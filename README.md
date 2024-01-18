@@ -10,11 +10,11 @@ Website application for checking prices on explicit and affixes specific items i
 
 
 ## Version on dependencies and download python venv
-We use:
-Python version 3.10.11 ($ python -V)
-Pip version 23.3.2 ($ pip -V)
-PostgreSQL version 16.1
-Pydantic version: 2.5.3
+We use:  
+Python version 3.10.11 ($ python -V)  
+Pip version 23.3.2 ($ pip -V)  
+PostgreSQL version 16.1  
+Pydantic version: 2.5.3  
 
 1. $ python3 -m venv venv
 2. $ source venv/Scripts/Activate
