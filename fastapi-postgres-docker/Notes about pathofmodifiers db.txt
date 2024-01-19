@@ -1,0 +1,12 @@
+Classes:
+Item
+
+
+
+
+Attributes in Item:
+"id"
+"icon"
+"league"
+"name"
+"typeline"
