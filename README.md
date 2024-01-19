@@ -25,7 +25,6 @@ Pydantic version: 2.5.3
 1. $ python3 -m venv venv  
 2. $ source venv/Scripts/Activate  
 3. Have venv in .gitignore  
-4. pip3 install "fastapi[all]" SQLAlchemy psycopg2-binary pydantic  
 
 ## Postgresdatabase database:
 Database name: pathofmodifiers_db  
