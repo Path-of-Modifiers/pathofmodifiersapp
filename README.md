@@ -2,6 +2,12 @@
 Website application for checking prices on explicit and affixes specific items in Path of Exile  
 
 
+## Download python requirements for fastapi-postgres-docker:
+cd into /fastapi-postgres-docker
+1. $ pip install pipreqs
+2. $ pipreqs .
+3. $ pip install -r requirements.txt
+
 
 ## Setup docker container for PostgreSQL database:
 1. docker pull postgres:alpine  
