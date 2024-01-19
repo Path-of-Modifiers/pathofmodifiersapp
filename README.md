@@ -11,7 +11,7 @@ Website application for checking prices on explicit and affixes specific items i
 
 ## Version on dependencies and download python venv
 We use:  
-Python version 3.10.11 ($ python -V)  
+Python version 3.12.1 ($ python -V)  
 Pip version 23.3.2 ($ pip -V)  
 PostgreSQL version 16.1  
 Pydantic version: 2.5.3   
