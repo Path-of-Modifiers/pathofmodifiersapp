@@ -2,11 +2,21 @@ Class: Item
 
 Attributes in Item:
 "id" (string), pk
-"icon" (string - link to icon
+"icon" (string - link to icon)
 "league"
 "name"
 "typeline"
-"basetype
+"basetype"
+"rarity"
+"ilvl"
+"identified"
+"note" (price)
+"properties"
+"itemlevel/ilvl"
+"explicitMods"
+"extended"
+
+
 
 
 Example of Item:
