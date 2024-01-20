@@ -56,7 +56,7 @@
 | <del>duplicated            | ?bool                      | always true if present                                                       |    NO    |     |
 | split                 | ?bool                      | always true if present                                                       |   MAYBE     |     |
 | corrupted             | ?bool                      | always true if present                                                       |    YES    |     |
-| unmodifiable          | ?bool                      | always true if present                                                       |   NO     |     |
+| <del>unmodifiable          | ?bool                      | always true if present                                                       |   NO     |     |
 | <del>cisRaceReward         | ?bool                      | always true if present                                                       |    NO    |     |
 | <del>seaRaceReward         | ?bool                      | always true if present                                                       |   NO     |     |
 | <del>thRaceReward          | ?bool                      | always true if present                                                       |   NO     |     |
@@ -80,7 +80,7 @@
 | <del>↳ mods                | array of string            |                                                                              |   NO     |     |
 | enchantMods           | ?array of string           |                                                                              |    YES    |     |
 | <del>scourgeMods           | ?array of string           |                                                                              |    NO    |     |
-| implicitMods          | ?array of string           |                                                                              |        |     |
+| implicitMods          | ?array of string           |                                                                              |     YES   |     |
 | <del>ultimatumMods         | ?array of object           |                                                                              |    NO    |     |
 | <del>↳ type                | string                     | text used to display ultimatum icons                                         |   NO     |     |
 | <del>↳ tier                | uint                       |                                                                              |   NO     |     |
@@ -120,7 +120,7 @@
 |<del> ↳ isVaalGem           | ?bool                      |                                                                              |    NO    |     |
 | <del>↳ baseTypeName        | string                     |                                                                              |    NO    |     |
 |<del> ↳ properties          | ?array of ItemProperty     |                                                                              |   NO     |     |
-|<del> ↳ explicitMods        | ?array of string           |                                          <del> ↳ secDescrText        | ?string                    |                                                                              |   NO     |     |
+|<del> ↳ explicitMods        | ?array of string           |                                          <del> ↳ secDescrText        | NO                    |                                                                              |        |     |
 | extended              | ?object                    | only present in the Public Stash API                                         |    YES    |     |
 | ↳ category            | ?string                    |                                                                              |   YES     |     |
 | ↳ subcategories       | ?array of string           |                                                                              |    YES    |     |
