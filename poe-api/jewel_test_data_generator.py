@@ -2,6 +2,8 @@ import requests
 import json
 from tqdm import tqdm
 from typing import List
+import time
+from datetime import datetime
 
 
 CHEAT_STASH = {
@@ -46,9 +48,10 @@ CHEAT_STASH = {
 
 class ItemDetector:
     wanted_items = {}
+    found_items = {}
 
     def __init__(self) -> None:
-        pass
+        self.n_unique_items_found = 0
 
     def iterate_stashes(self, stashes: list) -> tuple:
         item_count = 0
@@ -72,11 +75,13 @@ class ItemDetector:
                     stash["items"] = stash_wanted_items
                     wanted_stashes.append(stash)
 
-        return wanted_stashes, item_count, leftover_stashes
+        self.n_unique_items_found = len(self.found_items.keys())
+        return wanted_stashes, item_count, self.n_unique_items_found, leftover_stashes
 
     def _check_item(self, item: dict) -> bool:
         if item["baseType"] in self.wanted_items:
             if item["name"] in self.wanted_items[item["baseType"]]:
+                self.found_items[item["name"] + " " + item["baseType"]] = True
                 return True
         return False
 
@@ -99,7 +104,7 @@ class JewelDetector(ItemDetector):
 
 
 class APIHandler:
-    headers = headers = {
+    headers = {
         "User-Agent": "OAuth pathofmodifiers/0.1.0 (contact: magnus.hoddevik@gmail.com) StrictMode"
     }
 
@@ -108,6 +113,7 @@ class APIHandler:
         url: str,
         auth_token: str,
         n_wanted_items: int = 100,
+        n_unique_wanted_items: int = 5,
         item_detectors: list = [JewelDetector()],
     ) -> None:
         self.url = url
@@ -119,26 +125,38 @@ class APIHandler:
         self.n_found_items = 0
         self.n_wanted_items = n_wanted_items
 
+        self.n_unique_items_found = 0
+        self.n_unique_wanted_items = n_unique_wanted_items
+
     def _check_stashes(self, stashes):
         wanted_stashes = []
         n_new_items = 0
+        n_total_unique_items = 0
         for item_detector in self.item_detectors:
             (
                 filtered_stashes,
                 item_count,
+                n_unique_found_items,
                 leftover_stashes,
             ) = item_detector.iterate_stashes(stashes)
 
             wanted_stashes += filtered_stashes
             n_new_items += item_count
+            n_total_unique_items += n_unique_found_items
 
             stashes = leftover_stashes
 
         self.n_found_items += n_new_items
+        self.item_count_pbar.update(n_new_items)
+
+        self.unique_items_count_pbar.update(
+            n_total_unique_items - self.n_unique_items_found
+        )
+        self.n_unique_items_found = n_total_unique_items
 
         return wanted_stashes
 
-    def _initialize_stream(self, pbar) -> tuple:
+    def _initialize_stream(self) -> tuple:
         response = requests.get(self.url, headers=self.headers)
         response_json = response.json()
 
@@ -148,13 +166,17 @@ class APIHandler:
         # stashes.insert(0, CHEAT_STASH)
         stashes = self._check_stashes(stashes=stashes)
 
-        pbar.update()
+        self.iteration_pbar.update()
         return next_change_id, stashes
 
     def _get_up_stream(self, next_change_id: str) -> tuple:
         params = {"id": next_change_id}
 
         response = requests.get(self.url, headers=self.headers, params=params)
+
+        if response.status_code >= 300:
+            response.raise_for_status()
+
         response_json = response.json()
 
         next_change_id = response_json["next_change_id"]
@@ -167,7 +189,6 @@ class APIHandler:
         initial_next_change_id: str,
         first_stashes: list,
         max_iterations: int,
-        pbar,
     ) -> None:
         next_change_id = initial_next_change_id
         stashes = first_stashes
@@ -175,46 +196,90 @@ class APIHandler:
 
         iteration = 2
         try:
-            while new_stashes and self.n_found_items < self.n_wanted_items:
+            while (
+                self.n_found_items < self.n_wanted_items
+                or self.n_unique_items_found < self.n_unique_wanted_items
+            ):
                 next_change_id, new_stashes = self._get_up_stream(
                     next_change_id=next_change_id
                 )
                 wanted_stashes = self._check_stashes(stashes=new_stashes)
                 stashes += wanted_stashes
 
-                pbar.update()
+                self.iteration_pbar.update()
 
                 # if iteration >= max_iterations:
                 #     break
+                if not new_stashes:
+                    time.sleep(300)
+
                 iteration += 1
-        except KeyError as e:
+        except requests.HTTPError as e:
             print(e)
         finally:
-            pbar.close()
-            print("Saving stashes")
-            with open("testing.json", "w", encoding="utf-8") as infile:
-                json.dump(stashes, infile, ensure_ascii=False, indent=4)
+            self.iteration_pbar.close()
+            self.item_count_pbar.close()
+            self.unique_items_count_pbar.close()
+            print(f"Final `next_change_id`: {next_change_id}")
+            self._store_data(stashes=stashes)
 
-    def dump_stream(self, max_iterations: int = None) -> None:
-        with tqdm(total=max_iterations) as pbar:
-            next_change_id, stashes = self._initialize_stream(pbar=pbar)
+    def dump_stream(
+        self, initial_next_change_id: str = None, max_iterations: int = None
+    ) -> None:
+        with (
+            tqdm(
+                total=max_iterations, desc="Iterations", position=0
+            ) as self.iteration_pbar,
+            tqdm(
+                total=self.n_wanted_items,
+                desc="    Items found",
+                unit="item",
+                position=1,
+            ) as self.item_count_pbar,
+            tqdm(
+                total=self.n_unique_wanted_items,
+                desc="    Unique items found",
+                unit="item",
+                position=2,
+            ) as self.unique_items_count_pbar,
+        ):
+            if initial_next_change_id is None:
+                next_change_id, stashes = self._initialize_stream()
+            else:
+                next_change_id = initial_next_change_id
+                stashes = ["FILLER"]
             try:
                 self._follow_stream(
                     initial_next_change_id=next_change_id,
                     first_stashes=stashes,
                     max_iterations=max_iterations,
-                    pbar=pbar,
                 )
             except KeyboardInterrupt:
                 print("Exiting program")
+
+    def _store_data(self, stashes):
+        print("Saving stashes")
+        now = datetime.now().strftime("%Y_%m_%d %H_%m")
+        with open(rf"testing_data\{now}.json", "w", encoding="utf-8") as infile:
+            json.dump(stashes, infile, ensure_ascii=False, indent=4)
 
 
 def main():
     auth_token = "***REMOVED***"
     url = "https://api.pathofexile.com/public-stash-tabs"
 
-    api_handler = APIHandler(url=url, auth_token=auth_token)
-    api_handler.dump_stream()  # max_iterations=100)
+    n_wanted_items = 1000
+    n_unique_wanted_items = 10
+
+    api_handler = APIHandler(
+        url=url,
+        auth_token=auth_token,
+        n_wanted_items=n_wanted_items,
+        n_unique_wanted_items=n_unique_wanted_items,
+    )
+    api_handler.dump_stream(
+        # initial_next_change_id="51782717-48721296-50468408-51725550-48651954"
+    )  # max_iterations=100)
 
     return 0
 
