@@ -6,46 +6,6 @@ import time
 from datetime import datetime
 
 
-CHEAT_STASH = {
-    "id": "4baedf23834266c69db596b5cfa0bf35dbc7c92a3cf7c4fc634ac0b82f67b81e",
-    "public": True,
-    "accountName": "XiaZ",
-    "stash": "~b/o 1 fuse",
-    "stashType": "PremiumStash",
-    "league": "Hardcore",
-    "items": [
-        {
-            "verified": False,
-            "w": 1,
-            "h": 1,
-            "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvSmV3ZWxzL01pZFF1ZXN0UmV3YXJkUmVkIiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/b920f106cf/MidQuestRewardRed.png",
-            "league": "Hardcore",
-            "id": "e768eb8f423f0ffc5cbf2e1e687f3e9f4289ff48565f2876b4a03033c3047c90",
-            "name": "That Which Was Taken",
-            "typeLine": "Crimson Jewel",
-            "baseType": "Crimson Jewel",
-            "rarity": "Unique",
-            "ilvl": 1,
-            "identified": True,
-            "properties": [
-                {"name": "Limited to", "values": [["1", 0]], "displayMode": 0}
-            ],
-            "explicitMods": [
-                "8% increased Attack Damage",
-                "+0.1 metres to Melee Strike Range",
-            ],
-            "descrText": "Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.",
-            "flavourText": ["A steady hand can hold back an army."],
-            "frameType": 3,
-            "extended": {"category": "jewels"},
-            "x": 11,
-            "y": 4,
-            "inventoryId": "Stash11",
-        }
-    ],
-}
-
-
 class ItemDetector:
     wanted_items = {}
     found_items = {}
@@ -93,7 +53,7 @@ class JewelDetector(ItemDetector):
         "Viridian Jewel": ["Impossible Escape", "Grand Spectrum"],
         "Prismatic Jewel": ["Watcher's Eye", "Sublime Vision"],
         "Timeless Jewel": [
-            "Glorius Vanity",
+            "Glorious Vanity",
             "Lethal Pride",
             "Brutal Restraint",
             "Militant Faith",
@@ -163,7 +123,6 @@ class APIHandler:
         stashes = response_json["stashes"]
         next_change_id = response_json["next_change_id"]
 
-        # stashes.insert(0, CHEAT_STASH)
         stashes = self._check_stashes(stashes=stashes)
 
         self.iteration_pbar.update()
@@ -192,7 +151,7 @@ class APIHandler:
     ) -> None:
         next_change_id = initial_next_change_id
         stashes = first_stashes
-        new_stashes = ["FILLER"]
+        new_stashes = []
 
         iteration = 2
         try:
@@ -259,7 +218,8 @@ class APIHandler:
 
     def _store_data(self, stashes):
         print("Saving stashes")
-        now = datetime.now().strftime("%Y_%m_%d %H_%m")
+        now = datetime.now().strftime("%Y_%m_%d %H_%M")
+        print(now)
         with open(rf"testing_data\{now}.json", "w", encoding="utf-8") as infile:
             json.dump(stashes, infile, ensure_ascii=False, indent=4)
 
@@ -268,8 +228,8 @@ def main():
     auth_token = "***REMOVED***"
     url = "https://api.pathofexile.com/public-stash-tabs"
 
-    n_wanted_items = 1000
-    n_unique_wanted_items = 10
+    n_wanted_items = 10000
+    n_unique_wanted_items = 15
 
     api_handler = APIHandler(
         url=url,
@@ -278,7 +238,8 @@ def main():
         n_unique_wanted_items=n_unique_wanted_items,
     )
     api_handler.dump_stream(
-        # initial_next_change_id="51782717-48721296-50468408-51725550-48651954"
+        # initial_next_change_id="2304194866-2292426223-2218500683-2460109491-2390361734"
+        initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272"
     )  # max_iterations=100)
 
     return 0
