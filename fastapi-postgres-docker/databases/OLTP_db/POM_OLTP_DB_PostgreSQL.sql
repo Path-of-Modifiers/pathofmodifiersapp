@@ -108,6 +108,7 @@ CREATE TABLE "Stat" (
   "stat_id" varchar PRIMARY KEY, -- Generated with "local_" + "_" replaced for whitespace in Modifier.effect for sensible uniqueness
   "mininum_value" smallint,
   "maximum_value" smallint,
+  "stat_tier" smallint, -- Tier 1 is highest tier 
   "created_at" datetime,
   "updated_at" datetime
 );
