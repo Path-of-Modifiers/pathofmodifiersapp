@@ -7,30 +7,53 @@ from datetime import datetime
 
 
 class ItemDetector:
+    """
+    Base class for searching stashes for items we want to store and process further
+    """
+
     wanted_items = {}
     found_items = {}
 
     def __init__(self) -> None:
+        """
+        `self.n_unique_items_found` needs to be stored inbetween item detector sessions.
+        """
         self.n_unique_items_found = 0
 
     def iterate_stashes(self, stashes: list) -> tuple:
+        """
+        Goes through all stashes searching for items that correspond to `self.wanted_items`.
+        `self.n_unique_items_found` is calculated by the number of keys in `self.found_items`.
+        The `_check_item` method, which is unique to item categories, is defined in a child class.
+
+        Parameters:
+            :param stashes: (list) A list of stash objects as defined by GGG.
+            :return: (tuple) Wanted stashes, how many new items was found, number of different items that have been found so far, stashes that still need to be filtered.
+        """
         item_count = 0
 
+        # Lists of stashes to be populated
         wanted_stashes = []
         leftover_stashes = []
         for stash in stashes:
-            if stash["public"] and stash["items"]:
+            if (
+                stash["public"] and stash["items"]
+            ):  # Checks if the stash is public and contains items
+                # Lists of items
                 stash_wanted_items = []
                 stash_leftover_items = []
                 for item in stash["items"]:
-                    if self._check_item(item):
+                    if self._check_item(item):  # Checks if we want the item
                         stash_wanted_items.append(item)
                         item_count += 1
                     else:
                         stash_leftover_items.append(item)
 
+                # Replaces only the `items` object in stashes
                 stash["items"] = stash_leftover_items
                 leftover_stashes.append(stash)
+
+                # Only adds stashes to `wanted_stashes` if items were found
                 if stash_wanted_items:
                     stash["items"] = stash_wanted_items
                     wanted_stashes.append(stash)
@@ -38,15 +61,26 @@ class ItemDetector:
         self.n_unique_items_found = len(self.found_items.keys())
         return wanted_stashes, item_count, self.n_unique_items_found, leftover_stashes
 
+
+class UniqueDetector(ItemDetector):
     def _check_item(self, item: dict) -> bool:
-        if item["baseType"] in self.wanted_items:
-            if item["name"] in self.wanted_items[item["baseType"]]:
+        if (
+            item["baseType"] in self.wanted_items
+        ):  # Checks if the unique is a basetyp we are interested in
+            if (
+                item["name"] in self.wanted_items[item["baseType"]]
+            ):  # Check if the unique is one that we want
+                # Records the item as found, which is used to count number of unique items found
                 self.found_items[item["name"] + " " + item["baseType"]] = True
                 return True
         return False
 
 
-class JewelDetector(ItemDetector):
+class JewelDetector(UniqueDetector):
+    """
+    Contains only a dictionary of wanted uniques and with their basetype as
+    """
+
     wanted_items = {
         "Cobalt Jewel": ["Grand Spectrum", "Forbidden Flesh"],
         "Crimson Jewel": ["That Which Was Taken", "Grand Spectrum", "Forbidden Flame"],
@@ -76,6 +110,14 @@ class APIHandler:
         n_unique_wanted_items: int = 5,
         item_detectors: list = [JewelDetector()],
     ) -> None:
+        """
+        Parameters:
+            :param url: (str) A string containing POE public stash api url.
+            :param auth_token: (str) A string containing OAuth2 auth token.
+            :param n_wanted_items: (int) The number of items the program should search for before quitting.
+            :param n_unique_wanted_items: (int) The number of different type of items the program should search for before quitin.
+            :param item_detectors: (List[ItemDetector]) A list of `ItemDetector` instances.
+        """
         self.url = url
         self.auth_token = auth_token
         self.headers["Authorization"] = "Bearer " + auth_token
@@ -88,10 +130,16 @@ class APIHandler:
         self.n_unique_items_found = 0
         self.n_unique_wanted_items = n_unique_wanted_items
 
-    def _check_stashes(self, stashes):
+    def _check_stashes(self, stashes: list) -> list:
+        """
+        Parameters:
+            :param stashes: (list) A list of stash objects
+        """
         wanted_stashes = []
         n_new_items = 0
         n_total_unique_items = 0
+
+        # The stashes are fed to all item detectors, slowly being filtered down
         for item_detector in self.item_detectors:
             (
                 filtered_stashes,
@@ -106,17 +154,22 @@ class APIHandler:
 
             stashes = leftover_stashes
 
+        # Updates progress bars
         self.n_found_items += n_new_items
         self.item_count_pbar.update(n_new_items)
 
         self.unique_items_count_pbar.update(
-            n_total_unique_items - self.n_unique_items_found
+            n_total_unique_items
+            - self.n_unique_items_found  # Updates with the difference of current unique items found and previously found
         )
         self.n_unique_items_found = n_total_unique_items
 
         return wanted_stashes
 
     def _initialize_stream(self) -> tuple:
+        """
+        Used when no initial `next_change_id` is given
+        """
         response = requests.get(self.url, headers=self.headers)
         response_json = response.json()
 
@@ -129,6 +182,12 @@ class APIHandler:
         return next_change_id, stashes
 
     def _get_up_stream(self, next_change_id: str) -> tuple:
+        """
+        Moves up in the stream and retrieves the new `stashes` and `next_change_id`
+
+        Parameters:
+            :param next_change_id: (str) An id generated by a previous API call
+        """
         params = {"id": next_change_id}
 
         response = requests.get(self.url, headers=self.headers, params=params)
@@ -149,6 +208,13 @@ class APIHandler:
         first_stashes: list,
         max_iterations: int,
     ) -> None:
+        """
+        Follows the API stream until conditions are met
+
+        Parameters:
+            :param initial_next_change_id: (str) A previously found `next_change_id`.
+            :param first_stashes: (list) A list of stash objects which have already been found.
+        """
         next_change_id = initial_next_change_id
         stashes = first_stashes
         new_stashes = []
@@ -170,12 +236,14 @@ class APIHandler:
                 # if iteration >= max_iterations:
                 #     break
                 if not new_stashes:
-                    time.sleep(300)
+                    time.sleep(
+                        300
+                    )  # Waits 5 minutes before continuing to persue the stream
 
                 iteration += 1
         except requests.HTTPError as e:
             print(e)
-        finally:
+        finally:  # Probably needs some more exception catches
             self.iteration_pbar.close()
             self.item_count_pbar.close()
             self.unique_items_count_pbar.close()
@@ -185,6 +253,15 @@ class APIHandler:
     def dump_stream(
         self, initial_next_change_id: str = None, max_iterations: int = None
     ) -> None:
+        """
+        The method which begins making API calls and fetching data.
+
+        Parameters:
+            :param initial_next_change_id: (str) A previously found `next_change_id`.
+            :param max_iterations: (int) The number of iteration before shutting down. (currently not implemented)
+        """
+
+        # Intializes progressbar context managers
         with (
             tqdm(
                 total=max_iterations, desc="Iterations", position=0
@@ -202,11 +279,12 @@ class APIHandler:
                 position=2,
             ) as self.unique_items_count_pbar,
         ):
+            # Checks if an initial `next_change_id` was given
             if initial_next_change_id is None:
                 next_change_id, stashes = self._initialize_stream()
             else:
                 next_change_id = initial_next_change_id
-                stashes = ["FILLER"]
+                stashes = ["FILLER"]  # Random filler stash
             try:
                 self._follow_stream(
                     initial_next_change_id=next_change_id,
@@ -216,7 +294,11 @@ class APIHandler:
             except KeyboardInterrupt:
                 print("Exiting program")
 
-    def _store_data(self, stashes):
+    def _store_data(self, stashes: list):
+        """
+        Stores the data as the program is done. All files are stored in the `.\testing_data` folder
+        and named after the current time.
+        """
         print("Saving stashes")
         now = datetime.now().strftime("%Y_%m_%d %H_%M")
         print(now)
@@ -238,8 +320,7 @@ def main():
         n_unique_wanted_items=n_unique_wanted_items,
     )
     api_handler.dump_stream(
-        # initial_next_change_id="2304194866-2292426223-2218500683-2460109491-2390361734"
-        initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272"
+        initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272"  # From poe.ninja
     )  # max_iterations=100)
 
     return 0
