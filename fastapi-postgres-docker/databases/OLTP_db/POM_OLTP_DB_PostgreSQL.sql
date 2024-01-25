@@ -1,9 +1,10 @@
 CREATE TABLE "Currency" (
   "currency_name" varchar PRIMARY KEY, -- Self generated
-  "value_in_chaos" int NOT NULL,
+  "value_in_chaos" float NOT NULL,
   "icon_url" varchar NOT NULL,
   "created_at" datetime,
   "updated_at" datetime
+  FOREIGN KEY (icon_url) REFERENCES Icon(icon_url) ON DELETE SET NULL
 );
 
 CREATE TABLE "Item" (
@@ -11,12 +12,13 @@ CREATE TABLE "Item" (
   "stash_id" varchar NOT NULL,
   "name" varchar,
   "icon_url" varchar,
+  "league" varchar NOT NULL,
   "base_type" varchar NOT NULL,
   "type_line" varchar NOT NULL,
   "rarity" varchar NOT NULL,
   "identified" bool NOT NULL,
   "item_level" tinyint NOT NULL,
-  "forum_note" varchar NOT NULL,
+  "forum_note" varchar,
   "currency_amount" float(24),
   "currency_name" varchar,
   "corrupted" bool,
@@ -45,7 +47,7 @@ CREATE TABLE "Transaction" (
   "transaction_id" serial PRIMARY KEY, -- Self generated
   "item_id" varchar NOT NULL,
   "account_name" varchar NOT NULL,
-  "currency_amount" int NOT NULL,
+  "currency_amount" float(24) NOT NULL,
   "currency_name" varchar NOT NULL,
   "created_at" datetime,
   "updated_at" datetime,
@@ -64,15 +66,9 @@ CREATE TABLE "Item_Categories" (
 
 CREATE TABLE "Item_Modifiers" (
   "modifier_id" varchar PRIMARY KEY,
-  "item_id" varchar PRIMARY KEY,
+  "item_id" varchar PRIMARY KEY
   FOREIGN KEY (modifier_id) REFERENCES Modifier(modifier_id) ON DELETE CASCADE,
   FOREIGN KEY (item_id) REFERENCES Item(item_id) ON DELETE CASCADE
-);
-
-CREATE TABLE "Icon" (
-  "icon_url" varchar PRIMARY KEY, -- Field "icon" in Item POE API object
-  "created_at" datetime,
-  "updated_at" datetime
 );
 
 CREATE TABLE "Category" (
@@ -121,7 +117,6 @@ CREATE TABLE "Stash" (
   "created_at" datetime,
   "updated_at" datetime,
   FOREIGN KEY (account_name) REFERENCES Account(account_name) ON DELETE CASCADE,
-  FOREIGN KEY (league) REFERENCES League(league_name) ON DELETE CASCADE
 );
 
 CREATE TABLE "Account" (
@@ -131,8 +126,5 @@ CREATE TABLE "Account" (
   "updated_at" datetime
 );
 
-CREATE TABLE "League" (
-  "league_name" varchar PRIMARY KEY,
-  "created_at" datetime
-);
+INSERT INTO Currency (currency_name, value_in_chaos, icon_url) VALUES ('Chaos Orb', 1, 'https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyRerollRare.png');
 
