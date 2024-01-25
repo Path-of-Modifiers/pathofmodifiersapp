@@ -16,22 +16,22 @@ CREATE TABLE "Item" (
   "base_type" varchar NOT NULL,
   "type_line" varchar NOT NULL,
   "rarity" varchar NOT NULL,
-  "identified" bool NOT NULL,
+  "identified" boolean NOT NULL,
   "item_level" tinyint NOT NULL,
   "forum_note" varchar,
   "currency_amount" float(24),
   "currency_name" varchar,
-  "corrupted" bool,
-  "delve" bool,
-  "fractured" bool,
-  "synthesized" bool,
-  "replica" bool,
-  "elder" bool,
-  "shaper" bool,
-  "searing" bool,
-  "tangled" bool,
+  "corrupted" boolean,
+  "delve" boolean,
+  "fractured" boolean,
+  "synthesized" boolean,
+  "replica" boolean,
+  "elder" boolean,
+  "shaper" boolean,
+  "searing" boolean,
+  "tangled" boolean,
   "influences" jsonb,
-  "is_relic" bool,
+  "is_relic" boolean,
   "prefixes" tinyint,
   "suffixes" tinyint,
   "foil_variation" int,
@@ -73,20 +73,20 @@ CREATE TABLE "Item_Modifiers" (
 
 CREATE TABLE "Category" (
   "category_name" varchar PRIMARY KEY, -- Field "extended" -> "category" and "subcategory" in Item POE API object
-  "is_sub_category" bool
+  "is_sub_category" boolean
 );
 
 CREATE TABLE "Modifier" (
   "modifier_id" varchar PRIMARY KEY, -- Self generated with Modifier.effect for sensible uniqueness
   "effect" varchar NOT NULL,
-  "implicit" bool,
-  "explicit" bool,
-  "delve" bool,
-  "fractured" bool,
-  "synthesized" bool,
-  "corrupted" bool,
-  "enchanted" bool,
-  "veiled" bool,
+  "implicit" boolean,
+  "explicit" boolean,
+  "delve" boolean,
+  "fractured" boolean,
+  "synthesized" boolean,
+  "corrupted" boolean,
+  "enchanted" boolean,
+  "veiled" boolean,
   "created_at" datetime,
   "updated_at" datetime
 );
@@ -112,7 +112,7 @@ CREATE TABLE "Stat" (
 CREATE TABLE "Stash" (
   "stash_id" varchar PRIMARY KEY, -- Field "id" in PublicStashChange POE API object
   "account_name" varchar NOT NULL,
-  "public" bool NOT NULL,
+  "public" boolean NOT NULL,
   "league" varchar NOT NULL,
   "created_at" datetime,
   "updated_at" datetime,
@@ -121,7 +121,7 @@ CREATE TABLE "Stash" (
 
 CREATE TABLE "Account" (
   "account_name" varchar PRIMARY KEY,
-  "is_banned" bool,
+  "is_banned" boolean,
   "created_at" datetime,
   "updated_at" datetime
 );
