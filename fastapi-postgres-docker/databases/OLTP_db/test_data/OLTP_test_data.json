@@ -1,0 +1,24 @@
+[
+    {
+        "item_id": "4aae2a9262e2b68397c246563c23bff87cac2808b9a19a7e06ace5aa73e291b2",
+        "stash_id": "a42eaf88948b2a84e1b3645f3c0296896581c138067aa46344353943c0d13a7d",
+        "name": "Grand Spectrum",
+        "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvSmV3ZWxzL1JlZEdyYW5kU3BlY3RydW0iLCJ3IjoxLCJoIjoxLCJzY2FsZSI6MX1d/3e6789a065/RedGrandSpectrum.png",
+        "league": "Standard",
+        "base_type": "Crimson Jewel",
+        "type_line": "Crimson Jewel",
+        "rarity": "Unique",
+        "identified": "true",
+        "item_level": 35,
+        "currency_amount": 20,
+        "currency_name":"Chaos Orb",
+        "inventory_id": "Stash9"
+    },
+    {
+        "transaction_id": 1,
+        "item_id": "4aae2a9262e2b68397c246563c23bff87cac2808b9a19a7e06ace5aa73e291b2",
+        "account_name": "xphailedx",
+        "currency_amount": 20,
+        "currency_name":"Chaos Orb"
+    }
+]
