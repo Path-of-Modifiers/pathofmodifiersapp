@@ -79,14 +79,14 @@ CREATE TABLE "Category" (
 CREATE TABLE "Modifier" (
   "modifier_id" varchar PRIMARY KEY, -- Self generated with Modifier.effect for sensible uniqueness
   "effect" varchar NOT NULL,
-  "implicit" bool NOT NULL,
-  "explicit" bool NOT NULL,
+  "implicit" bool,
+  "explicit" bool,
   "delve" bool,
-  "fractured" bool NOT NULL,
-  "synthesized" bool NOT NULL,
+  "fractured" bool,
+  "synthesized" bool,
   "corrupted" bool,
-  "enchanted" bool NOT NULL,
-  "veiled" bool NOT NULL,
+  "enchanted" bool,
+  "veiled" bool,
   "created_at" datetime,
   "updated_at" datetime
 );
@@ -94,14 +94,14 @@ CREATE TABLE "Modifier" (
 CREATE TABLE "Modifier_Stats" (
   "modifier_id" varchar PRIMARY KEY,
   "stat_id" varchar PRIMARY KEY,
-  "position" tinyint NOT NULL UNIQUE, -- If it's the first/second/third... number in the Modifier.effect text
-  "stat_value" smallint, -- Value of the # in Modifier.effect text
   FOREIGN KEY (modifier_id) REFERENCES Modifier(modifier_id) ON DELETE CASCADE,
   FOREIGN KEY (stat_id) REFERENCES Stat(stat_id) ON DELETE CASCADE
 );
 
 CREATE TABLE "Stat" (
   "stat_id" varchar PRIMARY KEY, -- Generated with "local_" + "_" replaced for whitespace in Modifier.effect for sensible uniqueness
+  "position" tinyint NOT NULL PRIMARY KEY, -- If it's the first/second/third... number in the Modifier.effect text
+  "stat_value" smallint NOT NULL, -- Value of the # in Modifier.effect text
   "mininum_value" smallint,
   "maximum_value" smallint,
   "stat_tier" smallint, -- Tier 1 is highest tier 
