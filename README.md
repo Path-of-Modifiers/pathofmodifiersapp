@@ -40,7 +40,7 @@ $ uvicorn main:app --reload
 1. $ psql -U postgres  
 2. $ create database pom_oltp_db;  
 3. $ CREATE USER pom_oltp_superuser WITH SUPERUSER ENCRYPTED PASSWORD 'sjukebarna123';  
-4. $ grant all privileges on database pom_db to pathofmodifiers_oltp_superuser;  
+4. $ grant all privileges on database pom_oltp_db to pom_oltp_superuser;  
 5. $ \c pom_oltp_db   
 6. $ psql -h localhost -p 5432 postgres  
 
