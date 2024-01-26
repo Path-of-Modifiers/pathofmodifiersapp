@@ -29,8 +29,8 @@ $ source venv/Scripts/Activate
 Have venv in .gitignore  
 
 ## Postgresdatabase database:
-Database name: pathofmodifiers_oltp_db  
-Username: pathofmodifiersoltpdbadmin  
+Database name: pom_oltp_db  
+Username: pom_oltp_superuser  
 Password: sjukebarna123  
 
 ## Run API:
@@ -38,7 +38,7 @@ $ uvicorn main:app --reload
 
 ## Create database with PostgreSQL and make it available outside
 1. $ psql -U postgres  
-2. $ create database pathofmodifiers_db;  
+2. $ create database pom_oltp_db;  
 3. $ CREATE USER pom_oltp_superuser WITH SUPERUSER ENCRYPTED PASSWORD 'sjukebarna123';  
 4. $ grant all privileges on database pom_db to pathofmodifiers_oltp_superuser;  
 5. $ \c pom_oltp_db   
