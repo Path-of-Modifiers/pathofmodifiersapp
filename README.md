@@ -10,9 +10,9 @@ cd into /fastapi-postgres-docker
 
 
 ## Setup docker container for PostgreSQL database:
-1. docker pull postgres:alpine  
-2. docker run --name docker-pom_oltp_db_ct -e POSTGRES_PASSWORD=sjukebarna123 -d -p 5432:5432 postgres:alpine  
-2. docker exec -it docker-pom_oltp_db_ct bash  
+$ docker pull postgres:alpine  
+$ docker run --name docker-pom_oltp_db_ct -e POSTGRES_PASSWORD=sjukebarna123 -d -p 5432:5432 postgres:alpine  
+$ docker exec -it docker-pom_oltp_db_ct bash  
 
 
 ## Version on dependencies and download python venv
