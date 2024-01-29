@@ -37,6 +37,7 @@ CREATE TABLE "Item" (
   "inventory_id" varchar,
   "created_at" datetime,
   "updated_at" datetime,
+  FOREIGN KEY (base_type) REFERENCES Item_Basetype(basetype) ON DELETE RESTRICT,
   FOREIGN KEY (currency_name) REFERENCES Currency(currency_name) ON DELETE RESTRICT,
   FOREIGN KEY (stash_id) REFERENCES Stash(stash_id) ON DELETE CASCADE
 );
@@ -54,12 +55,12 @@ CREATE TABLE "Transaction" (
   FOREIGN KEY (currency_name) REFERENCES Currency(currency_name) ON DELETE RESTRICT
 );
 
-
-CREATE TABLE "Item_Categories" (
-  "category_name" varchar PRIMARY KEY,
-  "item_id" varchar PRIMARY KEY,
-  FOREIGN KEY (category_name) REFERENCES Category(category_name) ON DELETE CASCADE,
-  FOREIGN KEY (item_id) REFERENCES Item(item_id) ON DELETE CASCADE
+CREATE TABLE "Item_Basetype" (
+  "basetype" varchar PRIMARY KEY,
+  "category" varchar NOT NULL,
+  "sub_category" jsonb NOT NULL,
+  "created_at" datetime,
+  "updated_at" datetime
 );
 
 CREATE TABLE "Item_Modifiers" (
@@ -67,11 +68,6 @@ CREATE TABLE "Item_Modifiers" (
   "item_id" varchar PRIMARY KEY,
   FOREIGN KEY (modifier_id) REFERENCES Modifier(modifier_id) ON DELETE CASCADE,
   FOREIGN KEY (item_id) REFERENCES Item(item_id) ON DELETE CASCADE
-);
-
-CREATE TABLE "Category" (
-  "category_name" varchar PRIMARY KEY, 
-  "is_sub_category" boolean
 );
 
 CREATE TABLE "Modifier" (
