@@ -12,7 +12,6 @@ CREATE TABLE "Item" (
   "name" varchar,
   "icon_url" varchar,
   "league" varchar NOT NULL,
-  "base_type" varchar NOT NULL,
   "type_line" varchar NOT NULL,
   "rarity" varchar NOT NULL,
   "identified" boolean NOT NULL,
@@ -56,7 +55,7 @@ CREATE TABLE "Transaction" (
 );
 
 CREATE TABLE "Item_Basetype" (
-  "basetype" varchar PRIMARY KEY,
+  "base_type" varchar PRIMARY KEY,
   "category" varchar NOT NULL,
   "sub_category" jsonb NOT NULL,
   "created_at" datetime,
