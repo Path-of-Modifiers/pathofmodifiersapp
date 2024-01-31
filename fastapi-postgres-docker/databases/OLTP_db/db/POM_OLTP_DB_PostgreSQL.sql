@@ -27,6 +27,7 @@ CREATE TABLE "Item" (
   "replica" boolean,
   "elder" boolean,
   "shaper" boolean,
+  "influences" jsonb,
   "searing" boolean,
   "tangled" boolean,
   "isrelic" boolean,
