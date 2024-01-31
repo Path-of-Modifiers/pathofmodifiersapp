@@ -13,6 +13,7 @@ CREATE TABLE "Item" (
   "iconUrl" varchar,
   "league" varchar NOT NULL,
   "typeLine" varchar NOT NULL,
+  "baseType" varchar NOT NULL,
   "rarity" varchar NOT NULL,
   "identified" boolean NOT NULL,
   "itemLevel" smallint NOT NULL,
@@ -35,7 +36,7 @@ CREATE TABLE "Item" (
   "inventoryId" varchar,
   "createdAt" datetime,
   "updatedAt" datetime,
-  FOREIGN KEY (baseType) REFERENCES ItemBasetype(baseType) ON DELETE RESTRICT,
+  FOREIGN KEY (baseType) REFERENCES ItemBaseType(baseType) ON DELETE RESTRICT,
   FOREIGN KEY (currencyName) REFERENCES Currency(currencyName) ON DELETE RESTRICT,
   FOREIGN KEY (stashId) REFERENCES Stash(stashId) ON DELETE CASCADE
 );
@@ -53,7 +54,7 @@ CREATE TABLE "Transaction" (
   FOREIGN KEY (currencyName) REFERENCES Currency(currencyName) ON DELETE RESTRICT
 );
 
-CREATE TABLE "itemBasetype" (
+CREATE TABLE "ItemBaseType" (
   "baseType" varchar PRIMARY KEY,
   "category" varchar NOT NULL,
   "subCategory" jsonb NOT NULL,
