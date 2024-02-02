@@ -1,42 +1,41 @@
-import datetime
-from typing import Optional, Json
+import datetime as _dt
+from typing import Optional
 import pydantic as _pydantic
-
+from pydantic import Json
 
 class _BaseCurrency(_pydantic.BaseModel):
+    modelConfig = _pydantic.ConfigDict(fromAttributes=True)
 
-    currency_name: str
-    value_in_chaos: float
-    icon_url: str
-
+    currencyName: str
+    valueInChaos: float
+    iconUrl: str
 
 class Currency(_BaseCurrency):
-
-    created_at: Optional[datetime.datetime]
-    updated_at: Optional[datetime.datetime]
+    createdAt: Optional[_dt.datetime]
+    updatedAt: Optional[_dt.datetime]
 
     class Config:
-        orm_mode = True
+        ormMode = True
 
 class CreateCurrency(_BaseCurrency):
     pass
-        
 
 class _BaseItem(_pydantic.BaseModel):
-    
-    item_id: str
-    stash_id: str
+    modelConfig = _pydantic.ConfigDict(fromAttributes=True)
+
+    itemId: str
+    stashId: str
     name: Optional[str]
-    icon_url: Optional[str]
+    iconUrl: Optional[str]
     league: str
-    base_type: str
     type_line: str
+    base_type: str
     rarity: str
     identified: bool
-    item_level: int
-    forum_note: Optional[str]
-    currency_amount: Optional[float]
-    currency_name: Optional[str]
+    itemLevel: int
+    forumNote: Optional[str]
+    currencyAmount: Optional[float]
+    currencyName: Optional[str]
     corrupted: Optional[bool]
     delve: Optional[bool]
     fractured: Optional[bool]
@@ -44,69 +43,77 @@ class _BaseItem(_pydantic.BaseModel):
     replica: Optional[bool]
     elder: Optional[bool]
     shaper: Optional[bool]
+    influences: Optional[Json]
     searing: Optional[bool]
     tangled: Optional[bool]
-    influences: Optional[_pydantic.Json]
-    is_relic: Optional[bool]
+    isrelic: Optional[bool]
     prefixes: Optional[int]
     suffixes: Optional[int]
-    foil_variation: Optional[int]
-    inventory_id: Optional[str]
-
+    foilVariation: Optional[int]
+    inventoryId: Optional[str]
 
 class Item(_BaseItem):
-    created_at: Optional[datetime.datetime]
-    updated_at: Optional[datetime.datetime]
+    createdAt: Optional[_dt.datetime]
+    updatedAt: Optional[_dt.datetime]
 
     class Config:
-        orm_mode = True
-
+        ormMode = True
 
 class CreateItem(_BaseItem):
     pass
 
-
 class _BaseTransaction(_pydantic.BaseModel):
-    item_id: str
-    account_name: str
-    currency_amount: float
-    currency_name: str
+    modelConfig = _pydantic.ConfigDict(fromAttributes=True)
 
+    itemId: str
+    accountName: str
+    currencyAmount: float
+    currencyName: str
 
 class Transaction(_BaseTransaction):
-    transaction_id: int
-    created_at: Optional[datetime.datetime]
-    updated_at: Optional[datetime.datetime]
+    transactionId: int
+    createdAt: Optional[_dt.datetime]
+    updatedAt: Optional[_dt.datetime]
 
     class Config:
-        orm_mode = True
-
+        ormMode = True
 
 class CreateTransaction(_BaseTransaction):
     pass
 
+class _BaseItemBaseType(_pydantic.BaseModel):
+    modelConfig = _pydantic.ConfigDict(fromAttributes=True)
 
-class ItemCategories(_pydantic.BaseModel):
+    baseType: str
+    category: str
+    subCategory: Json
 
-    category_name: str
-    item_id: str
+class ItemBaseType(_BaseItemBaseType):
+    createdAt: Optional[_dt.datetime]
+    updatedAt: Optional[_dt.datetime]
 
+    class Config:
+        ormMode = True
 
-class ItemModifiers(_pydantic.BaseModel):
+class CreateItemBaseType(_BaseItemBaseType):
+    pass
 
-    modifier_id: str
-    item_id: str
+class _BaseItemModifiers(_pydantic.BaseModel):
+    modelConfig = _pydantic.ConfigDict(fromAttributes=True)
 
+    modifierId: str
+    itemId: str
 
-class Category(_pydantic.BaseModel):
+class ItemModifiers(_BaseItemModifiers):
+    pass
 
-    category_name: str
-    is_sub_category: Optional[bool]
+class CreateItemModifiers(_BaseItemModifiers):
+    pass
 
+class _BaseModifier(_pydantic.BaseModel):
+    modelConfig = _pydantic.ConfigDict(fromAttributes=True)
 
-class Modifier(_pydantic.BaseModel):
-
-    modifier_id: str
+    modifierId: str
     effect: str
     implicit: Optional[bool]
     explicit: Optional[bool]
@@ -116,41 +123,79 @@ class Modifier(_pydantic.BaseModel):
     corrupted: Optional[bool]
     enchanted: Optional[bool]
     veiled: Optional[bool]
-    created_at: Optional[datetime.datetime]
-    updated_at: Optional[datetime.datetime]
 
+class Modifier(_BaseModifier):
+    createdAt: Optional[_dt.datetime]
+    updatedAt: Optional[_dt.datetime]
 
-class ModifierStats(_pydantic.BaseModel):
+    class Config:
+        ormMode = True
 
-    modifier_id: str
-    stat_id: str
+class CreateModifier(_BaseModifier):
+    pass
 
+class _BaseModifierStats(_pydantic.BaseModel):
+    modelConfig = _pydantic.ConfigDict(fromAttributes=True)
 
-class Stat(_pydantic.BaseModel):
+    modifierId: str
+    statId: str
 
-    stat_id: str
+class ModifierStats(_BaseModifierStats):
+    pass
+
+class CreateModifierStats(_BaseModifierStats):
+    pass
+
+class _BaseStat(_pydantic.BaseModel):
+    modelConfig = _pydantic.ConfigDict(fromAttributes=True)
+
+    statId: str
     position: int
-    stat_value: int
-    mininum_value: Optional[int]
-    maximum_value: Optional[int]
+    statValue: int
+    mininumValue: Optional[int]
+    maximumValue: Optional[int]
     stat_tier: Optional[int]
-    created_at: Optional[datetime.datetime]
-    updated_at: Optional[datetime.datetime]
 
+class Stat(_BaseStat):
+    createdAt: Optional[_dt.datetime]
+    updatedAt: Optional[_dt.datetime]
 
-class Stash(_pydantic.BaseModel):
+    class Config:
+        ormMode = True
 
-    stash_id: str
-    account_name: str
+class CreateStat(_BaseStat):
+    pass
+
+class _BaseStash(_pydantic.BaseModel):
+    modelConfig = _pydantic.ConfigDict(fromAttributes=True)
+
+    stashId: str
+    accountName: str
     public: bool
     league: str
-    created_at: Optional[datetime.datetime]
-    updated_at: Optional[datetime.datetime]
 
+class Stash(_BaseStash):
+    createdAt: Optional[_dt.datetime]
+    updatedAt: Optional[_dt.datetime]
 
-class Account(_pydantic.BaseModel):
+    class Config:
+        ormMode = True
 
-    account_name: str
+class CreateStash(_BaseStash):
+    pass
+
+class _BaseAccount(_pydantic.BaseModel):
+    modelConfig = _pydantic.ConfigDict(fromAttributes=True)
+
+    accountName: str
     is_banned: Optional[bool]
-    created_at: Optional[datetime.datetime]
-    updated_at: Optional[datetime.datetime]
+
+class Account(_BaseAccount):
+    createdAt: Optional[_dt.datetime]
+    updatedAt: Optional[_dt.datetime]
+
+    class Config:
+        ormMode = True
+
+class CreateAccount(_BaseAccount):
+    pass
