@@ -1,35 +1,38 @@
-import database as _database
+import datetime as _dt
 import sqlalchemy as _sql
 from sqlalchemy.dialects.postgresql import JSONB
 
+import database as _database
+
+
 class Currency(_database.Base):
 
-    __tablename__ = 'Currency'
+    _Tablename__ = 'Currency'
 
-    currency_name = _sql.Column(_sql.String(), primary_key=True)
-    value_in_chaos = _sql.Column(_sql.Float(), nullable=False)
-    icon_url = _sql.Column(_sql.String(), nullable=False)
-    created_at = _sql.Column(_sql.DateTime())
-    updated_at = _sql.Column(_sql.DateTime())
+    currencyName = _sql.Column(_sql.String(), primary_key=True, index=True)
+    valueInChaos = _sql.Column(_sql.Float(), nullable=False)
+    iconUrl = _sql.Column(_sql.String(), nullable=False, unique=True)
+    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
+    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
 
 class Item(_database.Base):
 
-    __tablename__ = 'Item'
+    _Tablename__ = 'Item'
 
-    item_id = _sql.Column(_sql.String(), primary_key=True)
-    stash_id = _sql.Column(_sql.String(), _sql.ForeignKey('Stash.stash_id'), ondelete="CASCADE", nullable=False)
+    itemId = _sql.Column(_sql.String(), primary_key=True, index=True)
+    stashId = _sql.Column(_sql.String(), _sql.ForeignKey('Stash.stashId'), ondelete="CASCADE", nullable=False)
     name = _sql.Column(_sql.String())
-    icon_url = _sql.Column(_sql.String())
+    iconUrl = _sql.Column(_sql.String())
     league = _sql.Column(_sql.String(), nullable=False)
-    base_type = _sql.Column(_sql.String(), nullable=False)
-    type_line = _sql.Column(_sql.String(), nullable=False)
+    typeLine = _sql.Column(_sql.String(), nullable=False)
+    baseType = _sql.Column(_sql.String(), _sql.ForeignKey('Item_database.BaseType.baseType'), ondelete="RESTRICT", nullable=False)
     rarity = _sql.Column(_sql.String(), nullable=False)
     identified = _sql.Column(_sql.Boolean(), nullable=False)
-    item_level = _sql.Column(_sql.SmallInteger(), nullable=False)
-    forum_note = _sql.Column(_sql.String())
-    currency_amount = _sql.Column(_sql.Float(24))
-    currency_name = _sql.Column(_sql.String(), _sql.ForeignKey('Currency.currency_name'), ondelete="RESTRICT")
+    itemLevel = _sql.Column(_sql.SmallInteger(), nullable=False)
+    forumNote = _sql.Column(_sql.String())
+    currencyAmount = _sql.Column(_sql.Float(24))
+    currencyName = _sql.Column(_sql.String(), _sql.ForeignKey('Currency.currencyName'), ondelete="RESTRICT")
     corrupted = _sql.Column(_sql.Boolean())
     delve = _sql.Column(_sql.Boolean())
     fractured = _sql.Column(_sql.Boolean())
@@ -37,60 +40,55 @@ class Item(_database.Base):
     replica = _sql.Column(_sql.Boolean())
     elder = _sql.Column(_sql.Boolean())
     shaper = _sql.Column(_sql.Boolean())
+    influences = _sql.Column(JSONB())
     searing = _sql.Column(_sql.Boolean())
     tangled = _sql.Column(_sql.Boolean())
-    influences = _sql.Column(JSONB())
-    is_relic = _sql.Column(_sql.Boolean())
+    isrelic = _sql.Column(_sql.Boolean())
     prefixes = _sql.Column(_sql.SmallInteger())
     suffixes = _sql.Column(_sql.SmallInteger())
-    foil_variation = _sql.Column(_sql.Integer())
-    inventory_id = _sql.Column(_sql.String())
-    created_at = _sql.Column(_sql.DateTime())
-    updated_at = _sql.Column(_sql.DateTime())
+    foilVariation = _sql.Column(_sql.Integer())
+    inventoryId = _sql.Column(_sql.String())
+    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
+    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
 
 class Transaction(_database.Base):
 
-    __tablename__ = 'Transaction'
+    _Tablename__ = 'Transaction'
 
-    transaction_id = _sql.Column(_sql.Integer(), autoincrement=True, primary_key=True)
-    item_id = _sql.Column(_sql.String(), _sql.ForeignKey('Item.item_id'), ondelete="CASCADE", nullable=False)
-    account_name = _sql.Column(_sql.String(), _sql.ForeignKey('Account.account_name'), ondelete="CASCADE", nullable=False)
-    currency_amount = _sql.Column(_sql.Float(24), nullable=False)
-    currency_name = _sql.Column(_sql.String(), _sql.ForeignKey('Currency.currency_name'), ondelete="RESTRICT", nullable=False)
-    created_at = _sql.Column(_sql.DateTime())
-    updated_at = _sql.Column(_sql.DateTime())
+    transactionId = _sql.Column(_sql.Integer(), autoincrement=True, primary_key=True, index=True)
+    itemId = _sql.Column(_sql.String(), _sql.ForeignKey('Item.itemId'), ondelete="CASCADE", nullable=False)
+    accountName = _sql.Column(_sql.String(), _sql.ForeignKey('Account.accountName'), ondelete="CASCADE", nullable=False)
+    currencyAmount = _sql.Column(_sql.Float(24), nullable=False)
+    currencyName = _sql.Column(_sql.String(), _sql.ForeignKey('Currency.currencyName'), ondelete="RESTRICT", nullable=False)
+    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
+    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
 
-class ItemCategories(_database.Base):
+class ItemBaseType(_database.Base):
 
-    __tablename__ = 'Item_Categories'
+    _Tablename__ = '_database.BaseType'
 
-    category_name = _sql.Column(_sql.String(), _sql.ForeignKey('Category.category_name'), ondelete="CASCADE", primary_key=True)
-    item_id = _sql.Column(_sql.String(), _sql.ForeignKey('Item.item_id'), ondelete="CASCADE", primary_key=True)
+    baseType = _sql.Column(_sql.String(), nullable=False, primary_key=True, index=True)
+    category = _sql.Column(_sql.String(), nullable=False, unique=True)
+    subCategory = _sql.Column(JSONB(), nullable=False)
+    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
+    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
 
 class ItemModifiers(_database.Base):
 
-    __tablename__ = 'Item_Modifiers'
+    _Tablename__ = 'ItemModifiers'
 
-    modifier_id = _sql.Column(_sql.String(), _sql.ForeignKey('Modifier.modifier_id'), ondelete="CASCADE", primary_key=True)
-    item_id = _sql.Column(_sql.String(), _sql.ForeignKey('Item.item_id'), ondelete="CASCADE", primary_key=True)
-
-
-class Category(_database.Base):
-
-    __tablename__ = 'Category'
-
-    category_name = _sql.Column(_sql.String(), primary_key=True)
-    is_sub_category = _sql.Column(_sql.Boolean())
+    modifierId = _sql.Column(_sql.String(), _sql.ForeignKey('Modifier.modifierId'), ondelete="CASCADE", nullable=False)
+    itemId = _sql.Column(_sql.String(), _sql.ForeignKey('Item.itemId'), ondelete="CASCADE", nullable=False)
 
 
 class Modifier(_database.Base):
 
-    __tablename__ = 'Modifier'
+    _Tablename__ = 'Modifier'
 
-    modifier_id = _sql.Column(_sql.String(), primary_key=True)
+    modifierId = _sql.Column(_sql.String(), primary_key=True, index=True)
     effect = _sql.Column(_sql.String(), nullable=False)
     implicit = _sql.Column(_sql.Boolean())
     explicit = _sql.Column(_sql.Boolean())
@@ -100,49 +98,49 @@ class Modifier(_database.Base):
     corrupted = _sql.Column(_sql.Boolean())
     enchanted = _sql.Column(_sql.Boolean())
     veiled = _sql.Column(_sql.Boolean())
-    created_at = _sql.Column(_sql.DateTime())
-    updated_at = _sql.Column(_sql.DateTime())
+    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
+    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
 
 class ModifierStats(_database.Base):
 
-    __tablename__ = 'Modifier_Stats'
+    _Tablename__ = 'ModifierStats'
 
-    modifier_id = _sql.Column(_sql.String(), _sql.ForeignKey('Modifier.modifier_id'), ondelete="CASCADE", primary_key=True)
-    stat_id = _sql.Column(_sql.String(), _sql.ForeignKey('Stat.stat_id'), ondelete="CASCADE", primary_key=True)
+    modifierId = _sql.Column(_sql.String(), _sql.ForeignKey('Modifier.modifierId'), ondelete="CASCADE", nullable=False)
+    statId = _sql.Column(_sql.String(), _sql.ForeignKey('Stat.statId'), ondelete="CASCADE", nullable=False)
 
 
 class Stat(_database.Base):
 
-    __tablename__ = 'Stat'
+    _Tablename__ = 'Stat'
 
-    stat_id = _sql.Column(_sql.String(), primary_key=True)
+    statId = _sql.Column(_sql.String(), primary_key=True, index=True)
     position = _sql.Column(_sql.SmallInteger(), primary_key=True)
-    stat_value = _sql.Column(_sql.SmallInteger(), nullable=False)
-    mininum_value = _sql.Column(_sql.SmallInteger())
-    maximum_value = _sql.Column(_sql.SmallInteger())
-    stat_tier = _sql.Column(_sql.SmallInteger())
-    created_at = _sql.Column(_sql.DateTime())
-    updated_at = _sql.Column(_sql.DateTime())
+    statValue = _sql.Column(_sql.SmallInteger(), nullable=False)
+    mininumValue = _sql.Column(_sql.SmallInteger())
+    maximumValue = _sql.Column(_sql.SmallInteger())
+    statTier = _sql.Column(_sql.SmallInteger())
+    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
+    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
 
 class Stash(_database.Base):
 
-    __tablename__ = 'Stash'
+    _Tablename__ = 'Stash'
 
-    stash_id = _sql.Column(_sql.String(), primary_key=True)
-    account_name = _sql.Column(_sql.String(), _sql.ForeignKey('Account.account_name'), ondelete="CASCADE", nullable=False)
+    stashId = _sql.Column(_sql.String(), primary_key=True, index=True)
+    accountName = _sql.Column(_sql.String(), _sql.ForeignKey('Account.accountName'), ondelete="CASCADE", nullable=False)
     public = _sql.Column(_sql.Boolean(), nullable=False)
     league = _sql.Column(_sql.String(), nullable=False)
-    created_at = _sql.Column(_sql.DateTime())
-    updated_at = _sql.Column(_sql.DateTime())
+    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
+    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
 
 class Account(_database.Base):
 
-    __tablename__ = 'Account'
+    _Tablename__ = 'Account'
 
-    account_name = _sql.Column(_sql.String(), primary_key=True)
-    is_banned = _sql.Column(_sql.Boolean())
-    created_at = _sql.Column(_sql.DateTime())
-    updated_at = _sql.Column(_sql.DateTime())
+    accountName = _sql.Column(_sql.String(), primary_key=True, index=True)
+    isBanned = _sql.Column(_sql.Boolean())
+    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
+    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
