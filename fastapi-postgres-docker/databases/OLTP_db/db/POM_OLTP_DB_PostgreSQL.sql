@@ -1,7 +1,7 @@
 CREATE TABLE "Currency" (
   "currencyName" varchar PRIMARY KEY,
   "valueInChaos" float NOT NULL,
-  "iconUrl" varchar NOT NULL,
+  "iconUrl" varchar NOT NULL unique,
   "createdAt" datetime,
   "updatedAt" datetime
 );
@@ -57,7 +57,7 @@ CREATE TABLE "Transaction" (
 
 CREATE TABLE "ItemBaseType" (
   "baseType" varchar PRIMARY KEY,
-  "category" varchar NOT NULL,
+  "category" varchar NOT NULL unique,
   "subCategory" jsonb NOT NULL,
   "createdAt" datetime,
   "updatedAt" datetime
