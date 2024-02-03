@@ -98,22 +98,29 @@ class ItemBaseType(_BaseItemBaseType):
 class CreateItemBaseType(_BaseItemBaseType):
     pass
 
-class _BaseItemModifiers(_pydantic.BaseModel):
+class _BaseItemModifier(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
-
-    modifierId: str
+    
     itemId: str
+    modifierId: str
+    position: int
+    range: float(24)
+    
 
-class ItemModifiers(_BaseItemModifiers):
+class ItemModifiers(_BaseItemModifier):
     pass
 
-class CreateItemModifiers(_BaseItemModifiers):
+class CreateItemModifiers(_BaseItemModifier):
     pass
 
 class _BaseModifier(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
     modifierId: str
+    position: int
+    minRoll: float(24)
+    maxRoll: float(24)
+    textRoll: str
     effect: str
     implicit: Optional[bool]
     explicit: Optional[bool]
@@ -132,38 +139,6 @@ class Modifier(_BaseModifier):
         orm_mode = True
 
 class CreateModifier(_BaseModifier):
-    pass
-
-class _BaseModifierStats(_pydantic.BaseModel):
-    model_config = _pydantic.ConfigDict(from_attributes=True)
-
-    modifierId: str
-    statId: str
-
-class ModifierStats(_BaseModifierStats):
-    pass
-
-class CreateModifierStats(_BaseModifierStats):
-    pass
-
-class _BaseStat(_pydantic.BaseModel):
-    model_config = _pydantic.ConfigDict(from_attributes=True)
-
-    statId: str
-    position: int
-    statValue: int
-    mininumValue: Optional[int]
-    maximumValue: Optional[int]
-    statTier: Optional[int]
-
-class Stat(_BaseStat):
-    createdAt: Optional[_dt.datetime]
-    updatedAt: Optional[_dt.datetime]
-
-    class Config:
-        orm_mode = True
-
-class CreateStat(_BaseStat):
     pass
 
 class _BaseStash(_pydantic.BaseModel):
