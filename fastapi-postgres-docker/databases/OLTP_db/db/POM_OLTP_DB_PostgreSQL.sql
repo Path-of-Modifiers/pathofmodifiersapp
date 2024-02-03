@@ -1,13 +1,14 @@
 CREATE TABLE "Currency" (
-  "currencyName" varchar PRIMARY KEY,
+  "currencyName" varchar,
   "valueInChaos" float NOT NULL,
   "iconUrl" varchar NOT NULL unique,
   "createdAt" datetime,
-  "updatedAt" datetime
+  "updatedAt" datetime,
+  PRIMARY KEY (currencyName)
 );
 
 CREATE TABLE "Item" (
-  "itemId" varchar PRIMARY KEY, 
+  "itemId" varchar, 
   "stashId" varchar NOT NULL,
   "name" varchar,
   "iconUrl" varchar,
@@ -37,41 +38,54 @@ CREATE TABLE "Item" (
   "inventoryId" varchar,
   "createdAt" datetime,
   "updatedAt" datetime,
+  PRIMARY KEY (itemId),
   FOREIGN KEY (baseType) REFERENCES ItemBaseType(baseType) ON DELETE RESTRICT,
   FOREIGN KEY (currencyName) REFERENCES Currency(currencyName) ON DELETE RESTRICT,
   FOREIGN KEY (stashId) REFERENCES Stash(stashId) ON DELETE CASCADE
 );
 
 CREATE TABLE "Transaction" (
-  "transactionId" serial PRIMARY KEY, 
+  "transactionId" serial, 
   "itemId" varchar NOT NULL,
   "accountName" varchar NOT NULL,
   "currencyAmount" float(24) NOT NULL,
   "currencyName" varchar NOT NULL,
   "createdAt" datetime,
   "updatedAt" datetime,
+  PRIMARY KEY (transactionId),
   FOREIGN KEY (itemId) REFERENCES Item(itemId) ON DELETE CASCADE,
   FOREIGN KEY (accountName) REFERENCES Account(accountName) ON DELETE CASCADE,
   FOREIGN KEY (currencyName) REFERENCES Currency(currencyName) ON DELETE RESTRICT
 );
 
 CREATE TABLE "ItemBaseType" (
-  "baseType" varchar PRIMARY KEY,
+  "baseType" varchar NOT NULL,
   "category" varchar NOT NULL unique,
-  "subCategory" jsonb NOT NULL,
+  "subCategory" varchar NOT NULL,
   "createdAt" datetime,
-  "updatedAt" datetime
+  "updatedAt" datetime,
+  PRIMARY KEY (baseType)
 );
 
-CREATE TABLE "ItemModifiers" (
-  "modifierId" varchar PRIMARY KEY,
-  "itemId" varchar PRIMARY KEY,
+CREATE TABLE "Modifier_Item" (
+  "modifierId" varchar NOT NULL,
+  "position" smallint NOT NULL,
+  "itemId" varchar NOT NULL,
+  "range" float(24),
+  "createdAt" datetime,
+  "updatedAt" datetime,
+  PRIMARY KEY (modifierId, itemId, position),
   FOREIGN KEY (modifierId) REFERENCES Modifier(modifierId) ON DELETE CASCADE,
-  FOREIGN KEY (itemId) REFERENCES Item(itemId) ON DELETE CASCADE
+  FOREIGN KEY (itemId) REFERENCES Item(itemId) ON DELETE CASCADE,
+  FOREIGN KEY (position) REFERENCES Modifier(position) ON DELETE CASCADE
 );
 
 CREATE TABLE "Modifier" (
-  "modifierId" varchar PRIMARY KEY, 
+  "modifierId" varchar, 
+  "position" smallint,
+  "minRoll" float(24),
+  "maxRoll" float(24),
+  "textRoll" varchar,
   "effect" varchar NOT NULL,
   "implicit" boolean,
   "explicit" boolean,
@@ -82,40 +96,25 @@ CREATE TABLE "Modifier" (
   "enchanted" boolean,
   "veiled" boolean,
   "createdAt" datetime,
-  "updatedAt" datetime
-);
-
-CREATE TABLE "ModifierStats" (
-  "modifierId" varchar PRIMARY KEY,
-  "statId" varchar PRIMARY KEY,
-  FOREIGN KEY (modifierId) REFERENCES Modifier(modifierId) ON DELETE CASCADE,
-  FOREIGN KEY (statId) REFERENCES Stat(statId) ON DELETE CASCADE
-);
-
-CREATE TABLE "Stat" (
-  "statId" varchar PRIMARY KEY, 
-  "position" smallint NOT NULL PRIMARY KEY, 
-  "statValue" smallint NOT NULL, 
-  "mininumValue" smallint,
-  "maximumValue" smallint,
-  "statTier" smallint, 
-  "createdAt" datetime,
-  "updatedAt" datetime
+  "updatedAt" datetime,
+  PRIMARY KEY (modifierId, position)
 );
 
 CREATE TABLE "Stash" (
-  "stashId" varchar PRIMARY KEY, 
+  "stashId" varchar, 
   "accountName" varchar NOT NULL,
   "public" boolean NOT NULL,
   "league" varchar NOT NULL,
   "createdAt" datetime,
   "updatedAt" datetime,
+  PRIMARY KEY (stashId),
   FOREIGN KEY (accountName) REFERENCES Account(accountName) ON DELETE CASCADE
 );
 
 CREATE TABLE "Account" (
-  "accountName" varchar PRIMARY KEY,
+  "accountName" varchar,
   "isBanned" boolean,
   "createdAt" datetime,
-  "updatedAt" datetime
+  "updatedAt" datetime,
+  PRIMARY KEY (accountName)
 );
