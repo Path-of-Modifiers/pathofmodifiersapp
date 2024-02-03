@@ -41,25 +41,8 @@ class DataTransformer:
     def _create_modifier_table(self, json_data: list) -> None:
         pass
 
-    def _clean_stash_table(self):
-        self.stash_df.drop("items", axis=1, inplace=True)
-
-    def _clean_item_table(self):
-        item_df = self.item_df.drop(
-            [
-                "verified",
-                "w",
-                "h",
-                "league",
-                "descrText",
-                "flavourText",
-                "frameType",
-                "x",
-                "y",
-                "requirements",
-            ],
-            axis=1,
-        )
+    def _transform_item_table(self) -> None:
+        item_df = self.item_df
         currency_series = item_df["note"].str.split(" ")
 
         def get_currency_amount(element):
@@ -77,7 +60,31 @@ class DataTransformer:
         item_df["currency_amount"] = currency_series.apply(get_currency_amount)
         item_df["currency_type"] = currency_series.apply(get_currency_type)
 
-        print(item_df)
+        self.item_df = item_df
+
+    def _transform_modifier_table(self) -> None:
+        pass
+
+    def _clean_stash_table(self):
+        self.stash_df.drop(["items", "stashType"], axis=1, inplace=True)
+
+    def _clean_item_table(self):
+        item_df = self.item_df.drop(
+            [
+                "verified",
+                "w",
+                "h",
+                "league",
+                "descrText",
+                "flavourText",
+                "frameType",
+                "x",
+                "y",
+                "requirements",
+            ],
+            axis=1,
+        )
+
         item_df.to_csv("test.csv", index=False)
 
     def _clean_modifier_table(self):
@@ -87,6 +94,9 @@ class DataTransformer:
         self._create_stash_table(json_data=json_data)
         self._create_item_table(json_data=json_data)
         self._create_modifier_table(json_data=json_data)
+
+        self._transform_item_table()
+        self._transform_modifier_table()
 
         self._clean_stash_table()
         self._clean_item_table()
