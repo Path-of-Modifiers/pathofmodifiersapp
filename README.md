@@ -49,9 +49,9 @@ Useful database commands:
 1. Check tables: 
 $ \dt  
 2. User connection to db: 
-$ \c pathofmodifiers_oltp_db  
+$ \c pom_oltp_db
 3. Add tables to the db:   
-cd into /fast_api-postgres-docker  
+cd into /fast_api-postgres-docker/databases/OLTP_db 
 $ python  
 $ import services  
 $ services._add_tables()  
@@ -59,5 +59,3 @@ $ services._add_tables()
 $ ps -ef | grep postgres  
 6. Connect to postgres:
 $ psql -U postgres  
-8. Connect to database:
-$ \c pathofmodifiers_db  
