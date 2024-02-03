@@ -67,7 +67,7 @@ CREATE TABLE "ItemBaseType" (
   PRIMARY KEY (baseType)
 );
 
-CREATE TABLE "Modifier_Item" (
+CREATE TABLE "ModifierItem" (
   "modifierId" varchar NOT NULL,
   "position" smallint NOT NULL,
   "itemId" varchar NOT NULL,
