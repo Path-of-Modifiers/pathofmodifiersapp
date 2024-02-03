@@ -4,7 +4,7 @@ import pydantic as _pydantic
 from pydantic import Json
 
 class _BaseCurrency(_pydantic.BaseModel):
-    modelConfig = _pydantic.ConfigDict(fromAttributes=True)
+    model_config = _pydantic.ConfigDict(from_attributes=True)
 
     currencyName: str
     valueInChaos: float
@@ -15,13 +15,13 @@ class Currency(_BaseCurrency):
     updatedAt: Optional[_dt.datetime]
 
     class Config:
-        ormMode = True
+        orm_mode = True
 
 class CreateCurrency(_BaseCurrency):
     pass
 
 class _BaseItem(_pydantic.BaseModel):
-    modelConfig = _pydantic.ConfigDict(fromAttributes=True)
+    model_config = _pydantic.ConfigDict(from_attributes=True)
 
     itemId: str
     stashId: str
@@ -57,13 +57,13 @@ class Item(_BaseItem):
     updatedAt: Optional[_dt.datetime]
 
     class Config:
-        ormMode = True
+        orm_mode = True
 
 class CreateItem(_BaseItem):
     pass
 
 class _BaseTransaction(_pydantic.BaseModel):
-    modelConfig = _pydantic.ConfigDict(fromAttributes=True)
+    model_config = _pydantic.ConfigDict(from_attributes=True)
 
     itemId: str
     accountName: str
@@ -76,13 +76,13 @@ class Transaction(_BaseTransaction):
     updatedAt: Optional[_dt.datetime]
 
     class Config:
-        ormMode = True
+        orm_mode = True
 
 class CreateTransaction(_BaseTransaction):
     pass
 
 class _BaseItemBaseType(_pydantic.BaseModel):
-    modelConfig = _pydantic.ConfigDict(fromAttributes=True)
+    model_config = _pydantic.ConfigDict(from_attributes=True)
 
     baseType: str
     category: str
@@ -93,13 +93,13 @@ class ItemBaseType(_BaseItemBaseType):
     updatedAt: Optional[_dt.datetime]
 
     class Config:
-        ormMode = True
+        orm_mode = True
 
 class CreateItemBaseType(_BaseItemBaseType):
     pass
 
 class _BaseItemModifiers(_pydantic.BaseModel):
-    modelConfig = _pydantic.ConfigDict(fromAttributes=True)
+    model_config = _pydantic.ConfigDict(from_attributes=True)
 
     modifierId: str
     itemId: str
@@ -111,7 +111,7 @@ class CreateItemModifiers(_BaseItemModifiers):
     pass
 
 class _BaseModifier(_pydantic.BaseModel):
-    modelConfig = _pydantic.ConfigDict(fromAttributes=True)
+    model_config = _pydantic.ConfigDict(from_attributes=True)
 
     modifierId: str
     effect: str
@@ -129,13 +129,13 @@ class Modifier(_BaseModifier):
     updatedAt: Optional[_dt.datetime]
 
     class Config:
-        ormMode = True
+        orm_mode = True
 
 class CreateModifier(_BaseModifier):
     pass
 
 class _BaseModifierStats(_pydantic.BaseModel):
-    modelConfig = _pydantic.ConfigDict(fromAttributes=True)
+    model_config = _pydantic.ConfigDict(from_attributes=True)
 
     modifierId: str
     statId: str
@@ -147,7 +147,7 @@ class CreateModifierStats(_BaseModifierStats):
     pass
 
 class _BaseStat(_pydantic.BaseModel):
-    modelConfig = _pydantic.ConfigDict(fromAttributes=True)
+    model_config = _pydantic.ConfigDict(from_attributes=True)
 
     statId: str
     position: int
@@ -161,13 +161,13 @@ class Stat(_BaseStat):
     updatedAt: Optional[_dt.datetime]
 
     class Config:
-        ormMode = True
+        orm_mode = True
 
 class CreateStat(_BaseStat):
     pass
 
 class _BaseStash(_pydantic.BaseModel):
-    modelConfig = _pydantic.ConfigDict(fromAttributes=True)
+    model_config = _pydantic.ConfigDict(from_attributes=True)
 
     stashId: str
     accountName: str
@@ -179,13 +179,13 @@ class Stash(_BaseStash):
     updatedAt: Optional[_dt.datetime]
 
     class Config:
-        ormMode = True
+        orm_mode = True
 
 class CreateStash(_BaseStash):
     pass
 
 class _BaseAccount(_pydantic.BaseModel):
-    modelConfig = _pydantic.ConfigDict(fromAttributes=True)
+    model_config = _pydantic.ConfigDict(from_attributes=True)
 
     accountName: str
     isBanned: Optional[bool]
@@ -195,7 +195,7 @@ class Account(_BaseAccount):
     updatedAt: Optional[_dt.datetime]
 
     class Config:
-        ormMode = True
+        orm_mode = True
 
 class CreateAccount(_BaseAccount):
     pass
