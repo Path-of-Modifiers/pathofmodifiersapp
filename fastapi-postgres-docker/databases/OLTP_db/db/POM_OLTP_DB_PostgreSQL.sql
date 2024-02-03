@@ -67,17 +67,15 @@ CREATE TABLE "ItemBaseType" (
   PRIMARY KEY (baseType)
 );
 
-CREATE TABLE "ModifierItem" (
+CREATE TABLE "ItemModifier" (
+  "itemId" varchar NOT NULL,
   "modifierId" varchar NOT NULL,
   "position" smallint NOT NULL,
-  "itemId" varchar NOT NULL,
   "range" float(24),
-  "createdAt" datetime,
-  "updatedAt" datetime,
   PRIMARY KEY (modifierId, itemId, position),
-  FOREIGN KEY (modifierId) REFERENCES Modifier(modifierId) ON DELETE CASCADE,
   FOREIGN KEY (itemId) REFERENCES Item(itemId) ON DELETE CASCADE,
-  FOREIGN KEY (position) REFERENCES Modifier(position) ON DELETE CASCADE
+  FOREIGN KEY (position) REFERENCES Modifier(position) ON DELETE CASCADE,
+  FOREIGN KEY (modifierId) REFERENCES Modifier(modifierId) ON DELETE CASCADE
 );
 
 CREATE TABLE "Modifier" (
