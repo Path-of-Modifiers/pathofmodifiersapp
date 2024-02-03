@@ -28,8 +28,8 @@ class _BaseItem(_pydantic.BaseModel):
     name: Optional[str]
     iconUrl: Optional[str]
     league: str
-    type_line: str
-    base_type: str
+    typeLine: str
+    baseType: str
     rarity: str
     identified: bool
     itemLevel: int
@@ -154,7 +154,7 @@ class _BaseStat(_pydantic.BaseModel):
     statValue: int
     mininumValue: Optional[int]
     maximumValue: Optional[int]
-    stat_tier: Optional[int]
+    statTier: Optional[int]
 
 class Stat(_BaseStat):
     createdAt: Optional[_dt.datetime]
@@ -188,7 +188,7 @@ class _BaseAccount(_pydantic.BaseModel):
     modelConfig = _pydantic.ConfigDict(fromAttributes=True)
 
     accountName: str
-    is_banned: Optional[bool]
+    isBanned: Optional[bool]
 
 class Account(_BaseAccount):
     createdAt: Optional[_dt.datetime]
