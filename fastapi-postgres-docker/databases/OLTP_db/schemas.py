@@ -106,7 +106,6 @@ class _BaseItemModifier(_pydantic.BaseModel):
     position: int
     range: float(24)
     
-
 class ItemModifiers(_BaseItemModifier):
     pass
 
