@@ -26,7 +26,7 @@ class Item(_database.Base):
     iconUrl = _sql.Column(_sql.String())
     league = _sql.Column(_sql.String(), nullable=False)
     typeLine = _sql.Column(_sql.String(), nullable=False)
-    baseType = _sql.Column(_sql.String(), _sql.ForeignKey('Item_database.BaseType.baseType'), ondelete="RESTRICT", nullable=False)
+    baseType = _sql.Column(_sql.String(), _sql.ForeignKey('ItemBaseType.baseType'), ondelete="RESTRICT", nullable=False)
     rarity = _sql.Column(_sql.String(), nullable=False)
     identified = _sql.Column(_sql.Boolean(), nullable=False)
     itemLevel = _sql.Column(_sql.SmallInteger(), nullable=False)
@@ -67,7 +67,7 @@ class Transaction(_database.Base):
 
 class ItemBaseType(_database.Base):
 
-    _Tablename__ = '_database.BaseType'
+    _Tablename__ = 'ItemBaseType'
 
     baseType = _sql.Column(_sql.String(), nullable=False, primary_key=True, index=True)
     category = _sql.Column(_sql.String(), nullable=False, unique=True)
@@ -76,19 +76,28 @@ class ItemBaseType(_database.Base):
     updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
 
-class ItemModifiers(_database.Base):
+class ItemModifier(_database.Base):
 
-    _Tablename__ = 'ItemModifiers'
+    __tablename__ = 'ItemModifier'
 
-    modifierId = _sql.Column(_sql.String(), _sql.ForeignKey('Modifier.modifierId'), ondelete="CASCADE", nullable=False)
     itemId = _sql.Column(_sql.String(), _sql.ForeignKey('Item.itemId'), ondelete="CASCADE", nullable=False)
+    modifierId = _sql.Column(_sql.String(), _sql.ForeignKey('Modifier.modifierId'), ondelete="CASCADE", nullable=False)
+    position = _sql.Column(_sql.SmallInteger(), _sql.ForeignKey('Modifier.position'), ondelete="CASCADE", nullable=False)
+    range = _sql.Column(_sql.Float(24))
 
+    __table_args__ = (
+        _sql.PrimaryKeyConstraint('item_id', 'modifier_id', 'position'),
+    )
 
 class Modifier(_database.Base):
 
-    _Tablename__ = 'Modifier'
+    __tablename__ = 'Modifier'
 
-    modifierId = _sql.Column(_sql.String(), primary_key=True, index=True, nullable=False)
+    modifierId = _sql.Column(_sql.String(), nullable=False)
+    position = _sql.Column(_sql.SmallInteger(), primary_key=True)
+    minRoll = _sql.Column(_sql.Float(24))
+    maxRoll = _sql.Column(_sql.Float(24))
+    textRoll = _sql.Column(_sql.String())
     effect = _sql.Column(_sql.String(), nullable=False)
     implicit = _sql.Column(_sql.Boolean())
     explicit = _sql.Column(_sql.Boolean())
@@ -101,27 +110,9 @@ class Modifier(_database.Base):
     createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
     updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
-
-class ModifierStats(_database.Base):
-
-    _Tablename__ = 'ModifierStats'
-
-    modifierId = _sql.Column(_sql.String(), _sql.ForeignKey('Modifier.modifierId'), ondelete="CASCADE", nullable=False)
-    statId = _sql.Column(_sql.String(), _sql.ForeignKey('Stat.statId'), ondelete="CASCADE", nullable=False)
-
-
-class Stat(_database.Base):
-
-    _Tablename__ = 'Stat'
-
-    statId = _sql.Column(_sql.String(), primary_key=True, index=True, nullable=False)
-    position = _sql.Column(_sql.SmallInteger(), primary_key=True)
-    statValue = _sql.Column(_sql.SmallInteger(), nullable=False)
-    mininumValue = _sql.Column(_sql.SmallInteger())
-    maximumValue = _sql.Column(_sql.SmallInteger())
-    statTier = _sql.Column(_sql.SmallInteger())
-    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
-    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
+    __table_args__ = (
+        _sql.PrimaryKeyConstraint('modifier_id', 'position'),
+    )
 
 
 class Stash(_database.Base):
