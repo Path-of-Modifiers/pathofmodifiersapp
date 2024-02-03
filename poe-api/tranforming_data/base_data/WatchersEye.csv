@@ -1,0 +1,67 @@
+minRoll, maxRoll, position, effect
+5, 8, , #% additional Physical Damage Reduction while affected by Determination
+5, 8, , #% Chance to Block Attack Damage while affected by Determination
+40, 60, , You take #% reduced Extra Damage from Critical Strikes while affected by Determination
+600, 1000, , +# to Armour while affected by Determination
+40, 50, , #% reduced Reflected Physical Damage taken while affected by Determination
+5, 8, , +#% chance to Evade Attack Hits while affected by Grace
+12, 15, , +#% chance to Suppress Spell Damage while affected by Grace
+10, 15, , #% increased Movement Speed while affected by Gracespeed
+30, 50, , #% chance to Blind Enemies which Hit you while affected by Grace
+1.5, 2.5, , Regenerate #% of Energy Shield per Second while affected by Discipline
+5, 8, , +#% Chance to Block Spell Damage while affected by Discipline
+30, 40, , #% faster start of Energy Shield Recharge while affected by Discipline
+20, 30, , Gain # Energy Shield per Enemy Hit while affected by Discipline
+10, 15, , #% increased Energy Shield Recovery Rate while affected by Discipline
+10, 15, , Damage Penetrates #% Lightning Resistance while affected by Wrath
+1, 1.5, , #% of Lightning Damage is Leeched as Energy Shield while affected by Wrath
+15, 25, , Gain #% of Physical Damage as Extra Lightning Damage while affected by Wrath
+25, 40, , #% of Physical Damage Converted to Lightning Damage while affected by Wrath
+40, 60, , #% increased Lightning Damage while affected by Wrath
+70, 100, , #% increased Critical Strike Chance while affected by Wrath
+10, 15, , Damage Penetrates #% Fire Resistance while affected by Anger
+1, 1.5, , #% of Fire Damage Leeched as Life while affected by Anger
+15, 25, , Gain #% of Physical Damage as Extra Fire Damage while affected by Anger 
+25, 40, , #% of Physical Damage Converted to Fire Damage while affected by Anger
+40, 60, , #% increased Fire Damage while affected by Anger
+30, 50, , +#% to Critical Strike Multiplier while affected by Anger
+10, 15, , Damage Penetrates #% Cold Resistance while affected by Hatred
+1.2, 1.8, , +#% to Critical Strike Chance while affected by Hatred
+58, 78, 0, Adds # to # Cold Damage while affected by Hatred
+80, 104, 1, Adds # to # Cold Damage while affected by Hatred
+25, 40, , #% of Physical Damage Converted to Cold Damage while affected by Hatred
+40, 60, , #% increased Cold Damage while affected by Hatred
+0.8, 1.2, , #% of Damage leeched as Life while affected by Vitality
+1, 1.5, , Regenerate #% of Life per second while affected by Vitality
+10, 15, , #% increased Life Recovery Rate while affected by Vitality
+20, 30, , Gain # Life per Enemy Hit while affected by Vitality
+50, 70, , #% increased Life Recovery from Flasks while affected by Vitality
+-10, -5, , Non-Channelling Skills have # to Total Mana Cost while affected by Clarity
+6, 10, , #% of Damage taken from Mana before Life while affected by Clarity
+10, 15, , #% chance to Recover 10% of Mana when you use a Skill while affected by Clarity
+6, 10, , Gain #% of Maximum Mana as Extra Maximum Energy Shield while affected by Clarity
+10, 15, , #% increased Mana Recovery Rate while affected by Clarity
+15, 20, , #% of Damage taken while affected by Clarity Recouped as Mana
+5, 8, , +#% chance to Suppress Spell Damage while affected by Haste
+15, 20, , Debuffs on you expire #% faster while affected by Haste
+30, 50, , #% increased Cooldown Recovery Rate of Movement Skills used while affected by Haste
+6, 10, , #% of Physical Damage from Hits taken as Fire Damage while affected by Purity of Fire
+6, 10, , #% of Physical Damage from Hits taken as Cold Damage while affected by Purity of Ice
+6, 10, , #% of Physical Damage from Hits taken as Lightning Damage while affected by Purity of Lightning
+8, 12, , #% of Physical Damage from Hits taken as Fire Damage while affected by Purity of Elements
+8, 12, , #% of Physical Damage from Hits taken as Cold Damage while affected by Purity of Elements
+8, 12, , #% of Physical Damage from Hits taken as Lightning Damage while affected by Purity of Elements
+30, 50, , +#% to Chaos Resistance while affected by Purity of Elements
+40, 50, , #% reduced Reflected Elemental Damage taken while affected by Purity of Elements
+18, 22, , +#% to Damage over Time Multiplier while affected by Malevolence
+8, 12, , #% increased Recovery rate of Life and Energy Shield while affected by Malevolence 
+10, 15, , Damaging Ailments you inflict deal Damage #% faster while affected by Malevolence
+8, 10, , Critical Strikes Penetrate #% of Enemy Elemental Resistances while affected by Zealotry
+10, 15, , #% increased Cast Speed while affected by Zealotry
+8, 10, , Consecrated Ground you create while affected by Zealotry causes enemies to take #% increased Damage
+100, 120, , #% increased Critical Strike Chance against Enemies on Consecrated Ground while affected by Zealotry
+20, 30, , +#% to Critical Strike Multiplier while affected by Precision
+40, 60, , #% increased Attack Damage while affected by Precision
+10, 15, , #% increased Attack Speed while affected by Precision
+8, 12, , #% chance to deal Double Damage while using Pride
+40, 60, , #% increased Physical Damage while using Pride
