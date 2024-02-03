@@ -9,7 +9,7 @@ class Currency(_database.Base):
 
     _Tablename__ = 'Currency'
 
-    currencyName = _sql.Column(_sql.String(), primary_key=True, index=True)
+    currencyName = _sql.Column(_sql.String(), primary_key=True, index=True, nullable=False)
     valueInChaos = _sql.Column(_sql.Float(), nullable=False)
     iconUrl = _sql.Column(_sql.String(), nullable=False, unique=True)
     createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
@@ -20,7 +20,7 @@ class Item(_database.Base):
 
     _Tablename__ = 'Item'
 
-    itemId = _sql.Column(_sql.String(), primary_key=True, index=True)
+    itemId = _sql.Column(_sql.String(), primary_key=True, index=True, nullable=False)
     stashId = _sql.Column(_sql.String(), _sql.ForeignKey('Stash.stashId'), ondelete="CASCADE", nullable=False)
     name = _sql.Column(_sql.String())
     iconUrl = _sql.Column(_sql.String())
@@ -56,7 +56,7 @@ class Transaction(_database.Base):
 
     _Tablename__ = 'Transaction'
 
-    transactionId = _sql.Column(_sql.Integer(), autoincrement=True, primary_key=True, index=True)
+    transactionId = _sql.Column(_sql.Integer(), autoincrement=True, primary_key=True, index=True, nullable=False)
     itemId = _sql.Column(_sql.String(), _sql.ForeignKey('Item.itemId'), ondelete="CASCADE", nullable=False)
     accountName = _sql.Column(_sql.String(), _sql.ForeignKey('Account.accountName'), ondelete="CASCADE", nullable=False)
     currencyAmount = _sql.Column(_sql.Float(24), nullable=False)
@@ -88,7 +88,7 @@ class Modifier(_database.Base):
 
     _Tablename__ = 'Modifier'
 
-    modifierId = _sql.Column(_sql.String(), primary_key=True, index=True)
+    modifierId = _sql.Column(_sql.String(), primary_key=True, index=True, nullable=False)
     effect = _sql.Column(_sql.String(), nullable=False)
     implicit = _sql.Column(_sql.Boolean())
     explicit = _sql.Column(_sql.Boolean())
@@ -114,7 +114,7 @@ class Stat(_database.Base):
 
     _Tablename__ = 'Stat'
 
-    statId = _sql.Column(_sql.String(), primary_key=True, index=True)
+    statId = _sql.Column(_sql.String(), primary_key=True, index=True, nullable=False)
     position = _sql.Column(_sql.SmallInteger(), primary_key=True)
     statValue = _sql.Column(_sql.SmallInteger(), nullable=False)
     mininumValue = _sql.Column(_sql.SmallInteger())
@@ -128,7 +128,7 @@ class Stash(_database.Base):
 
     _Tablename__ = 'Stash'
 
-    stashId = _sql.Column(_sql.String(), primary_key=True, index=True)
+    stashId = _sql.Column(_sql.String(), primary_key=True, index=True, nullable=False)
     accountName = _sql.Column(_sql.String(), _sql.ForeignKey('Account.accountName'), ondelete="CASCADE", nullable=False)
     public = _sql.Column(_sql.Boolean(), nullable=False)
     league = _sql.Column(_sql.String(), nullable=False)
@@ -140,7 +140,7 @@ class Account(_database.Base):
 
     _Tablename__ = 'Account'
 
-    accountName = _sql.Column(_sql.String(), primary_key=True, index=True)
+    accountName = _sql.Column(_sql.String(), primary_key=True, index=True, nullable=False)
     isBanned = _sql.Column(_sql.Boolean())
     createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
     updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
