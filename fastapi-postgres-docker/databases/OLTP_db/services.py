@@ -26,7 +26,7 @@ def add_commit_refresh(field: _pydantic.BaseModel, db: "Session"):
 
 async def create_currency(currency: _schemas.CreateCurrency, db: "Session"
 ) -> _schemas.Currency:
-    currency = _models.Currency(**currency.modelDump())
+    currency = _models.Currency(**currency.model_dump())
     add_commit_refresh(currency, db)
     return _schemas.Currency.model_validate(currency)
 
