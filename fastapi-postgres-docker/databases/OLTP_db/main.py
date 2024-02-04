@@ -12,7 +12,7 @@ import sqlalchemy.orm as _orm
 app = _fastapi.FastAPI()
 
 
-@app.post("/api/currencys/", response_model=_schemas.Currency)
+@app.post("/api/currencies/", response_model=_schemas.Currency)
 async def create_currency(
     currency: _schemas.CreateCurrency,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
@@ -20,22 +20,22 @@ async def create_currency(
     return await _services.create_currency(currency=currency, db=db)
 
 
-@app.get("/api/currencys/", response_model=List[_schemas.Currency])
-async def get_currencys(db: _orm.Session = _fastapi.Depends(_services.get_db)):
-    return await _services.get_all_currencys(db=db)
+@app.get("/api/currencies/", response_model=List[_schemas.Currency])
+async def get_currencies(db: _orm.Session = _fastapi.Depends(_services.get_db)):
+    return await _services.get_all_currencies(db=db)
 
 
-@app.get("/api/currencys/{currencyName}", response_model=_schemas.Currency)
+@app.get("/api/currencies/{currencyName}", response_model=_schemas.Currency)
 async def get_currency(
     currencyName: str, db: _orm.Session = _fastapi.Depends(_services.get_db)
-):
+): 
     currency = await _services.get_currency(currencyName=currencyName, db=db)
     if currency is None:
         raise _fastapi.HTTPException(status_code=404, detail="currency not found")
     return currency
 
 
-@app.delete("/api/currencys/{currencyName}")
+@app.delete("/api/currencies/{currencyName}")
 async def delete_currency(
     currencyName: str, db: _orm.Session = _fastapi.Depends(_services.get_db)
 ):
@@ -47,7 +47,7 @@ async def delete_currency(
     return "currency deleted successfully"
 
 
-@app.put("/api/currencys/{currencyName}", response_model=_schemas.Currency)
+@app.put("/api/currencies/{currencyName}", response_model=_schemas.Currency)
 async def update_currency(
     currencyName: str,
     currency_data: _schemas.CreateCurrency,
