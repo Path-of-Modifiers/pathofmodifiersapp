@@ -55,7 +55,7 @@ async def update_currency(currencyData: _schemas.CreateCurrency, currency: _mode
 
 async def create_item(item: _schemas.CreateItem, db: "Session"
 ) -> _schemas.Item:
-    item = _models.Item(**item.modelDump())
+    item = _models.Item(**item.model_dump())
     add_commit_refresh(item, db)
 
 async def get_all_items(db: "Session") -> List[_schemas.Item]:
@@ -107,7 +107,7 @@ async def update_item(itemData: _schemas.CreateItem, item: _models.Item, db: "Se
 
 async def create_transaction(transaction: _schemas.CreateTransaction, db: "Session"
 ) -> _schemas.Transaction:
-    transaction = _models.Transaction(**transaction.modelDump())
+    transaction = _models.Transaction(**transaction.model_dump())
     add_commit_refresh(transaction, db)
     return _schemas.Transaction.model_validate(transaction)
 
@@ -137,7 +137,7 @@ async def update_transaction(transactionData: _schemas.CreateTransaction, transa
 
 async def create_item_base_type(item_base_type: _schemas.CreateItemBaseType, db: "Session"
 ) -> _schemas.ItemBaseType:
-    item_base_type = _models.ItemBaseType(**item_base_type.modelDump())
+    item_base_type = _models.ItemBaseType(**item_base_type.model_dump())
     add_commit_refresh(item_base_type, db)
     return _schemas.ItemBaseType.model_validate(item_base_type)
 
@@ -166,7 +166,7 @@ async def update_item_base_type(itemBaseTypeData: _schemas.CreateItemBaseType, i
 
 async def create_item_modifier(itemModifier: _schemas.CreateItemModifier, db: "Session"
 ) -> _schemas.ItemModifier:
-    itemModifier = _models.ItemModifier(**itemModifier.modelDump())
+    itemModifier = _models.ItemModifier(**itemModifier.model_dump())
     add_commit_refresh(itemModifier, db)
     return _schemas.ItemModifier.model_validate(itemModifier)
 
@@ -199,7 +199,7 @@ async def update_item_modifier(itemModifierData: _schemas.CreateItemModifier, it
 
 async def create_modifier(modifier: _schemas.CreateModifier, db: "Session"
 ) -> _schemas.Modifier:
-    modifier = _models.Modifier(**modifier.modelDump())
+    modifier = _models.Modifier(**modifier.model_dump())
     add_commit_refresh(modifier, db)
     return _schemas.Modifier.model_validate(modifier)
 
@@ -242,7 +242,7 @@ async def update_modifier(modifierData: _schemas.CreateModifier, modifier: _mode
 
 async def create_stash(stash: _schemas.CreateStash, db: "Session"
 ) -> _schemas.Stash:
-    stash = _models.Stash(**stash.modelDump())
+    stash = _models.Stash(**stash.model_dump())
     add_commit_refresh(stash, db)
     return _schemas.Stash.model_validate(stash)
 
@@ -272,7 +272,7 @@ async def update_stash(stashData: _schemas.CreateStash, stash: _models.Stash, db
 
 async def create_account(account: _schemas.CreateAccount, db: "Session"
 ) -> _schemas.Account:
-    account = _models.Account(**account.modelDump())
+    account = _models.Account(**account.model_dump())
     add_commit_refresh(account, db)
     return _schemas.Account.model_validate(account)
 
@@ -301,7 +301,7 @@ async def update_account(accountData: _schemas.CreateAccount, account: _models.A
 # Format for adding new services
 """ async def create_X(X: _schemas.CreateX, db: "Session"
 ) -> _schemas.X:
-    X = _models.X(**X.modelDump())
+    X = _models.X(**X.model_dump())
     add_commit_refresh(X, db)
     return _schemas.X.model_validate(X)
 
