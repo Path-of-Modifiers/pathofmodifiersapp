@@ -43,7 +43,7 @@ class Item(_database.Base):
     influences = _sql.Column(JSONB())
     searing = _sql.Column(_sql.Boolean())
     tangled = _sql.Column(_sql.Boolean())
-    isrelic = _sql.Column(_sql.Boolean())
+    isRelic = _sql.Column(_sql.Boolean())
     prefixes = _sql.Column(_sql.SmallInteger())
     suffixes = _sql.Column(_sql.SmallInteger())
     foilVariation = _sql.Column(_sql.Integer())
@@ -80,13 +80,13 @@ class ItemModifier(_database.Base):
 
     __tablename__ = 'ItemModifier'
 
-    itemId = _sql.Column(_sql.String(), _sql.ForeignKey('Item.itemId'), ondelete="CASCADE", nullable=False)
-    modifierId = _sql.Column(_sql.String(), _sql.ForeignKey('Modifier.modifierId'), ondelete="CASCADE", nullable=False)
-    position = _sql.Column(_sql.SmallInteger(), _sql.ForeignKey('Modifier.position'), ondelete="CASCADE", nullable=False)
+    itemId = _sql.Column(_sql.String(), _sql.ForeignKey('Item.itemId'), ondelete="CASCADE", nullable=False, index=True)
+    modifierId = _sql.Column(_sql.String(), _sql.ForeignKey('Modifier.modifierId'), ondelete="CASCADE", nullable=False, index=True)
+    position = _sql.Column(_sql.SmallInteger(), _sql.ForeignKey('Modifier.position'), ondelete="CASCADE", nullable=False, index=True)
     range = _sql.Column(_sql.Float(24))
 
     __table_args__ = (
-        _sql.PrimaryKeyConstraint('item_id', 'modifier_id', 'position'),
+        _sql.PrimaryKeyConstraint(itemId, modifierId, position, name='pk_ItemModifier'),
     )
 
 class Modifier(_database.Base):
@@ -94,7 +94,7 @@ class Modifier(_database.Base):
     __tablename__ = 'Modifier'
 
     modifierId = _sql.Column(_sql.String(), nullable=False)
-    position = _sql.Column(_sql.SmallInteger(), primary_key=True)
+    position = _sql.Column(_sql.SmallInteger(), nullable=False)
     minRoll = _sql.Column(_sql.Float(24))
     maxRoll = _sql.Column(_sql.Float(24))
     textRoll = _sql.Column(_sql.String())
@@ -111,7 +111,7 @@ class Modifier(_database.Base):
     updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
     __table_args__ = (
-        _sql.PrimaryKeyConstraint('modifier_id', 'position'),
+        _sql.PrimaryKeyConstraint('Modifier.modifierId', 'Modifier.position', name='pk_Modifier'),
     )
 
 
