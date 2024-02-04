@@ -25,21 +25,21 @@ async def get_currencys(db: _orm.Session = _fastapi.Depends(_services.get_db)):
     return await _services.get_all_currencys(db=db)
 
 
-@app.get("/api/currencys/{currency_id}", response_model=_schemas.Currency)
+@app.get("/api/currencys/{currencyName}", response_model=_schemas.Currency)
 async def get_currency(
-    currency_id: int, db: _orm.Session = _fastapi.Depends(_services.get_db)
+    currencyName: str, db: _orm.Session = _fastapi.Depends(_services.get_db)
 ):
-    currency = await _services.get_currency(currency_id=currency_id, db=db)
+    currency = await _services.get_currency(currencyName=currencyName, db=db)
     if currency is None:
         raise _fastapi.HTTPException(status_code=404, detail="currency not found")
     return currency
 
 
-@app.delete("/api/currencys/{currency_id}")
+@app.delete("/api/currencys/{currencyName}")
 async def delete_currency(
-    currency_id: int, db: _orm.Session = _fastapi.Depends(_services.get_db)
+    currencyName: str, db: _orm.Session = _fastapi.Depends(_services.get_db)
 ):
-    currency = await _services.get_currency(currency_id=currency_id, db=db)
+    currency = await _services.get_currency(currencyName=currencyName, db=db)
     if currency is None:
         raise _fastapi.HTTPException(status_code=404, detail="currency not found")
     await _services.delete_currency(currency, db=db)
@@ -47,13 +47,13 @@ async def delete_currency(
     return "currency deleted successfully"
 
 
-@app.put("/api/currencys/{currency_id}", response_model=_schemas.Currency)
+@app.put("/api/currencys/{currencyName}", response_model=_schemas.Currency)
 async def update_currency(
-    currency_id: int,
+    currencyName: str,
     currency_data: _schemas.CreateCurrency,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
-    currency = await _services.get_currency(currency_id=currency_id, db=db)
+    currency = await _services.get_currency(currencyName=currencyName, db=db)
     if currency is None:
         raise _fastapi.HTTPException(status_code=404, detail="currency not found")
 
