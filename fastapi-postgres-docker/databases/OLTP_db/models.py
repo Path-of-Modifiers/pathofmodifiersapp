@@ -20,7 +20,7 @@ class Currency(_database.Base):
 
 class ItemBaseType(_database.Base):
 
-    __tablename__ = "item_basetype"
+    __tablename__ = "item_base_type"
 
     baseType = _sql.Column(_sql.String(), nullable=False, primary_key=True, index=True)
     category = _sql.Column(_sql.String(), nullable=False, unique=True)
