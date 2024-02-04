@@ -104,12 +104,12 @@ class _BaseItemModifier(_pydantic.BaseModel):
     itemId: str
     modifierId: str
     position: int
-    range: float(24)
+    range: float
     
-class ItemModifiers(_BaseItemModifier):
+class ItemModifier(_BaseItemModifier):
     pass
 
-class CreateItemModifiers(_BaseItemModifier):
+class CreateItemModifier(_BaseItemModifier):
     pass
 
 class _BaseModifier(_pydantic.BaseModel):
@@ -117,8 +117,8 @@ class _BaseModifier(_pydantic.BaseModel):
 
     modifierId: str
     position: int
-    minRoll: float(24)
-    maxRoll: float(24)
+    minRoll: float
+    maxRoll: float
     textRoll: str
     effect: str
     implicit: Optional[bool]
