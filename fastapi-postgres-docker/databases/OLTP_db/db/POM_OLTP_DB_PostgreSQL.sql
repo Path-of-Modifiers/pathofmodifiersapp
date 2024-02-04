@@ -31,7 +31,7 @@ CREATE TABLE "Item" (
   "influences" jsonb,
   "searing" boolean,
   "tangled" boolean,
-  "isrelic" boolean,
+  "isRelic" boolean,
   "prefixes" smallint,
   "suffixes" smallint,
   "foilVariation" int,
