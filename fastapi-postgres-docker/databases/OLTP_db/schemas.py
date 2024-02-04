@@ -46,7 +46,7 @@ class _BaseItem(_pydantic.BaseModel):
     influences: Optional[Json]
     searing: Optional[bool]
     tangled: Optional[bool]
-    isrelic: Optional[bool]
+    isRelic: Optional[bool]
     prefixes: Optional[int]
     suffixes: Optional[int]
     foilVariation: Optional[int]
