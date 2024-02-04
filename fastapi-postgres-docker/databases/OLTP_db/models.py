@@ -7,7 +7,7 @@ import database as _database
 
 class Currency(_database.Base):
 
-    __tablename__ = "Currency"
+    __tablename__ = "currency"
 
     currencyName = _sql.Column(
         _sql.String(), primary_key=True, index=True, nullable=False
@@ -20,7 +20,7 @@ class Currency(_database.Base):
 
 class ItemBaseType(_database.Base):
 
-    __tablename__ = "ItemBaseType"
+    __tablename__ = "item_basetype"
 
     baseType = _sql.Column(_sql.String(), nullable=False, primary_key=True, index=True)
     category = _sql.Column(_sql.String(), nullable=False, unique=True)
@@ -31,7 +31,7 @@ class ItemBaseType(_database.Base):
 
 class Item(_database.Base):
 
-    __tablename__ = "Item"
+    __tablename__ = "item"
 
     itemId = _sql.Column(_sql.String(), primary_key=True, index=True, nullable=False)
     stashId = _sql.Column(
@@ -77,7 +77,7 @@ class Item(_database.Base):
 
 class Modifier(_database.Base):
 
-    __tablename__ = "Modifier"
+    __tablename__ = "modifier"
 
     modifierId = _sql.Column(_sql.String(), nullable=False, index=True)
     position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
@@ -101,7 +101,7 @@ class Modifier(_database.Base):
 
 class Transaction(_database.Base):
 
-    __tablename__ = "Transaction"
+    __tablename__ = "transaction"
 
     transactionId = _sql.Column(
         _sql.Integer(), autoincrement=True, primary_key=True, index=True, nullable=False
@@ -128,7 +128,7 @@ class Transaction(_database.Base):
 
 class ItemModifier(_database.Base):
 
-    __tablename__ = "ItemModifier"
+    __tablename__ = "item_modifier"
 
     itemId = _sql.Column(
         _sql.String(),
@@ -152,7 +152,7 @@ class ItemModifier(_database.Base):
 
 class Stash(_database.Base):
 
-    __tablename__ = "Stash"
+    __tablename__ = "stash"
 
     stashId = _sql.Column(_sql.String(), primary_key=True, index=True, nullable=False)
     accountName = _sql.Column(
@@ -168,7 +168,7 @@ class Stash(_database.Base):
 
 class Account(_database.Base):
 
-    __tablename__ = "Account"
+    __tablename__ = "account"
 
     accountName = _sql.Column(
         _sql.String(), primary_key=True, index=True, nullable=False
