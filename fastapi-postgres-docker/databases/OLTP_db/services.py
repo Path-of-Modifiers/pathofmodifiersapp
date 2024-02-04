@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 def _add_tables():
     return Database.Base.metadata.create_all(bind=Database.engine)
 
-def getDb():
+def get_db():
     db = Database.SessionLocal()
     try:
         yield db
@@ -174,7 +174,7 @@ async def get_all_item_modifiers(db: "Session") -> List[_schemas.ItemModifier]:
     item_modifiers = db.query(_models.ItemModifier).all()
     return list(map(_schemas.ItemModifier.model_validate, item_modifiers))
 
-async def get_item_modifiers(self, itemId: str, modifierId: str, position: int, db: Session):
+async def get_item_modifier(itemId: str, modifierId: str, position: int, db: "Session"):
         item_modifier = db.query(_models.ItemModifier).filter(
             _models.ItemModifier.itemId == itemId,
             _models.ItemModifier.modifierId == modifierId,
@@ -207,8 +207,11 @@ async def get_all_modifiers(db: "Session") -> List[_schemas.Modifier]:
     modifiers = db.query(_models.Modifier).all()
     return list(map(_schemas.Modifier.model_validate, modifiers))
 
-async def get_modifier(modifierId: int, db: "Session"):
-    modifier = db.query(_models.Modifier).filter(_models.Modifier.id == modifierId).first()
+async def get_modifier(modifierId: int, position: int, db: "Session"):
+    modifier = db.query(_models.Modifier).filter(
+            _models.Modifier.id == modifierId,
+            _models.Modifier.position == position
+        ).first()
     return modifier
 
 async def delete_modifier(modifier: _models.Modifier, db: "Session"):
