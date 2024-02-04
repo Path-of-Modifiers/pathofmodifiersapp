@@ -36,9 +36,9 @@ async def create_currency(
     return _schemas.Currency.model_validate(currency)
 
 
-async def get_all_currencys(db: "Session") -> List[_schemas.Currency]:
-    currencys = db.query(_models.Currency).all()
-    return list(map(_schemas.Currency.model_validate, currencys))
+async def get_all_currencies(db: "Session") -> List[_schemas.Currency]:
+    currencies = db.query(_models.Currency).all()
+    return list(map(_schemas.Currency.model_validate, currencies))
 
 
 async def get_currency(currencyName: int, db: "Session"):
@@ -73,7 +73,7 @@ async def create_item(item: _schemas.CreateItem, db: "Session") -> _schemas.Item
     add_commit_refresh(item, db)
 
 
-async def get_all_items(db: "Session") -> List[_schemas.Item]:
+async def get_all_item(db: "Session") -> List[_schemas.Item]:
     items = db.query(_models.Item).all()
     return list(map(_schemas.Item.model_validate, items))
 
@@ -133,7 +133,7 @@ async def create_transaction(
     return _schemas.Transaction.model_validate(transaction)
 
 
-async def get_all_transactions(db: "Session") -> List[_schemas.Transaction]:
+async def get_all_transaction(db: "Session") -> List[_schemas.Transaction]:
     transactions = db.query(_models.Transaction).all()
     return list(map(_schemas.Transaction.model_validate, transactions))
 
@@ -176,7 +176,7 @@ async def create_item_base_type(
     return _schemas.ItemBaseType.model_validate(item_base_type)
 
 
-async def get_all_item_base_types(db: "Session") -> List[_schemas.ItemBaseType]:
+async def get_all_item_base_type(db: "Session") -> List[_schemas.ItemBaseType]:
     item_base_types = db.query(_models.ItemBaseType).all()
     return list(map(_schemas.ItemBaseType.model_validate, item_base_types))
 
@@ -218,7 +218,7 @@ async def create_item_modifier(
     return _schemas.ItemModifier.model_validate(itemModifier)
 
 
-async def get_all_item_modifiers(db: "Session") -> List[_schemas.ItemModifier]:
+async def get_all_item_modifier(db: "Session") -> List[_schemas.ItemModifier]:
     itemModifiers = db.query(_models.ItemModifier).all()
     return list(map(_schemas.ItemModifier.model_validate, itemModifiers))
 
@@ -262,7 +262,7 @@ async def create_modifier(
     return _schemas.Modifier.model_validate(modifier)
 
 
-async def get_all_modifiers(db: "Session") -> List[_schemas.Modifier]:
+async def get_all_modifier(db: "Session") -> List[_schemas.Modifier]:
     modifiers = db.query(_models.Modifier).all()
     return list(map(_schemas.Modifier.model_validate, modifiers))
 
@@ -313,7 +313,7 @@ async def create_stash(stash: _schemas.CreateStash, db: "Session") -> _schemas.S
     return _schemas.Stash.model_validate(stash)
 
 
-async def get_all_stashs(db: "Session") -> List[_schemas.Stash]:
+async def get_all_stash(db: "Session") -> List[_schemas.Stash]:
     stashs = db.query(_models.Stash).all()
     return list(map(_schemas.Stash.model_validate, stashs))
 
@@ -350,7 +350,7 @@ async def create_account(
     return _schemas.Account.model_validate(account)
 
 
-async def get_all_accounts(db: "Session") -> List[_schemas.Account]:
+async def get_all_account(db: "Session") -> List[_schemas.Account]:
     accounts = db.query(_models.Account).all()
     return list(map(_schemas.Account.model_validate, accounts))
 
