@@ -15,9 +15,42 @@ class Currency(_BaseCurrency):
     updatedAt: Optional[_dt.datetime]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class CreateCurrency(_BaseCurrency):
+    pass
+
+class _BaseItemBaseType(_pydantic.BaseModel):
+    model_config = _pydantic.ConfigDict(from_attributes=True)
+
+    baseType: str
+    category: str
+    subCategory: Json
+
+class ItemBaseType(_BaseItemBaseType):
+    createdAt: Optional[_dt.datetime]
+    updatedAt: Optional[_dt.datetime]
+
+    class Config:
+        from_attributes = True
+
+class CreateItemBaseType(_BaseItemBaseType):
+    pass
+
+class _BaseAccount(_pydantic.BaseModel):
+    model_config = _pydantic.ConfigDict(from_attributes=True)
+
+    accountName: str
+    isBanned: Optional[bool]
+
+class Account(_BaseAccount):
+    createdAt: Optional[_dt.datetime]
+    updatedAt: Optional[_dt.datetime]
+
+    class Config:
+        from_attributes = True
+
+class CreateAccount(_BaseAccount):
     pass
 
 class _BaseItem(_pydantic.BaseModel):
@@ -57,59 +90,9 @@ class Item(_BaseItem):
     updatedAt: Optional[_dt.datetime]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class CreateItem(_BaseItem):
-    pass
-
-class _BaseTransaction(_pydantic.BaseModel):
-    model_config = _pydantic.ConfigDict(from_attributes=True)
-
-    itemId: str
-    accountName: str
-    currencyAmount: float
-    currencyName: str
-
-class Transaction(_BaseTransaction):
-    transactionId: int
-    createdAt: Optional[_dt.datetime]
-    updatedAt: Optional[_dt.datetime]
-
-    class Config:
-        orm_mode = True
-
-class CreateTransaction(_BaseTransaction):
-    pass
-
-class _BaseItemBaseType(_pydantic.BaseModel):
-    model_config = _pydantic.ConfigDict(from_attributes=True)
-
-    baseType: str
-    category: str
-    subCategory: Json
-
-class ItemBaseType(_BaseItemBaseType):
-    createdAt: Optional[_dt.datetime]
-    updatedAt: Optional[_dt.datetime]
-
-    class Config:
-        orm_mode = True
-
-class CreateItemBaseType(_BaseItemBaseType):
-    pass
-
-class _BaseItemModifier(_pydantic.BaseModel):
-    model_config = _pydantic.ConfigDict(from_attributes=True)
-    
-    itemId: str
-    modifierId: str
-    position: int
-    range: float
-    
-class ItemModifier(_BaseItemModifier):
-    pass
-
-class CreateItemModifier(_BaseItemModifier):
     pass
 
 class _BaseModifier(_pydantic.BaseModel):
@@ -135,9 +118,43 @@ class Modifier(_BaseModifier):
     updatedAt: Optional[_dt.datetime]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class CreateModifier(_BaseModifier):
+    pass
+
+class _BaseTransaction(_pydantic.BaseModel):
+    model_config = _pydantic.ConfigDict(from_attributes=True)
+
+    itemId: str
+    accountName: str
+    currencyAmount: float
+    currencyName: str
+
+class Transaction(_BaseTransaction):
+    transactionId: int
+    createdAt: Optional[_dt.datetime]
+    updatedAt: Optional[_dt.datetime]
+
+    class Config:
+        from_attributes = True
+
+class CreateTransaction(_BaseTransaction):
+    pass
+
+class _BaseItemModifier(_pydantic.BaseModel):
+    model_config = _pydantic.ConfigDict(from_attributes=True)
+    
+    itemModifierId: int
+    itemId: str
+    modifierId: str
+    position: int
+    range: float
+    
+class ItemModifier(_BaseItemModifier):
+    pass
+
+class CreateItemModifier(_BaseItemModifier):
     pass
 
 class _BaseStash(_pydantic.BaseModel):
@@ -153,23 +170,7 @@ class Stash(_BaseStash):
     updatedAt: Optional[_dt.datetime]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class CreateStash(_BaseStash):
-    pass
-
-class _BaseAccount(_pydantic.BaseModel):
-    model_config = _pydantic.ConfigDict(from_attributes=True)
-
-    accountName: str
-    isBanned: Optional[bool]
-
-class Account(_BaseAccount):
-    createdAt: Optional[_dt.datetime]
-    updatedAt: Optional[_dt.datetime]
-
-    class Config:
-        orm_mode = True
-
-class CreateAccount(_BaseAccount):
     pass

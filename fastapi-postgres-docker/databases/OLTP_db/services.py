@@ -171,19 +171,17 @@ async def create_item_modifier(itemModifier: _schemas.CreateItemModifier, db: "S
     return _schemas.ItemModifier.model_validate(itemModifier)
 
 async def get_all_item_modifiers(db: "Session") -> List[_schemas.ItemModifier]:
-    item_modifiers = db.query(_models.ItemModifier).all()
-    return list(map(_schemas.ItemModifier.model_validate, item_modifiers))
+    itemModifiers = db.query(_models.ItemModifier).all()
+    return list(map(_schemas.ItemModifier.model_validate, itemModifiers))
 
-async def get_item_modifier(itemId: str, modifierId: str, position: int, db: "Session"):
-        item_modifier = db.query(_models.ItemModifier).filter(
-            _models.ItemModifier.itemId == itemId,
-            _models.ItemModifier.modifierId == modifierId,
-            _models.ItemModifier.position == position
+async def get_item_modifier(itemModifierId: int, db: "Session"):
+        itemModifier = db.query(_models.ItemModifier).filter(
+            _models.ItemModifier.itemModifierId == itemModifierId,
         ).first()
-        return item_modifier
+        return itemModifier
 
-async def delete_item_modifier(item_modifier: _models.ItemModifier, db: "Session"):
-    db.delete(item_modifier)
+async def delete_item_modifier(itemModifier: _models.ItemModifier, db: "Session"):
+    db.delete(itemModifier)
     db.commit()
 
 async def update_item_modifier(itemModifierData: _schemas.CreateItemModifier, itemModifier: _models.ItemModifier, db: "Session"
