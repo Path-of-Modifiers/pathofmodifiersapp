@@ -15,6 +15,15 @@ class Currency(_database.Base):
     createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
     updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
+class ItemBaseType(_database.Base):
+
+    __tablename__ = 'ItemBaseType'
+
+    baseType = _sql.Column(_sql.String(), nullable=False, primary_key=True, index=True)
+    category = _sql.Column(_sql.String(), nullable=False, unique=True)
+    subCategory = _sql.Column(JSONB(), nullable=False)
+    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
+    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
 class Item(_database.Base):
 
@@ -51,50 +60,12 @@ class Item(_database.Base):
     createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
     updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
-
-class Transaction(_database.Base):
-
-    __tablename__ = 'Transaction'
-
-    transactionId = _sql.Column(_sql.Integer(), autoincrement=True, primary_key=True, index=True, nullable=False)
-    itemId = _sql.Column(_sql.String(), _sql.ForeignKey('Item.itemId', ondelete="CASCADE"), nullable=False)
-    accountName = _sql.Column(_sql.String(), _sql.ForeignKey('Account.accountName', ondelete="CASCADE"), nullable=False)
-    currencyAmount = _sql.Column(_sql.Float(24), nullable=False)
-    currencyName = _sql.Column(_sql.String(), _sql.ForeignKey('Currency.currencyName', ondelete="RESTRICT"), nullable=False)
-    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
-    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
-
-
-class ItemBaseType(_database.Base):
-
-    __tablename__ = 'ItemBaseType'
-
-    baseType = _sql.Column(_sql.String(), nullable=False, primary_key=True, index=True)
-    category = _sql.Column(_sql.String(), nullable=False, unique=True)
-    subCategory = _sql.Column(JSONB(), nullable=False)
-    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
-    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
-
-
-class ItemModifier(_database.Base):
-
-    __tablename__ = 'ItemModifier'
-
-    itemId = _sql.Column(_sql.String(), _sql.ForeignKey('Item.itemId', ondelete="CASCADE"), nullable=False, index=True)
-    modifierId = _sql.Column(_sql.String(), _sql.ForeignKey('Modifier.modifierId', ondelete="CASCADE"), nullable=False, index=True)
-    position = _sql.Column(_sql.SmallInteger(), _sql.ForeignKey('Modifier.position', ondelete="CASCADE"), nullable=False, index=True)
-    range = _sql.Column(_sql.Float(24))
-
-    __table_args__ = (
-        _sql.PrimaryKeyConstraint(itemId, modifierId, position, name='pk_ItemModifier'),
-    )
-
 class Modifier(_database.Base):
 
     __tablename__ = 'Modifier'
 
-    modifierId = _sql.Column(_sql.String(), nullable=False)
-    position = _sql.Column(_sql.SmallInteger(), nullable=False)
+    modifierId = _sql.Column(_sql.String(), nullable=False, index=True)
+    position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
     minRoll = _sql.Column(_sql.Float(24))
     maxRoll = _sql.Column(_sql.Float(24))
     textRoll = _sql.Column(_sql.String())
@@ -111,9 +82,34 @@ class Modifier(_database.Base):
     updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
     __table_args__ = (
-        _sql.PrimaryKeyConstraint(modifierId, position, name='pk_Modifier'),
+        _sql.PrimaryKeyConstraint(modifierId, position),
     )
 
+class Transaction(_database.Base):
+
+    __tablename__ = 'Transaction'
+
+    transactionId = _sql.Column(_sql.Integer(), autoincrement=True, primary_key=True, index=True, nullable=False)
+    itemId = _sql.Column(_sql.String(), _sql.ForeignKey('Item.itemId', ondelete="CASCADE"), nullable=False)
+    accountName = _sql.Column(_sql.String(), _sql.ForeignKey('Account.accountName', ondelete="CASCADE"), nullable=False)
+    currencyAmount = _sql.Column(_sql.Float(24), nullable=False)
+    currencyName = _sql.Column(_sql.String(), _sql.ForeignKey('Currency.currencyName', ondelete="RESTRICT"), nullable=False)
+    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
+    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
+
+class ItemModifier(_database.Base):
+
+    __tablename__ = 'ItemModifier'
+
+    itemId = _sql.Column(_sql.String(), _sql.ForeignKey('Item.itemId', ondelete="CASCADE"), nullable=False, index=True)
+    modifierId = _sql.Column(_sql.String(), nullable=False, index=True)
+    position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
+    range = _sql.Column(_sql.Float(24))
+
+    __table_args__ = (
+        _sql.PrimaryKeyConstraint(itemId, modifierId, position),
+        _sql.ForeignKeyConstraint([modifierId, position], ['Modifier.modifierId', 'Modifier.position'], ondelete="CASCADE"),
+    )
 
 class Stash(_database.Base):
 

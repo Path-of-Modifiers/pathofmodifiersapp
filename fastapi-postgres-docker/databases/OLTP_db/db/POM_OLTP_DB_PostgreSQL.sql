@@ -7,6 +7,15 @@ CREATE TABLE "Currency" (
   PRIMARY KEY (currencyName)
 );
 
+CREATE TABLE "ItemBaseType" (
+  "baseType" varchar NOT NULL,
+  "category" varchar NOT NULL unique,
+  "subCategory" varchar NOT NULL,
+  "createdAt" datetime,
+  "updatedAt" datetime,
+  PRIMARY KEY (baseType)
+);
+
 CREATE TABLE "Item" (
   "itemId" varchar, 
   "stashId" varchar NOT NULL,
@@ -44,40 +53,6 @@ CREATE TABLE "Item" (
   FOREIGN KEY (stashId) REFERENCES Stash(stashId) ON DELETE CASCADE
 );
 
-CREATE TABLE "Transaction" (
-  "transactionId" serial, 
-  "itemId" varchar NOT NULL,
-  "accountName" varchar NOT NULL,
-  "currencyAmount" float(24) NOT NULL,
-  "currencyName" varchar NOT NULL,
-  "createdAt" datetime,
-  "updatedAt" datetime,
-  PRIMARY KEY (transactionId),
-  FOREIGN KEY (itemId) REFERENCES Item(itemId) ON DELETE CASCADE,
-  FOREIGN KEY (accountName) REFERENCES Account(accountName) ON DELETE CASCADE,
-  FOREIGN KEY (currencyName) REFERENCES Currency(currencyName) ON DELETE RESTRICT
-);
-
-CREATE TABLE "ItemBaseType" (
-  "baseType" varchar NOT NULL,
-  "category" varchar NOT NULL unique,
-  "subCategory" varchar NOT NULL,
-  "createdAt" datetime,
-  "updatedAt" datetime,
-  PRIMARY KEY (baseType)
-);
-
-CREATE TABLE "ItemModifier" (
-  "itemId" varchar NOT NULL,
-  "modifierId" varchar NOT NULL,
-  "position" smallint NOT NULL,
-  "range" float(24),
-  PRIMARY KEY (modifierId, itemId, position),
-  FOREIGN KEY (itemId) REFERENCES Item(itemId) ON DELETE CASCADE,
-  FOREIGN KEY (position) REFERENCES Modifier(position) ON DELETE CASCADE,
-  FOREIGN KEY (modifierId) REFERENCES Modifier(modifierId) ON DELETE CASCADE
-);
-
 CREATE TABLE "Modifier" (
   "modifierId" varchar, 
   "position" smallint,
@@ -95,7 +70,25 @@ CREATE TABLE "Modifier" (
   "veiled" boolean,
   "createdAt" datetime,
   "updatedAt" datetime,
-  PRIMARY KEY (modifierId, position)
+  PRIMARY KEY (modifierId, position),
+);
+
+CREATE TABLE "ItemModifier" (
+  "itemId" varchar NOT NULL,
+  "modifierId" varchar NOT NULL,
+  "position" smallint NOT NULL,
+  "range" float(24),
+  PRIMARY KEY (itemId, modifierId, position),
+  FOREIGN KEY (itemId) REFERENCES Item(itemId) ON DELETE CASCADE,
+  FOREIGN KEY (modifierId, position) REFERENCES Modifier(modifierId, position) ON DELETE CASCADE,
+);
+
+CREATE TABLE "Account" (
+  "accountName" varchar,
+  "isBanned" boolean,
+  "createdAt" datetime,
+  "updatedAt" datetime,
+  PRIMARY KEY (accountName)
 );
 
 CREATE TABLE "Stash" (
@@ -109,10 +102,16 @@ CREATE TABLE "Stash" (
   FOREIGN KEY (accountName) REFERENCES Account(accountName) ON DELETE CASCADE
 );
 
-CREATE TABLE "Account" (
-  "accountName" varchar,
-  "isBanned" boolean,
+CREATE TABLE "Transaction" (
+  "transactionId" serial, 
+  "itemId" varchar NOT NULL,
+  "accountName" varchar NOT NULL,
+  "currencyAmount" float(24) NOT NULL,
+  "currencyName" varchar NOT NULL,
   "createdAt" datetime,
   "updatedAt" datetime,
-  PRIMARY KEY (accountName)
+  PRIMARY KEY (transactionId),
+  FOREIGN KEY (itemId) REFERENCES Item(itemId) ON DELETE CASCADE,
+  FOREIGN KEY (accountName) REFERENCES Account(accountName) ON DELETE CASCADE,
+  FOREIGN KEY (currencyName) REFERENCES Currency(currencyName) ON DELETE RESTRICT
 );
