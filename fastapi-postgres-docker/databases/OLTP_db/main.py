@@ -15,7 +15,7 @@ app = _fastapi.FastAPI()
 @app.post("/api/currencys/", response_model=_schemas.Currency)
 async def create_currency(
     currency: _schemas.CreateCurrency,
-    db: _orm.Session = _fastapi.Depends(_services.get_db)
+    db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
     return await _services.create_currency(currency=currency, db=db)
 
