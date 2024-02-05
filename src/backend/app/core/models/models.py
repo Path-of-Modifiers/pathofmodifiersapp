@@ -2,7 +2,7 @@ import datetime as _dt
 import sqlalchemy as _sql
 from sqlalchemy.dialects.postgresql import JSONB
 
-import database as _database
+import core.models.database as _database
 
 
 def update(self, **new_data):

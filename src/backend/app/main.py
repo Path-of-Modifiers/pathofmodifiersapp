@@ -3,8 +3,8 @@ import fastapi as _fastapi
 from typing import TYPE_CHECKING, List
 
 
-import schemas as _schemas
-import services as _services
+import core.schemas.schemas as _schemas
+import core.services.services as _services
 
 
 import sqlalchemy.orm as _orm

@@ -1,21 +1,20 @@
 from typing import TYPE_CHECKING, List
 
-import datetime as _dt
+import core.models.models as _models
+import core.schemas.schemas as _schemas
+import core.models.database as _database
 import pydantic as _pydantic
-import database as Database
-import models as _models
-import schemas as _schemas
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session
 
 
 def _add_tables():
-    return Database.Base.metadata.create_all(bind=Database.engine)
+    return _database.Base.metadata.create_all(bind=_database.engine)
 
 
 def get_db():
-    db = Database.SessionLocal()
+    db = _database.SessionLocal()
     try:
         yield db
     finally:
