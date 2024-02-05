@@ -5,6 +5,14 @@ from sqlalchemy.dialects.postgresql import JSONB
 import database as _database
 
 
+def update(self, **new_data):
+    for field, value in new_data.items():
+        setattr(self, field, value)
+
+
+_database.Base.update = update
+
+
 class Currency(_database.Base):
 
     __tablename__ = "currency"

@@ -58,10 +58,9 @@ async def delete_currency(currency: _models.Currency, db: "Session"):
 async def update_currency(
     currencyData: _schemas.CreateCurrency, currency: _models.Currency, db: "Session"
 ) -> _schemas.Currency:
-    currency.currencyName = currencyData.currencyName
-    currency.valueInChaos = currencyData.valueInChaos
-    currency.iconUrl = currencyData.iconUrl
-    currency.updatedAt = _schemas._dt.datetime.now()
+    currency.update(
+        **currencyData.model_dump(), updatedAt=_schemas._dt.datetime.utcnow()
+    )
     db.commit()
     db.refresh(currency)
 
@@ -91,34 +90,7 @@ async def delete_item(item: _models.Item, db: "Session"):
 async def update_item(
     itemData: _schemas.CreateItem, item: _models.Item, db: "Session"
 ) -> _schemas.Item:
-    item.stashId = itemData.stashId
-    item.name = itemData.name
-    item.iconUrl = itemData.iconUrl
-    item.league = itemData.league
-    item.typeLine = itemData.typeLine
-    item.baseType = itemData.baseType
-    item.rarity = itemData.rarity
-    item.identified = itemData.identified
-    item.itemLevel = itemData.itemLevel
-    item.forumNote = itemData.forumNote
-    item.currencyAmount = itemData.currencyAmount
-    item.currencyName = itemData.currencyName
-    item.corrupted = itemData.corrupted
-    item.delve = itemData.delve
-    item.fractured = itemData.fractured
-    item.synthesized = itemData.synthesized
-    item.replica = itemData.replica
-    item.elder = itemData.elder
-    item.shaper = itemData.shaper
-    item.influences = itemData.influences
-    item.searing = itemData.searing
-    item.tangled = itemData.tangled
-    item.isRelic = itemData.isRelic
-    item.prefixes = itemData.prefixes
-    item.suffixes = itemData.suffixes
-    item.foilVariation = itemData.foilVariation
-    item.inventoryId = itemData.inventoryId
-    item.updatedAt = _schemas._dt.datetime.now()
+    item.update(**itemData.model_dump(), updatedAt=_schemas._dt.datetime.utcnow())
     db.commit()
     db.refresh(item)
 
@@ -157,11 +129,9 @@ async def update_transaction(
     transaction: _models.Transaction,
     db: "Session",
 ) -> _schemas.Transaction:
-    transaction.itemId = transactionData.itemId
-    transaction.accountName = transactionData.accountName
-    transaction.currencyAmount = transactionData.currencyAmount
-    transaction.currencyName = transactionData.currencyName
-    transaction.updatedAt = _schemas._dt.datetime.now()
+    transaction.update(
+        **transactionData.model_dump(), updatedAt=_schemas._dt.datetime.utcnow()
+    )
     db.commit()
     db.refresh(transaction)
 
@@ -169,11 +139,11 @@ async def update_transaction(
 
 
 async def create_item_base_type(
-    item_base_type: _schemas.CreateItemBaseType, db: "Session"
+    itemBaseType: _schemas.CreateItemBaseType, db: "Session"
 ) -> _schemas.ItemBaseType:
-    item_base_type = _models.ItemBaseType(**item_base_type.model_dump())
-    add_commit_refresh(item_base_type, db)
-    return _schemas.ItemBaseType.model_validate(item_base_type)
+    itemBaseType = _models.ItemBaseType(**itemBaseType.model_dump())
+    add_commit_refresh(itemBaseType, db)
+    return _schemas.ItemBaseType.model_validate(itemBaseType)
 
 
 async def get_all_item_base_type(db: "Session") -> List[_schemas.ItemBaseType]:
@@ -181,13 +151,13 @@ async def get_all_item_base_type(db: "Session") -> List[_schemas.ItemBaseType]:
     return list(map(_schemas.ItemBaseType.model_validate, item_base_types))
 
 
-async def get_item_base_type(item_base_type_id: int, db: "Session"):
-    item_base_type = (
+async def get_item_base_type(itemBaseTypeId: int, db: "Session"):
+    itemBaseType = (
         db.query(_models.ItemBaseType)
-        .filter(_models.ItemBaseType.baseType == item_base_type_id)
+        .filter(_models.ItemBaseType.baseType == itemBaseTypeId)
         .first()
     )
-    return item_base_type
+    return itemBaseType
 
 
 async def delete_item_base_type(item_base_type: _models.ItemBaseType, db: "Session"):
@@ -197,17 +167,16 @@ async def delete_item_base_type(item_base_type: _models.ItemBaseType, db: "Sessi
 
 async def update_item_base_type(
     itemBaseTypeData: _schemas.CreateItemBaseType,
-    item_base_type: _models.ItemBaseType,
+    itemBaseType: _models.ItemBaseType,
     db: "Session",
 ) -> _schemas.ItemBaseType:
-    item_base_type.baseType = itemBaseTypeData.baseType
-    item_base_type.category = itemBaseTypeData.category
-    item_base_type.subCategory = itemBaseTypeData.subCategory
-    item_base_type.updatedAt = _schemas._dt.datetime.now()
+    itemBaseType.update(
+        **itemBaseTypeData.model_dump(), updatedAt=_schemas._dt.datetime.utcnow()
+    )
     db.commit()
-    db.refresh(item_base_type)
+    db.refresh(itemBaseType)
 
-    return _schemas.ItemBaseType.model_validate(item_base_type)
+    return _schemas.ItemBaseType.model_validate(itemBaseType)
 
 
 async def create_item_modifier(
@@ -244,10 +213,9 @@ async def update_item_modifier(
     itemModifier: _models.ItemModifier,
     db: "Session",
 ) -> _schemas.ItemModifier:
-    itemModifier.itemId = itemModifierData.itemId
-    itemModifier.modifierId = itemModifierData.modifierId
-    itemModifier.position = itemModifierData.position
-    itemModifier.range = itemModifierData.range
+    itemModifier.update(
+        **itemModifierData.model_dump(), updatedAt=_schemas._dt.datetime.utcnow()
+    )
     db.commit()
     db.refresh(itemModifier)
 
@@ -286,21 +254,9 @@ async def delete_modifier(modifier: _models.Modifier, db: "Session"):
 async def update_modifier(
     modifierData: _schemas.CreateModifier, modifier: _models.Modifier, db: "Session"
 ) -> _schemas.Modifier:
-    modifier.modifierId = modifierData.modifierId
-    modifier.position = modifierData.position
-    modifier.minRoll = modifierData.minRoll
-    modifier.maxRoll = modifierData.maxRoll
-    modifier.textRoll = modifierData.textRoll
-    modifier.effect = modifierData.effect
-    modifier.implicit = modifierData.implicit
-    modifier.explicit = modifierData.explicit
-    modifier.delve = modifierData.delve
-    modifier.fractured = modifierData.fractured
-    modifier.synthesized = modifierData.synthesized
-    modifier.corrupted = modifierData.corrupted
-    modifier.enchanted = modifierData.enchanted
-    modifier.veiled = modifierData.veiled
-    modifier.updatedAt = _schemas._dt.datetime.now()
+    modifier.update(
+        **modifierData.model_dump(), updatedAt=_schemas._dt.datetime.utcnow()
+    )
     db.commit()
     db.refresh(modifier)
 
@@ -331,11 +287,7 @@ async def delete_stash(stash: _models.Stash, db: "Session"):
 async def update_stash(
     stashData: _schemas.CreateStash, stash: _models.Stash, db: "Session"
 ) -> _schemas.Stash:
-    stash.stashId = stashData.stashId
-    stash.accountName = stashData.accountName
-    stash.public = stashData.public
-    stash.league = stashData.league
-    stash.updatedAt = _schemas._dt.datetime.now()
+    stash.update(**stashData.model_dump(), updatedAt=_schemas._dt.datetime.utcnow())
     db.commit()
     db.refresh(stash)
 
@@ -368,9 +320,7 @@ async def delete_account(account: _models.Account, db: "Session"):
 async def update_account(
     accountData: _schemas.CreateAccount, account: _models.Account, db: "Session"
 ) -> _schemas.Account:
-    account.accountName = accountData.accountName
-    account.isBanned = accountData.isBanned
-    account.updatedAt = _schemas._dt.datetime.now()
+    account.update(**accountData.model_dump(), updatedAt=_schemas._dt.datetime.utcnow())
     db.commit()
     db.refresh(account)
 

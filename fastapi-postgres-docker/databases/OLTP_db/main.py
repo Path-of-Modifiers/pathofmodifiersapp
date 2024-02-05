@@ -50,7 +50,7 @@ async def delete_currency(
 @app.put("/api/currency/{currencyName}", response_model=_schemas.Currency)
 async def update_currency(
     currencyName: str,
-    currency_data: _schemas.CreateCurrency,
+    currencyData: _schemas.CreateCurrency,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
     currency = await _services.get_currency(currencyName=currencyName, db=db)
@@ -58,5 +58,5 @@ async def update_currency(
         raise _fastapi.HTTPException(status_code=404, detail="currency not found")
 
     return await _services.update_currency(
-        currency_data=currency_data, currency=currency, db=db
+        currencyData=currencyData, currency=currency, db=db
     )
