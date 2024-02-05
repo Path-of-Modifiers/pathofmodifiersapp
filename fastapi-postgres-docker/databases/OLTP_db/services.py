@@ -36,7 +36,7 @@ async def create_currency(
     return _schemas.Currency.model_validate(currency)
 
 
-async def get_all_currencies(db: "Session") -> List[_schemas.Currency]:
+async def get_all_currency(db: "Session") -> List[_schemas.Currency]:
     currencies = db.query(_models.Currency).all()
     return list(map(_schemas.Currency.model_validate, currencies))
 

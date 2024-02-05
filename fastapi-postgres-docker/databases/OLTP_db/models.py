@@ -36,7 +36,7 @@ class Item(_database.Base):
     itemId = _sql.Column(_sql.String(), primary_key=True, index=True, nullable=False)
     stashId = _sql.Column(
         _sql.String(),
-        _sql.ForeignKey("Stash.stashId", ondelete="CASCADE"),
+        _sql.ForeignKey("stash.stashId", ondelete="CASCADE"),
         nullable=False,
     )
     name = _sql.Column(_sql.String())
@@ -45,7 +45,7 @@ class Item(_database.Base):
     typeLine = _sql.Column(_sql.String(), nullable=False)
     baseType = _sql.Column(
         _sql.String(),
-        _sql.ForeignKey("ItemBaseType.baseType", ondelete="RESTRICT"),
+        _sql.ForeignKey("item_base_type.baseType", ondelete="RESTRICT"),
         nullable=False,
     )
     rarity = _sql.Column(_sql.String(), nullable=False)
@@ -54,7 +54,7 @@ class Item(_database.Base):
     forumNote = _sql.Column(_sql.String())
     currencyAmount = _sql.Column(_sql.Float(24))
     currencyName = _sql.Column(
-        _sql.String(), _sql.ForeignKey("Currency.currencyName", ondelete="RESTRICT")
+        _sql.String(), _sql.ForeignKey("currency.currencyName", ondelete="RESTRICT")
     )
     corrupted = _sql.Column(_sql.Boolean())
     delve = _sql.Column(_sql.Boolean())
@@ -108,18 +108,18 @@ class Transaction(_database.Base):
     )
     itemId = _sql.Column(
         _sql.String(),
-        _sql.ForeignKey("Item.itemId", ondelete="CASCADE"),
+        _sql.ForeignKey("item.itemId", ondelete="CASCADE"),
         nullable=False,
     )
     accountName = _sql.Column(
         _sql.String(),
-        _sql.ForeignKey("Account.accountName", ondelete="CASCADE"),
+        _sql.ForeignKey("account.accountName", ondelete="CASCADE"),
         nullable=False,
     )
     currencyAmount = _sql.Column(_sql.Float(24), nullable=False)
     currencyName = _sql.Column(
         _sql.String(),
-        _sql.ForeignKey("Currency.currencyName", ondelete="RESTRICT"),
+        _sql.ForeignKey("currency.currencyName", ondelete="RESTRICT"),
         nullable=False,
     )
     createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
@@ -132,7 +132,7 @@ class ItemModifier(_database.Base):
 
     itemId = _sql.Column(
         _sql.String(),
-        _sql.ForeignKey("Item.itemId", ondelete="CASCADE"),
+        _sql.ForeignKey("item.itemId", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
@@ -144,7 +144,7 @@ class ItemModifier(_database.Base):
         _sql.PrimaryKeyConstraint(itemId, modifierId, position),
         _sql.ForeignKeyConstraint(
             [modifierId, position],
-            ["Modifier.modifierId", "Modifier.position"],
+            ["modifier.modifierId", "modifier.position"],
             ondelete="CASCADE",
         ),
     )
@@ -157,7 +157,7 @@ class Stash(_database.Base):
     stashId = _sql.Column(_sql.String(), primary_key=True, index=True, nullable=False)
     accountName = _sql.Column(
         _sql.String(),
-        _sql.ForeignKey("Account.accountName", ondelete="CASCADE"),
+        _sql.ForeignKey("account.accountName", ondelete="CASCADE"),
         nullable=False,
     )
     public = _sql.Column(_sql.Boolean(), nullable=False)
