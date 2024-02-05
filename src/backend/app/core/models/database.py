@@ -2,8 +2,7 @@ import sqlalchemy as _sql
 import sqlalchemy.ext.declarative as _declarative
 import sqlalchemy.orm as _orm
 
-
-DATABASE_URL = "postgresql://pom_oltp_superuser:sjukebarna123@localhost/pom_oltp_db"
+from core.settings import DATABASE_URL
 
 engine = _sql.create_engine(DATABASE_URL)
 
