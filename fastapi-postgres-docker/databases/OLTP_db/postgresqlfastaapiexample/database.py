@@ -3,7 +3,7 @@ import sqlalchemy.ext.declarative as _declarative
 import sqlalchemy.orm as _orm
 
 
-DATABASE_URL = "postgresql://pathofmodifiersdbadmin:sjukebarna123@localhost/pathofmodifiers_db"
+DATABASE_URL = "postgresql://docker-pom_oltp_db_ct:sjukebarna123@localhost/pathofmodifiers_db"
 
 engine = _sql.create_engine(DATABASE_URL)
 
