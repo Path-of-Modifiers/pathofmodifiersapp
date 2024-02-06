@@ -1,6 +1,6 @@
 CREATE TABLE "Currency" (
   "currencyName" varchar(50) NOT NULL,
-  "valueInChaos" numeric(20,2) NOT NULL,
+  "valueInChaos" numeric(10,2) NOT NULL,
   "iconUrl" varchar(300) NOT NULL UNIQUE,
   "createdAt" datetime NOT NULL,
   "updatedAt" datetime NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE "Item" (
   "identified" boolean NOT NULL,
   "itemLevel" smallint NOT NULL,
   "forumNote" varchar(40),
-  "currencyAmount" numeric(20, 2),
+  "currencyAmount" numeric(12, 2),
   "currencyName" varchar(50) NOT NULL,
   "corrupted" boolean,
   "delve" boolean,
@@ -46,8 +46,8 @@ CREATE TABLE "Item" (
   "createdAt" datetime NOT NULL,
   "updatedAt" datetime NOT NULL,
   PRIMARY KEY (itemId),
-  FOREIGN KEY (baseType) REFERENCES ItemBaseType(baseType) ON DELETE RESTRICT,
-  FOREIGN KEY (currencyName) REFERENCES Currency(currencyName) ON DELETE RESTRICT,
+  FOREIGN KEY (baseType) REFERENCES ItemBaseType(baseType) ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (currencyName) REFERENCES Currency(currencyName) ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY (stashId) REFERENCES Stash(stashId) ON DELETE CASCADE
 );
 
@@ -56,8 +56,8 @@ CREATE TABLE "Modifier" (
   "effect" varchar(200) NOT NULL,
   "position" smallint NOT NULL,
   "static" boolean,
-  "minRoll" numeric(20, 2),
-  "maxRoll" numeric(20, 2),
+  "minRoll" numeric(10, 2),
+  "maxRoll" numeric(10, 2),
   "textRoll" varchar(30),
   "implicit" boolean,
   "explicit" boolean,
@@ -77,10 +77,10 @@ CREATE TABLE "ItemModifier" (
   "itemId" varchar(200) NOT NULL,
   "modifierId" integer NOT NULL,
   "position" smallint NOT NULL,
-  "range" numeric(20, 2),
+  "range" numeric(10, 2),
   PRIMARY KEY (itemId, modifierId, position),
   FOREIGN KEY (itemId) REFERENCES Item(itemId) ON DELETE CASCADE,
-  FOREIGN KEY (modifierId, position) REFERENCES Modifier(modifierId, position) ON DELETE CASCADE
+  FOREIGN KEY (modifierId, position) REFERENCES Modifier(modifierId, position) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE "Account" (
@@ -99,19 +99,19 @@ CREATE TABLE "Stash" (
   "createdAt" datetime NOT NULL,
   "updatedAt" datetime NOT NULL,
   PRIMARY KEY (stashId),
-  FOREIGN KEY (accountName) REFERENCES Account(accountName) ON DELETE CASCADE
+  FOREIGN KEY (accountName) REFERENCES Account(accountName) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE "Transaction" (
   "transactionId" serial, 
   "itemId" varchar(200) NOT NULL,
   "accountName" varchar(40) NOT NULL,
-  "currencyAmount" numeric(20,2) NOT NULL,
+  "currencyAmount" numeric(12,2) NOT NULL,
   "currencyName" varchar(40) NOT NULL,
   "createdAt" datetime NOT NULL,
   "updatedAt" datetime NOT NULL,
   PRIMARY KEY (transactionId),
   FOREIGN KEY (itemId) REFERENCES Item(itemId) ON DELETE CASCADE,
-  FOREIGN KEY (accountName) REFERENCES Account(accountName) ON DELETE CASCADE,
-  FOREIGN KEY (currencyName) REFERENCES Currency(currencyName) ON DELETE RESTRICT
+  FOREIGN KEY (accountName) REFERENCES Account(accountName) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (currencyName) REFERENCES Currency(currencyName) ON DELETE RESTRICT ON UPDATE CASCADE
 );
