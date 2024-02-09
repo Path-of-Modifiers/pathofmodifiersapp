@@ -1,2 +1,3 @@
-textRolls, effect
-"1-3-5-7", "Adds # Small Passive Skill which grants nothing"
+textRolls,position,effect,static
+"1-3-5-7",0,"Adds # Small Passive Skill which grants nothing",
+,,"Adds 3 Jewel Socket Passive Skills",True
