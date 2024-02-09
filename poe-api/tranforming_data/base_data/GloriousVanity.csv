@@ -1,2 +1,4 @@
-minRoll, maxRoll, textRolls, effect
-100, 8000, "Xibaqua-Ahuana-Doryani", "Bathed in the blood of # sacrificed in the name of #\nPassives in radius are Conquered by the Vaal"
+minRoll,maxRoll,textRolls,position,effect,static
+100,8000,,0,"Bathed in the blood of # sacrificed in the name of #\nPassives in radius are Conquered by the Vaal",
+,,"Xibaqua-Ahuana-Doryani",1,"Bathed in the blood of # sacrificed in the name of #\nPassives in radius are Conquered by the Vaal",
+,,,0,"Historic",True
