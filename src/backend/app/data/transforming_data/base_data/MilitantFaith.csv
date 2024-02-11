@@ -1,6 +1,6 @@
 minRoll,maxRoll,textRolls,position,effect,static
-2000,10000,,0,"Carved to glorify # new faithful converted by High Templar #\nPassives in radius are Conquered by the Templars",
-,,"Maxarius-Dominus-Avarius",1,"Carved to glorify # new faithful converted by High Templar #\nPassives in radius are Conquered by the Templars",
+2000,10000,,0,"Carved to glorify # new faithful converted by High Templar # Passives in radius are Conquered by the Templars",
+,,"Maxarius-Dominus-Avarius-Venarius",1,"Carved to glorify # new faithful converted by High Templar # Passives in radius are Conquered by the Templars",
 ,,,0,"Regenerate 0.6 Mana per Second per 10 Devotion",True
 ,,,0,"3% increased Effect of non-Damaging Ailments on Enemies per 10 Devotion",True
 ,,,0,"4% increased Area Damage per 10 Devotion",True
