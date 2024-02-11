@@ -1,19 +1,19 @@
-minRoll,maxRoll,textRolls,position,effect,regex,static,regex_drop
-2000,10000,,0,Carved to glorify # new faithful converted by High Templar # Passives in radius are Conquered by the Templars,,,Carved to glorify (\d+) new faithful converted by High Templar (Maxarius|Dominus|Avarius) Passives in radius are Conquered by the Templars
-,,Maxarius-Dominus-Avarius,1,Carved to glorify # new faithful converted by High Templar # Passives in radius are Conquered by the Templars,,,Carved to glorify (\d+) new faithful converted by High Templar (Maxarius|Dominus|Avarius) Passives in radius are Conquered by the Templars
-,,,0,Regenerate 0.6 Mana per Second per 10 Devotion,,True,
-,,,0,3% increased Effect of non-Damaging Ailments on Enemies per 10 Devotion,,True,
-,,,0,4% increased Area Damage per 10 Devotion,,True,
-,,,0,1% increased effect of Non-Curse Auras per 10 Devotion,,True,
-,,,0,4% increased Brand Damage per 10 Devotion,,True,
-,,,0,Channelling Skills deal 4% increased Damage per 10 Devotion,,True,
-,,,0,4% reduced Duration of Curses on you per 10 Devotion,,True,
-,,,0,4% reduced Elemental Ailment Duration on you per 10 Devotion,,True,
-,,,0,4% increased Elemental Damage per 10 Devotion,,True,
-,,,0,+2% to all Elemental Resistances per 10 Devotion,,True,
-,,,0,Minions have +60 to Accuracy Rating per 10 Devotion,,True,
-,,,0,1% increased Minion Attack and Cast Speed per 10 Devotion,,True,
-,,,0,1% reduced Mana Cost of Skills per 10 Devotion,,True,
-,,,0,3% increased Defences from Equipped Shield per 10 Devotion,,True,
-,,,0,4% increased Totem Damage per 10 Devotion,,True,
-,,,0,Historic,,True,
+minRoll,maxRoll,textRolls,position,effect,static,regex,modifierId
+2000,10000,,0,Carved to glorify # new faithful converted by High Templar # Passives in radius are Conquered by the Templars,,Carved to glorify ([+-]?([0-9]*[.])?[0-9]+) new faithful converted by High Templar (Maxarius|Dominus|Avarius|Venarius) Passives in radius are Conquered by the Templars,28
+,,Maxarius-Dominus-Avarius-Venarius,1,Carved to glorify # new faithful converted by High Templar # Passives in radius are Conquered by the Templars,,Carved to glorify ([+-]?([0-9]*[.])?[0-9]+) new faithful converted by High Templar (Maxarius|Dominus|Avarius|Venarius) Passives in radius are Conquered by the Templars,29
+,,,0,Regenerate 0.6 Mana per Second per 10 Devotion,True,,30
+,,,0,3% increased Effect of non-Damaging Ailments on Enemies per 10 Devotion,True,,31
+,,,0,4% increased Area Damage per 10 Devotion,True,,32
+,,,0,1% increased effect of Non-Curse Auras per 10 Devotion,True,,33
+,,,0,4% increased Brand Damage per 10 Devotion,True,,34
+,,,0,Channelling Skills deal 4% increased Damage per 10 Devotion,True,,35
+,,,0,4% reduced Duration of Curses on you per 10 Devotion,True,,36
+,,,0,4% reduced Elemental Ailment Duration on you per 10 Devotion,True,,37
+,,,0,4% increased Elemental Damage per 10 Devotion,True,,38
+,,,0,+2% to all Elemental Resistances per 10 Devotion,True,,39
+,,,0,Minions have +60 to Accuracy Rating per 10 Devotion,True,,40
+,,,0,1% increased Minion Attack and Cast Speed per 10 Devotion,True,,41
+,,,0,1% reduced Mana Cost of Skills per 10 Devotion,True,,42
+,,,0,3% increased Defences from Equipped Shield per 10 Devotion,True,,43
+,,,0,4% increased Totem Damage per 10 Devotion,True,,44
+,,,0,Historic,True,,45

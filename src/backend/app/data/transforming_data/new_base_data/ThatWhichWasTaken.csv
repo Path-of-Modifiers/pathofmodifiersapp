@@ -1,252 +1,252 @@
-minRoll,maxRoll,textRolls,position,effect,regex,static,regex_drop
-10,19,,0,#% chance to gain an Endurance Charge when you Stun an Enemy,,,(\d+)% chance to gain an Endurance Charge when you Stun an Enemy
-20,30,,0,#% chance to gain an Endurance Charge when you Stun an Enemy,,,(\d+)% chance to gain an Endurance Charge when you Stun an Enemy
-3,4,,0,#% increased Area of Effect per Endurance Charge,,,(\d+)% (increased|reduced) Area of Effect per Endurance Charge
-5,6,,0,#% increased Area of Effect per Endurance Charge,,,(\d+)% (increased|reduced) Area of Effect per Endurance Charge
-10,19,,0,#% chance to gain an Endurance Charge when you are Hit,,,(\d+)% chance to gain an Endurance Charge when you are Hit
-20,30,,0,#% chance to gain an Endurance Charge when you are Hit,,,(\d+)% chance to gain an Endurance Charge when you are Hit
-2,3,,0,+#% to Chaos Resistance per Endurance Charge,,,(\+|\-)(\d+)% to Chaos Resistance per Endurance Charge
-4,5,,0,+#% to Chaos Resistance per Endurance Charge,,,(\+|\-)(\d+)% to Chaos Resistance per Endurance Charge
-10,15,,0,#% increased Life Regeneration rate,,,(\d+)% (increased|reduced) Life Regeneration rate
-16,20,,0,#% increased Life Regeneration rate,,,(\d+)% (increased|reduced) Life Regeneration rate
-5,7,,0,Recoup #% of Damage Taken by your Totems as Life,,,Recoup (\d+)% of Damage Taken by your Totems as Life
-8,12,,0,Recoup #% of Damage Taken by your Totems as Life,,,Recoup (\d+)% of Damage Taken by your Totems as Life
-5,10,,0,#% chance to Cover Rare or Unique Enemies in Ash for 10 Seconds on Hit,,,(\d+)% chance to Cover Rare or Unique Enemies in Ash for 10 Seconds on Hit
-11,20,,0,#% chance to Cover Rare or Unique Enemies in Ash for 10 Seconds on Hit,,,(\d+)% chance to Cover Rare or Unique Enemies in Ash for 10 Seconds on Hit
-3,5,,0,#% increased Strength,,,(\d+)% (increased|reduced) Strength
-6,8,,0,#% increased Strength,,,(\d+)% (increased|reduced) Strength
-20,30,,0,#% reduced Ignite Duration on you,,,(\d+)% (increased|reduced) Ignite Duration on you
-31,50,,0,#% reduced Ignite Duration on you,,,(\d+)% (increased|reduced) Ignite Duration on you
-5,7,,0,Adds # to # Physical Damage if you've dealt a Critical Strike Recently,,,Adds (\d+) to (\d+) Physical Damage if you've dealt a Critical Strike Recently
-14,27,,1,Adds # to # Physical Damage if you've dealt a Critical Strike Recently,,,Adds (\d+) to (\d+) Physical Damage if you've dealt a Critical Strike Recently
-8,12,,0,Adds # to # Physical Damage if you've dealt a Critical Strike Recently,,,Adds (\d+) to (\d+) Physical Damage if you've dealt a Critical Strike Recently
-18,22,,1,Adds # to # Physical Damage if you've dealt a Critical Strike Recently,,,Adds (\d+) to (\d+) Physical Damage if you've dealt a Critical Strike Recently
-2,3,,0,+# to Maximum Rage,,,(\+|\-)(\d+) to Maximum Rage
-4,5,,0,+# to Maximum Rage,,,(\+|\-)(\d+) to Maximum Rage
-2,3,,0,Warcries grant # Rage per 5 Power if you have less than 25 Rage,,,Warcries grant (\d+) Rage per 5 Power if you have less than 25 Rage
-4,5,,0,Warcries grant # Rage per 5 Power if you have less than 25 Rage,,,Warcries grant (\d+) Rage per 5 Power if you have less than 25 Rage
-3,5,,0,#% of Leech is Instant,,,(\d+)% of Leech is Instant
-6,8,,0,#% of Leech is Instant,,,(\d+)% of Leech is Instant
-3,4,,0,"Nearby corpses Explode when you Warcry, dealing #% of their Life as Physical Damage",,,"Nearby corpses Explode when you Warcry, dealing (\d+)% of their Life as Physical Damage"
-5,6,,0,"Nearby corpses Explode when you Warcry, dealing #% of their Life as Physical Damage",,,"Nearby corpses Explode when you Warcry, dealing (\d+)% of their Life as Physical Damage"
-10,19,,0,#% chance to Taunt on Hit,,,(\d+)% chance to Taunt on Hit
-20,30,,0,#% chance to Taunt on Hit,,,(\d+)% chance to Taunt on Hit
-10,15,,0,"When you create a Banner, it gains #% of the Stages of your placed Banner",,,"When you create a Banner, it gains (\d+)% of the Stages of your placed Banner"
-16,25,,0,"When you create a Banner, it gains #% of the Stages of your placed Banner",,,"When you create a Banner, it gains (\d+)% of the Stages of your placed Banner"
-5,10,,0,Melee Hits have #% chance to Fortify,,,Melee Hits have (\d+)% chance to Fortify
-11,20,,0,Melee Hits have #% chance to Fortify,,,Melee Hits have (\d+)% chance to Fortify
-2,3,,0,"Bleeding Enemies you Kill Explode, dealing #% of their Maximum Life as Physical Damage",,,"Bleeding Enemies you Kill Explode, dealing (\d+)% of their Maximum Life as Physical Damage"
-4,5,,0,"Bleeding Enemies you Kill Explode, dealing #% of their Maximum Life as Physical Damage",,,"Bleeding Enemies you Kill Explode, dealing (\d+)% of their Maximum Life as Physical Damage"
-10,19,,0,Attack Hits against Bleeding Enemies have #% chance to Blind,,,Attack Hits against Bleeding Enemies have (\d+)% chance to Blind
-20,30,,0,Attack Hits against Bleeding Enemies have #% chance to Blind,,,Attack Hits against Bleeding Enemies have (\d+)% chance to Blind
-10,19,,0,Attack Hits against Blinded Enemies have #% chance to Maim,,,Attack Hits against Blinded Enemies have (\d+)% chance to Maim
-20,30,,0,Attack Hits against Blinded Enemies have #% chance to Maim,,,Attack Hits against Blinded Enemies have (\d+)% chance to Maim
-1,2,,0,+#% to maximum Chance to Block Attack Damage,,,(\+|\-)(\d+)% to maximum Chance to Block Attack Damage
-3,4,,0,+# to Armour and Evasion Rating per 1% Chance to Block Attack Damage,,,(\+|\-)(\d+) to Armour and Evasion Rating per 1% Chance to Block Attack Damage
-5,6,,0,+# to Armour and Evasion Rating per 1% Chance to Block Attack Damage,,,(\+|\-)(\d+) to Armour and Evasion Rating per 1% Chance to Block Attack Damage
-3,4,,0,+#% Chance to Block Attack Damage,,,(\+|\-)(\d+)% Chance to Block Attack Damage
-5,6,,0,+#% Chance to Block Attack Damage,,,(\+|\-)(\d+)% Chance to Block Attack Damage
-4,7,,0,Gain #% increased Attack Speed for 20 seconds when you Kill a Rare or Unique Enemy,,,Gain (\d+)% (increased|reduced) Attack Speed for 20 seconds when you Kill a Rare or Unique Enemy
-8,12,,0,Gain #% increased Attack Speed for 20 seconds when you Kill a Rare or Unique Enemy,,,Gain (\d+)% (increased|reduced) Attack Speed for 20 seconds when you Kill a Rare or Unique Enemy
-4,7,,0,#% of Overkill Damage is Leeched as Life,,,(\d+)% of Overkill Damage is Leeched as Life
-8,12,,0,#% of Overkill Damage is Leeched as Life,,,(\d+)% of Overkill Damage is Leeched as Life
-10,20,,0,#% increased Maximum Recovery per Life Leech,,,(\d+)% (increased|reduced) Maximum Recovery per Life Leech
-21,30,,0,#% increased Maximum Recovery per Life Leech,,,(\d+)% (increased|reduced) Maximum Recovery per Life Leech
-4,7,,0,#% increased Area of Effect if you've Killed Recently,,,(\d+)% (increased|reduced) Area of Effect if you've Killed Recently
-8,12,,0,#% increased Area of Effect if you've Killed Recently,,,(\d+)% (increased|reduced) Area of Effect if you've Killed Recently
-20,30,,0,+# to Strength and Intelligence,,,(\+|\-)(\d+) to Strength and Intelligence
-31,40,,0,+# to Strength and Intelligence,,,(\+|\-)(\d+) to Strength and Intelligence
-20,30,,0,#% increased Effect of non-Damaging Ailments you inflict with Critical Strikes,,,(\d+)% (increased|reduced) Effect of non-Damaging Ailments you inflict with Critical Strikes
-31,40,,0,#% increased Effect of non-Damaging Ailments you inflict with Critical Strikes,,,(\d+)% (increased|reduced) Effect of non-Damaging Ailments you inflict with Critical Strikes
-5,6,,0,Consecrated Ground you create applies #% increased Damage taken to Enemies,,,Consecrated Ground you create applies (\d+)% (increased|reduced) Damage taken to Enemies
-7,10,,0,Consecrated Ground you create applies #% increased Damage taken to Enemies,,,Consecrated Ground you create applies (\d+)% (increased|reduced) Damage taken to Enemies
-3,4,,0,Damage Penetrates #% of Enemy Elemental Resistances,,,Damage Penetrates (\d+)% of Enemy Elemental Resistances
-5,6,,0,Damage Penetrates #% of Enemy Elemental Resistances,,,Damage Penetrates (\d+)% of Enemy Elemental Resistances
-10,19,,0,"#% chance to create Consecrated Ground when you Hit a Rare or Unique Enemy, lasting 8 seconds",,,"(\d+)% chance to create Consecrated Ground when you Hit a Rare or Unique Enemy, lasting 8 seconds"
-20,30,,0,"#% chance to create Consecrated Ground when you Hit a Rare or Unique Enemy, lasting 8 seconds",,,"(\d+)% chance to create Consecrated Ground when you Hit a Rare or Unique Enemy, lasting 8 seconds"
-,70,,0,#% increased Critical Strike Chance if you haven't dealt a Critical Strike Recently,,,(\d+)% (increased|reduced) Critical Strike Chance if you haven't dealt a Critical Strike Recently
-71,100,,0,#% increased Critical Strike Chance if you haven't dealt a Critical Strike Recently,,,(\d+)% (increased|reduced) Critical Strike Chance if you haven't dealt a Critical Strike Recently
-1,2,,0,#% of Damage is taken from Mana before Life,,,(\d+)% of Damage is taken from Mana before Life
-4,7,,0,#% increased Mana Reservation Efficiency of Skills,,,(\d+)% (increased|reduced) Mana Reservation Efficiency of Skills
-8,12,,0,#% increased Mana Reservation Efficiency of Skills,,,(\d+)% (increased|reduced) Mana Reservation Efficiency of Skills
-2,3,,0,Gain #% of Maximum Mana as Extra Maximum Energy Shield,,,Gain (\d+)% of Maximum Mana as Extra Maximum Energy Shield
-4,5,,0,Gain #% of Maximum Mana as Extra Maximum Energy Shield,,,Gain (\d+)% of Maximum Mana as Extra Maximum Energy Shield
-20,30,,0,Non-Damaging Ailments have #% reduced Effect on you while you have Arcane Surge,,,Non-Damaging Ailments have (\d+)% (increased|reduced) Effect on you while you have Arcane Surge
-31,40,,0,Non-Damaging Ailments have #% reduced Effect on you while you have Arcane Surge,,,Non-Damaging Ailments have (\d+)% (increased|reduced) Effect on you while you have Arcane Surge
-1,2,,0,#% of Damage from Hits is taken from your nearest Totem's Life before you,,,(\d+)% of Damage from Hits is taken from your nearest Totem's Life before you
-20,30,,0,Skills that would Summon a Totem have #% chance to Summon two Totems instead,,,Skills that would Summon a Totem have (\d+)% chance to Summon two Totems instead
-31,50,,0,Skills that would Summon a Totem have #% chance to Summon two Totems instead,,,Skills that would Summon a Totem have (\d+)% chance to Summon two Totems instead
-4,5,,0,"If you've Attacked Recently, you and nearby Allies have +#% Chance to Block Attack Damage",,,"If you've Attacked Recently, you and nearby Allies have (\+|\-)(\d+)% Chance to Block Attack Damage"
-6,8,,0,"If you've Attacked Recently, you and nearby Allies have +#% Chance to Block Attack Damage",,,"If you've Attacked Recently, you and nearby Allies have (\+|\-)(\d+)% Chance to Block Attack Damage"
-4,5,,0,"If you've Cast a Spell Recently, you and nearby Allies have +#% Chance to Block Spell Damage",,,"If you've Cast a Spell Recently, you and nearby Allies have (\+|\-)(\d+)% Chance to Block Spell Damage"
-6,8,,0,"If you've Cast a Spell Recently, you and nearby Allies have +#% Chance to Block Spell Damage",,,"If you've Cast a Spell Recently, you and nearby Allies have (\+|\-)(\d+)% Chance to Block Spell Damage"
-3,4,,0,Grants Armour equal to #% of your Reserved Mana to you and nearby Allies,,,Grants Armour equal to (\d+)% of your Reserved Mana to you and nearby Allies
-5,6,,0,Grants Armour equal to #% of your Reserved Mana to you and nearby Allies,,,Grants Armour equal to (\d+)% of your Reserved Mana to you and nearby Allies
--5,-4,,0,Exposure you inflict applies an extra #% to the affected Resistance,,,Exposure you inflict applies an extra (\d+)% to the affected Resistance
--7,-6,,0,Exposure you inflict applies an extra #% to the affected Resistance,,,Exposure you inflict applies an extra (\d+)% to the affected Resistance
-5,7,,0,Shocks from your Hits always increase Damage taken by at least #%,,,Shocks from your Hits always increase Damage taken by at least (\d+)%
-8,10,,0,Shocks from your Hits always increase Damage taken by at least #%,,,Shocks from your Hits always increase Damage taken by at least (\d+)%
-3,4,,0,Chills from your Hits always reduce Action Speed by at least #%,,,Chills from your Hits always reduce Action Speed by at least (\d+)%
-5,6,,0,Chills from your Hits always reduce Action Speed by at least #%,,,Chills from your Hits always reduce Action Speed by at least (\d+)%
-15,20,,0,#% increased Effect of Buffs granted by your Golems,,,(\d+)% (increased|reduced) Effect of Buffs granted by your Golems
-21,35,,0,#% increased Effect of Buffs granted by your Golems,,,(\d+)% (increased|reduced) Effect of Buffs granted by your Golems
-10,15,,0,"#% chance to Freeze, Shock and Ignite",,,"(\d+)% chance to Freeze, Shock and Ignite"
-16,25,,0,"#% chance to Freeze, Shock and Ignite",,,"(\d+)% chance to Freeze, Shock and Ignite"
-6,10,,0,"Cursed Enemies you or your Minions Kill have a #% chance to Explode, dealing a quarter of their maximum Life as Chaos Damage",,,"Cursed Enemies you or your Minions Kill have a (\d+)% chance to Explode, dealing a quarter of their maximum Life as Chaos Damage"
-11,15,,0,"Cursed Enemies you or your Minions Kill have a #% chance to Explode, dealing a quarter of their maximum Life as Chaos Damage",,,"Cursed Enemies you or your Minions Kill have a (\d+)% chance to Explode, dealing a quarter of their maximum Life as Chaos Damage"
-2,3,,0,#% increased Area of Effect per Power Charge,,,(\d+)% (increased|reduced) Area of Effect per Power Charge
-3,5,,0,#% increased Effect of your Curses,,,(\d+)% (increased|reduced) Effect of your Curses
-6,8,,0,#% increased Effect of your Curses,,,(\d+)% (increased|reduced) Effect of your Curses
-1,1.5,,0,Regenerate #% of Energy Shield per second,,,Regenerate (\d+)% of Energy Shield per second
-2,3,,0,Regenerate #% of Energy Shield per second,,,Regenerate (\d+)% of Energy Shield per second
-10,19,,0,#% chance to Hinder Enemies on Hit with Spells,,,(\d+)% chance to Hinder Enemies on Hit with Spells
-20,30,,0,#% chance to Hinder Enemies on Hit with Spells,,,(\d+)% chance to Hinder Enemies on Hit with Spells
-10,19,,0,Minions have #% chance to gain Unholy Might for 4 seconds on Kill,,,Minions have (\d+)% chance to gain Unholy Might for 4 seconds on Kill
-20,30,,0,Minions have #% chance to gain Unholy Might for 4 seconds on Kill,,,Minions have (\d+)% chance to gain Unholy Might for 4 seconds on Kill
-15,20,,0,Your Offerings have #% increased Effect on you,,,Your Offerings have (\d+)% (increased|reduced) Effect on you
-21,30,,0,Your Offerings have #% increased Effect on you,,,Your Offerings have (\d+)% (increased|reduced) Effect on you
-2,3,,0,Regenerate #% of Mana over 2 seconds when you Consume a corpse,,,Regenerate (\d+)% of Mana over 2 seconds when you Consume a corpse
-4,5,,0,Regenerate #% of Mana over 2 seconds when you Consume a corpse,,,Regenerate (\d+)% of Mana over 2 seconds when you Consume a corpse
-2,3,,0,Regenerate #% of Energy Shield over 2 seconds when you Consume a corpse,,,Regenerate (\d+)% of Energy Shield over 2 seconds when you Consume a corpse
-4,5,,0,Regenerate #% of Energy Shield over 2 seconds when you Consume a corpse,,,Regenerate (\d+)% of Energy Shield over 2 seconds when you Consume a corpse
-10,14,,0,You and nearby Allies have +#% to Elemental Resistances,,,You and nearby Allies have (\+|\-)(\d+)% to Elemental Resistances
-15,20,,0,You and nearby Allies have +#% to Elemental Resistances,,,You and nearby Allies have (\+|\-)(\d+)% to Elemental Resistances
-3,5,,0,Minions gain Added Physical Damage equal to #% of Maximum Energy Shield on your Equipped Helmet,,,Minions gain Added Physical Damage equal to (\d+)% of Maximum Energy Shield on your Equipped Helmet
-6,10,,0,Minions gain Added Physical Damage equal to #% of Maximum Energy Shield on your Equipped Helmet,,,Minions gain Added Physical Damage equal to (\d+)% of Maximum Energy Shield on your Equipped Helmet
-5,10,,0,Corpses you Spawn have #% increased Maximum Life,,,Corpses you Spawn have (\d+)% (increased|reduced) Maximum Life
-11,20,,0,Corpses you Spawn have #% increased Maximum Life,,,Corpses you Spawn have (\d+)% (increased|reduced) Maximum Life
-5,8,,0,Minions have #% additional Physical Damage Reduction,,,Minions have (\d+)% additional Physical Damage Reduction
-9,12,,0,Minions have #% additional Physical Damage Reduction,,,Minions have (\d+)% additional Physical Damage Reduction
-10,15,,0,#% chance to gain a Power Charge on Critical Strike,,,(\d+)% chance to gain a Power Charge on Critical Strike
-16,25,,0,#% chance to gain a Power Charge on Critical Strike,,,(\d+)% chance to gain a Power Charge on Critical Strike
-2,3,,0,+#% to Critical Strike Multiplier per Power Charge,,,(\+|\-)(\d+)% to Critical Strike Multiplier per Power Charge
-4,5,,0,+#% to Critical Strike Multiplier per Power Charge,,,(\+|\-)(\d+)% to Critical Strike Multiplier per Power Charge
-0.4,0.6,,0,+#% Critical Strike Chance while at maximum Power Charges,,,(\+|\-)(\d+)% Critical Strike Chance while at maximum Power Charges
-0.61,1,,0,+#% Critical Strike Chance while at maximum Power Charges,,,(\+|\-)(\d+)% Critical Strike Chance while at maximum Power Charges
-80,120,,0,#% increased Critical Strike Chance against Enemies on Full Life,,,(\d+)% (increased|reduced) Critical Strike Chance against Enemies on Full Life
-130,160,,0,#% increased Critical Strike Chance against Enemies on Full Life,,,(\d+)% (increased|reduced) Critical Strike Chance against Enemies on Full Life
-10,15,,0,#% increased Elusive Effect,,,(\d+)% (increased|reduced) Elusive Effect
-16,25,,0,#% increased Elusive Effect,,,(\d+)% (increased|reduced) Elusive Effect
-1,2,,0,"#% increased Poison Duration for each Poison you have inflicted Recently, up to a maximum of 100%",,,"(\d+)% (increased|reduced) Poison Duration for each Poison you have inflicted Recently, up to a maximum of 100%"
-5,10,,0,#% Global chance to Blind Enemies on hit,,,(\d+)% Global chance to Blind Enemies on hit
-11,15,,0,#% Global chance to Blind Enemies on hit,,,(\d+)% Global chance to Blind Enemies on hit
-20,30,,0,#% increased Effect of Auras from Mines,,,(\d+)% (increased|reduced) Effect of Auras from Mines
-31,50,,0,#% increased Effect of Auras from Mines,,,(\d+)% (increased|reduced) Effect of Auras from Mines
-5,6,,0,#% chance to take 50% less Area Damage from Hits,,,(\d+)% chance to take 50% less Area Damage from Hits
-7,10,,0,#% chance to take 50% less Area Damage from Hits,,,(\d+)% chance to take 50% less Area Damage from Hits
-5,6,,0,Hits have #% chance to deal 50% more Area Damage,,,Hits have (\d+)% chance to deal 50% more Area Damage
-7,10,,0,Hits have #% chance to deal 50% more Area Damage,,,Hits have (\d+)% chance to deal 50% more Area Damage
-5,8,,0,#% increased Cooldown Recovery Rate,,,(\d+)% (increased|reduced) Cooldown Recovery Rate
-9,12,,0,#% increased Cooldown Recovery Rate,,,(\d+)% (increased|reduced) Cooldown Recovery Rate
-2,3,,0,#% chance to throw up to 4 additional Traps,,,(\d+)% chance to throw up to 4 additional Traps
-4,5,,0,#% chance to throw up to 4 additional Traps,,,(\d+)% chance to throw up to 4 additional Traps
-10,15,,0,+#% to Critical Strike Multiplier against Burning Enemies,,,(\+|\-)(\d+)% to Critical Strike Multiplier against Burning Enemies
-20,30,,0,#% increased Critical Strike Chance against Shocked Enemies,,,(\d+)% (increased|reduced) Critical Strike Chance against Shocked Enemies
-16,25,,0,+#% to Critical Strike Multiplier against Burning Enemies,,,(\+|\-)(\d+)% to Critical Strike Multiplier against Burning Enemies
-31,50,,0,#% increased Critical Strike Chance against Shocked Enemies,,,(\d+)% (increased|reduced) Critical Strike Chance against Shocked Enemies
-40,60,,0,#% increased Charge Duration,,,(\d+)% (increased|reduced) Charge Duration
-61,100,,0,#% increased Charge Duration,,,(\d+)% (increased|reduced) Charge Duration
-5,8,,0,#% chance for Energy Shield Recharge to start when you Suppress Spell Damage,,,(\d+)% chance for Energy Shield Recharge to start when you Suppress Spell Damage
-9,12,,0,#% chance for Energy Shield Recharge to start when you Suppress Spell Damage,,,(\d+)% chance for Energy Shield Recharge to start when you Suppress Spell Damage
-7,13,,0,#% chance to gain 25% of Non-Chaos Damage with Hits as Extra Chaos Damage,,,(\d+)% chance to gain 25% of Non-Chaos Damage with Hits as Extra Chaos Damage
-17,23,,0,#% chance to gain 25% of Non-Chaos Damage with Hits as Extra Chaos Damage,,,(\d+)% chance to gain 25% of Non-Chaos Damage with Hits as Extra Chaos Damage
-1,2,,0,+# to Evasion Rating per 1 Maximum Energy Shield on Equipped Helmet,,,(\+|\-)(\d+) to Evasion Rating per 1 Maximum Energy Shield on Equipped Helmet
-3,4,,0,+# to Evasion Rating per 1 Maximum Energy Shield on Equipped Helmet,,,(\+|\-)(\d+) to Evasion Rating per 1 Maximum Energy Shield on Equipped Helmet
-3,4,,0,Prevent +#% of Suppressed Spell Damage while on Full Energy Shield,,,Prevent (\+|\-)(\d+)% of Suppressed Spell Damage while on Full Energy Shield
-5,6,,0,Prevent +#% of Suppressed Spell Damage while on Full Energy Shield,,,Prevent (\+|\-)(\d+)% of Suppressed Spell Damage while on Full Energy Shield
-0.5,1,,0,#% of Damage Leeched as Energy Shield,,,(\d+)% of Damage Leeched as Energy Shield
-1.1,2,,0,#% of Damage Leeched as Energy Shield,,,(\d+)% of Damage Leeched as Energy Shield
-4,6,,0,#% chance to Recover 10% of Mana when you use a Skill,,,(\d+)% chance to Recover 10% of Mana when you use a Skill
-7,10,,0,#% chance to Recover 10% of Mana when you use a Skill,,,(\d+)% chance to Recover 10% of Mana when you use a Skill
-10,15,,0,#% increased Effect of your Marks,,,(\d+)% (increased|reduced) Effect of your Marks
-16,25,,0,#% increased Effect of your Marks,,,(\d+)% (increased|reduced) Effect of your Marks
-7,13,,0,Projectiles have #% chance to be able to Chain when colliding with terrain,,,Projectiles have (\d+)% chance to be able to Chain when colliding with terrain
-14,20,,0,Projectiles have #% chance to be able to Chain when colliding with terrain,,,Projectiles have (\d+)% chance to be able to Chain when colliding with terrain
-30,50,,0,#% increased Mirage Archer Duration,,,(\d+)% (increased|reduced) Mirage Archer Duration
-51,100,,0,#% increased Mirage Archer Duration,,,(\d+)% (increased|reduced) Mirage Archer Duration
-25,40,,0,"Projectiles gain Damage as they travel farther, dealing up to #% increased Damage with Hits to targets",,,"Projectiles gain Damage as they travel farther, dealing up to (\d+)% (increased|reduced) Damage with Hits to targets"
-41,60,,0,"Projectiles gain Damage as they travel farther, dealing up to #% increased Damage with Hits to targets",,,"Projectiles gain Damage as they travel farther, dealing up to (\d+)% (increased|reduced) Damage with Hits to targets"
-6,10,,0,Gain # Life per Bleeding Enemy Hit,,,Gain (\d+) Life per Bleeding Enemy Hit
-11,20,,0,Gain # Life per Bleeding Enemy Hit,,,Gain (\d+) Life per Bleeding Enemy Hit
-7,13,,0,#% increased Accuracy Rating if you've dealt a Critical Strike in the past 8 seconds,,,(\d+)% (increased|reduced) Accuracy Rating if you've dealt a Critical Strike in the past 8 seconds
-14,20,,0,#% increased Accuracy Rating if you've dealt a Critical Strike in the past 8 seconds,,,(\d+)% (increased|reduced) Accuracy Rating if you've dealt a Critical Strike in the past 8 seconds
-15,25,,0,#% increased Effect of Onslaught on you,,,(\d+)% (increased|reduced) Effect of Onslaught on you
-26,40,,0,#% increased Effect of Onslaught on you,,,(\d+)% (increased|reduced) Effect of Onslaught on you
-10,15,,0,#% chance to gain Phasing for 4 seconds on Kill,,,(\d+)% chance to gain Phasing for 4 seconds on Kill
-16,25,,0,#% chance to gain Phasing for 4 seconds on Kill,,,(\d+)% chance to gain Phasing for 4 seconds on Kill
-5,9,,0,+#% chance to Suppress Spell Damage,,,(\+|\-)(\d+)% chance to Suppress Spell Damage
-10,15,,0,+#% chance to Suppress Spell Damage,,,(\+|\-)(\d+)% chance to Suppress Spell Damage
-10,15,,0,#% chance to Avoid Elemental Ailments while Phasing,,,(\d+)% chance to Avoid Elemental Ailments while Phasing
-16,25,,0,#% chance to Avoid Elemental Ailments while Phasing,,,(\d+)% chance to Avoid Elemental Ailments while Phasing
-10,15,,0,#% chance to gain Onslaught for 4 seconds on Kill,,,(\d+)% chance to gain Onslaught for 4 seconds on Kill
-16,25,,0,#% chance to gain Onslaught for 4 seconds on Kill,,,(\d+)% chance to gain Onslaught for 4 seconds on Kill
-3,5,,0,#% increased Evasion Rating per Frenzy Charge,,,(\d+)% (increased|reduced) Evasion Rating per Frenzy Charge
-6,9,,0,#% increased Evasion Rating per Frenzy Charge,,,(\d+)% (increased|reduced) Evasion Rating per Frenzy Charge
-3,5,,0,#% chance to gain a Frenzy Charge on Hit,,,(\d+)% chance to gain a Frenzy Charge on Hit
-6,8,,0,#% chance to gain a Frenzy Charge on Hit,,,(\d+)% chance to gain a Frenzy Charge on Hit
-6,10,,0,Magic Utility Flasks applied to you have #% increased Effect,,,Magic Utility Flasks applied to you have (\d+)% (increased|reduced) Effect
-11,15,,0,Magic Utility Flasks applied to you have #% increased Effect,,,Magic Utility Flasks applied to you have (\d+)% (increased|reduced) Effect
-6,10,,0,#% chance to inflict Withered for 2 seconds on Hit,,,(\d+)% chance to inflict Withered for 2 seconds on Hit
-11,15,,0,#% chance to inflict Withered for 2 seconds on Hit,,,(\d+)% chance to inflict Withered for 2 seconds on Hit
-2,3,,0,Recover #% of Life when you use a Flask,,,Recover (\d+)% of Life when you use a Flask
-4,5,,0,Recover #% of Life when you use a Flask,,,Recover (\d+)% of Life when you use a Flask
-7,13,,0,#% increased Effect of Withered,,,(\d+)% (increased|reduced) Effect of Withered
-14,20,,0,#% increased Effect of Withered,,,(\d+)% (increased|reduced) Effect of Withered
-15,25,,0,Enemies you Kill that are affected by Elemental Ailments grant #% increased Flask Charges,,,Enemies you Kill that are affected by Elemental Ailments grant (\d+)% (increased|reduced) Flask Charges
-26,40,,0,Enemies you Kill that are affected by Elemental Ailments grant #% increased Flask Charges,,,Enemies you Kill that are affected by Elemental Ailments grant (\d+)% (increased|reduced) Flask Charges
-5,8,,0,Gain #% of Physical Damage as Extra Damage of a random Element,,,Gain (\d+)% of Physical Damage as Extra Damage of a random Element
-9,12,,0,Gain #% of Physical Damage as Extra Damage of a random Element,,,Gain (\d+)% of Physical Damage as Extra Damage of a random Element
-,,,0,Movement Speed cannot be modified to below base value,,True,
-,,,0,"2% of Armour applies to Fire, Cold and Lightning Damage taken from Hits",,True,
-,,,0,"3% of Armour applies to Fire, Cold and Lightning Damage taken from Hits",,True,
-,,,0,Totems Taunt Enemies around them for 2 seconds when Summoned,,True,
-,,,0,"Enemies you or your Totems Kill have 1% chance to Explode, dealing 500% of their maximum Life as Fire Damage",,True,
-,,,0,+1% to maximum Fire Resistance,,True,
-,,,0,+2% to maximum Fire Resistance,,True,
-,,,0,Cannot be Stunned while you have at least 25 Rage,,True,
-,,,0,1% of Attack Damage Leeched as Life and Mana if you've Killed Recently,,True,
-,,,0,2% of Attack Damage Leeched as Life and Mana if you've Killed Recently,,True,
-,,,0,Cannot be Stunned while Fortified,,True,
-,,,0,Banner Skills have no Reservation,,True,
-,,,0,Gain Adrenaline for 4 seconds when you reach Low Life,,True,
-,,,0,Impales you inflict last 1 additional Hit,,True,
-,,,0,Cannot be Stunned by Hits you Block,,True,
-,,,0,+3% to maximum Chance to Block Attack Damage,,True,
-,,,0,Hits ignore Enemy Monster Physical Damage Reduction if you've Blocked in the past 20 seconds,,True,
-,,,0,Cannot take Reflected Physical Damage,,True,
-,,,0,Cannot be Stunned while Leeching,,True,
-,,,0,You are Unaffected by Bleeding while Leeching,,True,
-,,,0,Culling Strike,,True,
-,,,0,Effects of Consecrated Ground you create Linger for 2 seconds,,True,
-,,,0,3% of Damage is taken from Mana before Life,,True,
-,,,0,Gain Arcane Surge when you or your Totems Hit an Enemy with a Spell,,True,
-,,,0,3% of Damage from Hits is taken from your nearest Totem's Life before you,,True,
-,,,0,+1 to Minimum Endurance Charges,,True,
-,,,0,+1 to Minimum Power Charges,,True,
-,,,0,"Every 4 seconds, remove Curses and Elemental Ailments from you",,True,
-,,,0,Enemies in your Link Beams cannot apply Elemental Ailments,,True,
-,,,0,"Every 4 seconds, Regenerate 10% of Life over one second",,True,
-,,,0,"Every 4 seconds, Regenerate 20% of Life over one second",,True,
-,,,0,"Nearby Enemies cannot gain Power, Frenzy or Endurance Charges",,True,
-,,,0,"While there are at least five nearby Allies, you and nearby Allies have Onslaught",,True,
-,,,0,All Damage can Ignite,,True,
-,,,0,Cannot take Reflected Elemental Damage,,True,
-,,,0,Your Hexes can affect Hexproof Enemies,,True,
-,,,0,4% increased Area of Effect per Power Charge,,True,
-,,,0,Nearby Enemies are Chilled,,True,
-,,,0,Critical Strikes have Culling Strike,,True,
-,,,0,Damage from your Critical Strikes cannot be Reflected,,True,
-,,,0,You take no Extra Damage from Critical Strikes while Elusive,,True,
-,,,0,"3% increased Poison Duration for each Poison you have inflicted Recently, up to a maximum of 100%",,True,
-,,,0,Cannot be Blinded,,True,
-,,,0,Recover 1% of Life on Kill,,True,
-,,,0,Recover 1% of Energy Shield on Kill,,True,
-,,,0,Recover 1% of Mana on Kill,,True,
-,,,0,Recover 2% of Life on Kill,,True,
-,,,0,Recover 2% of Energy Shield on Kill,,True,
-,,,0,Recover 2% of Mana on Kill,,True,
-,,,0,Projectile Barrages have no spread,,True,
-,,,0,Skills fire an additional Projectile,,True,
-,,,0,2% increased Movement Speed per Frenzy Charge,,True,
-,,,0,Flasks gain a Charge every 3 seconds,,True,
-,,,0,Removes Bleeding when you use a Flask,,True,
+minRoll,maxRoll,textRolls,position,effect,static,regex,modifierId
+10,19,,0,#% chance to gain an Endurance Charge when you Stun an Enemy,,([+-]?([0-9]*[.])?[0-9]+)% chance to gain an Endurance Charge when you Stun an Enemy,82
+20,30,,0,#% chance to gain an Endurance Charge when you Stun an Enemy,,([+-]?([0-9]*[.])?[0-9]+)% chance to gain an Endurance Charge when you Stun an Enemy,83
+3,4,,0,#% increased Area of Effect per Endurance Charge,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Area of Effect per Endurance Charge,84
+5,6,,0,#% increased Area of Effect per Endurance Charge,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Area of Effect per Endurance Charge,85
+10,19,,0,#% chance to gain an Endurance Charge when you are Hit,,([+-]?([0-9]*[.])?[0-9]+)% chance to gain an Endurance Charge when you are Hit,86
+20,30,,0,#% chance to gain an Endurance Charge when you are Hit,,([+-]?([0-9]*[.])?[0-9]+)% chance to gain an Endurance Charge when you are Hit,87
+2,3,,0,+#% to Chaos Resistance per Endurance Charge,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+)% to Chaos Resistance per Endurance Charge,88
+4,5,,0,+#% to Chaos Resistance per Endurance Charge,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+)% to Chaos Resistance per Endurance Charge,89
+10,15,,0,#% increased Life Regeneration rate,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Life Regeneration rate,90
+16,20,,0,#% increased Life Regeneration rate,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Life Regeneration rate,91
+5,7,,0,Recoup #% of Damage Taken by your Totems as Life,,Recoup ([+-]?([0-9]*[.])?[0-9]+)% of Damage Taken by your Totems as Life,92
+8,12,,0,Recoup #% of Damage Taken by your Totems as Life,,Recoup ([+-]?([0-9]*[.])?[0-9]+)% of Damage Taken by your Totems as Life,93
+5,10,,0,#% chance to Cover Rare or Unique Enemies in Ash for 10 Seconds on Hit,,([+-]?([0-9]*[.])?[0-9]+)% chance to Cover Rare or Unique Enemies in Ash for 10 Seconds on Hit,94
+11,20,,0,#% chance to Cover Rare or Unique Enemies in Ash for 10 Seconds on Hit,,([+-]?([0-9]*[.])?[0-9]+)% chance to Cover Rare or Unique Enemies in Ash for 10 Seconds on Hit,95
+3,5,,0,#% increased Strength,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Strength,96
+6,8,,0,#% increased Strength,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Strength,97
+20,30,,0,#% reduced Ignite Duration on you,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Ignite Duration on you,98
+31,50,,0,#% reduced Ignite Duration on you,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Ignite Duration on you,99
+5,7,,0,Adds # to # Physical Damage if you've dealt a Critical Strike Recently,,Adds ([+-]?([0-9]*[.])?[0-9]+) to ([+-]?([0-9]*[.])?[0-9]+) Physical Damage if you've dealt a Critical Strike Recently,100
+14,27,,1,Adds # to # Physical Damage if you've dealt a Critical Strike Recently,,Adds ([+-]?([0-9]*[.])?[0-9]+) to ([+-]?([0-9]*[.])?[0-9]+) Physical Damage if you've dealt a Critical Strike Recently,101
+8,12,,0,Adds # to # Physical Damage if you've dealt a Critical Strike Recently,,Adds ([+-]?([0-9]*[.])?[0-9]+) to ([+-]?([0-9]*[.])?[0-9]+) Physical Damage if you've dealt a Critical Strike Recently,102
+18,22,,1,Adds # to # Physical Damage if you've dealt a Critical Strike Recently,,Adds ([+-]?([0-9]*[.])?[0-9]+) to ([+-]?([0-9]*[.])?[0-9]+) Physical Damage if you've dealt a Critical Strike Recently,103
+2,3,,0,+# to Maximum Rage,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+) to Maximum Rage,104
+4,5,,0,+# to Maximum Rage,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+) to Maximum Rage,105
+2,3,,0,Warcries grant # Rage per 5 Power if you have less than 25 Rage,,Warcries grant ([+-]?([0-9]*[.])?[0-9]+) Rage per 5 Power if you have less than 25 Rage,106
+4,5,,0,Warcries grant # Rage per 5 Power if you have less than 25 Rage,,Warcries grant ([+-]?([0-9]*[.])?[0-9]+) Rage per 5 Power if you have less than 25 Rage,107
+3,5,,0,#% of Leech is Instant,,([+-]?([0-9]*[.])?[0-9]+)% of Leech is Instant,108
+6,8,,0,#% of Leech is Instant,,([+-]?([0-9]*[.])?[0-9]+)% of Leech is Instant,109
+3,4,,0,"Nearby corpses Explode when you Warcry, dealing #% of their Life as Physical Damage",,"Nearby corpses Explode when you Warcry, dealing ([+-]?([0-9]*[.])?[0-9]+)% of their Life as Physical Damage",110
+5,6,,0,"Nearby corpses Explode when you Warcry, dealing #% of their Life as Physical Damage",,"Nearby corpses Explode when you Warcry, dealing ([+-]?([0-9]*[.])?[0-9]+)% of their Life as Physical Damage",111
+10,19,,0,#% chance to Taunt on Hit,,([+-]?([0-9]*[.])?[0-9]+)% chance to Taunt on Hit,112
+20,30,,0,#% chance to Taunt on Hit,,([+-]?([0-9]*[.])?[0-9]+)% chance to Taunt on Hit,113
+10,15,,0,"When you create a Banner, it gains #% of the Stages of your placed Banner",,"When you create a Banner, it gains ([+-]?([0-9]*[.])?[0-9]+)% of the Stages of your placed Banner",114
+16,25,,0,"When you create a Banner, it gains #% of the Stages of your placed Banner",,"When you create a Banner, it gains ([+-]?([0-9]*[.])?[0-9]+)% of the Stages of your placed Banner",115
+5,10,,0,Melee Hits have #% chance to Fortify,,Melee Hits have ([+-]?([0-9]*[.])?[0-9]+)% chance to Fortify,116
+11,20,,0,Melee Hits have #% chance to Fortify,,Melee Hits have ([+-]?([0-9]*[.])?[0-9]+)% chance to Fortify,117
+2,3,,0,"Bleeding Enemies you Kill Explode, dealing #% of their Maximum Life as Physical Damage",,"Bleeding Enemies you Kill Explode, dealing ([+-]?([0-9]*[.])?[0-9]+)% of their Maximum Life as Physical Damage",118
+4,5,,0,"Bleeding Enemies you Kill Explode, dealing #% of their Maximum Life as Physical Damage",,"Bleeding Enemies you Kill Explode, dealing ([+-]?([0-9]*[.])?[0-9]+)% of their Maximum Life as Physical Damage",119
+10,19,,0,Attack Hits against Bleeding Enemies have #% chance to Blind,,Attack Hits against Bleeding Enemies have ([+-]?([0-9]*[.])?[0-9]+)% chance to Blind,120
+20,30,,0,Attack Hits against Bleeding Enemies have #% chance to Blind,,Attack Hits against Bleeding Enemies have ([+-]?([0-9]*[.])?[0-9]+)% chance to Blind,121
+10,19,,0,Attack Hits against Blinded Enemies have #% chance to Maim,,Attack Hits against Blinded Enemies have ([+-]?([0-9]*[.])?[0-9]+)% chance to Maim,122
+20,30,,0,Attack Hits against Blinded Enemies have #% chance to Maim,,Attack Hits against Blinded Enemies have ([+-]?([0-9]*[.])?[0-9]+)% chance to Maim,123
+1,2,,0,+#% to maximum Chance to Block Attack Damage,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+)% to maximum Chance to Block Attack Damage,124
+3,4,,0,+# to Armour and Evasion Rating per 1% Chance to Block Attack Damage,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+) to Armour and Evasion Rating per 1% Chance to Block Attack Damage,125
+5,6,,0,+# to Armour and Evasion Rating per 1% Chance to Block Attack Damage,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+) to Armour and Evasion Rating per 1% Chance to Block Attack Damage,126
+3,4,,0,+#% Chance to Block Attack Damage,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+)% Chance to Block Attack Damage,127
+5,6,,0,+#% Chance to Block Attack Damage,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+)% Chance to Block Attack Damage,128
+4,7,,0,Gain #% increased Attack Speed for 20 seconds when you Kill a Rare or Unique Enemy,,Gain ([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Attack Speed for 20 seconds when you Kill a Rare or Unique Enemy,129
+8,12,,0,Gain #% increased Attack Speed for 20 seconds when you Kill a Rare or Unique Enemy,,Gain ([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Attack Speed for 20 seconds when you Kill a Rare or Unique Enemy,130
+4,7,,0,#% of Overkill Damage is Leeched as Life,,([+-]?([0-9]*[.])?[0-9]+)% of Overkill Damage is Leeched as Life,131
+8,12,,0,#% of Overkill Damage is Leeched as Life,,([+-]?([0-9]*[.])?[0-9]+)% of Overkill Damage is Leeched as Life,132
+10,20,,0,#% increased Maximum Recovery per Life Leech,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Maximum Recovery per Life Leech,133
+21,30,,0,#% increased Maximum Recovery per Life Leech,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Maximum Recovery per Life Leech,134
+4,7,,0,#% increased Area of Effect if you've Killed Recently,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Area of Effect if you've Killed Recently,135
+8,12,,0,#% increased Area of Effect if you've Killed Recently,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Area of Effect if you've Killed Recently,136
+20,30,,0,+# to Strength and Intelligence,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+) to Strength and Intelligence,137
+31,40,,0,+# to Strength and Intelligence,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+) to Strength and Intelligence,138
+20,30,,0,#% increased Effect of non-Damaging Ailments you inflict with Critical Strikes,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Effect of non-Damaging Ailments you inflict with Critical Strikes,139
+31,40,,0,#% increased Effect of non-Damaging Ailments you inflict with Critical Strikes,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Effect of non-Damaging Ailments you inflict with Critical Strikes,140
+5,6,,0,Consecrated Ground you create applies #% increased Damage taken to Enemies,,Consecrated Ground you create applies ([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Damage taken to Enemies,141
+7,10,,0,Consecrated Ground you create applies #% increased Damage taken to Enemies,,Consecrated Ground you create applies ([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Damage taken to Enemies,142
+3,4,,0,Damage Penetrates #% of Enemy Elemental Resistances,,Damage Penetrates ([+-]?([0-9]*[.])?[0-9]+)% of Enemy Elemental Resistances,143
+5,6,,0,Damage Penetrates #% of Enemy Elemental Resistances,,Damage Penetrates ([+-]?([0-9]*[.])?[0-9]+)% of Enemy Elemental Resistances,144
+10,19,,0,"#% chance to create Consecrated Ground when you Hit a Rare or Unique Enemy, lasting 8 seconds",,"([+-]?([0-9]*[.])?[0-9]+)% chance to create Consecrated Ground when you Hit a Rare or Unique Enemy, lasting 8 seconds",145
+20,30,,0,"#% chance to create Consecrated Ground when you Hit a Rare or Unique Enemy, lasting 8 seconds",,"([+-]?([0-9]*[.])?[0-9]+)% chance to create Consecrated Ground when you Hit a Rare or Unique Enemy, lasting 8 seconds",146
+,70,,0,#% increased Critical Strike Chance if you haven't dealt a Critical Strike Recently,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Critical Strike Chance if you haven't dealt a Critical Strike Recently,147
+71,100,,0,#% increased Critical Strike Chance if you haven't dealt a Critical Strike Recently,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Critical Strike Chance if you haven't dealt a Critical Strike Recently,148
+1,2,,0,#% of Damage is taken from Mana before Life,,([+-]?([0-9]*[.])?[0-9]+)% of Damage is taken from Mana before Life,149
+4,7,,0,#% increased Mana Reservation Efficiency of Skills,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Mana Reservation Efficiency of Skills,150
+8,12,,0,#% increased Mana Reservation Efficiency of Skills,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Mana Reservation Efficiency of Skills,151
+2,3,,0,Gain #% of Maximum Mana as Extra Maximum Energy Shield,,Gain ([+-]?([0-9]*[.])?[0-9]+)% of Maximum Mana as Extra Maximum Energy Shield,152
+4,5,,0,Gain #% of Maximum Mana as Extra Maximum Energy Shield,,Gain ([+-]?([0-9]*[.])?[0-9]+)% of Maximum Mana as Extra Maximum Energy Shield,153
+20,30,,0,Non-Damaging Ailments have #% reduced Effect on you while you have Arcane Surge,,Non-Damaging Ailments have ([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Effect on you while you have Arcane Surge,154
+31,40,,0,Non-Damaging Ailments have #% reduced Effect on you while you have Arcane Surge,,Non-Damaging Ailments have ([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Effect on you while you have Arcane Surge,155
+1,2,,0,#% of Damage from Hits is taken from your nearest Totem's Life before you,,([+-]?([0-9]*[.])?[0-9]+)% of Damage from Hits is taken from your nearest Totem's Life before you,156
+20,30,,0,Skills that would Summon a Totem have #% chance to Summon two Totems instead,,Skills that would Summon a Totem have ([+-]?([0-9]*[.])?[0-9]+)% chance to Summon two Totems instead,157
+31,50,,0,Skills that would Summon a Totem have #% chance to Summon two Totems instead,,Skills that would Summon a Totem have ([+-]?([0-9]*[.])?[0-9]+)% chance to Summon two Totems instead,158
+4,5,,0,"If you've Attacked Recently, you and nearby Allies have +#% Chance to Block Attack Damage",,"If you've Attacked Recently, you and nearby Allies have (\+|\-)([+-]?([0-9]*[.])?[0-9]+)% Chance to Block Attack Damage",159
+6,8,,0,"If you've Attacked Recently, you and nearby Allies have +#% Chance to Block Attack Damage",,"If you've Attacked Recently, you and nearby Allies have (\+|\-)([+-]?([0-9]*[.])?[0-9]+)% Chance to Block Attack Damage",160
+4,5,,0,"If you've Cast a Spell Recently, you and nearby Allies have +#% Chance to Block Spell Damage",,"If you've Cast a Spell Recently, you and nearby Allies have (\+|\-)([+-]?([0-9]*[.])?[0-9]+)% Chance to Block Spell Damage",161
+6,8,,0,"If you've Cast a Spell Recently, you and nearby Allies have +#% Chance to Block Spell Damage",,"If you've Cast a Spell Recently, you and nearby Allies have (\+|\-)([+-]?([0-9]*[.])?[0-9]+)% Chance to Block Spell Damage",162
+3,4,,0,Grants Armour equal to #% of your Reserved Mana to you and nearby Allies,,Grants Armour equal to ([+-]?([0-9]*[.])?[0-9]+)% of your Reserved Mana to you and nearby Allies,163
+5,6,,0,Grants Armour equal to #% of your Reserved Mana to you and nearby Allies,,Grants Armour equal to ([+-]?([0-9]*[.])?[0-9]+)% of your Reserved Mana to you and nearby Allies,164
+-5,-4,,0,Exposure you inflict applies an extra #% to the affected Resistance,,Exposure you inflict applies an extra ([+-]?([0-9]*[.])?[0-9]+)% to the affected Resistance,165
+-7,-6,,0,Exposure you inflict applies an extra #% to the affected Resistance,,Exposure you inflict applies an extra ([+-]?([0-9]*[.])?[0-9]+)% to the affected Resistance,166
+5,7,,0,Shocks from your Hits always increase Damage taken by at least #%,,Shocks from your Hits always increase Damage taken by at least ([+-]?([0-9]*[.])?[0-9]+)%,167
+8,10,,0,Shocks from your Hits always increase Damage taken by at least #%,,Shocks from your Hits always increase Damage taken by at least ([+-]?([0-9]*[.])?[0-9]+)%,168
+3,4,,0,Chills from your Hits always reduce Action Speed by at least #%,,Chills from your Hits always reduce Action Speed by at least ([+-]?([0-9]*[.])?[0-9]+)%,169
+5,6,,0,Chills from your Hits always reduce Action Speed by at least #%,,Chills from your Hits always reduce Action Speed by at least ([+-]?([0-9]*[.])?[0-9]+)%,170
+15,20,,0,#% increased Effect of Buffs granted by your Golems,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Effect of Buffs granted by your Golems,171
+21,35,,0,#% increased Effect of Buffs granted by your Golems,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Effect of Buffs granted by your Golems,172
+10,15,,0,"#% chance to Freeze, Shock and Ignite",,"([+-]?([0-9]*[.])?[0-9]+)% chance to Freeze, Shock and Ignite",173
+16,25,,0,"#% chance to Freeze, Shock and Ignite",,"([+-]?([0-9]*[.])?[0-9]+)% chance to Freeze, Shock and Ignite",174
+6,10,,0,"Cursed Enemies you or your Minions Kill have a #% chance to Explode, dealing a quarter of their maximum Life as Chaos Damage",,"Cursed Enemies you or your Minions Kill have a ([+-]?([0-9]*[.])?[0-9]+)% chance to Explode, dealing a quarter of their maximum Life as Chaos Damage",175
+11,15,,0,"Cursed Enemies you or your Minions Kill have a #% chance to Explode, dealing a quarter of their maximum Life as Chaos Damage",,"Cursed Enemies you or your Minions Kill have a ([+-]?([0-9]*[.])?[0-9]+)% chance to Explode, dealing a quarter of their maximum Life as Chaos Damage",176
+2,3,,0,#% increased Area of Effect per Power Charge,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Area of Effect per Power Charge,177
+3,5,,0,#% increased Effect of your Curses,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Effect of your Curses,178
+6,8,,0,#% increased Effect of your Curses,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Effect of your Curses,179
+1,1.5,,0,Regenerate #% of Energy Shield per second,,Regenerate ([+-]?([0-9]*[.])?[0-9]+)% of Energy Shield per second,180
+2,3,,0,Regenerate #% of Energy Shield per second,,Regenerate ([+-]?([0-9]*[.])?[0-9]+)% of Energy Shield per second,181
+10,19,,0,#% chance to Hinder Enemies on Hit with Spells,,([+-]?([0-9]*[.])?[0-9]+)% chance to Hinder Enemies on Hit with Spells,182
+20,30,,0,#% chance to Hinder Enemies on Hit with Spells,,([+-]?([0-9]*[.])?[0-9]+)% chance to Hinder Enemies on Hit with Spells,183
+10,19,,0,Minions have #% chance to gain Unholy Might for 4 seconds on Kill,,Minions have ([+-]?([0-9]*[.])?[0-9]+)% chance to gain Unholy Might for 4 seconds on Kill,184
+20,30,,0,Minions have #% chance to gain Unholy Might for 4 seconds on Kill,,Minions have ([+-]?([0-9]*[.])?[0-9]+)% chance to gain Unholy Might for 4 seconds on Kill,185
+15,20,,0,Your Offerings have #% increased Effect on you,,Your Offerings have ([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Effect on you,186
+21,30,,0,Your Offerings have #% increased Effect on you,,Your Offerings have ([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Effect on you,187
+2,3,,0,Regenerate #% of Mana over 2 seconds when you Consume a corpse,,Regenerate ([+-]?([0-9]*[.])?[0-9]+)% of Mana over 2 seconds when you Consume a corpse,188
+4,5,,0,Regenerate #% of Mana over 2 seconds when you Consume a corpse,,Regenerate ([+-]?([0-9]*[.])?[0-9]+)% of Mana over 2 seconds when you Consume a corpse,189
+2,3,,0,Regenerate #% of Energy Shield over 2 seconds when you Consume a corpse,,Regenerate ([+-]?([0-9]*[.])?[0-9]+)% of Energy Shield over 2 seconds when you Consume a corpse,190
+4,5,,0,Regenerate #% of Energy Shield over 2 seconds when you Consume a corpse,,Regenerate ([+-]?([0-9]*[.])?[0-9]+)% of Energy Shield over 2 seconds when you Consume a corpse,191
+10,14,,0,You and nearby Allies have +#% to Elemental Resistances,,You and nearby Allies have (\+|\-)([+-]?([0-9]*[.])?[0-9]+)% to Elemental Resistances,192
+15,20,,0,You and nearby Allies have +#% to Elemental Resistances,,You and nearby Allies have (\+|\-)([+-]?([0-9]*[.])?[0-9]+)% to Elemental Resistances,193
+3,5,,0,Minions gain Added Physical Damage equal to #% of Maximum Energy Shield on your Equipped Helmet,,Minions gain Added Physical Damage equal to ([+-]?([0-9]*[.])?[0-9]+)% of Maximum Energy Shield on your Equipped Helmet,194
+6,10,,0,Minions gain Added Physical Damage equal to #% of Maximum Energy Shield on your Equipped Helmet,,Minions gain Added Physical Damage equal to ([+-]?([0-9]*[.])?[0-9]+)% of Maximum Energy Shield on your Equipped Helmet,195
+5,10,,0,Corpses you Spawn have #% increased Maximum Life,,Corpses you Spawn have ([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Maximum Life,196
+11,20,,0,Corpses you Spawn have #% increased Maximum Life,,Corpses you Spawn have ([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Maximum Life,197
+5,8,,0,Minions have #% additional Physical Damage Reduction,,Minions have ([+-]?([0-9]*[.])?[0-9]+)% additional Physical Damage Reduction,198
+9,12,,0,Minions have #% additional Physical Damage Reduction,,Minions have ([+-]?([0-9]*[.])?[0-9]+)% additional Physical Damage Reduction,199
+10,15,,0,#% chance to gain a Power Charge on Critical Strike,,([+-]?([0-9]*[.])?[0-9]+)% chance to gain a Power Charge on Critical Strike,200
+16,25,,0,#% chance to gain a Power Charge on Critical Strike,,([+-]?([0-9]*[.])?[0-9]+)% chance to gain a Power Charge on Critical Strike,201
+2,3,,0,+#% to Critical Strike Multiplier per Power Charge,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+)% to Critical Strike Multiplier per Power Charge,202
+4,5,,0,+#% to Critical Strike Multiplier per Power Charge,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+)% to Critical Strike Multiplier per Power Charge,203
+0.4,0.6,,0,+#% Critical Strike Chance while at maximum Power Charges,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+)% Critical Strike Chance while at maximum Power Charges,204
+0.61,1,,0,+#% Critical Strike Chance while at maximum Power Charges,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+)% Critical Strike Chance while at maximum Power Charges,205
+80,120,,0,#% increased Critical Strike Chance against Enemies on Full Life,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Critical Strike Chance against Enemies on Full Life,206
+130,160,,0,#% increased Critical Strike Chance against Enemies on Full Life,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Critical Strike Chance against Enemies on Full Life,207
+10,15,,0,#% increased Elusive Effect,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Elusive Effect,208
+16,25,,0,#% increased Elusive Effect,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Elusive Effect,209
+1,2,,0,"#% increased Poison Duration for each Poison you have inflicted Recently, up to a maximum of 100%",,"([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Poison Duration for each Poison you have inflicted Recently, up to a maximum of 100%",210
+5,10,,0,#% Global chance to Blind Enemies on hit,,([+-]?([0-9]*[.])?[0-9]+)% Global chance to Blind Enemies on hit,211
+11,15,,0,#% Global chance to Blind Enemies on hit,,([+-]?([0-9]*[.])?[0-9]+)% Global chance to Blind Enemies on hit,212
+20,30,,0,#% increased Effect of Auras from Mines,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Effect of Auras from Mines,213
+31,50,,0,#% increased Effect of Auras from Mines,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Effect of Auras from Mines,214
+5,6,,0,#% chance to take 50% less Area Damage from Hits,,([+-]?([0-9]*[.])?[0-9]+)% chance to take 50% less Area Damage from Hits,215
+7,10,,0,#% chance to take 50% less Area Damage from Hits,,([+-]?([0-9]*[.])?[0-9]+)% chance to take 50% less Area Damage from Hits,216
+5,6,,0,Hits have #% chance to deal 50% more Area Damage,,Hits have ([+-]?([0-9]*[.])?[0-9]+)% chance to deal 50% more Area Damage,217
+7,10,,0,Hits have #% chance to deal 50% more Area Damage,,Hits have ([+-]?([0-9]*[.])?[0-9]+)% chance to deal 50% more Area Damage,218
+5,8,,0,#% increased Cooldown Recovery Rate,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Cooldown Recovery Rate,219
+9,12,,0,#% increased Cooldown Recovery Rate,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Cooldown Recovery Rate,220
+2,3,,0,#% chance to throw up to 4 additional Traps,,([+-]?([0-9]*[.])?[0-9]+)% chance to throw up to 4 additional Traps,221
+4,5,,0,#% chance to throw up to 4 additional Traps,,([+-]?([0-9]*[.])?[0-9]+)% chance to throw up to 4 additional Traps,222
+10,15,,0,+#% to Critical Strike Multiplier against Burning Enemies,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+)% to Critical Strike Multiplier against Burning Enemies,223
+20,30,,0,#% increased Critical Strike Chance against Shocked Enemies,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Critical Strike Chance against Shocked Enemies,224
+16,25,,0,+#% to Critical Strike Multiplier against Burning Enemies,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+)% to Critical Strike Multiplier against Burning Enemies,225
+31,50,,0,#% increased Critical Strike Chance against Shocked Enemies,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Critical Strike Chance against Shocked Enemies,226
+40,60,,0,#% increased Charge Duration,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Charge Duration,227
+61,100,,0,#% increased Charge Duration,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Charge Duration,228
+5,8,,0,#% chance for Energy Shield Recharge to start when you Suppress Spell Damage,,([+-]?([0-9]*[.])?[0-9]+)% chance for Energy Shield Recharge to start when you Suppress Spell Damage,229
+9,12,,0,#% chance for Energy Shield Recharge to start when you Suppress Spell Damage,,([+-]?([0-9]*[.])?[0-9]+)% chance for Energy Shield Recharge to start when you Suppress Spell Damage,230
+7,13,,0,#% chance to gain 25% of Non-Chaos Damage with Hits as Extra Chaos Damage,,([+-]?([0-9]*[.])?[0-9]+)% chance to gain 25% of Non-Chaos Damage with Hits as Extra Chaos Damage,231
+17,23,,0,#% chance to gain 25% of Non-Chaos Damage with Hits as Extra Chaos Damage,,([+-]?([0-9]*[.])?[0-9]+)% chance to gain 25% of Non-Chaos Damage with Hits as Extra Chaos Damage,232
+1,2,,0,+# to Evasion Rating per 1 Maximum Energy Shield on Equipped Helmet,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+) to Evasion Rating per 1 Maximum Energy Shield on Equipped Helmet,233
+3,4,,0,+# to Evasion Rating per 1 Maximum Energy Shield on Equipped Helmet,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+) to Evasion Rating per 1 Maximum Energy Shield on Equipped Helmet,234
+3,4,,0,Prevent +#% of Suppressed Spell Damage while on Full Energy Shield,,Prevent (\+|\-)([+-]?([0-9]*[.])?[0-9]+)% of Suppressed Spell Damage while on Full Energy Shield,235
+5,6,,0,Prevent +#% of Suppressed Spell Damage while on Full Energy Shield,,Prevent (\+|\-)([+-]?([0-9]*[.])?[0-9]+)% of Suppressed Spell Damage while on Full Energy Shield,236
+0.5,1,,0,#% of Damage Leeched as Energy Shield,,([+-]?([0-9]*[.])?[0-9]+)% of Damage Leeched as Energy Shield,237
+1.1,2,,0,#% of Damage Leeched as Energy Shield,,([+-]?([0-9]*[.])?[0-9]+)% of Damage Leeched as Energy Shield,238
+4,6,,0,#% chance to Recover 10% of Mana when you use a Skill,,([+-]?([0-9]*[.])?[0-9]+)% chance to Recover 10% of Mana when you use a Skill,239
+7,10,,0,#% chance to Recover 10% of Mana when you use a Skill,,([+-]?([0-9]*[.])?[0-9]+)% chance to Recover 10% of Mana when you use a Skill,240
+10,15,,0,#% increased Effect of your Marks,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Effect of your Marks,241
+16,25,,0,#% increased Effect of your Marks,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Effect of your Marks,242
+7,13,,0,Projectiles have #% chance to be able to Chain when colliding with terrain,,Projectiles have ([+-]?([0-9]*[.])?[0-9]+)% chance to be able to Chain when colliding with terrain,243
+14,20,,0,Projectiles have #% chance to be able to Chain when colliding with terrain,,Projectiles have ([+-]?([0-9]*[.])?[0-9]+)% chance to be able to Chain when colliding with terrain,244
+30,50,,0,#% increased Mirage Archer Duration,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Mirage Archer Duration,245
+51,100,,0,#% increased Mirage Archer Duration,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Mirage Archer Duration,246
+25,40,,0,"Projectiles gain Damage as they travel farther, dealing up to #% increased Damage with Hits to targets",,"Projectiles gain Damage as they travel farther, dealing up to ([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Damage with Hits to targets",247
+41,60,,0,"Projectiles gain Damage as they travel farther, dealing up to #% increased Damage with Hits to targets",,"Projectiles gain Damage as they travel farther, dealing up to ([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Damage with Hits to targets",248
+6,10,,0,Gain # Life per Bleeding Enemy Hit,,Gain ([+-]?([0-9]*[.])?[0-9]+) Life per Bleeding Enemy Hit,249
+11,20,,0,Gain # Life per Bleeding Enemy Hit,,Gain ([+-]?([0-9]*[.])?[0-9]+) Life per Bleeding Enemy Hit,250
+7,13,,0,#% increased Accuracy Rating if you've dealt a Critical Strike in the past 8 seconds,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Accuracy Rating if you've dealt a Critical Strike in the past 8 seconds,251
+14,20,,0,#% increased Accuracy Rating if you've dealt a Critical Strike in the past 8 seconds,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Accuracy Rating if you've dealt a Critical Strike in the past 8 seconds,252
+15,25,,0,#% increased Effect of Onslaught on you,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Effect of Onslaught on you,253
+26,40,,0,#% increased Effect of Onslaught on you,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Effect of Onslaught on you,254
+10,15,,0,#% chance to gain Phasing for 4 seconds on Kill,,([+-]?([0-9]*[.])?[0-9]+)% chance to gain Phasing for 4 seconds on Kill,255
+16,25,,0,#% chance to gain Phasing for 4 seconds on Kill,,([+-]?([0-9]*[.])?[0-9]+)% chance to gain Phasing for 4 seconds on Kill,256
+5,9,,0,+#% chance to Suppress Spell Damage,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+)% chance to Suppress Spell Damage,257
+10,15,,0,+#% chance to Suppress Spell Damage,,(\+|\-)([+-]?([0-9]*[.])?[0-9]+)% chance to Suppress Spell Damage,258
+10,15,,0,#% chance to Avoid Elemental Ailments while Phasing,,([+-]?([0-9]*[.])?[0-9]+)% chance to Avoid Elemental Ailments while Phasing,259
+16,25,,0,#% chance to Avoid Elemental Ailments while Phasing,,([+-]?([0-9]*[.])?[0-9]+)% chance to Avoid Elemental Ailments while Phasing,260
+10,15,,0,#% chance to gain Onslaught for 4 seconds on Kill,,([+-]?([0-9]*[.])?[0-9]+)% chance to gain Onslaught for 4 seconds on Kill,261
+16,25,,0,#% chance to gain Onslaught for 4 seconds on Kill,,([+-]?([0-9]*[.])?[0-9]+)% chance to gain Onslaught for 4 seconds on Kill,262
+3,5,,0,#% increased Evasion Rating per Frenzy Charge,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Evasion Rating per Frenzy Charge,263
+6,9,,0,#% increased Evasion Rating per Frenzy Charge,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Evasion Rating per Frenzy Charge,264
+3,5,,0,#% chance to gain a Frenzy Charge on Hit,,([+-]?([0-9]*[.])?[0-9]+)% chance to gain a Frenzy Charge on Hit,265
+6,8,,0,#% chance to gain a Frenzy Charge on Hit,,([+-]?([0-9]*[.])?[0-9]+)% chance to gain a Frenzy Charge on Hit,266
+6,10,,0,Magic Utility Flasks applied to you have #% increased Effect,,Magic Utility Flasks applied to you have ([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Effect,267
+11,15,,0,Magic Utility Flasks applied to you have #% increased Effect,,Magic Utility Flasks applied to you have ([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Effect,268
+6,10,,0,#% chance to inflict Withered for 2 seconds on Hit,,([+-]?([0-9]*[.])?[0-9]+)% chance to inflict Withered for 2 seconds on Hit,269
+11,15,,0,#% chance to inflict Withered for 2 seconds on Hit,,([+-]?([0-9]*[.])?[0-9]+)% chance to inflict Withered for 2 seconds on Hit,270
+2,3,,0,Recover #% of Life when you use a Flask,,Recover ([+-]?([0-9]*[.])?[0-9]+)% of Life when you use a Flask,271
+4,5,,0,Recover #% of Life when you use a Flask,,Recover ([+-]?([0-9]*[.])?[0-9]+)% of Life when you use a Flask,272
+7,13,,0,#% increased Effect of Withered,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Effect of Withered,273
+14,20,,0,#% increased Effect of Withered,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Effect of Withered,274
+15,25,,0,Enemies you Kill that are affected by Elemental Ailments grant #% increased Flask Charges,,Enemies you Kill that are affected by Elemental Ailments grant ([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Flask Charges,275
+26,40,,0,Enemies you Kill that are affected by Elemental Ailments grant #% increased Flask Charges,,Enemies you Kill that are affected by Elemental Ailments grant ([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Flask Charges,276
+5,8,,0,Gain #% of Physical Damage as Extra Damage of a random Element,,Gain ([+-]?([0-9]*[.])?[0-9]+)% of Physical Damage as Extra Damage of a random Element,277
+9,12,,0,Gain #% of Physical Damage as Extra Damage of a random Element,,Gain ([+-]?([0-9]*[.])?[0-9]+)% of Physical Damage as Extra Damage of a random Element,278
+,,,0,Movement Speed cannot be modified to below base value,True,,279
+,,,0,"2% of Armour applies to Fire, Cold and Lightning Damage taken from Hits",True,,280
+,,,0,"3% of Armour applies to Fire, Cold and Lightning Damage taken from Hits",True,,281
+,,,0,Totems Taunt Enemies around them for 2 seconds when Summoned,True,,282
+,,,0,"Enemies you or your Totems Kill have 1% chance to Explode, dealing 500% of their maximum Life as Fire Damage",True,,283
+,,,0,+1% to maximum Fire Resistance,True,,284
+,,,0,+2% to maximum Fire Resistance,True,,285
+,,,0,Cannot be Stunned while you have at least 25 Rage,True,,286
+,,,0,1% of Attack Damage Leeched as Life and Mana if you've Killed Recently,True,,287
+,,,0,2% of Attack Damage Leeched as Life and Mana if you've Killed Recently,True,,288
+,,,0,Cannot be Stunned while Fortified,True,,289
+,,,0,Banner Skills have no Reservation,True,,290
+,,,0,Gain Adrenaline for 4 seconds when you reach Low Life,True,,291
+,,,0,Impales you inflict last 1 additional Hit,True,,292
+,,,0,Cannot be Stunned by Hits you Block,True,,293
+,,,0,+3% to maximum Chance to Block Attack Damage,True,,294
+,,,0,Hits ignore Enemy Monster Physical Damage Reduction if you've Blocked in the past 20 seconds,True,,295
+,,,0,Cannot take Reflected Physical Damage,True,,296
+,,,0,Cannot be Stunned while Leeching,True,,297
+,,,0,You are Unaffected by Bleeding while Leeching,True,,298
+,,,0,Culling Strike,True,,299
+,,,0,Effects of Consecrated Ground you create Linger for 2 seconds,True,,300
+,,,0,3% of Damage is taken from Mana before Life,True,,301
+,,,0,Gain Arcane Surge when you or your Totems Hit an Enemy with a Spell,True,,302
+,,,0,3% of Damage from Hits is taken from your nearest Totem's Life before you,True,,303
+,,,0,+1 to Minimum Endurance Charges,True,,304
+,,,0,+1 to Minimum Power Charges,True,,305
+,,,0,"Every 4 seconds, remove Curses and Elemental Ailments from you",True,,306
+,,,0,Enemies in your Link Beams cannot apply Elemental Ailments,True,,307
+,,,0,"Every 4 seconds, Regenerate 10% of Life over one second",True,,308
+,,,0,"Every 4 seconds, Regenerate 20% of Life over one second",True,,309
+,,,0,"Nearby Enemies cannot gain Power, Frenzy or Endurance Charges",True,,310
+,,,0,"While there are at least five nearby Allies, you and nearby Allies have Onslaught",True,,311
+,,,0,All Damage can Ignite,True,,312
+,,,0,Cannot take Reflected Elemental Damage,True,,313
+,,,0,Your Hexes can affect Hexproof Enemies,True,,314
+,,,0,4% increased Area of Effect per Power Charge,True,,315
+,,,0,Nearby Enemies are Chilled,True,,316
+,,,0,Critical Strikes have Culling Strike,True,,317
+,,,0,Damage from your Critical Strikes cannot be Reflected,True,,318
+,,,0,You take no Extra Damage from Critical Strikes while Elusive,True,,319
+,,,0,"3% increased Poison Duration for each Poison you have inflicted Recently, up to a maximum of 100%",True,,320
+,,,0,Cannot be Blinded,True,,321
+,,,0,Recover 1% of Life on Kill,True,,322
+,,,0,Recover 1% of Energy Shield on Kill,True,,323
+,,,0,Recover 1% of Mana on Kill,True,,324
+,,,0,Recover 2% of Life on Kill,True,,325
+,,,0,Recover 2% of Energy Shield on Kill,True,,326
+,,,0,Recover 2% of Mana on Kill,True,,327
+,,,0,Projectile Barrages have no spread,True,,328
+,,,0,Skills fire an additional Projectile,True,,329
+,,,0,2% increased Movement Speed per Frenzy Charge,True,,330
+,,,0,Flasks gain a Charge every 3 seconds,True,,331
+,,,0,Removes Bleeding when you use a Flask,True,,332
