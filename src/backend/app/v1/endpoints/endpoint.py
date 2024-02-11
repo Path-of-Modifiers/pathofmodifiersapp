@@ -1,0 +1,1 @@
+# Setup router endpoints for v1 api here
