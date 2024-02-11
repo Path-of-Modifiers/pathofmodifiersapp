@@ -1,0 +1,431 @@
+minRoll,maxRoll,textRolls,position,effect,static,regex
+500,8000,,0,Denoted service of # dekhara in the akhara of # Passives in radius are Conquered by the Maraketh,,Denoted service of (\d+) dekhara in the akhara of (Balbala|Asenath|Nasima) Passives in radius are Conquered by the Maraketh
+,,Balbala-Asenath-Nasima,1,Denoted service of # dekhara in the akhara of # Passives in radius are Conquered by the Maraketh,,Denoted service of (\d+) dekhara in the akhara of (Balbala|Asenath|Nasima) Passives in radius are Conquered by the Maraketh
+2000,160000,,0,Commissioned # coins to commemorate # Passives in radius are Conquered by the Eternal Empire,,Commissioned (\d+) coins to commemorate (Cadiro|Victario|Caspiro) Passives in radius are Conquered by the Eternal Empire
+,,Cadiro-Victario-Caspiro,1,Commissioned # coins to commemorate # Passives in radius are Conquered by the Eternal Empire,,Commissioned (\d+) coins to commemorate (Cadiro|Victario|Caspiro) Passives in radius are Conquered by the Eternal Empire
+,,"Ambush and Assassinate-Deadly Infusion-Mistwalker-Noxious Strike-Opportunistic-Toxic Delivery-Unstable Infusion-Aspect of Carnage-Blitz-Crave the Slaughter-Defy Pain-Flawless Savagery-Rite of Ruin-War Bringer-Conqueror-First to Strike, Last to Fall-Fortitude-Inspirational-Master of Metal-Unstoppable Hero-Worthy Foe-Arohongui, Moon's Presence-Hinekora, Death's Fury-Ngamahu, Flame's Advance-Ramako, Sun's Light-Tasalio, Cleansing Water-Tawhoa, Forest's Strength-Tukohama, War's Herald-Valako, Storm's Embrace-Endless Munitions-Far Shot-Focal Point-Gathering Winds-Occupying Force-Ricochet-Rupturing-Wind Ward-Bastion of Elements-Elemancer-Heart of Destruction-Liege of the Primordial-Mastermind of Discord-Shaper of Flames-Shaper of Storms-Shaper of Winter-Arena Challenger-Blood in the Eyes-Gratuitous Violence-Outmatch and Outlast-Painforged-Reigning Veteran-Violent Retaliation-Bastion of Hope-Harmony of Purpose-Radiant Crusade-Radiant Faith-Time of Need-Unwavering Crusade-Unwavering Faith-Arcane Blessing-Conviction of Power-Divine Guidance-Illuminated Devotion-Pursuit of Faith-Ritual of Awakening-Sanctuary of Thought-Sign of Purpose-Augury of Penitence-Inevitable Judgement-Instruments of Virtue-Instruments of Zeal-Pious Path-Righteous Providence-Sanctuary-Unbreakable-Undeniable-Unflinching-Unrelenting-Unstoppable-Untiring-Unyielding-Bone Barrier-Commander of Darkness-Corpse Pact-Essence Glutton-Mindless Aggression-Mistress of Sacrifice-Plaguebringer-Unnatural Strength-Forbidden Power-Frigid Wake-Profane Bloom-Unholy Authority-Vile Bastion-Void Beacon-Withering Presence-Master Alchemist-Master Distiller-Master Surgeon-Master Toxicist-Nature's Adrenaline-Nature's Boon-Nature's Reprisal-Avatar of the Chase-Avatar of the Slaughter-Avatar of the Veil-Quartz Infusion-Rapid Assault-Way of the Poacher-Bomb Specialist-Born in the Shadows-Chain Reaction-Demolitions Specialist-Explosives Expert-Like Clockwork-Perfect Crime-Pyromaniac-Harness the Void-Bane of Legends-Brutal Fervour-Endless Hunger-Headsman-Impact-Masterful Form-Overwhelm-Escape Artist-Heartstopper-One Step Ahead-Polymath-Soul Drinker-Spellbreaker-Swift Killer-Nine Lives-Searing Purity-Indomitable Resolve-Fatal Flourish-Fury of Nature-Unleashed Potential-Assassin-Trikster-Saboteur-Raider-Pathfinder-Deadeye-Gladiator-Champion-Slayer-Juggernaut-Chieftain-Berserker-Hierophant-Guardian-Inquisitor-Occultist-Necromancer-Elementalist",0,Allocates # if you have the matching modifier on Forbidden Flesh,,"Allocates (Ambush and Assassinate|Deadly Infusion|Mistwalker|Noxious Strike|Opportunistic|Toxic Delivery|Unstable Infusion|Aspect of Carnage|Blitz|Crave the Slaughter|Defy Pain|Flawless Savagery|Rite of Ruin|War Bringer|Conqueror|First to Strike, Last to Fall|Fortitude|Inspirational|Master of Metal|Unstoppable Hero|Worthy Foe|Arohongui, Moon's Presence|Hinekora, Death's Fury|Ngamahu, Flame's Advance|Ramako, Sun's Light|Tasalio, Cleansing Water|Tawhoa, Forest's Strength|Tukohama, War's Herald|Valako, Storm's Embrace|Endless Munitions|Far Shot|Focal Point|Gathering Winds|Occupying Force|Ricochet|Rupturing|Wind Ward|Bastion of Elements|Elemancer|Heart of Destruction|Liege of the Primordial|Mastermind of Discord|Shaper of Flames|Shaper of Storms|Shaper of Winter|Arena Challenger|Blood in the Eyes|Gratuitous Violence|Outmatch and Outlast|Painforged|Reigning Veteran|Violent Retaliation|Bastion of Hope|Harmony of Purpose|Radiant Crusade|Radiant Faith|Time of Need|Unwavering Crusade|Unwavering Faith|Arcane Blessing|Conviction of Power|Divine Guidance|Illuminated Devotion|Pursuit of Faith|Ritual of Awakening|Sanctuary of Thought|Sign of Purpose|Augury of Penitence|Inevitable Judgement|Instruments of Virtue|Instruments of Zeal|Pious Path|Righteous Providence|Sanctuary|Unbreakable|Undeniable|Unflinching|Unrelenting|Unstoppable|Untiring|Unyielding|Bone Barrier|Commander of Darkness|Corpse Pact|Essence Glutton|Mindless Aggression|Mistress of Sacrifice|Plaguebringer|Unnatural Strength|Forbidden Power|Frigid Wake|Profane Bloom|Unholy Authority|Vile Bastion|Void Beacon|Withering Presence|Master Alchemist|Master Distiller|Master Surgeon|Master Toxicist|Nature's Adrenaline|Nature's Boon|Nature's Reprisal|Avatar of the Chase|Avatar of the Slaughter|Avatar of the Veil|Quartz Infusion|Rapid Assault|Way of the Poacher|Bomb Specialist|Born in the Shadows|Chain Reaction|Demolitions Specialist|Explosives Expert|Like Clockwork|Perfect Crime|Pyromaniac|Harness the Void|Bane of Legends|Brutal Fervour|Endless Hunger|Headsman|Impact|Masterful Form|Overwhelm|Escape Artist|Heartstopper|One Step Ahead|Polymath|Soul Drinker|Spellbreaker|Swift Killer|Nine Lives|Searing Purity|Indomitable Resolve|Fatal Flourish|Fury of Nature|Unleashed Potential|Assassin|Trikster|Saboteur|Raider|Pathfinder|Deadeye|Gladiator|Champion|Slayer|Juggernaut|Chieftain|Berserker|Hierophant|Guardian|Inquisitor|Occultist|Necromancer|Elementalist) if you have the matching modifier on Forbidden Flesh"
+,,"Ambush and Assassinate-Deadly Infusion-Mistwalker-Noxious Strike-Opportunistic-Toxic Delivery-Unstable Infusion-Aspect of Carnage-Blitz-Crave the Slaughter-Defy Pain-Flawless Savagery-Rite of Ruin-War Bringer-Conqueror-First to Strike, Last to Fall-Fortitude-Inspirational-Master of Metal-Unstoppable Hero-Worthy Foe-Arohongui, Moon's Presence-Hinekora, Death's Fury-Ngamahu, Flame's Advance-Ramako, Sun's Light-Tasalio, Cleansing Water-Tawhoa, Forest's Strength-Tukohama, War's Herald-Valako, Storm's Embrace-Endless Munitions-Far Shot-Focal Point-Gathering Winds-Occupying Force-Ricochet-Rupturing-Wind Ward-Bastion of Elements-Elemancer-Heart of Destruction-Liege of the Primordial-Mastermind of Discord-Shaper of Flames-Shaper of Storms-Shaper of Winter-Arena Challenger-Blood in the Eyes-Gratuitous Violence-Outmatch and Outlast-Painforged-Reigning Veteran-Violent Retaliation-Bastion of Hope-Harmony of Purpose-Radiant Crusade-Radiant Faith-Time of Need-Unwavering Crusade-Unwavering Faith-Arcane Blessing-Conviction of Power-Divine Guidance-Illuminated Devotion-Pursuit of Faith-Ritual of Awakening-Sanctuary of Thought-Sign of Purpose-Augury of Penitence-Inevitable Judgement-Instruments of Virtue-Instruments of Zeal-Pious Path-Righteous Providence-Sanctuary-Unbreakable-Undeniable-Unflinching-Unrelenting-Unstoppable-Untiring-Unyielding-Bone Barrier-Commander of Darkness-Corpse Pact-Essence Glutton-Mindless Aggression-Mistress of Sacrifice-Plaguebringer-Unnatural Strength-Forbidden Power-Frigid Wake-Profane Bloom-Unholy Authority-Vile Bastion-Void Beacon-Withering Presence-Master Alchemist-Master Distiller-Master Surgeon-Master Toxicist-Nature's Adrenaline-Nature's Boon-Nature's Reprisal-Avatar of the Chase-Avatar of the Slaughter-Avatar of the Veil-Quartz Infusion-Rapid Assault-Way of the Poacher-Bomb Specialist-Born in the Shadows-Chain Reaction-Demolitions Specialist-Explosives Expert-Like Clockwork-Perfect Crime-Pyromaniac-Harness the Void-Bane of Legends-Brutal Fervour-Endless Hunger-Headsman-Impact-Masterful Form-Overwhelm-Escape Artist-Heartstopper-One Step Ahead-Polymath-Soul Drinker-Spellbreaker-Swift Killer-Nine Lives-Searing Purity-Indomitable Resolve-Fatal Flourish-Fury of Nature-Unleashed Potential-Assassin-Trikster-Saboteur-Raider-Pathfinder-Deadeye-Gladiator-Champion-Slayer-Juggernaut-Chieftain-Berserker-Hierophant-Guardian-Inquisitor-Occultist-Necromancer-Elementalist",0,Allocates # if you have the matching modifier on Forbidden Flame,,"Allocates (Ambush and Assassinate|Deadly Infusion|Mistwalker|Noxious Strike|Opportunistic|Toxic Delivery|Unstable Infusion|Aspect of Carnage|Blitz|Crave the Slaughter|Defy Pain|Flawless Savagery|Rite of Ruin|War Bringer|Conqueror|First to Strike, Last to Fall|Fortitude|Inspirational|Master of Metal|Unstoppable Hero|Worthy Foe|Arohongui, Moon's Presence|Hinekora, Death's Fury|Ngamahu, Flame's Advance|Ramako, Sun's Light|Tasalio, Cleansing Water|Tawhoa, Forest's Strength|Tukohama, War's Herald|Valako, Storm's Embrace|Endless Munitions|Far Shot|Focal Point|Gathering Winds|Occupying Force|Ricochet|Rupturing|Wind Ward|Bastion of Elements|Elemancer|Heart of Destruction|Liege of the Primordial|Mastermind of Discord|Shaper of Flames|Shaper of Storms|Shaper of Winter|Arena Challenger|Blood in the Eyes|Gratuitous Violence|Outmatch and Outlast|Painforged|Reigning Veteran|Violent Retaliation|Bastion of Hope|Harmony of Purpose|Radiant Crusade|Radiant Faith|Time of Need|Unwavering Crusade|Unwavering Faith|Arcane Blessing|Conviction of Power|Divine Guidance|Illuminated Devotion|Pursuit of Faith|Ritual of Awakening|Sanctuary of Thought|Sign of Purpose|Augury of Penitence|Inevitable Judgement|Instruments of Virtue|Instruments of Zeal|Pious Path|Righteous Providence|Sanctuary|Unbreakable|Undeniable|Unflinching|Unrelenting|Unstoppable|Untiring|Unyielding|Bone Barrier|Commander of Darkness|Corpse Pact|Essence Glutton|Mindless Aggression|Mistress of Sacrifice|Plaguebringer|Unnatural Strength|Forbidden Power|Frigid Wake|Profane Bloom|Unholy Authority|Vile Bastion|Void Beacon|Withering Presence|Master Alchemist|Master Distiller|Master Surgeon|Master Toxicist|Nature's Adrenaline|Nature's Boon|Nature's Reprisal|Avatar of the Chase|Avatar of the Slaughter|Avatar of the Veil|Quartz Infusion|Rapid Assault|Way of the Poacher|Bomb Specialist|Born in the Shadows|Chain Reaction|Demolitions Specialist|Explosives Expert|Like Clockwork|Perfect Crime|Pyromaniac|Harness the Void|Bane of Legends|Brutal Fervour|Endless Hunger|Headsman|Impact|Masterful Form|Overwhelm|Escape Artist|Heartstopper|One Step Ahead|Polymath|Soul Drinker|Spellbreaker|Swift Killer|Nine Lives|Searing Purity|Indomitable Resolve|Fatal Flourish|Fury of Nature|Unleashed Potential|Assassin|Trikster|Saboteur|Raider|Pathfinder|Deadeye|Gladiator|Champion|Slayer|Juggernaut|Chieftain|Berserker|Hierophant|Guardian|Inquisitor|Occultist|Necromancer|Elementalist) if you have the matching modifier on Forbidden Flame"
+100,8000,,0,Bathed in the blood of # sacrificed in the name of # Passives in radius are Conquered by the Vaal,,Bathed in the blood of (\d+) sacrificed in the name of (Xibaqua|Ahuana|Doryani) Passives in radius are Conquered by the Vaal
+,,Xibaqua-Ahuana-Doryani,1,Bathed in the blood of # sacrificed in the name of # Passives in radius are Conquered by the Vaal,,Bathed in the blood of (\d+) sacrificed in the name of (Xibaqua|Ahuana|Doryani) Passives in radius are Conquered by the Vaal
+,,Divine Shield-Resolute Technique-The Agnostic-Ancestral Bond-Blood Magic-Zealot's Oath-Glancing Blows-Avatar of Fire-Runebinder-Call to Arms-Imbalanced Guard-Eternal Youth-Elemental Overload-Mind Over Matter-The Impaler-Unwavering Stance-Crimson Dance-Iron Will-Iron Reflexes-Iron Grip-Necromantic Aegis-Solipsism-Magebane-Hex Master-Minion Instability-Versatile Combatant-Conduit-Vaal Pact-Wicked Ward-Elemental Equilibrium-Pain Attunement-Eldritch Battery-Supreme Ego-Precise Technique-Point Blank-Wind Dancer-Chaos Inoculation-Lethe Shade-Arrow Dancing-Ghost Dance-Ghost Reaver-Perfect Agony-Acrobatics,0,Passives in Radius of # can be Allocated without being connected to your tree,,Passives in Radius of (Divine Shield|Resolute Technique|The Agnostic|Ancestral Bond|Blood Magic|Zealot's Oath|Glancing Blows|Avatar of Fire|Runebinder|Call to Arms|Imbalanced Guard|Eternal Youth|Elemental Overload|Mind Over Matter|The Impaler|Unwavering Stance|Crimson Dance|Iron Will|Iron Reflexes|Iron Grip|Necromantic Aegis|Solipsism|Magebane|Hex Master|Minion Instability|Versatile Combatant|Conduit|Vaal Pact|Wicked Ward|Elemental Equilibrium|Pain Attunement|Eldritch Battery|Supreme Ego|Precise Technique|Point Blank|Wind Dancer|Chaos Inoculation|Lethe Shade|Arrow Dancing|Ghost Dance|Ghost Reaver|Perfect Agony|Acrobatics) can be Allocated without being connected to your tree
+10000,18000,,0,Commanded leadership over # warriors under # Passives in radius are Conquered by the Karui,,Commanded leadership over (\d+) warriors under (Kaom|Rakiata|Akoya) Passives in radius are Conquered by the Karui
+,,Kaom-Rakiata-Akoya,1,Commanded leadership over # warriors under # Passives in radius are Conquered by the Karui,,Commanded leadership over (\d+) warriors under (Kaom|Rakiata|Akoya) Passives in radius are Conquered by the Karui
+2000,10000,,0,Carved to glorify # new faithful converted by High Templar # Passives in radius are Conquered by the Templars,,Carved to glorify (\d+) new faithful converted by High Templar (Maxarius|Dominus|Avarius) Passives in radius are Conquered by the Templars
+,,Maxarius-Dominus-Avarius,1,Carved to glorify # new faithful converted by High Templar # Passives in radius are Conquered by the Templars,,Carved to glorify (\d+) new faithful converted by High Templar (Maxarius|Dominus|Avarius) Passives in radius are Conquered by the Templars
+20,40,,0,Auras from your Skills have #% increased Effect on you,,Auras from your Skills have (\d+)% (increased|reduced) Effect on you
+20,40,,0,#% increased Effect of Non-Curse Auras from your Skills on Enemies,,(\d+)% (increased|reduced) Effect of Non-Curse Auras from your Skills on Enemies
+10,19,,0,#% chance to gain an Endurance Charge when you Stun an Enemy,,(\d+)% chance to gain an Endurance Charge when you Stun an Enemy
+20,30,,0,#% chance to gain an Endurance Charge when you Stun an Enemy,,(\d+)% chance to gain an Endurance Charge when you Stun an Enemy
+3,4,,0,#% increased Area of Effect per Endurance Charge,,(\d+)% (increased|reduced) Area of Effect per Endurance Charge
+5,6,,0,#% increased Area of Effect per Endurance Charge,,(\d+)% (increased|reduced) Area of Effect per Endurance Charge
+10,19,,0,#% chance to gain an Endurance Charge when you are Hit,,(\d+)% chance to gain an Endurance Charge when you are Hit
+20,30,,0,#% chance to gain an Endurance Charge when you are Hit,,(\d+)% chance to gain an Endurance Charge when you are Hit
+2,3,,0,+#% to Chaos Resistance per Endurance Charge,,(\+|\-)(\d+)% to Chaos Resistance per Endurance Charge
+4,5,,0,+#% to Chaos Resistance per Endurance Charge,,(\+|\-)(\d+)% to Chaos Resistance per Endurance Charge
+10,15,,0,#% increased Life Regeneration rate,,(\d+)% (increased|reduced) Life Regeneration rate
+16,20,,0,#% increased Life Regeneration rate,,(\d+)% (increased|reduced) Life Regeneration rate
+5,7,,0,Recoup #% of Damage Taken by your Totems as Life,,Recoup (\d+)% of Damage Taken by your Totems as Life
+8,12,,0,Recoup #% of Damage Taken by your Totems as Life,,Recoup (\d+)% of Damage Taken by your Totems as Life
+5,10,,0,#% chance to Cover Rare or Unique Enemies in Ash for 10 Seconds on Hit,,(\d+)% chance to Cover Rare or Unique Enemies in Ash for 10 Seconds on Hit
+11,20,,0,#% chance to Cover Rare or Unique Enemies in Ash for 10 Seconds on Hit,,(\d+)% chance to Cover Rare or Unique Enemies in Ash for 10 Seconds on Hit
+3,5,,0,#% increased Strength,,(\d+)% (increased|reduced) Strength
+6,8,,0,#% increased Strength,,(\d+)% (increased|reduced) Strength
+20,30,,0,#% reduced Ignite Duration on you,,(\d+)% (increased|reduced) Ignite Duration on you
+31,50,,0,#% reduced Ignite Duration on you,,(\d+)% (increased|reduced) Ignite Duration on you
+5,7,,0,Adds # to # Physical Damage if you've dealt a Critical Strike Recently,,Adds (\d+) to (\d+) Physical Damage if you've dealt a Critical Strike Recently
+14,27,,1,Adds # to # Physical Damage if you've dealt a Critical Strike Recently,,Adds (\d+) to (\d+) Physical Damage if you've dealt a Critical Strike Recently
+8,12,,0,Adds # to # Physical Damage if you've dealt a Critical Strike Recently,,Adds (\d+) to (\d+) Physical Damage if you've dealt a Critical Strike Recently
+18,22,,1,Adds # to # Physical Damage if you've dealt a Critical Strike Recently,,Adds (\d+) to (\d+) Physical Damage if you've dealt a Critical Strike Recently
+2,3,,0,+# to Maximum Rage,,(\+|\-)(\d+) to Maximum Rage
+4,5,,0,+# to Maximum Rage,,(\+|\-)(\d+) to Maximum Rage
+2,3,,0,Warcries grant # Rage per 5 Power if you have less than 25 Rage,,Warcries grant (\d+) Rage per 5 Power if you have less than 25 Rage
+4,5,,0,Warcries grant # Rage per 5 Power if you have less than 25 Rage,,Warcries grant (\d+) Rage per 5 Power if you have less than 25 Rage
+3,5,,0,#% of Leech is Instant,,(\d+)% of Leech is Instant
+6,8,,0,#% of Leech is Instant,,(\d+)% of Leech is Instant
+3,4,,0,"Nearby corpses Explode when you Warcry, dealing #% of their Life as Physical Damage",,"Nearby corpses Explode when you Warcry, dealing (\d+)% of their Life as Physical Damage"
+5,6,,0,"Nearby corpses Explode when you Warcry, dealing #% of their Life as Physical Damage",,"Nearby corpses Explode when you Warcry, dealing (\d+)% of their Life as Physical Damage"
+10,19,,0,#% chance to Taunt on Hit,,(\d+)% chance to Taunt on Hit
+20,30,,0,#% chance to Taunt on Hit,,(\d+)% chance to Taunt on Hit
+10,15,,0,"When you create a Banner, it gains #% of the Stages of your placed Banner",,"When you create a Banner, it gains (\d+)% of the Stages of your placed Banner"
+16,25,,0,"When you create a Banner, it gains #% of the Stages of your placed Banner",,"When you create a Banner, it gains (\d+)% of the Stages of your placed Banner"
+5,10,,0,Melee Hits have #% chance to Fortify,,Melee Hits have (\d+)% chance to Fortify
+11,20,,0,Melee Hits have #% chance to Fortify,,Melee Hits have (\d+)% chance to Fortify
+2,3,,0,"Bleeding Enemies you Kill Explode, dealing #% of their Maximum Life as Physical Damage",,"Bleeding Enemies you Kill Explode, dealing (\d+)% of their Maximum Life as Physical Damage"
+4,5,,0,"Bleeding Enemies you Kill Explode, dealing #% of their Maximum Life as Physical Damage",,"Bleeding Enemies you Kill Explode, dealing (\d+)% of their Maximum Life as Physical Damage"
+10,19,,0,Attack Hits against Bleeding Enemies have #% chance to Blind,,Attack Hits against Bleeding Enemies have (\d+)% chance to Blind
+20,30,,0,Attack Hits against Bleeding Enemies have #% chance to Blind,,Attack Hits against Bleeding Enemies have (\d+)% chance to Blind
+10,19,,0,Attack Hits against Blinded Enemies have #% chance to Maim,,Attack Hits against Blinded Enemies have (\d+)% chance to Maim
+20,30,,0,Attack Hits against Blinded Enemies have #% chance to Maim,,Attack Hits against Blinded Enemies have (\d+)% chance to Maim
+1,2,,0,+#% to maximum Chance to Block Attack Damage,,(\+|\-)(\d+)% to maximum Chance to Block Attack Damage
+3,4,,0,+# to Armour and Evasion Rating per 1% Chance to Block Attack Damage,,(\+|\-)(\d+) to Armour and Evasion Rating per 1% Chance to Block Attack Damage
+5,6,,0,+# to Armour and Evasion Rating per 1% Chance to Block Attack Damage,,(\+|\-)(\d+) to Armour and Evasion Rating per 1% Chance to Block Attack Damage
+3,4,,0,+#% Chance to Block Attack Damage,,(\+|\-)(\d+)% Chance to Block Attack Damage
+5,6,,0,+#% Chance to Block Attack Damage,,(\+|\-)(\d+)% Chance to Block Attack Damage
+4,7,,0,Gain #% increased Attack Speed for 20 seconds when you Kill a Rare or Unique Enemy,,Gain (\d+)% (increased|reduced) Attack Speed for 20 seconds when you Kill a Rare or Unique Enemy
+8,12,,0,Gain #% increased Attack Speed for 20 seconds when you Kill a Rare or Unique Enemy,,Gain (\d+)% (increased|reduced) Attack Speed for 20 seconds when you Kill a Rare or Unique Enemy
+4,7,,0,#% of Overkill Damage is Leeched as Life,,(\d+)% of Overkill Damage is Leeched as Life
+8,12,,0,#% of Overkill Damage is Leeched as Life,,(\d+)% of Overkill Damage is Leeched as Life
+10,20,,0,#% increased Maximum Recovery per Life Leech,,(\d+)% (increased|reduced) Maximum Recovery per Life Leech
+21,30,,0,#% increased Maximum Recovery per Life Leech,,(\d+)% (increased|reduced) Maximum Recovery per Life Leech
+4,7,,0,#% increased Area of Effect if you've Killed Recently,,(\d+)% (increased|reduced) Area of Effect if you've Killed Recently
+8,12,,0,#% increased Area of Effect if you've Killed Recently,,(\d+)% (increased|reduced) Area of Effect if you've Killed Recently
+20,30,,0,+# to Strength and Intelligence,,(\+|\-)(\d+) to Strength and Intelligence
+31,40,,0,+# to Strength and Intelligence,,(\+|\-)(\d+) to Strength and Intelligence
+20,30,,0,#% increased Effect of non-Damaging Ailments you inflict with Critical Strikes,,(\d+)% (increased|reduced) Effect of non-Damaging Ailments you inflict with Critical Strikes
+31,40,,0,#% increased Effect of non-Damaging Ailments you inflict with Critical Strikes,,(\d+)% (increased|reduced) Effect of non-Damaging Ailments you inflict with Critical Strikes
+5,6,,0,Consecrated Ground you create applies #% increased Damage taken to Enemies,,Consecrated Ground you create applies (\d+)% (increased|reduced) Damage taken to Enemies
+7,10,,0,Consecrated Ground you create applies #% increased Damage taken to Enemies,,Consecrated Ground you create applies (\d+)% (increased|reduced) Damage taken to Enemies
+3,4,,0,Damage Penetrates #% of Enemy Elemental Resistances,,Damage Penetrates (\d+)% of Enemy Elemental Resistances
+5,6,,0,Damage Penetrates #% of Enemy Elemental Resistances,,Damage Penetrates (\d+)% of Enemy Elemental Resistances
+10,19,,0,"#% chance to create Consecrated Ground when you Hit a Rare or Unique Enemy, lasting 8 seconds",,"(\d+)% chance to create Consecrated Ground when you Hit a Rare or Unique Enemy, lasting 8 seconds"
+20,30,,0,"#% chance to create Consecrated Ground when you Hit a Rare or Unique Enemy, lasting 8 seconds",,"(\d+)% chance to create Consecrated Ground when you Hit a Rare or Unique Enemy, lasting 8 seconds"
+,70,,0,#% increased Critical Strike Chance if you haven't dealt a Critical Strike Recently,,(\d+)% (increased|reduced) Critical Strike Chance if you haven't dealt a Critical Strike Recently
+71,100,,0,#% increased Critical Strike Chance if you haven't dealt a Critical Strike Recently,,(\d+)% (increased|reduced) Critical Strike Chance if you haven't dealt a Critical Strike Recently
+1,2,,0,#% of Damage is taken from Mana before Life,,(\d+)% of Damage is taken from Mana before Life
+4,7,,0,#% increased Mana Reservation Efficiency of Skills,,(\d+)% (increased|reduced) Mana Reservation Efficiency of Skills
+8,12,,0,#% increased Mana Reservation Efficiency of Skills,,(\d+)% (increased|reduced) Mana Reservation Efficiency of Skills
+2,3,,0,Gain #% of Maximum Mana as Extra Maximum Energy Shield,,Gain (\d+)% of Maximum Mana as Extra Maximum Energy Shield
+4,5,,0,Gain #% of Maximum Mana as Extra Maximum Energy Shield,,Gain (\d+)% of Maximum Mana as Extra Maximum Energy Shield
+20,30,,0,Non-Damaging Ailments have #% reduced Effect on you while you have Arcane Surge,,Non-Damaging Ailments have (\d+)% (increased|reduced) Effect on you while you have Arcane Surge
+31,40,,0,Non-Damaging Ailments have #% reduced Effect on you while you have Arcane Surge,,Non-Damaging Ailments have (\d+)% (increased|reduced) Effect on you while you have Arcane Surge
+1,2,,0,#% of Damage from Hits is taken from your nearest Totem's Life before you,,(\d+)% of Damage from Hits is taken from your nearest Totem's Life before you
+20,30,,0,Skills that would Summon a Totem have #% chance to Summon two Totems instead,,Skills that would Summon a Totem have (\d+)% chance to Summon two Totems instead
+31,50,,0,Skills that would Summon a Totem have #% chance to Summon two Totems instead,,Skills that would Summon a Totem have (\d+)% chance to Summon two Totems instead
+4,5,,0,"If you've Attacked Recently, you and nearby Allies have +#% Chance to Block Attack Damage",,"If you've Attacked Recently, you and nearby Allies have (\+|\-)(\d+)% Chance to Block Attack Damage"
+6,8,,0,"If you've Attacked Recently, you and nearby Allies have +#% Chance to Block Attack Damage",,"If you've Attacked Recently, you and nearby Allies have (\+|\-)(\d+)% Chance to Block Attack Damage"
+4,5,,0,"If you've Cast a Spell Recently, you and nearby Allies have +#% Chance to Block Spell Damage",,"If you've Cast a Spell Recently, you and nearby Allies have (\+|\-)(\d+)% Chance to Block Spell Damage"
+6,8,,0,"If you've Cast a Spell Recently, you and nearby Allies have +#% Chance to Block Spell Damage",,"If you've Cast a Spell Recently, you and nearby Allies have (\+|\-)(\d+)% Chance to Block Spell Damage"
+3,4,,0,Grants Armour equal to #% of your Reserved Mana to you and nearby Allies,,Grants Armour equal to (\d+)% of your Reserved Mana to you and nearby Allies
+5,6,,0,Grants Armour equal to #% of your Reserved Mana to you and nearby Allies,,Grants Armour equal to (\d+)% of your Reserved Mana to you and nearby Allies
+-5,-4,,0,Exposure you inflict applies an extra #% to the affected Resistance,,Exposure you inflict applies an extra (\d+)% to the affected Resistance
+-7,-6,,0,Exposure you inflict applies an extra #% to the affected Resistance,,Exposure you inflict applies an extra (\d+)% to the affected Resistance
+5,7,,0,Shocks from your Hits always increase Damage taken by at least #%,,Shocks from your Hits always increase Damage taken by at least (\d+)%
+8,10,,0,Shocks from your Hits always increase Damage taken by at least #%,,Shocks from your Hits always increase Damage taken by at least (\d+)%
+3,4,,0,Chills from your Hits always reduce Action Speed by at least #%,,Chills from your Hits always reduce Action Speed by at least (\d+)%
+5,6,,0,Chills from your Hits always reduce Action Speed by at least #%,,Chills from your Hits always reduce Action Speed by at least (\d+)%
+15,20,,0,#% increased Effect of Buffs granted by your Golems,,(\d+)% (increased|reduced) Effect of Buffs granted by your Golems
+21,35,,0,#% increased Effect of Buffs granted by your Golems,,(\d+)% (increased|reduced) Effect of Buffs granted by your Golems
+10,15,,0,"#% chance to Freeze, Shock and Ignite",,"(\d+)% chance to Freeze, Shock and Ignite"
+16,25,,0,"#% chance to Freeze, Shock and Ignite",,"(\d+)% chance to Freeze, Shock and Ignite"
+6,10,,0,"Cursed Enemies you or your Minions Kill have a #% chance to Explode, dealing a quarter of their maximum Life as Chaos Damage",,"Cursed Enemies you or your Minions Kill have a (\d+)% chance to Explode, dealing a quarter of their maximum Life as Chaos Damage"
+11,15,,0,"Cursed Enemies you or your Minions Kill have a #% chance to Explode, dealing a quarter of their maximum Life as Chaos Damage",,"Cursed Enemies you or your Minions Kill have a (\d+)% chance to Explode, dealing a quarter of their maximum Life as Chaos Damage"
+2,3,,0,#% increased Area of Effect per Power Charge,,(\d+)% (increased|reduced) Area of Effect per Power Charge
+3,5,,0,#% increased Effect of your Curses,,(\d+)% (increased|reduced) Effect of your Curses
+6,8,,0,#% increased Effect of your Curses,,(\d+)% (increased|reduced) Effect of your Curses
+1,1.5,,0,Regenerate #% of Energy Shield per second,,Regenerate (\d+)% of Energy Shield per second
+2,3,,0,Regenerate #% of Energy Shield per second,,Regenerate (\d+)% of Energy Shield per second
+10,19,,0,#% chance to Hinder Enemies on Hit with Spells,,(\d+)% chance to Hinder Enemies on Hit with Spells
+20,30,,0,#% chance to Hinder Enemies on Hit with Spells,,(\d+)% chance to Hinder Enemies on Hit with Spells
+10,19,,0,Minions have #% chance to gain Unholy Might for 4 seconds on Kill,,Minions have (\d+)% chance to gain Unholy Might for 4 seconds on Kill
+20,30,,0,Minions have #% chance to gain Unholy Might for 4 seconds on Kill,,Minions have (\d+)% chance to gain Unholy Might for 4 seconds on Kill
+15,20,,0,Your Offerings have #% increased Effect on you,,Your Offerings have (\d+)% (increased|reduced) Effect on you
+21,30,,0,Your Offerings have #% increased Effect on you,,Your Offerings have (\d+)% (increased|reduced) Effect on you
+2,3,,0,Regenerate #% of Mana over 2 seconds when you Consume a corpse,,Regenerate (\d+)% of Mana over 2 seconds when you Consume a corpse
+4,5,,0,Regenerate #% of Mana over 2 seconds when you Consume a corpse,,Regenerate (\d+)% of Mana over 2 seconds when you Consume a corpse
+2,3,,0,Regenerate #% of Energy Shield over 2 seconds when you Consume a corpse,,Regenerate (\d+)% of Energy Shield over 2 seconds when you Consume a corpse
+4,5,,0,Regenerate #% of Energy Shield over 2 seconds when you Consume a corpse,,Regenerate (\d+)% of Energy Shield over 2 seconds when you Consume a corpse
+10,14,,0,You and nearby Allies have +#% to Elemental Resistances,,You and nearby Allies have (\+|\-)(\d+)% to Elemental Resistances
+15,20,,0,You and nearby Allies have +#% to Elemental Resistances,,You and nearby Allies have (\+|\-)(\d+)% to Elemental Resistances
+3,5,,0,Minions gain Added Physical Damage equal to #% of Maximum Energy Shield on your Equipped Helmet,,Minions gain Added Physical Damage equal to (\d+)% of Maximum Energy Shield on your Equipped Helmet
+6,10,,0,Minions gain Added Physical Damage equal to #% of Maximum Energy Shield on your Equipped Helmet,,Minions gain Added Physical Damage equal to (\d+)% of Maximum Energy Shield on your Equipped Helmet
+5,10,,0,Corpses you Spawn have #% increased Maximum Life,,Corpses you Spawn have (\d+)% (increased|reduced) Maximum Life
+11,20,,0,Corpses you Spawn have #% increased Maximum Life,,Corpses you Spawn have (\d+)% (increased|reduced) Maximum Life
+5,8,,0,Minions have #% additional Physical Damage Reduction,,Minions have (\d+)% additional Physical Damage Reduction
+9,12,,0,Minions have #% additional Physical Damage Reduction,,Minions have (\d+)% additional Physical Damage Reduction
+10,15,,0,#% chance to gain a Power Charge on Critical Strike,,(\d+)% chance to gain a Power Charge on Critical Strike
+16,25,,0,#% chance to gain a Power Charge on Critical Strike,,(\d+)% chance to gain a Power Charge on Critical Strike
+2,3,,0,+#% to Critical Strike Multiplier per Power Charge,,(\+|\-)(\d+)% to Critical Strike Multiplier per Power Charge
+4,5,,0,+#% to Critical Strike Multiplier per Power Charge,,(\+|\-)(\d+)% to Critical Strike Multiplier per Power Charge
+0.4,0.6,,0,+#% Critical Strike Chance while at maximum Power Charges,,(\+|\-)(\d+)% Critical Strike Chance while at maximum Power Charges
+0.61,1,,0,+#% Critical Strike Chance while at maximum Power Charges,,(\+|\-)(\d+)% Critical Strike Chance while at maximum Power Charges
+80,120,,0,#% increased Critical Strike Chance against Enemies on Full Life,,(\d+)% (increased|reduced) Critical Strike Chance against Enemies on Full Life
+130,160,,0,#% increased Critical Strike Chance against Enemies on Full Life,,(\d+)% (increased|reduced) Critical Strike Chance against Enemies on Full Life
+10,15,,0,#% increased Elusive Effect,,(\d+)% (increased|reduced) Elusive Effect
+16,25,,0,#% increased Elusive Effect,,(\d+)% (increased|reduced) Elusive Effect
+1,2,,0,"#% increased Poison Duration for each Poison you have inflicted Recently, up to a maximum of 100%",,"(\d+)% (increased|reduced) Poison Duration for each Poison you have inflicted Recently, up to a maximum of 100%"
+5,10,,0,#% Global chance to Blind Enemies on hit,,(\d+)% Global chance to Blind Enemies on hit
+11,15,,0,#% Global chance to Blind Enemies on hit,,(\d+)% Global chance to Blind Enemies on hit
+20,30,,0,#% increased Effect of Auras from Mines,,(\d+)% (increased|reduced) Effect of Auras from Mines
+31,50,,0,#% increased Effect of Auras from Mines,,(\d+)% (increased|reduced) Effect of Auras from Mines
+5,6,,0,#% chance to take 50% less Area Damage from Hits,,(\d+)% chance to take 50% less Area Damage from Hits
+7,10,,0,#% chance to take 50% less Area Damage from Hits,,(\d+)% chance to take 50% less Area Damage from Hits
+5,6,,0,Hits have #% chance to deal 50% more Area Damage,,Hits have (\d+)% chance to deal 50% more Area Damage
+7,10,,0,Hits have #% chance to deal 50% more Area Damage,,Hits have (\d+)% chance to deal 50% more Area Damage
+5,8,,0,#% increased Cooldown Recovery Rate,,(\d+)% (increased|reduced) Cooldown Recovery Rate
+9,12,,0,#% increased Cooldown Recovery Rate,,(\d+)% (increased|reduced) Cooldown Recovery Rate
+2,3,,0,#% chance to throw up to 4 additional Traps,,(\d+)% chance to throw up to 4 additional Traps
+4,5,,0,#% chance to throw up to 4 additional Traps,,(\d+)% chance to throw up to 4 additional Traps
+10,15,,0,+#% to Critical Strike Multiplier against Burning Enemies,,(\+|\-)(\d+)% to Critical Strike Multiplier against Burning Enemies
+20,30,,0,#% increased Critical Strike Chance against Shocked Enemies,,(\d+)% (increased|reduced) Critical Strike Chance against Shocked Enemies
+16,25,,0,+#% to Critical Strike Multiplier against Burning Enemies,,(\+|\-)(\d+)% to Critical Strike Multiplier against Burning Enemies
+31,50,,0,#% increased Critical Strike Chance against Shocked Enemies,,(\d+)% (increased|reduced) Critical Strike Chance against Shocked Enemies
+40,60,,0,#% increased Charge Duration,,(\d+)% (increased|reduced) Charge Duration
+61,100,,0,#% increased Charge Duration,,(\d+)% (increased|reduced) Charge Duration
+5,8,,0,#% chance for Energy Shield Recharge to start when you Suppress Spell Damage,,(\d+)% chance for Energy Shield Recharge to start when you Suppress Spell Damage
+9,12,,0,#% chance for Energy Shield Recharge to start when you Suppress Spell Damage,,(\d+)% chance for Energy Shield Recharge to start when you Suppress Spell Damage
+7,13,,0,#% chance to gain 25% of Non-Chaos Damage with Hits as Extra Chaos Damage,,(\d+)% chance to gain 25% of Non-Chaos Damage with Hits as Extra Chaos Damage
+17,23,,0,#% chance to gain 25% of Non-Chaos Damage with Hits as Extra Chaos Damage,,(\d+)% chance to gain 25% of Non-Chaos Damage with Hits as Extra Chaos Damage
+1,2,,0,+# to Evasion Rating per 1 Maximum Energy Shield on Equipped Helmet,,(\+|\-)(\d+) to Evasion Rating per 1 Maximum Energy Shield on Equipped Helmet
+3,4,,0,+# to Evasion Rating per 1 Maximum Energy Shield on Equipped Helmet,,(\+|\-)(\d+) to Evasion Rating per 1 Maximum Energy Shield on Equipped Helmet
+3,4,,0,Prevent +#% of Suppressed Spell Damage while on Full Energy Shield,,Prevent (\+|\-)(\d+)% of Suppressed Spell Damage while on Full Energy Shield
+5,6,,0,Prevent +#% of Suppressed Spell Damage while on Full Energy Shield,,Prevent (\+|\-)(\d+)% of Suppressed Spell Damage while on Full Energy Shield
+0.5,1,,0,#% of Damage Leeched as Energy Shield,,(\d+)% of Damage Leeched as Energy Shield
+1.1,2,,0,#% of Damage Leeched as Energy Shield,,(\d+)% of Damage Leeched as Energy Shield
+4,6,,0,#% chance to Recover 10% of Mana when you use a Skill,,(\d+)% chance to Recover 10% of Mana when you use a Skill
+7,10,,0,#% chance to Recover 10% of Mana when you use a Skill,,(\d+)% chance to Recover 10% of Mana when you use a Skill
+10,15,,0,#% increased Effect of your Marks,,(\d+)% (increased|reduced) Effect of your Marks
+16,25,,0,#% increased Effect of your Marks,,(\d+)% (increased|reduced) Effect of your Marks
+7,13,,0,Projectiles have #% chance to be able to Chain when colliding with terrain,,Projectiles have (\d+)% chance to be able to Chain when colliding with terrain
+14,20,,0,Projectiles have #% chance to be able to Chain when colliding with terrain,,Projectiles have (\d+)% chance to be able to Chain when colliding with terrain
+30,50,,0,#% increased Mirage Archer Duration,,(\d+)% (increased|reduced) Mirage Archer Duration
+51,100,,0,#% increased Mirage Archer Duration,,(\d+)% (increased|reduced) Mirage Archer Duration
+25,40,,0,"Projectiles gain Damage as they travel farther, dealing up to #% increased Damage with Hits to targets",,"Projectiles gain Damage as they travel farther, dealing up to (\d+)% (increased|reduced) Damage with Hits to targets"
+41,60,,0,"Projectiles gain Damage as they travel farther, dealing up to #% increased Damage with Hits to targets",,"Projectiles gain Damage as they travel farther, dealing up to (\d+)% (increased|reduced) Damage with Hits to targets"
+6,10,,0,Gain # Life per Bleeding Enemy Hit,,Gain (\d+) Life per Bleeding Enemy Hit
+11,20,,0,Gain # Life per Bleeding Enemy Hit,,Gain (\d+) Life per Bleeding Enemy Hit
+7,13,,0,#% increased Accuracy Rating if you've dealt a Critical Strike in the past 8 seconds,,(\d+)% (increased|reduced) Accuracy Rating if you've dealt a Critical Strike in the past 8 seconds
+14,20,,0,#% increased Accuracy Rating if you've dealt a Critical Strike in the past 8 seconds,,(\d+)% (increased|reduced) Accuracy Rating if you've dealt a Critical Strike in the past 8 seconds
+15,25,,0,#% increased Effect of Onslaught on you,,(\d+)% (increased|reduced) Effect of Onslaught on you
+26,40,,0,#% increased Effect of Onslaught on you,,(\d+)% (increased|reduced) Effect of Onslaught on you
+10,15,,0,#% chance to gain Phasing for 4 seconds on Kill,,(\d+)% chance to gain Phasing for 4 seconds on Kill
+16,25,,0,#% chance to gain Phasing for 4 seconds on Kill,,(\d+)% chance to gain Phasing for 4 seconds on Kill
+5,9,,0,+#% chance to Suppress Spell Damage,,(\+|\-)(\d+)% chance to Suppress Spell Damage
+10,15,,0,+#% chance to Suppress Spell Damage,,(\+|\-)(\d+)% chance to Suppress Spell Damage
+10,15,,0,#% chance to Avoid Elemental Ailments while Phasing,,(\d+)% chance to Avoid Elemental Ailments while Phasing
+16,25,,0,#% chance to Avoid Elemental Ailments while Phasing,,(\d+)% chance to Avoid Elemental Ailments while Phasing
+10,15,,0,#% chance to gain Onslaught for 4 seconds on Kill,,(\d+)% chance to gain Onslaught for 4 seconds on Kill
+16,25,,0,#% chance to gain Onslaught for 4 seconds on Kill,,(\d+)% chance to gain Onslaught for 4 seconds on Kill
+3,5,,0,#% increased Evasion Rating per Frenzy Charge,,(\d+)% (increased|reduced) Evasion Rating per Frenzy Charge
+6,9,,0,#% increased Evasion Rating per Frenzy Charge,,(\d+)% (increased|reduced) Evasion Rating per Frenzy Charge
+3,5,,0,#% chance to gain a Frenzy Charge on Hit,,(\d+)% chance to gain a Frenzy Charge on Hit
+6,8,,0,#% chance to gain a Frenzy Charge on Hit,,(\d+)% chance to gain a Frenzy Charge on Hit
+6,10,,0,Magic Utility Flasks applied to you have #% increased Effect,,Magic Utility Flasks applied to you have (\d+)% (increased|reduced) Effect
+11,15,,0,Magic Utility Flasks applied to you have #% increased Effect,,Magic Utility Flasks applied to you have (\d+)% (increased|reduced) Effect
+6,10,,0,#% chance to inflict Withered for 2 seconds on Hit,,(\d+)% chance to inflict Withered for 2 seconds on Hit
+11,15,,0,#% chance to inflict Withered for 2 seconds on Hit,,(\d+)% chance to inflict Withered for 2 seconds on Hit
+2,3,,0,Recover #% of Life when you use a Flask,,Recover (\d+)% of Life when you use a Flask
+4,5,,0,Recover #% of Life when you use a Flask,,Recover (\d+)% of Life when you use a Flask
+7,13,,0,#% increased Effect of Withered,,(\d+)% (increased|reduced) Effect of Withered
+14,20,,0,#% increased Effect of Withered,,(\d+)% (increased|reduced) Effect of Withered
+15,25,,0,Enemies you Kill that are affected by Elemental Ailments grant #% increased Flask Charges,,Enemies you Kill that are affected by Elemental Ailments grant (\d+)% (increased|reduced) Flask Charges
+26,40,,0,Enemies you Kill that are affected by Elemental Ailments grant #% increased Flask Charges,,Enemies you Kill that are affected by Elemental Ailments grant (\d+)% (increased|reduced) Flask Charges
+5,8,,0,Gain #% of Physical Damage as Extra Damage of a random Element,,Gain (\d+)% of Physical Damage as Extra Damage of a random Element
+9,12,,0,Gain #% of Physical Damage as Extra Damage of a random Element,,Gain (\d+)% of Physical Damage as Extra Damage of a random Element
+,,3-5-7,0,Adds # Small Passive Skills which grant nothing,,Adds (3|5|7) Small Passive Skills which grant nothing
+4,6,,0,#% increased maximum Energy Shield,,(\d+)% (increased|reduced) maximum Energy Shield
+4,6,,0,#% increased maximum Life,,(\d+)% (increased|reduced) maximum Life
+4,6,,0,#% increased maximum Mana,,(\d+)% (increased|reduced) maximum Mana
+5,8,,0,#% additional Physical Damage Reduction while affected by Determination,,(\d+)% additional Physical Damage Reduction while affected by Determination
+5,8,,0,+#% Chance to Block Attack Damage while affected by Determination,,(\+|\-)(\d+)% Chance to Block Attack Damage while affected by Determination
+40,60,,0,You take #% reduced Extra Damage from Critical Strikes while affected by Determination,,You take (\d+)% (increased|reduced) Extra Damage from Critical Strikes while affected by Determination
+600,1000,,0,+# to Armour while affected by Determination,,(\+|\-)(\d+) to Armour while affected by Determination
+40,50,,0,#% reduced Reflected Physical Damage taken while affected by Determination,,(\d+)% (increased|reduced) Reflected Physical Damage taken while affected by Determination
+5,8,,0,+#% chance to Evade Attack Hits while affected by Grace,,(\+|\-)(\d+)% chance to Evade Attack Hits while affected by Grace
+12,15,,0,+#% chance to Suppress Spell Damage while affected by Grace,,(\+|\-)(\d+)% chance to Suppress Spell Damage while affected by Grace
+10,15,,0,#% increased Movement Speed while affected by Grace,,(\d+)% (increased|reduced) Movement Speed while affected by Grace
+30,50,,0,#% chance to Blind Enemies which Hit you while affected by Grace,,(\d+)% chance to Blind Enemies which Hit you while affected by Grace
+1.5,2.5,,0,Regenerate #% of Energy Shield per Second while affected by Discipline,,Regenerate (\d+)% of Energy Shield per Second while affected by Discipline
+5,8,,0,+#% Chance to Block Spell Damage while affected by Discipline,,(\+|\-)(\d+)% Chance to Block Spell Damage while affected by Discipline
+30,40,,0,#% faster start of Energy Shield Recharge while affected by Discipline,,(\d+)% faster start of Energy Shield Recharge while affected by Discipline
+20,30,,0,Gain # Energy Shield per Enemy Hit while affected by Discipline,,Gain (\d+) Energy Shield per Enemy Hit while affected by Discipline
+10,15,,0,#% increased Energy Shield Recovery Rate while affected by Discipline,,(\d+)% (increased|reduced) Energy Shield Recovery Rate while affected by Discipline
+10,15,,0,Damage Penetrates #% Lightning Resistance while affected by Wrath,,Damage Penetrates (\d+)% Lightning Resistance while affected by Wrath
+1,1.5,,0,#% of Lightning Damage is Leeched as Energy Shield while affected by Wrath,,(\d+)% of Lightning Damage is Leeched as Energy Shield while affected by Wrath
+15,25,,0,Gain #% of Physical Damage as Extra Lightning Damage while affected by Wrath,,Gain (\d+)% of Physical Damage as Extra Lightning Damage while affected by Wrath
+25,40,,0,#% of Physical Damage Converted to Lightning Damage while affected by Wrath,,(\d+)% of Physical Damage Converted to Lightning Damage while affected by Wrath
+40,60,,0,#% increased Lightning Damage while affected by Wrath,,(\d+)% (increased|reduced) Lightning Damage while affected by Wrath
+70,100,,0,#% increased Critical Strike Chance while affected by Wrath,,(\d+)% (increased|reduced) Critical Strike Chance while affected by Wrath
+10,15,,0,Damage Penetrates #% Fire Resistance while affected by Anger,,Damage Penetrates (\d+)% Fire Resistance while affected by Anger
+1,1.5,,0,#% of Fire Damage Leeched as Life while affected by Anger,,(\d+)% of Fire Damage Leeched as Life while affected by Anger
+15,25,,0,Gain #% of Physical Damage as Extra Fire Damage while affected by Anger,,Gain (\d+)% of Physical Damage as Extra Fire Damage while affected by Anger
+25,40,,0,#% of Physical Damage Converted to Fire Damage while affected by Anger,,(\d+)% of Physical Damage Converted to Fire Damage while affected by Anger
+40,60,,0,#% increased Fire Damage while affected by Anger,,(\d+)% (increased|reduced) Fire Damage while affected by Anger
+30,50,,0,+#% to Critical Strike Multiplier while affected by Anger,,(\+|\-)(\d+)% to Critical Strike Multiplier while affected by Anger
+10,15,,0,Damage Penetrates #% Cold Resistance while affected by Hatred,,Damage Penetrates (\d+)% Cold Resistance while affected by Hatred
+1.2,1.8,,0,+#% to Critical Strike Chance while affected by Hatred,,(\+|\-)(\d+)% to Critical Strike Chance while affected by Hatred
+58,78,,0,Adds # to # Cold Damage while affected by Hatred,,Adds (\d+) to (\d+) Cold Damage while affected by Hatred
+80,104,,1,Adds # to # Cold Damage while affected by Hatred,,Adds (\d+) to (\d+) Cold Damage while affected by Hatred
+25,40,,0,#% of Physical Damage Converted to Cold Damage while affected by Hatred,,(\d+)% of Physical Damage Converted to Cold Damage while affected by Hatred
+40,60,,0,#% increased Cold Damage while affected by Hatred,,(\d+)% (increased|reduced) Cold Damage while affected by Hatred
+0.8,1.2,,0,#% of Damage leeched as Life while affected by Vitality,,(\d+)% of Damage leeched as Life while affected by Vitality
+1,1.5,,0,Regenerate #% of Life per second while affected by Vitality,,Regenerate (\d+)% of Life per second while affected by Vitality
+10,15,,0,#% increased Life Recovery Rate while affected by Vitality,,(\d+)% (increased|reduced) Life Recovery Rate while affected by Vitality
+20,30,,0,Gain # Life per Enemy Hit while affected by Vitality,,Gain (\d+) Life per Enemy Hit while affected by Vitality
+50,70,,0,#% increased Life Recovery from Flasks while affected by Vitality,,(\d+)% (increased|reduced) Life Recovery from Flasks while affected by Vitality
+-10,-5,,0,Non-Channelling Skills have # to Total Mana Cost while affected by Clarity,,Non-Channelling Skills have (\d+) to Total Mana Cost while affected by Clarity
+6,10,,0,#% of Damage taken from Mana before Life while affected by Clarity,,(\d+)% of Damage taken from Mana before Life while affected by Clarity
+10,15,,0,#% chance to Recover 10% of Mana when you use a Skill while affected by Clarity,,(\d+)% chance to Recover 10% of Mana when you use a Skill while affected by Clarity
+6,10,,0,Gain #% of Maximum Mana as Extra Maximum Energy Shield while affected by Clarity,,Gain (\d+)% of Maximum Mana as Extra Maximum Energy Shield while affected by Clarity
+10,15,,0,#% increased Mana Recovery Rate while affected by Clarity,,(\d+)% (increased|reduced) Mana Recovery Rate while affected by Clarity
+15,20,,0,#% of Damage taken while affected by Clarity Recouped as Mana,,(\d+)% of Damage taken while affected by Clarity Recouped as Mana
+5,8,,0,+#% chance to Suppress Spell Damage while affected by Haste,,(\+|\-)(\d+)% chance to Suppress Spell Damage while affected by Haste
+15,20,,0,Debuffs on you expire #% faster while affected by Haste,,Debuffs on you expire (\d+)% faster while affected by Haste
+30,50,,0,#% increased Cooldown Recovery Rate of Movement Skills used while affected by Haste,,(\d+)% (increased|reduced) Cooldown Recovery Rate of Movement Skills used while affected by Haste
+6,10,,0,#% of Physical Damage from Hits taken as Fire Damage while affected by Purity of Fire,,(\d+)% of Physical Damage from Hits taken as Fire Damage while affected by Purity of Fire
+6,10,,0,#% of Physical Damage from Hits taken as Cold Damage while affected by Purity of Ice,,(\d+)% of Physical Damage from Hits taken as Cold Damage while affected by Purity of Ice
+6,10,,0,#% of Physical Damage from Hits taken as Lightning Damage while affected by Purity of Lightning,,(\d+)% of Physical Damage from Hits taken as Lightning Damage while affected by Purity of Lightning
+8,12,,0,#% of Physical Damage from Hits taken as Fire Damage while affected by Purity of Elements,,(\d+)% of Physical Damage from Hits taken as Fire Damage while affected by Purity of Elements
+8,12,,0,#% of Physical Damage from Hits taken as Cold Damage while affected by Purity of Elements,,(\d+)% of Physical Damage from Hits taken as Cold Damage while affected by Purity of Elements
+8,12,,0,#% of Physical Damage from Hits taken as Lightning Damage while affected by Purity of Elements,,(\d+)% of Physical Damage from Hits taken as Lightning Damage while affected by Purity of Elements
+30,50,,0,+#% to Chaos Resistance while affected by Purity of Elements,,(\+|\-)(\d+)% to Chaos Resistance while affected by Purity of Elements
+40,50,,0,#% reduced Reflected Elemental Damage taken while affected by Purity of Elements,,(\d+)% (increased|reduced) Reflected Elemental Damage taken while affected by Purity of Elements
+18,22,,0,+#% to Damage over Time Multiplier while affected by Malevolence,,(\+|\-)(\d+)% to Damage over Time Multiplier while affected by Malevolence
+8,12,,0,#% increased Recovery rate of Life and Energy Shield while affected by Malevolence,,(\d+)% (increased|reduced) Recovery rate of Life and Energy Shield while affected by Malevolence
+10,15,,0,Damaging Ailments you inflict deal Damage #% faster while affected by Malevolence,,Damaging Ailments you inflict deal Damage (\d+)% faster while affected by Malevolence
+8,10,,0,Critical Strikes Penetrate #% of Enemy Elemental Resistances while affected by Zealotry,,Critical Strikes Penetrate (\d+)% of Enemy Elemental Resistances while affected by Zealotry
+10,15,,0,#% increased Cast Speed while affected by Zealotry,,(\d+)% (increased|reduced) Cast Speed while affected by Zealotry
+8,10,,0,Consecrated Ground you create while affected by Zealotry causes enemies to take #% increased Damage,,Consecrated Ground you create while affected by Zealotry causes enemies to take (\d+)% (increased|reduced) Damage
+100,120,,0,#% increased Critical Strike Chance against Enemies on Consecrated Ground while affected by Zealotry,,(\d+)% (increased|reduced) Critical Strike Chance against Enemies on Consecrated Ground while affected by Zealotry
+20,30,,0,+#% to Critical Strike Multiplier while affected by Precision,,(\+|\-)(\d+)% to Critical Strike Multiplier while affected by Precision
+40,60,,0,#% increased Attack Damage while affected by Precision,,(\d+)% (increased|reduced) Attack Damage while affected by Precision
+10,15,,0,#% increased Attack Speed while affected by Precision,,(\d+)% (increased|reduced) Attack Speed while affected by Precision
+8,12,,0,#% chance to deal Double Damage while using Pride,,(\d+)% chance to deal Double Damage while using Pride
+40,60,,0,#% increased Physical Damage while using Pride,,(\d+)% (increased|reduced) Physical Damage while using Pride
+,,,0,Historic,True,
+,,,0,Historic,True,
+,,,0,Historic,True,
+,,,0,+7% to all Elemental Resistances per Grand Spectrum,True,
+,,,0,25% increased Critical Strike Chance per Grand Spectrum,True,
+,,,0,15% increased Elemental Damage per Grand Spectrum,True,
+,,,0,12% increased Elemental Damage per Grand Spectrum,True,
+,,,0,5% increased Elemental Damage per Grand Spectrum,True,
+,,,0,Gain 200 Armour per Grand Spectrum,True,
+,,,0,Gain 30 Mana per Grand Spectrum,True,
+,,,0,+1 to Minimum Endurance Charges per Grand Spectrum,True,
+,,,0,Minions have +10% to Critical Strike Multiplier per Grand Spectrum,True,
+,,,0,12% chance to Avoid Elemental Ailments per Grand Spectrum,True,
+,,,0,+1 to Minimum Frenzy Charges per Grand Spectrum,True,
+,,,0,+1 to Minimum Power Charges per Grand Spectrum,True,
+,,,0,5% increased Maximum Life per Grand Spectrum,True,
+,,,0,Historic,True,
+,,,0,Regenerate 0.6 Mana per Second per 10 Devotion,True,
+,,,0,3% increased Effect of non-Damaging Ailments on Enemies per 10 Devotion,True,
+,,,0,4% increased Area Damage per 10 Devotion,True,
+,,,0,1% increased effect of Non-Curse Auras per 10 Devotion,True,
+,,,0,4% increased Brand Damage per 10 Devotion,True,
+,,,0,Channelling Skills deal 4% increased Damage per 10 Devotion,True,
+,,,0,4% reduced Duration of Curses on you per 10 Devotion,True,
+,,,0,4% reduced Elemental Ailment Duration on you per 10 Devotion,True,
+,,,0,4% increased Elemental Damage per 10 Devotion,True,
+,,,0,+2% to all Elemental Resistances per 10 Devotion,True,
+,,,0,Minions have +60 to Accuracy Rating per 10 Devotion,True,
+,,,0,1% increased Minion Attack and Cast Speed per 10 Devotion,True,
+,,,0,1% reduced Mana Cost of Skills per 10 Devotion,True,
+,,,0,3% increased Defences from Equipped Shield per 10 Devotion,True,
+,,,0,4% increased Totem Damage per 10 Devotion,True,
+,,,0,Historic,True,
+,,,0,Always Scorch while affected by Anger,True,
+,,,0,Aura Skills other than Anger are Disabled,True,
+,,,0,80% increased Effect of Arcane Surge on you while affected by Clarity,True,
+,,,0,Aura Skills other than Clarity are Disabled,True,
+,,,0,+1 to Maximum Endurance Charges while affected by Determination,True,
+,,,0,Aura Skills other than Determination are Disabled,True,
+,,,0,+1 to Maximum Power Charges while affected by Discipline,True,
+,,,0,Aura Skills other than Discipline are Disabled,True,
+,,,0,+1 to Maximum Frenzy Charges while affected by Grace,True,
+,,,0,Aura Skills other than Grace are Disabled,True,
+,,,0,10% increased Action Speed while affected by Haste,True,
+,,,0,Aura Skills other than Haste are Disabled,True,
+,,,0,Always inflict Brittle while affected by Hatred,True,
+,,,0,Aura Skills other than Hatred are Disabled,True,
+,,,0,You can apply an additional Curse while affected by Malevolence,True,
+,,,0,Aura Skills other than Malevolence are Disabled,True,
+,,,0,25% more Critical Strike chance while affected by Precision,True,
+,,,0,Aura Skills other than Precision are Disabled,True,
+,,,0,"Enemies you Kill while using Pride have 25% chance to Explode, dealing a tenth of their maximum Life as Physical Damage",True,
+,,,0,Aura Skills other than Pride are Disabled,True,
+,,,0,+3% to all maximum Elemental Resistances while affected by Purity of Elements,True,
+,,,0,Aura Skills other than Purity of Elements are Disabled,True,
+,,,0,30% of Cold and Lightning Damage taken as Fire Damage while affected by Purity of Fire,True,
+,,,0,Aura Skills other than Purity of Fire are Disabled,True,
+,,,0,30% of Fire and Lightning Damage taken as Cold Damage while affected by Purity of Ice,True,
+,,,0,Aura Skills other than Purity of Ice are Disabled,True,
+,,,0,30% of Fire and Cold Damage taken as Lightning Damage while affected by Purity of Lightning,True,
+,,,0,Aura Skills other than Purity of Lightning are Disabled,True,
+,,,0,Regenerate 15% Life over one second when hit while affected by Vitality,True,
+,,,0,Aura Skills other than Vitality are Disabled,True,
+,,,0,Always Sap while affected by Wrath,True,
+,,,0,Aura Skills other than Wrath are Disabled,True,
+,,,0,Unaffected by Curses while affected by Zealotry,True,
+,,,0,Aura Skills other than Zealotry are Disabled,True,
+,,,0,Movement Speed cannot be modified to below base value,True,
+,,,0,"2% of Armour applies to Fire, Cold and Lightning Damage taken from Hits",True,
+,,,0,"3% of Armour applies to Fire, Cold and Lightning Damage taken from Hits",True,
+,,,0,Totems Taunt Enemies around them for 2 seconds when Summoned,True,
+,,,0,"Enemies you or your Totems Kill have 1% chance to Explode, dealing 500% of their maximum Life as Fire Damage",True,
+,,,0,+1% to maximum Fire Resistance,True,
+,,,0,+2% to maximum Fire Resistance,True,
+,,,0,Cannot be Stunned while you have at least 25 Rage,True,
+,,,0,1% of Attack Damage Leeched as Life and Mana if you've Killed Recently,True,
+,,,0,2% of Attack Damage Leeched as Life and Mana if you've Killed Recently,True,
+,,,0,Cannot be Stunned while Fortified,True,
+,,,0,Banner Skills have no Reservation,True,
+,,,0,Gain Adrenaline for 4 seconds when you reach Low Life,True,
+,,,0,Impales you inflict last 1 additional Hit,True,
+,,,0,Cannot be Stunned by Hits you Block,True,
+,,,0,+3% to maximum Chance to Block Attack Damage,True,
+,,,0,Hits ignore Enemy Monster Physical Damage Reduction if you've Blocked in the past 20 seconds,True,
+,,,0,Cannot take Reflected Physical Damage,True,
+,,,0,Cannot be Stunned while Leeching,True,
+,,,0,You are Unaffected by Bleeding while Leeching,True,
+,,,0,Culling Strike,True,
+,,,0,Effects of Consecrated Ground you create Linger for 2 seconds,True,
+,,,0,3% of Damage is taken from Mana before Life,True,
+,,,0,Gain Arcane Surge when you or your Totems Hit an Enemy with a Spell,True,
+,,,0,3% of Damage from Hits is taken from your nearest Totem's Life before you,True,
+,,,0,+1 to Minimum Endurance Charges,True,
+,,,0,+1 to Minimum Power Charges,True,
+,,,0,"Every 4 seconds, remove Curses and Elemental Ailments from you",True,
+,,,0,Enemies in your Link Beams cannot apply Elemental Ailments,True,
+,,,0,"Every 4 seconds, Regenerate 10% of Life over one second",True,
+,,,0,"Every 4 seconds, Regenerate 20% of Life over one second",True,
+,,,0,"Nearby Enemies cannot gain Power, Frenzy or Endurance Charges",True,
+,,,0,"While there are at least five nearby Allies, you and nearby Allies have Onslaught",True,
+,,,0,All Damage can Ignite,True,
+,,,0,Cannot take Reflected Elemental Damage,True,
+,,,0,Your Hexes can affect Hexproof Enemies,True,
+,,,0,4% increased Area of Effect per Power Charge,True,
+,,,0,Nearby Enemies are Chilled,True,
+,,,0,Critical Strikes have Culling Strike,True,
+,,,0,Damage from your Critical Strikes cannot be Reflected,True,
+,,,0,You take no Extra Damage from Critical Strikes while Elusive,True,
+,,,0,"3% increased Poison Duration for each Poison you have inflicted Recently, up to a maximum of 100%",True,
+,,,0,Cannot be Blinded,True,
+,,,0,Recover 1% of Life on Kill,True,
+,,,0,Recover 1% of Energy Shield on Kill,True,
+,,,0,Recover 1% of Mana on Kill,True,
+,,,0,Recover 2% of Life on Kill,True,
+,,,0,Recover 2% of Energy Shield on Kill,True,
+,,,0,Recover 2% of Mana on Kill,True,
+,,,0,Projectile Barrages have no spread,True,
+,,,0,Skills fire an additional Projectile,True,
+,,,0,2% increased Movement Speed per Frenzy Charge,True,
+,,,0,Flasks gain a Charge every 3 seconds,True,
+,,,0,Removes Bleeding when you use a Flask,True,
+,,,0,Adds 1 Small Passive Skill which grant nothing,True,
+,,,0,Adds 3 Jewel Socket Passive Skills,True,
+,,,0,Unaffected by Vulnerability while affected by Determination,True,
+,,,0,Unaffected by Enfeeble while affected by Grace,True,
+,,,0,You gain Onslaught for 4 seconds on Kill while affected by Haste,True,
+,,,0,You have Phasing while affected by Haste,True,
+,,,0,Unaffected by Temporal Chains while affected by Haste,True,
+,,,0,Immune to Ignite while affected by Purity of Fire,True,
+,,,0,Unaffected by Burning Ground while affected by Purity of Fire,True,
+,,,0,Unaffected by Flammability while affected by Purity of Fire,True,
+,,,0,Immune to Freeze while affected by Purity of Ice,True,
+,,,0,Unaffected by Chilled Ground while affected by Purity of Ice,True,
+,,,0,Unaffected by Frostbite while affected by Purity of Ice,True,
+,,,0,Immune to Shock while affected by Purity of Lightning,True,
+,,,0,Unaffected by Shocked Ground while affected by Purity of Lightning,True,
+,,,0,Unaffected by Conductivity while affected by Purity of Lightning,True,
+,,,0,Unaffected by Elemental Weakness while affected by Purity of Elements,True,
+,,,0,Unaffected by Poison while affected by Malevolence,True,
+,,,0,Unaffected by Bleeding while affected by Malevolence,True,
+,,,0,Effects of Consecrated Ground you create while affected by Zealotry Linger for 2 seconds,True,
+,,,0,Gain Arcane Surge for 4 seconds when you create Consecrated Ground while affected by Zealotry,True,
+,,,0,30% increased Maximum total Energy Shield Recovery per second from Leech while affected by Zealotry,True,
+,,,0,Gain a Flask Charge when you deal a Critical Strike while affected by Precision,True,
+,,,0,Cannot be Blinded while affected by Precision,True,
+,,,0,Your Hits Intimidate Enemies for 4 seconds while you are using Pride,True,
+,,,0,25% chance to Impale Enemies on Hit with Attacks while using Pride,True,
+,,,0,Impales you inflict last 2 additional Hits while using Pride,True,
