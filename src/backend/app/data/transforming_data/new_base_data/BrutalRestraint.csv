@@ -1,0 +1,4 @@
+minRoll,maxRoll,textRolls,position,effect,static,regex
+500,8000,,0,Denoted service of # dekhara in the akhara of # Passives in radius are Conquered by the Maraketh,,Denoted service of ([+-]?([0-9]*[.])?[0-9]+) dekhara in the akhara of (Balbala|Asenath|Nasima) Passives in radius are Conquered by the Maraketh
+,,Balbala-Asenath-Nasima,1,Denoted service of # dekhara in the akhara of # Passives in radius are Conquered by the Maraketh,,Denoted service of ([+-]?([0-9]*[.])?[0-9]+) dekhara in the akhara of (Balbala|Asenath|Nasima) Passives in radius are Conquered by the Maraketh
+,,,0,Historic,True,
