@@ -1,0 +1,31 @@
+services:
+  web:
+    build: .
+    ports:
+      - "80:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["uvicorn", "main:app", "--reload", "--port", "8000",]
+
+  db:
+    image: postgres:16.1
+    env_file: .env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - app-db-data:/var/lib/postgresql
+    deploy:
+      placement:
+        constraints:
+          - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
+
+
+volumes:
+  app-db-data: {}
+ 
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
