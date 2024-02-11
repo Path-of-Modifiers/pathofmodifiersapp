@@ -1,0 +1,4 @@
+minRoll,maxRoll,textRolls,position,effect,regex,static,regex_drop
+2000,160000,,0,Commissioned # coins to commemorate # Passives in radius are Conquered by the Eternal Empire,,,Commissioned (\d+) coins to commemorate (Cadiro|Victario|Caspiro) Passives in radius are Conquered by the Eternal Empire
+,,Cadiro-Victario-Caspiro,1,Commissioned # coins to commemorate # Passives in radius are Conquered by the Eternal Empire,,,Commissioned (\d+) coins to commemorate (Cadiro|Victario|Caspiro) Passives in radius are Conquered by the Eternal Empire
+,,,0,Historic,,True,
