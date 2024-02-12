@@ -27,7 +27,6 @@ psycopg2 = {extras = ["binary"], version = "^2.9.9"} # binary is for development
 SQLAlchemy="2.0.25" # for database
 
 [tool.poetry.group.dev.dependencies]
-mypy = "^1.8.0" # for static type checking
 black = "^23.11.0" # for formatting code
 isort = "^5.13.2" # for sorting imports
 autoflake = "^2.2.1" # for removing unused imports
