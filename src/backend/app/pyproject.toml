@@ -14,6 +14,7 @@ DateTime==5.4 # for date and time
 fastapi==0.109.2 # for web APIs 
 idna==3.6 # for network communication
 pydantic==2.6.1 # for data validation
+pydantic_settings==2.1.0 # for settings management
 pydantic_core==2.16.2 # for data validation
 pytz==2024.1    # for time zones
 SQLAlchemy==2.0.25 # for database
