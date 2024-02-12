@@ -2,7 +2,7 @@ import datetime as _dt
 import sqlalchemy as _sql
 from sqlalchemy.dialects.postgresql import JSONB
 
-import core.models.database as _database
+from core.models.database import Base
 
 
 def update(self, **new_data):
@@ -10,10 +10,10 @@ def update(self, **new_data):
         setattr(self, field, value)
 
 
-_database.Base.update = update
+Base.update = update
 
 
-class Currency(_database.Base):
+class Currency(Base):
 
     __tablename__ = "currency"
 
@@ -26,7 +26,7 @@ class Currency(_database.Base):
     updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
 
-class ItemBaseType(_database.Base):
+class ItemBaseType(Base):
 
     __tablename__ = "item_base_type"
 
@@ -37,7 +37,7 @@ class ItemBaseType(_database.Base):
     updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
 
-class Item(_database.Base):
+class Item(Base):
 
     __tablename__ = "item"
 
@@ -83,7 +83,7 @@ class Item(_database.Base):
     updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
 
-class Modifier(_database.Base):
+class Modifier(Base):
 
     __tablename__ = "modifier"
 
@@ -107,7 +107,7 @@ class Modifier(_database.Base):
     __table_args__ = (_sql.PrimaryKeyConstraint(modifierId, position),)
 
 
-class Transaction(_database.Base):
+class Transaction(Base):
 
     __tablename__ = "transaction"
 
@@ -134,7 +134,7 @@ class Transaction(_database.Base):
     updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
 
-class ItemModifier(_database.Base):
+class ItemModifier(Base):
 
     __tablename__ = "item_modifier"
 
@@ -158,7 +158,7 @@ class ItemModifier(_database.Base):
     )
 
 
-class Stash(_database.Base):
+class Stash(Base):
 
     __tablename__ = "stash"
 
@@ -174,7 +174,7 @@ class Stash(_database.Base):
     updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
 
-class Account(_database.Base):
+class Account(Base):
 
     __tablename__ = "account"
 
