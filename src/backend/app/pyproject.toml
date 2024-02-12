@@ -21,7 +21,6 @@ SQLAlchemy="2.0.25" # for database
 typing="3.7.4.3" # 
 typing_extensions="4.9.0" 
 uvicorn="0.27.0.post1"
-zope.interface="6.1"
 alembic = "^1.13.1" # for database migrations
 psycopg2 = {extras = ["binary"], version = "^2.9.9"} # binary is for development only
 SQLAlchemy="2.0.25" # for database
