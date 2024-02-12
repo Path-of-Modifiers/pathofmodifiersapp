@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING, List
 
-import core.models.models as _models
-import core.schemas.schemas as _schemas
-import core.models.database as _database
+import app.core.models.models as _models
+import app.core.schemas.schemas as _schemas
+import app.core.models.database as _database
 import pydantic as _pydantic
 
 if TYPE_CHECKING:
