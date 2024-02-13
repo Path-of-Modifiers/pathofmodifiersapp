@@ -1,19 +1,18 @@
 [tool.poetry]
-name = "pathofmodifiers"
+name = "pathofmodifiersapp"
 version = "0.1.0"
 description = "Web application to manage Path of Exile modifiers and their item price listed"
 authors = ["Path of Modifiers <pomodifiers@outlook.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.12" # for Python version
-fastapi = "^0.68.0" # for web APIs
+fastapi = "^0.109.2" # for web APIs
 annotated-types="0.6.0" # for type annotations
 anyio="4.2.0" # for async I/O
 click="8.1.7" # for command-line interfaces
 colorama="0.4.6" # for colored output
 sniffio="1.3.0" # for async I/O
 DateTime="5.4" # for date and time
-fastapi="0.109.2" # for web APIs 
 idna="3.6" # for network communication
 pydantic="2.6.1" # for data validation
 pydantic_settings="2.1.0" # for settings management
@@ -25,7 +24,6 @@ typing_extensions="4.9.0"
 uvicorn="0.27.0.post1"
 alembic = "^1.13.1" # for database migrations
 psycopg2 = {extras = ["binary"], version = "^2.9.9"} # binary is for development only
-SQLAlchemy="2.0.25" # for database
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.11.0" # for formatting code
