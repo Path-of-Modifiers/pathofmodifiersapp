@@ -5,7 +5,7 @@ description = "Web application to manage Path of Exile modifiers and their item 
 authors = ["Path of Modifiers <pomodifiers@outlook.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.11" # for Python version
+python = "^3.12" # for Python version
 fastapi = "^0.68.0" # for web APIs
 annotated-types="0.6.0" # for type annotations
 anyio="4.2.0" # for async I/O
@@ -39,6 +39,9 @@ multi_line_output = 3 # for multi-line imports
 include_trailing_comma = true # for trailing commas
 force_grid_wrap = 0 # for grid wrapping
 line_length = 88 # for line length
-[build-system] 
-requires = ["poetry>=1.7.1"] 
-build-backend = "poetry.masonry.api" 
+
+
+[build-system]
+# Should be the same as `$POETRY_VERSION`:
+requires = ["poetry-core>=1.7"]
+build-backend = "poetry.core.masonry.api"
