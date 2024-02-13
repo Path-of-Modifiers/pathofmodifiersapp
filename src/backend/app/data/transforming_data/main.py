@@ -5,6 +5,9 @@ import pandas as pd
 
 
 def load_test_data():
+    """
+    Temporary test data loader
+    """
     with open("testing_data\\2024_01_24 22_28.json", encoding="utf8") as infile:
         data = json.load(infile)
 
@@ -12,32 +15,53 @@ def load_test_data():
 
 
 class DataTransformer:
-    def __init__(self) -> None:
-        pass
-
     def _create_stash_table(self, json_data: list) -> None:
-        stash_df = pd.json_normalize(json_data)
+        """
+        Creates the basis of the `stash` table.
+        It is not immediately processed in order to save compute power later.
+        """
+        stash_df = pd.json_normalize(json_data)  # Contains columns of JSON-objects
 
         self.stash_df = stash_df
 
     def _create_item_table(self, json_data: list) -> None:
+        """
+        Creates the basis of the `item` table, using parts of `stash` table.
+
+        The `item` table requires the `stashId` as a foreign key. This is
+        why the `stash` table was not immediately processed.
+        """
         stash_df = self.stash_df.copy(deep=True)  # Deep copy to avoid damage
 
-        stash_df = self._expand_df(stash_df, "items", "id")
+        stash_df = self._expand_df(
+            stash_df, "items", "id"
+        )  # Stretches `stash_df` into the same length as `item_df`
 
         item_df = pd.json_normalize(
             json_data, record_path="items"
         )  # Extracts items-json
 
-        item_df["stash_id"] = stash_df["id"]
+        item_df["stashId"] = stash_df["id"]
         item_df.rename(columns={"id": "itemId"}, inplace=True)
 
         self.item_df = item_df
 
     def _create_item_modifier_table(self, json_data: list) -> None:
+        """
+        The `item_modifier` table heavily relies on what type of item the modifiers
+        belong to.
+        """
         raise NotImplementedError("Only available in child classes")
 
     def _transform_item_table(self) -> None:
+        """
+        The `item` table requires a foreign key to the `currency` table.
+        Everything related to the price of the item is stored in the `node`
+        attribute.
+
+        There are two types of listings in POE, exact price and asking price which are
+        represented by `price` and `b/o` respectively.
+        """
         item_df = self.item_df
         currency_series = item_df["note"].str.split(" ")
 
@@ -59,12 +83,22 @@ class DataTransformer:
         self.item_df = item_df
 
     def _transform_item_modifier_table(self) -> None:
+        """
+        The `item_modifier` table heavily relies on what type of item the modifiers
+        belong to.
+        """
         raise NotImplementedError("Only available in child classes")
 
     def _clean_stash_table(self):
+        """
+        Gets rid of unnecessay information, so that only fields needed for the DB remains.
+        """
         self.stash_df.drop(["items", "stashType"], axis=1, inplace=True)
 
     def _clean_item_table(self):
+        """
+        Gets rid of unnecessay information, so that only fields needed for the DB remains.
+        """
         self.item_df.drop(
             [
                 "verified",
@@ -83,9 +117,18 @@ class DataTransformer:
         )
 
     def _clean_item_modifier_table(self):
+        """
+        The `item_modifier` table heavily relies on what type of item the modifiers
+        belong to.
+
+        Gets rid of unnecessay information, so that only fields needed for the DB remains.
+        """
         raise NotImplementedError("Only available in child classes")
 
-    def transform_into_tables(self, json_data):
+    def transform_into_tables(self, json_data: list):
+        """
+        The process of extracting data from the JSON-data, transforming it and cleaning it.
+        """
         self._create_stash_table(json_data=json_data)
         self._create_item_table(json_data=json_data)
         self._create_item_modifier_table(json_data=json_data)
@@ -98,7 +141,13 @@ class DataTransformer:
         self._clean_item_modifier_table()
 
     @staticmethod
-    def _expand_df(df: pd.DataFrame, json_column: str, target_column: str):
+    def _expand_df(
+        df: pd.DataFrame, json_column: str, target_column: str
+    ) -> pd.DataFrame:
+        """
+        An independent function that is highly related to the class. Was created as a static method
+        because it might be necessary to access from several methods. This turned out to be uneccessary
+        """
         df["temp_col"] = df[json_column].apply(
             lambda x: [item[target_column] for item in x]
         )  # Extracts column out of the list_column's json-object, storing it as a list
@@ -109,15 +158,41 @@ class DataTransformer:
         return df
 
     @staticmethod
-    def _get_rolls_data(df, modifier_df):
-        df.loc[:, "modifier"] = df["modifier"].replace(r"\\n|\n", " ", regex=True)
+    def _get_ranges(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        A very complex function for extracting the range out of the `modifier` field.
 
+        Modifiers can be split into two categories: static and dynamic. A static modifier
+        has no range, while a dynamic modifier has one or more ranges.
+
+        Using regex, we can link item modifiers to the already-prepared `modifier` table.
+        From there we extract the range based on `minRoll` and `maxRoll` or just `textRolls`
+        if the roll is not numerical.
+
+        The formula for calculating the range:
+            range = (roll - minRoll)/(maxRoll - minRoll)
+
+        Where:
+            `roll` is extracted from the `modifier` field
+
+            For text rolls, `roll` is the index of roll in a stored list. In this case
+            `maxRoll` is the length of the list and `minRoll` is zero
+
+        The method contains assertions to ensure successful steps.
+        """
+        df.loc[:, "modifier"] = df["modifier"].replace(
+            r"\\n|\n", " ", regex=True
+        )  # Replaces newline with a space, so that it does not mess up the regex and matches modifiers in the `modifier` table
+
+        # We divide the modifier into the two categories
         static_modifier_mask = modifier_df["static"] == "True"
 
         dynamic_modifier_df = modifier_df.loc[~static_modifier_mask]
         static_modifier_df = modifier_df.loc[static_modifier_mask]
 
         # ---- Static modifier processing ----
+        # Static modifiers must be processed first, to reduce the amount of modifiers
+        # processed by the much more expensive dynamic modifier processing
         static_df = df.loc[df["modifier"].isin(static_modifier_df["effect"])]
         static_df.loc[:, "position"] = "0"
         static_df.loc[:, "effect"] = static_df.loc[:, "modifier"]
@@ -127,6 +202,7 @@ class DataTransformer:
         )
         failed_df = merged_static_df.loc[merged_static_df["static"].isna()]
 
+        # Should never fail, by the nature of the process
         try:
             assert failed_df.empty
         except AssertionError:
@@ -134,10 +210,13 @@ class DataTransformer:
             quit()
 
         # ---- Dynamic modifier processing ----
-
-        dynamic_df = df.loc[~df["modifier"].isin(static_modifier_df["effect"])]
+        # A much more expensive process
+        dynamic_df = df.loc[
+            ~df["modifier"].isin(static_modifier_df["effect"])
+        ]  # Everything not static is dynamic
 
         dynamic_df.loc[:, "effect"] = dynamic_df.loc[:, "modifier"]
+        # The process must be broken down into a for-loop as the replacement is unique
         for regex, effect in dynamic_modifier_df[["regex", "effect"]].itertuples(
             index=False
         ):
@@ -146,6 +225,12 @@ class DataTransformer:
             )
 
         def add_alternate_effect(df):
+            """
+            Alternate effect is the wording of an effect when the roll is negative
+
+            This assumes all modifiers in the `modifier` table are stored with only
+            positive elements.
+            """
             df.loc[:, "alternateEffect"] = df["effect"]
             df["alternateEffect"] = df["alternateEffect"].str.replace("+#", "-#")
             df["alternateEffect"] = df["alternateEffect"].str.replace(
@@ -154,13 +239,21 @@ class DataTransformer:
             df.loc[
                 df["alternateEffect"] == df["effect"],
                 "alternateEffect",
-            ] = ""  # Gets rid of unneccesary alternate effects
+            ] = pd.Na  # Gets rid of unneccesary alternate effects
 
             return df
 
         dynamic_df = add_alternate_effect(df=dynamic_df)
 
         def add_range_roll(row):
+            """
+            The main part of this method.
+
+            The `effect` modifier contains `#` as a placeholder for the `roll`.
+            By replacing one part of the `effect` at a time, we end up with
+            only the roll and `---`. We then split this into a list, which is
+            the filtered to only return elements which are not empty strings.
+            """
             modifier = row["modifier"]
             effect = row["effect"]
             effect_parts = [part for part in effect.split("#") if part]
@@ -176,7 +269,11 @@ class DataTransformer:
 
             return [range_roll for range_roll in ranges if range_roll]
 
-        dynamic_df.loc[:, "range"] = dynamic_df.apply(add_range_roll, axis=1)
+        dynamic_df.loc[:, "range"] = dynamic_df.apply(
+            add_range_roll, axis=1
+        )  # the `roll` modifier is stored in the `range` field temporarily
+
+        # If there are rows in the dataframe which contain empty lists, something has failed
         failed_df = dynamic_df.loc[dynamic_df["range"].str.len() == 0]
         try:
             assert failed_df.empty
@@ -184,16 +281,19 @@ class DataTransformer:
             print(failed_df)
             quit()
 
+        # Creates a column for position, which contains a list of numerical strings
         dynamic_df.loc[:, "position"] = dynamic_df.loc[:, "range"].apply(
             lambda x: [str(i) for i in range(len(x))]
         )
 
+        # Each row describes one range
         dynamic_df = dynamic_df.explode(["range", "position"])
 
         merged_dynamic_df = dynamic_df.merge(
             dynamic_modifier_df, on=["effect", "position"], how="left"
         )
 
+        # If all of these fields are still NA, it means that modifier was not matched with a modifier in our DB
         failed_df = merged_dynamic_df.loc[
             merged_dynamic_df[["minRoll", "maxRoll", "textRolls"]].isna().all(axis=1)
         ]
@@ -205,6 +305,9 @@ class DataTransformer:
             quit()
 
         def convert_range_roll_to_range(row):
+            """
+            The formula mentioned earlier
+            """
             un_processed_range = row["range"]
             if not pd.isna(row["textRolls"]):
                 text_rolls = row["textRolls"].split("-")
@@ -222,20 +325,22 @@ class DataTransformer:
 
         merged_dynamic_df["range"] = merged_dynamic_df.apply(
             convert_range_roll_to_range, axis=1
-        )
+        )  # The `range` column now truly contains the range
 
         # ---- Finishing touches ----
         processed_df = pd.concat(
             (merged_dynamic_df, merged_static_df), axis=0, ignore_index=True
-        )
-
-        finished_df = processed_df.loc[:, ["itemId", "position", "range", "modifierId"]]
+        )  # static and dynamic item modifiers are combined into one dataframe again
 
         return processed_df
 
 
 class UniqueDataTransformer(DataTransformer):
     def _create_item_modifier_table(self, json_data: list) -> None:
+        """
+        A similiar process to creating the item table, only this time the
+        relevant column contains a list and not a JSON-object
+        """
         item_df = self.item_df.copy(deep=True)
 
         item_df = item_df.explode("explicitMods", ignore_index=True)
@@ -251,8 +356,12 @@ class UniqueDataTransformer(DataTransformer):
         self.item_modifier_df = item_modifier_df
 
     def _transform_item_modifier_table(self) -> None:
+        """
+        Currently relies on locally stored files to retrieve relevant modifiers
+        """
         item_modifier_df = self.item_modifier_df
 
+        # --- Only relevant until we connect to the DB ---
         item_modifier_df["roll_file_name"] = (
             item_modifier_df["name"].str.replace("'", "").str.replace(" ", "")
         )
@@ -274,8 +383,9 @@ class UniqueDataTransformer(DataTransformer):
             temp_df = pd.read_csv(f"new_base_data/{unique}.csv", dtype=str)
             modifier_df = pd.concat((modifier_df, temp_df), axis=0, ignore_index=True)
 
-        item_modifier_df = self._get_rolls_data(
-            # df=item_modifier_df.loc[item_modifier_df["name"] == "Watcher's Eye"],
+        # --- Always relevant ---
+
+        item_modifier_df = self._get_ranges(
             df=item_modifier_df,
             modifier_df=modifier_df,
         )
@@ -283,6 +393,9 @@ class UniqueDataTransformer(DataTransformer):
         self.item_modifier_df = item_modifier_df
 
     def _clean_item_modifier_table(self):
+        """
+        Gets rid of unnecessay information, so that only fields needed for the DB remains.
+        """
         self.item_modifier_df.drop(
             [
                 "modifier",
@@ -300,14 +413,12 @@ class UniqueDataTransformer(DataTransformer):
             inplace=True,
         )
 
-        # item_modifier_df = item_modifier_df.loc[
-        #     :, ["itemId", "position", "range", "modifierId"]
-        # ]
-
 
 def main():
     json_data = load_test_data()
-    data_transformer = UniqueDataTransformer()
+    data_transformer = (
+        UniqueDataTransformer()
+    )  # eventually a system for sending the right JSON-data to the correct data-transformers need to be implemented
     data_transformer.transform_into_tables(json_data=json_data)
 
     return 0
