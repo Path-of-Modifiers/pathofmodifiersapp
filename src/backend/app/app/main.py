@@ -12,6 +12,10 @@ import sqlalchemy.orm as _orm
 app = _fastapi.FastAPI()
 
 
+@app.get("/")
+async def read_main():
+    return {"message": "Welcome to Path of Modifiers API!"}
+
 @app.post("/api/currency/", response_model=_schemas.Currency)
 async def create_currency(
     currency: _schemas.CreateCurrency,
