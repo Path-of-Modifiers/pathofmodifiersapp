@@ -8,37 +8,37 @@ services:
         condition: service_healthy
     command: ["uvicorn", "main:app", "--reload", "--port", "8000",]
 
-db:
+  db:
     image: postgres:16.1-alpine
     volumes:
-      - app-db-data:/var/lib/postgresql/data/pgdata
+      - "app-db-data:/var/lib/postgresql/data/pgdata"
     env_file:
       - .env
     environment:
-      - PGDATA=/var/lib/postgresql/data/pgdata
+      POSTGRES_DB: ${POSTGRES_DB?Variable not set}
+      POSTGRES_USER: ${POSTGRES_USER?Variable not set}
+      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD?Variable not set}'
     deploy:
       placement:
         constraints:
           - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
 
-backend:
-  image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
-  depends_on:
-    - db
-  env_file:
-    - .env
-  environment:
-    - SERVER_NAME=${DOMAIN?Variable not set}
-    - SERVER_HOST=https://${DOMAIN?Variable not set}
-    # Allow explicit env var override for tests
-    - SMTP_HOST=${SMTP_HOST}
-  build:
-    context: ./backend
-    dockerfile: backend.dockerfile
-    args:
-      INSTALL_DEV: ${INSTALL_DEV-false}
-
-pgadmin:
+  backend:
+    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      - SERVER_NAME=${DOMAIN?Variable not set}
+      - SERVER_HOST=https://${DOMAIN?Variable not set}
+      # Allow explicit env var override for tests
+      - SMTP_HOST=${SMTP_HOST}
+    build:
+      context: ./backend
+      dockerfile: backend.dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
   
 
 volumes:
