@@ -1,14 +1,11 @@
-minRoll,maxRoll,textRolls,position,effect,static,regex,modifierId
-,,,0,+7% to all Elemental Resistances per Grand Spectrum,True,,11
-,,,0,25% increased Critical Strike Chance per Grand Spectrum,True,,12
-,,,0,15% increased Elemental Damage per Grand Spectrum,True,,13
-,,,0,12% increased Elemental Damage per Grand Spectrum,True,,14
-,,,0,5% increased Elemental Damage per Grand Spectrum,True,,15
-,,,0,Gain 200 Armour per Grand Spectrum,True,,16
-,,,0,Gain 30 Mana per Grand Spectrum,True,,17
-,,,0,+1 to Minimum Endurance Charges per Grand Spectrum,True,,18
-,,,0,Minions have +10% to Critical Strike Multiplier per Grand Spectrum,True,,19
-,,,0,12% chance to Avoid Elemental Ailments per Grand Spectrum,True,,20
-,,,0,+1 to Minimum Frenzy Charges per Grand Spectrum,True,,21
-,,,0,+1 to Minimum Power Charges per Grand Spectrum,True,,22
-,,,0,5% increased Maximum Life per Grand Spectrum,True,,23
+minRoll,maxRoll,textRolls,position,effect,static,regex
+5,15,,0,15% increased Elemental Damage per Grand Spectrum,,15% (increased|reduced) Elemental Damage per Grand Spectrum([+-]?([0-9]*[.])?[0-9]+)
+,,,0,+7% to all Elemental Resistances per Grand Spectrum,True,
+,,,0,25% increased Critical Strike Chance per Grand Spectrum,True,
+,,,0,Gain 30 Mana per Grand Spectrum,True,
+,,,0,+1 to Minimum Endurance Charges per Grand Spectrum,True,
+,,,0,Minions have +10% to Critical Strike Multiplier per Grand Spectrum,True,
+,,,0,12% chance to Avoid Elemental Ailments per Grand Spectrum,True,
+,,,0,+1 to Minimum Frenzy Charges per Grand Spectrum,True,
+,,,0,+1 to Minimum Power Charges per Grand Spectrum,True,
+,,,0,5% increased Maximum Life per Grand Spectrum,True,
