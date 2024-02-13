@@ -51,6 +51,7 @@ class DataTransformer:
         The `item_modifier` table heavily relies on what type of item the modifiers
         belong to.
         """
+        self.item_modifier_df = pd.DataFrame()
         raise NotImplementedError("Only available in child classes")
 
     def _transform_item_table(self) -> None:
@@ -125,7 +126,19 @@ class DataTransformer:
         """
         raise NotImplementedError("Only available in child classes")
 
-    def transform_into_tables(self, json_data: list):
+    def _save_tables_to_files(self):
+        """
+        Saves the tables into their own file
+        """
+        tables = {
+            "stash": self.stash_df,
+            "item": self.item_df,
+            "item_modifer": self.item_modifier_df,
+        }
+        for key in tables:
+            tables[key].to_csv(f"transformed_data\\{key}.csv", index=False)
+
+    def transform_into_tables(self, json_data: list) -> None:
         """
         The process of extracting data from the JSON-data, transforming it and cleaning it.
         """
@@ -139,6 +152,8 @@ class DataTransformer:
         self._clean_stash_table()
         self._clean_item_table()
         self._clean_item_modifier_table()
+
+        self._save_tables_to_files()
 
     @staticmethod
     def _expand_df(
@@ -239,7 +254,7 @@ class DataTransformer:
             df.loc[
                 df["alternateEffect"] == df["effect"],
                 "alternateEffect",
-            ] = pd.Na  # Gets rid of unneccesary alternate effects
+            ] = pd.NA  # Gets rid of unneccesary alternate effects
 
             return df
 
