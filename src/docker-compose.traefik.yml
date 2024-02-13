@@ -6,12 +6,16 @@ services:
       ports:
         # Listen on port 80, default for HTTP, necessary to redirect to HTTPS
         - 80:80
+        # Listen on port 443, default for HTTPS
+        - 443:443
       restart: always
       networks:
         - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       volumes:
         # Add Docker as a mounted volume, so that Traefik can read the labels of other services
         - /var/run/docker.sock:/var/run/docker.sock:ro
+        # Mount the volume to store the certificates. When new container stops/starts, it will preserve and load the certificates in this folder
+        - traefik-public-certificates:/certificates
       command:
         # Enable Docker in Traefik, so that it reads labels from Docker services
         - --providers.docker
@@ -19,6 +23,14 @@ services:
         - --providers.docker.exposedbydefault=false
         # Create an entrypoint "http" listening on port 80
         - --entrypoints.http.address=:80
+        # Create an entrypoint "https" listening on port 443
+        - --entrypoints.https.address=:443
+        # Create the certificate resolver "le" for Let's Encrypt, uses the environmnet variable EMAIL
+        - --certificateresolvers.le.acme.email=${SMTP_USER?Variable not set}
+        # Store the Let's Encrypt certificates in the mounted volume
+        - --certificateresolvers.le.acme.storage=/certificates/acme.json
+        # Use the TLS Challenge for Let's Encrypt
+        - --certificateresolvers.le.acme.tlschallenge=true
         # Enable the access log, with HTTP request
         - --accesslog
         # Enable the Traefik log, for configurations and errors
@@ -35,3 +47,7 @@ networks:
   traefik-public:
     # Allow setting it to false for testing
     external: true
+
+volumes:
+  traefik-public-certificates:
+    external: false
