@@ -20,7 +20,7 @@ ENV POETRY_ENV=${POETRY_ENV} \
   # Make sure to update it!
 
 # Install Poetry
-RUN curl -sSL https://install.python-poetry.org | python3 - --version $POETRY_VERSION
+RUN curl -sSL https://install.python-poetry.org | python3 - 
 
 WORKDIR /app
 
@@ -28,7 +28,8 @@ WORKDIR /app
 COPY ./app/pyproject.toml ./app/poetry.lock* /app/
 
 # Project initialization:
-RUN poetry install $(test "$POETRY_ENV" == production && echo "--only=main") --no-interaction --no-ansi
+RUN POETRY_VIRTUALENVS_CREATE=false poetry install
+RUN poetry install --no-interaction
 
 COPY ./app /app
 ENV PYTHONPATH=/app
