@@ -14,6 +14,8 @@ services:
           - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
 
   backend:
+    ports:
+      - 80:80
     volumes:
       - ./backend/app:/app
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
@@ -41,6 +43,21 @@ services:
         - traefik.http.routers.${STACK_NAME?Variable not set}--backend-http.entrypoints=http
         # Use the traefik-public network (declared below)
         - traefik.docker.network=${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+        # Make Traefik use this domain in HTTPS
+        - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.entrypoints=https
+        - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.rule=Host(`${DOMAIN?Variable not set}`)
+        - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.tls=true
+        # Use the "le" (Let's Encrypt) resolver created in the traefik-public service
+        - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.tls.certresolver=le
+        # https-redirect middleware to redirect HTTP to HTTPS
+        - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
+        - traefik.http.middlewares.https-redirect.redirectscheme.permanent=true
+        # https-redirect middleware to redirect HTTP to HTTPS
+        - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.middlewares=https-redirect
+    networks:
+      # Use the public network created to be shared between Traefik and
+      # any other service that needs to be publicly available with HTTPS
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
     restart: always
 
 volumes:
