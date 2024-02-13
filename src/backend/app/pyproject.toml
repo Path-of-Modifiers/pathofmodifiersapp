@@ -5,6 +5,8 @@ description = "Web application to manage Path of Exile modifiers and their item 
 authors = ["Path of Modifiers <pomodifiers@outlook.com>"]
 
 [tool.poetry.dependencies]
+python = "^3.11" # for Python version
+fastapi = "^0.68.0" # for web APIs
 annotated-types="0.6.0" # for type annotations
 anyio="4.2.0" # for async I/O
 click="8.1.7" # for command-line interfaces
