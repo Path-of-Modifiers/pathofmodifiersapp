@@ -24,6 +24,10 @@ services:
           - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
 
   backend:
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./backend/app:/app
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
     depends_on:
       - db
@@ -36,7 +40,7 @@ services:
       - SMTP_HOST=${SMTP_HOST}
     build:
       context: ./backend
-      dockerfile: backend.dockerfile
+      dockerfile: Dockerfile
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
   
