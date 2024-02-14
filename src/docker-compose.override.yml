@@ -1,5 +1,13 @@
 # Useful for development and testing 
 services:
+  db:
+    ports: 
+      - 5432:5432
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.rule=Host(`localhost`)"
+      - "traefik.http.services.${STACK_NAME?Variable not set}-backend-http.loadbalancer.server.port=5432"
+      - "traefik.docker.network={$TRAEFIK_PUBLIC_NETWORK?Variable not set}" 
 
   backend:
     ports:
