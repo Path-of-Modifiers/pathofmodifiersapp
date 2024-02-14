@@ -2,6 +2,7 @@ services:
   
   db:
     image: postgres:16.1-alpine
+    restart: always
     volumes:
       - "pom-db-data:/var/lib/postgresql/data"
     env_file:
@@ -14,6 +15,8 @@ services:
       placement:
         constraints:
           - node.labels.${STACK_NAME?Variable not set}.pom-db-data == true
+    networks:
+      - traefik-public
 
   backend:
     volumes:
