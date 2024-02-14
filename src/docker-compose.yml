@@ -3,19 +3,19 @@ services:
   db:
     image: postgres:16.1-alpine
     volumes:
-      - "app-db-data:/var/lib/postgresql/data"
+      - "pom-db-data:/var/lib/postgresql/data"
     env_file:
       - .env
     environment:
-      - PGDATA=/var/lib/postgresql/data/pgdata
+      POSTGRES_DB: ${POSTGRES_DB?Variable not set}
+      POSTGRES_USER: ${POSTGRES_USER?Variable not set}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?Variable not set}
     deploy:
       placement:
         constraints:
-          - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
+          - node.labels.${STACK_NAME?Variable not set}.pom-db-data == true
 
   backend:
-    ports:
-      - 80:80
     volumes:
       - ./backend/app:/app
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
@@ -61,7 +61,7 @@ services:
     restart: always
 
 volumes:
-  app-db-data: 
+  pom-db-data: 
 
 networks:
   traefik-public:
