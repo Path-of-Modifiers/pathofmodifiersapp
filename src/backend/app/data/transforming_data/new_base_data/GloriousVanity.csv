@@ -1,4 +1,4 @@
-minRoll,maxRoll,textRolls,position,effect,static,regex
-100,8000,,0,Bathed in the blood of # sacrificed in the name of # Passives in radius are Conquered by the Vaal,,Bathed in the blood of ([+-]?([0-9]*[.])?[0-9]+) sacrificed in the name of (Xibaqua|Ahuana|Doryani) Passives in radius are Conquered by the Vaal
-,,Xibaqua-Ahuana-Doryani,1,Bathed in the blood of # sacrificed in the name of # Passives in radius are Conquered by the Vaal,,Bathed in the blood of ([+-]?([0-9]*[.])?[0-9]+) sacrificed in the name of (Xibaqua|Ahuana|Doryani) Passives in radius are Conquered by the Vaal
-,,,0,Historic,True,
+minRoll,maxRoll,textRolls,position,effect,static,regex,modifierId
+100,8000,,0,Bathed in the blood of # sacrificed in the name of # Passives in radius are Conquered by the Vaal,,Bathed in the blood of ([+-]?([0-9]*[.])?[0-9]+) sacrificed in the name of (Xibaqua|Ahuana|Doryani|Zerphi) Passives in radius are Conquered by the Vaal,8
+,,Xibaqua-Ahuana-Doryani-Zerphi,1,Bathed in the blood of # sacrificed in the name of # Passives in radius are Conquered by the Vaal,,Bathed in the blood of ([+-]?([0-9]*[.])?[0-9]+) sacrificed in the name of (Xibaqua|Ahuana|Doryani|Zerphi) Passives in radius are Conquered by the Vaal,9
+,,,0,Historic,True,,10
