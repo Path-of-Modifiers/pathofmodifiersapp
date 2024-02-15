@@ -12,13 +12,13 @@ Website application for checking prices on explicit and affixes specific items i
 
 # Technical information
 ## Download python requirements:
- 1. Enter a local virtual enviroment
+ 1. Enter a local python virtual enviroment
  2. Make sure `poetry` package is installed
     - If not run `pip install poetry`
  3. cd into `.\src\backend\app`
  4. Run `poetry install`
 
-## Docker-compose
+## Create and run docker containers
 1. Enter `.\src`
 2. Run `docker-compose up -d`
     - This will trigger the override docker-compose
@@ -38,3 +38,17 @@ Website application for checking prices on explicit and affixes specific items i
     &#8594; To handle proxy and https communication
  - Poetry\
     &#8594; To handle python packages
+
+## Local alembic migrations
+This section describes how to migrate changes made in database models to the local database postgres server
+
+Run `docker container exec -it src-backend-1 bash` to enter the local backend container
+
+### How to migrate alembic database model changes
+1. Run `alembic revision --autogenerate -m "Message"` to create a alembic revision
+2. Run `alembic upgrade head` to migrate database changes
+
+### How to revert the database to an alembic revision
+- Run `alembic downgrade -1` to revert to the last revision made
+
+    

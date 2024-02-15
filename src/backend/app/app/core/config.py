@@ -2,12 +2,13 @@ from typing import List, Optional
 from pydantic import PostgresDsn, AnyHttpUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+import os
 
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
 
     DATABASE_URL: Optional[PostgresDsn] = (
-        "postgresql://pom_oltp_superuser:sjukebarna123@db:5432/pom_oltp_db"
+        os.getenv("DATABASE_URL") 
     )
 
     model_config = SettingsConfigDict(env_prefix="POM_MODEL_")
