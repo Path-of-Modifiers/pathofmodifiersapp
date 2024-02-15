@@ -1,61 +1,40 @@
 # Path of Modifiers Application  
 Website application for checking prices on explicit and affixes specific items in Path of Exile  
 
+## Current goals we are working towards:
+ - Modifiers on unique jewels such as Watcher's Eye and Sublime Vision
+ - Rolls for certain unique jewels such as Timeless Jewels and Voices.
 
-## Download python requirements for fastapi-postgres-docker:
-cd into /fastapi-postgres-docker
-1. $ pip install pipreqs
-2. $ pipreqs .
-3. $ pip install -r requirements.txt
+## Future goals:
+ - Introduce other uniques where rolls matter
+ - Introduce synthesis implicit tracking
+ - Introduce fractured explicit tracking
 
+# Technical information
+## Download python requirements:
+ 1. Enter a local virtual enviroment
+ 2. Make sure `poetry` package is installed
+    - If not run `pip install poetry`
+ 3. cd into `.\src\backend\app`
+ 4. Run `poetry install`
 
-## Setup docker container for PostgreSQL database:
-$ docker pull postgres:alpine  
-$ docker run --name docker-pom_oltp_db_ct -e POSTGRES_PASSWORD=sjukebarna123 -d -p 5432:5432 postgres:alpine  
-$ docker exec -it docker-pom_oltp_db_ct bash  
+## Docker-compose
+1. Enter `.\src`
+2. Run `docker-compose up -d`
+    - This will trigger the override docker-compose
 
-
-## Version on dependencies and download python venv
-We use:  
-Python version 3.12.1 ($ python -V)  
-Pip version 23.3.2 ($ pip -V)  
-PostgreSQL version 16.1  
-Pydantic version: 2.5.3   
-
-Activate python venv:
-1. cd into \fastapi-postgres-docker
-$ python3 -m venv venv  
-$ source venv/Scripts/Activate  
-Have venv in .gitignore  
-
-## Postgresdatabase database:
-Database name: pom_oltp_db  
-Username: pom_oltp_superuser  
-Password: sjukebarna123  
-
-## Run API:
-$ uvicorn main:app --reload
-
-## Create database with PostgreSQL and make it available outside
-1. $ psql -U postgres  
-2. $ create database pom_oltp_db;  
-3. $ CREATE USER pom_oltp_superuser WITH SUPERUSER ENCRYPTED PASSWORD 'sjukebarna123';  
-4. $ grant all privileges on database pom_oltp_db to pom_oltp_superuser;  
-5. $ \c pom_oltp_db   
-6. $ psql -h localhost -p 5432 postgres  
-
-
-Useful database commands:
-1. Check tables: 
-$ \dt  
-2. User connection to db: 
-$ \c pom_oltp_db
-3. Add tables to the db:   
-cd into /fast_api-postgres-docker/databases/OLTP_db 
-$ python  
-$ import services  
-$ services._add_tables()  
-4. Check if database is running:
-$ ps -ef | grep postgres  
-6. Connect to postgres:
-$ psql -U postgres  
+## Current tech-stack
+ - Docker\
+    &#8594; To set up containers
+ - Fast-API\
+    &#8594; To handle communication with database
+ - SQLAlchemy\
+    &#8594; To set up database
+ - Alembic\
+    &#8594; To enable database version controll
+ - GitHub\
+    &#8594; To enable code version controll
+ - Traefik\
+    &#8594; To handle proxy and https communication
+ - Poetry\
+    &#8594; To handle python packages
