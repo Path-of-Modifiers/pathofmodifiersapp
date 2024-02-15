@@ -10,11 +10,7 @@ from app.core.models.models import Base
 
 
 def get_url():
-    user = os.getenv("POSTGRES_USER")
-    password = os.getenv("POSTGRES_PASSWORD")
-    server = os.getenv("POSTGRES_SERVER")
-    db = os.getenv("POSTGRES_DB")
-    return f"postgresql://{user}:{password}@{server}/{db}"
+    return os.getenv("DATABASE_URL")
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
