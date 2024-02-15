@@ -1,7 +1,7 @@
 services:
   
   db:
-    image: postgres:16.1-alpine
+    image: postgres:16.1
     restart: always
     volumes:
       - "pom-db-data:/var/lib/postgresql/data"
@@ -16,7 +16,7 @@ services:
         constraints:
           - node.labels.${STACK_NAME?Variable not set}.pom-db-data == true
     networks:
-      - traefik-public
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
 
   backend:
     volumes:
@@ -36,27 +36,7 @@ services:
       dockerfile: Dockerfile
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
-    deploy:
-      labels:
-        - traefik.enable=true
-        # Define the port inside of the Docker service to use
-        - traefik.http.services.${STACK_NAME?Variable not set}-backend.loadbalancer.server.port=80
-        # Make Trawefik use this domain in HTTP
-        - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.rule=Host(`${DOMAIN?Variable not set}`)
-        - traefik.http.routers.${STACK_NAME?Variable not set}--backend-http.entrypoints=http
-        # Use the traefik-public network (declared below)
-        - traefik.docker.network=${TRAEFIK_PUBLIC_NETWORK?Variable not set}
-        # Make Traefik use this domain in HTTPS
-        - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.entrypoints=https
-        - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.rule=Host(`${DOMAIN?Variable not set}`)
-        - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.tls=true
-        # Use the "le" (Let's Encrypt) resolver created in the traefik-public service
-        - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.tls.certresolver=le
-        # https-redirect middleware to redirect HTTP to HTTPS
-        - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
-        - traefik.http.middlewares.https-redirect.redirectscheme.permanent=true
-        # https-redirect middleware to redirect HTTP to HTTPS
-        - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.middlewares=https-redirect
+
     networks:
       # Use the public network created to be shared between Traefik and
       # any other service that needs to be publicly available with HTTPS
