@@ -2,8 +2,10 @@ import sqlalchemy as _sql
 import sqlalchemy.ext.declarative as _declarative
 import sqlalchemy.orm as _orm
 
+import os
 
-DATABASE_URL = "postgresql://docker-pom_oltp_db_ct:sjukebarna123@localhost/pathofmodifiers_db"
+
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 engine = _sql.create_engine(DATABASE_URL)
 
