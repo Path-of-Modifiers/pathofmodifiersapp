@@ -1,3 +1,5 @@
-.vscode/launch.json
+.vscode
 *\__pycache__
 *\venv
+
+*\poetry.lock
