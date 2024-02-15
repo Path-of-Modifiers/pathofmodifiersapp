@@ -23,6 +23,21 @@ Website application for checking prices on explicit and affixes specific items i
 2. Run `docker-compose up -d`
     - This will trigger the override docker-compose
 
+## Access pgAdmin
+1. Go to `http://localhost:8888/`
+2. Enter credentials
+   - email: `user@pgadmin.com`
+   - password: `password`
+3. Add server
+   - General &#8594; Name = pom_oltp_db
+   - Connection &#8594; Host name/address = db
+   - Connection &#8594; username = pom_oltp_superuser
+   - Connection &#8594; password = sjukebarna123
+   - Leave everything else unchanged
+4. Save
+5. Tables can be found under:
+   - pom_oltp_db>Databases>pom_oltp_db>Schemas>Tables
+
 ## Current tech-stack
  - Docker\
     &#8594; To set up containers
@@ -38,6 +53,8 @@ Website application for checking prices on explicit and affixes specific items i
     &#8594; To handle proxy and https communication
  - Poetry\
     &#8594; To handle python packages
+ - pgAdmin\
+    &#8594; To view and modify the database
 
 ## Local alembic migrations
 This section describes how to migrate changes made in database models to the local database postgres server
