@@ -3,22 +3,15 @@ services:
   db:
     ports: 
       - 5432:5432
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.rule=Host(`localhost`)"
-      - "traefik.http.services.${STACK_NAME?Variable not set}-backend-http.loadbalancer.server.port=5432"
-      - "traefik.docker.network={$TRAEFIK_PUBLIC_NETWORK?Variable not set}" 
+
+    
 
   backend:
     ports:
       - 80:80
     environment:
       - SERVER_HOST=http://${DOMAIN?Variable not set}
-    labels:
-      - traefik.enable=true
-      - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
-      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
-      - traefik.http.services.${STACK_NAME?Variable not set}-backend.loadbalancer.server.port=80
+
 
 
 
