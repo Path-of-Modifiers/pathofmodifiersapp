@@ -46,7 +46,9 @@ Run `docker container exec -it src-backend-1 bash` to enter the local backend co
 
 ### How to migrate alembic database model changes
 1. Run `alembic revision --autogenerate -m "Message"` to create a alembic revision
-2. Run `alembic upgrade head` to migrate database changes
+   - [What does and doesn't Alembic autamtically detect](https://alembic.sqlalchemy.org/en/latest/autogenerate.html#what-does-autogenerate-detect-and-what-does-it-not-detect)
+2. Review the generated migration template
+3. Run `alembic upgrade head` to migrate database changes
 
 ### How to revert the database to an alembic revision
 - Run `alembic downgrade -1` to revert to the last revision made
