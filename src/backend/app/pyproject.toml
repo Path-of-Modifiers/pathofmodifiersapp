@@ -23,7 +23,7 @@ typing="3.7.4.3" #
 typing_extensions="4.9.0" 
 uvicorn="0.27.0.post1"
 alembic = "^1.13.1" # for database migrations
-psycopg2 = {extras = ["binary"], version = "^2.9.9"} # binary is for development only
+psycopg2 = "^2.9.9" # for PostgreSQL database
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.11.0" # for formatting code
