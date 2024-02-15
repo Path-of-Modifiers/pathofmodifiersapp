@@ -1,1 +1,0 @@
-DATABASE_URL = "postgresql://pom_oltp_superuser:sjukebarna123@localhost/pom_oltp_db"

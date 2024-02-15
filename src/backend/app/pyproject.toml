@@ -1,0 +1,45 @@
+[tool.poetry]
+name = "pathofmodifiersapp"
+version = "0.1.0"
+description = "Web application to manage Path of Exile modifiers and their item price listed"
+authors = ["Path of Modifiers <pomodifiers@outlook.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11" # for Python version
+fastapi = "^0.109.2" # for web APIs
+annotated-types="0.6.0" # for type annotations
+anyio="4.2.0" # for async I/O
+click="8.1.7" # for command-line interfaces
+colorama="0.4.6" # for colored output
+sniffio="1.3.0" # for async I/O
+DateTime="5.4" # for date and time
+idna="3.6" # for network communication
+pydantic="2.6.1" # for data validation
+pydantic_settings="2.1.0" # for settings management
+pydantic_core="2.16.2" # for data validation
+pytz="2024.1"    # for time zones
+SQLAlchemy="2.0.25" # for database
+typing="3.7.4.3" # 
+typing_extensions="4.9.0" 
+uvicorn="0.27.0.post1"
+alembic = "^1.13.1" # for database migrations
+psycopg2 = {extras = ["binary"], version = "^2.9.9"} # binary is for development only
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.11.0" # for formatting code
+isort = "^5.13.2" # for sorting imports
+autoflake = "^2.2.1" # for removing unused imports
+pytest = "^8.0.0" # for testing
+pytest-cov = "^4.1.0" # for testing
+
+[tool.isort]
+multi_line_output = 3 # for multi-line imports
+include_trailing_comma = true # for trailing commas
+force_grid_wrap = 0 # for grid wrapping
+line_length = 88 # for line length
+
+
+[build-system]
+# Should be the same as `$POETRY_VERSION`:
+requires = ["poetry-core>=1.7"]
+build-backend = "poetry.core.masonry.api"
