@@ -1,6 +1,7 @@
 from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
 
 from fastapi.encoders import jsonable_encoder
+from fastapi import HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -24,7 +25,12 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self.model = model
 
     def get(self, db: Session, id: Any) -> Optional[ModelType]:
-        return db.query(self.model).filter(self.model.id == id).first()
+        db_obj = db.query(self.model).filter(self.model.id == id).first()
+        if db_obj is None:
+            raise HTTPException(
+                status_code=404, detail=f"Object in {type(self.model)} not found"
+            )
+        return db_obj
 
     def create(
         self, db: Session, *, obj_in: Union[CreateSchemaType, ListCreateSchemaType]
@@ -35,3 +41,34 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db.commit()
         db.refresh(db_obj)
         return db_obj
+
+    def update(
+        self,
+        db: Session,
+        *,
+        db_obj: ModelType,
+        obj_in: Union[UpdateSchemaType, ListUpdateSchemaType, Dict[str, Any]],
+    ) -> ModelType:
+        obj_data = jsonable_encoder(db_obj)
+        if isinstance(obj_in, dict):
+            update_data = obj_in
+        else:
+            # update_data = obj_in.dict(exclude_unset=True)
+            update_data = obj_in.model_dump()
+        for field in obj_data:
+            if field in update_data:
+                setattr(db_obj, field, update_data[field])
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+
+    def remove(self, db: Session, *, id: int) -> ModelType:
+        obj = db.query(self.model).get(id)
+        if obj is None:
+            raise HTTPException(
+                status_code=404, detail=f"Object in {type(self.model)} not found"
+            )
+        db.delete(obj)
+        db.commit()
+        return obj
