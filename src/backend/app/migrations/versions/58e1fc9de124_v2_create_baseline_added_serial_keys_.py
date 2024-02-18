@@ -40,7 +40,6 @@ def upgrade() -> None:
     sa.Column('iconUrl', sa.String(), nullable=False),
     sa.Column('createdAt', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('currencyId'),
-    sa.UniqueConstraint('iconUrl')
     )
     op.create_index(op.f('ix_currency_currencyId'), 'currency', ['currencyId'], unique=False)
     op.create_index(op.f('ix_currency_currencyName'), 'currency', ['currencyName'], unique=False)
