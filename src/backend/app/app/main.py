@@ -27,14 +27,14 @@ async def create_currency(
     currency: _schemas.CurrencyCreate,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
-    return await currencyCRUD.create(currency=currency, db=db)
+    return await currencyCRUD.create(db=db, obj_in=currency)
 
 
 @app.get("/api/currency/{currencyId}", response_model=_schemas.Currency)
 async def get_currency(
     currencyName: str, db: _orm.Session = _fastapi.Depends(_services.get_db)
 ):
-    currency = await currencyCRUD.get(currencyName=currencyName, db=db)
+    currency = await currencyCRUD.get(db=db, currencyName=currencyName)
     return currency
 
 
@@ -60,7 +60,10 @@ async def update_currency(
     currencyData: _schemas.CurrencyUpdate,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
-    currency = await currencyCRUD.get(db=db, id=currencyId,)
+    currency = await currencyCRUD.get(
+        db=db,
+        id=currencyId,
+    )
 
     return await currencyCRUD.update(
         currencyData=currencyData, currency=currency, db=db
