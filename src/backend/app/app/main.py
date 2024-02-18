@@ -19,14 +19,12 @@ async def read_main():
     return {"message": "Welcome to Path of Modifiers API!"}
 
 
-currencyCRUD = _crud.CRUDBase[
-    _schemas.Currency, _schemas.CreateCurrency, _schemas.CreateCurrency
-]
+currencyCRUD = _crud.CRUDBase(schema=_schemas.Currency)
 
 
 @app.post("/api/currency/", response_model=_schemas.Currency)
 async def create_currency(
-    currency: _schemas.CurrencyInDBCreate,
+    currency: _schemas.CurrencyCreate,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
     return await currencyCRUD.create(currency=currency, db=db)
@@ -37,16 +35,12 @@ async def get_currency(
     currencyName: str, db: _orm.Session = _fastapi.Depends(_services.get_db)
 ):
     currency = await currencyCRUD.get(currencyName=currencyName, db=db)
-    if currency is None:
-        raise _fastapi.HTTPException(status_code=404, detail="currency not found")
     return currency
 
 
 @app.get("/api/currency/", response_model=List[_schemas.Currency])
 async def get_all_currency(db: _orm.Session = _fastapi.Depends(_services.get_db)):
     all_currency = await currencyCRUD.get_all(db=db)
-    if all_currency is None:
-        raise _fastapi.HTTPException(status_code=404, detail="all currency not found")
     return all_currency
 
 
@@ -55,23 +49,19 @@ async def delete_currency(
     currencyName: str, db: _orm.Session = _fastapi.Depends(_services.get_db)
 ):
     currency = await currencyCRUD.get(currencyName=currencyName, db=db)
-    if currency is None:
-        raise _fastapi.HTTPException(status_code=404, detail="currency not found")
-    await _services.delete_currency(currency, db=db)
+    await currencyCRUD.remove(currency, db=db)
 
     return "currency deleted successfully"
 
 
-@app.put("/api/currency/{currencyName}", response_model=_schemas.Currency)
+@app.put("/api/currency/{currencyId}", response_model=_schemas.Currency)
 async def update_currency(
-    currencyName: str,
-    currencyData: _schemas.CreateCurrency,
+    currencyId: str,
+    currencyData: _schemas.CurrencyUpdate,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
-    currency = await _services.get_currency(currencyName=currencyName, db=db)
-    if currency is None:
-        raise _fastapi.HTTPException(status_code=404, detail="currency not found")
+    currency = await currencyCRUD.get(db=db, id=currencyId,)
 
-    return await _services.update_currency(
+    return await currencyCRUD.update(
         currencyData=currencyData, currency=currency, db=db
     )
