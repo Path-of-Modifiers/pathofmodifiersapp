@@ -17,13 +17,27 @@ class Currency(Base):
 
     __tablename__ = "currency"
 
-    currencyName = _sql.Column(
-        _sql.String(), primary_key=True, index=True, nullable=False
+    currency_field_seq = _sql.Sequence(
+        "currency_id_seq",
+        start=1,
+        increment=1,
+        minvalue=1,
+        cycle=False,
+        cache=1,
+        schema=None,
     )
+    currencyId = _sql.Column(
+        _sql.BigInteger(),
+        currency_field_seq,
+        server_default=currency_field_seq.next_value(),
+        primary_key=True,
+        index=True,
+        nullable=False,
+    )
+    currencyName = _sql.Column(_sql.String(), index=True, nullable=False)
     valueInChaos = _sql.Column(_sql.Float(), nullable=False)
     iconUrl = _sql.Column(_sql.String(), nullable=False, unique=True)
     createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
-    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
 
 class ItemBaseType(Base):
@@ -41,7 +55,23 @@ class Item(Base):
 
     __tablename__ = "item"
 
-    itemId = _sql.Column(_sql.String(), primary_key=True, index=True, nullable=False)
+    item_field_seq = _sql.Sequence(
+        "item_id_seq",
+        start=1,
+        increment=1,
+        minvalue=1,
+        cycle=False,
+        cache=1,
+        schema=None,
+    )
+    itemId = _sql.Column(
+        _sql.BigInteger(),
+        item_field_seq,
+        index=True,
+        nullable=False,
+        server_default=item_field_seq.next_value(),
+    )
+    gameItemId = _sql.Column(_sql.String(), index=True, nullable=False)
     stashId = _sql.Column(
         _sql.String(),
         _sql.ForeignKey("stash.stashId", ondelete="CASCADE"),
@@ -61,8 +91,8 @@ class Item(Base):
     itemLevel = _sql.Column(_sql.SmallInteger(), nullable=False)
     forumNote = _sql.Column(_sql.String())
     currencyAmount = _sql.Column(_sql.Float(24))
-    currencyName = _sql.Column(
-        _sql.String(), _sql.ForeignKey("currency.currencyName", ondelete="RESTRICT")
+    currencyId = _sql.Column(
+        _sql.BigInteger(), _sql.ForeignKey("currency.currencyId", ondelete="RESTRICT")
     )
     corrupted = _sql.Column(_sql.Boolean())
     delve = _sql.Column(_sql.Boolean())
@@ -80,14 +110,30 @@ class Item(Base):
     foilVariation = _sql.Column(_sql.Integer())
     inventoryId = _sql.Column(_sql.String())
     createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
-    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
+
+    __table_args__ = (_sql.PrimaryKeyConstraint(itemId, gameItemId),)
 
 
 class Modifier(Base):
 
     __tablename__ = "modifier"
 
-    modifierId = _sql.Column(_sql.String(), nullable=False, index=True)
+    modifier_field_seq = _sql.Sequence(
+        "modifier_id_seq",
+        start=1,
+        increment=1,
+        minvalue=1,
+        cycle=False,
+        cache=1,
+        schema=None,
+    )
+    modifierId = _sql.Column(
+        _sql.BigInteger(),
+        modifier_field_seq,
+        index=True,
+        nullable=False,
+        server_default=modifier_field_seq.next_value(),
+    )
     position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
     minRoll = _sql.Column(_sql.Float(24))
     maxRoll = _sql.Column(_sql.Float(24))
@@ -109,49 +155,31 @@ class Modifier(Base):
     __table_args__ = (_sql.PrimaryKeyConstraint(modifierId, position),)
 
 
-class Transaction(Base):
-
-    __tablename__ = "transaction"
-
-    transactionId = _sql.Column(
-        _sql.Integer(), autoincrement=True, primary_key=True, index=True, nullable=False
-    )
-    itemId = _sql.Column(
-        _sql.String(),
-        _sql.ForeignKey("item.itemId", ondelete="CASCADE"),
-        nullable=False,
-    )
-    accountName = _sql.Column(
-        _sql.String(),
-        _sql.ForeignKey("account.accountName", ondelete="CASCADE"),
-        nullable=False,
-    )
-    currencyAmount = _sql.Column(_sql.Float(24), nullable=False)
-    currencyName = _sql.Column(
-        _sql.String(),
-        _sql.ForeignKey("currency.currencyName", ondelete="RESTRICT"),
-        nullable=False,
-    )
-    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
-    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
-
-
 class ItemModifier(Base):
 
     __tablename__ = "item_modifier"
 
     itemId = _sql.Column(
-        _sql.String(),
-        _sql.ForeignKey("item.itemId", ondelete="CASCADE"),
+        _sql.BigInteger(),
         nullable=False,
         index=True,
     )
-    modifierId = _sql.Column(_sql.String(), nullable=False, index=True)
+    gameItemId = _sql.Column(
+        _sql.String(),
+        nullable=False,
+        index=True,
+    )
+    modifierId = _sql.Column(_sql.BigInteger(), nullable=False, index=True)
     position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
     range = _sql.Column(_sql.Float(24))
 
     __table_args__ = (
-        _sql.PrimaryKeyConstraint(itemId, modifierId, position),
+        _sql.PrimaryKeyConstraint(itemId, gameItemId, modifierId, position),
+        _sql.ForeignKeyConstraint(
+            [itemId, gameItemId],
+            ["item.itemId", "item.gameItemId"],
+            ondelete="CASCADE",
+        ),
         _sql.ForeignKeyConstraint(
             [modifierId, position],
             ["modifier.modifierId", "modifier.position"],

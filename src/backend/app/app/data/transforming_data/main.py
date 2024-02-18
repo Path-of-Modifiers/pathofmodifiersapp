@@ -1,5 +1,3 @@
-# import schemas as _schemas
-from flatten_json import flatten
 import json
 import pandas as pd
 
@@ -42,7 +40,10 @@ class DataTransformer:
         )  # Extracts items-json
 
         item_df["stashId"] = stash_df["id"]
-        item_df.rename(columns={"id": "itemId"}, inplace=True)
+        item_df["itemId"] = (
+            item_df.index
+        )  # + n_items_in_db <------------ Needs to be implemented: TODO
+        item_df.rename(columns={"id": "gameItemId"}, inplace=True)
 
         self.item_df = item_df
 
@@ -365,6 +366,7 @@ class UniqueDataTransformer(DataTransformer):
         )  # Extracts items-json
 
         item_modifier_df["itemId"] = item_df["itemId"]
+        item_modifier_df["gameItemId"] = item_df["gameItemId"]
         item_modifier_df["name"] = item_df["name"]
         item_modifier_df.rename({0: "modifier"}, axis=1, inplace=True)
 
