@@ -45,7 +45,9 @@ class ItemBaseType(Base):
 
     __tablename__ = "item_base_type"
 
-    id = _sql.Column("baseType", _sql.String(), nullable=False, primary_key=True, index=True)
+    id = _sql.Column(
+        "baseType", _sql.String(), nullable=False, primary_key=True, index=True
+    )
     category = _sql.Column(_sql.String(), nullable=False, unique=True)
     subCategory = _sql.Column(JSONB(), nullable=False)
     createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
@@ -195,7 +197,9 @@ class Stash(Base):
 
     __tablename__ = "stash"
 
-    id = _sql.Column("stashId", _sql.String(), primary_key=True, index=True, nullable=False)
+    id = _sql.Column(
+        "stashId", _sql.String(), primary_key=True, index=True, nullable=False
+    )
     accountName = _sql.Column(
         _sql.String(),
         _sql.ForeignKey("account.accountName", ondelete="CASCADE"),
@@ -212,7 +216,7 @@ class Account(Base):
     __tablename__ = "account"
 
     id = _sql.Column(
-        "accountId", _sql.String(), primary_key=True, index=True, nullable=False
+        "accountName", _sql.String(), primary_key=True, index=True, nullable=False
     )
     isBanned = _sql.Column(_sql.Boolean())
     createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
