@@ -92,7 +92,7 @@ class Item(Base):
     forumNote = _sql.Column(_sql.String())
     currencyAmount = _sql.Column(_sql.Float(24))
     currencyId = _sql.Column(
-        _sql.Integer(), _sql.ForeignKey("currency.currencyId", ondelete="RESTRICT")
+        _sql.BigInteger(), _sql.ForeignKey("currency.currencyId", ondelete="RESTRICT")
     )
     corrupted = _sql.Column(_sql.Boolean())
     delve = _sql.Column(_sql.Boolean())
