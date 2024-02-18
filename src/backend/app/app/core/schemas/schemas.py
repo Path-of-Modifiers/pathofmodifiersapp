@@ -28,7 +28,6 @@ class CurrencyUpdate(_BaseCurrency):
 
 # Properties shared by models stored in DB
 class CurrencyInDBBase(_BaseCurrency):
-    id: int  # currencyId
     currencyName: str
     valueInChaos: float
     iconUrl: str
@@ -42,8 +41,9 @@ class Currency(CurrencyInDBBase):
     pass
 
 
-# Properties stored in DB on creation
+# Properties stored in DB 
 class CurrencyInDB(CurrencyInDBBase):
+    createdAt: Optional[_dt.datetime]
     pass
 
 
