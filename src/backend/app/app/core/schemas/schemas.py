@@ -7,6 +7,7 @@ from pydantic import Json
 class _BaseCurrency(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
+    currencyId: int
     currencyName: str
     valueInChaos: float
     iconUrl: str
@@ -14,7 +15,6 @@ class _BaseCurrency(_pydantic.BaseModel):
 
 class Currency(_BaseCurrency):
     createdAt: Optional[_dt.datetime]
-    updatedAt: Optional[_dt.datetime]
 
     class Config:
         from_attributes = True
@@ -44,29 +44,11 @@ class CreateItemBaseType(_BaseItemBaseType):
     pass
 
 
-class _BaseAccount(_pydantic.BaseModel):
-    model_config = _pydantic.ConfigDict(from_attributes=True)
-
-    accountName: str
-    isBanned: Optional[bool]
-
-
-class Account(_BaseAccount):
-    createdAt: Optional[_dt.datetime]
-    updatedAt: Optional[_dt.datetime]
-
-    class Config:
-        from_attributes = True
-
-
-class CreateAccount(_BaseAccount):
-    pass
-
-
 class _BaseItem(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
-    itemId: str
+    itemId: int
+    gameItemId: str
     stashId: str
     name: Optional[str]
     iconUrl: Optional[str]
@@ -78,7 +60,7 @@ class _BaseItem(_pydantic.BaseModel):
     itemLevel: int
     forumNote: Optional[str]
     currencyAmount: Optional[float]
-    currencyName: Optional[str]
+    currencyId: Optional[int]
     corrupted: Optional[bool]
     delve: Optional[bool]
     fractured: Optional[bool]
@@ -98,7 +80,6 @@ class _BaseItem(_pydantic.BaseModel):
 
 class Item(_BaseItem):
     createdAt: Optional[_dt.datetime]
-    updatedAt: Optional[_dt.datetime]
 
     class Config:
         from_attributes = True
@@ -111,12 +92,14 @@ class CreateItem(_BaseItem):
 class _BaseModifier(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
-    modifierId: str
+    modifierId: int
     position: int
-    minRoll: float
-    maxRoll: float
-    textRoll: str
+    minRoll: Optional[float]
+    maxRoll: Optional[float]
+    textRoll: Optional[str]
+    static: Optional[bool]
     effect: str
+    regex: Optional[str]
     implicit: Optional[bool]
     explicit: Optional[bool]
     delve: Optional[bool]
@@ -139,40 +122,20 @@ class CreateModifier(_BaseModifier):
     pass
 
 
-class _BaseTransaction(_pydantic.BaseModel):
-    model_config = _pydantic.ConfigDict(from_attributes=True)
-
-    itemId: str
-    accountName: str
-    currencyAmount: float
-    currencyName: str
-
-
-class Transaction(_BaseTransaction):
-    transactionId: int
-    createdAt: Optional[_dt.datetime]
-    updatedAt: Optional[_dt.datetime]
-
-    class Config:
-        from_attributes = True
-
-
-class CreateTransaction(_BaseTransaction):
-    pass
-
-
 class _BaseItemModifier(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
-    itemModifierId: int
-    itemId: str
-    modifierId: str
+    itemId: int
+    gameItemId: str
+    modifierId: int
     position: int
-    range: float
+    range: Optional[float]
 
 
 class ItemModifier(_BaseItemModifier):
-    pass
+
+    class Config:
+        from_attributes = True
 
 
 class CreateItemModifier(_BaseItemModifier):
@@ -197,4 +160,23 @@ class Stash(_BaseStash):
 
 
 class CreateStash(_BaseStash):
+    pass
+
+
+class _BaseAccount(_pydantic.BaseModel):
+    model_config = _pydantic.ConfigDict(from_attributes=True)
+
+    accountName: str
+    isBanned: Optional[bool]
+
+
+class Account(_BaseAccount):
+    createdAt: Optional[_dt.datetime]
+    updatedAt: Optional[_dt.datetime]
+
+    class Config:
+        from_attributes = True
+
+
+class CreateAccount(_BaseAccount):
     pass
