@@ -60,7 +60,7 @@ class _BaseItem(_pydantic.BaseModel):
     itemLevel: int
     forumNote: Optional[str]
     currencyAmount: Optional[float]
-    currencyId: Optional[str]
+    currencyId: Optional[int]
     corrupted: Optional[bool]
     delve: Optional[bool]
     fractured: Optional[bool]
