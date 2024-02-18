@@ -15,10 +15,7 @@ class _BaseCurrency(_pydantic.BaseModel):
 
 # Properties to receive on currency creation
 class CurrencyCreate(_BaseCurrency):
-    createdAt: Optional[_dt.datetime]
-
-    class Config:
-        from_attributes = True
+    pass
 
 
 # Properties to receive on update
@@ -33,7 +30,7 @@ class CurrencyInDBBase(_BaseCurrency):
     iconUrl: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # Properties to return to client
@@ -41,10 +38,13 @@ class Currency(CurrencyInDBBase):
     pass
 
 
-# Properties stored in DB 
+# Properties stored in DB
 class CurrencyInDB(CurrencyInDBBase):
     createdAt: Optional[_dt.datetime]
-    pass
+    # currencyId: int
+
+    # class Config:
+    #     from_attributes = True
 
 
 class _BaseItemBaseType(_pydantic.BaseModel):

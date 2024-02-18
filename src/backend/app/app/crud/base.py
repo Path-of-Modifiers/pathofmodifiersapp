@@ -31,7 +31,7 @@ class CRUDBase(Generic[SchemaType, CreateSchemaType, UpdateSchemaType]):
                 status_code=404, detail=f"Object in {type(self.schema)} not found"
             )
         return db_obj
-    
+
     async def get_all(self, db: Session) -> List[SchemaType]:
         db_all_obj = db.query(self.schema).all()
         if db_all_obj is None:
@@ -40,15 +40,15 @@ class CRUDBase(Generic[SchemaType, CreateSchemaType, UpdateSchemaType]):
             )
         return db_all_obj
 
-    async def create(
-        self, db: Session, *, obj_in: Union[CreateSchemaType, ListCreateSchemaType]
-    ) -> SchemaType:
-        obj_in_data = jsonable_encoder(obj_in)
-        db_obj = self.schema(**obj_in_data)  # type: ignore
+    async def create(self, db: Session, *, obj_in: CreateSchemaType) -> SchemaType:
+        # obj_in_data = jsonable_encoder(obj_in)
+        db_obj = self.schema(**obj_in.model_dump())
+        print(f"{type(db_obj)}: {db_obj}")
+        # db_obj = self.schema(**obj_in_data)  # type: ignore
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
-        return db_obj
+        return self.schema.model_validate(db_obj)
 
     async def update(
         self,
