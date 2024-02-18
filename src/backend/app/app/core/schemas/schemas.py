@@ -4,23 +4,46 @@ import pydantic as _pydantic
 from pydantic import Json
 
 
+# Shared currency props
 class _BaseCurrency(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
-    currencyId: int
     currencyName: str
     valueInChaos: float
     iconUrl: str
 
 
-class Currency(_BaseCurrency):
+# Properties to receive on currency creation
+class CurrencyCreate(_BaseCurrency):
     createdAt: Optional[_dt.datetime]
 
     class Config:
         from_attributes = True
 
 
-class CreateCurrency(_BaseCurrency):
+# Properties to receive on update
+class CurrencyUpdate(_BaseCurrency):
+    pass
+
+
+# Properties shared by models stored in DB
+class CurrencyInDBBase(_BaseCurrency):
+    id: int  # currencyId
+    currencyName: str
+    valueInChaos: float
+    iconUrl: str
+
+    class Config:
+        orm_mode = True
+
+
+# Properties to return to client
+class Currency(CurrencyInDBBase):
+    pass
+
+
+# Properties stored in DB on creation
+class CurrencyInDB(CurrencyInDBBase):
     pass
 
 
