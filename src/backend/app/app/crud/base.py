@@ -31,6 +31,14 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 status_code=404, detail=f"Object in {type(self.model)} not found"
             )
         return db_obj
+    
+    def get_all(self, db: Session) -> List[ModelType]:
+        db_all_obj = db.query(self.model).all()
+        if db_all_obj is None:
+            raise HTTPException(
+                status_code=404, detail=f"All objects in {type(self.model)} not found"
+            )
+        return db_all_obj
 
     def create(
         self, db: Session, *, obj_in: Union[CreateSchemaType, ListCreateSchemaType]
