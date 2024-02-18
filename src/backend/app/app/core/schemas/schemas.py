@@ -133,7 +133,6 @@ class _BaseItemModifier(_pydantic.BaseModel):
 
 
 class ItemModifier(_BaseItemModifier):
-    createdAt: Optional[_dt.datetime]
 
     class Config:
         from_attributes = True
