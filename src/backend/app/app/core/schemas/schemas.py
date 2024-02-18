@@ -60,7 +60,7 @@ class _BaseItem(_pydantic.BaseModel):
     itemLevel: int
     forumNote: Optional[str]
     currencyAmount: Optional[float]
-    currencyName: Optional[str]
+    currencyId: Optional[str]
     corrupted: Optional[bool]
     delve: Optional[bool]
     fractured: Optional[bool]
@@ -94,9 +94,9 @@ class _BaseModifier(_pydantic.BaseModel):
 
     modifierId: int
     position: int
-    minRoll: float
-    maxRoll: float
-    textRoll: str
+    minRoll: Optional[float]
+    maxRoll: Optional[float]
+    textRoll: Optional[str]
     static: Optional[bool]
     effect: str
     regex: Optional[str]
@@ -129,7 +129,7 @@ class _BaseItemModifier(_pydantic.BaseModel):
     gameItemId: str
     modifierId: int
     position: int
-    range: float
+    range: Optional[float]
 
 
 class ItemModifier(_BaseItemModifier):
