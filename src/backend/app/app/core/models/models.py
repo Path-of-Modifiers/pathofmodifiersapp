@@ -26,7 +26,8 @@ class Currency(Base):
         cache=1,
         schema=None,
     )
-    currencyId = _sql.Column(
+    id = _sql.Column(
+        "currencyId",
         _sql.BigInteger(),
         currency_field_seq,
         server_default=currency_field_seq.next_value(),
@@ -44,7 +45,7 @@ class ItemBaseType(Base):
 
     __tablename__ = "item_base_type"
 
-    baseType = _sql.Column(_sql.String(), nullable=False, primary_key=True, index=True)
+    id = _sql.Column("baseType", _sql.String(), nullable=False, primary_key=True, index=True)
     category = _sql.Column(_sql.String(), nullable=False, unique=True)
     subCategory = _sql.Column(JSONB(), nullable=False)
     createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
@@ -64,7 +65,8 @@ class Item(Base):
         cache=1,
         schema=None,
     )
-    itemId = _sql.Column(
+    id = _sql.Column(
+        "itemId",
         _sql.BigInteger(),
         item_field_seq,
         index=True,
@@ -127,7 +129,8 @@ class Modifier(Base):
         cache=1,
         schema=None,
     )
-    modifierId = _sql.Column(
+    id = _sql.Column(
+        "modifierId",
         _sql.BigInteger(),
         modifier_field_seq,
         index=True,
@@ -152,7 +155,7 @@ class Modifier(Base):
     createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
     updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
-    __table_args__ = (_sql.PrimaryKeyConstraint(modifierId, position),)
+    __table_args__ = (_sql.PrimaryKeyConstraint(id, position),)
 
 
 class ItemModifier(Base):
@@ -192,7 +195,7 @@ class Stash(Base):
 
     __tablename__ = "stash"
 
-    stashId = _sql.Column(_sql.String(), primary_key=True, index=True, nullable=False)
+    id = _sql.Column("stashId", _sql.String(), primary_key=True, index=True, nullable=False)
     accountName = _sql.Column(
         _sql.String(),
         _sql.ForeignKey("account.accountName", ondelete="CASCADE"),
@@ -208,8 +211,8 @@ class Account(Base):
 
     __tablename__ = "account"
 
-    accountName = _sql.Column(
-        _sql.String(), primary_key=True, index=True, nullable=False
+    id = _sql.Column(
+        "accountId", _sql.String(), primary_key=True, index=True, nullable=False
     )
     isBanned = _sql.Column(_sql.Boolean())
     createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
