@@ -102,7 +102,7 @@ def upgrade() -> None:
     sa.Column('itemLevel', sa.SmallInteger(), nullable=False),
     sa.Column('forumNote', sa.String(), nullable=True),
     sa.Column('currencyAmount', sa.Float(precision=24), nullable=True),
-    sa.Column('currencyId', sa.Integer(), nullable=True),
+    sa.Column('currencyId', sa.BigInteger(), nullable=True),
     sa.Column('corrupted', sa.Boolean(), nullable=True),
     sa.Column('delve', sa.Boolean(), nullable=True),
     sa.Column('fractured', sa.Boolean(), nullable=True),
