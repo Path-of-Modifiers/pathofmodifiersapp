@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, List
 
 import app.core.models.models as _models
-import app.core.schemas.schemas as _schemas
+import app.core.schemas as _schemas
 import app.core.models.database as _database
 import pydantic as _pydantic
 
