@@ -115,7 +115,7 @@ class Item(Base):
     inventoryId = _sql.Column(_sql.String())
     createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
-    __table_args__ = (_sql.PrimaryKeyConstraint(id, gameItemId),)
+    __table_args__ = (_sql.PrimaryKeyConstraint(itemId, gameItemId),)
 
 
 class Modifier(Base):
@@ -157,7 +157,7 @@ class Modifier(Base):
     createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
     updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
-    __table_args__ = (_sql.PrimaryKeyConstraint(id, position),)
+    __table_args__ = (_sql.PrimaryKeyConstraint(modifierId, position),)
 
 
 class ItemModifier(Base):
