@@ -51,18 +51,12 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             db_obj = [self.model(**obj.model_dump()) for obj in obj_in]
             db.add_all(db_obj)
             db.commit()
-            # print([self.schema.model_validate(obj) for obj in db_obj])
-            # return [self.schema.model_validate(obj) for obj in db_obj]
         else:
             db_obj = self.model(**obj_in.model_dump())
             db.add(db_obj)
             db.commit()
             db.refresh(db_obj)
-            db_obj = [db_obj]
-            # return self.schema.model_validate(db_obj)
         return self.validate(db_obj)
-        # print(self.schema.model_validate(db_obj))
-        #
 
     async def update(
         self,
