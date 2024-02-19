@@ -14,12 +14,12 @@ class _BaseItemBaseType(_pydantic.BaseModel):
 
 
 # Properties to receive on item base type creation
-class CreateItemBaseType(_BaseItemBaseType):
+class ItemBaseTypeCreate(_BaseItemBaseType):
     pass
 
 
 # Properties to receive on update
-class UpdateItemBaseType(_BaseItemBaseType):
+class ItemBaseTypeUpdate(_BaseItemBaseType):
     pass
 
 

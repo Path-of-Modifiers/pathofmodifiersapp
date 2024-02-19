@@ -14,12 +14,12 @@ class _BaseItemModifier(_pydantic.BaseModel):
 
 
 # Properties to receive on item modifier creation
-class CreateItemModifier(_BaseItemModifier):
+class ItemModifierCreate(_BaseItemModifier):
     pass
 
 
 # Properties to receive on update
-class UpdateItemModifier(_BaseItemModifier):
+class ItemModifierUpdate(_BaseItemModifier):
     pass
 
 

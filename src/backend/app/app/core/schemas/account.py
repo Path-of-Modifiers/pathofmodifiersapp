@@ -12,12 +12,12 @@ class _BaseAccount(_pydantic.BaseModel):
 
 
 # Properties to receive on account creation
-class CreateAccount(_BaseAccount):
+class AccountCreate(_BaseAccount):
     pass
 
 
 # Properties to receive on update
-class UpdateAccount(_BaseAccount):
+class AccountUpdate(_BaseAccount):
     pass
 
 

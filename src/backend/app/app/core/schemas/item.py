@@ -40,12 +40,12 @@ class _BaseItem(_pydantic.BaseModel):
 
 
 # Properties to receive on item creation
-class CreateItem(_BaseItem):
+class ItemCreate(_BaseItem):
     pass
 
 
 # Properties to receive on update
-class UpdateItem(_BaseItem):
+class ItemUpdate(_BaseItem):
     pass
 
 

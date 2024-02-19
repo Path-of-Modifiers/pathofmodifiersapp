@@ -26,12 +26,12 @@ class _BaseModifier(_pydantic.BaseModel):
 
 
 # Properties to receive on modifier creation
-class CreateModifier(_BaseModifier):
+class ModifierCreate(_BaseModifier):
     pass
 
 
 # Properties to receive on update
-class UpdateModifier(_BaseModifier):
+class ModifierUpdate(_BaseModifier):
     pass
 
 
