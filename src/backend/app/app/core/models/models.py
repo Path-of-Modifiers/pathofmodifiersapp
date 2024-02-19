@@ -26,7 +26,7 @@ class Currency(Base):
         cache=1,
         schema=None,
     )
-    id = _sql.Column(
+    currencyId = _sql.Column(
         "currencyId",
         _sql.BigInteger(),
         currency_field_seq,
@@ -45,7 +45,7 @@ class ItemBaseType(Base):
 
     __tablename__ = "item_base_type"
 
-    id = _sql.Column(
+    baseType = _sql.Column(
         "baseType", _sql.String(), nullable=False, primary_key=True, index=True
     )
     category = _sql.Column(_sql.String(), nullable=False, unique=True)
@@ -67,7 +67,7 @@ class Item(Base):
         cache=1,
         schema=None,
     )
-    id = _sql.Column(
+    itemId = _sql.Column(
         "itemId",
         _sql.BigInteger(),
         item_field_seq,
@@ -131,7 +131,7 @@ class Modifier(Base):
         cache=1,
         schema=None,
     )
-    id = _sql.Column(
+    modifierId = _sql.Column(
         "modifierId",
         _sql.BigInteger(),
         modifier_field_seq,
@@ -197,7 +197,7 @@ class Stash(Base):
 
     __tablename__ = "stash"
 
-    id = _sql.Column(
+    stashId = _sql.Column(
         "stashId", _sql.String(), primary_key=True, index=True, nullable=False
     )
     accountName = _sql.Column(
@@ -215,7 +215,7 @@ class Account(Base):
 
     __tablename__ = "account"
 
-    id = _sql.Column(
+    accountName = _sql.Column(
         "accountName", _sql.String(), primary_key=True, index=True, nullable=False
     )
     isBanned = _sql.Column(_sql.Boolean())
