@@ -25,7 +25,7 @@ class ItemModifierUpdate(_BaseItemModifier):
 
 # Properties shared by models stored in DB
 class ItemModifierInDBBase(_BaseItemModifier):
-    id: int
+    pass
 
 
 # Properties to return to client

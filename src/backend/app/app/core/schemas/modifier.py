@@ -39,7 +39,6 @@ class ModifierUpdate(_BaseModifier):
 class ModifierInDBBase(_BaseModifier):
     createdAt: Optional[_dt.datetime]
     updatedAt: Optional[_dt.datetime]
-    id: int
 
 
 # Properties to return to client

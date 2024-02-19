@@ -25,7 +25,6 @@ class AccountUpdate(_BaseAccount):
 class AccountInDBBase(_BaseAccount):
     createdAt: Optional[_dt.datetime]
     updatedAt: Optional[_dt.datetime]
-    id: int
 
 
 # Properties to return to client

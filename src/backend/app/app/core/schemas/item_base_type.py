@@ -27,7 +27,6 @@ class ItemBaseTypeUpdate(_BaseItemBaseType):
 class ItemBaseTypeInDBBase(_BaseItemBaseType):
     createdAt: Optional[_dt.datetime]
     updatedAt: Optional[_dt.datetime]
-    id: int
 
 
 # Properties to return to client

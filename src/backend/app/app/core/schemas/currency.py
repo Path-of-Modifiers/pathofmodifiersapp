@@ -25,7 +25,7 @@ class CurrencyUpdate(_BaseCurrency):
 # Properties shared by models stored in DB
 class CurrencyInDBBase(_BaseCurrency):
     createdAt: Optional[_dt.datetime]
-    id: int
+    currencyId: int
 
 
 # Properties to return to client
