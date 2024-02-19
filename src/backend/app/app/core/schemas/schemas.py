@@ -1,13 +1,11 @@
 import datetime as _dt
-from typing import Optional
+from typing import Optional, List
 import pydantic as _pydantic
 from pydantic import Json
 
 
 # Shared currency props
 class _BaseCurrency(_pydantic.BaseModel):
-    model_config = _pydantic.ConfigDict(from_attributes=True)
-
     currencyName: str
     valueInChaos: float
     iconUrl: str
@@ -16,7 +14,6 @@ class _BaseCurrency(_pydantic.BaseModel):
 # Properties to receive on currency creation
 class CurrencyCreate(_BaseCurrency):
     pass
-    
 
 
 # Properties to receive on update
@@ -27,10 +24,8 @@ class CurrencyUpdate(_BaseCurrency):
 # Properties shared by models stored in DB
 class CurrencyInDBBase(_BaseCurrency):
     model_config = _pydantic.ConfigDict(from_attributes=True)
-    
-    currencyName: str
-    valueInChaos: float
-    iconUrl: str
+    createdAt: Optional[_dt.datetime]
+    id: int
 
 
 # Properties to return to client
@@ -40,7 +35,7 @@ class Currency(CurrencyInDBBase):
 
 # Properties stored in DB
 class CurrencyInDB(CurrencyInDBBase):
-    createdAt: Optional[_dt.datetime]
+    pass
 
 
 class _BaseItemBaseType(_pydantic.BaseModel):

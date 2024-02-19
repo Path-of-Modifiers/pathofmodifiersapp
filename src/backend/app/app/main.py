@@ -1,9 +1,10 @@
 from __future__ import annotations
 import fastapi as _fastapi
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Union
 
 
 import app.core.schemas.schemas as _schemas
+import app.core.models.models as _models
 import app.core.services.services as _services
 
 import app.crud.base as _crud
@@ -19,12 +20,17 @@ async def read_main():
     return {"message": "Welcome to Path of Modifiers API!"}
 
 
-currencyCRUD = _crud.CRUDBase(schema=_schemas.Currency)
+currencyCRUD = _crud.CRUDBase[
+    _models.Currency,
+    _schemas.Currency,
+    _schemas.CurrencyCreate,
+    _schemas.CurrencyUpdate,
+](model=_models.Currency, schema=_schemas.Currency)
 
 
 @app.post("/api/currency/", response_model=_schemas.Currency)
 async def create_currency(
-    currency: _schemas.CurrencyCreate,
+    currency: Union[_schemas.CurrencyCreate, List[_schemas.CurrencyCreate]],
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
     return await currencyCRUD.create(db=db, obj_in=currency)
