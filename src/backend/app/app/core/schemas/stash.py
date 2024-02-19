@@ -14,12 +14,12 @@ class _BaseStash(_pydantic.BaseModel):
 
 
 # Properties to receive on stash creation
-class CreateStash(_BaseStash):
+class StashCreate(_BaseStash):
     pass
 
 
 # Properties to receive on update
-class UpdateStash(_BaseStash):
+class StashUpdate(_BaseStash):
     pass
 
 
