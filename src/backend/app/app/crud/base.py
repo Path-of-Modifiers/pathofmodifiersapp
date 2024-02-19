@@ -2,9 +2,10 @@ from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
 
 from fastapi.encoders import jsonable_encoder
 from fastapi import HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, TypeAdapter
 from sqlalchemy.orm import Session
 
+ModelType = TypeVar("ModelType", bound=Any)
 SchemaType = TypeVar("SchemaType", bound=Any)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 ListCreateSchemaType = TypeVar("ListCreateSchemaType", bound=List[BaseModel])
@@ -12,51 +13,64 @@ UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 ListUpdateSchemaType = TypeVar("ListUpdateSchemaType", bound=List[BaseModel])
 
 
-class CRUDBase(Generic[SchemaType, CreateSchemaType, UpdateSchemaType]):
-    def __init__(self, schema: Type[SchemaType]):
+class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType]):
+    def __init__(self, model: Type[ModelType], schema: Type[SchemaType]):
         """
         CRUD object with default methods to Create, Read, Update, Delete (CRUD).
 
         **Parameters**
 
-        * `schema`: A SQLAlchemy schema class
+        * `models`: A SQLAlchemy schema class
         * `schema`: A Pydantic schema (schema) class
         """
+        self.model = model
         self.schema = schema
 
-    async def get(self, db: Session, id: Any) -> Optional[SchemaType]:
-        db_obj = db.query(self.schema).filter(self.schema.id == id).first()
+        self.validate = TypeAdapter(List[SchemaType]).validate_python
+
+    async def get(self, db: Session, id: Any) -> Optional[ModelType]:
+        db_obj = db.query(self.model).filter(self.model.id == id).first()
         if db_obj is None:
             raise HTTPException(
-                status_code=404, detail=f"Object in {type(self.schema)} not found"
+                status_code=404, detail=f"Object in {type(self.model)} not found"
             )
         return db_obj
 
-    async def get_all(self, db: Session) -> List[SchemaType]:
-        db_all_obj = db.query(self.schema).all()
+    async def get_all(self, db: Session) -> List[ModelType]:
+        db_all_obj = db.query(self.model).all()
         if db_all_obj is None:
             raise HTTPException(
-                status_code=404, detail=f"All objects in {type(self.schema)} not found"
+                status_code=404, detail=f"All objects in {type(self.model)} not found"
             )
         return db_all_obj
 
-    async def create(self, db: Session, *, obj_in: CreateSchemaType) -> SchemaType:
-        # obj_in_data = jsonable_encoder(obj_in)
-        db_obj = self.schema(**obj_in.model_dump())
-        print(f"{type(db_obj)}: {db_obj}")
-        # db_obj = self.schema(**obj_in_data)  # type: ignore
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
-        return self.schema.model_validate(db_obj)
+    async def create(
+        self, db: Session, *, obj_in: Union[CreateSchemaType, List[CreateSchemaType]]
+    ) -> ModelType:
+        if isinstance(obj_in, list):
+            db_obj = [self.model(**obj.model_dump()) for obj in obj_in]
+            db.add_all(db_obj)
+            db.commit()
+            # print([self.schema.model_validate(obj) for obj in db_obj])
+            # return [self.schema.model_validate(obj) for obj in db_obj]
+        else:
+            db_obj = self.model(**obj_in.model_dump())
+            db.add(db_obj)
+            db.commit()
+            db.refresh(db_obj)
+            db_obj = [db_obj]
+            # return self.schema.model_validate(db_obj)
+        return self.validate(db_obj)
+        # print(self.schema.model_validate(db_obj))
+        #
 
     async def update(
         self,
         db: Session,
         *,
-        db_obj: SchemaType,
+        db_obj: ModelType,
         obj_in: Union[UpdateSchemaType, ListUpdateSchemaType, Dict[str, Any]],
-    ) -> SchemaType:
+    ) -> ModelType:
         obj_data = jsonable_encoder(db_obj)
         if isinstance(obj_in, dict):
             update_data = obj_in
@@ -71,11 +85,11 @@ class CRUDBase(Generic[SchemaType, CreateSchemaType, UpdateSchemaType]):
         db.refresh(db_obj)
         return db_obj
 
-    async def remove(self, db: Session, *, id: int) -> SchemaType:
-        obj = db.query(self.schema).get(id)
+    async def remove(self, db: Session, *, id: int) -> ModelType:
+        obj = db.query(self.model).get(id)
         if obj is None:
             raise HTTPException(
-                status_code=404, detail=f"Object in {type(self.schema)} not found"
+                status_code=404, detail=f"Object in {type(self.model)} not found"
             )
         db.delete(obj)
         db.commit()
