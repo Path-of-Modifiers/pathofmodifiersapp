@@ -28,7 +28,7 @@ currencyCRUD = _crud.CRUDBase[
 ](model=_models.Currency, schema=_schemas.Currency)
 
 
-@app.post("/api/currency/", response_model=_schemas.Currency)
+@app.post("/api/currency/", response_model=Union[_schemas.CurrencyCreate, List[_schemas.CurrencyCreate]])
 async def create_currency(
     currency: Union[_schemas.CurrencyCreate, List[_schemas.CurrencyCreate]],
     db: _orm.Session = _fastapi.Depends(_services.get_db),
