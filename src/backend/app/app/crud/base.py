@@ -5,6 +5,10 @@ from fastapi import HTTPException
 from pydantic import BaseModel, TypeAdapter
 from sqlalchemy.orm import Session
 
+
+from sqlalchemy.inspection import inspect
+
+
 ModelType = TypeVar("ModelType", bound=Any)
 SchemaType = TypeVar("SchemaType", bound=Any)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -26,7 +30,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         self.model = model
         self.schema = schema
 
-        self.validate = TypeAdapter(List[SchemaType]).validate_python
+        self.validate = TypeAdapter(Union[SchemaType, List[SchemaType]]).validate_python
 
     async def get(self, db: Session, id: Any) -> Optional[ModelType]:
         db_obj = db.query(self.model).filter(self.model.id == id).first()
