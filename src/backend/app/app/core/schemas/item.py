@@ -8,7 +8,6 @@ from pydantic import Json
 class _BaseItem(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
-    itemId: int
     gameItemId: str
     stashId: str
     name: Optional[str]
@@ -52,7 +51,7 @@ class ItemUpdate(_BaseItem):
 # Properties shared by models stored in DB
 class ItemInDBBase(_BaseItem):
     createdAt: Optional[_dt.datetime]
-    id: int
+    itemId: int
 
 
 # Properties to return to client
