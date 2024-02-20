@@ -39,7 +39,10 @@ async def create_currency(
     return await currencyCRUD.create(db=db, obj_in=currency)
 
 
-@app.get("/api/currency/{currencyId}", response_model=Union[_schemas.Currency, List[_schemas.Currency]])
+@app.get(
+    "/api/currency/{currencyId}",
+    response_model=Union[_schemas.Currency, List[_schemas.Currency]],
+)
 async def get_currency(
     currencyId: int, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
@@ -98,7 +101,10 @@ async def create_account(
     return await accountCRUD.create(db=db, obj_in=account)
 
 
-@app.get("/api/account/{accountName}", response_model=Union[_schemas.Account, List[_schemas.Account]])
+@app.get(
+    "/api/account/{accountName}",
+    response_model=Union[_schemas.Account, List[_schemas.Account]],
+)
 async def get_account(
     accountName: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
@@ -159,7 +165,10 @@ async def create_itemBaseType(
     return await itemBaseTypeCRUD.create(db=db, obj_in=itemBaseType)
 
 
-@app.get("/api/itemBaseType/{baseType}", response_model=Union[_schemas.ItemBaseType, List[_schemas.ItemBaseType]])
+@app.get(
+    "/api/itemBaseType/{baseType}",
+    response_model=Union[_schemas.ItemBaseType, List[_schemas.ItemBaseType]],
+)
 async def get_itemBaseType(
     baseType: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
@@ -220,7 +229,9 @@ async def create_item(
     return await itemCRUD.create(db=db, obj_in=item)
 
 
-@app.get("/api/item/{gameItemId}", response_model=Union[_schemas.Item, List[_schemas.Item]])
+@app.get(
+    "/api/item/{gameItemId}", response_model=Union[_schemas.Item, List[_schemas.Item]]
+)
 async def get_item(gameItemId: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)):
     item_map = {"gameItemId": gameItemId}
     item = await itemCRUD.get(db=db, filter=item_map)
@@ -277,7 +288,9 @@ async def create_stash(
     return await stashCRUD.create(db=db, obj_in=stash)
 
 
-@app.get("/api/stash/{stashId}", response_model=Union[_schemas.Stash, List[_schemas.Stash]])
+@app.get(
+    "/api/stash/{stashId}", response_model=Union[_schemas.Stash, List[_schemas.Stash]]
+)
 async def get_stash(stashId: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)):
     stash_map = {"stashId": stashId}
     stash = await stashCRUD.get(db=db, filter=stash_map)
@@ -332,9 +345,14 @@ async def create_modifier(
     return await modifierCRUD.create(db=db, obj_in=modifier)
 
 
-@app.get("/api/modifier/{modifierId}", response_model=Union[_schemas.Modifier, List[_schemas.Modifier]])
+@app.get(
+    "/api/modifier/{modifierId}",
+    response_model=Union[_schemas.Modifier, List[_schemas.Modifier]],
+)
 async def get_modifier(
-    modifierId: int, position: Optional[int] = None, db: _orm.Session = _fastapi.Depends(_deps.get_db)
+    modifierId: int,
+    position: Optional[int] = None,
+    db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
     modifier_map = {"modifierId": modifierId}
     if position is not None:
