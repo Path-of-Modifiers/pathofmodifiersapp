@@ -30,9 +30,9 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
         self.validate = TypeAdapter(Union[SchemaType, List[SchemaType]]).validate_python
 
-    async def get(self, db: Session, filter: Any) -> Optional[ModelType]:
-        db_obj = db.query(self.model).filter_by(**filter).first()
-        if db_obj is None:
+    async def get(self, db: Session, filter: Any) -> Optional[Union[ModelType, List[ModelType]]]:
+        db_obj = db.query(self.model).filter_by(**filter).all()
+        if not db_obj:
             raise HTTPException(
                 status_code=404, detail=f"Object in {type(self.model)} not found"
             )
