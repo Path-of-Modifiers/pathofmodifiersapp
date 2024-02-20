@@ -2,8 +2,10 @@ import datetime as _dt
 from typing import Optional
 import pydantic as _pydantic
 
+
 class subCategory(_pydantic.BaseModel):
     subCategory: str
+
 
 # Shared item base type props
 class _BaseItemBaseType(_pydantic.BaseModel):
