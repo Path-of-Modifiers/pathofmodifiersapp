@@ -66,19 +66,10 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         db: Session,
         *,
         db_obj: ModelType,
-        obj_in: Union[UpdateSchemaType, List[UpdateSchemaType], Dict[str, Any]],
+        obj_in: Union[UpdateSchemaType, Dict[str, Any]],
     ) -> ModelType:
         if isinstance(obj_in, dict):
             update_data = obj_in
-        elif isinstance(obj_in, list):
-            for obj in obj_in:
-                update_data = obj.model_dump()
-                for field in obj:
-                    if field in update_data:
-                        setattr(obj, field, update_data[field])
-            db.add_all(obj_in)
-            db.commit()
-            [db.refresh(obj) for obj in db_obj]
         else:
             update_data = obj_in.model_dump()
             for field in obj_in:
