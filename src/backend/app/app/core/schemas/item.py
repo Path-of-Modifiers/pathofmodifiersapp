@@ -4,12 +4,12 @@ import pydantic as _pydantic
 
 
 class Influences(_pydantic.BaseModel):
-    elder: Optional[bool]
-    shaper: Optional[bool]
-    crusader: Optional[bool]
-    redeemer: Optional[bool]
-    hunter: Optional[bool]
-    warlord: Optional[bool]
+    elder: Optional[bool] = None
+    shaper: Optional[bool] = None
+    crusader: Optional[bool] = None
+    redeemer: Optional[bool] = None
+    hunter: Optional[bool] = None
+    warlord: Optional[bool] = None
 
 
 # Shared item props
@@ -18,32 +18,32 @@ class _BaseItem(_pydantic.BaseModel):
 
     gameItemId: str
     stashId: str
-    name: Optional[str]
-    iconUrl: Optional[str]
+    name: Optional[str] = None
+    iconUrl: Optional[str] = None
     league: str
     typeLine: str
     baseType: str
     rarity: str
     identified: bool
     itemLevel: int
-    forumNote: Optional[str]
-    currencyAmount: Optional[float]
-    currencyId: Optional[int]
-    corrupted: Optional[bool]
-    delve: Optional[bool]
-    fractured: Optional[bool]
-    synthesized: Optional[bool]
-    replica: Optional[bool]
-    elder: Optional[bool]
-    shaper: Optional[bool]
+    forumNote: Optional[str] = None
+    currencyAmount: Optional[float] = None
+    currencyId: Optional[int] = None
+    corrupted: Optional[bool] = None
+    delve: Optional[bool] = None
+    fractured: Optional[bool] = None
+    synthesized: Optional[bool] = None
+    replica: Optional[bool] = None
+    elder: Optional[bool] = None
+    shaper: Optional[bool] = None
     influences: Optional[list[Influences]]
-    searing: Optional[bool]
-    tangled: Optional[bool]
-    isRelic: Optional[bool]
-    prefixes: Optional[int]
-    suffixes: Optional[int]
-    foilVariation: Optional[int]
-    inventoryId: Optional[str]
+    searing: Optional[bool] = None
+    tangled: Optional[bool] = None
+    isRelic: Optional[bool] = None
+    prefixes: Optional[int] = None
+    suffixes: Optional[int] = None
+    foilVariation: Optional[int] = None
+    inventoryId: Optional[str] = None
 
 
 # Properties to receive on item creation
@@ -58,7 +58,7 @@ class ItemUpdate(_BaseItem):
 
 # Properties shared by models stored in DB
 class ItemInDBBase(_BaseItem):
-    createdAt: Optional[_dt.datetime]
+    createdAt: Optional[_dt.datetime] = None
     itemId: int
 
 

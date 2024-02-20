@@ -7,22 +7,21 @@ import pydantic as _pydantic
 class _BaseModifier(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
-    modifierId: int
     position: int
-    minRoll: Optional[float]
-    maxRoll: Optional[float]
-    textRoll: Optional[str]
-    static: Optional[bool]
+    minRoll: Optional[float] = None
+    maxRoll: Optional[float] = None
+    textRoll: Optional[str] = None
+    static: Optional[bool] = None
     effect: str
-    regex: Optional[str]
-    implicit: Optional[bool]
-    explicit: Optional[bool]
-    delve: Optional[bool]
-    fractured: Optional[bool]
-    synthesized: Optional[bool]
-    corrupted: Optional[bool]
-    enchanted: Optional[bool]
-    veiled: Optional[bool]
+    regex: Optional[str] = None
+    implicit: Optional[bool] = None
+    explicit: Optional[bool] = None
+    delve: Optional[bool] = None
+    fractured: Optional[bool] = None
+    synthesized: Optional[bool] = None
+    corrupted: Optional[bool] = None
+    enchanted: Optional[bool] = None 
+    veiled: Optional[bool] = None
 
 
 # Properties to receive on modifier creation
@@ -39,7 +38,7 @@ class ModifierUpdate(_BaseModifier):
 class ModifierInDBBase(_BaseModifier):
     createdAt: Optional[_dt.datetime]
     updatedAt: Optional[_dt.datetime]
-
+    modifierId: int
 
 # Properties to return to client
 class Modifier(ModifierInDBBase):
