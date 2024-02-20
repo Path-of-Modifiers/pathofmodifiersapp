@@ -334,9 +334,11 @@ async def create_modifier(
 
 @app.get("/api/modifier/{modifierId}", response_model=_schemas.Modifier)
 async def get_modifier(
-    modifierId: int, position: int, db: _orm.Session = _fastapi.Depends(_deps.get_db)
+    modifierId: int, position: Optional[int] = None, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
-    modifier_map = {"modifierId": modifierId, "position": position}
+    modifier_map = {"modifierId": modifierId}
+    if position is not None:
+        modifier_map["position"] = position
     modifier = await modifierCRUD.get(db=db, filter=modifier_map)
     return modifier
 
