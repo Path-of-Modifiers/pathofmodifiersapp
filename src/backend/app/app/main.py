@@ -68,18 +68,16 @@ async def delete_currency(
 @app.put("/api/currency/{currencyId}", response_model=_schemas.Currency)
 async def update_currency(
     currencyId: str,
-    currencyData: _schemas.CurrencyUpdate,
+    currency_update: _schemas.CurrencyUpdate,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
-    currency_mapped = {"currencyId": currencyId}
+    currency_map = {"currencyId": currencyId}
     currency = await currencyCRUD.get(
         db=db,
-        id=currency_mapped,
+        id=currency_map,
     )
 
-    return await currencyCRUD.update(
-        currencyData=currencyData, currency=currency, db=db
-    )
+    return await currencyCRUD.update(db_obj=currency, obj_in=currency_update, db=db)
 
 
 accountCRUD = _crud.CRUDBase[
@@ -119,7 +117,7 @@ async def get_all_accounts(db: _orm.Session = _fastapi.Depends(_services.get_db)
 @app.delete("/api/account/{accountName}")
 async def delete_account(
     accountName: str, db: _orm.Session = _fastapi.Depends(_services.get_db)
-): 
+):
     print("DB DELETE ACCOUNT")
     print(db)
     account_map = {"accountName": accountName}
@@ -131,7 +129,7 @@ async def delete_account(
 @app.put("/api/account/{accountName}", response_model=_schemas.Account)
 async def update_account(
     accountName: str,
-    accountData: _schemas.AccountUpdate,
+    account_update: _schemas.AccountUpdate,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
     account_mapped = {"accountName": accountName}
@@ -140,4 +138,4 @@ async def update_account(
         id=account_mapped,
     )
 
-    return await accountCRUD.update(obj_in=accountData, db_obj=, obj_in=account, db=db)
+    return await accountCRUD.update(db_obj=account, obj_in=account_update, db=db)
