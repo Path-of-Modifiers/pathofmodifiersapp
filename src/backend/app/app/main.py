@@ -53,7 +53,7 @@ async def get_currency(
 
 @app.get("/api/currency/", response_model=List[_schemas.Currency])
 async def get_all_currency(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
-    all_currency = await currencyCRUD.get_all(db=db)
+    all_currency = await currencyCRUD.get(db=db)
     return all_currency
 
 
@@ -115,7 +115,7 @@ async def get_account(
 
 @app.get("/api/account/", response_model=List[_schemas.Account])
 async def get_all_accounts(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
-    all_accounts = await accountCRUD.get_all(db=db)
+    all_accounts = await accountCRUD.get(db=db)
     return all_accounts
 
 
@@ -179,7 +179,7 @@ async def get_itemBaseType(
 
 @app.get("/api/itemBaseType/", response_model=List[_schemas.ItemBaseType])
 async def get_all_itemBaseTypes(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
-    allItemBaseTypes = await itemBaseTypeCRUD.get_all(db=db)
+    allItemBaseTypes = await itemBaseTypeCRUD.get(db=db)
     return allItemBaseTypes
 
 
@@ -240,7 +240,7 @@ async def get_item(gameItemId: str, db: _orm.Session = _fastapi.Depends(_deps.ge
 
 @app.get("/api/item/", response_model=List[_schemas.Item])
 async def get_all_items(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
-    all_items = await itemCRUD.get_all(db=db)
+    all_items = await itemCRUD.get(db=db)
     return all_items
 
 
@@ -299,7 +299,7 @@ async def get_stash(stashId: str, db: _orm.Session = _fastapi.Depends(_deps.get_
 
 @app.get("/api/stash/", response_model=List[_schemas.Stash])
 async def get_all_stashes(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
-    all_stashes = await stashCRUD.get_all(db=db)
+    all_stashes = await stashCRUD.get(db=db)
     return all_stashes
 
 
@@ -363,7 +363,7 @@ async def get_modifier(
 
 @app.get("/api/modifier/", response_model=List[_schemas.Modifier])
 async def get_all_modifiers(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
-    all_modifiers = await modifierCRUD.get_all(db=db)
+    all_modifiers = await modifierCRUD.get(db=db)
     return all_modifiers
 
 
@@ -441,7 +441,7 @@ async def get_item_modifier(
 
 @app.get("/api/itemModifier/", response_model=List[_schemas.ItemModifier])
 async def get_all_item_modifiers(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
-    all_item_modifiers = await itemModifierCRUD.get_all(db=db)
+    all_item_modifiers = await itemModifierCRUD.get(db=db)
     return all_item_modifiers
 
 
