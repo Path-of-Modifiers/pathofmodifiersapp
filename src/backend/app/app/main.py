@@ -332,7 +332,7 @@ async def create_modifier(
     return await modifierCRUD.create(db=db, obj_in=modifier)
 
 
-@app.get("/api/modifier/{modifierId}", response_model=_schemas.Modifier)
+@app.get("/api/modifier/{modifierId}", response_model=Union[_schemas.Modifier, List[_schemas.Modifier]])
 async def get_modifier(
     modifierId: int, position: Optional[int] = None, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
