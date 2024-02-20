@@ -8,7 +8,7 @@ class _BaseAccount(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
     accountName: str
-    isBanned: Optional[bool]
+    isBanned: Optional[bool] = None
 
 
 # Properties to receive on account creation
@@ -23,8 +23,8 @@ class AccountUpdate(_BaseAccount):
 
 # Properties shared by models stored in DB
 class AccountInDBBase(_BaseAccount):
-    createdAt: Optional[_dt.datetime]
-    updatedAt: Optional[_dt.datetime]
+    createdAt: Optional[_dt.datetime] = None
+    updatedAt: Optional[_dt.datetime] = None
 
 
 # Properties to return to client

@@ -2,10 +2,8 @@ import datetime as _dt
 from typing import Optional
 import pydantic as _pydantic
 
-
 class subCategory(_pydantic.BaseModel):
     subCategory: str
-
 
 # Shared item base type props
 class _BaseItemBaseType(_pydantic.BaseModel):
@@ -28,8 +26,8 @@ class ItemBaseTypeUpdate(_BaseItemBaseType):
 
 # Properties shared by models stored in DB
 class ItemBaseTypeInDBBase(_BaseItemBaseType):
-    createdAt: Optional[_dt.datetime]
-    updatedAt: Optional[_dt.datetime]
+    createdAt: Optional[_dt.datetime] = None
+    updatedAt: Optional[_dt.datetime] = None
 
 
 # Properties to return to client
