@@ -62,7 +62,7 @@ async def delete_currency(
     currency = await currencyCRUD.get(id=currency_mapped, db=db)
     await currencyCRUD.remove(currency, db=db)
 
-    return "currency deleted successfully"
+    return "currency with id {currencyId} deleted successfully"
 
 
 @app.put("/api/currency/{currencyId}", response_model=_schemas.Currency)
@@ -118,8 +118,6 @@ async def get_all_accounts(db: _orm.Session = _fastapi.Depends(_services.get_db)
 async def delete_account(
     accountName: str, db: _orm.Session = _fastapi.Depends(_services.get_db)
 ):
-    print("DB DELETE ACCOUNT")
-    print(db)
     account_map = {"accountName": accountName}
     await accountCRUD.remove(db=db, id=account_map)
 
