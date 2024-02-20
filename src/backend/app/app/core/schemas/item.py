@@ -1,7 +1,15 @@
 import datetime as _dt
 from typing import Optional
 import pydantic as _pydantic
-from pydantic import Json
+
+
+class Influences(_pydantic.BaseModel):
+    elder: Optional[bool]
+    shaper: Optional[bool]
+    crusader: Optional[bool]
+    redeemer: Optional[bool]
+    hunter: Optional[bool]
+    warlord: Optional[bool]
 
 
 # Shared item props
@@ -28,7 +36,7 @@ class _BaseItem(_pydantic.BaseModel):
     replica: Optional[bool]
     elder: Optional[bool]
     shaper: Optional[bool]
-    influences: Optional[Json]
+    influences: Optional[list[Influences]]
     searing: Optional[bool]
     tangled: Optional[bool]
     isRelic: Optional[bool]
