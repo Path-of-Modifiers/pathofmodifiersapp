@@ -1,6 +1,6 @@
 from __future__ import annotations
 import fastapi as _fastapi
-from typing import List, Union
+from typing import List, Union, Annotated
 
 import app.core.models.models as _models
 import app.api.deps as _deps
@@ -332,7 +332,7 @@ async def create_modifier(
     return await modifierCRUD.create(db=db, obj_in=modifier)
 
 
-@app.get("/api/modifier/{modifierId}/{position}", response_model=_schemas.Modifier)
+@app.get("/api/modifier/{modifierId}", response_model=_schemas.Modifier)
 async def get_modifier(
     modifierId: int, position: int, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
@@ -347,7 +347,7 @@ async def get_all_modifiers(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
     return all_modifiers
 
 
-@app.delete("/api/modifier/{modifierId}/{position}")
+@app.delete("/api/modifier/{modifierId}")
 async def delete_modifier(
     modifierId: int, position: int, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
@@ -357,7 +357,7 @@ async def delete_modifier(
     return "Modifier deleted successfully"
 
 
-@app.put("/api/modifier/{modifierId}/{position}", response_model=_schemas.Modifier)
+@app.put("/api/modifier/{modifierId}", response_model=_schemas.Modifier)
 async def update_modifier(
     modifierId: int,
     position: int,
@@ -393,7 +393,7 @@ async def create_item_modifier(
 
 
 @app.get(
-    "/api/itemModifier/{itemId}/{gameItemId}/{modifierId}/{position}",
+    "/api/itemModifier/{itemId}",
     response_model=_schemas.ItemModifier,
 )
 async def get_item_modifier(
@@ -419,7 +419,7 @@ async def get_all_item_modifiers(db: _orm.Session = _fastapi.Depends(_deps.get_d
     return all_item_modifiers
 
 
-@app.delete("/api/itemModifier/{itemId}/{gameItemId}/{modifierId}/{position}")
+@app.delete("/api/itemModifier/{itemId}")
 async def delete_item_modifier(
     itemId: int,
     gameItemId: str,
@@ -439,7 +439,7 @@ async def delete_item_modifier(
 
 
 @app.put(
-    "/api/itemModifier/{itemId}/{gameItemId}/{modifierId}/{position}",
+    "/api/itemModifier/{itemId}",
     response_model=_schemas.ItemModifier,
 )
 async def update_item_modifier(
