@@ -1,9 +1,9 @@
 from __future__ import annotations
 import fastapi as _fastapi
-from typing import TYPE_CHECKING, List, Union
+from typing import List, Union
 
 import app.core.models.models as _models
-import app.core.services.services as _services
+import app.api.deps as _deps
 
 import app.crud.base as _crud
 
@@ -34,14 +34,14 @@ currencyCRUD = _crud.CRUDBase[
 )
 async def create_currency(
     currency: Union[_schemas.CurrencyCreate, List[_schemas.CurrencyCreate]],
-    db: _orm.Session = _fastapi.Depends(_services.get_db),
+    db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
     return await currencyCRUD.create(db=db, obj_in=currency)
 
 
 @app.get("/api/currency/{currencyId}", response_model=_schemas.Currency)
 async def get_currency(
-    currencyId: int, db: _orm.Session = _fastapi.Depends(_services.get_db)
+    currencyId: int, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
     currency_mapped = {"currencyId": currencyId}
     currency = await currencyCRUD.get(db=db, id=currency_mapped)
@@ -49,14 +49,14 @@ async def get_currency(
 
 
 @app.get("/api/currency/", response_model=List[_schemas.Currency])
-async def get_all_currency(db: _orm.Session = _fastapi.Depends(_services.get_db)):
+async def get_all_currency(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
     all_currency = await currencyCRUD.get_all(db=db)
     return all_currency
 
 
 @app.delete("/api/currency/{currencyName}")
 async def delete_currency(
-    currencyId: int, db: _orm.Session = _fastapi.Depends(_services.get_db)
+    currencyId: int, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
     currency_mapped = {"currencyId": currencyId}
     await currencyCRUD.remove(id=currency_mapped, db=db)
@@ -68,7 +68,7 @@ async def delete_currency(
 async def update_currency(
     currencyId: str,
     currency_update: _schemas.CurrencyUpdate,
-    db: _orm.Session = _fastapi.Depends(_services.get_db),
+    db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
     currency_map = {"currencyId": currencyId}
     currency = await currencyCRUD.get(
@@ -93,14 +93,14 @@ accountCRUD = _crud.CRUDBase[
 )
 async def create_account(
     account: Union[_schemas.AccountCreate, List[_schemas.AccountCreate]],
-    db: _orm.Session = _fastapi.Depends(_services.get_db),
+    db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
     return await accountCRUD.create(db=db, obj_in=account)
 
 
 @app.get("/api/account/{accountName}", response_model=_schemas.Account)
 async def get_account(
-    accountName: str, db: _orm.Session = _fastapi.Depends(_services.get_db)
+    accountName: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
     account_map = {"accountName": accountName}
     account = await accountCRUD.get(db=db, id=account_map)
@@ -108,14 +108,14 @@ async def get_account(
 
 
 @app.get("/api/account/", response_model=List[_schemas.Account])
-async def get_all_accounts(db: _orm.Session = _fastapi.Depends(_services.get_db)):
+async def get_all_accounts(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
     all_accounts = await accountCRUD.get_all(db=db)
     return all_accounts
 
 
 @app.delete("/api/account/{accountName}")
 async def delete_account(
-    accountName: str, db: _orm.Session = _fastapi.Depends(_services.get_db)
+    accountName: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
     account_map = {"accountName": accountName}
     await accountCRUD.remove(db=db, id=account_map)
@@ -127,7 +127,7 @@ async def delete_account(
 async def update_account(
     accountName: str,
     account_update: _schemas.AccountUpdate,
-    db: _orm.Session = _fastapi.Depends(_services.get_db),
+    db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
     account_mapped = {"accountName": accountName}
     account = await accountCRUD.get(
