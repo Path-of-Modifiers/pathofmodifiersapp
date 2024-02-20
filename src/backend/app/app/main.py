@@ -387,10 +387,10 @@ itemModifierCRUD = _crud.CRUDBase[
 
 @app.post(
     "/api/itemModifier/",
-    response_model=Union[_schemas.Item, List[_schemas.Item]],
+    response_model=Union[_schemas.ItemModifier, List[_schemas.ItemModifier]],
 )
 async def create_item_modifier(
-    itemModifier: Union[_schemas.ItemCreate, List[_schemas.ItemCreate]],
+    itemModifier: Union[_schemas.ItemModifierCreate, List[_schemas.ItemModifierCreate]],
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
     return await itemModifierCRUD.create(db=db, obj_in=itemModifier)
@@ -454,7 +454,7 @@ async def update_item_modifier(
     gameItemId: str,
     modifierId: int,
     position: int,
-    itemModifier_update: _schemas.Item,
+    itemModifier_update: _schemas.ItemModifierUpdate,
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
     itemModifier_mapped = {
