@@ -36,7 +36,7 @@ class _BaseItem(_pydantic.BaseModel):
     replica: Optional[bool] = None
     elder: Optional[bool] = None
     shaper: Optional[bool] = None
-    influences: Optional[list[Influences]]
+    influences: Optional[list[Influences]] = None
     searing: Optional[bool] = None
     tangled: Optional[bool] = None
     isRelic: Optional[bool] = None
