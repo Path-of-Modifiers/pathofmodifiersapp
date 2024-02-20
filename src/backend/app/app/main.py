@@ -1,6 +1,6 @@
 from __future__ import annotations
 import fastapi as _fastapi
-from typing import List, Union, Annotated
+from typing import List, Union, Optional
 
 import app.core.models.models as _models
 import app.api.deps as _deps
@@ -349,9 +349,13 @@ async def get_all_modifiers(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
 
 @app.delete("/api/modifier/{modifierId}")
 async def delete_modifier(
-    modifierId: int, position: int, db: _orm.Session = _fastapi.Depends(_deps.get_db)
+    modifierId: int,
+    position: Optional[int] = None,
+    db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
-    modifier_map = {"modifierId": modifierId, "position": position}
+    modifier_map = {"modifierId": modifierId}
+    if position is not None:
+        modifier_map["position"] = position
     await modifierCRUD.remove(db=db, filter=modifier_map)
 
     return "Modifier deleted successfully"
@@ -422,17 +426,20 @@ async def get_all_item_modifiers(db: _orm.Session = _fastapi.Depends(_deps.get_d
 @app.delete("/api/itemModifier/{itemId}")
 async def delete_item_modifier(
     itemId: int,
-    gameItemId: str,
-    modifierId: int,
-    position: int,
+    gameItemId: Optional[str],
+    modifierId: Optional[int],
+    position: Optional[int],
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
+    **kwargs,
 ):
+    print(kwargs)
     itemModifier_map = {
         "itemId": itemId,
         "gameItemId": gameItemId,
         "modifierId": modifierId,
         "position": position,
     }
+
     await itemModifierCRUD.remove(db=db, filter=itemModifier_map)
 
     return "ItemModifier deleted successfully"
