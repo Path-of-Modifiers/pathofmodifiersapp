@@ -59,10 +59,9 @@ async def delete_currency(
     currencyId: int, db: _orm.Session = _fastapi.Depends(_services.get_db)
 ):
     currency_mapped = {"currencyId": currencyId}
-    currency = await currencyCRUD.get(id=currency_mapped, db=db)
-    await currencyCRUD.remove(currency, db=db)
+    await currencyCRUD.remove(id=currency_mapped, db=db)
 
-    return "currency with id {currencyId} deleted successfully"
+    return f"currency with id {currencyId} deleted successfully"
 
 
 @app.put("/api/currency/{currencyId}", response_model=_schemas.Currency)
