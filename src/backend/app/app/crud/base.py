@@ -38,7 +38,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             raise HTTPException(
                 status_code=404, detail=f"Object in {type(self.model)} not found"
             )
-        return db_obj
+        return self.validate(db_obj)
 
     async def get_all(self, db: Session) -> List[ModelType]:
         db_all_obj = db.query(self.model).all()
@@ -46,7 +46,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             raise HTTPException(
                 status_code=404, detail=f"All objects in {type(self.model)} not found"
             )
-        return db_all_obj
+        return self.validate(db_all_obj)
 
     async def create(
         self, db: Session, *, obj_in: Union[CreateSchemaType, List[CreateSchemaType]]
@@ -84,11 +84,11 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         return self.validate(db_obj)
 
     async def remove(self, db: Session, *, id: Any) -> ModelType:
-        obj = db.query(self.model).get(**id)
+        obj = db.query(self.model).filter_by(**id).first()
         if obj is None:
             raise HTTPException(
                 status_code=404, detail=f"Object in {type(self.model)} not found"
             )
         db.delete(obj)
         db.commit()
-        return obj
+        return self.validate(obj)
