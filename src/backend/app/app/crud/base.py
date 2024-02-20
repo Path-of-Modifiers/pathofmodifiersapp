@@ -12,9 +12,7 @@ from sqlalchemy.inspection import inspect
 ModelType = TypeVar("ModelType", bound=Any)
 SchemaType = TypeVar("SchemaType", bound=Any)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
-ListCreateSchemaType = TypeVar("ListCreateSchemaType", bound=List[BaseModel])
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
-ListUpdateSchemaType = TypeVar("ListUpdateSchemaType", bound=List[BaseModel])
 
 
 class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType]):
@@ -55,6 +53,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             db_obj = [self.model(**obj.model_dump()) for obj in obj_in]
             db.add_all(db_obj)
             db.commit()
+            [db.refresh(obj) for obj in db_obj]
         else:
             db_obj = self.model(**obj_in.model_dump())
             db.add(db_obj)
@@ -67,20 +66,28 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         db: Session,
         *,
         db_obj: ModelType,
-        obj_in: Union[UpdateSchemaType, ListUpdateSchemaType, Dict[str, Any]],
+        obj_in: Union[UpdateSchemaType, List[UpdateSchemaType], Dict[str, Any]],
     ) -> ModelType:
-        obj_data = jsonable_encoder(db_obj)
         if isinstance(obj_in, dict):
             update_data = obj_in
+        elif isinstance(obj_in, list):
+            for obj in obj_in:
+                update_data = obj.model_dump()
+                for field in obj:
+                    if field in update_data:
+                        setattr(obj, field, update_data[field])
+            db.add_all(obj_in)
+            db.commit()
+            [db.refresh(obj) for obj in db_obj]
         else:
-            # update_data = obj_in.dict(exclude_unset=True)
             update_data = obj_in.model_dump()
-        for field in obj_data:
-            if field in update_data:
-                setattr(db_obj, field, update_data[field])
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
+            for field in obj_in:
+                if field in update_data:
+                    setattr(db_obj, field, update_data[field])
+            db.add(db_obj)
+            db.commit()
+            db.refresh(db_obj)
+
         return self.validate(db_obj)
 
     async def remove(self, db: Session, *, id: Any) -> ModelType:
