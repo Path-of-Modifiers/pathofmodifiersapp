@@ -28,7 +28,10 @@ currencyCRUD = _crud.CRUDBase[
 ](model=_models.Currency, schema=_schemas.Currency)
 
 
-@app.post("/api/currency/", response_model=Union[_schemas.CurrencyCreate, List[_schemas.CurrencyCreate]])
+@app.post(
+    "/api/currency/",
+    response_model=Union[_schemas.CurrencyCreate, List[_schemas.CurrencyCreate]],
+)
 async def create_currency(
     currency: Union[_schemas.CurrencyCreate, List[_schemas.CurrencyCreate]],
     db: _orm.Session = _fastapi.Depends(_services.get_db),
@@ -40,7 +43,8 @@ async def create_currency(
 async def get_currency(
     currencyId: int, db: _orm.Session = _fastapi.Depends(_services.get_db)
 ):
-    currency = await currencyCRUD.get(db=db, id=currencyId)
+    currency_mapped = {"currencyId": currencyId}
+    currency = await currencyCRUD.get(db=db, id=currency_mapped)
     return currency
 
 
@@ -54,7 +58,8 @@ async def get_all_currency(db: _orm.Session = _fastapi.Depends(_services.get_db)
 async def delete_currency(
     currencyId: int, db: _orm.Session = _fastapi.Depends(_services.get_db)
 ):
-    currency = await currencyCRUD.get(id=currencyId, db=db)
+    currency_mapped = {"currencyId": currencyId}
+    currency = await currencyCRUD.get(id=currency_mapped, db=db)
     await currencyCRUD.remove(currency, db=db)
 
     return "currency deleted successfully"
@@ -66,61 +71,73 @@ async def update_currency(
     currencyData: _schemas.CurrencyUpdate,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
+    currency_mapped = {"currencyId": currencyId}
     currency = await currencyCRUD.get(
         db=db,
-        id=currencyId,
+        id=currency_mapped,
     )
 
     return await currencyCRUD.update(
         currencyData=currencyData, currency=currency, db=db
     )
 
+
 accountCRUD = _crud.CRUDBase[
     _models.Account,
     _schemas.Account,
     _schemas.AccountCreate,
     _schemas.AccountUpdate,
-    ](model=_models.Account, schema=_schemas.Account)
+](model=_models.Account, schema=_schemas.Account)
 
-@app.post("/api/account/", response_model=Union[_schemas.AccountCreate, List[_schemas.AccountCreate]])
+
+@app.post(
+    "/api/account/",
+    response_model=Union[_schemas.AccountCreate, List[_schemas.AccountCreate]],
+)
 async def create_account(
     account: Union[_schemas.AccountCreate, List[_schemas.AccountCreate]],
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
     return await accountCRUD.create(db=db, obj_in=account)
 
-@app.get("/api/account/{accountId}", response_model=_schemas.Account)
+
+@app.get("/api/account/{accountName}", response_model=_schemas.Account)
 async def get_account(
-    accountId: str, db: _orm.Session = _fastapi.Depends(_services.get_db)
+    accountName: str, db: _orm.Session = _fastapi.Depends(_services.get_db)
 ):
-    account = await accountCRUD.get(db=db, id=accountId)
+    account_map = {"accountName": accountName}
+    account = await accountCRUD.get(db=db, id=account_map)
     return account
+
 
 @app.get("/api/account/", response_model=List[_schemas.Account])
 async def get_all_accounts(db: _orm.Session = _fastapi.Depends(_services.get_db)):
     all_accounts = await accountCRUD.get_all(db=db)
     return all_accounts
 
-@app.delete("/api/account/{accountId}")
+
+@app.delete("/api/account/{accountName}")
 async def delete_account(
-    accountId: str, db: _orm.Session = _fastapi.Depends(_services.get_db)
-):
-    account = await accountCRUD.get(id=accountId, db=db)
-    await accountCRUD.remove(account, db=db)
+    accountName: str, db: _orm.Session = _fastapi.Depends(_services.get_db)
+): 
+    print("DB DELETE ACCOUNT")
+    print(db)
+    account_map = {"accountName": accountName}
+    await accountCRUD.remove(db=db, id=account_map)
 
     return "Account deleted successfully"
 
-@app.put("/api/account/{accountId}", response_model=_schemas.Account)
+
+@app.put("/api/account/{accountName}", response_model=_schemas.Account)
 async def update_account(
-    accountId: str,
+    accountName: str,
     accountData: _schemas.AccountUpdate,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
+    account_mapped = {"accountName": accountName}
     account = await accountCRUD.get(
         db=db,
-        id=accountId,
+        id=account_mapped,
     )
 
-    return await accountCRUD.update(
-        obj_in=accountData, obj=account, db=db
-    )
+    return await accountCRUD.update(obj_in=accountData, db_obj=, obj_in=account, db=db)
