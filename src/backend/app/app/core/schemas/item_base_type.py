@@ -1,7 +1,10 @@
 import datetime as _dt
 from typing import Optional
 import pydantic as _pydantic
-from pydantic import Json
+
+
+class subCategory(_pydantic.BaseModel):
+    subCategory: str
 
 
 # Shared item base type props
@@ -10,7 +13,7 @@ class _BaseItemBaseType(_pydantic.BaseModel):
 
     baseType: str
     category: str
-    subCategory: Json
+    subCategory: list[subCategory]
 
 
 # Properties to receive on item base type creation
