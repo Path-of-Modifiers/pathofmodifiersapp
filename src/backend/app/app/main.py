@@ -30,7 +30,7 @@ currencyCRUD = _crud.CRUDBase[
 
 @app.post(
     "/api/currency/",
-    response_model=Union[_schemas.CurrencyCreate, List[_schemas.CurrencyCreate]],
+    response_model=Union[_schemas.Currency, List[_schemas.Currency]],
 )
 async def create_currency(
     currency: Union[_schemas.CurrencyCreate, List[_schemas.CurrencyCreate]],
