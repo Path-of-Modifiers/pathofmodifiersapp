@@ -136,3 +136,66 @@ async def update_account(
     )
 
     return await accountCRUD.update(db_obj=account, obj_in=account_update, db=db)
+
+
+itemBaseTypeCRUD = _crud.CRUDBase[
+    _models.ItemBaseType,
+    _schemas.ItemBaseType,
+    _schemas.ItemBaseTypeCreate,
+    _schemas.ItemBaseTypeUpdate,
+](model=_models.ItemBaseType, schema=_schemas.ItemBaseType)
+
+
+@app.post(
+    "/api/itemBaseType/",
+    response_model=Union[
+        _schemas.ItemBaseTypeCreate, List[_schemas.ItemBaseTypeCreate]
+    ],
+)
+async def create_itemBaseType(
+    itemBaseType: Union[_schemas.ItemBaseTypeCreate, List[_schemas.ItemBaseTypeCreate]],
+    db: _orm.Session = _fastapi.Depends(_deps.get_db),
+):
+    return await itemBaseTypeCRUD.create(db=db, obj_in=itemBaseType)
+
+
+@app.get("/api/itemBaseType/{baseType}", response_model=_schemas.ItemBaseType)
+async def get_itemBaseType(
+    baseType: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)
+):
+    itemBaseTypeMap = {"baseType": baseType}
+    itemBaseType = await itemBaseTypeCRUD.get(db=db, id=itemBaseTypeMap)
+    return itemBaseType
+
+
+@app.get("/api/itemBaseType/", response_model=List[_schemas.ItemBaseType])
+async def get_all_itemBaseTypes(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
+    allItemBaseTypes = await itemBaseTypeCRUD.get_all(db=db)
+    return allItemBaseTypes
+
+
+@app.delete("/api/itemBaseType/{baseType}")
+async def delete_itemBaseType(
+    baseType: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)
+):
+    itemBaseTypeMap = {"baseType": baseType}
+    await itemBaseTypeCRUD.remove(db=db, id=itemBaseTypeMap)
+
+    return "ItemBaseType deleted successfully"
+
+
+@app.put("/api/itemBaseType/{baseType}", response_model=_schemas.ItemBaseType)
+async def update_itemBaseType(
+    baseType: str,
+    itemBaseTypeUpdate: _schemas.ItemBaseTypeUpdate,
+    db: _orm.Session = _fastapi.Depends(_deps.get_db),
+):
+    itemBaseTypeMap = {"baseType": baseType}
+    itemBaseType = await itemBaseTypeCRUD.get(
+        db=db,
+        id=itemBaseTypeMap,
+    )
+
+    return await itemBaseTypeCRUD.update(
+        db_obj=itemBaseType, obj_in=itemBaseTypeUpdate, db=db
+    )
