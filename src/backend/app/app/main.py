@@ -426,19 +426,18 @@ async def get_all_item_modifiers(db: _orm.Session = _fastapi.Depends(_deps.get_d
 @app.delete("/api/itemModifier/{itemId}")
 async def delete_item_modifier(
     itemId: int,
-    gameItemId: Optional[str],
-    modifierId: Optional[int],
-    position: Optional[int],
+    gameItemId: Optional[str] = None,
+    modifierId: Optional[int] = None,
+    position: Optional[int] = None,
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
-    **kwargs,
 ):
-    print(kwargs)
-    itemModifier_map = {
-        "itemId": itemId,
-        "gameItemId": gameItemId,
-        "modifierId": modifierId,
-        "position": position,
-    }
+    itemModifier_map = {"itemId": itemId}
+    if gameItemId is not None:
+        itemModifier_map["gameItemId"] = gameItemId
+    if modifierId is not None:
+        itemModifier_map["modifierId"] = modifierId
+    if position is not None:
+        itemModifier_map["position"] = position
 
     await itemModifierCRUD.remove(db=db, filter=itemModifier_map)
 
