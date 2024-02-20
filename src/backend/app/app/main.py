@@ -51,7 +51,9 @@ async def get_currency(
     return currency
 
 
-@app.get("/api/currency/", response_model=List[_schemas.Currency])
+@app.get(
+    "/api/currency/", response_model=Union[_schemas.Currency, List[_schemas.Currency]]
+)
 async def get_all_currency(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
     all_currency = await currencyCRUD.get(db=db)
     return all_currency
@@ -113,7 +115,9 @@ async def get_account(
     return account
 
 
-@app.get("/api/account/", response_model=List[_schemas.Account])
+@app.get(
+    "/api/account/", response_model=Union[_schemas.Account, List[_schemas.Account]]
+)
 async def get_all_accounts(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
     all_accounts = await accountCRUD.get(db=db)
     return all_accounts
@@ -177,7 +181,10 @@ async def get_itemBaseType(
     return itemBaseType
 
 
-@app.get("/api/itemBaseType/", response_model=List[_schemas.ItemBaseType])
+@app.get(
+    "/api/itemBaseType/",
+    response_model=Union[_schemas.ItemBaseType, List[_schemas.ItemBaseType]],
+)
 async def get_all_itemBaseTypes(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
     allItemBaseTypes = await itemBaseTypeCRUD.get(db=db)
     return allItemBaseTypes
@@ -238,7 +245,7 @@ async def get_item(gameItemId: str, db: _orm.Session = _fastapi.Depends(_deps.ge
     return item
 
 
-@app.get("/api/item/", response_model=List[_schemas.Item])
+@app.get("/api/item/", response_model=Union[_schemas.Item, List[_schemas.Item]])
 async def get_all_items(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
     all_items = await itemCRUD.get(db=db)
     return all_items
@@ -297,7 +304,7 @@ async def get_stash(stashId: str, db: _orm.Session = _fastapi.Depends(_deps.get_
     return stash
 
 
-@app.get("/api/stash/", response_model=List[_schemas.Stash])
+@app.get("/api/stash/", response_model=Union[_schemas.Stash, List[_schemas.Stash]])
 async def get_all_stashes(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
     all_stashes = await stashCRUD.get(db=db)
     return all_stashes
@@ -361,7 +368,9 @@ async def get_modifier(
     return modifier
 
 
-@app.get("/api/modifier/", response_model=List[_schemas.Modifier])
+@app.get(
+    "/api/modifier/", response_model=Union[_schemas.Modifier, List[_schemas.Modifier]]
+)
 async def get_all_modifiers(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
     all_modifiers = await modifierCRUD.get(db=db)
     return all_modifiers
@@ -439,7 +448,10 @@ async def get_item_modifier(
     return itemModifier
 
 
-@app.get("/api/itemModifier/", response_model=List[_schemas.ItemModifier])
+@app.get(
+    "/api/itemModifier/",
+    response_model=Union[_schemas.ItemModifier, List[_schemas.ItemModifier]],
+)
 async def get_all_item_modifiers(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
     all_item_modifiers = await itemModifierCRUD.get(db=db)
     return all_item_modifiers
