@@ -36,7 +36,8 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         db_obj = db.query(self.model).filter_by(**filter).all()
         if not db_obj:
             raise HTTPException(
-                status_code=404, detail=f"Object in {type(self.model)} not found"
+                status_code=404,
+                detail=f"No object matching the query ({', '.join([key + ': ' + str(item) for key, item in filter.items()])}) in the table {self.model.__tablename__} was found",
             )
         if len(db_obj) == 1:
             db_obj = db_obj[0]
@@ -81,14 +82,15 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         objs = db.query(self.model).filter_by(**filter).all()
         if not objs:
             raise HTTPException(
-                status_code=404, detail=f"Object in {type(self.model)} not found"
+                status_code=404,
+                detail=f"No object matching the query ({','.join([key + ': ' + str(item) for key, item in filter.items()])}) in the table {self.model.__tablename__} was found",
             )
         elif (
             len(objs) > 12
         ):  # Arbitrary number, not too large, but should allow deleting all modifiers assosiated with an item
             raise HTTPException(
                 status_code=403,
-                detail=f"Too many objects ({len(objs)}) matched the query, cannot delete and guarantee safety",
+                detail=f"Too many objects ({len(objs)}) matching the query ({','.join([key + ': ' + str(item) for key, item in filter.items()])}), cannot delete and guarantee safety",
             )
         [db.delete(obj) for obj in objs]
         db.commit()
