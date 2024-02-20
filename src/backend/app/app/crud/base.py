@@ -36,6 +36,8 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             raise HTTPException(
                 status_code=404, detail=f"Object in {type(self.model)} not found"
             )
+        if len(db_obj) == 1:
+            db_obj = db_obj[0]
         return self.validate(db_obj)
 
     async def get_all(self, db: Session) -> List[ModelType]:
