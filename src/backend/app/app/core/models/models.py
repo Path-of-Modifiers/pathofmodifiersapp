@@ -37,7 +37,7 @@ class Currency(Base):
     currencyName = _sql.Column(_sql.String(), index=True, nullable=False)
     valueInChaos = _sql.Column(_sql.Float(), nullable=False)
     iconUrl = _sql.Column(_sql.String(), nullable=False)
-    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
+    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
 
 
 class ItemBaseType(Base):
@@ -47,8 +47,8 @@ class ItemBaseType(Base):
     baseType = _sql.Column(_sql.String(), nullable=False, primary_key=True, index=True)
     category = _sql.Column(_sql.String(), nullable=False, unique=True)
     subCategory = _sql.Column(JSONB(), nullable=False)
-    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
-    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
+    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
+    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
 
 
 class Item(Base):
@@ -109,7 +109,7 @@ class Item(Base):
     suffixes = _sql.Column(_sql.SmallInteger())
     foilVariation = _sql.Column(_sql.Integer())
     inventoryId = _sql.Column(_sql.String())
-    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
+    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
 
     __table_args__ = (_sql.PrimaryKeyConstraint(itemId, gameItemId),)
 
@@ -149,8 +149,8 @@ class Modifier(Base):
     corrupted = _sql.Column(_sql.Boolean())
     enchanted = _sql.Column(_sql.Boolean())
     veiled = _sql.Column(_sql.Boolean())
-    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
-    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
+    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
+    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
 
     __table_args__ = (_sql.PrimaryKeyConstraint(modifierId, position),)
 
@@ -200,8 +200,8 @@ class Stash(Base):
     )
     public = _sql.Column(_sql.Boolean(), nullable=False)
     league = _sql.Column(_sql.String(), nullable=False)
-    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
-    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
+    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
+    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
 
 
 class Account(Base):
@@ -212,5 +212,5 @@ class Account(Base):
         _sql.String(), primary_key=True, index=True, nullable=False
     )
     isBanned = _sql.Column(_sql.Boolean())
-    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
-    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
+    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
+    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
