@@ -20,7 +20,7 @@ async def read_main():
     return {"message": "Welcome to Path of Modifiers API!"}
 
 
-currencyCRUD = _crud.CRUDBase[
+CRUD_currency = _crud.CRUDBase[
     _models.Currency,
     _schemas.Currency,
     _schemas.CurrencyCreate,
@@ -36,7 +36,7 @@ async def create_currency(
     currency: Union[_schemas.CurrencyCreate, List[_schemas.CurrencyCreate]],
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
-    return await currencyCRUD.create(db=db, obj_in=currency)
+    return await CRUD_currency.create(db=db, obj_in=currency)
 
 
 @app.get(
@@ -47,7 +47,7 @@ async def get_currency(
     currencyId: int, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
     currency_mapped = {"currencyId": currencyId}
-    currency = await currencyCRUD.get(db=db, filter=currency_mapped)
+    currency = await CRUD_currency.get(db=db, filter=currency_mapped)
     return currency
 
 
@@ -55,7 +55,7 @@ async def get_currency(
     "/api/currency/", response_model=Union[_schemas.Currency, List[_schemas.Currency]]
 )
 async def get_all_currency(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
-    all_currency = await currencyCRUD.get(db=db)
+    all_currency = await CRUD_currency.get(db=db)
     return all_currency
 
 
@@ -64,7 +64,7 @@ async def delete_currency(
     currencyId: int, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
     currency_mapped = {"currencyId": currencyId}
-    await currencyCRUD.remove(filter=currency_mapped, db=db)
+    await CRUD_currency.remove(filter=currency_mapped, db=db)
 
     return f"Currency with id {currencyId} deleted successfully"
 
@@ -76,15 +76,15 @@ async def update_currency(
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
     currency_map = {"currencyId": currencyId}
-    currency = await currencyCRUD.get(
+    currency = await CRUD_currency.get(
         db=db,
         filter=currency_map,
     )
 
-    return await currencyCRUD.update(db_obj=currency, obj_in=currency_update, db=db)
+    return await CRUD_currency.update(db_obj=currency, obj_in=currency_update, db=db)
 
 
-accountCRUD = _crud.CRUDBase[
+CRUD_account = _crud.CRUDBase[
     _models.Account,
     _schemas.Account,
     _schemas.AccountCreate,
@@ -100,7 +100,7 @@ async def create_account(
     account: Union[_schemas.AccountCreate, List[_schemas.AccountCreate]],
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
-    return await accountCRUD.create(db=db, obj_in=account)
+    return await CRUD_account.create(db=db, obj_in=account)
 
 
 @app.get(
@@ -111,7 +111,7 @@ async def get_account(
     accountName: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
     account_map = {"accountName": accountName}
-    account = await accountCRUD.get(db=db, filter=account_map)
+    account = await CRUD_account.get(db=db, filter=account_map)
     return account
 
 
@@ -119,7 +119,7 @@ async def get_account(
     "/api/account/", response_model=Union[_schemas.Account, List[_schemas.Account]]
 )
 async def get_all_accounts(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
-    all_accounts = await accountCRUD.get(db=db)
+    all_accounts = await CRUD_account.get(db=db)
     return all_accounts
 
 
@@ -128,7 +128,7 @@ async def delete_account(
     accountName: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
     account_map = {"accountName": accountName}
-    await accountCRUD.remove(db=db, filter=account_map)
+    await CRUD_account.remove(db=db, filter=account_map)
 
     return "Account deleted successfully"
 
@@ -140,15 +140,15 @@ async def update_account(
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
     account_mapped = {"accountName": accountName}
-    account = await accountCRUD.get(
+    account = await CRUD_account.get(
         db=db,
         filter=account_mapped,
     )
 
-    return await accountCRUD.update(db_obj=account, obj_in=account_update, db=db)
+    return await CRUD_account.update(db_obj=account, obj_in=account_update, db=db)
 
 
-itemBaseTypeCRUD = _crud.CRUDBase[
+CRUD_itemBaseType = _crud.CRUDBase[
     _models.ItemBaseType,
     _schemas.ItemBaseType,
     _schemas.ItemBaseTypeCreate,
@@ -166,7 +166,7 @@ async def create_itemBaseType(
     itemBaseType: Union[_schemas.ItemBaseTypeCreate, List[_schemas.ItemBaseTypeCreate]],
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
-    return await itemBaseTypeCRUD.create(db=db, obj_in=itemBaseType)
+    return await CRUD_itemBaseType.create(db=db, obj_in=itemBaseType)
 
 
 @app.get(
@@ -177,7 +177,7 @@ async def get_itemBaseType(
     baseType: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
     itemBaseTypeMap = {"baseType": baseType}
-    itemBaseType = await itemBaseTypeCRUD.get(db=db, filter=itemBaseTypeMap)
+    itemBaseType = await CRUD_itemBaseType.get(db=db, filter=itemBaseTypeMap)
     return itemBaseType
 
 
@@ -186,7 +186,7 @@ async def get_itemBaseType(
     response_model=Union[_schemas.ItemBaseType, List[_schemas.ItemBaseType]],
 )
 async def get_all_itemBaseTypes(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
-    allItemBaseTypes = await itemBaseTypeCRUD.get(db=db)
+    allItemBaseTypes = await CRUD_itemBaseType.get(db=db)
     return allItemBaseTypes
 
 
@@ -195,7 +195,7 @@ async def delete_itemBaseType(
     baseType: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
     itemBaseTypeMap = {"baseType": baseType}
-    await itemBaseTypeCRUD.remove(db=db, filter=itemBaseTypeMap)
+    await CRUD_itemBaseType.remove(db=db, filter=itemBaseTypeMap)
 
     return "ItemBaseType deleted successfully"
 
@@ -207,17 +207,17 @@ async def update_itemBaseType(
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
     itemBaseTypeMap = {"baseType": baseType}
-    itemBaseType = await itemBaseTypeCRUD.get(
+    itemBaseType = await CRUD_itemBaseType.get(
         db=db,
         filter=itemBaseTypeMap,
     )
 
-    return await itemBaseTypeCRUD.update(
+    return await CRUD_itemBaseType.update(
         db_obj=itemBaseType, obj_in=itemBaseTypeUpdate, db=db
     )
 
 
-itemCRUD = _crud.CRUDBase[
+CRUD_item = _crud.CRUDBase[
     _models.Item,
     _schemas.Item,
     _schemas.ItemCreate,
@@ -233,7 +233,7 @@ async def create_item(
     item: Union[_schemas.ItemCreate, List[_schemas.ItemCreate]],
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
-    return await itemCRUD.create(db=db, obj_in=item)
+    return await CRUD_item.create(db=db, obj_in=item)
 
 
 @app.get(
@@ -241,13 +241,13 @@ async def create_item(
 )
 async def get_item(gameItemId: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)):
     item_map = {"gameItemId": gameItemId}
-    item = await itemCRUD.get(db=db, filter=item_map)
+    item = await CRUD_item.get(db=db, filter=item_map)
     return item
 
 
 @app.get("/api/item/", response_model=Union[_schemas.Item, List[_schemas.Item]])
 async def get_all_items(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
-    all_items = await itemCRUD.get(db=db)
+    all_items = await CRUD_item.get(db=db)
     return all_items
 
 
@@ -256,7 +256,7 @@ async def delete_item(
     gameItemId: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
     item_map = {"gameItemId": gameItemId}
-    await itemCRUD.remove(db=db, filter=item_map)
+    await CRUD_item.remove(db=db, filter=item_map)
 
     return "Item deleted successfully"
 
@@ -268,15 +268,15 @@ async def update_item(
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
     item_mapped = {"gameItemId": gameItemId}
-    item = await itemCRUD.get(
+    item = await CRUD_item.get(
         db=db,
         filter=item_mapped,
     )
 
-    return await itemCRUD.update(db_obj=item, obj_in=item_update, db=db)
+    return await CRUD_item.update(db_obj=item, obj_in=item_update, db=db)
 
 
-stashCRUD = _crud.CRUDBase[
+CRUD_stash = _crud.CRUDBase[
     _models.Stash,
     _schemas.Stash,
     _schemas.StashCreate,
@@ -292,7 +292,7 @@ async def create_stash(
     stash: Union[_schemas.StashCreate, List[_schemas.StashCreate]],
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
-    return await stashCRUD.create(db=db, obj_in=stash)
+    return await CRUD_stash.create(db=db, obj_in=stash)
 
 
 @app.get(
@@ -300,20 +300,20 @@ async def create_stash(
 )
 async def get_stash(stashId: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)):
     stash_map = {"stashId": stashId}
-    stash = await stashCRUD.get(db=db, filter=stash_map)
+    stash = await CRUD_stash.get(db=db, filter=stash_map)
     return stash
 
 
 @app.get("/api/stash/", response_model=Union[_schemas.Stash, List[_schemas.Stash]])
 async def get_all_stashes(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
-    all_stashes = await stashCRUD.get(db=db)
+    all_stashes = await CRUD_stash.get(db=db)
     return all_stashes
 
 
 @app.delete("/api/stash/{stashId}")
 async def delete_stash(stashId: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)):
     stash_map = {"stashId": stashId}
-    await stashCRUD.remove(db=db, filter=stash_map)
+    await CRUD_stash.remove(db=db, filter=stash_map)
 
     return "Stash deleted successfully"
 
@@ -325,15 +325,15 @@ async def update_stash(
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
     stash_mapped = {"stashId": stashId}
-    stash = await stashCRUD.get(
+    stash = await CRUD_stash.get(
         db=db,
         filter=stash_mapped,
     )
 
-    return await stashCRUD.update(db_obj=stash, obj_in=stash_update, db=db)
+    return await CRUD_stash.update(db_obj=stash, obj_in=stash_update, db=db)
 
 
-modifierCRUD = _crud.CRUDBase[
+CRUD_modifier = _crud.CRUDBase[
     _models.Modifier,
     _schemas.Modifier,
     _schemas.ModifierCreate,
@@ -349,7 +349,7 @@ async def create_modifier(
     modifier: Union[_schemas.ModifierCreate, List[_schemas.ModifierCreate]],
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
-    return await modifierCRUD.create(db=db, obj_in=modifier)
+    return await CRUD_modifier.create(db=db, obj_in=modifier)
 
 
 @app.get(
@@ -364,7 +364,7 @@ async def get_modifier(
     modifier_map = {"modifierId": modifierId}
     if position is not None:
         modifier_map["position"] = position
-    modifier = await modifierCRUD.get(db=db, filter=modifier_map)
+    modifier = await CRUD_modifier.get(db=db, filter=modifier_map)
     return modifier
 
 
@@ -372,7 +372,7 @@ async def get_modifier(
     "/api/modifier/", response_model=Union[_schemas.Modifier, List[_schemas.Modifier]]
 )
 async def get_all_modifiers(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
-    all_modifiers = await modifierCRUD.get(db=db)
+    all_modifiers = await CRUD_modifier.get(db=db)
     return all_modifiers
 
 
@@ -385,7 +385,7 @@ async def delete_modifier(
     modifier_map = {"modifierId": modifierId}
     if position is not None:
         modifier_map["position"] = position
-    await modifierCRUD.remove(db=db, filter=modifier_map)
+    await CRUD_modifier.remove(db=db, filter=modifier_map)
 
     return "Modifier deleted successfully"
 
@@ -398,15 +398,15 @@ async def update_modifier(
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
     modifier_mapped = {"modifierId": modifierId, "position": position}
-    modifier = await modifierCRUD.get(
+    modifier = await CRUD_modifier.get(
         db=db,
         filter=modifier_mapped,
     )
 
-    return await modifierCRUD.update(db_obj=modifier, obj_in=modifier_update, db=db)
+    return await CRUD_modifier.update(db_obj=modifier, obj_in=modifier_update, db=db)
 
 
-itemModifierCRUD = _crud.CRUDBase[
+CRUD_itemModifier = _crud.CRUDBase[
     _models.ItemModifier,
     _schemas.ItemModifier,
     _schemas.ItemModifierCreate,
@@ -422,7 +422,7 @@ async def create_item_modifier(
     itemModifier: Union[_schemas.ItemModifierCreate, List[_schemas.ItemModifierCreate]],
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
-    return await itemModifierCRUD.create(db=db, obj_in=itemModifier)
+    return await CRUD_itemModifier.create(db=db, obj_in=itemModifier)
 
 
 @app.get(
@@ -444,7 +444,7 @@ async def get_item_modifier(
     if position is not None:
         itemModifier_map["position"] = position
 
-    itemModifier = await itemModifierCRUD.get(db=db, filter=itemModifier_map)
+    itemModifier = await CRUD_itemModifier.get(db=db, filter=itemModifier_map)
     return itemModifier
 
 
@@ -453,7 +453,7 @@ async def get_item_modifier(
     response_model=Union[_schemas.ItemModifier, List[_schemas.ItemModifier]],
 )
 async def get_all_item_modifiers(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
-    all_item_modifiers = await itemModifierCRUD.get(db=db)
+    all_item_modifiers = await CRUD_itemModifier.get(db=db)
     return all_item_modifiers
 
 
@@ -473,7 +473,7 @@ async def delete_item_modifier(
     if position is not None:
         itemModifier_map["position"] = position
 
-    await itemModifierCRUD.remove(db=db, filter=itemModifier_map)
+    await CRUD_itemModifier.remove(db=db, filter=itemModifier_map)
 
     return "ItemModifier deleted successfully"
 
@@ -496,11 +496,11 @@ async def update_item_modifier(
         "modifierId": modifierId,
         "position": position,
     }
-    itemModifier = await itemModifierCRUD.get(
+    itemModifier = await CRUD_itemModifier.get(
         db=db,
         filter=itemModifier_mapped,
     )
 
-    return await itemModifierCRUD.update(
+    return await CRUD_itemModifier.update(
         db_obj=itemModifier, obj_in=itemModifier_update, db=db
     )
