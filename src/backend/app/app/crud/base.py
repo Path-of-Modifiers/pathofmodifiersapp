@@ -81,7 +81,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
     async def remove(self, db: Session, *, filter: Any) -> ModelType:
         objs = self.get(db=db, filter=filter)
         if not isinstance(objs, list):
-            objs = list(objs)
+            objs = [objs]
 
         if (
             len(objs) > 12
