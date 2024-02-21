@@ -71,7 +71,7 @@ async def delete_currency(
 
 @app.put("/api/currency/{currencyId}", response_model=_schemas.Currency)
 async def update_currency(
-    currencyId: str,
+    currencyId: int,
     currency_update: _schemas.CurrencyUpdate,
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
