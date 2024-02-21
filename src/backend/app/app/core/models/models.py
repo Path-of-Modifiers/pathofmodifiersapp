@@ -152,7 +152,10 @@ class Modifier(Base):
     createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
     updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow)
 
-    __table_args__ = (_sql.PrimaryKeyConstraint(modifierId, position),)
+    __table_args__ = (
+        _sql.PrimaryKeyConstraint(modifierId, position),
+        _sql.UniqueConstraint(effect, position),
+    )
 
 
 class ItemModifier(Base):
