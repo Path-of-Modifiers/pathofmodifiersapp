@@ -46,8 +46,8 @@ async def create_currency(
 async def get_currency(
     currencyId: int, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
-    currency_mapped = {"currencyId": currencyId}
-    currency = await CRUD_currency.get(db=db, filter=currency_mapped)
+    currency_map = {"currencyId": currencyId}
+    currency = await CRUD_currency.get(db=db, filter=currency_map)
     return currency
 
 
@@ -63,8 +63,8 @@ async def get_all_currency(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
 async def delete_currency(
     currencyId: int, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
-    currency_mapped = {"currencyId": currencyId}
-    await CRUD_currency.remove(filter=currency_mapped, db=db)
+    currency_map = {"currencyId": currencyId}
+    await CRUD_currency.remove(filter=currency_map, db=db)
 
     return f"Currency with id {currencyId} deleted successfully"
 
@@ -139,10 +139,10 @@ async def update_account(
     account_update: _schemas.AccountUpdate,
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
-    account_mapped = {"accountName": accountName}
+    account_map = {"accountName": accountName}
     account = await CRUD_account.get(
         db=db,
-        filter=account_mapped,
+        filter=account_map,
     )
 
     return await CRUD_account.update(db_obj=account, obj_in=account_update, db=db)
@@ -176,8 +176,8 @@ async def create_itemBaseType(
 async def get_itemBaseType(
     baseType: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
-    itemBaseTypeMap = {"baseType": baseType}
-    itemBaseType = await CRUD_itemBaseType.get(db=db, filter=itemBaseTypeMap)
+    itemBaseType_map = {"baseType": baseType}
+    itemBaseType = await CRUD_itemBaseType.get(db=db, filter=itemBaseType_map)
     return itemBaseType
 
 
@@ -186,16 +186,16 @@ async def get_itemBaseType(
     response_model=Union[_schemas.ItemBaseType, List[_schemas.ItemBaseType]],
 )
 async def get_all_itemBaseTypes(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
-    allItemBaseTypes = await CRUD_itemBaseType.get(db=db)
-    return allItemBaseTypes
+    all_ItemBaseTypes = await CRUD_itemBaseType.get(db=db)
+    return all_ItemBaseTypes
 
 
 @app.delete("/api/itemBaseType/{baseType}")
 async def delete_itemBaseType(
     baseType: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)
 ):
-    itemBaseTypeMap = {"baseType": baseType}
-    await CRUD_itemBaseType.remove(db=db, filter=itemBaseTypeMap)
+    itemBaseType_map = {"baseType": baseType}
+    await CRUD_itemBaseType.remove(db=db, filter=itemBaseType_map)
 
     return "ItemBaseType deleted successfully"
 
@@ -203,17 +203,17 @@ async def delete_itemBaseType(
 @app.put("/api/itemBaseType/{baseType}", response_model=_schemas.ItemBaseType)
 async def update_itemBaseType(
     baseType: str,
-    itemBaseTypeUpdate: _schemas.ItemBaseTypeUpdate,
+    itemBaseType_update: _schemas.ItemBaseTypeUpdate,
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
-    itemBaseTypeMap = {"baseType": baseType}
+    itemBaseType_map = {"baseType": baseType}
     itemBaseType = await CRUD_itemBaseType.get(
         db=db,
-        filter=itemBaseTypeMap,
+        filter=itemBaseType_map,
     )
 
     return await CRUD_itemBaseType.update(
-        db_obj=itemBaseType, obj_in=itemBaseTypeUpdate, db=db
+        db_obj=itemBaseType, obj_in=itemBaseType_update, db=db
     )
 
 
@@ -267,10 +267,10 @@ async def update_item(
     item_update: _schemas.ItemUpdate,
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
-    item_mapped = {"gameItemId": gameItemId}
+    item_map = {"gameItemId": gameItemId}
     item = await CRUD_item.get(
         db=db,
-        filter=item_mapped,
+        filter=item_map,
     )
 
     return await CRUD_item.update(db_obj=item, obj_in=item_update, db=db)
@@ -324,10 +324,10 @@ async def update_stash(
     stash_update: _schemas.StashUpdate,
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
-    stash_mapped = {"stashId": stashId}
+    stash_map = {"stashId": stashId}
     stash = await CRUD_stash.get(
         db=db,
-        filter=stash_mapped,
+        filter=stash_map,
     )
 
     return await CRUD_stash.update(db_obj=stash, obj_in=stash_update, db=db)
@@ -397,10 +397,10 @@ async def update_modifier(
     modifier_update: _schemas.ModifierUpdate,
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
-    modifier_mapped = {"modifierId": modifierId, "position": position}
+    modifier_map = {"modifierId": modifierId, "position": position}
     modifier = await CRUD_modifier.get(
         db=db,
-        filter=modifier_mapped,
+        filter=modifier_map,
     )
 
     return await CRUD_modifier.update(db_obj=modifier, obj_in=modifier_update, db=db)
@@ -453,8 +453,8 @@ async def get_item_modifier(
     response_model=Union[_schemas.ItemModifier, List[_schemas.ItemModifier]],
 )
 async def get_all_item_modifiers(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
-    all_item_modifiers = await CRUD_itemModifier.get(db=db)
-    return all_item_modifiers
+    all_itemModifiers = await CRUD_itemModifier.get(db=db)
+    return all_itemModifiers
 
 
 @app.delete("/api/itemModifier/{itemId}")
@@ -490,7 +490,7 @@ async def update_item_modifier(
     itemModifier_update: _schemas.ItemModifierUpdate,
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
-    itemModifier_mapped = {
+    itemModifier_map = {
         "itemId": itemId,
         "gameItemId": gameItemId,
         "modifierId": modifierId,
@@ -498,7 +498,7 @@ async def update_item_modifier(
     }
     itemModifier = await CRUD_itemModifier.get(
         db=db,
-        filter=itemModifier_mapped,
+        filter=itemModifier_map,
     )
 
     return await CRUD_itemModifier.update(
