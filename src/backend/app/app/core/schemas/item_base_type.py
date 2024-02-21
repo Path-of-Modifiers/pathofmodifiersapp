@@ -1,5 +1,5 @@
 import datetime as _dt
-from typing import Optional
+from typing import Optional, List
 import pydantic as _pydantic
 
 
@@ -13,7 +13,7 @@ class _BaseItemBaseType(_pydantic.BaseModel):
 
     baseType: str
     category: str
-    subCategory: list[subCategory]
+    subCategory: List[subCategory]
 
 
 # Properties to receive on item base type creation
