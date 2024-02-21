@@ -25,7 +25,8 @@ class ItemModifierUpdate(_BaseItemModifier):
 
 # Properties shared by models stored in DB
 class ItemModifierInDBBase(_BaseItemModifier):
-    pass
+    createdAt: _pydantic.datetime.datetime
+    updatedAt: _pydantic.datetime.datetime
 
 
 # Properties to return to client
