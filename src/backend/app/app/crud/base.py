@@ -79,17 +79,19 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         return self.validate(db_obj)
 
     async def remove(self, db: Session, *, filter: Any) -> ModelType:
-        objs = self.get(db=db, filter=filter)
-        if not isinstance(objs, list):
-            objs = [objs]
-
-        if (
-            len(objs) > 12
+        db_objs = db.query(self.model).filter_by(**filter).all()
+        if not db_objs:
+            raise HTTPException(
+                status_code=404,
+                detail=f"No object matching the query ({', '.join([key + ': ' + str(item) for key, item in filter.items()])}) in the table {self.model.__tablename__} was found",
+            )
+        elif (
+            len(db_objs) > 12
         ):  # Arbitrary number, not too large, but should allow deleting all modifiers assosiated with an item
             raise HTTPException(
                 status_code=403,
-                detail=f"Too many objects ({len(objs)}) matching the query ({','.join([key + ': ' + str(item) for key, item in filter.items()])}), cannot delete and guarantee safety",
+                detail=f"Too many objects ({len(db_objs)}) matching the query ({','.join([key + ': ' + str(item) for key, item in filter.items()])}), cannot delete and guarantee safety",
             )
-        [db.delete(obj) for obj in objs]
+        [db.delete(obj) for obj in db_objs]
         db.commit()
-        return self.validate(objs)
+        return self.validate(db_objs)
