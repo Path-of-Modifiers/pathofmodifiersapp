@@ -236,11 +236,9 @@ async def create_item(
     return await CRUD_item.create(db=db, obj_in=item)
 
 
-@app.get(
-    "/api/item/{gameItemId}", response_model=Union[_schemas.Item, List[_schemas.Item]]
-)
-async def get_item(gameItemId: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)):
-    item_map = {"gameItemId": gameItemId}
+@app.get("/api/item/{itemId}", response_model=Union[_schemas.Item, List[_schemas.Item]])
+async def get_item(itemId: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)):
+    item_map = {"itemId": itemId}
     item = await CRUD_item.get(db=db, filter=item_map)
     return item
 
@@ -251,11 +249,9 @@ async def get_all_items(db: _orm.Session = _fastapi.Depends(_deps.get_db)):
     return all_items
 
 
-@app.delete("/api/item/{gameItemId}")
-async def delete_item(
-    gameItemId: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)
-):
-    item_map = {"gameItemId": gameItemId}
+@app.delete("/api/item/{itemId}")
+async def delete_item(itemId: str, db: _orm.Session = _fastapi.Depends(_deps.get_db)):
+    item_map = {"itemId": itemId}
     await CRUD_item.remove(db=db, filter=item_map)
 
     return "Item deleted successfully"
