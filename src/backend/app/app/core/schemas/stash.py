@@ -7,7 +7,6 @@ import pydantic as _pydantic
 class _BaseStash(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
-    stashId: str
     accountName: str
     public: bool
     league: str
@@ -15,7 +14,7 @@ class _BaseStash(_pydantic.BaseModel):
 
 # Properties to receive on stash creation
 class StashCreate(_BaseStash):
-    pass
+    stashId: str
 
 
 # Properties to receive on update
@@ -25,6 +24,7 @@ class StashUpdate(_BaseStash):
 
 # Properties shared by models stored in DB
 class StashInDBBase(_BaseStash):
+    stashId: str
     createdAt: Optional[_dt.datetime] = None
     updatedAt: Optional[_dt.datetime] = None
 
