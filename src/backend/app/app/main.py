@@ -257,13 +257,13 @@ async def delete_item(itemId: str, db: _orm.Session = _fastapi.Depends(_deps.get
     return "Item deleted successfully"
 
 
-@app.put("/api/item/{gameItemId}", response_model=_schemas.Item)
+@app.put("/api/item/{itemId}", response_model=_schemas.Item)
 async def update_item(
-    gameItemId: str,
+    itemId: str,
     item_update: _schemas.ItemUpdate,
     db: _orm.Session = _fastapi.Depends(_deps.get_db),
 ):
-    item_map = {"gameItemId": gameItemId}
+    item_map = {"itemId": itemId}
     item = await CRUD_item.get(
         db=db,
         filter=item_map,
