@@ -69,12 +69,12 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             update_data = obj_in
         else:
             update_data = obj_in.model_dump()
-            for field in obj_in:
-                if field in update_data:
-                    setattr(db_obj, field, update_data[field])
-            db.add(db_obj)
-            db.commit()
-            db.refresh(db_obj)
+        for field in obj_in:
+            if field in update_data:
+                setattr(db_obj, field, update_data[field])
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
 
         return self.validate(db_obj)
 
