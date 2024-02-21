@@ -28,8 +28,8 @@ class ItemBaseTypeUpdate(_BaseItemBaseType):
 
 # Properties shared by models stored in DB
 class ItemBaseTypeInDBBase(_BaseItemBaseType):
-    createdAt: Optional[_dt.datetime] = None
-    updatedAt: Optional[_dt.datetime] = None
+    createdAt: _dt.datetime 
+    updatedAt: _dt.datetime 
 
 
 # Properties to return to client
