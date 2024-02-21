@@ -34,7 +34,9 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         self, db: Session, filter: Any = {}
     ) -> Optional[Union[ModelType, List[ModelType]]]:
         db_obj = db.query(self.model).filter_by(**filter).all()
-        if not db_obj:
+        if not db_obj and not filter:  # Get all objs on an empty db
+            pass
+        elif not db_obj:
             raise HTTPException(
                 status_code=404,
                 detail=f"No object matching the query ({', '.join([key + ': ' + str(item) for key, item in filter.items()])}) in the table {self.model.__tablename__} was found",
