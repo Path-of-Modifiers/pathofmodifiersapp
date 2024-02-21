@@ -23,8 +23,8 @@ class AccountUpdate(_BaseAccount):
 
 # Properties shared by models stored in DB
 class AccountInDBBase(_BaseAccount):
-    createdAt: Optional[_dt.datetime] = None
-    updatedAt: Optional[_dt.datetime] = None
+    createdAt: _dt.datetime = None
+    updatedAt: _dt.datetime = None
 
 
 # Properties to return to client
