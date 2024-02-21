@@ -79,13 +79,11 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         return self.validate(db_obj)
 
     async def remove(self, db: Session, *, filter: Any) -> ModelType:
-        objs = db.query(self.model).filter_by(**filter).all()
-        if not objs:
-            raise HTTPException(
-                status_code=404,
-                detail=f"No object matching the query ({','.join([key + ': ' + str(item) for key, item in filter.items()])}) in the table {self.model.__tablename__} was found",
-            )
-        elif (
+        objs = self.get(db=db, filter=filter)
+        if not isinstance(objs, list):
+            objs = list(objs)
+
+        if (
             len(objs) > 12
         ):  # Arbitrary number, not too large, but should allow deleting all modifiers assosiated with an item
             raise HTTPException(
