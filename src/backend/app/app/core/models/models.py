@@ -48,7 +48,7 @@ class ItemBaseType(Base):
 
     baseType = _sql.Column(_sql.String(), nullable=False, primary_key=True, index=True)
     category = _sql.Column(_sql.String(), nullable=False, unique=True)
-    subCategory = _sql.Column(JSONB(), nullable=False)
+    subCategory = _sql.Column(_sql.String(), nullable=False)
     createdAt = _sql.Column(
         _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
     )
