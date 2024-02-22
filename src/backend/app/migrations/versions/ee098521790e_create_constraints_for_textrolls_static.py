@@ -29,7 +29,7 @@ def upgrade() -> None:
     )
 
     op.create_check_constraint(
-        constraint_name="check_modifier_if_minMaxRolls_then_not_textRoll_or_static_vv",
+        constraint_name="check_modifier_if_minMaxRolls_then_not_textRoll",
         table_name="modifier",
         condition=""" (("modifier"."minRoll" IS NOT NULL AND "modifier"."maxRoll" IS NOT NULL) AND "modifier"."textRoll" IS NULL)
     OR
