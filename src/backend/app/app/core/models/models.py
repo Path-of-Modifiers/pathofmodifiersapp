@@ -168,18 +168,26 @@ class Modifier(Base):
         _sql.PrimaryKeyConstraint(modifierId, position),
         _sql.UniqueConstraint(effect, position),
         _sql.CheckConstraint(
-            "((minRoll IS NOT NULL AND maxRoll IS NOT NULL) AND textRoll IS NULL) OR "
-            "(textRoll IS NOT NULL AND (minRoll IS NULL AND maxRoll IS NULL))",
-            name="check_rolls_and_text",
+            '(("modifier"."minRoll" IS NOT NULL AND "modifier"."maxRoll" IS NOT NULL) AND '
+            '"textRoll" IS NULL) OR ("textRoll" IS NOT NULL AND ("modifier"."minRoll"'
+            'IS NULL AND "modifier"."maxRoll" IS NULL))',
+            name="check_modifier_if_minMaxRolls_then_not_textRoll_vv",
         ),
         _sql.CheckConstraint(
-            "(minRoll IS NOT NULL AND maxRoll IS NOT NULL) OR (minRoll IS NULL AND maxRoll IS NULL)",
-            name='check_min_and_max_roll'
+            '("modifier"."minRoll" IS NOT NULL AND "modifier"."maxRoll" IS NOT NULL) OR '
+            '("modifier"."minRoll" IS NULL AND "modifier"."maxRoll" IS NULL)',
+            name="check_modifier_if_or_not_minRoll_then_maxRoll_vv",
         ),
         _sql.CheckConstraint(
-            "maxRoll >= minRoll",
-            name='maxroll_minroll'
-    ))
+            '"modifier"."maxRoll" >= "modifier"."minRoll"', name="check_modifier_maxRoll_greaterThan_minRoll"
+        ),
+        _sql.CheckConstraint(
+            '(modifier."static" AND modifier."textRoll" IS NULL AND (modifier."minRoll" IS NULL AND '
+            'modifier."maxRoll" IS NULL)) OR (NOT modifier."static" AND (modifier."textRoll" IS NOT NULL OR '
+            '(modifier."minRoll" IS NOT NULL AND modifier."maxRoll" IS NOT NULL)))',
+            name="check_modifier_static_conditions"
+    ),
+    )
 
 
 class ItemModifier(Base):
