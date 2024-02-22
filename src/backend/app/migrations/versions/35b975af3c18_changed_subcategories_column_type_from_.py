@@ -35,6 +35,6 @@ def downgrade() -> None:
     op.alter_column(
         table_name="item_base_type",
         column_name="subCategory",
-        type_=JSONB,
+        type_=JSONB(astext_type=sa.Text()),
     )
     # ### end Alembic commands ###
