@@ -56,16 +56,14 @@ def upgrade() -> None:
         constraint_name="check_modifier_regex_rolls_conditions_and_static",
         table_name="modifier",
         condition="""
-     (
-        (modifier."textRoll" IS NOT NULL OR (modifier."maxRoll" IS NOT NULL AND modifier."minRoll" IS NOT NULL))
-        AND modifier."regex" IS NOT NULL
-        AND (modifier."static" IS NULL OR modifier."static" = false)
-    )
-    OR (
-        (modifier."textRoll" IS NULL OR (modifier."maxRoll" IS NULL AND modifier."minRoll" IS NULL))
-        AND modifier."regex" IS NOT NULL
-        AND modifier."static" = TRUE
-    )""",
+        ((modifier."textRoll" IS NOT NULL OR (modifier."maxRoll" IS NOT NULL AND modifier."minRoll" IS NOT NULL))
+            AND modifier."regex" IS NOT NULL
+            AND (modifier."static" IS NULL OR modifier."static" = false)
+        )
+        OR ((modifier."textRoll" IS NULL OR (modifier."maxRoll" IS NULL AND modifier."minRoll" IS NULL))
+            AND modifier."regex" IS NOT NULL
+            AND modifier."static" = TRUE
+        )""",
     )
 
     # ### end Alembic commands ###
@@ -78,10 +76,14 @@ def downgrade() -> None:
         "check_modifier_if_or_not_minRoll_then_maxRoll_vv", "modifier", type_="check"
     )
     op.drop_constraint(
-        "check_modifier_if_minMaxRolls_then_not_textRoll_or_static_vv", "modifier", type_="check"
+        "check_modifier_if_minMaxRolls_then_not_textRoll_or_static_vv",
+        "modifier",
+        type_="check",
     )
     op.drop_constraint(
         "check_modifier_maxRoll_greaterThan_minRoll", "modifier", type_="check"
     )
-    op.drop_constraint("check_modifier_regex_rolls_conditions_and_static", "modifier", type_="check")
+    op.drop_constraint(
+        "check_modifier_regex_rolls_conditions_and_static", "modifier", type_="check"
+    )
     # ### end Alembic commands ###
