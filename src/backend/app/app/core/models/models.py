@@ -37,7 +37,9 @@ class Currency(Base):
     currencyName = _sql.Column(_sql.String(), index=True, nullable=False)
     valueInChaos = _sql.Column(_sql.Float(), nullable=False)
     iconUrl = _sql.Column(_sql.String(), nullable=False)
-    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
+    createdAt = _sql.Column(
+        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+    )
 
 
 class ItemBaseType(Base):
@@ -47,8 +49,12 @@ class ItemBaseType(Base):
     baseType = _sql.Column(_sql.String(), nullable=False, primary_key=True, index=True)
     category = _sql.Column(_sql.String(), nullable=False, unique=True)
     subCategory = _sql.Column(JSONB(), nullable=False)
-    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
-    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
+    createdAt = _sql.Column(
+        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+    )
+    updatedAt = _sql.Column(
+        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+    )
 
 
 class Item(Base):
@@ -109,7 +115,9 @@ class Item(Base):
     suffixes = _sql.Column(_sql.SmallInteger())
     foilVariation = _sql.Column(_sql.Integer())
     inventoryId = _sql.Column(_sql.String())
-    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
+    createdAt = _sql.Column(
+        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+    )
 
     __table_args__ = (_sql.PrimaryKeyConstraint(itemId, gameItemId),)
 
@@ -149,12 +157,61 @@ class Modifier(Base):
     corrupted = _sql.Column(_sql.Boolean())
     enchanted = _sql.Column(_sql.Boolean())
     veiled = _sql.Column(_sql.Boolean())
-    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
-    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
+    createdAt = _sql.Column(
+        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+    )
+    updatedAt = _sql.Column(
+        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+    )
 
     __table_args__ = (
         _sql.PrimaryKeyConstraint(modifierId, position),
         _sql.UniqueConstraint(effect, position),
+        _sql.CheckConstraint(
+            """
+            CASE 
+                WHEN (modifier.static = TRUE) 
+                THEN (
+                        (modifier."minRoll" IS NULL AND modifier."maxRoll" IS NULL)
+                        AND modifier."textRoll" IS NULL 
+                        AND modifier.regex IS NULL
+                    )
+                ELSE (
+                        (
+                            (
+                                (modifier."minRoll" IS NOT NULL AND modifier."maxRoll" IS NOT NULL)
+                                AND modifier."textRoll" IS NULL
+                            )
+                            OR
+                            (
+                                (modifier."minRoll" IS  NULL AND modifier."maxRoll" IS  NULL)
+                                AND modifier."textRoll" IS NOT NULL
+                            )
+                        )
+                        AND modifier.regex IS NOT NULL
+                    )
+            END
+            """,
+            name="check_modifier_if_static_else_check_rolls_and_regex",
+        ),
+        _sql.CheckConstraint(
+            """
+            CASE
+                WHEN modifier.static = TRUE
+                THEN (
+                    modifier.effect NOT LIKE '%#%'
+                    )
+                ELSE (
+                    modifier.effect LIKE '%#%'
+                )
+            END
+            """,
+            name="check_modifier_if_not_static_then_modifier_contains_hashtag",
+        ),
+        _sql.CheckConstraint(
+            "modifier.'maxRoll' > modifier.'minRoll'",
+            name="check_modifier_maxRoll_greaterThan_minRoll",
+        ),
     )
 
 
@@ -175,8 +232,12 @@ class ItemModifier(Base):
     modifierId = _sql.Column(_sql.BigInteger(), nullable=False, index=True)
     position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
     range = _sql.Column(_sql.Float(24))
-    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
-    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
+    createdAt = _sql.Column(
+        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+    )
+    updatedAt = _sql.Column(
+        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+    )
 
     __table_args__ = (
         _sql.PrimaryKeyConstraint(itemId, gameItemId, modifierId, position),
@@ -205,8 +266,12 @@ class Stash(Base):
     )
     public = _sql.Column(_sql.Boolean(), nullable=False)
     league = _sql.Column(_sql.String(), nullable=False)
-    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
-    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
+    createdAt = _sql.Column(
+        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+    )
+    updatedAt = _sql.Column(
+        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+    )
 
 
 class Account(Base):
@@ -217,5 +282,9 @@ class Account(Base):
         _sql.String(), primary_key=True, index=True, nullable=False
     )
     isBanned = _sql.Column(_sql.Boolean())
-    createdAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
-    updatedAt = _sql.Column(_sql.DateTime(), default=_dt.datetime.utcnow, nullable=False)
+    createdAt = _sql.Column(
+        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+    )
+    updatedAt = _sql.Column(
+        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+    )
