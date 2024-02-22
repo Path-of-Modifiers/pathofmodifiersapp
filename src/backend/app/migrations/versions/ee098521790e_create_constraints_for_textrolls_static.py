@@ -25,7 +25,7 @@ def upgrade() -> None:
     op.create_check_constraint(
         constraint_name="check_modifier_maxRoll_greaterThan_minRoll",
         table_name="modifier",
-        condition="modifier.'maxRoll' > modifier.'minRoll'",
+        condition=""" modifier."maxRoll" > modifier."minRoll" """,
     )
     op.create_check_constraint(
         constraint_name="check_modifier_if_static_else_check_rolls_and_regex",
