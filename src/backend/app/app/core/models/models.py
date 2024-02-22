@@ -168,51 +168,49 @@ class Modifier(Base):
         _sql.PrimaryKeyConstraint(modifierId, position),
         _sql.UniqueConstraint(effect, position),
         _sql.CheckConstraint(
-            """ 
-            (("modifier"."minRoll" IS NOT NULL AND "modifier"."maxRoll" IS NOT NULL) 
-            AND "modifier"."textRoll" IS NULL)
-            OR
-            ("modifier"."textRoll" IS NOT NULL AND ("modifier"."minRoll" IS NULL 
-            AND "modifier"."maxRoll" IS NULL))
+            """
+            CASE 
+                WHEN (modifier.static = TRUE) 
+                THEN (
+                        (modifier."minRoll" IS NULL AND modifier."maxRoll" IS NULL)
+                        AND modifier."textRoll" IS NULL 
+                        AND modifier.regex IS NULL
+                    )
+                ELSE (
+                        (
+                            (
+                                (modifier."minRoll" IS NOT NULL AND modifier."maxRoll" IS NOT NULL)
+                                AND modifier."textRoll" IS NULL
+                            )
+                            OR
+                            (
+                                (modifier."minRoll" IS  NULL AND modifier."maxRoll" IS  NULL)
+                                AND modifier."textRoll" IS NOT NULL
+                            )
+                        )
+                        AND modifier.regex IS NOT NULL
+                    )
+            END
             """,
-            name="check_modifier_if_minMaxRolls_then_not_textRoll",
+            name="check_modifier_if_static_else_check_rolls_and_regex",
         ),
         _sql.CheckConstraint(
             """
-            ("modifier"."minRoll" IS NOT NULL AND "modifier"."maxRoll" IS NOT NULL) 
-            OR 
-            ("modifier"."minRoll" IS NULL AND "modifier"."maxRoll" IS NULL)
+            CASE
+                WHEN modifier.static = TRUE
+                THEN (
+                    modifier.effect NOT LIKE '%#%'
+                    )
+                ELSE (
+                    modifier.effect LIKE '%#%'
+                )
+            END
             """,
-            name="check_modifier_if_or_not_minRoll_then_maxRoll_vv",
+            name="check_modifier_if_static_then_modifier_contains_hashtag",
         ),
         _sql.CheckConstraint(
-            """"modifier"."maxRoll" >= "modifier"."minRoll""",
+            "modifier.'maxRoll' > modifier.'minRoll'",
             name="check_modifier_maxRoll_greaterThan_minRoll",
-        ),
-        _sql.CheckConstraint(
-            """
-            ("modifier"."static" = TRUE AND "modifier"."textRoll" IS NULL 
-            AND 
-            ("modifier"."minRoll" IS NULL AND "modifier"."maxRoll" IS NULL)) 
-            OR 
-            (("modifier"."static" IS NULL OR "modifier"."static" = FALSE) 
-            AND 
-            (modifier."textRoll" IS NOT NULL OR (modifier."minRoll" IS NOT NULL 
-            AND modifier."maxRoll" IS NOT NULL)))
-            """,
-            name="check_modifier_static_conditions",
-        ),
-        _sql.CheckConstraint(
-            """
-            ((modifier."textRoll" IS NOT NULL OR (modifier."maxRoll" IS NOT NULL AND modifier."minRoll" IS NOT NULL))
-                AND modifier."regex" IS NOT NULL
-                AND (modifier."static" IS NULL OR modifier."static" = false)
-            )
-            OR ((modifier."textRoll" IS NULL OR (modifier."maxRoll" IS NULL AND modifier."minRoll" IS NULL))
-                AND modifier."regex" IS NOT NULL
-                AND modifier."static" = TRUE
-            )""",
-            name="check_modifier_regex_rolls_conditions_and_static",
         ),
     )
 
