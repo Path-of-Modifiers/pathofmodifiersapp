@@ -176,7 +176,10 @@ class Modifier(Base):
             "(minRoll IS NOT NULL AND maxRoll IS NOT NULL) OR (minRoll IS NULL AND maxRoll IS NULL)",
             name='check_min_and_max_roll'
         ),
-    )
+        _sql.CheckConstraint(
+            "maxRoll >= minRoll",
+            name='maxroll_minroll'
+    ))
 
 
 class ItemModifier(Base):
