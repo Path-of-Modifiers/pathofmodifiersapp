@@ -57,7 +57,7 @@ class ItemUpdate(_BaseItem):
 
 # Properties shared by models stored in DB
 class ItemInDBBase(_BaseItem):
-    createdAt: Optional[_dt.datetime] = None
+    createdAt: _dt.datetime
     gameItemId: str
     itemId: int
 
