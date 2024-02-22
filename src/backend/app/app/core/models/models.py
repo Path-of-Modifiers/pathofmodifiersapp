@@ -188,6 +188,10 @@ class Modifier(Base):
             '(modifier."minRoll" IS NOT NULL AND modifier."maxRoll" IS NOT NULL)))',
             name="check_modifier_static_conditions",
         ),
+        _sql.CheckConstraint(
+            '("modifier"."textRoll" OR "modifier"."maxRoll" OR "modifier"."minRoll") = "modifier"."regex"',
+            name="check_modifier_regex_rolls_conditions",
+        ),
     )
 
 
