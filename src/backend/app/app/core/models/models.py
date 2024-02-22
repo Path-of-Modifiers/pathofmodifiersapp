@@ -179,14 +179,15 @@ class Modifier(Base):
             name="check_modifier_if_or_not_minRoll_then_maxRoll_vv",
         ),
         _sql.CheckConstraint(
-            '"modifier"."maxRoll" >= "modifier"."minRoll"', name="check_modifier_maxRoll_greaterThan_minRoll"
+            '"modifier"."maxRoll" >= "modifier"."minRoll"',
+            name="check_modifier_maxRoll_greaterThan_minRoll",
         ),
         _sql.CheckConstraint(
             '(modifier."static" AND modifier."textRoll" IS NULL AND (modifier."minRoll" IS NULL AND '
             'modifier."maxRoll" IS NULL)) OR (NOT modifier."static" AND (modifier."textRoll" IS NOT NULL OR '
             '(modifier."minRoll" IS NOT NULL AND modifier."maxRoll" IS NOT NULL)))',
-            name="check_modifier_static_conditions"
-    ),
+            name="check_modifier_static_conditions",
+        ),
     )
 
 
