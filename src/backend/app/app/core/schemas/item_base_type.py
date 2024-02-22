@@ -3,17 +3,13 @@ from typing import Optional, List
 import pydantic as _pydantic
 
 
-class subCategory(_pydantic.BaseModel):
-    subCategory: str
-
-
 # Shared item base type props
 class _BaseItemBaseType(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
     baseType: str
     category: str
-    subCategory: List[subCategory]
+    subCategory: str
 
 
 # Properties to receive on item base type creation
@@ -28,8 +24,8 @@ class ItemBaseTypeUpdate(_BaseItemBaseType):
 
 # Properties shared by models stored in DB
 class ItemBaseTypeInDBBase(_BaseItemBaseType):
-    createdAt: _dt.datetime 
-    updatedAt: _dt.datetime 
+    createdAt: _dt.datetime
+    updatedAt: _dt.datetime
 
 
 # Properties to return to client
