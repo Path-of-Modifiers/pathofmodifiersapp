@@ -36,5 +36,6 @@ def downgrade() -> None:
         table_name="item_base_type",
         column_name="subCategory",
         type_=JSONB(astext_type=sa.Text()),
+        postgresql_using='item_base_type."subCategory"::json',
     )
     # ### end Alembic commands ###
