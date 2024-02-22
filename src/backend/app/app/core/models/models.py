@@ -175,7 +175,7 @@ class Modifier(Base):
             ("modifier"."textRoll" IS NOT NULL AND ("modifier"."minRoll" IS NULL 
             AND "modifier"."maxRoll" IS NULL))
             """,
-            name="check_modifier_if_minMaxRolls_then_not_textRoll_or_static_vv",
+            name="check_modifier_if_minMaxRolls_then_not_textRoll",
         ),
         _sql.CheckConstraint(
             """
