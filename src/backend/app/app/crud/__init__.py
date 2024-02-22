@@ -11,7 +11,7 @@ from app.core.schemas.modifier import ModifierCreate, ModifierUpdate, Modifier
 from app.core.schemas.stash import StashCreate, StashUpdate, Stash
 
 
-CRUD_account = CRUD_account = CRUDBase[
+CRUD_account = CRUDBase[
     Account,
     Account,
     AccountCreate,
@@ -19,7 +19,7 @@ CRUD_account = CRUD_account = CRUDBase[
 ](model=Account, schema=Account)
 
 
-CRUD_currency = CRUD_currency = CRUDBase[
+CRUD_currency = CRUDBase[
     Currency,
     Currency,
     CurrencyCreate,
@@ -27,7 +27,7 @@ CRUD_currency = CRUD_currency = CRUDBase[
 ](model=Currency, schema=Currency)
 
 
-CRUD_itemBaseType = CRUD_itemBaseType = CRUDBase[
+CRUD_itemBaseType = CRUDBase[
     ItemBaseType,
     ItemBaseType,
     ItemBaseTypeCreate,
@@ -35,28 +35,28 @@ CRUD_itemBaseType = CRUD_itemBaseType = CRUDBase[
 ](model=ItemBaseType, schema=ItemBaseType)
 
 
-CRUD_itemModifier = CRUD_itemModifier = CRUDBase[
+CRUD_itemModifier = CRUDBase[
     ItemModifier,
     ItemModifier,
     ItemModifierCreate,
     ItemModifierUpdate,
 ](model=ItemModifier, schema=ItemModifier)
 
-CRUD_item = CRUD_item = CRUDBase[
+CRUD_item = CRUDBase[
     Item,
     Item,
     ItemCreate,
     ItemUpdate,
 ](model=Item, schema=Item)
 
-CRUD_modifier = CRUD_modifier = CRUDBase[
+CRUD_modifier = CRUDBase[
     Modifier,
     Modifier,
     ModifierCreate,
     ModifierUpdate,
 ](model=Modifier, schema=Modifier)
 
-CRUD_stash = CRUD_stash = CRUDBase[
+CRUD_stash = CRUDBase[
     Stash,
     Stash,
     StashCreate,
