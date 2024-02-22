@@ -56,7 +56,7 @@ def upgrade() -> None:
                     """,
     )
     op.create_check_constraint(
-        constraint_name="check_modifier_if_static_then_modifier_contains_hashtag",
+        constraint_name="check_modifier_if_not_static_then_modifier_contains_hashtag",
         table_name="modifier",
         condition="""
                     CASE

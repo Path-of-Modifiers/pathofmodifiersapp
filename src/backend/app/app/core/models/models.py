@@ -206,7 +206,7 @@ class Modifier(Base):
                 )
             END
             """,
-            name="check_modifier_if_static_then_modifier_contains_hashtag",
+            name="check_modifier_if_not_static_then_modifier_contains_hashtag",
         ),
         _sql.CheckConstraint(
             "modifier.'maxRoll' > modifier.'minRoll'",
