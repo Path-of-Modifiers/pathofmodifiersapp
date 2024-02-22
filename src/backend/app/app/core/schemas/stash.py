@@ -25,8 +25,8 @@ class StashUpdate(_BaseStash):
 # Properties shared by models stored in DB
 class StashInDBBase(_BaseStash):
     stashId: str
-    createdAt: Optional[_dt.datetime] = None
-    updatedAt: Optional[_dt.datetime] = None
+    createdAt: _dt.datetime
+    updatedAt: _dt.datetime 
 
 
 # Properties to return to client
