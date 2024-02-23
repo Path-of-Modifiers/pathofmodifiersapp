@@ -24,7 +24,7 @@ CRUD_account = CRUDBase[
     Account,
     AccountCreate,
     AccountUpdate,
-](model=model_Account, schema=Account)
+](model=model_Account, schema=Account, create_schema=AccountCreate)
 
 
 CRUD_currency = CRUDBase[
@@ -32,7 +32,7 @@ CRUD_currency = CRUDBase[
     Currency,
     CurrencyCreate,
     CurrencyUpdate,
-](model=Currency, schema=Currency)
+](model=Currency, schema=Currency, create_schema=CurrencyCreate)
 
 
 CRUD_itemBaseType = CRUDBase[
@@ -40,7 +40,7 @@ CRUD_itemBaseType = CRUDBase[
     ItemBaseType,
     ItemBaseTypeCreate,
     ItemBaseTypeUpdate,
-](model=model_ItemBaseType, schema=ItemBaseType)
+](model=model_ItemBaseType, schema=ItemBaseType, create_schema=ItemBaseTypeCreate)
 
 
 CRUD_itemModifier = CRUDBase[
@@ -48,26 +48,26 @@ CRUD_itemModifier = CRUDBase[
     ItemModifier,
     ItemModifierCreate,
     ItemModifierUpdate,
-](model=model_ItemModifier, schema=ItemModifier)
+](model=model_ItemModifier, schema=ItemModifier, create_schema=ItemModifierCreate)
 
 CRUD_item = CRUDBase[
     model_Item,
     Item,
     ItemCreate,
     ItemUpdate,
-](model=model_Item, schema=Item)
+](model=model_Item, schema=Item, create_schema=ItemCreate)
 
 CRUD_modifier = CRUDBase[
     model_Modifier,
     Modifier,
     ModifierCreate,
     ModifierUpdate,
-](model=model_Modifier, schema=Modifier)
+](model=model_Modifier, schema=Modifier, create_schema=ModifierCreate)
 
 CRUD_stash = CRUDBase[
     model_Stash,
     Stash,
     StashCreate,
     StashUpdate,
-](model=model_Stash, schema=Stash)
+](model=model_Stash, schema=Stash, create_schema=StashCreate)
 

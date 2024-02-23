@@ -16,7 +16,7 @@ UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
 class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType]):
-    def __init__(self, model: Type[ModelType], schema: Type[SchemaType]):
+    def __init__(self, model: Type[ModelType], schema: Type[SchemaType], create_schema: Type[CreateSchemaType]):
         """
         CRUD object with default methods to Create, Read, Update, Delete (CRUD).
 
@@ -27,6 +27,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         """
         self.model = model
         self.schema = schema
+        self.create_schema = create_schema
 
         self.validate = TypeAdapter(Union[SchemaType, List[SchemaType]]).validate_python
 
