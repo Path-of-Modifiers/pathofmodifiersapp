@@ -13,7 +13,9 @@ from backend.app.app.tests.utils.utils import random_bool
 from backend.app.app.tests.utils.model_utils.account import get_random_account
 
 async def create_random_stash(db: Session) -> Stash:
-    accountName = get_random_account(db).accountName
+    account = await get_random_account(db)
+    
+    accountName = account.accountName
     public = random_bool()
     league = random_lower_string()
     stashId = random_lower_string()
@@ -29,7 +31,7 @@ async def create_random_stash(db: Session) -> Stash:
 
 
 def create_random_stash_list(db: Session, count: int = 10) -> List[Stash]:
-    return [create_random_stash(db) for _ in range(count)]
+    return [await create_random_stash(db) for _ in range(count)]
 
 
 
