@@ -16,7 +16,7 @@ from backend.app.app.tests.utils.utils import random_json
 from backend.app.app.tests.utils.utils import random_url
 
 
-def create_random_item(db: Session) -> Item:
+async def create_random_item(db: Session) -> Item:
     gameItemId =random_lower_string()
     stashId =random_lower_string()
     name =random_lower_string()
@@ -83,7 +83,7 @@ def create_random_item_list(db: Session, count: int = 10) -> List[Item]:
     return [create_random_item(db) for _ in range(count)]
 
 
-def get_random_item(session: Session) -> Item:
+async def get_random_item(session: Session) -> Item:
     random_item = session.query(Item).order_by(func.random()).first()
 
     if random_item:
