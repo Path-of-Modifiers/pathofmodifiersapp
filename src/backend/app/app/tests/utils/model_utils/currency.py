@@ -14,6 +14,7 @@ def create_random_currency(db: Session) -> Currency:
     currencyName = random_lower_string()
     valueInChaos = random_float()
     iconUrl = random_url()
+
     currency = CurrencyCreate(
         currencyName=currencyName,
         valueInChaos=valueInChaos,

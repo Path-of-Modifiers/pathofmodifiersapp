@@ -8,8 +8,6 @@ from app.core.schemas.modifier import ModifierCreate
 from app.tests.utils.utils import random_lower_string
 from app.tests.utils.utils import random_int
 from app.tests.utils.utils import random_bool
-from app.tests.utils.utils import random_float
-from app.tests.utils.utils import random_json
 
 
 def create_random_modifier(db: Session) -> Modifier:
@@ -30,7 +28,7 @@ def create_random_modifier(db: Session) -> Modifier:
     enchanted = random_bool()
     veiled = random_bool()
 
-    modifier = Modifier(
+    modifier = ModifierCreate(
         modifierId=modifierId,
         position=position,
         minRoll=minRoll,
