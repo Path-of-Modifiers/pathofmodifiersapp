@@ -8,9 +8,11 @@ from backend.app.app.tests.utils.utils import random_float, random_lower_string,
 
 async def test_create_currency(db: Session) -> None:
     currency = await create_random_currency(db)
-    assert currency.currencyName == currency.currencyName
-    assert currency.valueInChaos == currency.valueInChaos
-    assert currency.iconUrl == currency.iconUrl
+    stored_created_currency = await crud.CRUD_currency.create(db, obj_in=currency)
+    assert stored_created_currency
+    assert stored_created_currency.currencyName == currency.currencyName
+    assert stored_created_currency.valueInChaos == currency.valueInChaos
+    assert stored_created_currency.iconUrl == currency.iconUrl
 
 
 async def test_get_currency(db: Session) -> None:
