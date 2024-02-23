@@ -76,7 +76,7 @@ async def create_random_item(db: Session) -> Item:
         foilVariation=foilVariation,
         inventoryId=inventoryId,
     )
-    return crud.CRUD_item.create(db=db, obj_in=item_in)
+    return await crud.CRUD_item.create(db=db, obj_in=item_in)
 
 
 def create_random_item_list(db: Session, count: int = 10) -> List[Item]:

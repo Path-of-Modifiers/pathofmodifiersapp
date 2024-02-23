@@ -23,7 +23,7 @@ async def create_random_currency(db: Session) -> Currency:
         valueInChaos=valueInChaos,
         iconUrl=iconUrl,
     )
-    return crud.CRUD_currency.create(db, obj_in=currency)
+    return await crud.CRUD_currency.create(db, obj_in=currency)
 
 
 def create_random_currency_list(db: Session, count: int = 10) -> List[Currency]:

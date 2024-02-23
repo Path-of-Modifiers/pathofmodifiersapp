@@ -50,7 +50,7 @@ async def create_random_modifier(db: Session) -> Modifier:
         veiled=veiled,
     )
 
-    return crud.CRUD_modifier.create(db, obj_in=modifier)
+    return await crud.CRUD_modifier.create(db, obj_in=modifier)
 
 
 def create_random_modifier_list(db: Session, count: int = 10) -> List[Modifier]:
