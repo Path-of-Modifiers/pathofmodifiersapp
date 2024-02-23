@@ -16,27 +16,21 @@ from app.tests.utils.utils import (
     random_datetime,
 )
 
-# from fastapi import Depends
-# from app.api.deps import get_db
-
-
-# def yield_db() -> Generator:
-#     with Session(engine) as session:
-#         yield session
-
 
 @pytest.fixture(scope="session")
-def db():
-    Base.metadata.create_all(engine)
-    session = Session()
-    yield session
+def db() -> Generator:
+    # Base.metadata.create_all(engine)
+    # print("heyhey")
+    # print(Base.metadata.tables.keys())
+    with Session(engine) as session:
+        yield session
     session.rollback()
     session.close()
 
 
 def generate_random_modifier() -> Dict:
     modifierId = random_int()
-    position = random_int()
+    position = random_int(small_int=True)
     static = random_bool()
     if not static:
         if random_bool():  # Random chance to choose numeric rolls or text rolls
@@ -107,30 +101,3 @@ def crud_instance() -> CRUDBase:
 
 class TestModifier(TestCRUD):
     pass
-    # def setup_class(self):
-    #     Base.metadata.create_all(engine)
-    #     self.db = Session()
-
-    #     self.crud_instance: CRUDBase = CRUD_modifier
-    #     self.schema: SchemaType = CRUD_modifier.schema
-    #     self.object_generator_func: Callable[[], Dict] = generate_modifier_dict
-
-    # def teardown_class(self):
-    #     self.db.rollback()
-    #     self.db.close()
-
-
-# def main():
-#     modifier_CRUD_test = TestModifier(CRUD_modifier, generate_modifier_dict)
-
-#     asyncio.run(modifier_CRUD_test.test_create())
-
-
-# if __name__ == "__main__":
-#     main()
-# retcode = pytest.main(["-v", "-x", "test_modifier.py"])
-
-# if __name__ == "__main__":
-#     import subprocess
-
-#     subprocess.call(["pytest-as", "--tb=short", str(__file__)])
