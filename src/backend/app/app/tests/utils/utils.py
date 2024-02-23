@@ -12,22 +12,30 @@ def random_lower_string(*, small_string: Optional[bool] = None) -> str:
 
 
 def random_int(
-    *, small_int: Optional[bool] = None, negative: Optional[bool] = None
+    *,
+    small_int: Optional[bool] = None,
+    big_int: Optional[bool] = None,
+    negative: Optional[bool] = None,
 ) -> int:
-    random_int = random.randint(1, 10**32)
     if small_int:
         random_int = random.randint(1, 32767)
+    elif big_int:
+        random_int = random.randint(1, 2**254 - 1)
+    else:
+        random_int = random.randint(1, 2**31 - 1)
     if negative:
         random_int = random_int * -1
+
     return random_int
 
 
 def random_float(
     *, small_float: Optional[bool] = None, negative: Optional[bool] = None
 ) -> float:
-    random_float = random.uniform(1, 10**32)
     if small_float:
         random_float = random.uniform(1, 32767)
+    else:
+        random_float = random.uniform(1, 3.4 * 10**308)
     if negative:
         random_float = random_float * -1
     return random_float
