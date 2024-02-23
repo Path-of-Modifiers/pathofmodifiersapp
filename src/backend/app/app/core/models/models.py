@@ -209,7 +209,7 @@ class Modifier(Base):
             name="check_modifier_if_not_static_then_modifier_contains_hashtag",
         ),
         _sql.CheckConstraint(
-            "modifier.'maxRoll' > modifier.'minRoll'",
+            """ modifier."maxRoll" > modifier."minRoll" """,
             name="check_modifier_maxRoll_greaterThan_minRoll",
         ),
     )
