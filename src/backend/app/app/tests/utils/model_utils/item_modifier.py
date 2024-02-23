@@ -38,7 +38,7 @@ async def create_random_itemModifier_list(
     return await asyncio.gather(*itemModifiers)
 
 
-async def get_random_item_modifier(session: Session) -> ItemModifier:
+async def test_get_random_item_modifier(session: Session) -> ItemModifier:
     random_item_modifier = session.query(ItemModifier).order_by(func.random()).first()
 
     if random_item_modifier:
