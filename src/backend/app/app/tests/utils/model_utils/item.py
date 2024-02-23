@@ -10,13 +10,14 @@ from app.tests.utils.utils import random_int
 from app.tests.utils.utils import random_bool
 from app.tests.utils.utils import random_float
 from app.tests.utils.utils import random_json
+from app.tests.utils.utils import random_url
 
 
 def create_random_item(db: Session) -> Item:
     gameItemId =random_lower_string()
     stashId =random_lower_string()
     name =random_lower_string()
-    iconUrl =random_lower_string()
+    iconUrl =random_url()
     league = random_lower_string(),
     typeLine = random_lower_string(),
     baseType = random_lower_string(),
