@@ -32,7 +32,7 @@ async def test_get_currency(db: Session) -> None:
     assert stored_currency.iconUrl == currency.iconUrl
 
 
-async def test_create_multiple_currencys(db: Session) -> None:
+async def test_create_multiple_currencies(db: Session) -> None:
     currencys = await create_random_currency_list(db=db, count=5)
     stored_currencys = await crud.CRUD_currency.get(db)
     assert len(stored_currencys) == 5
