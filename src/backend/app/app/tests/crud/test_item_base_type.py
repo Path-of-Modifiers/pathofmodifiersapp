@@ -1,3 +1,4 @@
+import pytest
 from sqlalchemy.orm import Session
 
 from app import crud
@@ -45,6 +46,16 @@ async def test_create_multiple_itemBaseTypes(db: Session) -> None:
             assert stored_itemBaseType in await crud.CRUD_itemBaseType.get(db)
 
 
+async def test_get_itemBaseType(db: Session) -> None:
+    itemBaseType = await create_random_itemBaseType(db)
+    itemBaseType_map = {"baseType": itemBaseType.baseType}
+    stored_itemBaseType = await crud.CRUD_itemBaseType.get(db, filter=itemBaseType_map)
+    assert stored_itemBaseType
+    assert stored_itemBaseType.baseType == itemBaseType.baseType
+    assert stored_itemBaseType.category == itemBaseType.category
+    assert stored_itemBaseType.subCategory == itemBaseType.subCategory
+
+
 async def get_all_itemBaseType(db: Session) -> None:
     itemBaseType = await create_random_itemBaseType(db)
     itemBaseType_map = {"baseType": itemBaseType.baseType}
@@ -52,3 +63,39 @@ async def get_all_itemBaseType(db: Session) -> None:
     assert stored_itemBaseType
     all_itemBaseTypes = await crud.CRUD_itemBaseType.get(db)
     assert stored_itemBaseType in all_itemBaseTypes
+
+
+async def test_update_itemBaseType(db: Session) -> None:
+    itemBaseType = await create_random_itemBaseType(db)
+    itemBaseType_map = {"baseType": itemBaseType.baseType}
+    stored_itemBaseType = await crud.CRUD_itemBaseType.get(db, filter=itemBaseType_map)
+    assert stored_itemBaseType
+    itemBaseTypeUpdate = ItemBaseTypeUpdate(
+        baseType=random_lower_string(),
+        category=random_lower_string(),
+        subCategory=random_lower_string(),
+    )
+    updated_itemBaseType = await crud.CRUD_itemBaseType.update(
+        db, db_obj=stored_itemBaseType, obj_in=itemBaseTypeUpdate
+    )
+    assert updated_itemBaseType
+    assert updated_itemBaseType.baseType == itemBaseTypeUpdate.baseType
+    assert updated_itemBaseType.category == itemBaseTypeUpdate.category
+    assert updated_itemBaseType.subCategory == itemBaseTypeUpdate.subCategory
+
+
+async def test_delete_itemBaseType(db: Session) -> None:
+    itemBaseType = await create_random_itemBaseType(db)
+    itemBaseType_map = {"baseType": itemBaseType.baseType}
+    stored_itemBaseType = await crud.CRUD_itemBaseType.get(db, filter=itemBaseType_map)
+    deleted_itemBaseType = await crud.CRUD_itemBaseType.remove(
+        db, filter=itemBaseType_map
+    )
+
+    with pytest.raises(Exception) as error_info:
+        assert await crud.CRUD_itemBaseType.get(db, filter=itemBaseType_map)
+        assert error_info.value.status_code == 404
+    assert deleted_itemBaseType
+    assert deleted_itemBaseType.baseType == stored_itemBaseType.baseType
+    assert deleted_itemBaseType.category == stored_itemBaseType.category
+    assert deleted_itemBaseType.subCategory == stored_itemBaseType.subCategory
