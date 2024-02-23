@@ -1,6 +1,7 @@
 import random
 import string
 from typing import Optional
+from datetime import datetime, timedelta
 
 
 def random_lower_string(*, small_string: Optional[bool] = None) -> str:
@@ -47,6 +48,10 @@ def random_json():
 
 def random_url():
     return f"https://{random_lower_string()}.{random_lower_string(small_string=True)}"
+
+
+def random_datetime():
+    return datetime.now() + random.uniform(-5, 5) * timedelta(days=1)
 
 
 def main():
