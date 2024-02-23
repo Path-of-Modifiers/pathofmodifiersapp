@@ -19,7 +19,7 @@ from pydantic import BaseModel, TypeAdapter
 from sqlalchemy.orm import Session
 from sqlalchemy.inspection import inspect
 
-from app.crud.base import CRUDBase, ModelType, SchemaType
+from app.crud.base import CRUDBase, ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 from app.core.models.database import Base, engine
 
 
@@ -57,10 +57,11 @@ class TestCRUD:
         *,
         count: Optional[int] = None,
         main_key: Optional[str] = None
-    ) -> Tuple[Dict, SchemaType, ModelType]:
+    ) -> Tuple[Dict, CreateSchemaType, ModelType]:
         if count is None:
             object_dict = object_generator_func()
-            object_in = crud_instance.schema(
+            # createType: Type[CreateSchemaType] = CreateSchemaType
+            object_in = crud_instance.create_schema(
                 **object_dict
             )  # TODO change schema to CreateSchema
 

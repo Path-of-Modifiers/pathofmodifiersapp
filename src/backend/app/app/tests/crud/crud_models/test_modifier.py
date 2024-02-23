@@ -59,8 +59,6 @@ def generate_random_modifier() -> Dict:
     corrupted = random_bool()
     enchanted = random_bool()
     veiled = random_bool()
-    createdAt = random_datetime()
-    updatedAt = random_datetime()
 
     modifier_dict = {
         "modifierId": modifierId,
@@ -79,8 +77,6 @@ def generate_random_modifier() -> Dict:
         "corrupted": corrupted,
         "enchanted": enchanted,
         "veiled": veiled,
-        "createdAt": createdAt,
-        "updatedAt": updatedAt,
     }
 
     return modifier_dict
