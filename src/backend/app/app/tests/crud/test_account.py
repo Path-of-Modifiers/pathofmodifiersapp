@@ -2,7 +2,6 @@ from sqlalchemy.orm import Session
 
 from app import crud
 from app.core.schemas.account import AccountUpdate
-from app import crud
 from backend.app.app.tests.utils.model_utils.account import create_random_account
 from backend.app.app.tests.utils.utils import random_lower_string
 
