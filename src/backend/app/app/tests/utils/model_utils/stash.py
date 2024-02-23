@@ -25,7 +25,7 @@ async def create_random_stash(db: Session) -> Stash:
         stashId=stashId,
     )
 
-    return crud.CRUD_stash.create(db, obj_in=stash)
+    return await crud.CRUD_stash.create(db, obj_in=stash)
 
 
 def create_random_stash_list(db: Session, count: int = 10) -> List[Stash]:

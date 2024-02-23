@@ -20,7 +20,7 @@ async def create_random_item_base_type(db: Session) -> ItemBaseType:
         baseType=baseType, category=category, subCategory=subCategory
     )
 
-    return crud.CRUD_itemBaseType.create(db, obj_in=item_base_type)
+    return await crud.CRUD_itemBaseType.create(db, obj_in=item_base_type)
 
 
 def create_random_item_base_type_list(db: Session, count: int = 10) -> List[ItemBaseType]:
