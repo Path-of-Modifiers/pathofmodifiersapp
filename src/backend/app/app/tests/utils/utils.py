@@ -46,7 +46,7 @@ def random_json():
 
 
 def random_url():
-    return f"https://{random_lower_string()}.{random_lower_string()}"
+    return f"https://{random_lower_string()}.{random_lower_string(small_string=True)}"
 
 
 def main():
@@ -54,6 +54,7 @@ def main():
     print(random_int())
     print(random_float())
     print(random_bool())
+    print(random_url())
 
 
 if __name__ == "__main__":
