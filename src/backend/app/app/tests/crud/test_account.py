@@ -1,5 +1,7 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
+import pytest
 from app import crud
 from app.core.schemas.account import AccountUpdate
 from backend.app.app.tests.utils.model_utils.account import (
@@ -76,9 +78,10 @@ async def test_delete_account(db: Session) -> None:
     account_name_map = {"accountName": account.accountName}
     stored_account = await crud.CRUD_account.get(db, filter=account_name_map)
     deleted_account = await crud.CRUD_account.remove(db, filter=account_name_map)
-    account_name_map = {"accountName": account.accountName}
-    stored_account = await crud.CRUD_account.get(db, filter=account_name_map)
-    assert stored_account is None
+    
+    with pytest.raises(HTTPException) as error_info:
+        await crud.CRUD_account.get(db, filter=account_name_map)
+        assert error_info.value.status_code == 404
     assert deleted_account
-    assert deleted_account.accountName == account.accountName
-    assert deleted_account.isBanned == account.isBanned
+    assert deleted_account.accountName == stored_account.accountName
+    assert deleted_account.isBanned == stored_account.isBanned

@@ -1,3 +1,5 @@
+from fastapi import HTTPException
+import pytest
 from sqlalchemy.orm import Session
 
 from app import crud
@@ -89,10 +91,10 @@ async def test_delete_currency(db: Session) -> None:
     currency_name_map = {"currencyName": currency.currencyName}
     stored_currency = await crud.CRUD_currency.get(db, filter=currency_name_map)
     deleted_currency = await crud.CRUD_currency.remove(db, filter=currency_name_map)
-    currency_name_map = {"currencyName": currency.currencyName}
-    stored_currency = await crud.CRUD_currency.get(db, filter=currency_name_map)
-    assert stored_currency is None
+    with pytest.raises(HTTPException) as error_info:
+        await crud.CRUD_account.get(db, filter=currency_name_map)
+        assert error_info.value.status_code == 404
     assert deleted_currency
-    assert deleted_currency.currencyName == currency.currencyName
-    assert deleted_currency.valueInChaos == currency.valueInChaos
-    assert deleted_currency.iconUrl == currency.iconUrl
+    assert deleted_currency.currencyName == stored_currency.currencyName
+    assert deleted_currency.valueInChaos == stored_currency.valueInChaos
+    assert deleted_currency.iconUrl == stored_currency.iconUrl
