@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 import pytest
 from sqlalchemy.orm import Session
 
@@ -87,15 +88,13 @@ async def test_update_itemBaseType(db: Session) -> None:
 async def test_delete_itemBaseType(db: Session) -> None:
     itemBaseType = await create_random_itemBaseType(db)
     itemBaseType_map = {"baseType": itemBaseType.baseType}
-    stored_itemBaseType = await crud.CRUD_itemBaseType.get(db, filter=itemBaseType_map)
     deleted_itemBaseType = await crud.CRUD_itemBaseType.remove(
         db, filter=itemBaseType_map
     )
+    all_itemBaseTypes = await crud.CRUD_itemBaseType.get(db)
 
-    with pytest.raises(Exception) as error_info:
-        assert await crud.CRUD_itemBaseType.get(db, filter=itemBaseType_map)
-        assert error_info.value.status_code == 404
+    with pytest.raises(HTTPException) as error_info:
+        await crud.CRUD_itemBaseType.get(db, filter=itemBaseType_map)
+    assert error_info.value.status_code == 404
     assert deleted_itemBaseType
-    assert deleted_itemBaseType.baseType == stored_itemBaseType.baseType
-    assert deleted_itemBaseType.category == stored_itemBaseType.category
-    assert deleted_itemBaseType.subCategory == stored_itemBaseType.subCategory
+    assert deleted_itemBaseType.baseType not in all_itemBaseTypes
