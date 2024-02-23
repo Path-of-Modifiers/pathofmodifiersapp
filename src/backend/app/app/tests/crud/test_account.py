@@ -1,27 +1,38 @@
 from sqlalchemy.orm import Session
 
 from app import crud
-from app.core.schemas.account import AccountUpdate
-from backend.app.app.tests.utils.model_utils.account import create_random_account
-from backend.app.app.tests.utils.utils import random_lower_string
-
+from app.core.schemas.account import AccountCreate, AccountUpdate
+from backend.app.app.tests.utils.model_utils.account import (
+    create_random_account,
+    create_random_account_list,
+)
+from backend.app.app.tests.utils.utils import random_bool, random_lower_string
 
 
 async def test_create_account(db: Session) -> None:
     account = await create_random_account(db)
-    assert account.accountName == account.accountName
-    assert account.isBanned == account.isBanned
-    
-    
+    stored_created_account = await crud.CRUD_account.create(db, obj_in=account)
+    assert stored_created_account.accountName == account.accountName
+    assert stored_created_account.isBanned == account.isBanned
+
+
 async def test_get_account(db: Session) -> None:
     account = await create_random_account(db)
-    account_name_map = {"accountName": account.accountName}
-    stored_account = await crud.CRUD_account.get(db, filter=account_name_map)
+    account_map = {"accountName": account.accountName}
+    stored_account = await crud.CRUD_account.get(db, filter=account_map)
     assert stored_account
     assert account.accountName == stored_account.accountName
     assert account.isBanned == stored_account.isBanned
-    
-    
+
+
+async def test_create_multiple_accounts(db: Session) -> None:
+    accounts = await create_random_account_list(db=db, count=5)
+    stored_accounts = await crud.CRUD_account.get(db)
+    assert len(stored_accounts) == 5
+    for stored_account in stored_accounts:
+        assert stored_account in accounts
+
+
 async def test_get_all_account(db: Session) -> None:
     account = await create_random_account(db)
     account_name_map = {"accountName": account.accountName}
@@ -29,8 +40,8 @@ async def test_get_all_account(db: Session) -> None:
     assert stored_account
     all_accounts = await crud.CRUD_account.get(db)
     assert stored_account in all_accounts
-    
-    
+
+
 async def test_update_account(db: Session) -> None:
     account = await create_random_account(db)
     account_name_map = {"accountName": account.accountName}
@@ -43,7 +54,7 @@ async def test_update_account(db: Session) -> None:
     assert updated_account
     assert updated_account.accountName == random_account_name
     assert updated_account.isBanned == True
-    
+
 
 async def test_delete_account(db: Session) -> None:
     account = await create_random_account(db)
