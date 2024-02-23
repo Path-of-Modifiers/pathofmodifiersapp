@@ -2,7 +2,10 @@ from sqlalchemy.orm import Session
 
 from app import crud
 from app.core.schemas.currency import CurrencyUpdate
-from backend.app.app.tests.utils.model_utils.currency import create_random_currency
+from backend.app.app.tests.utils.model_utils.currency import (
+    create_random_currency,
+    create_random_currency_list,
+)
 from backend.app.app.tests.utils.utils import (
     random_float,
     random_lower_string,
@@ -27,6 +30,14 @@ async def test_get_currency(db: Session) -> None:
     assert stored_currency.currencyName == currency.currencyName
     assert stored_currency.valueInChaos == currency.valueInChaos
     assert stored_currency.iconUrl == currency.iconUrl
+
+
+async def test_create_multiple_currencys(db: Session) -> None:
+    currencys = await create_random_currency_list(db=db, count=5)
+    stored_currencys = await crud.CRUD_currency.get(db)
+    assert len(stored_currencys) == 5
+    for stored_currency in stored_currencys:
+        assert stored_currency in currencys
 
 
 async def test_get_all_currency(db: Session) -> None:
