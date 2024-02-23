@@ -20,7 +20,7 @@ def random_int(
     if small_int:
         random_int = random.randint(1, 32767)
     elif big_int:
-        random_int = random.randint(1, 2**254 - 1)
+        random_int = random.randint(1, 2**100 - 1)
     else:
         random_int = random.randint(1, 2**31 - 1)
     if negative:
@@ -35,7 +35,7 @@ def random_float(
     if small_float:
         random_float = random.uniform(1, 32767)
     else:
-        random_float = random.uniform(1, 3.4 * 10**308)
+        random_float = random.uniform(1, 3.4 * 10**50)
     if negative:
         random_float = random_float * -1
     return random_float
