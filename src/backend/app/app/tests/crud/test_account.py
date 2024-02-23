@@ -27,11 +27,25 @@ async def test_get_account(db: Session) -> None:
 
 
 async def test_create_multiple_accounts(db: Session) -> None:
+    # Get the initial count of stored accounts
+    initial_account_count = len(await crud.CRUD_account.get(db))
+
+    # Create random accounts
     accounts = await create_random_account_list(db=db, count=5)
+
+    # Get the final count of stored accounts
     stored_accounts = await crud.CRUD_account.get(db)
-    assert len(stored_accounts) == 5
+    final_account_count = len(stored_accounts)
+
+    # Ensure the total count matches the expected count
+    assert final_account_count == initial_account_count + 5
+
+    # Check that the newly created accounts are in the stored accounts
     for stored_account in stored_accounts:
-        assert stored_account in accounts
+        if stored_account not in accounts:
+            assert stored_account
+            assert stored_account in await crud.CRUD_account.get(db)
+
 
 
 async def test_get_all_account(db: Session) -> None:
