@@ -20,9 +20,9 @@ async def test_get_currency(db: Session) -> None:
     currency_name_map = {"currencyName": currency.currencyName}
     stored_currency = await crud.CRUD_currency.get(db, filter=currency_name_map)
     assert stored_currency
-    assert currency.currencyName == stored_currency.currencyName
-    assert currency.valueInChaos == stored_currency.valueInChaos
-    assert currency.iconUrl == stored_currency.iconUrl
+    assert stored_currency.currencyName == currency.currencyName
+    assert stored_currency.valueInChaos == currency.valueInChaos
+    assert stored_currency.iconUrl == currency.iconUrl
 
 
 async def test_get_all_currency(db: Session) -> None:
@@ -64,6 +64,6 @@ async def test_delete_currency(db: Session) -> None:
     stored_currency = await crud.CRUD_currency.get(db, filter=currency_name_map)
     assert stored_currency is None
     assert deleted_currency
-    assert currency.currencyName == deleted_currency.currencyName
-    assert currency.valueInChaos == deleted_currency.valueInChaos
-    assert currency.iconUrl == deleted_currency.iconUrl
+    assert deleted_currency.currencyName == currency.currencyName
+    assert deleted_currency.valueInChaos == currency.valueInChaos
+    assert deleted_currency.iconUrl == currency.iconUrl
