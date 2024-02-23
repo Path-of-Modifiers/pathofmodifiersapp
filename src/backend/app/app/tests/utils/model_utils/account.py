@@ -37,8 +37,11 @@ async def get_random_account(session: Session) -> Account:
 
     if random_account:
         print(
-            f"Found already existing account. random_account.accountName: {random_account.accountName}"
+            f"Test utils found already existing account. random_account.accountName: {random_account.accountName}"
         )
     else:
         random_account = create_random_account(session)
+        print(
+            f"Test utils created new account. random_account.accountName: {random_account.accountName}"
+        )
     return random_account
