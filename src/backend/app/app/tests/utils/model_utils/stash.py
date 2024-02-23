@@ -12,7 +12,7 @@ from backend.app.app.tests.utils.utils import random_lower_string
 from backend.app.app.tests.utils.utils import random_bool
 from backend.app.app.tests.utils.model_utils.account import get_random_account
 
-def create_random_stash(db: Session) -> Stash:
+async def create_random_stash(db: Session) -> Stash:
     accountName = get_random_account(db).accountName
     public = random_bool()
     league = random_lower_string()
@@ -33,7 +33,7 @@ def create_random_stash_list(db: Session, count: int = 10) -> List[Stash]:
 
 
 
-def get_random_stash(session: Session) -> Stash:
+async def get_random_stash(session: Session) -> Stash:
     random_stash = session.query(Stash).order_by(func.random()).first()
 
     if random_stash:

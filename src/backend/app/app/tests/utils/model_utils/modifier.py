@@ -13,7 +13,7 @@ from backend.app.app.tests.utils.utils import random_int
 from backend.app.app.tests.utils.utils import random_bool
 
 
-def create_random_modifier(db: Session) -> Modifier:
+async def create_random_modifier(db: Session) -> Modifier:
     modifierId = random_int()
     position = random_int()
     minRoll = random_int()
@@ -57,7 +57,7 @@ def create_random_modifier_list(db: Session, count: int = 10) -> List[Modifier]:
     return [create_random_modifier(db) for _ in range(count)]
 
 
-def get_random_modifier(session: Session) -> Modifier:
+async def get_random_modifier(session: Session) -> Modifier:
     random_modifier = session.query(Modifier).order_by(func.random()).first()
 
     if random_modifier:

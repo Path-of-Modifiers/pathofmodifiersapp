@@ -11,7 +11,7 @@ from backend.app.app.core.models.models import Account
 from backend.app.app.core.schemas.account import AccountCreate
 
 
-def create_random_account(db: Session) -> Account:
+async def create_random_account(db: Session) -> Account:
     accountName = random_lower_string()
     isBanned = random_bool()
 
@@ -27,7 +27,7 @@ def create_random_account_list(db: Session, count: int = 10) -> List[Account]:
     return [create_random_account(db) for _ in range(count)]
 
 
-def get_random_account(session: Session) -> Account:
+async def get_random_account(session: Session) -> Account:
     # Use func.random() for databases that support it (e.g., PostgreSQL)
     # For SQLite, you can use func.random() as well. For MySQL, use func.rand()
     # It returns random number between 0 and 1

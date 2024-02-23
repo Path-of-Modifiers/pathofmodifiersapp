@@ -12,7 +12,7 @@ from backend.app.app.tests.utils.utils import random_lower_string
 from backend.app.app.tests.utils.utils import random_int
 
 
-def create_random_item_modifier(db: Session) -> ItemModifier:
+async def create_random_item_modifier(db: Session) -> ItemModifier:
     itemId = random_int()
     gameItemId = random_lower_string()
     modifierId = random_int()
@@ -33,7 +33,7 @@ def create_random_item_modifier_list(db: Session, count: int = 10) -> List[ItemM
     return [create_random_item_modifier(db) for _ in range(count)]
 
 
-def get_random_item_modifier(session: Session) -> ItemModifier:
+async def get_random_item_modifier(session: Session) -> ItemModifier:
     random_item_modifier = session.query(ItemModifier).order_by(func.random()).first()
 
     if random_item_modifier:
