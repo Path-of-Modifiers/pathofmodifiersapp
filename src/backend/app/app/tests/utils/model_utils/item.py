@@ -18,30 +18,30 @@ def create_random_item(db: Session) -> Item:
     stashId =random_lower_string()
     name =random_lower_string()
     iconUrl =random_url()
-    league = random_lower_string(),
-    typeLine = random_lower_string(),
-    baseType = random_lower_string(),
-    rarity = random_lower_string(),
-    identified = random_bool(),
-    itemLevel = random_int(small_int=True),
-    forumNote = random_lower_string(),
-    currencyAmount = random_float(),
-    currencyId = random_int(),
-    corrupted = random_bool(),
-    delve = random_bool(),
-    fractured = random_bool(),
-    synthesized = random_bool(),
-    replica = random_bool(),
-    elder = random_bool(),
-    shaper = random_bool(),
+    league = random_lower_string()
+    typeLine = random_lower_string()
+    baseType = random_lower_string()
+    rarity = random_lower_string()
+    identified = random_bool()
+    itemLevel = random_int(small_int=True)
+    forumNote = random_lower_string()
+    currencyAmount = random_float()
+    currencyId = random_int()
+    corrupted = random_bool()
+    delve = random_bool()
+    fractured = random_bool()
+    synthesized = random_bool()
+    replica = random_bool()
+    elder = random_bool()
+    shaper = random_bool()
     influences = random_json()
-    searing = random_bool(),
-    tangled = random_bool(),
-    isRelic = random_bool(),
-    prefixes = random_int(small_int=True),
-    suffixes = random_int(small_int=True),
-    foilVariation = random_int(),
-    inventoryId = random_lower_string(),
+    searing = random_bool()
+    tangled = random_bool()
+    isRelic = random_bool()
+    prefixes = random_int(small_int=True)
+    suffixes = random_int(small_int=True)
+    foilVariation = random_int()
+    inventoryId = random_lower_string()
     item_in = ItemCreate(
         gameItemId=gameItemId,
         stashId=stashId,
