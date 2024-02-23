@@ -1,3 +1,6 @@
+from typing import List
+
+from sqlalchemy import func
 from app import crud
 
 from sqlalchemy.orm import Session
@@ -5,12 +8,12 @@ from sqlalchemy.orm import Session
 from app import crud
 from app.core.models.models import Item
 from app.core.schemas.item import ItemCreate
-from app.tests.utils.utils import random_lower_string
-from app.tests.utils.utils import random_int
-from app.tests.utils.utils import random_bool
-from app.tests.utils.utils import random_float
-from app.tests.utils.utils import random_json
-from app.tests.utils.utils import random_url
+from backend.app.app.tests.utils.utils import random_lower_string
+from backend.app.app.tests.utils.utils import random_int
+from backend.app.app.tests.utils.utils import random_bool
+from backend.app.app.tests.utils.utils import random_float
+from backend.app.app.tests.utils.utils import random_json
+from backend.app.app.tests.utils.utils import random_url
 
 
 def create_random_item(db: Session) -> Item:
@@ -74,3 +77,19 @@ def create_random_item(db: Session) -> Item:
         inventoryId=inventoryId,
     )
     return crud.CRUD_item.create(db=db, obj_in=item_in)
+
+
+def create_random_item_list(db: Session, count: int = 10) -> List[Item]:
+    return [create_random_item(db) for _ in range(count)]
+
+
+def get_random_item(session: Session) -> Item:
+    random_item = session.query(Item).order_by(func.random()).first()
+
+    if random_item:
+        print(
+            f"Found already existing item. random_item.gameItemId: {random_item.gameItemId}"
+        )
+    else:
+        random_item = create_random_item(session)
+    return random_item
