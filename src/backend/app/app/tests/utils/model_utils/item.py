@@ -1,3 +1,4 @@
+import asyncio
 from typing import List
 
 from sqlalchemy import func
@@ -79,8 +80,9 @@ async def create_random_item(db: Session) -> Item:
     return await crud.CRUD_item.create(db=db, obj_in=item_in)
 
 
-def create_random_item_list(db: Session, count: int = 10) -> List[Item]:
-    return [create_random_item(db) for _ in range(count)]
+async def create_random_item_list(db: Session, count: int = 10) -> List[Item]:
+    items = [create_random_item(db) for _ in range(count)]
+    return await asyncio.gather(*items)
 
 
 async def get_random_item(session: Session) -> Item:

@@ -1,3 +1,4 @@
+import asyncio
 from typing import List
 
 from sqlalchemy import func
@@ -12,7 +13,7 @@ from backend.app.app.tests.utils.utils import random_lower_string
 from backend.app.app.tests.utils.utils import random_int
 
 
-async def create_random_item_modifier(db: Session) -> ItemModifier:
+async def create_random_itemModifier(db: Session) -> ItemModifier:
     itemId = random_int()
     gameItemId = random_lower_string()
     modifierId = random_int()
@@ -29,8 +30,12 @@ async def create_random_item_modifier(db: Session) -> ItemModifier:
 
     return await crud.CRUD_itemModifier.create(db, obj_in=item_modifier)
 
-def create_random_item_modifier_list(db: Session, count: int = 10) -> List[ItemModifier]:
-    return [create_random_item_modifier(db) for _ in range(count)]
+
+async def create_random_itemModifier_list(
+    db: Session, count: int = 10
+) -> List[ItemModifier]:
+    itemModifiers = [create_random_itemModifier(db) for _ in range(count)]
+    return await asyncio.gather(*itemModifiers)
 
 
 async def get_random_item_modifier(session: Session) -> ItemModifier:
@@ -41,5 +46,5 @@ async def get_random_item_modifier(session: Session) -> ItemModifier:
             f"Found already existing item_modifier. random_item_modifier.itemId: {random_item_modifier.itemId}"
         )
     else:
-        random_item_modifier = create_random_item_modifier(session)
+        random_item_modifier = create_random_itemModifier(session)
     return random_item_modifier

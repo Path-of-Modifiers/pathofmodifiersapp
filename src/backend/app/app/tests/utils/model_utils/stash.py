@@ -1,3 +1,4 @@
+import asyncio
 from typing import List
 
 from sqlalchemy import func
@@ -30,9 +31,9 @@ async def create_random_stash(db: Session) -> Stash:
     return await crud.CRUD_stash.create(db, obj_in=stash)
 
 
-def create_random_stash_list(db: Session, count: int = 10) -> List[Stash]:
-    return [await create_random_stash(db) for _ in range(count)]
-
+async def create_random_stash_list(db: Session, count: int = 10) -> List[Stash]:
+    stashes = [create_random_stash(db) for _ in range(count)]
+    return await asyncio.gather(*stashes)
 
 
 async def get_random_stash(session: Session) -> Stash:
