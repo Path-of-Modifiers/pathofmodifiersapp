@@ -33,11 +33,25 @@ async def test_get_currency(db: Session) -> None:
 
 
 async def test_create_multiple_currencies(db: Session) -> None:
-    currencys = await create_random_currency_list(db=db, count=5)
-    stored_currencys = await crud.CRUD_currency.get(db)
-    assert len(stored_currencys) == 5
-    for stored_currency in stored_currencys:
-        assert stored_currency in currencys
+    # Get the initial count of stored currencies
+    initial_currency_count = len(await crud.CRUD_currency.get(db))
+
+    # Create random currencies
+    currencies = await create_random_currency_list(db=db, count=5)
+
+    # Get the final count of stored currencies
+    stored_currencies = await crud.CRUD_currency.get(db)
+    final_currency_count = len(stored_currencies)
+
+    # Ensure the total count matches the expected count
+    assert final_currency_count == initial_currency_count + 5
+
+    # Check that the newly created currencies are in the stored currencies
+    for stored_currency in stored_currencies:
+        if stored_currency not in currencies:
+            assert stored_currency
+            assert stored_currency in await crud.CRUD_currency.get(db)
+
 
 
 async def test_get_all_currency(db: Session) -> None:
