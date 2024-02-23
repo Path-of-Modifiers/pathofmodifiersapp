@@ -1,3 +1,4 @@
+import asyncio
 from typing import List
 
 from sqlalchemy import func
@@ -53,8 +54,9 @@ async def create_random_modifier(db: Session) -> Modifier:
     return await crud.CRUD_modifier.create(db, obj_in=modifier)
 
 
-def create_random_modifier_list(db: Session, count: int = 10) -> List[Modifier]:
-    return [create_random_modifier(db) for _ in range(count)]
+async def create_random_modifier_list(db: Session, count: int = 10) -> List[Modifier]:
+    modifiers = [create_random_modifier(db) for _ in range(count)]
+    return await asyncio.gather(*modifiers)
 
 
 async def get_random_modifier(session: Session) -> Modifier:

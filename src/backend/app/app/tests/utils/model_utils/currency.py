@@ -1,3 +1,4 @@
+import asyncio
 from typing import List
 
 from sqlalchemy import func
@@ -26,8 +27,9 @@ async def create_random_currency(db: Session) -> Currency:
     return await crud.CRUD_currency.create(db, obj_in=currency)
 
 
-def create_random_currency_list(db: Session, count: int = 10) -> List[Currency]:
-    return [create_random_currency(db) for _ in range(count)]
+async def create_random_currency_list(db: Session, count: int = 10) -> List[Currency]:
+    currencies = [create_random_currency(db) for _ in range(count)]
+    return await asyncio.gather(*currencies)
 
 
 async def get_random_currency(session: Session) -> Currency:

@@ -1,3 +1,4 @@
+import asyncio
 from typing import List
 from sqlalchemy import func
 from app import crud
@@ -23,8 +24,9 @@ async def create_random_account(db: Session) -> Account:
     return await crud.CRUD_account.create(db, obj_in=account)
 
 
-def create_random_account_list(db: Session, count: int = 10) -> List[Account]:
-    return [create_random_account(db) for _ in range(count)]
+async def create_random_account_list(db: Session, count: int = 10) -> List[Account]:
+    accounts = [create_random_account(db) for _ in range(count)]
+    return await asyncio.gather(*accounts)
 
 
 async def get_random_account(session: Session) -> Account:
