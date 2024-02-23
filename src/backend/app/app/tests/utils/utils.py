@@ -45,6 +45,10 @@ def random_json():
     }
 
 
+def random_url():
+    return f"https://{random_lower_string()}.{random_lower_string()}"
+
+
 def main():
     print(random_lower_string())
     print(random_int())
