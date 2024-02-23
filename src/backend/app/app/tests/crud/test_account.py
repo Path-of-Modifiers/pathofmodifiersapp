@@ -12,6 +12,7 @@ from backend.app.app.tests.utils.utils import random_bool, random_lower_string
 async def test_create_account(db: Session) -> None:
     account = await create_random_account(db)
     stored_created_account = await crud.CRUD_account.create(db, obj_in=account)
+    assert stored_created_account
     assert stored_created_account.accountName == account.accountName
     assert stored_created_account.isBanned == account.isBanned
 
@@ -21,8 +22,8 @@ async def test_get_account(db: Session) -> None:
     account_map = {"accountName": account.accountName}
     stored_account = await crud.CRUD_account.get(db, filter=account_map)
     assert stored_account
-    assert account.accountName == stored_account.accountName
-    assert account.isBanned == stored_account.isBanned
+    assert stored_account.accountName == account.accountName
+    assert stored_account.isBanned == account.isBanned
 
 
 async def test_create_multiple_accounts(db: Session) -> None:
@@ -65,5 +66,5 @@ async def test_delete_account(db: Session) -> None:
     stored_account = await crud.CRUD_account.get(db, filter=account_name_map)
     assert stored_account is None
     assert deleted_account
-    assert account.accountName == deleted_account.accountName
-    assert account.isBanned == deleted_account.isBanned
+    assert deleted_account.accountName == account.accountName
+    assert deleted_account.isBanned == account.isBanned
