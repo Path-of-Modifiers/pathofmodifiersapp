@@ -1,3 +1,6 @@
+from typing import List
+
+from sqlalchemy import func
 from app import crud
 
 from sqlalchemy.orm import Session
@@ -5,9 +8,9 @@ from sqlalchemy.orm import Session
 from app import crud
 from app.core.models.models import Currency
 from app.core.schemas import CurrencyCreate
-from app.tests.utils.utils import random_lower_string
-from app.tests.utils.utils import random_float
-from app.tests.utils.utils import random_url
+from backend.app.app.tests.utils.utils import random_lower_string
+from backend.app.app.tests.utils.utils import random_float
+from backend.app.app.tests.utils.utils import random_url
 
 
 def create_random_currency(db: Session) -> Currency:
@@ -21,3 +24,19 @@ def create_random_currency(db: Session) -> Currency:
         iconUrl=iconUrl,
     )
     return crud.CRUD_currency.create(db, obj_in=currency)
+
+
+def create_random_currency_list(db: Session, count: int = 10) -> List[Currency]:
+    return [create_random_currency(db) for _ in range(count)]
+
+
+def get_random_currency(session: Session) -> Currency:
+    random_currency = session.query(Currency).order_by(func.random()).first()
+
+    if random_currency:
+        print(
+            f"Found already existing currency. random_currency.currencyName: {random_currency.currencyName}"
+        )
+    else:
+        random_currency = create_random_currency(session)
+    return random_currency
