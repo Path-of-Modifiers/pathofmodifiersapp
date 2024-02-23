@@ -42,6 +42,7 @@ def create_random_item(db: Session) -> Item:
     suffixes = random_int(small_int=True)
     foilVariation = random_int()
     inventoryId = random_lower_string()
+    
     item_in = ItemCreate(
         gameItemId=gameItemId,
         stashId=stashId,
