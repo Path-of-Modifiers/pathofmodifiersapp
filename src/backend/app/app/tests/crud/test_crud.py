@@ -67,6 +67,7 @@ class TestCRUD:
             else:
                 object_dict = [object_generator_func() for _ in range(count)]
                 object_in = [crud_instance.schema(**obj) for obj in object_dict]
+
         object_out = await crud_instance.create(db=db, obj_in=object_in)
 
         return object_dict, object_in, object_out
@@ -82,10 +83,10 @@ class TestCRUD:
         if compare_object is not None:
             if isinstance(object, List) and isinstance(compare_object, List):
                 for obj, compare_obj in zip(object, compare_object):
-                    self._test_object(obj, compare_obj)
+                    await self._test_object(obj, compare_obj)
 
             else:
-                assert isinstance(object, ModelType)
+                assert isinstance(object, type(ModelType))
                 assert isinstance(compare_object, Dict)
                 for field in compare_object:
                     assert field in inspect(compare_object).attrs
@@ -96,30 +97,42 @@ class TestCRUD:
 
     #     object_map = {main_key: getattr(object_out, main_key)}
     #     stored_get_object = await self.crud_instance.get(db=self.db, filter=object_map)
-    #     self._test_object(stored_get_object, object_dict)
+    #     await self._test_object(stored_get_object, object_dict)
 
     @pytest.mark.asyncio
-    async def test_get(self, db: Session, crud_instance: CRUDBase) -> None:
-        object_dict, object_in, object_out = await self._create_object(db)
+    async def test_get(
+        self,
+        db: Session,
+        crud_instance: CRUDBase,
+        object_generator_func: Callable[[], Dict],
+    ) -> None:
+        object_dict, object_in, object_out = await self._create_object(
+            db, crud_instance, object_generator_func
+        )
         # object_dict = self.object_generator_func()
         # object_in = self.schema(**object_dict)
         # object_out = await crud_instance.create(db=db, obj_in=object_in)
 
         object_map = {
             key.name: getattr(object_out, key.name)
-            for key in inspect(object_out).primary_key
+            for key in object_out.__table__.primary_key
         }
 
-        stored_get_object = await crud_instance.get(db=db, obj_in=object_map)
+        stored_get_object = await crud_instance.get(db=db, filter=object_map)
 
-        self._test_object(stored_get_object, object_dict)
+        await self._test_object(stored_get_object, object_dict)
 
     @pytest.mark.asyncio
-    async def test_create(self, db: Session, crud_instance: CRUDBase) -> None:
+    async def test_create(
+        self,
+        db: Session,
+        crud_instance: CRUDBase,
+        object_generator_func: Callable[[], Dict],
+    ) -> None:
         object_dict, object_in, object_out = await self._create_object(
-            db, crud_instance
+            db, crud_instance, object_generator_func
         )
-        self._test_object(object_out, object_dict)
+        await self._test_object(object_out, object_dict)
 
     # async def test_create_multiple(
     #     self,
@@ -133,4 +146,4 @@ class TestCRUD:
     #     final_object_count = len(await self.crud_instance.get(self.db))
 
     #     assert final_object_count == initial_object_count + count
-    #     self._test_object(object_outs, object_dicts)
+    #     await self._test_object(object_outs, object_dicts)
