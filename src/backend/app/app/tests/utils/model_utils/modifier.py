@@ -1,3 +1,6 @@
+from typing import List
+
+from sqlalchemy import func
 from app import crud
 
 from sqlalchemy.orm import Session
@@ -5,9 +8,9 @@ from sqlalchemy.orm import Session
 from app import crud
 from app.core.models.models import Modifier
 from app.core.schemas.modifier import ModifierCreate
-from app.tests.utils.utils import random_lower_string
-from app.tests.utils.utils import random_int
-from app.tests.utils.utils import random_bool
+from backend.app.app.tests.utils.utils import random_lower_string
+from backend.app.app.tests.utils.utils import random_int
+from backend.app.app.tests.utils.utils import random_bool
 
 
 def create_random_modifier(db: Session) -> Modifier:
@@ -48,3 +51,19 @@ def create_random_modifier(db: Session) -> Modifier:
     )
 
     return crud.CRUD_modifier.create(db, obj_in=modifier)
+
+
+def create_random_modifier_list(db: Session, count: int = 10) -> List[Modifier]:
+    return [create_random_modifier(db) for _ in range(count)]
+
+
+def get_random_modifier(session: Session) -> Modifier:
+    random_modifier = session.query(Modifier).order_by(func.random()).first()
+
+    if random_modifier:
+        print(
+            f"Found already existing modifier. random_modifier.modifierId: {random_modifier.modifierId}"
+        )
+    else:
+        random_modifier = create_random_modifier(session)
+    return random_modifier
