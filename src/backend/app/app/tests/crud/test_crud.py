@@ -86,10 +86,10 @@ class TestCRUD:
                     await self._test_object(obj, compare_obj)
 
             else:
-                assert isinstance(object, type(ModelType))
+                assert not isinstance(object, List)
                 assert isinstance(compare_object, Dict)
                 for field in compare_object:
-                    assert field in inspect(compare_object).attrs
+                    assert field in inspect(object).attrs
                     assert compare_object[field] == getattr(object, field)
 
     # async def test_get_main_key(self, db: Session, main_key: str) -> None:
