@@ -35,10 +35,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
     ) -> Optional[Union[ModelType, List[ModelType]]]:
         db_obj = db.query(self.model).filter_by(**filter).all()
         if not db_obj and not filter:  # Get all objs on an empty db
-            raise HTTPException(
-                status_code=503,
-                detail=f"The table {self.model.__tablename__} is empty.",
-            )
+            pass
         elif not db_obj:
             raise HTTPException(
                 status_code=404,
