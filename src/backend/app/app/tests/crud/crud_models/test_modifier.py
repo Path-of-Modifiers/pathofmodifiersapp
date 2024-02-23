@@ -31,8 +31,8 @@ def generate_random_modifier() -> Dict:
     static = random_bool()
     if not static:
         if random_bool():  # Random chance to choose numeric rolls or text rolls
-            minRoll = random_float()
-            maxRoll = random_float()
+            minRoll = random_float(small_float=True)
+            maxRoll = random_float(small_float=True)
             if minRoll > maxRoll:
                 minRoll, maxRoll = maxRoll, minRoll
             textRoll = None

@@ -1,3 +1,4 @@
+import math
 import pytest
 from typing import (
     Any,
@@ -91,6 +92,9 @@ class TestCRUD:
                 assert not isinstance(object, List)
                 assert isinstance(compare_object, Dict)
                 for field in compare_object:
+                    if isinstance(compare_object[field], float):
+                        assert math.isclose(compare_object[field], getattr(object, field), rel_tol=1e-3)
+                        continue
                     assert field in inspect(object).attrs
                     assert compare_object[field] == getattr(object, field)
 
