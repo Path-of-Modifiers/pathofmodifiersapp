@@ -7,9 +7,6 @@ from app.core.models.models import ItemModifier
 from app.core.schemas.item_modifier import ItemModifierCreate
 from app.tests.utils.utils import random_lower_string
 from app.tests.utils.utils import random_int
-from app.tests.utils.utils import random_bool
-from app.tests.utils.utils import random_float
-from app.tests.utils.utils import random_json
 
 
 def create_random_item_modifier(db: Session) -> ItemModifier:
@@ -26,3 +23,5 @@ def create_random_item_modifier(db: Session) -> ItemModifier:
         position=position,
         range=range_value,
     )
+
+    return crud.CRUD_itemModifier.create(db, obj_in=item_modifier)
