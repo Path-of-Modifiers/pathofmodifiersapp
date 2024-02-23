@@ -13,7 +13,7 @@ from backend.app.app.tests.utils.utils import random_float
 from backend.app.app.tests.utils.utils import random_url
 
 
-def create_random_currency(db: Session) -> Currency:
+async def create_random_currency(db: Session) -> Currency:
     currencyName = random_lower_string()
     valueInChaos = random_float()
     iconUrl = random_url()
@@ -30,7 +30,7 @@ def create_random_currency_list(db: Session, count: int = 10) -> List[Currency]:
     return [create_random_currency(db) for _ in range(count)]
 
 
-def get_random_currency(session: Session) -> Currency:
+async def get_random_currency(session: Session) -> Currency:
     random_currency = session.query(Currency).order_by(func.random()).first()
 
     if random_currency:

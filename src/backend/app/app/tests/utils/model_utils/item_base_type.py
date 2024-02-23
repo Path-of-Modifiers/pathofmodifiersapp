@@ -11,7 +11,7 @@ from backend.app.app.tests.utils.utils import random_lower_string
 from backend.app.app.core.schemas.item_base_type import ItemBaseTypeCreate
 
 
-def create_random_item_base_type(db: Session) -> ItemBaseType:
+async def create_random_item_base_type(db: Session) -> ItemBaseType:
     baseType = random_lower_string()
     category = random_lower_string()
     subCategory = random_lower_string()
@@ -27,7 +27,7 @@ def create_random_item_base_type_list(db: Session, count: int = 10) -> List[Item
     return [create_random_item_base_type(db) for _ in range(count)]
 
 
-def get_random_itemBaseType(session: Session) -> ItemBaseType:
+async def get_random_itemBaseType(session: Session) -> ItemBaseType:
     random_itemBaseType = session.query(ItemBaseType).order_by(func.random()).first()
 
     if random_itemBaseType:
