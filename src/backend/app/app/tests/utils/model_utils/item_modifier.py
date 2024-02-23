@@ -27,7 +27,7 @@ async def create_random_item_modifier(db: Session) -> ItemModifier:
         range=range_value,
     )
 
-    return crud.CRUD_itemModifier.create(db, obj_in=item_modifier)
+    return await crud.CRUD_itemModifier.create(db, obj_in=item_modifier)
 
 def create_random_item_modifier_list(db: Session, count: int = 10) -> List[ItemModifier]:
     return [create_random_item_modifier(db) for _ in range(count)]

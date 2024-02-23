@@ -20,7 +20,7 @@ async def create_random_account(db: Session) -> Account:
         isBanned=isBanned,
     )
 
-    return crud.CRUD_account.create(db, obj_in=account)
+    return await crud.CRUD_account.create(db, obj_in=account)
 
 
 def create_random_account_list(db: Session, count: int = 10) -> List[Account]:
