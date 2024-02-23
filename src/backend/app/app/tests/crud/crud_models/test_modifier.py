@@ -19,9 +19,6 @@ from app.tests.utils.utils import (
 
 @pytest.fixture(scope="session")
 def db() -> Generator:
-    # Base.metadata.create_all(engine)
-    # print("heyhey")
-    # print(Base.metadata.tables.keys())
     with Session(engine) as session:
         yield session
     session.rollback()
