@@ -19,7 +19,13 @@ from pydantic import BaseModel, TypeAdapter
 from sqlalchemy.orm import Session
 from sqlalchemy.inspection import inspect
 
-from app.crud.base import CRUDBase, ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
+from app.crud.base import (
+    CRUDBase,
+    ModelType,
+    SchemaType,
+    CreateSchemaType,
+    UpdateSchemaType,
+)
 from app.core.models.database import Base, engine
 
 
@@ -55,28 +61,26 @@ class TestCRUD:
         crud_instance,
         object_generator_func,
         *,
-        count: Optional[int] = None,
+        # count: Optional[int] = None,
         main_key: Optional[str] = None
     ) -> Tuple[Dict, CreateSchemaType, ModelType]:
-        if count is None:
-            object_dict = object_generator_func()
-            # createType: Type[CreateSchemaType] = CreateSchemaType
-            object_in = crud_instance.create_schema(
-                **object_dict
-            )  
+        object_dict = object_generator_func()
+        # createType: Type[CreateSchemaType] = CreateSchemaType
 
-        else:
-            if main_key is not None:
-                object_dict = [object_generator_func() for _ in range(count)]
-                object_in = [crud_instance.create_schema(**obj) for obj in object_dict]
-                object_in_main_keys = [{main_key: getattr(obj, main_key)} for obj in object_in]
-                object_out = await crud_instance.create(db=db, obj_in=object_in)
-                return object_dict, object_out, object_in_main_keys
-            else:
-                object_dict = [object_generator_func() for _ in range(count)]
-                object_in = [crud_instance.create_schema(**obj) for obj in object_dict]
+        if main_key is not None:
+            all_keys = [key.name for key in inspect(ModelType).primary_key]
+            secondary_keys = [key for key in all_keys if key != main_key]
+
+        object_in = crud_instance.create_schema(**object_dict)
 
         object_out = await crud_instance.create(db=db, obj_in=object_in)
+        
+        if main_key is not None:
+            all_keys = [key.name for key in inspect(ModelType).primary_key]
+            secondary_keys = [key for key in all_keys if key != main_key]
+            # for field in object_keys:
+                
+            return object_dict, object_out, secondary_keys
 
         return object_dict, object_out
         # return object_dict, object_in, object_out
@@ -99,7 +103,9 @@ class TestCRUD:
                 assert isinstance(compare_object, Dict)
                 for field in compare_object:
                     if isinstance(compare_object[field], float):
-                        assert math.isclose(compare_object[field], getattr(object, field), rel_tol=1e-3)
+                        assert math.isclose(
+                            compare_object[field], getattr(object, field), rel_tol=1e-3
+                        )
                         continue
                     assert field in inspect(object).attrs
                     assert compare_object[field] == getattr(object, field)
@@ -107,7 +113,7 @@ class TestCRUD:
     # async def test_get_main_key(self, db: Session, main_key: str) -> None:
     #     # object_dict, object_in, object_out = await self._create_object(db)
     #     object_dict, object_out = await self._create_object(db)
-        
+
     #     object_map = {main_key: getattr(object_out, main_key)}
     #     stored_get_object = await self.crud_instance.get(db=db, filter=object_map)
     #     await self._test_object(stored_get_object, object_dict)
@@ -164,12 +170,13 @@ class TestCRUD:
         #     db, crud_instance, object_generator_func, count=count, main_key=main_key
         # )
         if main_key is not None:
-            object_dict, object_out, object_in_main_keys = await self._create_object(
-                db, crud_instance, object_generator_func, count=count, main_key=main_key
+            object_dict, object_out, secondary_keys = await self._create_object(
+                db, crud_instance, object_generator_func, main_key=main_key
             )
+            secondary_keys[0] 
         else:
             object_dict, object_out = await self._create_object(
-                db, crud_instance, object_generator_func, count=count, main_key=main_key
+                db, crud_instance, object_generator_func, main_key=main_key
             )
         final_object_count = len(await crud_instance.get(db))
 
