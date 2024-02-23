@@ -59,7 +59,9 @@ class TestCRUD:
     ) -> Tuple[Dict, SchemaType, ModelType]:
         if count is None:
             object_dict = object_generator_func()
-            object_in = crud_instance.schema(**object_dict)
+            object_in = crud_instance.schema(
+                **object_dict
+            )  # TODO change schema to CreateSchema
 
         else:
             if main_key is not None:
