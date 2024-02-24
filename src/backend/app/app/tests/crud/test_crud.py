@@ -33,7 +33,7 @@ class TestCRUD:
         *,
         main_key: Optional[str] = "",
         main_key_value: Optional[Any] = None,
-    ) -> Tuple[Dict, CreateSchemaType, ModelType]:
+    ) -> Tuple[Dict, ModelType, Optional[Any]]:
         object_dict = object_generator_func()
 
         if (
@@ -111,6 +111,8 @@ class TestCRUD:
             total_object_dicts = [object_one_dict, object_two_dict]
             stored_get_object = await crud_instance.get(db=db, filter=object_one_map)
             await self._test_object(stored_get_object, total_object_dicts)
+        else:
+            pytest.skip("No main_key provided")
 
     @pytest.mark.asyncio
     async def test_get(
