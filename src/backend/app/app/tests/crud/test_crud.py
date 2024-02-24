@@ -30,29 +30,6 @@ from app.core.models.database import Base, engine
 
 
 class TestCRUD:
-    # def __init__(
-    #     self, crud_instance: CRUDBase, object_generator_func: Callable[[], Dict]
-    # ) -> None:
-    #     self.crud_instance = crud_instance
-    #     self.schema = crud_instance.schema
-    #     self.object_generator_func = object_generator_func
-
-    #     self.db = None
-
-    # def setup_class(self):
-    #     """
-    #     Only used to get rid of IDE errors
-    #     """
-    #     Base.metadata.create_all(engine)
-    #     self.db = Session()
-
-    #     self.crud_instance: CRUDBase
-    #     self.schema: SchemaType
-    #     self.object_generator_func: Callable[[], Dict]
-
-    # def teardown_class(self):
-    #     self.db.rollback()
-    #     self.db.close()
 
     @pytest.mark.asyncio
     async def _create_object(
@@ -61,20 +38,16 @@ class TestCRUD:
         crud_instance,
         object_generator_func,
         *,
-        # count: Optional[int] = None,
         main_key: Optional[str] = "",
         main_key_value: Optional[Any] = None,
     ) -> Tuple[Dict, CreateSchemaType, ModelType]:
         object_dict = object_generator_func()
-        # createType: Type[CreateSchemaType] = CreateSchemaType
 
         if (
             main_key != "" and main_key_value is None
         ):  # If main_key is not None, then we need to get the value of the main_key
             main_key_value = object_dict[main_key]
 
-        print("MAIN KEY VALUE CREATE: ", main_key_value)
-        print("MAIN KEY CREATE: ", main_key)
         if (
             main_key_value is not None and main_key
         ):  # If main_key_value is not None, then we need to add it to the object_dict
@@ -88,20 +61,10 @@ class TestCRUD:
             db=db, obj_in=object_in
         )  # Create the object in the database
 
-        # if main_key is not None:
-        #     all_keys = [key.name for key in inspect(ModelType).primary_key]
-        #     secondary_keys = [key for key in all_keys if key != main_key]
-        #     for field in object_dict:
-
-        # for field in object_keys:
-        # print("OBJECT DICT: ", object_dict)
-        # print("OBJECT OUT: ", object_out)
-        print("HEYHEY", main_key_value)
         if main_key_value is not None:
             return object_dict, object_out, main_key_value
         else:
             return object_dict, object_out
-        # return object_dict, object_in, object_out
 
     @pytest.mark.asyncio
     async def _test_object(
@@ -143,16 +106,9 @@ class TestCRUD:
         crud_instance: CRUDBase,
         object_generator_func: Callable[[], Dict],
     ) -> None:
-        # object_dict, object_in, object_out = await self._create_object(
-        #     db, crud_instance, object_generator_func
-        # )
         object_dict, object_out = await self._create_object(
             db, crud_instance, object_generator_func
         )
-        # object_dict = self.object_generator_func()
-        # object_in = self.schema(**object_dict)
-        # object_out = await crud_instance.create(db=db, obj_in=object_in)
-
         object_map = {
             key.name: getattr(object_out, key.name)
             for key in object_out.__table__.primary_key
@@ -185,9 +141,6 @@ class TestCRUD:
         count: int = 5,
     ) -> None:
         initial_object_count = len(await crud_instance.get(db))
-        # object_dict, object_in, object_out = await self._create_object(
-        #     db, crud_instance, object_generator_func, count=count, main_key=main_key
-        # )
 
         multiple_object_dict = []
         multiple_object_out = []
