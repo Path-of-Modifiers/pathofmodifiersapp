@@ -2,7 +2,6 @@ import asyncio
 from sqlalchemy.orm import Session
 from typing import Dict, Generator, Callable
 import pytest
-import pytest_asyncio
 
 from app.crud import CRUD_modifier
 from app.core.models.database import Base, engine
@@ -85,6 +84,11 @@ def generate_random_modifier() -> Dict:
 @pytest.fixture(scope="class")
 def object_generator_func() -> Dict:
     return generate_random_modifier
+
+
+@pytest.fixture(scope="class")
+def main_key() -> str:
+    return "modifierId"
 
 
 @pytest.fixture(scope="class")
