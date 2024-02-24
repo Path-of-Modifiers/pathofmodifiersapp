@@ -9,9 +9,9 @@ from sqlalchemy.orm import Session
 from app import crud
 from app.core.models.models import Currency
 from app.core.schemas import CurrencyCreate
-from backend.app.app.tests.utils.utils import random_lower_string
-from backend.app.app.tests.utils.utils import random_float
-from backend.app.app.tests.utils.utils import random_url
+from app.tests.utils.utils import random_lower_string
+from app.tests.utils.utils import random_float
+from app.tests.utils.utils import random_url
 
 
 async def create_random_currency(db: Session) -> Currency:

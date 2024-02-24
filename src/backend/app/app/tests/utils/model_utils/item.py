@@ -9,12 +9,12 @@ from sqlalchemy.orm import Session
 from app import crud
 from app.core.models.models import Item
 from app.core.schemas.item import ItemCreate
-from backend.app.app.tests.utils.utils import random_lower_string
-from backend.app.app.tests.utils.utils import random_int
-from backend.app.app.tests.utils.utils import random_bool
-from backend.app.app.tests.utils.utils import random_float
-from backend.app.app.tests.utils.utils import random_json
-from backend.app.app.tests.utils.utils import random_url
+from app.tests.utils.utils import random_lower_string
+from app.tests.utils.utils import random_int
+from app.tests.utils.utils import random_bool
+from app.tests.utils.utils import random_float
+from app.tests.utils.utils import random_json
+from app.tests.utils.utils import random_url
 
 
 async def create_random_item(db: Session) -> Item:
