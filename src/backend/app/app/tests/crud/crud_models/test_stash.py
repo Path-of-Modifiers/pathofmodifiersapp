@@ -14,6 +14,7 @@ from app.tests.utils.utils import (
 )
 from app.tests.crud.test_crud import TestCRUD
 from app.tests.utils.model_utils.account import get_random_account
+from app.tests.crud.crud_models.test_account import generate_random_account
 
 
 @pytest.fixture(scope="session")
@@ -24,11 +25,12 @@ def db() -> Generator:
     session.close()
 
 
-async def generate_random_stash() -> Dict:
+def generate_random_stash() -> Dict:
+    account = generate_random_account()
+    
     stashId = random_lower_string()
-    accountName = (await get_random_account(Session)).accountName
+    accountName = random_lower_string()
     public = random_bool()
-    print("ACCOUNT", accountName)
     league = random_lower_string()
 
     stash_dict = {
@@ -38,17 +40,12 @@ async def generate_random_stash() -> Dict:
         "league": league,
     }
 
-    return stash_dict
-
-
-result_of_run = asyncio.run(generate_random_stash())
-
-object_generator_func_variable = partial(lambda: result_of_run)
+    return [stash_dict, account]
 
 
 @pytest.fixture(scope="class")
 def object_generator_func() -> Callable[[], Dict]:
-    return object_generator_func_variable
+    return generate_random_stash
 
 
 @pytest.fixture(scope="class")

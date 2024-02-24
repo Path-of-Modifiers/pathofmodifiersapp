@@ -64,7 +64,7 @@ def object_generator_func() -> Dict:
 
 @pytest.fixture(scope="class")
 def main_key() -> str:
-    return None
+    return "itemId"
 
 
 @pytest.fixture(scope="class")

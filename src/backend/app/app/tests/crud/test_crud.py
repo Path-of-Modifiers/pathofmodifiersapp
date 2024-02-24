@@ -29,7 +29,7 @@ class TestCRUD:
         self,
         db,
         crud_instance,
-        object_generator_func: Callable[[], Dict],
+        object_generator_func: Callable[[], Union[Dict, List[Dict]]],
         *,
         main_key: Optional[str] = "",
         main_key_value: Optional[Any] = None,
