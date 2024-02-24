@@ -169,7 +169,7 @@ class TestCRUD:
                     for _ in range(count)
                 )
             )
-        )
+        ) # Create multiple objects
 
         # Ensure multiple_object_dict is a list of Dict types
         multiple_object_dict: List[Dict] = list(multiple_object_dict)
