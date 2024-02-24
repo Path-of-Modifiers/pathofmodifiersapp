@@ -14,7 +14,7 @@ from app.tests.utils.utils import (
 )
 from app.tests.crud.test_crud import TestCRUD
 from app.tests.utils.model_utils.account import get_random_account
-from app.tests.crud.crud_models.test_account import generate_random_account
+from app import crud
 
 
 @pytest.fixture(scope="session")
@@ -25,22 +25,31 @@ def db() -> Generator:
     session.close()
 
 
-def generate_random_stash() -> Dict:
-    account = generate_random_account()
+async def generate_random_account() -> Callable[[], str]:
+    account_map = {"accountName": "acopcyzatrjpfoqrhhdzaszruhhpidec"}
+    accountName = (await crud.CRUD_account.get(Session, filter=account_map)).accountName
+    print(f"HEYHEY: {accountName}")
+    return accountName
+
+
+async def generate_random_stash() -> Dict:
+
+    randomAccountName = await generate_random_account()
     
+    print(f"HEYHEY: {randomAccountName}")
+
     stashId = random_lower_string()
-    accountName = random_lower_string()
     public = random_bool()
     league = random_lower_string()
 
     stash_dict = {
         "stashId": stashId,
-        "accountName": accountName,
+        "accountName": randomAccountName,
         "public": public,
         "league": league,
     }
 
-    return [stash_dict, account]
+    return stash_dict
 
 
 @pytest.fixture(scope="class")

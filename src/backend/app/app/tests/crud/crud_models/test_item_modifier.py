@@ -12,6 +12,8 @@ from app.tests.utils.utils import (
     random_bool,
 )
 from app.tests.crud.test_crud import TestCRUD
+from app.tests.crud.crud_models.test_item import generate_random_item
+from app.tests.crud.crud_models.test_modifier import generate_random_modifier
 
 
 @pytest.fixture(scope="session")
@@ -20,12 +22,15 @@ def db() -> Generator:
         yield session
     session.rollback()
     session.close()
-
-
+    
+ 
 def generate_random_itemModifier() -> Dict:
+    random_item = generate_random_item()
+    random_modifier = generate_random_modifier()
+    
     item_modifier = {
-        "itemId": random_int(),
-        "gameItemId": random_lower_string(),
+        "itemId": random_item["itemId"],
+        "gameItemId": random_item["gameItemId"],
         "modifierId": random_int(),
         "position": random_int(small_int=True),
         "range": random_float(small_float=True) if random_bool() else None,
