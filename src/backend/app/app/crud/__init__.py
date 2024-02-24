@@ -32,7 +32,7 @@ CRUD_currency = CRUDBase[
     Currency,
     CurrencyCreate,
     CurrencyUpdate,
-](model=Currency, schema=Currency, create_schema=CurrencyCreate)
+](model=model_Currency, schema=Currency, create_schema=CurrencyCreate)
 
 
 CRUD_itemBaseType = CRUDBase[
