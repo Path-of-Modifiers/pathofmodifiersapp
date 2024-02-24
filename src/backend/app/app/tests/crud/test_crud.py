@@ -4,30 +4,22 @@ import pytest
 from typing import (
     Any,
     Dict,
-    Generic,
     List,
     Optional,
-    Type,
-    TypeVar,
     Union,
     Callable,
     Tuple,
 )
 
 from fastapi.encoders import jsonable_encoder
-from fastapi import HTTPException
-from pydantic import BaseModel, TypeAdapter
 from sqlalchemy.orm import Session
 from sqlalchemy.inspection import inspect
 
 from app.crud.base import (
     CRUDBase,
     ModelType,
-    SchemaType,
     CreateSchemaType,
-    UpdateSchemaType,
 )
-from app.core.models.database import Base, engine
 
 
 class TestCRUD:
