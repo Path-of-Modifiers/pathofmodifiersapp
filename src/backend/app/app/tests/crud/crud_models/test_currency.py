@@ -1,100 +1,54 @@
-from fastapi import HTTPException
-import pytest
 from sqlalchemy.orm import Session
+from typing import Dict, Generator
+import pytest
 
-from app import crud
-from app.core.schemas.currency import CurrencyUpdate
-from backend.app.app.tests.utils.model_utils.currency import (
-    create_random_currency,
-    create_random_currency_list,
-)
-from backend.app.app.tests.utils.utils import (
+from app.crud import CRUD_currency
+from app.core.models.database import engine
+from app.crud.base import CRUDBase
+from app.tests.utils.utils import (
     random_float,
     random_lower_string,
-    random_url,
+    random_bool,
 )
+from app.tests.crud.test_crud import TestCRUD
 
 
-async def test_create_currency(db: Session) -> None:
-    currency = await create_random_currency(db)
-    stored_created_currency = await crud.CRUD_currency.create(db, obj_in=currency)
-    assert stored_created_currency
-    assert stored_created_currency.currencyName == currency.currencyName
-    assert stored_created_currency.valueInChaos == currency.valueInChaos
-    assert stored_created_currency.iconUrl == currency.iconUrl
+@pytest.fixture(scope="session")
+def db() -> Generator:
+    with Session(engine) as session:
+        yield session
+    session.rollback()
+    session.close()
 
 
-async def test_get_currency(db: Session) -> None:
-    currency = await create_random_currency(db)
-    currency_name_map = {"currencyName": currency.currencyName}
-    stored_currency = await crud.CRUD_currency.get(db, filter=currency_name_map)
-    assert stored_currency
-    assert stored_currency.currencyName == currency.currencyName
-    assert stored_currency.valueInChaos == currency.valueInChaos
-    assert stored_currency.iconUrl == currency.iconUrl
+def generate_random_currency() -> Dict:
+    currencyName = random_lower_string()
+    valueInChaos = random_float(small_float=True)
+    iconUrl = random_lower_string()
+
+    currency_dict = {
+        "currencyName": currencyName,
+        "valueInChaos": valueInChaos,
+        "iconUrl": iconUrl,
+    }
+    
+    return currency_dict
 
 
-async def test_create_multiple_currencies(db: Session) -> None:
-    # Get the initial count of stored currencies
-    initial_currency_count = len(await crud.CRUD_currency.get(db))
-
-    # Create random currencies
-    currencies = await create_random_currency_list(db=db, count=5)
-
-    # Get the final count of stored currencies
-    stored_currencies = await crud.CRUD_currency.get(db)
-    final_currency_count = len(stored_currencies)
-
-    # Ensure the total count matches the expected count
-    assert final_currency_count == initial_currency_count + 5
-
-    # Check that the newly created currencies are in the stored currencies
-    for stored_currency in stored_currencies:
-        if stored_currency not in currencies:
-            assert stored_currency
-            assert stored_currency in await crud.CRUD_currency.get(db)
+@pytest.fixture(scope="class")
+def main_key() -> str:
+    return None
 
 
-
-async def test_get_all_currency(db: Session) -> None:
-    currency = await create_random_currency(db)
-    currency_name_map = {"currencyName": currency.currencyName}
-    stored_currency = await crud.CRUD_currency.get(db, filter=currency_name_map)
-    assert stored_currency
-    all_currencys = crud.CRUD_currency.get(db)
-    assert stored_currency in all_currencys
+@pytest.fixture(scope="class")
+def object_generator_func() -> Dict:
+    return generate_random_currency
 
 
-async def test_update_currency(db: Session) -> None:
-    currency = await create_random_currency(db)
-    currency_name_map = {"currencyName": currency.currencyName}
-    stored_currency = await crud.CRUD_currency.get(db, filter=currency_name_map)
-    random_currency_name = random_lower_string()
-    random_icon_url = random_url()
-    random_valueInChaos = random_float()
-    currency_update = CurrencyUpdate(
-        currencyName=random_currency_name,
-        valueInChaos=random_valueInChaos,
-        iconUrl=random_icon_url,
-    )
-    updated_currency = await crud.CRUD_currency.update(
-        db, db_obj=stored_currency, obj_in=currency_update
-    )
-    assert updated_currency
-    assert updated_currency.currencyName == random_currency_name
-    assert updated_currency.valueInChaos == random_valueInChaos
-    assert updated_currency.iconUrl == random_icon_url
+@pytest.fixture(scope="class")
+def crud_instance() -> CRUDBase:
+    return CRUD_currency
 
 
-async def test_delete_currency(db: Session) -> None:
-    currency = await create_random_currency(db)
-    currency_name_map = {"currencyName": currency.currencyName}
-    stored_currency = await crud.CRUD_currency.get(db, filter=currency_name_map)
-    deleted_currency = await crud.CRUD_currency.remove(db, filter=currency_name_map)
-    with pytest.raises(HTTPException) as error_info:
-        await crud.CRUD_account.get(db, filter=currency_name_map)
-        assert error_info.value.status_code == 404
-    assert deleted_currency
-    assert deleted_currency.currencyName == stored_currency.currencyName
-    assert deleted_currency.valueInChaos == stored_currency.valueInChaos
-    assert deleted_currency.iconUrl == stored_currency.iconUrl
+# Instantiate TestCRUD class
+test_crud_instance = TestCRUD()

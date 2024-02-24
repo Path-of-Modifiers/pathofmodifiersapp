@@ -11,7 +11,15 @@ from app.tests.utils.utils import (
     random_int,
     random_bool,
 )
+from app.tests.crud.test_crud import TestCRUD
 
+
+@pytest.fixture(scope="session")
+def db() -> Generator:
+    with Session(engine) as session:
+        yield session
+    session.rollback()
+    session.close()
 
 def generate_random_modifier() -> Dict:
     modifierId = random_int()
@@ -83,3 +91,6 @@ def main_key() -> str:
 @pytest.fixture(scope="class")
 def crud_instance() -> CRUDBase:
     return CRUD_modifier
+
+
+test_crud_instance = TestCRUD()
