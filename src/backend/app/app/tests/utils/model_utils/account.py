@@ -33,8 +33,8 @@ async def get_random_account(session: Session) -> Account:
     # Use func.random() for databases that support it (e.g., PostgreSQL)
     # For SQLite, you can use func.random() as well. For MySQL, use func.rand()
     # It returns random number between 0 and 1
-    random_account = await session.query(Account).order_by(func.random()).first()
-    
+    random_account = await crud.CRUD_account.get_random(session)
+
     if random_account:
         print(
             f"Test utils found already existing account. random_account.accountName: {random_account.accountName}"
