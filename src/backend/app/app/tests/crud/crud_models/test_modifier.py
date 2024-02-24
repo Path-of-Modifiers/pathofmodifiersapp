@@ -13,14 +13,6 @@ from app.tests.utils.utils import (
 )
 
 
-@pytest.fixture(scope="session")
-def db() -> Generator:
-    with Session(engine) as session:
-        yield session
-    session.rollback()
-    session.close()
-
-
 def generate_random_modifier() -> Dict:
     modifierId = random_int()
     position = random_int(small_int=True)
