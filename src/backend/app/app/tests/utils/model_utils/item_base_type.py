@@ -8,8 +8,8 @@ from sqlalchemy.orm import Session
 
 from app import crud
 from app.core.models.models import ItemBaseType
-from backend.app.app.tests.utils.utils import random_lower_string
-from backend.app.app.core.schemas.item_base_type import ItemBaseTypeCreate
+from app.tests.utils.utils import random_lower_string
+from app.core.schemas.item_base_type import ItemBaseTypeCreate
 
 
 async def create_random_itemBaseType(db: Session) -> ItemBaseType:

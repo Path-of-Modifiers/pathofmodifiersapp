@@ -9,9 +9,9 @@ from sqlalchemy.orm import Session
 from app import crud
 from app.core.models.models import Modifier
 from app.core.schemas.modifier import ModifierCreate
-from backend.app.app.tests.utils.utils import random_lower_string
-from backend.app.app.tests.utils.utils import random_int
-from backend.app.app.tests.utils.utils import random_bool
+from app.tests.utils.utils import random_lower_string
+from app.tests.utils.utils import random_int
+from app.tests.utils.utils import random_bool
 
 
 async def create_random_modifier(db: Session) -> Modifier:
