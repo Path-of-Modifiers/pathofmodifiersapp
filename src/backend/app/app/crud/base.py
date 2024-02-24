@@ -3,6 +3,7 @@ from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
 from fastapi.encoders import jsonable_encoder
 from fastapi import HTTPException
 from pydantic import BaseModel, TypeAdapter
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 
@@ -44,6 +45,10 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             )
         if len(db_obj) == 1:
             db_obj = db_obj[0]
+        return self.validate(db_obj)
+    
+    async def get_random(self, db: Session) -> Optional[ModelType]:
+        db_obj = db.query(self.model).order_by(func.random()).first()
         return self.validate(db_obj)
 
     async def create(
