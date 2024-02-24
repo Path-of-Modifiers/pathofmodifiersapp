@@ -1,3 +1,4 @@
+import asyncio
 import math
 import pytest
 from typing import (
@@ -101,23 +102,20 @@ class TestCRUD:
     ) -> None:
         if main_key:
             # object_dict, object_in, object_out = await self._create_object(db)
-            object_one_dict, object_one_out, main_key_one_value = (
-                await self._create_object(
-                    db, crud_instance, object_generator_func, main_key=main_key
-                )
-            )
+            object_one_dict, _, main_key_one_value = await self._create_object(
+                db, crud_instance, object_generator_func, main_key=main_key
+            )  # Create the first object
 
             object_one_map = {main_key: main_key_one_value}
 
-            object_two_dict, object_two_out, main_key_two_value = (
-                await self._create_object(
-                    db,
-                    crud_instance,
-                    object_generator_func,
-                    main_key=main_key,
-                    main_key_value=main_key_one_value,
-                )
-            )
+            object_two_dict, _, _ = await self._create_object(
+                db,
+                crud_instance,
+                object_generator_func,
+                main_key=main_key,
+                main_key_value=main_key_one_value,
+            )  # Create the second object with the same main_key_value
+
             total_object_dicts = [object_one_dict, object_two_dict]
             stored_get_object = await crud_instance.get(db=db, filter=object_one_map)
             await self._test_object(stored_get_object, total_object_dicts)
@@ -164,43 +162,22 @@ class TestCRUD:
     ) -> None:
         initial_object_count = len(await crud_instance.get(db))
 
-        multiple_object_dict = []
-        multiple_object_out = []
-
-        # if main_key != "":
-        #     main_object_dict, main_object_out, main_key_value = (
-        #         await self._create_object(
-        #             db, crud_instance, object_generator_func, main_key=main_key
-        #         )
-        #     )  # Get the main_key_value to use for the rest of the objects
-        #     multiple_object_dict.append(main_object_dict)
-        #     multiple_object_out.append(main_object_out)
-        #     main_key_object_count = 3
-        #     for _ in range(
-        #         main_key_object_count
-        #     ):  # Invoke the main_key_value 3 times to test if it works for 3 objects with same main_key_value
-        #         object_dict, object_out, new_main_key_value = await self._create_object(
-        #             db,
-        #             crud_instance,
-        #             object_generator_func,
-        #             main_key=main_key,
-        #             main_key_value=main_key_value,
-        #         )
-        #         multiple_object_dict.append(object_dict)
-        #         multiple_object_out.append(object_out)
-
-        for _ in range(count):
-            object_dict, object_out, = await self._create_object(
-                db, crud_instance, object_generator_func
+        multiple_object_dict, multiple_object_out = zip(
+            *await asyncio.gather(
+                *(
+                    self._create_object(db, crud_instance, object_generator_func)
+                    for _ in range(count)
+                )
             )
-            multiple_object_dict.append(object_dict)
-            multiple_object_out.append(object_out)
+        )
+
+        # Ensure multiple_object_dict is a list of Dict types
+        multiple_object_dict: List[Dict] = list(multiple_object_dict)
+
+        # Ensure multiple_object_out is a list of ModelType
+        multiple_object_out: List[ModelType] = list(multiple_object_out)
+
         final_object_count = len(await crud_instance.get(db))
-        # if main_key != "":
-        #     assert (
-        #         final_object_count
-        #         == initial_object_count + count + main_key_object_count + 1
-        #     )  # +1 for the main_key_object
-        # else:
+
         assert final_object_count == initial_object_count + count
         await self._test_object(multiple_object_out, multiple_object_dict)
