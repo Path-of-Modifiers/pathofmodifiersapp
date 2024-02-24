@@ -62,27 +62,42 @@ class TestCRUD:
         object_generator_func,
         *,
         # count: Optional[int] = None,
-        main_key: Optional[str] = None
+        main_key: Optional[str] = "",
+        main_key_value: Optional[Any] = None,
     ) -> Tuple[Dict, CreateSchemaType, ModelType]:
         object_dict = object_generator_func()
         # createType: Type[CreateSchemaType] = CreateSchemaType
-
-        if main_key is not None:
-            all_keys = [key.name for key in inspect(ModelType).primary_key]
-            secondary_keys = [key for key in all_keys if key != main_key]
-
-        object_in = crud_instance.create_schema(**object_dict)
-
-        object_out = await crud_instance.create(db=db, obj_in=object_in)
         
-        if main_key is not None:
-            all_keys = [key.name for key in inspect(ModelType).primary_key]
-            secondary_keys = [key for key in all_keys if key != main_key]
-            # for field in object_keys:
-                
-            return object_dict, object_out, secondary_keys
+        if main_key != "" and main_key_value is None: # If main_key is not None, then we need to get the value of the main_key
+            main_key_value = object_dict[main_key]
+        
+        print("MAIN KEY VALUE CREATE: ", main_key_value)
+        print("MAIN KEY CREATE: ", main_key)
+        if main_key_value is not None and main_key: # If main_key_value is not None, then we need to add it to the object_dict
+            object_dict[main_key] = main_key_value
 
-        return object_dict, object_out
+        object_in = crud_instance.create_schema(
+            **object_dict
+        )  # Map object_dict to the create_schema
+
+
+        object_out = await crud_instance.create(
+            db=db, obj_in=object_in
+        )  # Create the object in the database
+
+        # if main_key is not None:
+        #     all_keys = [key.name for key in inspect(ModelType).primary_key]
+        #     secondary_keys = [key for key in all_keys if key != main_key]
+        #     for field in object_dict:
+
+        # for field in object_keys:
+        # print("OBJECT DICT: ", object_dict)
+        # print("OBJECT OUT: ", object_out)
+        print("HEYHEY", main_key_value)
+        if main_key_value is not None:
+            return object_dict, object_out, main_key_value
+        else:
+            return object_dict, object_out
         # return object_dict, object_in, object_out
 
     @pytest.mark.asyncio
@@ -139,6 +154,7 @@ class TestCRUD:
             key.name: getattr(object_out, key.name)
             for key in object_out.__table__.primary_key
         }
+        print("OBJECT MAP: ", object_map)
 
         stored_get_object = await crud_instance.get(db=db, filter=object_map)
 
@@ -151,7 +167,7 @@ class TestCRUD:
         crud_instance: CRUDBase,
         object_generator_func: Callable[[], Dict],
     ) -> None:
-        object_dict, object_in, object_out = await self._create_object(
+        object_dict, object_out = await self._create_object(
             db, crud_instance, object_generator_func
         )
         await self._test_object(object_out, object_dict)
@@ -162,23 +178,43 @@ class TestCRUD:
         db: Session,
         crud_instance: CRUDBase,
         object_generator_func: Callable[[], Dict],
+        main_key: Optional[str],
         count: int = 5,
-        main_key: Optional[str] = None,
     ) -> None:
-        initial_object_count = len(await self.crud_instance.get(db))
+        initial_object_count = len(await crud_instance.get(db))
         # object_dict, object_in, object_out = await self._create_object(
         #     db, crud_instance, object_generator_func, count=count, main_key=main_key
         # )
-        if main_key is not None:
-            object_dict, object_out, secondary_keys = await self._create_object(
-                db, crud_instance, object_generator_func, main_key=main_key
-            )
-            secondary_keys[0] 
+        
+        multiple_object_dict = []
+        multiple_object_out = []
+
+        if main_key != "":
+            main_object_dict, main_object_out, main_key_value = (
+                await self._create_object(db, crud_instance, object_generator_func, main_key=main_key)
+            ) # Get the main_key_value to use for the rest of the objects
+            multiple_object_dict.append(main_object_dict)
+            multiple_object_out.append(main_object_out)
+            for _ in range(count - 1): # Create the rest of the objects with the same main_key_value
+                object_dict, object_out, new_main_key_value = await self._create_object(
+                    db,
+                    crud_instance,
+                    object_generator_func,
+                    main_key=main_key,
+                    main_key_value=main_key_value,
+                )
+                multiple_object_dict.append(object_dict)
+                multiple_object_out.append(object_out)
+
         else:
-            object_dict, object_out = await self._create_object(
-                db, crud_instance, object_generator_func, main_key=main_key
-            )
-        final_object_count = len(await crud_instance.get(db))
+            for _ in range(count):
+                print("yo")
+                object_dict, object_out = await self._create_object(
+                    db, crud_instance, object_generator_func
+                )
+                multiple_object_dict.append(object_dict)
+                multiple_object_out.append(object_out)
+        final_object_count = len(await crud_instance.get(db)) 
 
         assert final_object_count == initial_object_count + count
-        await self._test_object(object_dict, object_out)
+        await self._test_object(multiple_object_out, multiple_object_dict)
