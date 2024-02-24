@@ -67,19 +67,22 @@ class TestCRUD:
     ) -> Tuple[Dict, CreateSchemaType, ModelType]:
         object_dict = object_generator_func()
         # createType: Type[CreateSchemaType] = CreateSchemaType
-        
-        if main_key != "" and main_key_value is None: # If main_key is not None, then we need to get the value of the main_key
+
+        if (
+            main_key != "" and main_key_value is None
+        ):  # If main_key is not None, then we need to get the value of the main_key
             main_key_value = object_dict[main_key]
-        
+
         print("MAIN KEY VALUE CREATE: ", main_key_value)
         print("MAIN KEY CREATE: ", main_key)
-        if main_key_value is not None and main_key: # If main_key_value is not None, then we need to add it to the object_dict
+        if (
+            main_key_value is not None and main_key
+        ):  # If main_key_value is not None, then we need to add it to the object_dict
             object_dict[main_key] = main_key_value
 
         object_in = crud_instance.create_schema(
             **object_dict
         )  # Map object_dict to the create_schema
-
 
         object_out = await crud_instance.create(
             db=db, obj_in=object_in
@@ -185,17 +188,22 @@ class TestCRUD:
         # object_dict, object_in, object_out = await self._create_object(
         #     db, crud_instance, object_generator_func, count=count, main_key=main_key
         # )
-        
+
         multiple_object_dict = []
         multiple_object_out = []
 
         if main_key != "":
             main_object_dict, main_object_out, main_key_value = (
-                await self._create_object(db, crud_instance, object_generator_func, main_key=main_key)
-            ) # Get the main_key_value to use for the rest of the objects
+                await self._create_object(
+                    db, crud_instance, object_generator_func, main_key=main_key
+                )
+            )  # Get the main_key_value to use for the rest of the objects
             multiple_object_dict.append(main_object_dict)
             multiple_object_out.append(main_object_out)
-            for _ in range(count - 1): # Create the rest of the objects with the same main_key_value
+            main_key_object_count = 3
+            for _ in range(
+                main_key_object_count
+            ):  # Invoke the main_key_value 3 times to test if it works for 3 objects with same main_key_value
                 object_dict, object_out, new_main_key_value = await self._create_object(
                     db,
                     crud_instance,
@@ -206,15 +214,18 @@ class TestCRUD:
                 multiple_object_dict.append(object_dict)
                 multiple_object_out.append(object_out)
 
+        for _ in range(count):
+            object_dict, object_out = await self._create_object(
+                db, crud_instance, object_generator_func
+            )
+            multiple_object_dict.append(object_dict)
+            multiple_object_out.append(object_out)
+        final_object_count = len(await crud_instance.get(db))
+        if main_key != "":
+            assert (
+                final_object_count
+                == initial_object_count + count + main_key_object_count + 1
+            )  # +1 for the main_key_object
         else:
-            for _ in range(count):
-                print("yo")
-                object_dict, object_out = await self._create_object(
-                    db, crud_instance, object_generator_func
-                )
-                multiple_object_dict.append(object_dict)
-                multiple_object_out.append(object_out)
-        final_object_count = len(await crud_instance.get(db)) 
-
-        assert final_object_count == initial_object_count + count
+            assert final_object_count == initial_object_count + count
         await self._test_object(multiple_object_out, multiple_object_dict)

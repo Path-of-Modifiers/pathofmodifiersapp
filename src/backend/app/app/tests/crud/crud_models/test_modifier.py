@@ -94,7 +94,3 @@ def main_key() -> str:
 @pytest.fixture(scope="class")
 def crud_instance() -> CRUDBase:
     return CRUD_modifier
-
-
-class TestModifier(TestCRUD):
-    pass
