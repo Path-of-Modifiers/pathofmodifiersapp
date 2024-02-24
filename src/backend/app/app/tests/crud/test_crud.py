@@ -29,13 +29,15 @@ class TestCRUD:
         self,
         db,
         crud_instance,
-        object_generator_func: Callable[[], Union[Dict, List[Dict]]],
+        object_generator_func: Callable[[], Dict],
         *,
         main_key: Optional[str] = "",
         main_key_value: Optional[Any] = None,
     ) -> Tuple[Dict, ModelType, Optional[Any]]:
-        object_dict = object_generator_func()
-
+        object_dict = await object_generator_func()
+        
+        print("HEYHEY", object_dict["accountName"])
+        
         if (
             main_key != "" and main_key_value is None
         ):  # If main_key is not None, then we need to get the value of the main_key
@@ -45,7 +47,15 @@ class TestCRUD:
             main_key_value is not None and main_key
         ):  # If main_key_value is not None, then we need to add it to the object_dict
             object_dict[main_key] = main_key_value
-
+            
+        # if isinstance(object_dict, List):
+        #     object_in = [
+        #         crud_instance.create_schema(
+        #             **obj
+        #         )  # Map object_dict to the create_schema
+        #         for obj in object_dict
+        #     ]
+            
         object_in = crud_instance.create_schema(
             **object_dict
         )  # Map object_dict to the create_schema
@@ -89,7 +99,7 @@ class TestCRUD:
         self,
         db: Session,
         crud_instance: CRUDBase,
-        object_generator_func: Callable[[], Dict],
+        object_generator_func: Callable[[],Dict],
         main_key: Optional[str],
     ) -> None:
         if main_key:
