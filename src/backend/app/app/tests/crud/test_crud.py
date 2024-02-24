@@ -136,7 +136,6 @@ class TestCRUD:
             key.name: getattr(object_out, key.name)
             for key in object_out.__table__.primary_key
         }
-        print("OBJECT MAP: ", object_map)
 
         stored_get_object = await crud_instance.get(db=db, filter=object_map)
 
