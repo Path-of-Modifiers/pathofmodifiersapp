@@ -1,5 +1,5 @@
 import asyncio
-from typing import Dict
+from typing import Dict, Tuple
 from sqlalchemy.orm import Session
 
 from app import crud
@@ -14,7 +14,6 @@ from app.tests.utils.utils import (
 
 
 def create_random_modifier_dict() -> Dict:
-    modifierId = random_int()
     position = random_int(small_int=True)
     static = random_bool()
     if not static:
@@ -49,7 +48,6 @@ def create_random_modifier_dict() -> Dict:
     veiled = random_bool()
 
     modifier_dict = {
-        "modifierId": modifierId,
         "position": position,
         "minRoll": minRoll,
         "maxRoll": maxRoll,
@@ -70,8 +68,8 @@ def create_random_modifier_dict() -> Dict:
     return modifier_dict
 
 
-async def generate_random_modifier(db: Session) -> Modifier:
-    modifier_dict = await create_random_modifier_dict()
+async def generate_random_modifier(db: Session) -> Tuple[Dict, Modifier]:
+    modifier_dict = create_random_modifier_dict()
     modifier_create = ModifierCreate(**modifier_dict)
     modifier = await crud.CRUD_modifier.create(db, obj_in=modifier_create)
     return modifier_dict, modifier

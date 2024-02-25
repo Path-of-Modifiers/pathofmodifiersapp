@@ -6,7 +6,7 @@ import pytest
 from app.crud import CRUD_currency
 from app.core.models.database import engine
 from app.crud.base import CRUDBase
-import app.tests.crud.test_crud as test_crud
+import app.tests.crud.crud_test_base as test_crud
 from app.tests.utils.model_utils.currency import generate_random_currency
 
 

@@ -1,5 +1,5 @@
 import asyncio
-from typing import Dict
+from typing import Dict, Tuple
 from sqlalchemy.orm import Session
 
 from app import crud
@@ -28,7 +28,7 @@ async def create_random_stash_dict(db: Session) -> Dict:
     return stash
 
 
-async def generate_random_stash(db: Session) -> Stash:
+async def generate_random_stash(db: Session) -> Tuple[Dict, Stash]:
     stash_dict = await create_random_stash_dict(db)
     stash_create = StashCreate(**stash_dict)
 
