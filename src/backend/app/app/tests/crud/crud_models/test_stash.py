@@ -27,16 +27,14 @@ def db() -> Generator:
 
 async def generate_random_account() -> Callable[[], str]:
     account_map = {"accountName": "acopcyzatrjpfoqrhhdzaszruhhpidec"}
-    accountName = (await crud.CRUD_account.get(Session, filter=account_map)).accountName
-    print(f"HEYHEY: {accountName}")
-    return accountName
+    account = await crud.CRUD_account.get(db=db, filter=account_map)
+    return account
 
 
-async def generate_random_stash() -> Dict:
-
-    randomAccountName = await generate_random_account()
+def generate_random_stash() -> Dict:
     
-    print(f"HEYHEY: {randomAccountName}")
+    randomAccount = asyncio.run(generate_random_account())
+    print(f"HEYHEY: {randomAccount}")
 
     stashId = random_lower_string()
     public = random_bool()
@@ -44,7 +42,7 @@ async def generate_random_stash() -> Dict:
 
     stash_dict = {
         "stashId": stashId,
-        "accountName": randomAccountName,
+        "accountName": randomAccount.accountName,
         "public": public,
         "league": league,
     }
