@@ -24,4 +24,4 @@ async def generate_random_account(db: Session) -> Account:
     account_dict = create_random_account_dict()
     account_create = AccountCreate(**account_dict)
     account = await crud.CRUD_account.create(db, obj_in=account_create)
-    return account
+    return account_dict, account

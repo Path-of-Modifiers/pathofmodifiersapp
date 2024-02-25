@@ -37,4 +37,4 @@ async def generate_random_item_modifier(db: Session) -> ItemModifier:
     item_modifier = await crud.CRUD_item_modifier.create(
         db, obj_in=item_modifier_create
     )
-    return item_modifier
+    return item_modifier_dict, item_modifier

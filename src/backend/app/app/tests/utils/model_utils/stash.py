@@ -29,10 +29,8 @@ async def create_random_stash_dict(db: Session) -> Dict:
 
 
 async def generate_random_stash(db: Session) -> Stash:
-
-    randomAccount = await create_random_stash_dict(db)
     stash_dict = create_random_stash_dict(db)
     stash_create = StashCreate(**stash_dict)
 
     stash = await crud.CRUD_stash.create(db, obj_in=stash_create)
-    return stash
+    return stash_dict, stash

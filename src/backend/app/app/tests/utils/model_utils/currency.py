@@ -26,4 +26,4 @@ async def generate_random_currency(db: Session) -> Currency:
     currency_dict = create_random_currency_dict()
     currency_create = CurrencyCreate(**currency_dict)
     currency = await crud.CRUD_currency.create(db, obj_in=currency_create)
-    return currency
+    return currency_dict, currency

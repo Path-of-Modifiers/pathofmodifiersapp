@@ -97,4 +97,4 @@ async def generate_random_item(db: Session) -> Item:
     item_dict = create_random_item_dict()
     item_create = ItemCreate(**item_dict)
     item = await crud.CRUD_item.create(db, obj_in=item_create)
-    return item
+    return item_dict, item
