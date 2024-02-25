@@ -1,5 +1,5 @@
 import asyncio
-from typing import Dict
+from typing import Dict, Tuple
 from sqlalchemy.orm import Session
 
 from app import crud
@@ -20,7 +20,7 @@ def create_random_account_dict() -> Dict:
     return account
 
 
-async def generate_random_account(db: Session) -> Account:
+async def generate_random_account(db: Session) -> Tuple[Dict, Account]:
     account_dict = create_random_account_dict()
     account_create = AccountCreate(**account_dict)
     account = await crud.CRUD_account.create(db, obj_in=account_create)

@@ -1,5 +1,5 @@
 import asyncio
-from typing import Dict
+from typing import Dict, Tuple
 from sqlalchemy.orm import Session
 
 from app import crud
@@ -29,7 +29,7 @@ async def create_random_item_dict(db: Session) -> Dict:
     identified = random_bool()
     itemLevel = random_int(small_int=True)
     forumNote = random_lower_string()
-    currencyAmount = random_float()
+    currencyAmount = random_float(small_float=True)
     corrupted = random_bool()
     delve = random_bool()
     fractured = random_bool()
@@ -93,8 +93,8 @@ async def create_random_item_dict(db: Session) -> Dict:
     return item
 
 
-async def generate_random_item(db: Session) -> Item:
-    item_dict = await create_random_item_dict()
+async def generate_random_item(db: Session) -> Tuple[Dict, Item]:
+    item_dict = await create_random_item_dict(db)
     item_create = ItemCreate(**item_dict)
     item = await crud.CRUD_item.create(db, obj_in=item_create)
     return item_dict, item

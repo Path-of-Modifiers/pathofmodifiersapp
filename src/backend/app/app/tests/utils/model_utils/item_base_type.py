@@ -1,5 +1,5 @@
 import asyncio
-from typing import Dict
+from typing import Dict, Tuple
 from sqlalchemy.orm import Session
 
 from app import crud
@@ -22,7 +22,7 @@ def create_random_item_base_type_dict() -> Dict:
     return item_base_type
 
 
-async def generate_random_item_base_type(db: Session) -> ItemBaseType:
+async def generate_random_item_base_type(db: Session) -> Tuple[Dict, ItemBaseType]:
     item_base_type_dict = create_random_item_base_type_dict()
     item_base_type_create = ItemBaseTypeCreate(**item_base_type_dict)
     item_base_type = await crud.CRUD_itemBaseType.create(

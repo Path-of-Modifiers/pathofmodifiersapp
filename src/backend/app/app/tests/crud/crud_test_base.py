@@ -24,11 +24,8 @@ class TestCRUD:
         *,
         main_key: Optional[str] = "",
         main_key_value: Optional[Any] = None,
-    ) -> Tuple[Dict, ModelType, Optional[Any]]:
-        if asyncio.iscoroutinefunction(object_generator_func):
-            object_dict, object_out = await object_generator_func(db)
-        else:
-            object_dict, object_out = object_generator_func()
+    ) -> Tuple[Dict, ModelType]:
+        object_dict, object_out = await object_generator_func(db)
 
         # print("HEYHEY", object_dict["accountName"])
 
@@ -50,10 +47,12 @@ class TestCRUD:
         #         for obj in object_dict
         #     ]
 
-        if main_key_value is not None:
-            return object_dict, object_out, main_key_value
-        else:
-            return object_dict, object_out
+        # if main_key_value is not None:
+        #     return object_dict, object_out, main_key_value
+        # else:
+        #     return object_dict, object_out
+
+        return object_dict, object_out
 
     @pytest.mark.asyncio
     async def _test_object(
