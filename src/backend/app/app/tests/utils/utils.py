@@ -35,7 +35,7 @@ def random_float(
     if small_float:
         random_float = random.uniform(1, 32767)
     else:
-        random_float = random.uniform(1, 3.4 * 10**50)
+        random_float = random.uniform(1, 10**10)
     if negative:
         random_float = random_float * -1
     return random_float
