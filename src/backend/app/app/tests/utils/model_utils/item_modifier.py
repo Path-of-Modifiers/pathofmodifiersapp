@@ -7,8 +7,8 @@ from app.core.models.models import ItemModifier
 from app.core.schemas.item_modifier import ItemModifierCreate
 from app.tests.utils.utils import random_int
 
-from item import generate_random_item
-from modifier import generate_random_modifier
+from app.tests.utils.model_utils.item import generate_random_item
+from app.tests.utils.model_utils.modifier import generate_random_modifier
 
 
 async def create_random_item_modifier_dict(db: Session) -> Dict:
