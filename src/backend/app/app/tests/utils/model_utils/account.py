@@ -1,47 +1,27 @@
 import asyncio
-from typing import List
-from sqlalchemy import func
-from app import crud
-
+from typing import Dict
 from sqlalchemy.orm import Session
 
 from app import crud
-from app.tests.utils.utils import random_lower_string
-from app.tests.utils.utils import random_bool
 from app.core.models.models import Account
 from app.core.schemas.account import AccountCreate
+from utils import random_lower_string, random_bool
 
 
-async def create_random_account(db: Session) -> Account:
+def create_random_account_dict() -> Dict:
     accountName = random_lower_string()
     isBanned = random_bool()
 
-    account = AccountCreate(
-        accountName=accountName,
-        isBanned=isBanned,
-    )
+    account = {
+        "accountName": accountName,
+        "isBanned": isBanned,
+    }
 
     return account
 
 
-async def create_random_account_list(db: Session, count: int = 10) -> List[Account]:
-    accounts = [create_random_account(db) for _ in range(count)]
-    return await asyncio.gather(*accounts)
-
-
-async def get_random_account(session: Session) -> Account:
-    # Use func.random() for databases that support it (e.g., PostgreSQL)
-    # For SQLite, you can use func.random() as well. For MySQL, use func.rand()
-    # It returns random number between 0 and 1
-    random_account = await crud.CRUD_account.get_random(session)
-
-    if random_account:
-        print(
-            f"Test utils found already existing account. random_account.accountName: {random_account.accountName}"
-        )
-    else:
-        random_account = create_random_account(session)
-        print(
-            f"Test utils created new account. random_account.accountName: {random_account.accountName}"
-        )
-    return random_account
+async def generate_random_account(db: Session) -> Account:
+    account_dict = create_random_account_dict()
+    account_create = AccountCreate(**account_dict)
+    account = await crud.CRUD_account.create(db, obj_in=account_create)
+    return account

@@ -1,44 +1,29 @@
 import asyncio
-from typing import List
-
-from sqlalchemy import func
-from app import crud
-
+from typing import Dict
 from sqlalchemy.orm import Session
 
 from app import crud
 from app.core.models.models import Currency
 from app.core.schemas import CurrencyCreate
-from app.tests.utils.utils import random_lower_string
-from app.tests.utils.utils import random_float
-from app.tests.utils.utils import random_url
+from app.tests.utils.utils import random_lower_string, random_float, random_url
 
 
-async def create_random_currency(db: Session) -> Currency:
+def create_random_currency_dict() -> Dict:
     currencyName = random_lower_string()
     valueInChaos = random_float()
     iconUrl = random_url()
 
-    currency = CurrencyCreate(
-        currencyName=currencyName,
-        valueInChaos=valueInChaos,
-        iconUrl=iconUrl,
-    )
-    return await crud.CRUD_currency.create(db, obj_in=currency)
+    currency = {
+        "currencyName": currencyName,
+        "valueInChaos": valueInChaos,
+        "iconUrl": iconUrl,
+    }
+
+    return currency
 
 
-async def create_random_currency_list(db: Session, count: int = 10) -> List[Currency]:
-    currencies = [create_random_currency(db) for _ in range(count)]
-    return await asyncio.gather(*currencies)
-
-
-async def get_random_currency(session: Session) -> Currency:
-    random_currency = session.query(Currency).order_by(func.random()).first()
-
-    if random_currency:
-        print(
-            f"Found already existing currency. random_currency.currencyName: {random_currency.currencyName}"
-        )
-    else:
-        random_currency = create_random_currency(session)
-    return random_currency
+async def generate_random_currency(db: Session) -> Currency:
+    currency_dict = create_random_currency_dict()
+    currency_create = CurrencyCreate(**currency_dict)
+    currency = await crud.CRUD_currency.create(db, obj_in=currency_create)
+    return currency

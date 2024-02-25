@@ -1,43 +1,32 @@
 import asyncio
-from typing import List
-
-from sqlalchemy import func
-from app import crud
-
+from typing import Dict
 from sqlalchemy.orm import Session
 
 from app import crud
 from app.core.models.models import ItemBaseType
-from app.tests.utils.utils import random_lower_string
 from app.core.schemas.item_base_type import ItemBaseTypeCreate
+from app.tests.utils.utils import random_lower_string
 
 
-async def create_random_itemBaseType(db: Session) -> ItemBaseType:
+def create_random_item_base_type_dict() -> Dict:
     baseType = random_lower_string()
     category = random_lower_string()
     subCategory = random_lower_string()
 
-    item_base_type = ItemBaseTypeCreate(
-        baseType=baseType, category=category, subCategory=subCategory
+    item_base_type = {
+        "baseType": baseType,
+        "category": category,
+        "subCategory": subCategory,
+    }
+
+    return item_base_type
+
+
+async def generate_random_item_base_type(db: Session) -> ItemBaseType:
+    item_base_type = create_random_item_base_type_dict()
+    item_base_type_create = ItemBaseTypeCreate(**item_base_type)
+    item_base_type = await crud.CRUD_itemBaseType.create(
+        db, obj_in=item_base_type_create
     )
 
-    return await crud.CRUD_itemBaseType.create(db, obj_in=item_base_type)
-
-
-async def create_random_itemBaseType_list(
-    db: Session, count: int = 10
-) -> List[ItemBaseType]:
-    itemBaseTypes = [create_random_itemBaseType(db) for _ in range(count)]
-    return await asyncio.gather(*itemBaseTypes)
-
-
-async def get_random_itemBaseType(session: Session) -> ItemBaseType:
-    random_itemBaseType = session.query(ItemBaseType).order_by(func.random()).first()
-
-    if random_itemBaseType:
-        print(
-            f"Found already existing itemBaseType. random_itemBaseType.baseType: {random_itemBaseType.baseType}"
-        )
-    else:
-        random_itemBaseType = create_random_itemBaseType(session)
-    return random_itemBaseType
+    return item_base_type

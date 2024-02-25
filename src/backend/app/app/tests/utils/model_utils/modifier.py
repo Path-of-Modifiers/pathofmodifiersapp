@@ -1,28 +1,44 @@
 import asyncio
-from typing import List
-
-from sqlalchemy import func
-from app import crud
-
+from typing import Dict
 from sqlalchemy.orm import Session
 
 from app import crud
 from app.core.models.models import Modifier
 from app.core.schemas.modifier import ModifierCreate
-from app.tests.utils.utils import random_lower_string
-from app.tests.utils.utils import random_int
-from app.tests.utils.utils import random_bool
+from app.tests.utils.utils import (
+    random_lower_string,
+    random_int,
+    random_bool,
+    random_float,
+)
 
 
-async def create_random_modifier(db: Session) -> Modifier:
+def create_random_modifier_dict() -> Dict:
     modifierId = random_int()
-    position = random_int()
-    minRoll = random_int()
-    maxRoll = random_int()
-    textRoll = random_lower_string()
+    position = random_int(small_int=True)
     static = random_bool()
-    effect = random_lower_string()
-    regex = random_lower_string()
+    if not static:
+        if random_bool():  # Random chance to choose numeric rolls or text rolls
+            minRoll = random_float(small_float=True)
+            maxRoll = random_float(small_float=True)
+            if minRoll > maxRoll:
+                minRoll, maxRoll = maxRoll, minRoll
+            textRoll = None
+        else:
+            minRoll = None
+            maxRoll = None
+            textRoll = random_lower_string()
+        effect = (
+            random_lower_string() + "#"
+        )  # "#" is required if the modifier is not static
+        regex = random_lower_string()
+    else:
+        minRoll = None
+        maxRoll = None
+        textRoll = None
+        effect = random_lower_string()
+        regex = None
+
     implicit = random_bool()
     explicit = random_bool()
     delve = random_bool()
@@ -32,40 +48,30 @@ async def create_random_modifier(db: Session) -> Modifier:
     enchanted = random_bool()
     veiled = random_bool()
 
-    modifier = ModifierCreate(
-        modifierId=modifierId,
-        position=position,
-        minRoll=minRoll,
-        maxRoll=maxRoll,
-        textRoll=textRoll,
-        static=static,
-        effect=effect,
-        regex=regex,
-        implicit=implicit,
-        explicit=explicit,
-        delve=delve,
-        fractured=fractured,
-        synthesized=synthesized,
-        corrupted=corrupted,
-        enchanted=enchanted,
-        veiled=veiled,
-    )
+    modifier_dict = {
+        "modifierId": modifierId,
+        "position": position,
+        "minRoll": minRoll,
+        "maxRoll": maxRoll,
+        "textRoll": textRoll,
+        "static": static,
+        "effect": effect,
+        "regex": regex,
+        "implicit": implicit,
+        "explicit": explicit,
+        "delve": delve,
+        "fractured": fractured,
+        "synthesized": synthesized,
+        "corrupted": corrupted,
+        "enchanted": enchanted,
+        "veiled": veiled,
+    }
 
-    return await crud.CRUD_modifier.create(db, obj_in=modifier)
-
-
-async def create_random_modifier_list(db: Session, count: int = 10) -> List[Modifier]:
-    modifiers = [create_random_modifier(db) for _ in range(count)]
-    return await asyncio.gather(*modifiers)
+    return modifier_dict
 
 
-async def get_random_modifier(session: Session) -> Modifier:
-    random_modifier = session.query(Modifier).order_by(func.random()).first()
-
-    if random_modifier:
-        print(
-            f"Found already existing modifier. random_modifier.modifierId: {random_modifier.modifierId}"
-        )
-    else:
-        random_modifier = create_random_modifier(session)
-    return random_modifier
+async def generate_random_modifier(db: Session) -> Modifier:
+    modifier_dict = create_random_modifier_dict()
+    modifier_create = ModifierCreate(**modifier_dict)
+    modifier = await crud.CRUD_modifier.create(db, obj_in=modifier_create)
+    return modifier
