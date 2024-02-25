@@ -23,10 +23,10 @@ def create_random_item_base_type_dict() -> Dict:
 
 
 async def generate_random_item_base_type(db: Session) -> ItemBaseType:
-    item_base_type = create_random_item_base_type_dict()
-    item_base_type_create = ItemBaseTypeCreate(**item_base_type)
+    item_base_type_dict = create_random_item_base_type_dict()
+    item_base_type_create = ItemBaseTypeCreate(**item_base_type_dict)
     item_base_type = await crud.CRUD_itemBaseType.create(
         db, obj_in=item_base_type_create
     )
 
-    return item_base_type
+    return item_base_type_dict, item_base_type
