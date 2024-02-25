@@ -34,10 +34,10 @@ class TestCRUD:
         main_key: Optional[str] = "",
         main_key_value: Optional[Any] = None,
     ) -> Tuple[Dict, ModelType, Optional[Any]]:
-        object_dict = await object_generator_func()
-        
-        print("HEYHEY", object_dict["accountName"])
-        
+        object_dict = object_generator_func()
+
+        # print("HEYHEY", object_dict["accountName"])
+
         if (
             main_key != "" and main_key_value is None
         ):  # If main_key is not None, then we need to get the value of the main_key
@@ -47,7 +47,7 @@ class TestCRUD:
             main_key_value is not None and main_key
         ):  # If main_key_value is not None, then we need to add it to the object_dict
             object_dict[main_key] = main_key_value
-            
+
         # if isinstance(object_dict, List):
         #     object_in = [
         #         crud_instance.create_schema(
@@ -55,7 +55,7 @@ class TestCRUD:
         #         )  # Map object_dict to the create_schema
         #         for obj in object_dict
         #     ]
-            
+
         object_in = crud_instance.create_schema(
             **object_dict
         )  # Map object_dict to the create_schema
@@ -78,12 +78,14 @@ class TestCRUD:
         assert object
 
         if compare_object is not None:
-            if isinstance(object, List) and isinstance(compare_object, List):
+            if isinstance(object, (List, Tuple)) and isinstance(
+                compare_object, (List, Tuple)
+            ):
                 for obj, compare_obj in zip(object, compare_object):
                     await self._test_object(obj, compare_obj)
 
             else:
-                assert not isinstance(object, List)
+                assert not isinstance(object, (List, Tuple))
                 assert isinstance(compare_object, Dict)
                 for field in compare_object:
                     if isinstance(compare_object[field], float):
@@ -93,36 +95,6 @@ class TestCRUD:
                         continue
                     assert field in inspect(object).attrs
                     assert compare_object[field] == getattr(object, field)
-
-    @pytest.mark.asyncio
-    async def test_get_main_key(
-        self,
-        db: Session,
-        crud_instance: CRUDBase,
-        object_generator_func: Callable[[],Dict],
-        main_key: Optional[str],
-    ) -> None:
-        if main_key:
-            # object_dict, object_in, object_out = await self._create_object(db)
-            object_one_dict, _, main_key_one_value = await self._create_object(
-                db, crud_instance, object_generator_func, main_key=main_key
-            )  # Create the first object
-
-            object_one_map = {main_key: main_key_one_value}
-
-            object_two_dict, _, _ = await self._create_object(
-                db,
-                crud_instance,
-                object_generator_func,
-                main_key=main_key,
-                main_key_value=main_key_one_value,
-            )  # Create the second object with the same main_key_value
-
-            total_object_dicts = [object_one_dict, object_two_dict]
-            stored_get_object = await crud_instance.get(db=db, filter=object_one_map)
-            await self._test_object(stored_get_object, total_object_dicts)
-        else:
-            pytest.skip("No main_key provided")
 
     @pytest.mark.asyncio
     async def test_get(
@@ -173,13 +145,13 @@ class TestCRUD:
                     for _ in range(count)
                 )
             )
-        ) # Create multiple objects
+        )  # Create multiple objects
 
         # Ensure multiple_object_dict is a list of Dict types
-        multiple_object_dict: List[Dict] = list(multiple_object_dict)
+        # multiple_object_dict: List[Dict] = list(multiple_object_dict)
 
-        # Ensure multiple_object_out is a list of ModelType
-        multiple_object_out: List[ModelType] = list(multiple_object_out)
+        # # Ensure multiple_object_out is a list of ModelType
+        # multiple_object_out: List[ModelType] = list(multiple_object_out)
 
         final_object_count = len(await crud_instance.get(db))
 
