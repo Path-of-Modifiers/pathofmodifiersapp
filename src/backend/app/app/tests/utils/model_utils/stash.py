@@ -7,7 +7,7 @@ from app.core.models.models import Stash
 from app.core.schemas.stash import StashCreate
 from app.tests.utils.utils import random_lower_string, random_bool
 
-from account import generate_random_account
+from app.tests.utils.model_utils.account import generate_random_account
 
 
 async def create_random_stash_dict(db: Session) -> Dict:

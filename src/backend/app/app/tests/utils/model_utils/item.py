@@ -14,9 +14,9 @@ from app.tests.utils.utils import (
     random_url,
 )
 
-from stash import generate_random_stash
-from item_base_type import generate_random_item_base_type
-from currency import generate_random_currency
+from app.tests.utils.model_utils.stash import generate_random_stash
+from app.tests.utils.model_utils.item_base_type import generate_random_item_base_type
+from app.tests.utils.model_utils.currency import generate_random_currency
 
 
 async def create_random_item_dict(db: Session) -> Dict:
