@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from typing import Dict, Generator
+from typing import Callable, Dict, Generator, List, Optional
 import pytest
 
 from app.crud import CRUD_modifier
@@ -11,7 +11,7 @@ from app.tests.utils.utils import (
     random_int,
     random_bool,
 )
-from app.tests.crud.test_crud import TestCRUD
+import app.tests.crud.test_crud as test_crud
 
 
 @pytest.fixture(scope="session")
@@ -93,4 +93,38 @@ def crud_instance() -> CRUDBase:
     return CRUD_modifier
 
 
-test_crud_instance = TestCRUD()
+
+class TestModifier(test_crud.TestCRUD):
+    
+    @pytest.mark.asyncio
+    async def test_get_main_key(
+        self,
+        db: Session,
+        crud_instance: CRUDBase,
+        object_generator_func: Callable[[],Dict],
+        main_key: Optional[str],
+    ) -> None:
+        if main_key:
+            # object_dict, object_in, object_out = await self._create_object(db)
+            object_one_dict, _, main_key_one_value = await self._create_object(
+                db, crud_instance, object_generator_func, main_key=main_key
+            )  # Create the first object
+
+            object_one_map = {main_key: main_key_one_value}
+
+            object_two_dict, _, _ = await self._create_object(
+                db,
+                crud_instance,
+                object_generator_func,
+                main_key=main_key,
+                main_key_value=main_key_one_value,
+            )  # Create the second object with the same main_key_value
+
+            total_object_dicts = [object_one_dict, object_two_dict]
+            stored_get_object = await crud_instance.get(db=db, filter=object_one_map)
+            assert isinstance(stored_get_object, List)
+            await self._test_object(stored_get_object, total_object_dicts)
+        else:
+            pytest.skip("No main_key provided")
+            
+            
