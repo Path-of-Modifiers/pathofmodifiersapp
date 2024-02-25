@@ -1,15 +1,7 @@
 import asyncio
 import math
 import pytest
-from typing import (
-    Any,
-    Dict,
-    List,
-    Optional,
-    Union,
-    Callable,
-    Tuple,
-)
+from typing import Any, Dict, List, Optional, Union, Callable, Tuple, Awaitable
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
@@ -23,18 +15,20 @@ from app.crud.base import (
 
 
 class TestCRUD:
-
     @pytest.mark.asyncio
     async def _create_object(
         self,
         db,
         crud_instance,
-        object_generator_func: Callable[[], Dict],
+        object_generator_func: Union[Callable[[], Dict], Any],
         *,
         main_key: Optional[str] = "",
         main_key_value: Optional[Any] = None,
     ) -> Tuple[Dict, ModelType, Optional[Any]]:
-        object_dict = object_generator_func()
+        if asyncio.iscoroutinefunction(object_generator_func):
+            object_dict, object_out = await object_generator_func(db)
+        else:
+            object_dict, object_out = object_generator_func()
 
         # print("HEYHEY", object_dict["accountName"])
 
@@ -55,14 +49,6 @@ class TestCRUD:
         #         )  # Map object_dict to the create_schema
         #         for obj in object_dict
         #     ]
-
-        object_in = crud_instance.create_schema(
-            **object_dict
-        )  # Map object_dict to the create_schema
-
-        object_out = await crud_instance.create(
-            db=db, obj_in=object_in
-        )  # Create the object in the database
 
         if main_key_value is not None:
             return object_dict, object_out, main_key_value
