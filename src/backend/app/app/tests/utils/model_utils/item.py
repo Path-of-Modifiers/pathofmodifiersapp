@@ -1,36 +1,35 @@
 import asyncio
-from typing import List
-
-from sqlalchemy import func
-from app import crud
-
+from typing import Dict
 from sqlalchemy.orm import Session
 
 from app import crud
 from app.core.models.models import Item
 from app.core.schemas.item import ItemCreate
-from app.tests.utils.utils import random_lower_string
-from app.tests.utils.utils import random_int
-from app.tests.utils.utils import random_bool
-from app.tests.utils.utils import random_float
-from app.tests.utils.utils import random_json
-from app.tests.utils.utils import random_url
+from app.tests.utils.utils import (
+    random_lower_string,
+    random_int,
+    random_bool,
+    random_float,
+    random_json,
+    random_url,
+)
+
+from stash import generate_random_stash
+from item_base_type import generate_random_item_base_type
+from currency import generate_random_currency
 
 
-async def create_random_item(db: Session) -> Item:
-    gameItemId =random_lower_string()
-    stashId =random_lower_string()
-    name =random_lower_string()
-    iconUrl =random_url()
+async def create_random_item_dict(db: Session) -> Dict:
+    gameItemId = random_lower_string()
+    name = random_lower_string()
+    iconUrl = random_url()
     league = random_lower_string()
     typeLine = random_lower_string()
-    baseType = random_lower_string()
     rarity = random_lower_string()
     identified = random_bool()
     itemLevel = random_int(small_int=True)
     forumNote = random_lower_string()
     currencyAmount = random_float()
-    currencyId = random_int()
     corrupted = random_bool()
     delve = random_bool()
     fractured = random_bool()
@@ -38,7 +37,13 @@ async def create_random_item(db: Session) -> Item:
     replica = random_bool()
     elder = random_bool()
     shaper = random_bool()
-    influences = random_json()
+    influences_type_dict = {
+        "shaper": "bool",
+        "elder": "bool",
+        "crusader": "bool",
+        "hunter": "bool",
+    }
+    influences = random_json(influences_type_dict)
     searing = random_bool()
     tangled = random_bool()
     isRelic = random_bool()
@@ -46,52 +51,50 @@ async def create_random_item(db: Session) -> Item:
     suffixes = random_int(small_int=True)
     foilVariation = random_int()
     inventoryId = random_lower_string()
-    
-    item_in = ItemCreate(
-        gameItemId=gameItemId,
-        stashId=stashId,
-        name=name,
-        iconUrl=iconUrl,
-        league=league,
-        typeLine=typeLine,
-        baseType=baseType,
-        rarity=rarity,
-        identified=identified,
-        itemLevel=itemLevel,
-        forumNote=forumNote,
-        currencyAmount=currencyAmount,
-        currencyId=currencyId,
-        corrupted=corrupted,
-        delve=delve,
-        fractured=fractured,
-        synthesized=synthesized,
-        replica=replica,
-        elder=elder,
-        shaper=shaper,
-        influences=influences,
-        searing=searing,
-        tangled=tangled,
-        isRelic=isRelic,
-        prefixes=prefixes,
-        suffixes=suffixes,
-        foilVariation=foilVariation,
-        inventoryId=inventoryId,
-    )
-    return await crud.CRUD_item.create(db=db, obj_in=item_in)
+
+    stash = await generate_random_stash(db)
+    stashId = stash.stashId
+    item_base_type = await generate_random_item_base_type(db)
+    baseType = item_base_type.baseType
+    currency = await generate_random_currency(db)
+    currencyId = currency.currencyId
+
+    item = {
+        "gameItemId": gameItemId,
+        "stashId": stashId,
+        "name": name,
+        "iconUrl": iconUrl,
+        "league": league,
+        "typeLine": typeLine,
+        "baseType": baseType,
+        "rarity": rarity,
+        "identified": identified,
+        "itemLevel": itemLevel,
+        "forumNote": forumNote,
+        "currencyAmount": currencyAmount,
+        "currencyId": currencyId,
+        "corrupted": corrupted,
+        "delve": delve,
+        "fractured": fractured,
+        "synthesized": synthesized,
+        "replica": replica,
+        "elder": elder,
+        "shaper": shaper,
+        "influences": influences,
+        "searing": searing,
+        "tangled": tangled,
+        "isRelic": isRelic,
+        "prefixes": prefixes,
+        "suffixes": suffixes,
+        "foilVariation": foilVariation,
+        "inventoryId": inventoryId,
+    }
+
+    return item
 
 
-async def create_random_item_list(db: Session, count: int = 10) -> List[Item]:
-    items = [create_random_item(db) for _ in range(count)]
-    return await asyncio.gather(*items)
-
-
-async def get_random_item(session: Session) -> Item:
-    random_item = session.query(Item).order_by(func.random()).first()
-
-    if random_item:
-        print(
-            f"Found already existing item. random_item.gameItemId: {random_item.gameItemId}"
-        )
-    else:
-        random_item = create_random_item(session)
-    return random_item
+async def generate_random_item(db: Session) -> Item:
+    item_dict = create_random_item_dict()
+    item_create = ItemCreate(**item_dict)
+    item = await crud.CRUD_item.create(db, obj_in=item_create)
+    return item
