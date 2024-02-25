@@ -1,6 +1,6 @@
 import random
 import string
-from typing import Optional
+from typing import Optional, Dict
 from datetime import datetime, timedelta
 
 
@@ -45,13 +45,20 @@ def random_bool() -> bool:
     return random.choice([True, False])
 
 
-def random_json():
-    return {
-        "random_lower_string": random_lower_string(),
-        "random_int": random_int(),
-        "random_float": random_float(),
-        "random_bool": random_bool(),
-    }
+def random_json(key_type: Dict):
+    random_dict = {}
+    for key in key_type:
+        match key_type[key]:
+            case "bool":
+                random_dict[key] = random_bool()
+            case "str":
+                random_dict[key] = random_lower_string()
+            case "int":
+                random_dict[key] = random_int()
+            case "float":
+                random_dict[key] = random_float()
+            case _:
+                random_dict[key] = None
 
 
 def random_url():
