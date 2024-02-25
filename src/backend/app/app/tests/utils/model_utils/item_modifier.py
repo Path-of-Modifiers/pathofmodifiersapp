@@ -32,7 +32,7 @@ async def create_random_item_modifier_dict(db: Session) -> Dict:
 
 
 async def generate_random_item_modifier(db: Session) -> ItemModifier:
-    item_modifier_dict = create_random_item_modifier_dict()
+    item_modifier_dict = await create_random_item_modifier_dict()
     item_modifier_create = ItemModifierCreate(**item_modifier_dict)
     item_modifier = await crud.CRUD_item_modifier.create(
         db, obj_in=item_modifier_create
