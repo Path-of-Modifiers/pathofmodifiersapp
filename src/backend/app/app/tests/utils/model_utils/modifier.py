@@ -71,7 +71,7 @@ def create_random_modifier_dict() -> Dict:
 
 
 async def generate_random_modifier(db: Session) -> Modifier:
-    modifier_dict = create_random_modifier_dict()
+    modifier_dict = await create_random_modifier_dict()
     modifier_create = ModifierCreate(**modifier_dict)
     modifier = await crud.CRUD_modifier.create(db, obj_in=modifier_create)
     return modifier_dict, modifier
