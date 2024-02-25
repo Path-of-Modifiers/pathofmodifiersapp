@@ -52,11 +52,11 @@ async def create_random_item_dict(db: Session) -> Dict:
     foilVariation = random_int()
     inventoryId = random_lower_string()
 
-    stash = await generate_random_stash(db)
+    _, stash = await generate_random_stash(db)
     stashId = stash.stashId
-    item_base_type = await generate_random_item_base_type(db)
+    _, item_base_type = await generate_random_item_base_type(db)
     baseType = item_base_type.baseType
-    currency = await generate_random_currency(db)
+    _, currency = await generate_random_currency(db)
     currencyId = currency.currencyId
 
     item = {

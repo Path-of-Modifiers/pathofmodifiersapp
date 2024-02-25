@@ -15,7 +15,7 @@ async def create_random_stash_dict(db: Session) -> Dict:
     league = random_lower_string()
     stashId = random_lower_string()
 
-    account = await generate_random_account(db)
+    _, account = await generate_random_account(db)
     accountName = account.accountName
 
     stash = {
