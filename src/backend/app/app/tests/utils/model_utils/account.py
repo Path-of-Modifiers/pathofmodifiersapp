@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app import crud
 from app.core.models.models import Account
 from app.core.schemas.account import AccountCreate
-from utils import random_lower_string, random_bool
+from app.tests.utils.utils import random_lower_string, random_bool
 
 
 def create_random_account_dict() -> Dict:
