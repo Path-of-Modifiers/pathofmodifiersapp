@@ -11,12 +11,12 @@ from app.tests.utils.model_utils.account import generate_random_account
 
 
 async def create_random_stash_dict(db: Session) -> Dict:
-    account = generate_random_account(db)
-
-    accountName = account.accountName
     public = random_bool()
     league = random_lower_string()
     stashId = random_lower_string()
+
+    account = await generate_random_account(db)
+    accountName = account.accountName
 
     stash = {
         "accountName": accountName,
