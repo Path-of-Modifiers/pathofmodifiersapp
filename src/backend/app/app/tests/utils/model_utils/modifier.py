@@ -1,5 +1,5 @@
 import asyncio
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Optional
 from sqlalchemy.orm import Session
 
 from app import crud
@@ -68,8 +68,12 @@ def create_random_modifier_dict() -> Dict:
     return modifier_dict
 
 
-async def generate_random_modifier(db: Session) -> Tuple[Dict, Modifier]:
+async def generate_random_modifier(
+    db: Session, main_key: Optional[int] = None
+) -> Tuple[Dict, Modifier]:
     modifier_dict = create_random_modifier_dict()
+    if main_key is not None:
+        modifier_dict["modifierId"] = main_key
     modifier_create = ModifierCreate(**modifier_dict)
     modifier = await crud.CRUD_modifier.create(db, obj_in=modifier_create)
     return modifier_dict, modifier
