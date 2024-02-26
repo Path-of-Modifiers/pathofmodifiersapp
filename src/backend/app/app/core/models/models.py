@@ -75,6 +75,7 @@ class Item(Base):
         item_field_seq,
         index=True,
         nullable=False,
+        primary_key=True,
         server_default=item_field_seq.next_value(),
     )
     gameItemId = _sql.Column(_sql.String(), index=True, nullable=False)
@@ -89,7 +90,7 @@ class Item(Base):
     typeLine = _sql.Column(_sql.String(), nullable=False)
     baseType = _sql.Column(
         _sql.String(),
-        _sql.ForeignKey("item_base_type.baseType", ondelete="RESTRICT"),
+        _sql.ForeignKey("item_base_type.baseType", ondelete="RESTRICT", onupdate="CASCADE"),
         nullable=False,
     )
     rarity = _sql.Column(_sql.String(), nullable=False)
@@ -113,13 +114,10 @@ class Item(Base):
     isRelic = _sql.Column(_sql.Boolean())
     prefixes = _sql.Column(_sql.SmallInteger())
     suffixes = _sql.Column(_sql.SmallInteger())
-    foilVariation = _sql.Column(_sql.Integer())
-    inventoryId = _sql.Column(_sql.String())
+    foilVariation = _sql.Column(_sql.SmallInteger())
     createdAt = _sql.Column(
         _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
     )
-
-    __table_args__ = (_sql.PrimaryKeyConstraint(itemId, gameItemId),)
 
 
 class Modifier(Base):
@@ -221,11 +219,7 @@ class ItemModifier(Base):
 
     itemId = _sql.Column(
         _sql.BigInteger(),
-        nullable=False,
-        index=True,
-    )
-    gameItemId = _sql.Column(
-        _sql.String(),
+        _sql.ForeignKey("item.itemId", ondelete="CASCADE", onupdate="CASCADE"),
         nullable=False,
         index=True,
     )
@@ -240,16 +234,11 @@ class ItemModifier(Base):
     )
 
     __table_args__ = (
-        _sql.PrimaryKeyConstraint(itemId, gameItemId, modifierId, position),
-        _sql.ForeignKeyConstraint(
-            [itemId, gameItemId],
-            ["item.itemId", "item.gameItemId"],
-            ondelete="CASCADE",
-        ),
+        _sql.PrimaryKeyConstraint(itemId, modifierId, position),
         _sql.ForeignKeyConstraint(
             [modifierId, position],
             ["modifier.modifierId", "modifier.position"],
-            ondelete="CASCADE",
+            ondelete="CASCADE", onupdate="CASCADE",
         ),
     )
 
@@ -261,7 +250,7 @@ class Stash(Base):
     stashId = _sql.Column(_sql.String(), primary_key=True, index=True, nullable=False)
     accountName = _sql.Column(
         _sql.String(),
-        _sql.ForeignKey("account.accountName", ondelete="CASCADE"),
+        _sql.ForeignKey("account.accountName", ondelete="CASCADE", onupdate="CASCADE"),
         nullable=False,
     )
     public = _sql.Column(_sql.Boolean(), nullable=False)
