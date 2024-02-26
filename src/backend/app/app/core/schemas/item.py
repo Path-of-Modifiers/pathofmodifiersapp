@@ -42,7 +42,6 @@ class _BaseItem(_pydantic.BaseModel):
     prefixes: Optional[int] = None
     suffixes: Optional[int] = None
     foilVariation: Optional[int] = None
-    inventoryId: Optional[str] = None
 
 
 # Properties to receive on item creation
