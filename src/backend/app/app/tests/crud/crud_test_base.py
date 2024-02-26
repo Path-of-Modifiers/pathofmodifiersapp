@@ -1,16 +1,14 @@
 import asyncio
 import math
 import pytest
-from typing import Any, Dict, List, Optional, Union, Callable, Tuple, Awaitable
+from typing import Any, Dict, List, Optional, Union, Callable, Tuple
 
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from sqlalchemy.inspection import inspect
 
 from app.crud.base import (
     CRUDBase,
     ModelType,
-    CreateSchemaType,
 )
 
 
@@ -19,15 +17,12 @@ class TestCRUD:
     async def _create_object(
         self,
         db,
-        crud_instance,
-        object_generator_func: Union[Callable[[], Dict], Any],
+        object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]], Any],
         *,
         main_key: Optional[str] = "",
         main_key_value: Optional[Any] = None,
     ) -> Tuple[Dict, ModelType]:
         object_dict, object_out = await object_generator_func(db)
-
-        # print("HEYHEY", object_dict["accountName"])
 
         if (
             main_key != "" and main_key_value is None
@@ -38,19 +33,6 @@ class TestCRUD:
             main_key_value is not None and main_key
         ):  # If main_key_value is not None, then we need to add it to the object_dict
             object_dict[main_key] = main_key_value
-
-        # if isinstance(object_dict, List):
-        #     object_in = [
-        #         crud_instance.create_schema(
-        #             **obj
-        #         )  # Map object_dict to the create_schema
-        #         for obj in object_dict
-        #     ]
-
-        # if main_key_value is not None:
-        #     return object_dict, object_out, main_key_value
-        # else:
-        #     return object_dict, object_out
 
         return object_dict, object_out
 
@@ -73,24 +55,24 @@ class TestCRUD:
                 assert not isinstance(object, (List, Tuple))
                 assert isinstance(compare_object, Dict)
                 for field in compare_object:
+                    assert field in inspect(object).attrs
                     if isinstance(compare_object[field], float):
                         assert math.isclose(
                             compare_object[field], getattr(object, field), rel_tol=1e-3
                         )
-                        continue
-                    assert field in inspect(object).attrs
-                    assert compare_object[field] == getattr(object, field)
+                    else:
+                        # print(f"\n{field}")
+                        # print(f"{compare_object[field]} == {getattr(object, field)}")
+                        assert compare_object[field] == getattr(object, field)
 
     @pytest.mark.asyncio
     async def test_get(
         self,
         db: Session,
         crud_instance: CRUDBase,
-        object_generator_func: Callable[[], Dict],
+        object_generator_func: Callable[[], Tuple[Dict, ModelType]],
     ) -> None:
-        object_dict, object_out = await self._create_object(
-            db, crud_instance, object_generator_func
-        )
+        object_dict, object_out = await self._create_object(db, object_generator_func)
         object_map = {
             key.name: getattr(object_out, key.name)
             for key in object_out.__table__.primary_key
@@ -104,12 +86,9 @@ class TestCRUD:
     async def test_create(
         self,
         db: Session,
-        crud_instance: CRUDBase,
-        object_generator_func: Callable[[], Dict],
+        object_generator_func: Callable[[], Tuple[Dict, ModelType]],
     ) -> None:
-        object_dict, object_out = await self._create_object(
-            db, crud_instance, object_generator_func
-        )
+        object_dict, object_out = await self._create_object(db, object_generator_func)
         await self._test_object(object_out, object_dict)
 
     @pytest.mark.asyncio
@@ -117,26 +96,16 @@ class TestCRUD:
         self,
         db: Session,
         crud_instance: CRUDBase,
-        object_generator_func: Callable[[], Dict],
-        # main_key: Optional[str],
+        object_generator_func: Callable[[], Tuple[Dict, ModelType]],
         count: int = 5,
     ) -> None:
         initial_object_count = len(await crud_instance.get(db))
 
         multiple_object_dict, multiple_object_out = zip(
             *await asyncio.gather(
-                *(
-                    self._create_object(db, crud_instance, object_generator_func)
-                    for _ in range(count)
-                )
+                *(self._create_object(db, object_generator_func) for _ in range(count))
             )
         )  # Create multiple objects
-
-        # Ensure multiple_object_dict is a list of Dict types
-        # multiple_object_dict: List[Dict] = list(multiple_object_dict)
-
-        # # Ensure multiple_object_out is a list of ModelType
-        # multiple_object_out: List[ModelType] = list(multiple_object_out)
 
         final_object_count = len(await crud_instance.get(db))
 
