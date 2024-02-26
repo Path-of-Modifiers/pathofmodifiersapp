@@ -20,7 +20,7 @@ def random_int(
     if small_int:
         random_int = random.randint(1, 32767)
     elif big_int:
-        random_int = random.randint(1, 2**100 - 1)
+        random_int = random.randint(1, 2**63 - 1)
     else:
         random_int = random.randint(1, 2**31 - 1)
     if negative:
