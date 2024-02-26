@@ -4,8 +4,6 @@ from typing import List, Union
 
 from app.api.deps import get_db
 
-import app.api.deps as deps
-
 from app.crud import CRUD_currency
 
 import app.core.schemas as schemas
@@ -58,7 +56,7 @@ async def create_currency(
 async def update_currency(
     currencyId: str,
     currency_update: schemas.CurrencyUpdate,
-    db: Session = Depends(deps.get_db),
+    db: Session = Depends(get_db),
 ):
     """
     Update an currency by "currencyId".

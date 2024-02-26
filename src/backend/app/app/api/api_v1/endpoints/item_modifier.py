@@ -4,8 +4,6 @@ from typing import List, Optional, Union
 
 from app.api.deps import get_db
 
-import app.api.deps as deps
-
 from app.crud import CRUD_itemModifier
 
 import app.core.schemas as schemas
