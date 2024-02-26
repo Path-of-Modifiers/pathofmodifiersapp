@@ -1,19 +1,10 @@
 from __future__ import annotations
-from fastapi import FastAPI, Depends
-from typing import List, Union, Optional
+from fastapi import FastAPI
 
 from app.api.api_v1.api import api_router
-import app.core.models.models as _models
-import app.api.deps as _deps
-
-import app.crud as _crud
-
-import app.core.schemas as _schemas
 
 from app.core.config import settings
 
-
-import sqlalchemy.orm as _orm
 
 app = FastAPI(
     title=settings.PROJECT_NAME,

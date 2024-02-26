@@ -4,8 +4,6 @@ from typing import List, Union
 
 from app.api.deps import get_db
 
-import app.api.deps as deps
-
 from app.crud import CRUD_itemBaseType
 
 import app.core.schemas as schemas
@@ -58,7 +56,7 @@ async def create_item_base_type(
 async def update_item_base_type(
     baseType: str,
     item_base_type_update: schemas.ItemBaseTypeUpdate,
-    db: Session = Depends(deps.get_db),
+    db: Session = Depends(get_db),
 ):
     """
     Update an itemBaseType by "baseType".

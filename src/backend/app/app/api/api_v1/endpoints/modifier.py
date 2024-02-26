@@ -4,8 +4,6 @@ from typing import List, Optional, Union
 
 from app.api.deps import get_db
 
-import app.api.deps as deps
-
 from app.crud import CRUD_modifier
 
 import app.core.schemas as schemas
@@ -63,7 +61,7 @@ async def update_modifier(
     modifierId: int,
     position: int,
     modifier_update: schemas.ModifierUpdate,
-    db: Session = Depends(deps.get_db),
+    db: Session = Depends(get_db),
 ):
     """
     Update a modifier by "modifierId" and "position".
