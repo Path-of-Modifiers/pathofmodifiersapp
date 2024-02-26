@@ -6,8 +6,7 @@ from pydantic import BaseModel, TypeAdapter
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-
-from sqlalchemy.inspection import inspect
+from app.utils.sort_algorithms import sort_with_refrence
 
 
 ModelType = TypeVar("ModelType", bound=Any)
@@ -17,7 +16,12 @@ UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
 class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType]):
-    def __init__(self, model: Type[ModelType], schema: Type[SchemaType], create_schema: Type[CreateSchemaType]):
+    def __init__(
+        self,
+        model: Type[ModelType],
+        schema: Type[SchemaType],
+        create_schema: Type[CreateSchemaType],
+    ):
         """
         CRUD object with default methods to Create, Read, Update, Delete (CRUD).
 
@@ -32,8 +36,38 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
         self.validate = TypeAdapter(Union[SchemaType, List[SchemaType]]).validate_python
 
+    def _sort_objects(
+        self,
+        objs: List[ModelType],
+        key: Optional[str] = None,
+        sort: Optional[str] = None,
+    ) -> List[ModelType]:
+        available_sorting_choices = ["asc", "dec"]
+        if sort is None:
+            return objs
+        elif sort not in available_sorting_choices:
+            raise NotImplementedError(
+                f"The sorting method {sort} is not supported, instead choose one of {available_sorting_choices}"
+            )
+        if sort in ["asc", "dec"]:
+            unsorted_extracted_column = []
+            for obj in objs:
+                unsorted_extracted_column.append(getattr(obj, key))
+
+            sorted_objs = sort_with_refrence(objs, unsorted_extracted_column)
+
+            if sort == "asc":
+                return sorted_objs
+            else:
+                return sorted_objs[::-1]
+
     async def get(
-        self, db: Session, filter: Any = {}
+        self,
+        db: Session,
+        filter: Any = {},
+        *,
+        sort_key: Optional[str] = None,
+        sort: Optional[str] = None,
     ) -> Optional[Union[ModelType, List[ModelType]]]:
         db_obj = db.query(self.model).filter_by(**filter).all()
         if not db_obj and not filter:  # Get all objs on an empty db
@@ -45,8 +79,10 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             )
         if len(db_obj) == 1:
             db_obj = db_obj[0]
+        else:
+            db_obj = self._sort_objects(db_obj, key=sort_key, sort=sort)
         return self.validate(db_obj)
-    
+
     async def get_random(self, db: Session) -> Optional[ModelType]:
         db_obj = db.query(self.model).order_by(func.random()).first()
         return self.validate(db_obj)
