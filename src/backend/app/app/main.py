@@ -2,6 +2,7 @@ from __future__ import annotations
 from fastapi import FastAPI, Depends
 from typing import List, Union, Optional
 
+from app.api.api_v1.api import api_router
 import app.core.models.models as _models
 import app.api.deps as _deps
 
@@ -25,3 +26,5 @@ app = FastAPI(
 async def read_main():
     return {"message": "Welcome to Path of Modifiers API!"}
 
+
+app.include_router(api_router, prefix=settings.API_V1_STR)
