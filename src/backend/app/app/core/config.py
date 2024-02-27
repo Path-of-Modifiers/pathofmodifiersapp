@@ -5,7 +5,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 import os
 
 class Settings(BaseSettings):
-    API_V1_STR: str = "/api/v1"
+    API_V1_STR: str = "/api/api_v1"
+    
+    PROJECT_NAME: str = "Path of Modifiers"
 
     DATABASE_URL: Optional[PostgresDsn] = (
         os.getenv("DATABASE_URL") 
