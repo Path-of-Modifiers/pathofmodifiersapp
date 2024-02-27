@@ -61,7 +61,6 @@ class TestCRUD:
                     extract_value = lambda obj, field: getattr(obj, field)
                     extract_fields = lambda obj: obj.__table__.columns.keys()
                 for field in extract_fields(compare_obj):
-                    print(field, compare_obj)
                     assert field in inspect(obj).attrs
                     if isinstance(extract_value(compare_obj, field), float):
                         assert math.isclose(
@@ -70,6 +69,9 @@ class TestCRUD:
                             rel_tol=1e-3,
                         )
                     else:
+                        print(
+                            f"{extract_value(compare_obj, field)} == {getattr(obj, field)}"
+                        )
                         assert extract_value(compare_obj, field) == getattr(obj, field)
 
     def _create_primary_key_map(self, obj):
