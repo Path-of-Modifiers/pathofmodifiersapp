@@ -1,9 +1,9 @@
 import asyncio
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Union, List, Optional
 from sqlalchemy.orm import Session
 
 from app import crud
-from app.core.models.models import ItemModifier
+from app.core.models.models import ItemModifier, Item, Modifier
 from app.core.schemas.item_modifier import ItemModifierCreate
 from app.tests.utils.utils import random_int, random_float
 
@@ -11,12 +11,14 @@ from app.tests.utils.model_utils.item import generate_random_item
 from app.tests.utils.model_utils.modifier import generate_random_modifier
 
 
-async def create_random_item_modifier_dict(db: Session) -> Dict:
+async def create_random_item_modifier_dict(
+    db: Session, retrieve_dependencies: bool
+) -> Union[Dict, Tuple[Dict, Optional[List[Union[Dict, Item, Modifier]]]]]:
     range_value = random_float()
 
-    _, item = await generate_random_item(db)
+    item_dict, item = await generate_random_item(db)
     itemId = item.itemId
-    _, modifier = await generate_random_modifier(db)
+    modifier_dict, modifier = await generate_random_modifier(db)
     modifierId = modifier.modifierId
     position = modifier.position
 
@@ -26,11 +28,25 @@ async def create_random_item_modifier_dict(db: Session) -> Dict:
         "position": position,
         "range": range_value,
     }
-    return item_modifier_dict
+    if not retrieve_dependencies:
+        return item_modifier_dict
+    else:
+        deps = [item_dict, item, modifier_dict, modifier]
+        return item_modifier_dict, deps
 
 
-async def generate_random_item_modifier(db: Session) -> Tuple[Dict, ItemModifier]:
-    item_modifier_dict = await create_random_item_modifier_dict(db)
+async def generate_random_item_modifier(
+    db: Session, retrieve_dependencies: Optional[bool] = False
+) -> Tuple[Dict, ItemModifier, Optional[List[Union[Dict, Item, Modifier]]]]:
+    output = await create_random_item_modifier_dict(db, retrieve_dependencies)
+    if not retrieve_dependencies:
+        item_modifier_dict = output
+    else:
+        item_modifier_dict, deps = output
     item_modifier_create = ItemModifierCreate(**item_modifier_dict)
     item_modifier = await crud.CRUD_itemModifier.create(db, obj_in=item_modifier_create)
-    return item_modifier_dict, item_modifier
+
+    if not retrieve_dependencies:
+        return item_modifier_dict, item_modifier
+    else:
+        return item_modifier_dict, item_modifier, deps

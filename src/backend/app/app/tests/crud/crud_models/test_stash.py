@@ -1,13 +1,10 @@
 import asyncio
-from sqlalchemy.orm import Session
 from typing import Callable, Dict, Tuple, List, Union
 import pytest
 
 from app.crud import CRUD_stash, CRUD_account
-from app.core.models.database import engine
 from app.core.models.models import Stash, Account
 from app.crud.base import CRUDBase
-import app.tests.crud.crud_test_base as test_crud
 import app.tests.crud.cascade_tests as cascade_test
 from app.tests.utils.model_utils.stash import generate_random_stash
 
@@ -35,7 +32,7 @@ def crud_instance() -> CRUDBase:
 
 
 @pytest.fixture(scope="module")
-def crud_deps_instances() -> CRUDBase:
+def crud_deps_instances() -> List[CRUDBase]:
     return [CRUD_account]
 
 
