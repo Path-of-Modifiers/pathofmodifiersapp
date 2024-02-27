@@ -137,6 +137,11 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
                 status_code=403,
                 detail=f"Too many objects ({len(db_objs)}) matching the query ({','.join([key + ': ' + str(item) for key, item in filter.items()])}), cannot delete and guarantee safety.",
             )
-        [db.delete(obj) for obj in db_objs]
+
+        if len(db_obj) == 1:
+            db_obj = db_obj[0]
+            db.delete(db_obj)
+        else:
+            [db.delete(obj) for obj in db_objs]
         db.commit()
         return self.validate(db_objs)
