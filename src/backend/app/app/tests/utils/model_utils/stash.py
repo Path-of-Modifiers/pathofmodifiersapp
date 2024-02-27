@@ -34,15 +34,20 @@ async def create_random_stash_dict(
 
 async def generate_random_stash(
     db: Session, retrieve_dependencies: Optional[bool] = False
-) -> Tuple[Dict, Stash]:
+) -> Tuple[Dict, Stash, Optional[List[Union[Dict, Account]]]]:
     output = await create_random_stash_dict(
         db, retrieve_dependencies=retrieve_dependencies
     )
-    if retrieve_dependencies:
-        stash_dict, account_dependecies = output
-    else:
+    if not retrieve_dependencies:
         stash_dict = output
+    else:
+        stash_dict, deps = output
+
     stash_create = StashCreate(**stash_dict)
 
     stash = await crud.CRUD_stash.create(db, obj_in=stash_create)
-    return stash_dict, stash
+
+    if not retrieve_dependencies:
+        return stash_dict, stash
+    else:
+        return stash_dict, stash, deps
