@@ -24,31 +24,37 @@ class TestCRUD:
 
     def _test_object(
         self,
-        object: Union[ModelType, List[ModelType]],
-        compare_object: Optional[Union[Dict, List[Dict]]],
+        obj: Union[ModelType, List[ModelType]],
+        compare_obj: Optional[
+            Union[Dict, List[Dict], ModelType, List[ModelType]]
+        ] = None,
     ) -> None:
-        assert object
+        assert obj
 
-        if compare_object is not None:
-            if isinstance(object, (List, Tuple)) and isinstance(
-                compare_object, (List, Tuple)
+        if compare_obj is not None:
+            if isinstance(obj, (List, Tuple)) and isinstance(
+                compare_obj, (List, Tuple)
             ):
-                for obj, compare_obj in zip(object, compare_object):
+                for obj, compare_obj in zip(obj, compare_obj):
                     self._test_object(obj, compare_obj)
 
             else:
-                assert not isinstance(object, (List, Tuple))
-                assert isinstance(compare_object, Dict)
-                for field in compare_object:
-                    assert field in inspect(object).attrs
-                    if isinstance(compare_object[field], float):
+                assert not isinstance(obj, (List, Tuple))
+                assert not isinstance(compare_obj, (List, Tuple))
+                if isinstance(compare_obj, Dict):
+                    extract_value = lambda obj, key: obj[key]
+                else:
+                    extract_value = lambda obj, field: getattr(obj, field)
+                for field in compare_obj:
+                    assert field in inspect(obj).attrs
+                    if isinstance(extract_value(compare_obj, field), float):
                         assert math.isclose(
-                            compare_object[field], getattr(object, field), rel_tol=1e-3
+                            extract_value(compare_obj, field),
+                            getattr(obj, field),
+                            rel_tol=1e-3,
                         )
                     else:
-                        # print(f"\n{field}")
-                        # print(f"{compare_object[field]} == {getattr(object, field)}")
-                        assert compare_object[field] == getattr(object, field)
+                        assert extract_value(compare_obj, field) == getattr(obj, field)
 
     def _create_primary_key_map(self, obj):
         object_map = {
@@ -64,8 +70,9 @@ class TestCRUD:
         object_generator_func: Callable[[], Tuple[Dict, ModelType]],
     ) -> None:
         object_dict, object_out = await self._create_object(db, object_generator_func)
-        object_map = self._create_primary_key_map(object_out)
+        self._test_object(object_out, object_dict)
 
+        object_map = self._create_primary_key_map(object_out)
         stored_get_object = await crud_instance.get(db=db, filter=object_map)
 
         self._test_object(stored_get_object, object_dict)
@@ -109,3 +116,7 @@ class TestCRUD:
     ) -> None:
         object_dict, object_out = await self._create_object(db, object_generator_func)
         self._test_object(object_out, object_dict)
+
+        object_map = self._create_primary_key_map(object_out)
+        deleted_object = await crud_instance.remove(db=db, filter=object_map)
+        assert deleted_object
