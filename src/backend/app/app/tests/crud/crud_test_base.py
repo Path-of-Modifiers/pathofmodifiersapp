@@ -43,9 +43,12 @@ class TestCRUD:
                 assert not isinstance(compare_obj, (List, Tuple))
                 if isinstance(compare_obj, Dict):
                     extract_value = lambda obj, key: obj[key]
+                    extract_fields = lambda obj: obj
                 else:
                     extract_value = lambda obj, field: getattr(obj, field)
-                for field in compare_obj:
+                    extract_fields = lambda obj: obj.__table__.columns.keys()
+                for field in extract_fields(compare_obj):
+                    print(field, compare_obj)
                     assert field in inspect(obj).attrs
                     if isinstance(extract_value(compare_obj, field), float):
                         assert math.isclose(
@@ -120,3 +123,4 @@ class TestCRUD:
         object_map = self._create_primary_key_map(object_out)
         deleted_object = await crud_instance.remove(db=db, filter=object_map)
         assert deleted_object
+        self._test_object(deleted_object, object_out)
