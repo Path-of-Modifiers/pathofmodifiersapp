@@ -1,12 +1,11 @@
 import asyncio
-from sqlalchemy.orm import Session
-from typing import Callable, Dict, Generator
+from typing import Callable, Dict, Tuple, List, Union
 import pytest
 
-from app.crud import CRUD_itemModifier
-from app.core.models.database import engine
+from app.crud import CRUD_itemModifier, CRUD_item, CRUD_modifier
+from app.core.models.models import ItemModifier, Item, Modifier
 from app.crud.base import CRUDBase
-import app.tests.crud.crud_test_base as test_crud
+import app.tests.crud.cascade_tests as cascade_test
 from app.tests.utils.model_utils.item_modifier import generate_random_item_modifier
 
 
@@ -16,8 +15,15 @@ def object_generator_func() -> Callable[[], Dict]:
 
 
 @pytest.fixture(scope="module")
-def main_key() -> str:
-    return None
+def object_generator_func_w_deps() -> (
+    Callable[[], Tuple[Dict, ItemModifier, List[Union[Dict, Item, Modifier]]]]
+):
+    def generate_random_item_modifier_w_deps(
+        db,
+    ) -> Callable[[], Tuple[Dict, ItemModifier, List[Union[Dict, Item, Modifier]]]]:
+        return generate_random_item_modifier(db, retrieve_dependencies=True)
+
+    return generate_random_item_modifier_w_deps
 
 
 @pytest.fixture(scope="module")
@@ -25,5 +31,10 @@ def crud_instance() -> CRUDBase:
     return CRUD_itemModifier
 
 
-class TestItemModifierCRUD(test_crud.TestCRUD):
+@pytest.fixture(scope="module")
+def crud_deps_instances() -> List[CRUDBase]:
+    return [CRUD_item, CRUD_modifier]
+
+
+class TestItemModifierCRUD(cascade_test.TestCascade):
     pass
