@@ -62,6 +62,7 @@ class TestCRUD:
                     extract_value = lambda obj, field: getattr(obj, field)
                     extract_fields = lambda obj: obj.__table__.columns.keys()
                 for field in extract_fields(compare_obj):
+                    print(f"\n{field}")
                     assert field in inspect(obj).attrs
                     if field not in ignore:
                         if isinstance(extract_value(compare_obj, field), float):
