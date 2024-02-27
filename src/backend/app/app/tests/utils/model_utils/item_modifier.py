@@ -16,14 +16,12 @@ async def create_random_item_modifier_dict(db: Session) -> Dict:
 
     _, item = await generate_random_item(db)
     itemId = item.itemId
-    gameItemId = item.gameItemId
     _, modifier = await generate_random_modifier(db)
     modifierId = modifier.modifierId
     position = modifier.position
 
     item_modifier_dict = {
         "itemId": itemId,
-        "gameItemId": gameItemId,
         "modifierId": modifierId,
         "position": position,
         "range": range_value,

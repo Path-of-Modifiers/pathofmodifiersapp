@@ -49,8 +49,7 @@ async def create_random_item_dict(db: Session) -> Dict:
     isRelic = random_bool()
     prefixes = random_int(small_int=True)
     suffixes = random_int(small_int=True)
-    foilVariation = random_int()
-    inventoryId = random_lower_string()
+    foilVariation = random_int(small_int=True)
 
     _, stash = await generate_random_stash(db)
     stashId = stash.stashId
@@ -87,7 +86,6 @@ async def create_random_item_dict(db: Session) -> Dict:
         "prefixes": prefixes,
         "suffixes": suffixes,
         "foilVariation": foilVariation,
-        "inventoryId": inventoryId,
     }
 
     return item
