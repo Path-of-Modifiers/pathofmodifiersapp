@@ -5,8 +5,6 @@ import { Image } from '@chakra-ui/react';
 
 
 
-const logo = './src/assets/images/POM_logo.jpg';
-
 const Dashboard: React.FC = () => {
 
     return (
