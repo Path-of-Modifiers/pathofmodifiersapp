@@ -123,7 +123,14 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
         return self.validate(db_obj)
 
-    async def remove(self, db: Session, *, filter: Any) -> ModelType:
+    async def remove(
+        self,
+        db: Session,
+        *,
+        filter: Any,
+        sort_key: Optional[str] = None,
+        sort: Optional[str] = None,
+    ) -> ModelType:
         db_objs = db.query(self.model).filter_by(**filter).all()
         if not db_objs:
             raise HTTPException(
@@ -142,6 +149,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             db_objs = db_objs[0]
             db.delete(db_objs)
         else:
+            db_objs = self._sort_objects(db_objs, key=sort_key, sort=sort)
             [db.delete(obj) for obj in db_objs]
         db.commit()
         return self.validate(db_objs)
