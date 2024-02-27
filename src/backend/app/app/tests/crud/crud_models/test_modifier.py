@@ -53,7 +53,7 @@ class TestModifierCRUD(test_crud.TestCRUD):
             )
         )  # Create multiple objects
 
-        await self._test_object(multiple_object_out, multiple_object_dict)
+        self._test_object(multiple_object_out, multiple_object_dict)
 
         modifier_map = {"modifierId": multiple_object_out[0].modifierId}
         multiple_object_db = await crud_instance.get(
@@ -63,4 +63,4 @@ class TestModifierCRUD(test_crud.TestCRUD):
         multiple_object_dict = sort_with_refrence(multiple_object_dict, dict_refrence)
 
         assert len(multiple_object_db) == count
-        await self._test_object(multiple_object_db, multiple_object_dict)
+        self._test_object(multiple_object_db, multiple_object_dict)
