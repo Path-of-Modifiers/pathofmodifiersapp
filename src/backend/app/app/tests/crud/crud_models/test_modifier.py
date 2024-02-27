@@ -1,6 +1,6 @@
 import asyncio
 from sqlalchemy.orm import Session
-from typing import Callable, Dict, Tuple
+from typing import Callable, Dict, Tuple, Optional
 import pytest
 
 from app.crud import CRUD_modifier
@@ -18,7 +18,7 @@ def object_generator_func():
     return generate_random_modifier
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def object_generator_func_w_main_key() -> Callable[[], Tuple[Dict, Modifier]]:
 
     modifier_id = random_int(big_int=True)
@@ -44,14 +44,9 @@ class TestModifierCRUD(test_crud.TestCRUD):
         *,
         count: int = 5,
     ) -> None:
-        multiple_object_dict, multiple_object_out = zip(
-            *await asyncio.gather(
-                *(
-                    self._create_object(db, object_generator_func_w_main_key)
-                    for _ in range(count)
-                )
-            )
-        )  # Create multiple objects
+        multiple_object_dict, multiple_object_out = await self._create_multiple_objects(
+            db, object_generator_func_w_main_key, count=count
+        )
 
         self._test_object(multiple_object_out, multiple_object_dict)
 
@@ -64,3 +59,26 @@ class TestModifierCRUD(test_crud.TestCRUD):
 
         assert len(multiple_object_db) == count
         self._test_object(multiple_object_db, multiple_object_dict)
+
+    @pytest.mark.asyncio
+    async def test_main_key_delete(
+        self,
+        db: Session,
+        crud_instance: CRUDBase,
+        object_generator_func_w_main_key: Callable[[], Tuple[Dict, ModelType]],
+        count: Optional[int] = 5,
+    ) -> None:
+        multiple_object_dict, multiple_object_out = await self._create_multiple_objects(
+            db, object_generator_func_w_main_key, count=count
+        )
+        self._test_object(multiple_object_out, multiple_object_dict)
+
+        modifier_map = {"modifierId": multiple_object_out[0].modifierId}
+        deleted_objects = await crud_instance.remove(
+            db=db, filter=modifier_map, sort_key="position", sort="asc"
+        )
+
+        dict_refrence = [item["position"] for item in multiple_object_dict]
+        multiple_object_out = sort_with_refrence(multiple_object_out, dict_refrence)
+        assert deleted_objects
+        self._test_object(deleted_objects, multiple_object_out)
