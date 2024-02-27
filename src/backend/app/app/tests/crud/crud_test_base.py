@@ -22,6 +22,19 @@ class TestCRUD:
 
         return object_dict, object_out
 
+    async def _create_multiple_objects(
+        self,
+        db,
+        object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]], Any],
+        count: int,
+    ) -> Tuple[Dict, ModelType]:
+        multiple_object_dict, multiple_object_out = zip(
+            *await asyncio.gather(
+                *(self._create_object(db, object_generator_func) for _ in range(count))
+            )
+        )  # Create multiple objects
+        return multiple_object_dict, multiple_object_out
+
     def _test_object(
         self,
         obj: Union[ModelType, List[ModelType]],
@@ -99,11 +112,9 @@ class TestCRUD:
     ) -> None:
         initial_object_count = len(await crud_instance.get(db))
 
-        multiple_object_dict, multiple_object_out = zip(
-            *await asyncio.gather(
-                *(self._create_object(db, object_generator_func) for _ in range(count))
-            )
-        )  # Create multiple objects
+        multiple_object_dict, multiple_object_out = await self._create_multiple_objects(
+            db, object_generator_func, count=count
+        )
 
         final_object_count = len(await crud_instance.get(db))
 
@@ -112,6 +123,21 @@ class TestCRUD:
 
     @pytest.mark.asyncio
     async def test_delete(
+        self,
+        db: Session,
+        crud_instance: CRUDBase,
+        object_generator_func: Callable[[], Tuple[Dict, ModelType]],
+    ) -> None:
+        object_dict, object_out = await self._create_object(db, object_generator_func)
+        self._test_object(object_out, object_dict)
+
+        object_map = self._create_primary_key_map(object_out)
+        deleted_object = await crud_instance.remove(db=db, filter=object_map)
+        assert deleted_object
+        self._test_object(deleted_object, object_out)
+
+    @pytest.mark.asyncio
+    async def test_delete_multiple(
         self,
         db: Session,
         crud_instance: CRUDBase,
