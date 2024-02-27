@@ -14,8 +14,12 @@ def quickSort(array):
         return array
 
 
-def sort_with_refrence(items, refrence):
-    sorted_refrence = quickSort(refrence.copy())
+def sort_with_refrence(items, refrence, presorted: bool = False):
+    if not presorted:
+        sorted_refrence = quickSort(refrence.copy())
+    else:
+        sorted_refrence = refrence
+
     sorted_items = ["filler"] * len(items)
     for obj, column_value in zip(items, refrence):
         ind = sorted_refrence.index(column_value)
