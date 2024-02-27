@@ -12,7 +12,7 @@ from app.tests.utils.model_utils.account import generate_random_account
 
 async def create_random_stash_dict(
     db: Session, retrieve_dependencies: bool
-) -> Union[Dict, Tuple[Dict, List[Union[Dict, Account]]]]:
+) -> Union[Dict, Tuple[Dict, Optional[List[Union[Dict, Account]]]]]:
     public = random_bool()
     league = random_lower_string()
     stashId = random_lower_string()
