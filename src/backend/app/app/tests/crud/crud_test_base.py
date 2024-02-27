@@ -41,6 +41,7 @@ class TestCRUD:
         compare_obj: Optional[
             Union[Dict, List[Dict], ModelType, List[ModelType]]
         ] = None,
+        ignore: Optional[List[str]] = [],
     ) -> None:
         assert obj
 
@@ -62,17 +63,21 @@ class TestCRUD:
                     extract_fields = lambda obj: obj.__table__.columns.keys()
                 for field in extract_fields(compare_obj):
                     assert field in inspect(obj).attrs
-                    if isinstance(extract_value(compare_obj, field), float):
-                        assert math.isclose(
-                            extract_value(compare_obj, field),
-                            getattr(obj, field),
-                            rel_tol=1e-3,
-                        )
-                    else:
-                        print(
-                            f"{extract_value(compare_obj, field)} == {getattr(obj, field)}"
-                        )
-                        assert extract_value(compare_obj, field) == getattr(obj, field)
+                    if field not in ignore:
+                        if isinstance(extract_value(compare_obj, field), float):
+                            assert math.isclose(
+                                extract_value(compare_obj, field),
+                                getattr(obj, field),
+                                rel_tol=1e-3,
+                            )
+                        else:
+                            # print(f"\n{field}")
+                            # print(
+                            #     f"{extract_value(compare_obj, field)} == {getattr(obj, field)}"
+                            # )
+                            assert extract_value(compare_obj, field) == getattr(
+                                obj, field
+                            )
 
     def _create_primary_key_map(self, obj):
         object_map = {
@@ -137,3 +142,36 @@ class TestCRUD:
         deleted_object = await crud_instance.remove(db=db, filter=object_map)
         assert deleted_object
         self._test_object(deleted_object, object_out)
+
+    @pytest.mark.asyncio
+    async def test_update(
+        self,
+        db: Session,
+        crud_instance: CRUDBase,
+        object_generator_func: Callable[[], Tuple[Dict, ModelType]],
+    ) -> None:
+        object_dict, object_out = await self._create_object(db, object_generator_func)
+        self._test_object(object_out, object_dict)
+
+        updated_object_dict, temp_object_out = await self._create_object(
+            db, object_generator_func
+        )  # Creates a second template
+        self._test_object(temp_object_out, updated_object_dict)
+        object_map = self._create_primary_key_map(temp_object_out)
+        deleted_object = await crud_instance.remove(
+            db=db, filter=object_map
+        )  # Delete the template from the db
+        assert deleted_object
+        self._test_object(deleted_object, temp_object_out)
+
+        ignore = [
+            key
+            for key in object_out.__table__.columns.keys()
+            if key not in updated_object_dict
+        ]
+
+        updated_object = await crud_instance.update(
+            db, db_obj=object_out, obj_in=updated_object_dict
+        )
+        assert updated_object
+        self._test_object(updated_object, object_out, ignore=ignore)
