@@ -16,8 +16,11 @@ def random_int(
     small_int: Optional[bool] = None,
     big_int: Optional[bool] = None,
     negative: Optional[bool] = None,
+    example: Optional[int] = None,
 ) -> int:
-    if small_int:
+    if example is not None:
+        random_int = random.randint(1, example)
+    elif small_int:
         random_int = random.randint(1, 32767)
     elif big_int:
         random_int = random.randint(1, 2**63 - 1)
@@ -30,9 +33,14 @@ def random_int(
 
 
 def random_float(
-    *, small_float: Optional[bool] = None, negative: Optional[bool] = None
+    *,
+    small_float: Optional[bool] = None,
+    negative: Optional[bool] = None,
+    example: Optional[int] = None,
 ) -> float:
-    if small_float:
+    if example is not None:
+        random_int = random.uniform(1, example)
+    elif small_float:
         random_float = random.uniform(1, 32767)
     else:
         random_float = random.uniform(1, 10**10)
@@ -74,9 +82,9 @@ def random_based_on_type(refrence):
     if type_refrence == str:
         return random_lower_string()
     elif type_refrence == float:
-        return random_float()
+        return random_float(example=refrence)
     elif type_refrence == int:
-        return random_int()
+        return random_int(example=refrence)
     else:
         raise NotImplementedError(f"Objects of type {type_refrence} is not supported")
 
