@@ -62,6 +62,7 @@ class TestCRUD:
                     extract_value = lambda obj, field: getattr(obj, field)
                     extract_fields = lambda obj: obj.__table__.columns.keys()
                 for field in extract_fields(compare_obj):
+                    # print(f"\n{field}")
                     assert field in inspect(obj).attrs
                     if field not in ignore:
                         if isinstance(extract_value(compare_obj, field), float):
@@ -71,7 +72,6 @@ class TestCRUD:
                                 rel_tol=1e-3,
                             )
                         else:
-                            # print(f"\n{field}")
                             # print(
                             #     f"{extract_value(compare_obj, field)} == {getattr(obj, field)}"
                             # )
@@ -157,6 +157,7 @@ class TestCRUD:
             db, object_generator_func
         )  # Creates a second template
         self._test_object(temp_object_out, updated_object_dict)
+
         object_map = self._create_primary_key_map(temp_object_out)
         deleted_object = await crud_instance.remove(
             db=db, filter=object_map
