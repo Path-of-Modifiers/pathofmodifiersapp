@@ -69,6 +69,18 @@ def random_datetime():
     return datetime.now() + random.uniform(-5, 5) * timedelta(days=1)
 
 
+def random_based_on_type(refrence):
+    type_refrence = type(refrence)
+    if type_refrence == str:
+        return random_lower_string()
+    elif type_refrence == float:
+        return random_float()
+    elif type_refrence == int:
+        return random_int()
+    else:
+        raise NotImplementedError(f"Objects of type {type_refrence} is not supported")
+
+
 def main():
     print(random_lower_string())
     print(random_int())
