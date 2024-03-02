@@ -26,7 +26,8 @@ async def get_item_modifier(
     db: Session = Depends(get_db),
 ):
     """
-    Get itemModifier(s) by "itemId", optional "gameItemId",
+    Get item modifier or list of item modifiers by key and 
+    value "itemId" and optional "gameItemId",
 
     optional "modifierId", and optional "position".
     """
