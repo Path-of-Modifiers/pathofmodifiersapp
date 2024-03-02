@@ -22,7 +22,10 @@ async def get_modifier(
     modifierId: str, position: Optional[int] = None, db: Session = Depends(get_db)
 ):
     """
-    Get modifier(s) by "modifierId" and optional "position".
+    Get modifier or list of modifiers by key and 
+    value for "modifierId" and optional "position" 
+
+    Returns one or a list of modifiers.
     """
     modifier_map = {"modifierId": modifierId}
     if position is not None:
@@ -36,6 +39,8 @@ async def get_modifier(
 async def get_all_modifiers(db: Session = Depends(get_db)):
     """
     Get all modifiers.
+    
+    Returns a list of all modifiers.
     """
     all_modifiers = await CRUD_modifier.get(db=db)
 
@@ -51,7 +56,9 @@ async def create_modifier(
     db: Session = Depends(get_db),
 ):
     """
-    Create a new modifier.
+    Create one or a list of new modifiers.
+    
+    Returns the created modifier or list of modifiers.
     """
     return await CRUD_modifier.create(db=db, obj_in=modifier)
 
@@ -64,7 +71,9 @@ async def update_modifier(
     db: Session = Depends(get_db),
 ):
     """
-    Update a modifier by "modifierId" and "position".
+    Update a modifier by key and value for "modifierId" and "position".
+    
+    Returns the updated modifier.
     """
     modifier_map = {"modifierId": modifierId, "position": position}
     modifier = await CRUD_modifier.get(
@@ -80,7 +89,10 @@ async def delete_modifier(
     modifierId: int, position: Optional[int] = None, db: Session = Depends(get_db)
 ):
     """
-    Delete a modifier by "modifierId" and optional "position".
+    Delete a modifier by key and value for "modifierId" 
+    and optional "position".
+    
+    Returns a message that the modifier was deleted.
     """
     modifier_map = {"modifierId": modifierId}
     if position is not None:

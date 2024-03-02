@@ -84,7 +84,7 @@ async def delete_account(accountName: str, db: Session = Depends(get_db)):
     Delete an account by key and value "accountName".
     
     Returns a message indicating the account was deleted.
-    Always returns one account.
+    Always deletes one account.
     """
     account_map = {"accountName": accountName}
     await CRUD_account.remove(db=db, filter=account_map)

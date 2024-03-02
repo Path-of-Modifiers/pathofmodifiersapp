@@ -26,9 +26,9 @@ async def get_item_modifier(
 ):
     """
     Get item modifier or list of item modifiers by key and 
-    value "itemId" and optional "gameItemId",
+    value for "itemId", optional "modifierId" and optional "position".
 
-    optional "modifierId", and optional "position".
+    Returns one or a list of item modifiers.
     """
     itemModifier_map = {"itemId": itemId}
     if modifierId is not None:
@@ -43,7 +43,9 @@ async def get_item_modifier(
 @router.get("/", response_model=Union[schemas.ItemModifier, List[schemas.ItemModifier]])
 async def get_all_item_modifiers(db: Session = Depends(get_db)):
     """
-    Get all itemModifiers
+    Get all item modifiers.
+    
+    Returns a list of all item modifiers.
     """
     all_itemModifiers = await CRUD_itemModifier.get(db=db)
 
@@ -59,7 +61,9 @@ async def create_item_modifier(
     db: Session = Depends(get_db),
 ):
     """
-    Create a new itemModifier.
+    Create one or a list item modifiers.
+    
+    Returns the created item modifier or list of item modifiers.
     """
     return await CRUD_itemModifier.create(db=db, obj_in=itemModifier)
 
@@ -73,9 +77,10 @@ async def update_item_modifier(
     db: Session = Depends(get_db),
 ):
     """
-    Update an itemModifier by "itemId", optional "gameItemId",
+    Update an item modifier by key and value for 
+    "itemId", optional "modifierId" and optional "position".
 
-    optional "modifierId", and optional "position".
+    Returns the updated item modifier.
     """
     itemModifier_map = {
         "itemId": itemId,
@@ -100,9 +105,11 @@ async def delete_item_modifier(
     db: Session = Depends(get_db),
 ):
     """
-    Delete an ItemModifier by "itemId", optional "gameItemId",
-
-    optional "modifierId", and optional "position".
+    Delete an item modifier by key and value for 
+    "itemId", optional "modifierId" and optional "position".
+    
+    Returns a message that the item modifier was deleted successfully.
+    Always deletes one item modifier.
     """
     itemModifier_map = {"itemId": itemId}
     if modifierId is not None:
