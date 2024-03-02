@@ -20,7 +20,9 @@ router = APIRouter()
 )
 async def get_currency(currencyId: str, db: Session = Depends(get_db)):
     """
-    Get currency by "currencyId".
+    Get currency by key and value for "currencyId".
+    
+    Always returns one currency.
     """
     currency_map = {"currencyId": currencyId}
     currency = await CRUD_currency.get(db=db, filter=currency_map)
@@ -32,6 +34,8 @@ async def get_currency(currencyId: str, db: Session = Depends(get_db)):
 async def get_all_currencies(db: Session = Depends(get_db)):
     """
     Get all currencies.
+    
+    Returns a list of all currencies.
     """
     all_currencies = await CRUD_currency.get(db=db)
 
@@ -47,7 +51,9 @@ async def create_currency(
     db: Session = Depends(get_db),
 ):
     """
-    Create a new currency.
+    Create one or a list of currencies.
+    
+    Returns the created currency or list of currencies.
     """
     return await CRUD_currency.create(db=db, obj_in=currency)
 
@@ -59,7 +65,9 @@ async def update_currency(
     db: Session = Depends(get_db),
 ):
     """
-    Update an currency by "currencyId".
+    Update a currency by key and value for "currencyId".
+    
+    Returns the updated currency.
     """
     currency_map = {"currencyId": currencyId}
     currency = await CRUD_currency.get(
@@ -73,7 +81,10 @@ async def update_currency(
 @router.delete("/{currencyId}", response_model=str)
 async def delete_currency(currencyId: str, db: Session = Depends(get_db)):
     """
-    Delete a currency by "currencyId".
+    Delete a currency by key and value for "currencyId".
+    
+    Returns a message indicating the currency was deleted.
+    Always deletes one currency.
     """
     currency_map = {"currencyId": currencyId}
     await CRUD_currency.remove(db=db, filter=currency_map)
