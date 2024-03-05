@@ -17,6 +17,7 @@ class _BaseItem(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
     stashId: str
+    gameItemId: str
     name: Optional[str] = None
     iconUrl: Optional[str] = None
     league: str
