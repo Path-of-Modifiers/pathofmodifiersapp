@@ -46,7 +46,7 @@ class _BaseItem(_pydantic.BaseModel):
 
 # Properties to receive on item creation
 class ItemCreate(_BaseItem):
-    gameItemId: str
+    pass
 
 
 # Properties to receive on update
@@ -57,7 +57,6 @@ class ItemUpdate(_BaseItem):
 # Properties shared by models stored in DB
 class ItemInDBBase(_BaseItem):
     createdAt: _dt.datetime
-    gameItemId: str
     itemId: int
 
 
