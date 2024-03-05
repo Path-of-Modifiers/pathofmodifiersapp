@@ -20,7 +20,9 @@ router = APIRouter()
 )
 async def get_item_base_type(baseType: str, db: Session = Depends(get_db)):
     """
-    Get itemBaseType by "baseType".
+    Get item base type by key and value for "baseType".
+    
+    Always returns one item base type.
     """
     item_base_type_map = {"baseType": baseType}
     itemBaseType = await CRUD_itemBaseType.get(db=db, filter=item_base_type_map)
@@ -31,7 +33,9 @@ async def get_item_base_type(baseType: str, db: Session = Depends(get_db)):
 @router.get("/", response_model=Union[schemas.ItemBaseType, List[schemas.ItemBaseType]])
 async def get_all_item_base_types(db: Session = Depends(get_db)):
     """
-    Get all itemBaseTypes.
+    Get all item base types.
+    
+    Returns a list of all item base types.
     """
     all_item_base_types = await CRUD_itemBaseType.get(db=db)
 
@@ -47,7 +51,9 @@ async def create_item_base_type(
     db: Session = Depends(get_db),
 ):
     """
-    Create a new itemBaseType.
+    Create one or a list of new item base types.
+    
+    Returns the created item base type or list of item base types.
     """
     return await CRUD_itemBaseType.create(db=db, obj_in=itemBaseType)
 
@@ -59,7 +65,9 @@ async def update_item_base_type(
     db: Session = Depends(get_db),
 ):
     """
-    Update an itemBaseType by "baseType".
+    Update an item base type by key and value for "baseType".
+    
+    Returns the updated item base type.
     """
     item_base_type_map = {"baseType": baseType}
     itemBaseType = await CRUD_itemBaseType.get(
@@ -75,9 +83,12 @@ async def update_item_base_type(
 @router.delete("/{baseType}", response_model=str)
 async def delete_item_base_type(baseType: str, db: Session = Depends(get_db)):
     """
-    Delete an itemBaseType by "baseType".
+    Delete an item base type by key and value for "baseType".
+    
+    Returns a message that the item base type was deleted successfully.
+    Always deletes one item base type.
     """
     item_base_type_map = {"baseType": baseType}
     await CRUD_itemBaseType.remove(db=db, filter=item_base_type_map)
 
-    return f"ItemBaseType with mapping ({item_base_type_map}) deleted successfully"
+    return f"Ttem base type with mapping ({item_base_type_map}) deleted successfully"
