@@ -44,6 +44,15 @@ class TestModifierCRUD(test_crud.TestCRUD):
         *,
         count: int = 5,
     ) -> None:
+        """
+        A test function.
+
+        1. Creates multiple objects, which all have the same key
+        2. Creates a map, only containing the 'modifierId' key
+        3. Retrieves all objects with matching 'modifierId' key
+        4. Sorts the objects so that they line up
+        5. Tests if the retrieved objects are the same as the initial
+        """
         multiple_object_dict, multiple_object_out = await self._create_multiple_objects(
             db, object_generator_func_w_main_key, count=count
         )
@@ -68,6 +77,15 @@ class TestModifierCRUD(test_crud.TestCRUD):
         object_generator_func_w_main_key: Callable[[], Tuple[Dict, ModelType]],
         count: Optional[int] = 5,
     ) -> None:
+        """
+        A test function.
+
+        1. Creates multiple objects, which all have the same key
+        2. Creates a map, only containing the 'modifierId' key
+        3. Deletes all objects with matching 'modifierId' key
+        4. Sorts the objects so that they line up
+        5. Tests if the deleted objects are the same as the initial
+        """
         multiple_object_dict, multiple_object_out = await self._create_multiple_objects(
             db, object_generator_func_w_main_key, count=count
         )
