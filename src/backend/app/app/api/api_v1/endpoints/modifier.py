@@ -93,6 +93,7 @@ async def delete_modifier(
     and optional "position".
     
     Returns a message that the modifier was deleted.
+    Always deletes one modifier.
     """
     modifier_map = {"modifierId": modifierId}
     if position is not None:

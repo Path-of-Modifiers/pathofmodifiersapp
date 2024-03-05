@@ -51,7 +51,7 @@ async def create_item(
     db: Session = Depends(get_db),
 ):
     """
-    Create one or a list of new item.
+    Create one or a list of new items.
     
     Returns the created item or list of items.
     """
