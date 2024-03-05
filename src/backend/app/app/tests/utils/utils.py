@@ -1,6 +1,6 @@
 import random
 import string
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Union
 from datetime import datetime, timedelta
 
 
@@ -71,15 +71,15 @@ def random_json(key_type: Dict[str, bool]) -> Dict[str, Any]:
     return random_dict
 
 
-def random_url():
+def random_url() -> str:
     return f"https://{random_lower_string()}.{random_lower_string(small_string=True)}"
 
 
-def random_datetime():
+def random_datetime() -> datetime:
     return datetime.now() + random.uniform(-5, 5) * timedelta(days=1)
 
 
-def random_based_on_type(refrence):
+def random_based_on_type(refrence) -> Union[str, int, float]:
     type_refrence = type(refrence)
     if type_refrence == str:
         return random_lower_string()
@@ -89,15 +89,3 @@ def random_based_on_type(refrence):
         return random_int(example=refrence)
     else:
         raise NotImplementedError(f"Objects of type {type_refrence} is not supported")
-
-
-def main():
-    print(random_lower_string())
-    print(random_int())
-    print(random_float())
-    print(random_bool())
-    print(random_url())
-
-
-if __name__ == "__main__":
-    main()
