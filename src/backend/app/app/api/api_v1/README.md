@@ -42,6 +42,7 @@ Returns the updated account.
 Delete an account by key and value "accountName".
 
 Returns a message indicating the account was deleted.
+
 Always deletes one account.
 
 ![delete_account](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/5caaab74-ce9f-4384-b1d6-c6251c6a05bf)
@@ -89,6 +90,7 @@ Returns the updated currency.
 Delete a currency by key and value for "currencyId".
 
 Returns a message indicating the currency was deleted.
+
 Always deletes one currency.
 
 ![delete_currency](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/1b84d3bf-7bdd-43a5-be06-2cd57149b72b)
@@ -138,6 +140,7 @@ Returns the updated item base type.
 Delete an item base type by key and value for "baseType".
 
 Returns a message that the item base type was deleted successfully.
+
 Always deletes one item base type.
 
 ![delete_item_base_type](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/315593bd-694c-4bea-9249-f2ed29bca0ce)
@@ -186,6 +189,7 @@ Delete an item modifier by key and value for
 "itemId", optional "modifierId" and optional "position".
 
 Returns a message that the item modifier was deleted successfully.
+
 Always deletes one item modifier.
 
 ![delete_item_modifier](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/a9c951d8-7aa6-4b81-b53f-e6904ae3a807)
@@ -234,6 +238,7 @@ Returns the updated item.
 Delete an item by key and value for "itemId".
 
 Returns a message indicating the item was deleted.
+
 Always deletes one item.
 
 ![delete_item](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/974f7267-b31b-45ab-88e4-de37fc90d856)
@@ -330,6 +335,7 @@ Returns the updated stash.
 Delete a stash by key and value for "stashId".
 
 Returns a message that the stash was deleted successfully.
+
 Always deletes one stash.
 
 ![delete_stash](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/ad38bd4d-6edf-47dc-9cc6-904e261b868c)
