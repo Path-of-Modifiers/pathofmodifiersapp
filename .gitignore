@@ -1,6 +1,8 @@
 .vscode
 *\__pycache__
 *\venv
+*\.history
 
 *\poetry.lock
-*\.pytest_cache
+
+*\node_modules
