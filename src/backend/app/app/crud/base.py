@@ -83,10 +83,6 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             db_obj = self._sort_objects(db_obj, key=sort_key, sort=sort)
         return self.validate(db_obj)
 
-    async def get_random(self, db: Session) -> Optional[ModelType]:
-        db_obj = db.query(self.model).order_by(func.random()).first()
-        return self.validate(db_obj)
-
     async def create(
         self, db: Session, *, obj_in: Union[CreateSchemaType, List[CreateSchemaType]]
     ) -> ModelType:
