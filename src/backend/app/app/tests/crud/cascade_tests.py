@@ -38,7 +38,7 @@ class TestCascade(TestCRUD):
 
             return object_dict, object_out
 
-    def _get_foreign_keys(self, model) -> List[Dict]:
+    def _get_foreign_keys(self, model: ModelType) -> List[Dict]:
         """
         Uses a database inspector to learn more about the foreign keys related to the given model.
         The returned object is a list of dictionaries, where each element represents a relation to
@@ -47,7 +47,9 @@ class TestCascade(TestCRUD):
         foreign_keys = insp.get_foreign_keys(model.__tablename__)
         return foreign_keys
 
-    def _find_restricted_delete(self, model, deps) -> List[str]:
+    def _find_restricted_delete(
+        self, model: ModelType, deps: List[Union[Dict, ModelType]]
+    ) -> List[str]:
         """
         Retrieves all tables related to model, which are not allowed to be deleted
         """
@@ -68,7 +70,9 @@ class TestCascade(TestCRUD):
 
         return restricted_tables
 
-    def _find_cascading_update(self, model, deps) -> Dict[str, str]:
+    def _find_cascading_update(
+        self, model: ModelType, deps: List[Union[Dict, ModelType]]
+    ) -> Dict[str, str]:
         """
         Retrieves all tables related to model, which delete all dependent entries
         """
@@ -108,7 +112,7 @@ class TestCascade(TestCRUD):
 
         1. Creates the object
         2. Uses the object to determine which tables are restricted
-        3. Counts how many dependncies there are
+        3. Counts how many dependencies there are
         4. Loops through all dependencies, ignoring restricted tables
         5. Deletes a dependency
         6. Checks if a query for the dependent results in a specified HTTPException
