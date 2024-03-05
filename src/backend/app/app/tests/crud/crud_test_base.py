@@ -107,7 +107,7 @@ class TestCRUD:
                                 obj, field
                             )
 
-    def _create_primary_key_map(self, obj):
+    def _create_primary_key_map(self, obj: ModelType) -> Dict[str, Any]:
         """
         The CRUD get method uses filters. We can send in a map of primary keys to
         get the object we are looking for
