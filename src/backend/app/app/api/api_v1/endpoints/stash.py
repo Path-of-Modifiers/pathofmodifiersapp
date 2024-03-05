@@ -84,6 +84,7 @@ async def delete_stash(stashId: str, db: Session = Depends(get_db)):
     Delete a stash by key and value for "stashId".
     
     Returns a message that the stash was deleted successfully.
+    Always deletes one stash.
     """
     stash_map = {"stashId": stashId}
     await CRUD_stash.remove(db=db, filter=stash_map)
