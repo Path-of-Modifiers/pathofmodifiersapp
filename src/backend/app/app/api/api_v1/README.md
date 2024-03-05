@@ -1,11 +1,17 @@
 # API documentation for POM
 
+This section covers the API functions for version 1 in the POM app.
+
+Each function serves one of five basic operations: retrieving specific data ``Get X``, retrieving all data ``Get All X``, creating data ``Create X``, updating data ``Update X``, and deleting data ``Delete X``.
+
+The ``Get X`` function retrieves an object by mapping to its primary key. Some primary key attributes are essential and can't be null, while others in the query can be nullable. For ``Get X``, if any or all of the non-essential attributes are null, the query fetches all objects with non-null values for the primary key. It's worth noting that this feature is currently limited to ``Get X`` and isn't available for ``Update X`` and ``Delete X``. However, these capabilities are planned for future releases.
+
 
 ## /account
 
 ### [GET] "/account/{accountName}"  Get Account
 
-Retrieves the POE account user by mapping with key and value for "accountName". 
+Get the account by mapping with key and value for "accountName". 
 
 Always returns one account.
 
@@ -153,6 +159,8 @@ Always deletes one item base type.
 
 Get item modifier or list of item modifiers by key and 
 value for "itemId", optional "modifierId" and optional "position".
+    
+Dominant key is "itemId".
 
 Returns one or a list of item modifiers.
 
@@ -179,6 +187,8 @@ Returns the created item modifier or list of item modifiers.
 Update an item modifier by key and value for 
 "itemId", optional "modifierId" and optional "position".
 
+Dominant key is "itemId".
+
 Returns the updated item modifier.
 
 ![update_item_modifier](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/f72a1144-efc1-4080-8d60-414e50d6e624)
@@ -187,6 +197,8 @@ Returns the updated item modifier.
 
 Delete an item modifier by key and value for 
 "itemId", optional "modifierId" and optional "position".
+    
+Dominant key is "itemId".
 
 Returns a message that the item modifier was deleted successfully.
 
@@ -252,6 +264,8 @@ Always deletes one item.
 
 Get modifier or list of modifiers by key and 
 value for "modifierId" and optional "position" 
+    
+Dominant key is "modifierId".
 
 Returns one or a list of modifiers.
 
@@ -277,6 +291,8 @@ Returns the created modifier or list of modifiers.
 ### [PUT] "/modifier/{modifierId}" Update Modifier
 
 Update a modifier by key and value for "modifierId" and "position".
+    
+Dominant key is "modifierId".
 
 Returns the updated modifier.
 
@@ -288,7 +304,11 @@ Returns the updated modifier.
 Delete a modifier by key and value for "modifierId" 
 and optional "position".
 
+Dominant key is "modifierId".
+
 Returns a message that the modifier was deleted.
+
+Always deletes one modifier.
 
 ![delete_modifier](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/e906d3ef-d7ae-4154-90a2-c1d047262422)
 

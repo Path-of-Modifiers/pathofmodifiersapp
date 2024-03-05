@@ -24,6 +24,8 @@ async def get_modifier(
     """
     Get modifier or list of modifiers by key and 
     value for "modifierId" and optional "position" 
+    
+    Dominant key is "modifierId".
 
     Returns one or a list of modifiers.
     """
@@ -73,6 +75,8 @@ async def update_modifier(
     """
     Update a modifier by key and value for "modifierId" and "position".
     
+    Dominant key is "modifierId".
+    
     Returns the updated modifier.
     """
     modifier_map = {"modifierId": modifierId, "position": position}
@@ -91,6 +95,8 @@ async def delete_modifier(
     """
     Delete a modifier by key and value for "modifierId" 
     and optional "position".
+    
+    Dominant key is "modifierId".
     
     Returns a message that the modifier was deleted.
     Always deletes one modifier.
