@@ -297,7 +297,7 @@ Get stash by key and value for "stashId".
 
 Always returns one stash.
 
-![get_account](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/a2a7108a-8da6-4a28-a4a1-a2244edb6e45)
+![get_stash](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/d5e8657e-d05c-4e68-8aaa-5336a8334c75)
 
 ### [GET] "/stash/" Get All Stashes
 
@@ -305,7 +305,7 @@ Get all stashes.
 
 Returns a list of all stashes.
 
-![get_all_accounts](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/21d1145c-6cb9-4d7b-838a-6398a888b0bf)
+![get_all_stashes](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/77e3f60e-0fd1-4a22-aaa1-85b3c7c4f40b)
 
 ### [POST] "/stash/" Create Stash
 
@@ -313,7 +313,7 @@ Create one or a list of new stashes.
 
 Returns the created stash or list of stashes.
 
-![create_account](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/83de3d02-177d-432d-90c1-8756df2ced87)
+![create_stash](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/d5985a2a-9cb0-45e4-a0ad-ad6067031a9d)
 
 
 ### [PUT] "/stash/{stashId}" Update Stash
@@ -322,7 +322,7 @@ Update a stash by key and value for "stashId".
 
 Returns the updated stash.
 
-![update_account](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/e3a277d9-da25-4952-a0f3-5814f2dca61a)
+![update_stash](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/817d289c-0d64-47d3-accc-1abc8ba9b1d6)
 
 
 ### [DELETE] "/stash/{stashId}" Delete Stash
@@ -332,4 +332,4 @@ Delete a stash by key and value for "stashId".
 Returns a message that the stash was deleted successfully.
 Always deletes one stash.
 
-![delete_account](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/5caaab74-ce9f-4384-b1d6-c6251c6a05bf)
+![delete_stash](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/ad38bd4d-6edf-47dc-9cc6-904e261b868c)
