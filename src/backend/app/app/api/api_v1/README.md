@@ -1,3 +1,49 @@
+## Table of contents
+- [API documentation for POM](#api-documentation-for-pom)
+  - [/account](#account)
+    - [\[GET\] "/account/{accountName}"  Get Account](#get-accountaccountname--get-account)
+    - [\[GET\] "/account/" Get All Accounts](#get-account-get-all-accounts)
+    - [\[POST\] "/account/" Create Account](#post-account-create-account)
+    - [\[PUT\] "/account/{accountName}" Update Account](#put-accountaccountname-update-account)
+    - [\[DELETE\] "/account/{accountName}" Delete Account](#delete-accountaccountname-delete-account)
+  - [/currency](#currency)
+    - [\[GET\] "/currency/{currencyId}" Get Currency](#get-currencycurrencyid-get-currency)
+    - [\[GET\] "/currency/" Get All Currencies](#get-currency-get-all-currencies)
+    - [\[POST\] "/currency/" Create Currency](#post-currency-create-currency)
+    - [\[PUT\] "/currency/{currencyId}" Update Currency](#put-currencycurrencyid-update-currency)
+    - [\[DELETE\] "/currency/{currencyId}" Delete Currency](#delete-currencycurrencyid-delete-currency)
+  - [/itemBaseType](#itembasetype)
+    - [\[GET\] "/itemBaseType/{baseType}" Get Item Base Type](#get-itembasetypebasetype-get-item-base-type)
+    - [\[GET\] "/itemBaseType/" Get All Item Base Types](#get-itembasetype-get-all-item-base-types)
+    - [\[POST\] "/itemBaseType/" Create Item Base Type](#post-itembasetype-create-item-base-type)
+    - [\[PUT\] "/itemBaseType/{baseType}" Update Item Base Type](#put-itembasetypebasetype-update-item-base-type)
+    - [\[DELETE\] "/itemBaseType/{baseType}" Delete Item Base Type](#delete-itembasetypebasetype-delete-item-base-type)
+  - [/itemModifier](#itemmodifier)
+    - [\[GET\] "/itemModifier/{itemId}" Get Item Modifier](#get-itemmodifieritemid-get-item-modifier)
+    - [\[GET\] "/itemModifier/" Get All Item Modifiers](#get-itemmodifier-get-all-item-modifiers)
+    - [\[POST\] "/itemModifier/" Create Item Modifier](#post-itemmodifier-create-item-modifier)
+    - [\[PUT\] "/itemModifier/{itemId}" Update Item Modifier](#put-itemmodifieritemid-update-item-modifier)
+    - [\[DELETE\] "/itemModifier/{itemId}" Delete Item Modifier](#delete-itemmodifieritemid-delete-item-modifier)
+  - [/item](#item)
+    - [\[GET\] "/item/{itemId}"  Get Item](#get-itemitemid--get-item)
+    - [\[GET\] "/item/" Get All Items](#get-item-get-all-items)
+    - [\[POST\] "/item/" Create Item](#post-item-create-item)
+    - [\[PUT\] "/item/{itemId}" Update Item](#put-itemitemid-update-item)
+    - [\[DELETE\] "/item/{itemId}" Delete Item](#delete-itemitemid-delete-item)
+  - [/modifier](#modifier)
+    - [\[GET\] "/modifier/{modifierId}"  Get Modifier](#get-modifiermodifierid--get-modifier)
+    - [\[GET\] "/modifier/" Get All Modifiers](#get-modifier-get-all-modifiers)
+    - [\[POST\] "/modifier/" Create Modifier](#post-modifier-create-modifier)
+    - [\[PUT\] "/modifier/{modifierId}" Update Modifier](#put-modifiermodifierid-update-modifier)
+    - [\[DELETE\] "/modifier/{modifierId}" Delete Modifier](#delete-modifiermodifierid-delete-modifier)
+  - [/stash](#stash)
+    - [\[GET\] "/stash/{stashId}"  Get Stash](#get-stashstashid--get-stash)
+    - [\[GET\] "/stash/" Get All Stashes](#get-stash-get-all-stashes)
+    - [\[POST\] "/stash/" Create Stash](#post-stash-create-stash)
+    - [\[PUT\] "/stash/{stashId}" Update Stash](#put-stashstashid-update-stash)
+    - [\[DELETE\] "/stash/{stashId}" Delete Stash](#delete-stashstashid-delete-stash)
+
+
 # API documentation for POM
 
 This section covers the API functions for version 1 in the POM app.
@@ -7,7 +53,7 @@ Each function serves one of five basic operations: retrieving specific data ``Ge
 The ``Get X`` function retrieves an object by mapping to its primary key. Some primary key attributes are essential and can't be null, while others in the query can be nullable. For ``Get X``, if any or all of the non-essential attributes are null, the query fetches all objects with non-null values for the primary key. It's worth noting that this feature is currently limited to ``Get X`` and isn't available for ``Update X`` and ``Delete X``. However, these capabilities are planned for future releases.
 
 
-## /account
+## /account 
 
 ### [GET] "/account/{accountName}"  Get Account
 
