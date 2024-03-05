@@ -8,7 +8,6 @@ class _BaseItemModifier(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
     itemId: int
-    gameItemId: str
     modifierId: int
     position: int
     range: Optional[float] = None
