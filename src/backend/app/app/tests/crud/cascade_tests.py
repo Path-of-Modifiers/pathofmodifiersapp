@@ -19,12 +19,15 @@ from app.tests.utils.utils import random_based_on_type
 class TestCascade(TestCRUD):
     async def _create_object(
         self,
-        db,
+        db: Session,
         object_generator_func: Tuple[
             Dict, ModelType, Optional[List[Union[Dict, ModelType]]]
         ],
         retrieve_dependencies: Optional[bool] = False,
     ) -> Tuple[Dict, ModelType, Optional[List[Union[Dict, ModelType]]]]:
+        """
+        A private method used to create objects, with the option to retrieve dependencies.
+        """
         if retrieve_dependencies:
             object_dict, object_out, deps = await object_generator_func(db)
 
@@ -36,10 +39,18 @@ class TestCascade(TestCRUD):
             return object_dict, object_out
 
     def _get_foreign_keys(self, model) -> List[Dict]:
+        """
+        Uses a database inspector to learn more about the foreign keys related to the given model.
+        The returned object is a list of dictionaries, where each element represents a relation to
+        another table. One related table may have multiple foreign keys.
+        """
         foreign_keys = insp.get_foreign_keys(model.__tablename__)
         return foreign_keys
 
     def _find_restricted_delete(self, model, deps) -> List[str]:
+        """
+        Retrieves all tables related to model, which are not allowed to be deleted
+        """
         foreign_keys = self._get_foreign_keys(model)
         restricted_tables = []
         for key in foreign_keys:
@@ -58,6 +69,9 @@ class TestCascade(TestCRUD):
         return restricted_tables
 
     def _find_cascading_update(self, model, deps) -> Dict[str, str]:
+        """
+        Retrieves all tables related to model, which delete all dependent entries
+        """
         foreign_keys = self._get_foreign_keys(model)
         cascading_tables = {}
         for key in foreign_keys:
@@ -89,17 +103,30 @@ class TestCascade(TestCRUD):
             [], Tuple[Dict, ModelType, List[Union[Dict, ModelType]]]
         ],
     ) -> None:
+        """
+        A test function.
+
+        1. Creates the object
+        2. Uses the object to determine which tables are restricted
+        3. Counts how many dependncies there are
+        4. Loops through all dependencies, ignoring restricted tables
+        5. Deletes a dependency
+        6. Checks if a query for the dependent results in a specified HTTPException
+        """
         _, obj, deps = await self._create_object(
             db, object_generator_func_w_deps, retrieve_dependencies=True
         )
 
+        # We cannot rely on errors to tell us if a table has restricted deletes,
+        # this is because the item is already deleted by the time we are notified
+        # that it was not allowed.
         restricted_tables = self._find_restricted_delete(obj, deps)
 
         n_deps = len(deps) // 2
         for i in range(n_deps):
             object_dict, object_out, deps = await self._create_object(
                 db, object_generator_func_w_deps, retrieve_dependencies=True
-            )
+            )  # New objects have to be created for every test, since they are constantly being deleted
             self._test_object(object_out, object_dict)
             obj_map = self._create_primary_key_map(object_out)
 
@@ -131,6 +158,16 @@ class TestCascade(TestCRUD):
             [], Tuple[Dict, ModelType, List[Union[Dict, ModelType]]]
         ],
     ) -> None:
+        """
+        A test function.
+
+        1. Creates the object
+        2. Uses the object to determine which tables cascade
+        3. Counts how many dependncies there are
+        4. Loops through all dependencies, ignoring non cascading tables
+        5. Updates a dependency
+        6. Checks if the update affects the dependent
+        """
         obj_dict, obj, deps = await self._create_object(
             db, object_generator_func_w_deps, retrieve_dependencies=True
         )

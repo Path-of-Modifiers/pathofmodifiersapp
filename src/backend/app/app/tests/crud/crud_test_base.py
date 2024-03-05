@@ -225,7 +225,7 @@ class TestCRUD:
         6. Creates an ignore list, which contains the fields which are created
         by the db on creation.
         7. Updates the values of the initial object.
-        8. Tests if the
+        8. Tests if the returned updated object has been updated.
         """
         object_dict, object_out = await self._create_object(db, object_generator_func)
         self._test_object(object_out, object_dict)
