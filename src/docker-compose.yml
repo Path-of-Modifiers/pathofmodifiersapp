@@ -1,0 +1,69 @@
+services:
+  
+  db:
+    image: postgres:16.1
+    restart: always
+    volumes:
+      - "pom-db-data:/var/lib/postgresql/data"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB?Variable not set}
+      POSTGRES_USER: ${POSTGRES_USER?Variable not set}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?Variable not set}
+    deploy:
+      placement:
+        constraints:
+          - node.labels.${STACK_NAME?Variable not set}.pom-db-data == true
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+
+  backend:
+    volumes:
+      - ./backend/app:/app
+    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      - SERVER_NAME=${DOMAIN?Variable not set}
+      - SERVER_HOST=https://${DOMAIN?Variable not set}
+      # Allow explicit env var override for tests
+      - SMTP_HOST=${SMTP_HOST}
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
+
+    networks:
+      # Use the public network created to be shared between Traefik and
+      # any other service that needs to be publicly available with HTTPS
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+    restart: always
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@pgadmin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+
+volumes:
+  pom-db-data: 
+    name: "pom-db-data"
+  pgadmin-data:
+    name: "pgadmin-data"
+
+networks:
+  traefik-public:
+    # Allow setting it to false for testing
+    external: false
