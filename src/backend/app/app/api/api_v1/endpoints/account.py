@@ -20,7 +20,7 @@ router = APIRouter()
 )
 async def get_account(accountName: str, db: Session = Depends(get_db)):
     """
-    Retrieves the POE account user by mapping with key and value for "accountName" . 
+    Get the account by mapping with key and value for "accountName" . 
     
     Always returns one account.
     """

@@ -26,7 +26,9 @@ async def get_item_modifier(
 ):
     """
     Get item modifier or list of item modifiers by key and 
-    value for "itemId", optional "modifierId" and optional "position".
+    value for "itemId", optional "modifierId" and optional "position".    
+    
+    Dominant key is "itemId".
 
     Returns one or a list of item modifiers.
     """
@@ -79,6 +81,8 @@ async def update_item_modifier(
     """
     Update an item modifier by key and value for 
     "itemId", optional "modifierId" and optional "position".
+        
+    Dominant key is "itemId".
 
     Returns the updated item modifier.
     """
@@ -107,6 +111,8 @@ async def delete_item_modifier(
     """
     Delete an item modifier by key and value for 
     "itemId", optional "modifierId" and optional "position".
+        
+    Dominant key is "itemId".
     
     Returns a message that the item modifier was deleted successfully.
     Always deletes one item modifier.
