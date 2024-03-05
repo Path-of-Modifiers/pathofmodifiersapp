@@ -20,7 +20,9 @@ router = APIRouter()
 )
 async def get_stash(stashId: str, db: Session = Depends(get_db)):
     """
-    Get stash by "stashId".
+    Get stash by key and value for "stashId".
+    
+    Always returns one stash.
     """
     stash_map = {"stashId": stashId}
     stash = await CRUD_stash.get(db=db, filter=stash_map)
@@ -32,6 +34,8 @@ async def get_stash(stashId: str, db: Session = Depends(get_db)):
 async def get_all_stashes(db: Session = Depends(get_db)):
     """
     Get all stashes.
+    
+    Returns a list of all stashes.
     """
     all_stashes = await CRUD_stash.get(db=db)
 
@@ -47,7 +51,9 @@ async def create_stash(
     db: Session = Depends(get_db),
 ):
     """
-    Create a new stash.
+    Create one or a list of new stashes.
+    
+    Returns the created stash or list of stashes.
     """
     return await CRUD_stash.create(db=db, obj_in=stash)
 
@@ -59,7 +65,9 @@ async def update_stash(
     db: Session = Depends(get_db),
 ):
     """
-    Update a stash by "stashId".
+    Update a stash by key and value for "stashId".
+    
+    Returns the updated stash.
     """
     stash_map = {"stashId": stashId}
     stash = await CRUD_stash.get(
@@ -73,7 +81,10 @@ async def update_stash(
 @router.delete("/{stashId}", response_model=str)
 async def delete_stash(stashId: str, db: Session = Depends(get_db)):
     """
-    Delete a stash by "stashId".
+    Delete a stash by key and value for "stashId".
+    
+    Returns a message that the stash was deleted successfully.
+    Always deletes one stash.
     """
     stash_map = {"stashId": stashId}
     await CRUD_stash.remove(db=db, filter=stash_map)
