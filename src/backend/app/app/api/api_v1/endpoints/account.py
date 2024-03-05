@@ -20,7 +20,9 @@ router = APIRouter()
 )
 async def get_account(accountName: str, db: Session = Depends(get_db)):
     """
-    Get account by "accountName".
+    Get the account by mapping with key and value for "accountName" . 
+    
+    Always returns one account.
     """
     account_map = {"accountName": accountName}
     account = await CRUD_account.get(db=db, filter=account_map)
@@ -32,6 +34,8 @@ async def get_account(accountName: str, db: Session = Depends(get_db)):
 async def get_all_accounts(db: Session = Depends(get_db)):
     """
     Get all accounts.
+    
+    Returns a list of all accounts.
     """
     all_accounts = await CRUD_account.get(db=db)
 
@@ -47,7 +51,9 @@ async def create_account(
     db: Session = Depends(get_db),
 ):
     """
-    Create a new account.
+    Create one or a list of accounts.
+    
+    Returns the created account or list of accounts.
     """
     return await CRUD_account.create(db=db, obj_in=account)
 
@@ -59,7 +65,9 @@ async def update_account(
     db: Session = Depends(get_db),
 ):
     """
-    Update an account by "accountName".
+    Update an account by key and value for "accountName".
+    
+    Returns the updated account.
     """
     account_map = {"accountName": accountName}
     account = await CRUD_account.get(
@@ -73,7 +81,10 @@ async def update_account(
 @router.delete("/{accountName}", response_model=str)
 async def delete_account(accountName: str, db: Session = Depends(get_db)):
     """
-    Delete an account by "accountName".
+    Delete an account by key and value "accountName".
+    
+    Returns a message indicating the account was deleted.
+    Always deletes one account.
     """
     account_map = {"accountName": accountName}
     await CRUD_account.remove(db=db, filter=account_map)
