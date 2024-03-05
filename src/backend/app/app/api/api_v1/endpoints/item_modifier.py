@@ -20,7 +20,6 @@ router = APIRouter()
 )
 async def get_item_modifier(
     itemId: int,
-    gameItemId: Optional[str] = None,
     modifierId: Optional[int] = None,
     position: Optional[int] = None,
     db: Session = Depends(get_db),
@@ -31,8 +30,6 @@ async def get_item_modifier(
     optional "modifierId", and optional "position".
     """
     itemModifier_map = {"itemId": itemId}
-    if gameItemId is not None:
-        itemModifier_map["gameItemId"] = gameItemId
     if modifierId is not None:
         itemModifier_map["modifierId"] = modifierId
     if position is not None:
@@ -69,7 +66,6 @@ async def create_item_modifier(
 @router.put("/item={itemId}", response_model=schemas.ItemModifier)
 async def update_item_modifier(
     itemId: int,
-    gameItemId: str,
     modifierId: int,
     position: int,
     itemModifier_update: schemas.ItemModifierUpdate,
@@ -82,7 +78,6 @@ async def update_item_modifier(
     """
     itemModifier_map = {
         "itemId": itemId,
-        "gameItemId": gameItemId,
         "modifierId": modifierId,
         "position": position,
     }
@@ -99,7 +94,6 @@ async def update_item_modifier(
 @router.delete("/item={itemId}")
 async def delete_item_modifier(
     itemId: int,
-    gameItemId: Optional[str] = None,
     modifierId: Optional[int] = None,
     position: Optional[int] = None,
     db: Session = Depends(get_db),
@@ -110,8 +104,6 @@ async def delete_item_modifier(
     optional "modifierId", and optional "position".
     """
     itemModifier_map = {"itemId": itemId}
-    if gameItemId is not None:
-        itemModifier_map["gameItemId"] = gameItemId
     if modifierId is not None:
         itemModifier_map["modifierId"] = modifierId
     if position is not None:
