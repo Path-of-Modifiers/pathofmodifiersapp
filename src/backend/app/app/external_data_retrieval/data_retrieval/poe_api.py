@@ -1,100 +1,14 @@
 import requests
+import time
 import json
 from tqdm import tqdm
-from typing import List
-import time
 from datetime import datetime
+from typing import List, Union
 
-
-class ItemDetector:
-    """
-    Base class for searching stashes for items we want to store and process further
-    """
-
-    wanted_items = {}
-    found_items = {}
-
-    def __init__(self) -> None:
-        """
-        `self.n_unique_items_found` needs to be stored inbetween item detector sessions.
-        """
-        self.n_unique_items_found = 0
-
-    def iterate_stashes(self, stashes: list) -> tuple:
-        """
-        Goes through all stashes searching for items that correspond to `self.wanted_items`.
-        `self.n_unique_items_found` is calculated by the number of keys in `self.found_items`.
-        The `_check_item` method, which is unique to item categories, is defined in a child class.
-
-        Parameters:
-            :param stashes: (list) A list of stash objects as defined by GGG.
-            :return: (tuple) Wanted stashes, how many new items was found, number of different items that have been found so far, stashes that still need to be filtered.
-        """
-        item_count = 0
-
-        # Lists of stashes to be populated
-        wanted_stashes = []
-        leftover_stashes = []
-        for stash in stashes:
-            if (
-                stash["public"] and stash["items"]
-            ):  # Checks if the stash is public and contains items
-                # Lists of items
-                stash_wanted_items = []
-                stash_leftover_items = []
-                for item in stash["items"]:
-                    if self._check_item(item):  # Checks if we want the item
-                        stash_wanted_items.append(item)
-                        item_count += 1
-                    else:
-                        stash_leftover_items.append(item)
-
-                # Replaces only the `items` object in stashes
-                stash["items"] = stash_leftover_items
-                leftover_stashes.append(stash)
-
-                # Only adds stashes to `wanted_stashes` if items were found
-                if stash_wanted_items:
-                    stash["items"] = stash_wanted_items
-                    wanted_stashes.append(stash)
-
-        self.n_unique_items_found = len(self.found_items.keys())
-        return wanted_stashes, item_count, self.n_unique_items_found, leftover_stashes
-
-
-class UniqueDetector(ItemDetector):
-    def _check_item(self, item: dict) -> bool:
-        if (
-            item["baseType"] in self.wanted_items
-        ):  # Checks if the unique is a basetyp we are interested in
-            if (
-                item["name"] in self.wanted_items[item["baseType"]]
-            ):  # Check if the unique is one that we want
-                # Records the item as found, which is used to count number of unique items found
-                self.found_items[item["name"] + " " + item["baseType"]] = True
-                return True
-        return False
-
-
-class JewelDetector(UniqueDetector):
-    """
-    Contains only a dictionary of wanted uniques and with their basetype as
-    """
-
-    wanted_items = {
-        "Cobalt Jewel": ["Grand Spectrum", "Forbidden Flesh"],
-        "Crimson Jewel": ["That Which Was Taken", "Grand Spectrum", "Forbidden Flame"],
-        "Viridian Jewel": ["Impossible Escape", "Grand Spectrum"],
-        "Prismatic Jewel": ["Watcher's Eye", "Sublime Vision"],
-        "Timeless Jewel": [
-            "Glorious Vanity",
-            "Lethal Pride",
-            "Brutal Restraint",
-            "Militant Faith",
-            "Elegant Hubris",
-        ],
-        "Large Cluster Jewel": ["Voices"],
-    }
+from app.external_data_retrieval.detectors.unique_detector import (
+    UniqueJewelDetector,
+    UniqueDetector,
+)
 
 
 class APIHandler:
@@ -108,7 +22,7 @@ class APIHandler:
         auth_token: str,
         n_wanted_items: int = 100,
         n_unique_wanted_items: int = 5,
-        item_detectors: list = [JewelDetector()],
+        item_detectors: List[Union[UniqueDetector]] = [UniqueJewelDetector()],
     ) -> None:
         """
         Parameters:
@@ -304,27 +218,3 @@ class APIHandler:
         print(now)
         with open(rf"testing_data\{now}.json", "w", encoding="utf-8") as infile:
             json.dump(stashes, infile, ensure_ascii=False, indent=4)
-
-
-def main():
-    auth_token = "***REMOVED***"
-    url = "https://api.pathofexile.com/public-stash-tabs"
-
-    n_wanted_items = 10000
-    n_unique_wanted_items = 15
-
-    api_handler = APIHandler(
-        url=url,
-        auth_token=auth_token,
-        n_wanted_items=n_wanted_items,
-        n_unique_wanted_items=n_unique_wanted_items,
-    )
-    api_handler.dump_stream(
-        initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272"  # From poe.ninja
-    )  # max_iterations=100)
-
-    return 0
-
-
-if __name__ == "__main__":
-    main()
