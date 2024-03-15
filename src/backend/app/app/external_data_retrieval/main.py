@@ -1,3 +1,5 @@
+import asyncio
+
 from app.external_data_retrieval.data_retrieval.poe_api import APIHandler
 
 
@@ -14,8 +16,10 @@ def main():
         n_wanted_items=n_wanted_items,
         n_unique_wanted_items=n_unique_wanted_items,
     )
-    api_handler.dump_stream(
-        initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272"  # From poe.ninja
+    asyncio.run(
+        api_handler.dump_stream(
+            initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272"  # From poe.ninja
+        )
     )  # max_iterations=100)
 
     return 0
