@@ -6,7 +6,7 @@ def load_test_data():
     """
     Temporary test data loader
     """
-    with open("testing_data\\2024_01_24 22_28.json", encoding="utf8") as infile:
+    with open("testing_data/2024_01_24 22_28.json", encoding="utf8") as infile:
         data = json.load(infile)
 
     return data
@@ -366,7 +366,6 @@ class UniqueDataTransformer(DataTransformer):
         )  # Extracts items-json
 
         item_modifier_df["itemId"] = item_df["itemId"]
-        item_modifier_df["gameItemId"] = item_df["gameItemId"]
         item_modifier_df["name"] = item_df["name"]
         item_modifier_df.rename({0: "modifier"}, axis=1, inplace=True)
 
@@ -397,7 +396,7 @@ class UniqueDataTransformer(DataTransformer):
         for unique in item_modifier_df["roll_file_name"].unique():
             # if unique != "WatchersEye":
             #     continue
-            temp_df = pd.read_csv(f"new_base_data/{unique}.csv", dtype=str)
+            temp_df = pd.read_csv(f"modifier/{unique}.csv", dtype=str)
             modifier_df = pd.concat((modifier_df, temp_df), axis=0, ignore_index=True)
 
         # --- Always relevant ---
