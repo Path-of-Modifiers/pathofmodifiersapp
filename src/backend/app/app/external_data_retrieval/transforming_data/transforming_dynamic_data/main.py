@@ -44,6 +44,7 @@ class DataTransformer:
             item_df.index
         )  # + n_items_in_db <------------ Needs to be implemented: TODO
         item_df.rename(columns={"id": "gameItemId"}, inplace=True)
+        item_df.rename(columns={"icon": "iconUrl"}, inplace=True)
 
         self.item_df = item_df
 
