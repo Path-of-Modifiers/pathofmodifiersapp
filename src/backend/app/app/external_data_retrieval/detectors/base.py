@@ -47,10 +47,10 @@ class DetectorBase:
         TODO
         """
 
-        df_potential = self._general_filter(df)
+        df_leftover = self._general_filter(df)
         df_filtered = self._specialized_filter(df)
 
-        df_leftover = df_potential.loc[df_potential.index.isin(df_filtered.index)]
+        df_leftover = df_leftover.loc[df_leftover.index.isin(df_filtered.index)]
 
         item_count = len(df_filtered)
         self.n_unique_items_found = len(self.found_items.keys())
