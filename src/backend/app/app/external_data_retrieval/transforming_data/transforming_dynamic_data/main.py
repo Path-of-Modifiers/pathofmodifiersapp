@@ -14,6 +14,7 @@ def load_test_data():
 
 
 class DataTransformer:
+
     def _create_stash_table(self, json_data: list) -> None:
         """
         Creates the basis of the `stash` table.
@@ -21,7 +22,19 @@ class DataTransformer:
         """
         stash_df = pd.json_normalize(json_data)  # Contains columns of JSON-objects
 
+        stash_df.rename(columns={"id": "stashId"}, inplace=True)
+
         self.stash_df = stash_df
+
+    def _create_account_table(self, json_data: list) -> None:
+        """
+        The `account`
+        """
+
+        account_df = self.stash_df.copy(deep=True)  # Deep copy to avoid damage
+        account_df["isBanned"] = pd.NA
+
+        self.account_df = account_df
 
     def _create_item_table(self, json_data: list) -> None:
         """
@@ -40,7 +53,7 @@ class DataTransformer:
             json_data, record_path="items"
         )  # Extracts items-json
 
-        item_df["stashId"] = stash_df["id"]
+        item_df["stashId"] = stash_df["stashId"]
         item_df["itemId"] = (
             item_df.index
         )  # + n_items_in_db <------------ Needs to be implemented: TODO
@@ -119,6 +132,12 @@ class DataTransformer:
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
         self.stash_df.drop(["items", "stashType"], axis=1, inplace=True)
+
+    def _clean_account_table(self):
+        """
+        Gets rid of unnecessay information, so that only fields needed for the DB remains.
+        """
+        self.account_df.drop(self.account_df.columns.difference(["accountName", "isBanned"]), axis=1, inplace=True)
 
     def _clean_item_table(self):
         """
@@ -243,9 +262,10 @@ class DataTransformer:
             "stash": self.stash_df,
             "item": self.item_df,
             "item_modifer": self.item_modifier_df,
+            "account": self.account_df,
         }
         for key in tables:
-            tables[key].to_csv(f"transformed_data\\{key}.csv", index=False)
+            tables[key].to_csv(f"transformed_data/{key}.csv", index=False)
 
     def transform_into_tables(self, json_data: list) -> None:
         """
@@ -254,6 +274,7 @@ class DataTransformer:
         self._create_stash_table(json_data=json_data)
         self._create_item_table(json_data=json_data)
         self._create_item_modifier_table(json_data=json_data)
+        self._create_account_table(json_data=json_data)
 
         self._transform_item_table()
         self._transform_item_modifier_table()
@@ -331,6 +352,7 @@ class DataTransformer:
             assert failed_df.empty
         except AssertionError:
             print(failed_df)
+            print("Failed to merge static modifier with modifier in DB.")
             quit()
 
         # ---- Dynamic modifier processing ----
@@ -403,6 +425,7 @@ class DataTransformer:
             assert failed_df.empty
         except AssertionError:
             print(failed_df)
+            print("Failed to merge dynamic modifier with modifier in DB.")
             quit()
 
         # Creates a column for position, which contains a list of numerical strings
@@ -426,6 +449,7 @@ class DataTransformer:
             assert failed_df.empty
         except AssertionError:
             print(failed_df)
+            print("Failed to merge dynamic modifier with static modifier in DB.")
             quit()
 
         def convert_range_roll_to_range(row):
@@ -544,7 +568,8 @@ def main():
         UniqueDataTransformer()
     )  # eventually a system for sending the right JSON-data to the correct data-transformers need to be implemented
     data_transformer.transform_into_tables(json_data=json_data)
-
+    
+    
     return 0
 
 

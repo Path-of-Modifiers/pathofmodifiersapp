@@ -41,6 +41,7 @@ minRoll,maxRoll,position,effect,static
 10,15,0,"#% increased Life Recovery Rate while affected by Vitality",
 20,30,0,"Gain # Life per Enemy Hit while affected by Vitality",
 50,70,0,"#% increased Life Recovery from Flasks while affected by Vitality",
+100,140,0,"Regenerate 118.1 Life per Second while affected by Vitality",
 -10,-5,0,"Non-Channelling Skills have +# to Total Mana Cost while affected by Clarity",
 6,10,0,"#% of Damage taken from Mana before Life while affected by Clarity",
 10,15,0,"#% chance to Recover 10% of Mana when you use a Skill while affected by Clarity",
