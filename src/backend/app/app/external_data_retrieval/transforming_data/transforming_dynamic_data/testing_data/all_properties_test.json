@@ -50,7 +50,241 @@
             "sColour": "B"
           }
         ],
-        "socketedItems": [{ "id": "51e54c21" }],
+        "socketedItems": [
+          {
+            "verified": false,
+            "w": 1,
+            "h": 1,
+            "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvSmV3ZWxzL0thcnVpQ2l2aWxpemF0aW9uIiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/04aefd20e6/KaruiCivilization.png",
+            "support": false,
+            "stackSize": 1,
+            "maxStackSize": 1,
+            "league": "Affliction",
+            "id": "519811b7282a13d5611b3c9e14dccb4ff422295ebc06a9a7232b354f36611e16",
+            "influences": {
+              "shaper": true
+            },
+            "elder": false,
+            "shaper": true,
+            "searing": false,
+            "tangled": false,
+            "abyssJewel": false,
+            "delve": false,
+            "fractured": false,
+            "synthesized": false,
+            "sockets": [
+              {
+                "group": 0,
+                "attr": "D",
+                "sColour": "G"
+              },
+              {
+                "group": 0,
+                "attr": "S",
+                "sColour": "R"
+              },
+              {
+                "group": 0,
+                "attr": "S",
+                "sColour": "R"
+              },
+              {
+                "group": 0,
+                "attr": "I",
+                "sColour": "B"
+              }
+            ],
+            "socketedItems": [{ "id": "51e54c21" }],
+            "name": "Lethal Pride",
+            "typeLine": "Timeless Jewel",
+            "baseType": "Timeless Jewel",
+            "rarity": "Unique",
+            "identified": true,
+            "itemLevel": 84,
+            "ilvl": 84,
+            "note": "~price 1 divine",
+            "forum_note": "you can find me in game",
+            "lockedToCharacter": false,
+            "lockedToAccount": false,
+            "duplicated": false,
+            "split": false,
+            "corrupted": false,
+            "unmodifiable": false,
+            "cisRaceReward": false,
+            "seaRaceReward": false,
+            "thRaceReward": false,
+            "properties": [
+              {
+                "name": "name",
+                "values": [0, 1],
+                "displayMode": 1,
+                "progress": 2.3,
+                "type": 1,
+                "suffix": "suffix1"
+              },
+              {
+                "name": "name",
+                "values": [0, 1],
+                "displayMode": 1,
+                "progress": 2.3,
+                "type": 1,
+                "suffix": "suffix1"
+              }
+            ],
+            "noteableProperties": [
+              {
+                "name": "name",
+                "values": [0, 1],
+                "displayMode": 1,
+                "progress": 2.3,
+                "type": 1,
+                "suffix": "suffix1"
+              },
+              {
+                "name": "name",
+                "values": [0, 1],
+                "displayMode": 1,
+                "progress": 2.3,
+                "type": 1,
+                "suffix": "suffix1"
+              }
+            ],
+            "requirements": [
+              {
+                "name": "name",
+                "values": [0, 1],
+                "displayMode": 1,
+                "progress": 2.3,
+                "type": 1,
+                "suffix": "suffix1"
+              }
+            ],
+            "additionalProperties": [
+              {
+                "name": "name",
+                "values": [0, 1],
+                "displayMode": 1,
+                "progress": 2.3,
+                "type": 1,
+                "suffix": "suffix1"
+              }
+            ],
+            "nextLevelRequirements": [
+              {
+                "name": "name",
+                "values": [0, 1],
+                "displayMode": 1,
+                "progress": 2.3,
+                "type": 1,
+                "suffix": "suffix1"
+              }
+            ],
+            "talismanTier": 0,
+            "rewards": [
+              {
+                "label": "hello",
+                "rewards": { "rewardType1": 100 }
+              }
+            ],
+            "secDescrText": "Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.",
+            "utilityMods": [
+              "Commanded leadership over 17692 warriors under Rakiata\nPassives in radius are Conquered by the Karui"
+            ],
+            "logbookMods": [
+              {
+                "name": "Explosive radious",
+                "faction": { "id": "Dragon", "name": "Rider" },
+                "mods": ["Explode", "Beast"]
+              }
+            ],
+            "enchantMods": ["Enchant example 1"],
+            "scourgeMods": ["Scourge example 1"],
+            "implicitMods": ["Historic"],
+            "ultimatumMods": [{ "type": "Ultimatum example 1", "tier": 4 }],
+            "explicitMods": [
+              "Commanded leadership over 17692 warriors under Rakiata\nPassives in radius are Conquered by the Karui",
+              "Historic"
+            ],
+            "craftedMods": ["Crafted example 1"],
+            "fracturedMods": ["Fractured example 1"],
+            "crucibleMods": ["Crucible example 1"],
+            "cosmeticMods": ["Cosmetic example 1"],
+            "veiledMods": ["Veiled example 1"],
+            "veiled": true,
+            "descrText": "Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.",
+            "flavourText": [
+              "They believed themselves the greatest warriors, but that savagery turned upon their own."
+            ],
+            "flavourTextParsed": [
+              "They believed themselves the greatest warriors, but that savagery turned upon their own."
+            ],
+            "flavourTextNote": "They believed themselves the greatest warriors, but that savagery turned upon their own.",
+            "prophecyText": "Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.",
+            "isRelic": true,
+            "foilVariation": 0,
+            "replica": false,
+            "foreseeing": false,
+            "incubatedItem": {
+              "name": "Fragment Item",
+              "level": 68,
+              "progress": 1368,
+              "total": 9030
+            },
+            "scourged": {
+              "tier": 1,
+              "level": 1,
+              "progress": 0,
+              "total": 100
+            },
+            "crucible": {
+              "layout": "yoyo",
+              "nodes": {
+                "skill": 1,
+                "tier": 1,
+                "icon": "icon",
+                "allocated": true,
+                "isNoteable": true,
+                "isReward": true,
+                "stats": ["stat1", "stat2"],
+                "reminderText": "reminderText",
+                "orbit": 1,
+                "orbitIndex": 1,
+                "out": ["you", "me", "us"],
+                "in": ["you", "me", "us"]
+              }
+            },
+            "ruthless": false,
+            "frameType": 3,
+            "artFilename": "KaruiCivilization",
+            "hybrid": {
+              "isVaalGem": true,
+              "baseTypeName": "Vaal Gem",
+              "properties": [
+                {
+                  "name": "name",
+                  "values": [0, 1],
+                  "displayMode": 1,
+                  "progress": 2.3,
+                  "type": 1,
+                  "suffix": "suffix1"
+                }
+              ],
+              "explicitMods": ["mod1"],
+              "secDescrText": "Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket."
+            },
+            "extended": {
+              "category": "jewels",
+              "subcategories": ["jewels"],
+              "prefixes": 1,
+              "suffixes": 2
+            },
+            "x": 6,
+            "y": 0,
+            "inventoryId": "Stash2",
+            "socket": 0,
+            "colour": "R"
+          }
+        ],
         "name": "Lethal Pride",
         "typeLine": "Timeless Jewel",
         "baseType": "Timeless Jewel",
@@ -71,49 +305,68 @@
         "thRaceReward": false,
         "properties": [
           {
-            "name": "Limited to",
-            "values": [["1 Historic", 0]],
-            "displayMode": 0
+            "name": "name",
+            "values": [0, 1],
+            "displayMode": 1,
+            "progress": 2.3,
+            "type": 1,
+            "suffix": "suffix1"
           },
           {
-            "name": "Radius",
-            "values": [["Large", 0]],
-            "displayMode": 0,
-            "type": 26
+            "name": "name",
+            "values": [0, 1],
+            "displayMode": 1,
+            "progress": 2.3,
+            "type": 1,
+            "suffix": "suffix1"
           }
         ],
         "noteableProperties": [
           {
-            "name": "Limited to",
-            "values": [["1 Historic", 0]],
-            "displayMode": 0
+            "name": "name",
+            "values": [0, 1],
+            "displayMode": 1,
+            "progress": 2.3,
+            "type": 1,
+            "suffix": "suffix1"
           },
           {
-            "name": "Radius",
-            "values": [["Large", 0]],
-            "displayMode": 0,
-            "type": 26
+            "name": "name",
+            "values": [0, 1],
+            "displayMode": 1,
+            "progress": 2.3,
+            "type": 1,
+            "suffix": "suffix1"
           }
         ],
         "requirements": [
           {
-            "name": "Limited to",
-            "values": [["1 Historic", 0]],
-            "displayMode": 0
+            "name": "name",
+            "values": [0, 1],
+            "displayMode": 1,
+            "progress": 2.3,
+            "type": 1,
+            "suffix": "suffix1"
           }
         ],
         "additionalProperties": [
           {
-            "name": "Limited to",
-            "values": [["1 Historic", 0]],
-            "displayMode": 0
+            "name": "name",
+            "values": [0, 1],
+            "displayMode": 1,
+            "progress": 2.3,
+            "type": 1,
+            "suffix": "suffix1"
           }
         ],
         "nextLevelRequirements": [
           {
-            "name": "Limited to",
-            "values": [["1 Historic", 0]],
-            "displayMode": 0
+            "name": "name",
+            "values": [0, 1],
+            "displayMode": 1,
+            "progress": 2.3,
+            "type": 1,
+            "suffix": "suffix1"
           }
         ],
         "talismanTier": 0,
@@ -168,21 +421,52 @@
           "total": 9030
         },
         "scourged": {
-            "tier": 1,
-            "level": 1,
-            "progress": 0,
-            "total": 100
+          "tier": 1,
+          "level": 1,
+          "progress": 0,
+          "total": 100
         },
         "crucible": {
-            "layout": "yoyo",
-            "nodes": {"skill": 1}
+          "layout": "yoyo",
+          "nodes": {
+            "skill": 1,
+            "tier": 1,
+            "icon": "icon",
+            "allocated": true,
+            "isNoteable": true,
+            "isReward": true,
+            "stats": ["stat1", "stat2"],
+            "reminderText": "reminderText",
+            "orbit": 1,
+            "orbitIndex": 1,
+            "out": ["you", "me", "us"],
+            "in": ["you", "me", "us"]
+          }
         },
         "ruthless": false,
         "frameType": 3,
         "artFilename": "KaruiCivilization",
-        "hybrid": {"isVaalGem": true},
+        "hybrid": {
+          "isVaalGem": true,
+          "baseTypeName": "Vaal Gem",
+          "properties": [
+            {
+              "name": "name",
+              "values": [0, 1],
+              "displayMode": 1,
+              "progress": 2.3,
+              "type": 1,
+              "suffix": "suffix1"
+            }
+          ],
+          "explicitMods": ["mod1"],
+          "secDescrText": "Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket."
+        },
         "extended": {
-          "category": "jewels"
+          "category": "jewels",
+          "subcategories": ["jewels"],
+          "prefixes": 1,
+          "suffixes": 2
         },
         "x": 6,
         "y": 0,
