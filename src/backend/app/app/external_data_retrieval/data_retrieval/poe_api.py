@@ -3,11 +3,12 @@ import time
 import json
 import asyncio
 import aiohttp
+import pandas as pd
 from tqdm import tqdm
 from datetime import datetime
 from typing import List, Union, Tuple, Dict, Coroutine
 
-from app.external_data_retrieval.detectors.unique_detector import (
+from app.external_data_retrieval.detectors.unique_detector_v2 import (
     UniqueJewelDetector,
     UniqueDetector,
 )
@@ -46,29 +47,51 @@ class APIHandler:
         self.n_unique_items_found = 0
         self.n_unique_wanted_items = n_unique_wanted_items
 
+    def _json_to_df(self, stashes: List) -> pd.DataFrame:
+        df_temp = pd.json_normalize(stashes)
+        df_temp = df_temp.explode(["items"])
+        df_temp = df_temp.loc[~df_temp["items"].isnull()]
+
+        df = pd.json_normalize(stashes, record_path=["items"])
+        df["stash_index"] = df_temp.index
+
+        return df
+
+    def _df_to_json(self, df: pd.DataFrame, stashes: List) -> List:
+        wanted_stashes = []
+        for stash_index in df["stash_index"].unique():
+            wanted_stash = stashes[stash_index]
+            wanted_items = df.loc[df["stash_index"] == stash_index]
+            wanted_stash["items"] = wanted_items.to_dict()
+            wanted_stashes.append(wanted_stash)
+
+        return wanted_stashes
+
     def _check_stashes(self, stashes: list) -> List[List[Dict[str, str]]]:
         """
         Parameters:
             :param stashes: (list) A list of stash objects
         """
-        wanted_stashes = []
+        df_wanted = pd.DataFrame()
         n_new_items = 0
         n_total_unique_items = 0
+
+        df = self._json_to_df(stashes)
 
         # The stashes are fed to all item detectors, slowly being filtered down
         for item_detector in self.item_detectors:
             (
-                filtered_stashes,
+                df_filtered,
                 item_count,
                 n_unique_found_items,
-                leftover_stashes,
-            ) = item_detector.iterate_stashes(stashes)
+                df_leftover,
+            ) = item_detector.iterate_stashes(df)
 
-            wanted_stashes += filtered_stashes
+            df_wanted = pd.concat((df_wanted, df_filtered))
             n_new_items += item_count
             n_total_unique_items += n_unique_found_items
 
-            stashes = leftover_stashes
+            df = df_leftover
 
         # Updates progress bars
         self.n_found_items += n_new_items
@@ -79,6 +102,8 @@ class APIHandler:
             - self.n_unique_items_found  # Updates with the difference of current unique items found and previously found
         )
         self.n_unique_items_found = n_total_unique_items
+
+        wanted_stashes = self._df_to_json(df_wanted, stashes)
 
         return wanted_stashes
 
