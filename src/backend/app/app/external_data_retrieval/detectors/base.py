@@ -1,3 +1,7 @@
+import pandas as pd
+from typing import Tuple
+
+
 class DetectorBase:
     """
     Base class for searching stashes for items we want to store and process further
@@ -12,43 +16,43 @@ class DetectorBase:
         """
         self.n_unique_items_found = 0
 
-    def iterate_stashes(self, stashes: list) -> tuple:
+    def _general_filter(self, df: pd.DataFrame) -> pd.DataFrame:
         """
-        Goes through all stashes searching for items that correspond to `self.wanted_items`.
-        `self.n_unique_items_found` is calculated by the number of keys in `self.found_items`.
-        The `_check_item` method, which is unique to item categories, is defined in a child class.
-
-        Parameters:
-            :param stashes: (list) A list of stash objects as defined by GGG.
-            :return: (tuple) Wanted stashes, how many new items was found, number of different items that have been found so far, stashes that still need to be filtered.
+        Filtering away items that are never useful
         """
-        item_count = 0
+        columns = df.columns
+        if "ruthless" in columns:
+            df = df.loc[df["ruthless"].isnull()]
+        if "lockedToCharacter" in columns:
+            df = df.loc[df["lockedToCharacter"].isnull()]
+        if "lockedToAccount" in columns:
+            df = df.loc[df["lockedToAccount"].isnull()]
+        if "logbookMods" in columns:
+            df = df.loc[df["logbookMods"].isnull()]
+        if "crucible" in columns:
+            df = df.loc[df["crucible"].isnull()]
+        if "scourged" in columns:
+            df = df.loc[df["scourged"].isnull()]
+        if "hybrid" in columns:
+            df = df.loc[df["hybrid"].isnull()]
+        if "ultimatumMods" in columns:
+            df = df.loc[df["ultimatumMods"].isnull()]
 
-        # Lists of stashes to be populated
-        wanted_stashes = []
-        leftover_stashes = []
-        for stash in stashes:
-            if (
-                stash["public"] and stash["items"]
-            ):  # Checks if the stash is public and contains items
-                # Lists of items
-                stash_wanted_items = []
-                stash_leftover_items = []
-                for item in stash["items"]:
-                    if self._check_item(item):  # Checks if we want the item
-                        stash_wanted_items.append(item)
-                        item_count += 1
-                    else:
-                        stash_leftover_items.append(item)
+        return df
 
-                # Replaces only the `items` object in stashes
-                stash["items"] = stash_leftover_items
-                leftover_stashes.append(stash)
+    def iterate_stashes(
+        self, df: pd.DataFrame
+    ) -> Tuple[pd.DataFrame, int, int, pd.DataFrame]:
+        """
+        TODO
+        """
 
-                # Only adds stashes to `wanted_stashes` if items were found
-                if stash_wanted_items:
-                    stash["items"] = stash_wanted_items
-                    wanted_stashes.append(stash)
+        df_leftover = self._general_filter(df)
+        df_filtered = self._specialized_filter(df)
 
+        df_leftover = df_leftover.loc[df_leftover.index.isin(df_filtered.index)]
+
+        item_count = len(df_filtered)
         self.n_unique_items_found = len(self.found_items.keys())
-        return wanted_stashes, item_count, self.n_unique_items_found, leftover_stashes
+
+        return df_filtered, item_count, self.n_unique_items_found, df_leftover
