@@ -39,7 +39,7 @@ minRoll,maxRoll,textRolls,position,effect,static,regex,modifierId
 10,15,,0,#% increased Life Recovery Rate while affected by Vitality,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Life Recovery Rate while affected by Vitality,263
 20,30,,0,Gain # Life per Enemy Hit while affected by Vitality,,Gain ([+-]?([0-9]*[.])?[0-9]+) Life per Enemy Hit while affected by Vitality,264
 50,70,,0,#% increased Life Recovery from Flasks while affected by Vitality,,([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Life Recovery from Flasks while affected by Vitality,265
-100,140,,0,Regenerate 118.1 Life per Second while affected by Vitality,,Regenerate 118.1 Life per Second while affected by Vitality([+-]?([0-9]*[.])?[0-9]+),266
+100,140,,0,Regenerate # Life per Second while affected by Vitality,,Regenerate ([+-]?([0-9]*[.])?[0-9]+) Life per Second while affected by Vitality,266
 -10,-5,,0,Non-Channelling Skills have +# to Total Mana Cost while affected by Clarity,,Non-Channelling Skills have (\+|\-)([+-]?([0-9]*[.])?[0-9]+) to Total Mana Cost while affected by Clarity,267
 6,10,,0,#% of Damage taken from Mana before Life while affected by Clarity,,([+-]?([0-9]*[.])?[0-9]+)% of Damage taken from Mana before Life while affected by Clarity,268
 10,15,,0,#% chance to Recover 10% of Mana when you use a Skill while affected by Clarity,,([+-]?([0-9]*[.])?[0-9]+)% chance to Recover 10% of Mana when you use a Skill while affected by Clarity,269
