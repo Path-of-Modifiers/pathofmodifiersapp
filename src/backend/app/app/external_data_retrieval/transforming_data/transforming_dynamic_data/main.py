@@ -102,8 +102,8 @@ class DataTransformer:
             lambda row: transform_influences(row, influence_columns), axis=1
         )
 
-        item_df["currency_amount"] = currency_series.apply(get_currency_amount)
-        item_df["currency_type"] = currency_series.apply(get_currency_type)
+        item_df["currencyAmount"] = currency_series.apply(get_currency_amount)
+        item_df["currencyType"] = currency_series.apply(get_currency_type)
 
         self.item_df = item_df
 
