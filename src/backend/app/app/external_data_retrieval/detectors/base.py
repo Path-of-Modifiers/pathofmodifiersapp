@@ -1,4 +1,5 @@
 import pandas as pd
+from typing import Tuple
 
 
 class DetectorBase:
@@ -39,7 +40,9 @@ class DetectorBase:
 
         return df
 
-    def iterate_stashes(self, df: pd.DataFrame) -> tuple:
+    def iterate_stashes(
+        self, df: pd.DataFrame
+    ) -> Tuple[pd.DataFrame, int, int, pd.DataFrame]:
         """
         TODO
         """
