@@ -98,7 +98,7 @@ class APIHandler:
             n_new_items += item_count
             n_total_unique_items += n_unique_found_items
 
-            df = df_leftover
+            df = df_leftover.copy(deep=True)
 
         # Updates progress bars
         self.n_found_items += n_new_items
