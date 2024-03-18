@@ -1,0 +1,4 @@
+minRoll,maxRoll,textRolls,position,effect,static,regex,modifierId
+2000,160000,,0,Commissioned # coins to commemorate # Passives in radius are Conquered by the Eternal Empire,,Commissioned ([+-]?([0-9]*[.])?[0-9]+) coins to commemorate (Cadiro|Victario|Caspiro|Chitus) Passives in radius are Conquered by the Eternal Empire,3
+,,Cadiro-Victario-Caspiro-Chitus,1,Commissioned # coins to commemorate # Passives in radius are Conquered by the Eternal Empire,,Commissioned ([+-]?([0-9]*[.])?[0-9]+) coins to commemorate (Cadiro|Victario|Caspiro|Chitus) Passives in radius are Conquered by the Eternal Empire,4
+,,,0,Historic,True,,5
