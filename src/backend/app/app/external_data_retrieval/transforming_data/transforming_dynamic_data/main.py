@@ -272,14 +272,15 @@ class DataTransformer:
         The process of extracting data from the JSON-data, transforming it and cleaning it.
         """
         self._create_stash_table(json_data=json_data)
+        self._create_account_table(json_data=json_data)
         self._create_item_table(json_data=json_data)
         self._create_item_modifier_table(json_data=json_data)
-        self._create_account_table(json_data=json_data)
 
         self._transform_item_table()
         self._transform_item_modifier_table()
 
         self._clean_stash_table()
+        self._clean_account_table()
         self._clean_item_table()
         self._clean_item_modifier_table()
 
