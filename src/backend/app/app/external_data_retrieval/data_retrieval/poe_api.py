@@ -62,6 +62,9 @@ class APIHandler:
         return df
 
     def _df_to_json(self, df: pd.DataFrame, stashes: List) -> List:
+        """
+        DEPRICATED
+        """
         wanted_stashes = []
         for stash_index in df["stash_index"].unique():
             wanted_stash = stashes[stash_index]
@@ -71,7 +74,7 @@ class APIHandler:
 
         return wanted_stashes
 
-    def _check_stashes(self, stashes: list) -> pd.DataFrame:
+    def _check_stashes(self, stashes: List) -> pd.DataFrame:
         """
         Parameters:
             :param stashes: (list) A list of stash objects
@@ -107,11 +110,9 @@ class APIHandler:
         )
         self.n_unique_items_found = n_total_unique_items
 
-        # wanted_stashes = self._df_to_json(df_wanted, stashes)
-
         return df_wanted
 
-    def _initialize_stream(self, next_change_id) -> tuple:
+    def _initialize_stream(self, next_change_id: str) -> Tuple[str, List]:
         """
         TODO
         """
@@ -128,7 +129,9 @@ class APIHandler:
         self.iteration_pbar.update()
         return next_change_id, stashes
 
-    async def _start_next_request(self, session, next_change_id: str) -> Coroutine:
+    async def _start_next_request(
+        self, session: aiohttp.ClientSession, next_change_id: str
+    ) -> Coroutine:
         async with session.get(self.url, params={"id": next_change_id}) as response:
             if response.status >= 300:
                 if response.status == 429:
@@ -137,6 +140,8 @@ class APIHandler:
                     headers = await response.headers
                     retry_after = int(headers["Retry-After"])
                     await asyncio.sleep(retry_after + 1)
+                    return await self._start_next_request(session, next_change_id)
+
                 else:
                     response.raise_for_status()
             response_json = await response.json()
@@ -144,7 +149,7 @@ class APIHandler:
             stashes = response_json["stashes"]
             return next_change_id, stashes
 
-    async def _follow_stream(self, initial_next_change_id) -> None:
+    async def _follow_stream(self, initial_next_change_id: str) -> None:
         """
         Follows the API stream until conditions are met
 
@@ -158,7 +163,6 @@ class APIHandler:
         iteration = 2
         session = aiohttp.ClientSession(headers=self.headers)
         try:
-            # async with aiohttp.ClientSession(headers=self.headers) as session:
             while (
                 self.n_found_items < self.n_wanted_items
                 or self.n_unique_items_found < self.n_unique_wanted_items
