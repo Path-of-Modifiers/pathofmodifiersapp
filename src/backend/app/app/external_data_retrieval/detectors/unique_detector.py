@@ -1,26 +1,25 @@
+import pandas as pd
+
 from app.external_data_retrieval.detectors.base import DetectorBase
 
 
 class UniqueDetector(DetectorBase):
-    def _check_item(self, item: dict) -> bool:
-        if (
-            item["baseType"] in self.wanted_items
-        ):  # Checks if the unique is a basetyp we are interested in
-            if (
-                item["name"] in self.wanted_items[item["baseType"]]
-            ):  # Check if the unique is one that we want
-                # Records the item as found, which is used to count number of unique items found
-                self.found_items[item["name"] + " " + item["baseType"]] = True
-                return True
-        return False
+    def _specialized_filter(self, df: pd.DataFrame) -> pd.DataFrame:
+
+        df = df.loc[df["rarity"] == "Unique"]
+
+        df = df.loc[df["name"].isin(self.wanted_items)]
+
+        temp_df = df["name"] + df["baseType"]
+        for name_baseType in temp_df.unique():
+            if not name_baseType in self.found_items:
+                self.found_items[name_baseType] = True
+
+        return df
 
 
 class UniqueJewelDetector(UniqueDetector):
-    """
-    Contains only a dictionary of wanted uniques and with their basetype as
-    """
-
-    wanted_items = {
+    wanted_items_dict = {
         "Cobalt Jewel": ["Grand Spectrum", "Forbidden Flesh"],
         "Crimson Jewel": ["That Which Was Taken", "Grand Spectrum", "Forbidden Flame"],
         "Viridian Jewel": ["Impossible Escape", "Grand Spectrum"],
@@ -34,3 +33,18 @@ class UniqueJewelDetector(UniqueDetector):
         ],
         "Large Cluster Jewel": ["Voices"],
     }
+    wanted_items = [
+        "Grand Spectrum",
+        "Forbidden Flesh",
+        "That Which Was Taken",
+        "Forbidden Flame",
+        "Impossible Escape",
+        "Watcher's Eye",
+        "Sublime Vision",
+        "Glorious Vanity",
+        "Lethal Pride",
+        "Brutal Restraint",
+        "Militant Faith",
+        "Elegant Hubris",
+        "Voices",
+    ]
