@@ -98,7 +98,6 @@ class DataTransformer:
             else:
                 return ""
 
-        # def transform_influences(influence_columns):
         def transform_influences(row: pd.DataFrame, influence_columns: List[str]):
             if not row[influence_columns].any():
                 return pd.NA
@@ -137,7 +136,11 @@ class DataTransformer:
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
-        self.account_df.drop(self.account_df.columns.difference(["accountName", "isBanned"]), axis=1, inplace=True)
+        self.account_df.drop(
+            self.account_df.columns.difference(["accountName", "isBanned"]),
+            axis=1,
+            inplace=True,
+        )
 
     def _clean_item_table(self):
         """
@@ -569,8 +572,7 @@ def main():
         UniqueDataTransformer()
     )  # eventually a system for sending the right JSON-data to the correct data-transformers need to be implemented
     data_transformer.transform_into_tables(json_data=json_data)
-    
-    
+
     return 0
 
 
