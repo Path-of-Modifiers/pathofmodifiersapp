@@ -17,7 +17,7 @@ class DetectorBase:
 
     def _general_filter(self, df: pd.DataFrame) -> pd.DataFrame:
         """
-        Filtering away items that are never usefull
+        Filtering away items that are never useful
         """
         columns = df.columns
         if "ruthless" in columns:
@@ -28,18 +28,20 @@ class DetectorBase:
             df = df.loc[df["lockedToAccount"].isnull()]
         if "logbookMods" in columns:
             df = df.loc[df["logbookMods"].isnull()]
+        if "crucible" in columns:
+            df = df.loc[df["crucible"].isnull()]
+        if "scourged" in columns:
+            df = df.loc[df["scourged"].isnull()]
+        if "hybrid" in columns:
+            df = df.loc[df["hybrid"].isnull()]
+        if "ultimatumMods" in columns:
+            df = df.loc[df["ultimatumMods"].isnull()]
 
         return df
 
     def iterate_stashes(self, df: pd.DataFrame) -> tuple:
         """
-        Goes through all stashes searching for items that correspond to `self.wanted_items`.
-        `self.n_unique_items_found` is calculated by the number of keys in `self.found_items`.
-        The `_check_item` method, which is unique to item categories, is defined in a child class.
-
-        Parameters:
-            :param stashes: (list) A list of stash objects as defined by GGG.
-            :return: (tuple) Wanted stashes, how many new items was found, number of different items that have been found so far, stashes that still need to be filtered.
+        TODO
         """
 
         df_potential = self._general_filter(df)
