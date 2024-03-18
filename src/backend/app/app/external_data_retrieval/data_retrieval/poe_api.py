@@ -51,9 +51,13 @@ class APIHandler:
         df_temp = pd.json_normalize(stashes)
         df_temp = df_temp.explode(["items"])
         df_temp = df_temp.loc[~df_temp["items"].isnull()]
+        df_temp.drop("items", axis=1, inplace=True)
 
         df = pd.json_normalize(stashes, record_path=["items"])
         df["stash_index"] = df_temp.index
+
+        df_temp.index = df.index
+        df[df_temp.columns.to_list()] = df_temp
 
         return df
 
@@ -67,7 +71,7 @@ class APIHandler:
 
         return wanted_stashes
 
-    def _check_stashes(self, stashes: list) -> List[List[Dict[str, str]]]:
+    def _check_stashes(self, stashes: list) -> pd.DataFrame:
         """
         Parameters:
             :param stashes: (list) A list of stash objects
@@ -103,9 +107,9 @@ class APIHandler:
         )
         self.n_unique_items_found = n_total_unique_items
 
-        wanted_stashes = self._df_to_json(df_wanted, stashes)
+        # wanted_stashes = self._df_to_json(df_wanted, stashes)
 
-        return wanted_stashes
+        return df_wanted
 
     def _initialize_stream(self, next_change_id) -> tuple:
         """
@@ -149,7 +153,7 @@ class APIHandler:
             :param first_stashes: (list) A list of stash objects which have already been found.
         """
         next_change_id, new_stashes = self._initialize_stream(initial_next_change_id)
-        stashes = []
+        df = pd.DataFrame()
 
         iteration = 2
         session = aiohttp.ClientSession(headers=self.headers)
@@ -163,8 +167,8 @@ class APIHandler:
                     self._start_next_request(session, next_change_id=next_change_id)
                 )
 
-                wanted_stashes = self._check_stashes(stashes=new_stashes)
-                stashes += wanted_stashes
+                df_wanted = self._check_stashes(stashes=new_stashes)
+                df = pd.concat((df, df_wanted))
 
                 self.iteration_pbar.update()
 
