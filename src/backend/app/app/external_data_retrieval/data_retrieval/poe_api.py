@@ -8,7 +8,7 @@ from tqdm import tqdm
 from datetime import datetime
 from typing import List, Union, Tuple, Dict, Coroutine
 
-from app.external_data_retrieval.detectors.unique_detector_v2 import (
+from app.external_data_retrieval.detectors.unique_detector import (
     UniqueJewelDetector,
     UniqueDetector,
 )
