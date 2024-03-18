@@ -114,7 +114,7 @@ class APIHandler:
 
     def _initialize_stream(self, next_change_id: str) -> Tuple[str, List]:
         """
-        TODO
+        Makes an initial, synchronous, API call.
         """
         response = requests.get(
             self.url, headers=self.headers, params={"id": next_change_id}
