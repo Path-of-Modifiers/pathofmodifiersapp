@@ -1,0 +1,195 @@
+[
+  {
+    "id": "51e54c21f26d044438989f2582c0fed51d667dacf323a5fa12a9d9ab96e6ca0f",
+    "public": true,
+    "accountName": "Skondr",
+    "stash": "Торговля",
+    "stashType": "PremiumStash",
+    "league": "Affliction",
+    "items": [
+      {
+        "verified": false,
+        "w": 1,
+        "h": 1,
+        "icon": "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvSmV3ZWxzL0thcnVpQ2l2aWxpemF0aW9uIiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/04aefd20e6/KaruiCivilization.png",
+        "support": false,
+        "stackSize": 1,
+        "maxStackSize": 1,
+        "league": "Affliction",
+        "id": "519811b7282a13d5611b3c9e14dccb4ff422295ebc06a9a7232b354f36611e16",
+        "influences": {
+          "shaper": true
+        },
+        "elder": false,
+        "shaper": true,
+        "searing": false,
+        "tangled": false,
+        "abyssJewel": false,
+        "delve": false,
+        "fractured": false,
+        "synthesized": false,
+        "sockets": [
+          {
+            "group": 0,
+            "attr": "D",
+            "sColour": "G"
+          },
+          {
+            "group": 0,
+            "attr": "S",
+            "sColour": "R"
+          },
+          {
+            "group": 0,
+            "attr": "S",
+            "sColour": "R"
+          },
+          {
+            "group": 0,
+            "attr": "I",
+            "sColour": "B"
+          }
+        ],
+        "socketedItems": [{ "id": "51e54c21" }],
+        "name": "Lethal Pride",
+        "typeLine": "Timeless Jewel",
+        "baseType": "Timeless Jewel",
+        "rarity": "Unique",
+        "identified": true,
+        "itemLevel": 84,
+        "ilvl": 84,
+        "note": "~price 1 divine",
+        "forum_note": "you can find me in game",
+        "lockedToCharacter": false,
+        "lockedToAccount": false,
+        "duplicated": false,
+        "split": false,
+        "corrupted": false,
+        "unmodifiable": false,
+        "cisRaceReward": false,
+        "seaRaceReward": false,
+        "thRaceReward": false,
+        "properties": [
+          {
+            "name": "Limited to",
+            "values": [["1 Historic", 0]],
+            "displayMode": 0
+          },
+          {
+            "name": "Radius",
+            "values": [["Large", 0]],
+            "displayMode": 0,
+            "type": 26
+          }
+        ],
+        "noteableProperties": [
+          {
+            "name": "Limited to",
+            "values": [["1 Historic", 0]],
+            "displayMode": 0
+          },
+          {
+            "name": "Radius",
+            "values": [["Large", 0]],
+            "displayMode": 0,
+            "type": 26
+          }
+        ],
+        "requirements": [
+          {
+            "name": "Limited to",
+            "values": [["1 Historic", 0]],
+            "displayMode": 0
+          }
+        ],
+        "additionalProperties": [
+          {
+            "name": "Limited to",
+            "values": [["1 Historic", 0]],
+            "displayMode": 0
+          }
+        ],
+        "nextLevelRequirements": [
+          {
+            "name": "Limited to",
+            "values": [["1 Historic", 0]],
+            "displayMode": 0
+          }
+        ],
+        "talismanTier": 0,
+        "rewards": [
+          {
+            "label": "hello",
+            "rewards": { "rewardType1": 100 }
+          }
+        ],
+        "secDescrText": "Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.",
+        "utilityMods": [
+          "Commanded leadership over 17692 warriors under Rakiata\nPassives in radius are Conquered by the Karui"
+        ],
+        "logbookMods": [
+          {
+            "name": "Explosive radious",
+            "faction": { "id": "Dragon", "name": "Rider" },
+            "mods": ["Explode", "Beast"]
+          }
+        ],
+        "enchantMods": ["Enchant example 1"],
+        "scourgeMods": ["Scourge example 1"],
+        "implicitMods": ["Historic"],
+        "ultimatumMods": [{ "type": "Ultimatum example 1", "tier": 4 }],
+        "explicitMods": [
+          "Commanded leadership over 17692 warriors under Rakiata\nPassives in radius are Conquered by the Karui",
+          "Historic"
+        ],
+        "craftedMods": ["Crafted example 1"],
+        "fracturedMods": ["Fractured example 1"],
+        "crucibleMods": ["Crucible example 1"],
+        "cosmeticMods": ["Cosmetic example 1"],
+        "veiledMods": ["Veiled example 1"],
+        "veiled": true,
+        "descrText": "Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.",
+        "flavourText": [
+          "They believed themselves the greatest warriors, but that savagery turned upon their own."
+        ],
+        "flavourTextParsed": [
+          "They believed themselves the greatest warriors, but that savagery turned upon their own."
+        ],
+        "flavourTextNote": "They believed themselves the greatest warriors, but that savagery turned upon their own.",
+        "prophecyText": "Place into an allocated Jewel Socket on the Passive Skill Tree. Right click to remove from the Socket.",
+        "isRelic": true,
+        "foilVariation": 0,
+        "replica": false,
+        "foreseeing": false,
+        "incubatedItem": {
+          "name": "Fragment Item",
+          "level": 68,
+          "progress": 1368,
+          "total": 9030
+        },
+        "scourged": {
+            "tier": 1,
+            "level": 1,
+            "progress": 0,
+            "total": 100
+        },
+        "crucible": {
+            "layout": "yoyo",
+            "nodes": {"skill": 1}
+        },
+        "ruthless": false,
+        "frameType": 3,
+        "artFilename": "KaruiCivilization",
+        "hybrid": {"isVaalGem": true},
+        "extended": {
+          "category": "jewels"
+        },
+        "x": 6,
+        "y": 0,
+        "inventoryId": "Stash2",
+        "socket": 0,
+        "colour": "R"
+      }
+    ]
+  }
+]
