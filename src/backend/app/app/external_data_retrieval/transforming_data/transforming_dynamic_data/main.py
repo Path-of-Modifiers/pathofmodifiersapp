@@ -135,6 +135,7 @@ class DataTransformer:
             "note",
             "extended.subcategories",
             "extended.category",
+            "abyssJewel",
             "implicitMods",
             "influences.shaper",
             "influences.elder",
