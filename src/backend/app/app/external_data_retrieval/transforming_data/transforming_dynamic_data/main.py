@@ -1,4 +1,5 @@
 import json
+from typing import List
 import pandas as pd
 
 
@@ -6,7 +7,7 @@ def load_test_data():
     """
     Temporary test data loader
     """
-    with open("testing_data/2024_01_24 22_28.json", encoding="utf8") as infile:
+    with open("testing_data/all_properties_test.json", encoding="utf8") as infile:
         data = json.load(infile)
 
     return data
@@ -67,6 +68,9 @@ class DataTransformer:
         """
         item_df = self.item_df
         currency_series = item_df["note"].str.split(" ")
+        influence_columns = [
+            column for column in item_df.columns if "influences" in column
+        ]
 
         def get_currency_amount(element):
             if isinstance(element, list):
@@ -79,6 +83,23 @@ class DataTransformer:
                 return element[2] if element[0] in ["~b/o", "~price"] else ""
             else:
                 return ""
+
+        # def transform_influences(influence_columns):
+        def transform_influences(row: pd.DataFrame, influence_columns: List[str]):
+            if not row[influence_columns].any():
+                return pd.NA
+            else:
+                influence_dict = {}
+                for influence_column in influence_columns:
+                    if row[influence_column]:
+                        influence_dict[influence_column.replace("influences.", "")] = (
+                            True
+                        )
+                return influence_dict
+
+        item_df["influences"] = item_df.apply(
+            lambda row: transform_influences(row, influence_columns), axis=1
+        )
 
         item_df["currency_amount"] = currency_series.apply(get_currency_amount)
         item_df["currency_type"] = currency_series.apply(get_currency_type)
@@ -102,26 +123,35 @@ class DataTransformer:
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
+        drop_list = [
+            "verified",
+            "w",
+            "h",
+            "support",
+            "league",
+            "descrText",
+            "flavourText",
+            "frameType",
+            "x",
+            "y",
+            "requirements",
+            "ruthless",
+            "note",
+            "extended.subcategories",
+            "extended.category",
+            "implicitMods",
+            "influences.shaper",
+            "influences.elder",
+            "influences.crusader",
+            "influences.hunter",
+            "influences.redeemer",
+            "influences.warlord",
+        ]
         self.item_df.drop(
-            [
-                "verified",
-                "w",
-                "h",
-                "league",
-                "descrText",
-                "flavourText",
-                "frameType",
-                "x",
-                "y",
-                "requirements",
-                "ruthless",
-                "note",
-                "extended.subcategories",
-                "extended.category",
-                "implicitMods",
-            ],
+            drop_list,
             axis=1,
             inplace=True,
+            errors="ignore",
         )
 
     def _clean_item_modifier_table(self):
