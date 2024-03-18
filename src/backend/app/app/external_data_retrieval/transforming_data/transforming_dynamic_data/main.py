@@ -46,6 +46,7 @@ class DataTransformer:
         )  # + n_items_in_db <------------ Needs to be implemented: TODO
         item_df.rename(columns={"id": "gameItemId"}, inplace=True)
         item_df.rename(columns={"icon": "iconUrl"}, inplace=True)
+        item_df.rename(columns={"forum_note": "forumNote"}, inplace=True)
 
         self.item_df = item_df
 
@@ -128,14 +129,9 @@ class DataTransformer:
             "w",
             "h",
             "support",
-            "league",
-            "descrText",
-            "flavourText",
-            "frameType",
-            "x",
-            "y",
-            "requirements",
-            "ruthless",
+            "stackSize",
+            "maxStackSize",
+            "stackSizeText",
             "note",
             "extended.subcategories",
             "extended.category",
@@ -146,6 +142,81 @@ class DataTransformer:
             "influences.hunter",
             "influences.redeemer",
             "influences.warlord",
+            "sockets",
+            "socketedItems",
+            "ilvl",
+            "lockedToAccount",
+            "lockedToCharacter",
+            "duplicated",
+            "split",
+            "unmodifiable",
+            "cisRaceReward",
+            "seaRaceReward",
+            "thRaceReward",
+            "properties",
+            "noteableProperties",
+            "additionalProperties",
+            "nextLevelRequirements",
+            "talismanTier",
+            "rewards",
+            "secDescrText",
+            "utilityMods",
+            "logbookMods",
+            "enchantMods",
+            "scourgeMods",
+            "ultimatumMods",
+            "explicitMods",
+            "craftedMods",
+            "fracturedMods",
+            "crucibleMods",
+            "cosmeticMods",
+            "veiledMods",
+            "veiled",
+            "flavourTextParsed",
+            "flavourTextNote",
+            "prophecyText",
+            "isRelic",
+            "foreseeing",
+            "artFilename",
+            "inventoryId",
+            "socket",
+            "colour",
+            "incubatedItem.name",
+            "incubatedItem.level",
+            "incubatedItem.progress",
+            "incubatedItem.total",
+            "scourged.tier",
+            "scourged.level",
+            "scourged.progress",
+            "scourged.total",
+            "crucible.layout",
+            "crucible.nodes",
+            "crucible.nodes.stats",
+            "crucible.nodes.skill",
+            "crucible.nodes.tier",
+            "crucible.nodes.icon",
+            "crucible.nodes.allocated",
+            "crucible.nodes.isNoteable",
+            "crucible.nodes.orbit",
+            "crucible.nodes.orbitIndex",
+            "crucible.nodes.out",
+            "crucible.nodes.in",
+            "crucible.nodes.reminderText",
+            "crucible.nodes.isReward",
+            "hybrid.isVaalGem",
+            "hybrid.baseTypeName",
+            "hybrid.properties",
+            "hybrid.explicitMods",
+            "hybrid.secDescrText",
+            "extended.prefixes",
+            "extended.suffixes",
+            "descrText",
+            "flavourText",
+            "frameType",
+            "x",
+            "y",
+            "requirements",
+            "ruthless",
         ]
         self.item_df.drop(
             drop_list,
@@ -284,8 +355,8 @@ class DataTransformer:
             positive elements.
             """
             df.loc[:, "alternateEffect"] = df["effect"]
-            df["alternateEffect"] = df["alternateEffect"].str.replace("+#", "-#")
-            df["alternateEffect"] = df["alternateEffect"].str.replace(
+            df.loc[:, "alternateEffect"] = df["alternateEffect"].str.replace("+#", "-#")
+            df.loc[:, "alternateEffect"] = df["alternateEffect"].str.replace(
                 "increased", "reduced"
             )
             df.loc[
