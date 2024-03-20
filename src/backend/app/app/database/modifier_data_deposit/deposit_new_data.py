@@ -4,8 +4,8 @@ import os
 import pandas as pd
 from typing import Iterator
 
-from app.database.data_deposit.processing_modules import add_regex
-from app.database.data_deposit.utils import remove_empty_fields
+from app.database.modifier_data_deposit.processing_modules import add_regex
+from app.database.modifier_data_deposit.utils import remove_empty_fields
 
 logging.basicConfig(
     filename="history.log",
@@ -13,7 +13,7 @@ logging.basicConfig(
     format="%(asctime)s:%(levelname)-8s:%(name)s: %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
-
+TESTING = True
 BASEURL = "http://localhost"  # TODO update when on virtual machine
 
 
@@ -64,6 +64,8 @@ class DataDepositer:
         for filename in os.listdir(self.new_data_location):
             filepath = os.path.join(self.new_data_location, filename)
             self.logger.info(f"Deleting '{filename}'")
+            if TESTING:
+                os.rename(filepath, filepath.replace("new_data", "deposited_data"))
             # os.remove(filepath)
             self.logger.info(f"Deleted '{filename}'")
 
