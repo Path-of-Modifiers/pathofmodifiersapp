@@ -13,7 +13,7 @@ def load_test_data():
     return data
 
 
-class DataTransformer:
+class PoeAPIDataTransformer:
 
     def _create_stash_table(self, json_data: list) -> None:
         """
