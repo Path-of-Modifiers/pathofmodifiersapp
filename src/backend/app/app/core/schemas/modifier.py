@@ -11,7 +11,7 @@ class _BaseModifier(_pydantic.BaseModel):
     position: int
     minRoll: Optional[float] = None
     maxRoll: Optional[float] = None
-    textRoll: Optional[str] = None
+    textRolls: Optional[str] = None
     static: Optional[bool] = None
     effect: str
     regex: Optional[str] = None
