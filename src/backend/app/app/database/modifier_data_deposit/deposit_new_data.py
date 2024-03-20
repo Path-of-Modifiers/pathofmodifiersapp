@@ -46,9 +46,11 @@ class DataDepositer:
         return df
 
     def _insert_data(self, df: pd.DataFrame) -> None:
-        df = df.fillna("")
-        df_json = df.to_dict("records")
-        df_json = remove_empty_fields(df_json)
+        df = df.fillna("")  # requests can not handle na
+        df_json = df.to_dict(
+            "records"
+        )  # Converts to a list of dicts, where each dict is a row
+        df_json = remove_empty_fields(df_json)  # Removes empty fields element-wise
 
         self.logger.info("Inserting data into database.")
         response = requests.post(
@@ -66,7 +68,8 @@ class DataDepositer:
             self.logger.info(f"Deleting '{filename}'")
             if TESTING:
                 os.rename(filepath, filepath.replace("new_data", "deposited_data"))
-            # os.remove(filepath)
+            else:
+                os.remove(filepath)
             self.logger.info(f"Deleted '{filename}'")
 
     def deposit_data(self) -> None:
