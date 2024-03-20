@@ -4,5 +4,5 @@
 2. Paste file into `./new_data`
 3. Run `deposit_new_data.py`
 
-## Limitations
-If the file contains duplicate information, either duplicated infile or already present in the database. Information is considered duplicate when a previous entry contains the same combination of `position` and `effect`.
+## Without a permanent database
+While still testing and developing, files need to be moved from `.\deposited_data` into `.\new_data` again.
