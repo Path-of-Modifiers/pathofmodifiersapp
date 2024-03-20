@@ -54,6 +54,9 @@ class DataDepositer:
 
     def _remove_duplicates(self, new_modifiers_df: pd.DataFrame) -> pd.DataFrame:
         current_modifers_df = self._get_current_modifiers()
+
+        new_modifiers_df.drop_duplicates(inplace=True)
+
         if current_modifers_df is None:
             self.logger.info("Skipping duplicate removing due to no previous data")
             return new_modifiers_df
