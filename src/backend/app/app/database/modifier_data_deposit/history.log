@@ -229,3 +229,354 @@
 2024-03-20 12:40:15:INFO    :__main__: Successfully inserted data into database.
 2024-03-20 12:40:15:INFO    :__main__: Deleting 'ThatWhichWasTaken.csv'
 2024-03-20 12:40:15:INFO    :__main__: Deleted 'ThatWhichWasTaken.csv'
+2024-03-20 16:18:55:INFO    :__main__: Loading new data from 'BrutalRestraint.csv'.
+2024-03-20 16:18:55:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:18:55:INFO    :__main__: Recording attached comments:
+2024-03-20 16:18:55:INFO    :__main__: End of attached comments.
+2024-03-20 16:18:55:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:18:55:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:18:55:INFO    :__main__: Inserting data into database.
+2024-03-20 16:21:36:INFO    :__main__: Loading new data from 'BrutalRestraint.csv'.
+2024-03-20 16:21:36:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:21:36:INFO    :__main__: Recording attached comments:
+2024-03-20 16:21:36:INFO    :__main__: End of attached comments.
+2024-03-20 16:21:36:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:21:36:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:21:36:INFO    :__main__: Inserting data into database.
+2024-03-20 16:34:32:INFO    :__main__: Loading new data from 'BrutalRestraint.csv'.
+2024-03-20 16:34:32:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:34:32:INFO    :__main__: Recording attached comments:
+2024-03-20 16:34:32:INFO    :__main__: End of attached comments.
+2024-03-20 16:34:32:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:34:32:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:34:32:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:34:32:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:34:32:INFO    :__main__: Inserting data into database.
+2024-03-20 16:34:55:INFO    :__main__: Loading new data from 'BrutalRestraint.csv'.
+2024-03-20 16:34:55:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:34:55:INFO    :__main__: Recording attached comments:
+2024-03-20 16:34:55:INFO    :__main__: End of attached comments.
+2024-03-20 16:34:55:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:34:55:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:34:55:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:34:55:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:34:55:INFO    :__main__: Inserting data into database.
+2024-03-20 16:37:44:INFO    :__main__: Loading new data from 'BrutalRestraint.csv'.
+2024-03-20 16:37:44:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:37:44:INFO    :__main__: Recording attached comments:
+2024-03-20 16:37:44:INFO    :__main__: End of attached comments.
+2024-03-20 16:37:44:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:37:44:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:37:44:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:37:44:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:37:44:INFO    :__main__: Inserting data into database.
+2024-03-20 16:38:01:INFO    :__main__: Loading new data from 'BrutalRestraint.csv'.
+2024-03-20 16:38:01:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:38:01:INFO    :__main__: Recording attached comments:
+2024-03-20 16:38:01:INFO    :__main__: End of attached comments.
+2024-03-20 16:38:01:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:38:01:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:38:01:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:38:01:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:38:01:INFO    :__main__: Inserting data into database.
+2024-03-20 16:44:24:INFO    :__main__: Loading new data from 'BrutalRestraint.csv'.
+2024-03-20 16:44:24:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:44:24:INFO    :__main__: Recording attached comments:
+2024-03-20 16:44:24:INFO    :__main__: End of attached comments.
+2024-03-20 16:44:24:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:44:24:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:44:24:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:44:24:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:44:24:INFO    :__main__: Inserting data into database.
+2024-03-20 16:47:26:INFO    :__main__: Loading new data from 'BrutalRestraint.csv'.
+2024-03-20 16:47:26:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:47:26:INFO    :__main__: Recording attached comments:
+2024-03-20 16:47:26:INFO    :__main__: End of attached comments.
+2024-03-20 16:47:26:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:47:26:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:47:26:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:48:23:INFO    :__main__: Loading new data from 'BrutalRestraint.csv'.
+2024-03-20 16:48:23:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:48:23:INFO    :__main__: Recording attached comments:
+2024-03-20 16:48:23:INFO    :__main__: End of attached comments.
+2024-03-20 16:48:23:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:48:23:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:48:23:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:48:23:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Loading new data from 'BrutalRestraint.csv'.
+2024-03-20 16:49:35:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:49:35:INFO    :__main__: Recording attached comments:
+2024-03-20 16:49:35:INFO    :__main__: End of attached comments.
+2024-03-20 16:49:35:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:49:35:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:49:35:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Inserting data into database.
+2024-03-20 16:49:35:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:49:35:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 16:49:35:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:49:35:INFO    :__main__: Recording attached comments:
+2024-03-20 16:49:35:INFO    :__main__: End of attached comments.
+2024-03-20 16:49:35:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:49:35:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:49:35:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Inserting data into database.
+2024-03-20 16:49:35:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:49:35:INFO    :__main__: Loading new data from 'ForbiddenFlame.csv'.
+2024-03-20 16:49:35:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:49:35:INFO    :__main__: Recording attached comments:
+2024-03-20 16:49:35:INFO    :__main__: End of attached comments.
+2024-03-20 16:49:35:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:49:35:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:49:35:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Inserting data into database.
+2024-03-20 16:49:35:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:49:35:INFO    :__main__: Loading new data from 'ForbiddenFlesh.csv'.
+2024-03-20 16:49:35:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:49:35:INFO    :__main__: Recording attached comments:
+2024-03-20 16:49:35:INFO    :__main__: End of attached comments.
+2024-03-20 16:49:35:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:49:35:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:49:35:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Inserting data into database.
+2024-03-20 16:49:35:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:49:35:INFO    :__main__: Loading new data from 'GloriousVanity.csv'.
+2024-03-20 16:49:35:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:49:35:INFO    :__main__: Recording attached comments:
+2024-03-20 16:49:35:INFO    :__main__: End of attached comments.
+2024-03-20 16:49:35:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:49:35:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:49:35:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Inserting data into database.
+2024-03-20 16:49:35:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:49:35:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 16:49:35:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:49:35:INFO    :__main__: Recording attached comments:
+2024-03-20 16:49:35:INFO    :__main__: End of attached comments.
+2024-03-20 16:49:35:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:49:35:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:49:35:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Inserting data into database.
+2024-03-20 16:49:35:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:49:35:INFO    :__main__: Loading new data from 'ImpossibleEscape.csv'.
+2024-03-20 16:49:35:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:49:35:INFO    :__main__: Recording attached comments:
+2024-03-20 16:49:35:INFO    :__main__: End of attached comments.
+2024-03-20 16:49:35:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:49:35:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:49:35:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Inserting data into database.
+2024-03-20 16:49:35:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:49:35:INFO    :__main__: Loading new data from 'LethalPride.csv'.
+2024-03-20 16:49:35:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:49:35:INFO    :__main__: Recording attached comments:
+2024-03-20 16:49:35:INFO    :__main__: End of attached comments.
+2024-03-20 16:49:35:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:49:35:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:49:35:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Inserting data into database.
+2024-03-20 16:49:35:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:49:35:INFO    :__main__: Loading new data from 'MilitantFaith.csv'.
+2024-03-20 16:49:35:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:49:35:INFO    :__main__: Recording attached comments:
+2024-03-20 16:49:35:INFO    :__main__: End of attached comments.
+2024-03-20 16:49:35:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:49:35:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:49:35:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Inserting data into database.
+2024-03-20 16:49:35:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:49:35:INFO    :__main__: Loading new data from 'Voices.csv'.
+2024-03-20 16:49:35:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:49:35:INFO    :__main__: Recording attached comments:
+2024-03-20 16:49:35:INFO    :__main__: End of attached comments.
+2024-03-20 16:49:35:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:49:35:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:49:35:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:49:35:INFO    :__main__: Inserting data into database.
+2024-03-20 16:49:35:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:49:35:INFO    :__main__: Deleting 'BrutalRestraint.csv'
+2024-03-20 16:49:35:INFO    :__main__: Deleted 'BrutalRestraint.csv'
+2024-03-20 16:49:35:INFO    :__main__: Deleting 'ElegantHubris.csv'
+2024-03-20 16:49:35:INFO    :__main__: Deleted 'ElegantHubris.csv'
+2024-03-20 16:49:35:INFO    :__main__: Deleting 'ForbiddenFlame.csv'
+2024-03-20 16:49:35:INFO    :__main__: Deleted 'ForbiddenFlame.csv'
+2024-03-20 16:49:35:INFO    :__main__: Deleting 'ForbiddenFlesh.csv'
+2024-03-20 16:49:35:INFO    :__main__: Deleted 'ForbiddenFlesh.csv'
+2024-03-20 16:49:35:INFO    :__main__: Deleting 'GloriousVanity.csv'
+2024-03-20 16:49:35:INFO    :__main__: Deleted 'GloriousVanity.csv'
+2024-03-20 16:49:35:INFO    :__main__: Deleting 'GrandSpectrum.csv'
+2024-03-20 16:49:35:INFO    :__main__: Deleted 'GrandSpectrum.csv'
+2024-03-20 16:49:35:INFO    :__main__: Deleting 'ImpossibleEscape.csv'
+2024-03-20 16:49:35:INFO    :__main__: Deleted 'ImpossibleEscape.csv'
+2024-03-20 16:49:35:INFO    :__main__: Deleting 'LethalPride.csv'
+2024-03-20 16:49:35:INFO    :__main__: Deleted 'LethalPride.csv'
+2024-03-20 16:49:35:INFO    :__main__: Deleting 'MilitantFaith.csv'
+2024-03-20 16:49:35:INFO    :__main__: Deleted 'MilitantFaith.csv'
+2024-03-20 16:49:35:INFO    :__main__: Deleting 'Voices.csv'
+2024-03-20 16:49:35:INFO    :__main__: Deleted 'Voices.csv'
+2024-03-20 16:50:11:INFO    :__main__: Loading new data from 'BrutalRestraint.csv'.
+2024-03-20 16:50:11:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:50:11:INFO    :__main__: Recording attached comments:
+2024-03-20 16:50:11:INFO    :__main__: End of attached comments.
+2024-03-20 16:50:11:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:50:11:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:50:11:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:50:11:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:50:11:INFO    :__main__: Inserting data into database.
+2024-03-20 16:50:11:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:50:11:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 16:50:11:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:50:11:INFO    :__main__: Recording attached comments:
+2024-03-20 16:50:11:INFO    :__main__: End of attached comments.
+2024-03-20 16:50:11:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:50:11:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:50:11:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:50:11:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:50:11:INFO    :__main__: Inserting data into database.
+2024-03-20 16:50:11:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:50:11:INFO    :__main__: Loading new data from 'ForbiddenFlame.csv'.
+2024-03-20 16:50:11:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:50:11:INFO    :__main__: Recording attached comments:
+2024-03-20 16:50:11:INFO    :__main__: End of attached comments.
+2024-03-20 16:50:11:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:50:12:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Inserting data into database.
+2024-03-20 16:50:12:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:50:12:INFO    :__main__: Loading new data from 'ForbiddenFlesh.csv'.
+2024-03-20 16:50:12:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:50:12:INFO    :__main__: Recording attached comments:
+2024-03-20 16:50:12:INFO    :__main__: End of attached comments.
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:50:12:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Inserting data into database.
+2024-03-20 16:50:12:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:50:12:INFO    :__main__: Loading new data from 'GloriousVanity.csv'.
+2024-03-20 16:50:12:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:50:12:INFO    :__main__: Recording attached comments:
+2024-03-20 16:50:12:INFO    :__main__: End of attached comments.
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:50:12:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Inserting data into database.
+2024-03-20 16:50:12:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:50:12:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 16:50:12:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:50:12:INFO    :__main__: Recording attached comments:
+2024-03-20 16:50:12:INFO    :__main__: End of attached comments.
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:50:12:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Inserting data into database.
+2024-03-20 16:50:12:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:50:12:INFO    :__main__: Loading new data from 'ImpossibleEscape.csv'.
+2024-03-20 16:50:12:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:50:12:INFO    :__main__: Recording attached comments:
+2024-03-20 16:50:12:INFO    :__main__: End of attached comments.
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:50:12:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Inserting data into database.
+2024-03-20 16:50:12:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:50:12:INFO    :__main__: Loading new data from 'LethalPride.csv'.
+2024-03-20 16:50:12:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:50:12:INFO    :__main__: Recording attached comments:
+2024-03-20 16:50:12:INFO    :__main__: End of attached comments.
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:50:12:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Inserting data into database.
+2024-03-20 16:50:12:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:50:12:INFO    :__main__: Loading new data from 'MilitantFaith.csv'.
+2024-03-20 16:50:12:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:50:12:INFO    :__main__: Recording attached comments:
+2024-03-20 16:50:12:INFO    :__main__: End of attached comments.
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:50:12:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Inserting data into database.
+2024-03-20 16:50:12:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:50:12:INFO    :__main__: Loading new data from 'SublimeVision.csv'.
+2024-03-20 16:50:12:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:50:12:INFO    :__main__: Recording attached comments:
+2024-03-20 16:50:12:INFO    :__main__: End of attached comments.
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:50:12:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Inserting data into database.
+2024-03-20 16:50:12:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:50:12:INFO    :__main__: Loading new data from 'ThatWhichWasTaken.csv'.
+2024-03-20 16:50:12:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:50:12:INFO    :__main__: Recording attached comments:
+2024-03-20 16:50:12:INFO    :__main__: End of attached comments.
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:50:12:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Inserting data into database.
+2024-03-20 16:50:12:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:50:12:INFO    :__main__: Loading new data from 'Voices.csv'.
+2024-03-20 16:50:12:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:50:12:INFO    :__main__: Recording attached comments:
+2024-03-20 16:50:12:INFO    :__main__: End of attached comments.
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:50:12:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Inserting data into database.
+2024-03-20 16:50:12:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:50:12:INFO    :__main__: Loading new data from 'WatchersEye.csv'.
+2024-03-20 16:50:12:INFO    :__main__: Successfully loaded new data.
+2024-03-20 16:50:12:INFO    :__main__: Recording attached comments:
+2024-03-20 16:50:12:INFO    :__main__: # This is a comment
+2024-03-20 16:50:12:INFO    :__main__: End of attached comments.
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 16:50:12:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 16:50:12:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 16:50:12:INFO    :__main__: Inserting data into database.
+2024-03-20 16:50:12:INFO    :__main__: Successfully inserted data into database.
+2024-03-20 16:50:12:INFO    :__main__: Deleting 'BrutalRestraint.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleted 'BrutalRestraint.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleting 'ElegantHubris.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleted 'ElegantHubris.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleting 'ForbiddenFlame.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleted 'ForbiddenFlame.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleting 'ForbiddenFlesh.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleted 'ForbiddenFlesh.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleting 'GloriousVanity.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleted 'GloriousVanity.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleting 'GrandSpectrum.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleted 'GrandSpectrum.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleting 'ImpossibleEscape.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleted 'ImpossibleEscape.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleting 'LethalPride.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleted 'LethalPride.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleting 'MilitantFaith.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleted 'MilitantFaith.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleting 'SublimeVision.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleted 'SublimeVision.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleting 'ThatWhichWasTaken.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleted 'ThatWhichWasTaken.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleting 'Voices.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleted 'Voices.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleting 'WatchersEye.csv'
+2024-03-20 16:50:12:INFO    :__main__: Deleted 'WatchersEye.csv'
