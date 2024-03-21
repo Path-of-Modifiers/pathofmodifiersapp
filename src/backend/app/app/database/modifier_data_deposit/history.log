@@ -1305,3 +1305,1763 @@
 2024-03-21 08:17:51:INFO    :__main__: Successfully inserted data into database.
 2024-03-21 08:17:51:INFO    :__main__: Deleting 'ElegantHubris.csv'
 2024-03-21 08:17:51:INFO    :__main__: Deleted 'ElegantHubris.csv'
+2024-03-21 12:52:33:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 12:52:33:INFO    :__main__: Successfully loaded new data.
+2024-03-21 12:52:33:INFO    :__main__: Recording attached comments:
+2024-03-21 12:52:33:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 12:52:33:INFO    :__main__: End of attached comments.
+2024-03-21 12:52:33:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 12:52:33:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 12:52:33:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 12:52:33:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 12:52:33:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 12:52:33:INFO    :__main__: Inserting data into database.
+2024-03-21 12:53:34:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 12:53:34:INFO    :__main__: Successfully loaded new data.
+2024-03-21 12:53:34:INFO    :__main__: Recording attached comments:
+2024-03-21 12:53:34:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 12:53:34:INFO    :__main__: End of attached comments.
+2024-03-21 12:53:34:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 12:53:34:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 12:53:34:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 12:53:34:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 12:53:34:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 12:53:34:INFO    :__main__: Inserting data into database.
+2024-03-21 12:54:57:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 12:54:57:INFO    :__main__: Successfully loaded new data.
+2024-03-21 12:54:57:INFO    :__main__: Recording attached comments:
+2024-03-21 12:54:57:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 12:54:57:INFO    :__main__: End of attached comments.
+2024-03-21 12:54:57:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 12:54:57:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 12:54:57:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 12:54:57:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 12:54:57:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 12:54:57:INFO    :__main__: Inserting data into database.
+2024-03-21 12:55:36:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 12:55:36:INFO    :__main__: Successfully loaded new data.
+2024-03-21 12:55:36:INFO    :__main__: Recording attached comments:
+2024-03-21 12:55:36:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 12:55:36:INFO    :__main__: End of attached comments.
+2024-03-21 12:55:36:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 12:55:36:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 12:55:36:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 12:55:36:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 12:55:36:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 12:55:36:INFO    :__main__: Inserting data into database.
+2024-03-21 12:55:36:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 12:55:36:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 12:55:36:INFO    :__main__: Successfully loaded new data.
+2024-03-21 12:55:36:INFO    :__main__: Recording attached comments:
+2024-03-21 12:55:36:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 12:55:36:INFO    :__main__: End of attached comments.
+2024-03-21 12:55:36:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 12:55:36:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 12:55:36:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 12:55:36:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 12:55:36:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 12:55:36:INFO    :__main__: Inserting data into database.
+2024-03-21 12:56:19:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 12:56:19:INFO    :__main__: Successfully loaded new data.
+2024-03-21 12:56:19:INFO    :__main__: Recording attached comments:
+2024-03-21 12:56:19:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 12:56:19:INFO    :__main__: End of attached comments.
+2024-03-21 12:56:19:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 12:56:19:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 12:56:19:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 12:56:19:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 12:56:19:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 12:56:19:INFO    :__main__: Inserting data into database.
+2024-03-21 12:56:19:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 12:56:19:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 12:56:19:INFO    :__main__: Successfully loaded new data.
+2024-03-21 12:56:19:INFO    :__main__: Recording attached comments:
+2024-03-21 12:56:19:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 12:56:19:INFO    :__main__: End of attached comments.
+2024-03-21 12:56:19:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 12:56:19:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 12:56:19:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 12:56:19:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 12:56:19:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 12:56:19:INFO    :__main__: Inserting data into database.
+2024-03-21 12:56:19:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 12:56:19:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 12:56:19:INFO    :__main__: Successfully loaded new data.
+2024-03-21 12:56:19:INFO    :__main__: Recording attached comments:
+2024-03-21 12:56:19:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 12:56:19:INFO    :__main__: End of attached comments.
+2024-03-21 12:56:19:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 12:56:19:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 12:56:19:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 12:56:19:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 12:56:19:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 12:56:19:INFO    :__main__: Inserting data into database.
+2024-03-21 13:01:27:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:01:27:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:01:27:INFO    :__main__: Recording attached comments:
+2024-03-21 13:01:27:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:01:27:INFO    :__main__: End of attached comments.
+2024-03-21 13:01:27:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:01:27:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:01:27:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:01:27:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:01:27:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:01:27:INFO    :__main__: Inserting data into database.
+2024-03-21 13:01:27:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:01:27:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:01:27:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:01:27:INFO    :__main__: Recording attached comments:
+2024-03-21 13:01:27:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:01:27:INFO    :__main__: End of attached comments.
+2024-03-21 13:01:27:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:01:27:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:01:27:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:01:27:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:01:27:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:01:27:INFO    :__main__: Inserting data into database.
+2024-03-21 13:01:27:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:01:27:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:01:27:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:01:27:INFO    :__main__: Recording attached comments:
+2024-03-21 13:01:27:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:01:27:INFO    :__main__: End of attached comments.
+2024-03-21 13:01:27:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:02:46:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:02:46:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:02:46:INFO    :__main__: Recording attached comments:
+2024-03-21 13:02:46:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:02:46:INFO    :__main__: End of attached comments.
+2024-03-21 13:02:46:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:02:46:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:02:46:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:02:46:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:02:46:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:02:46:INFO    :__main__: Inserting data into database.
+2024-03-21 13:02:46:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:02:46:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:02:46:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:02:46:INFO    :__main__: Recording attached comments:
+2024-03-21 13:02:46:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:02:46:INFO    :__main__: End of attached comments.
+2024-03-21 13:02:46:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:02:46:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:02:46:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:02:46:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:02:46:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:02:46:INFO    :__main__: Inserting data into database.
+2024-03-21 13:02:46:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:02:46:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:02:46:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:02:46:INFO    :__main__: Recording attached comments:
+2024-03-21 13:02:46:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:02:46:INFO    :__main__: End of attached comments.
+2024-03-21 13:02:46:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:03:19:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:03:19:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:03:19:INFO    :__main__: Recording attached comments:
+2024-03-21 13:03:19:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:03:19:INFO    :__main__: End of attached comments.
+2024-03-21 13:03:19:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:03:19:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:03:19:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:03:19:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:03:19:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:03:19:INFO    :__main__: Inserting data into database.
+2024-03-21 13:03:19:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:03:19:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:03:19:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:03:19:INFO    :__main__: Recording attached comments:
+2024-03-21 13:03:19:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:03:19:INFO    :__main__: End of attached comments.
+2024-03-21 13:03:19:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:03:19:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:03:19:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:03:19:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:03:19:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:03:19:INFO    :__main__: Inserting data into database.
+2024-03-21 13:03:19:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:03:19:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:03:19:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:03:19:INFO    :__main__: Recording attached comments:
+2024-03-21 13:03:19:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:03:19:INFO    :__main__: End of attached comments.
+2024-03-21 13:03:19:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:03:38:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:03:38:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:03:38:INFO    :__main__: Recording attached comments:
+2024-03-21 13:03:38:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:03:38:INFO    :__main__: End of attached comments.
+2024-03-21 13:03:38:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:03:38:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:03:38:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:03:39:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:03:39:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:03:39:INFO    :__main__: Inserting data into database.
+2024-03-21 13:03:39:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:03:39:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:03:39:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:03:39:INFO    :__main__: Recording attached comments:
+2024-03-21 13:03:39:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:03:39:INFO    :__main__: End of attached comments.
+2024-03-21 13:03:39:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:03:39:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:03:39:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:03:39:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:03:39:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:03:39:INFO    :__main__: Inserting data into database.
+2024-03-21 13:03:39:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:03:39:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:03:39:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:03:39:INFO    :__main__: Recording attached comments:
+2024-03-21 13:03:39:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:03:39:INFO    :__main__: End of attached comments.
+2024-03-21 13:03:39:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:04:30:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:04:30:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:04:30:INFO    :__main__: Recording attached comments:
+2024-03-21 13:04:30:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:04:30:INFO    :__main__: End of attached comments.
+2024-03-21 13:04:30:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:04:30:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:04:30:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:04:31:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:04:31:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:04:31:INFO    :__main__: Inserting data into database.
+2024-03-21 13:04:31:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:04:31:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:04:31:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:04:31:INFO    :__main__: Recording attached comments:
+2024-03-21 13:04:31:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:04:31:INFO    :__main__: End of attached comments.
+2024-03-21 13:04:31:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:04:31:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:04:31:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:04:31:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:04:31:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:04:31:INFO    :__main__: Inserting data into database.
+2024-03-21 13:04:31:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:04:31:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:04:31:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:04:31:INFO    :__main__: Recording attached comments:
+2024-03-21 13:04:31:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:04:31:INFO    :__main__: End of attached comments.
+2024-03-21 13:04:31:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:06:12:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:06:12:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:06:12:INFO    :__main__: Recording attached comments:
+2024-03-21 13:06:12:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:06:12:INFO    :__main__: End of attached comments.
+2024-03-21 13:06:12:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:06:12:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:06:12:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:06:12:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:06:12:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:06:12:INFO    :__main__: Inserting data into database.
+2024-03-21 13:06:12:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:06:12:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:06:12:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:06:12:INFO    :__main__: Recording attached comments:
+2024-03-21 13:06:12:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:06:12:INFO    :__main__: End of attached comments.
+2024-03-21 13:06:12:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:06:12:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:06:12:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:06:12:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:06:12:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:06:12:INFO    :__main__: Inserting data into database.
+2024-03-21 13:06:12:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:06:12:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:06:12:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:06:12:INFO    :__main__: Recording attached comments:
+2024-03-21 13:06:12:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:06:12:INFO    :__main__: End of attached comments.
+2024-03-21 13:06:12:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:06:39:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:06:39:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:06:39:INFO    :__main__: Recording attached comments:
+2024-03-21 13:06:39:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:06:39:INFO    :__main__: End of attached comments.
+2024-03-21 13:06:39:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:06:39:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:06:39:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:06:40:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:06:40:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:06:40:INFO    :__main__: Inserting data into database.
+2024-03-21 13:06:40:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:06:40:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:06:40:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:06:40:INFO    :__main__: Recording attached comments:
+2024-03-21 13:06:40:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:06:40:INFO    :__main__: End of attached comments.
+2024-03-21 13:06:40:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:06:40:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:06:40:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:06:40:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:06:40:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:06:40:INFO    :__main__: Inserting data into database.
+2024-03-21 13:06:40:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:06:40:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:06:40:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:06:40:INFO    :__main__: Recording attached comments:
+2024-03-21 13:06:40:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:06:40:INFO    :__main__: End of attached comments.
+2024-03-21 13:06:40:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:07:02:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:07:02:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:07:02:INFO    :__main__: Recording attached comments:
+2024-03-21 13:07:02:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:07:02:INFO    :__main__: End of attached comments.
+2024-03-21 13:07:02:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:07:02:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:07:02:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:07:02:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:07:02:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:07:02:INFO    :__main__: Inserting data into database.
+2024-03-21 13:07:02:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:07:02:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:07:02:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:07:02:INFO    :__main__: Recording attached comments:
+2024-03-21 13:07:02:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:07:02:INFO    :__main__: End of attached comments.
+2024-03-21 13:07:02:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:07:02:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:07:02:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:07:02:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:07:02:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:07:02:INFO    :__main__: Inserting data into database.
+2024-03-21 13:07:02:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:07:02:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:07:02:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:07:02:INFO    :__main__: Recording attached comments:
+2024-03-21 13:07:02:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:07:02:INFO    :__main__: End of attached comments.
+2024-03-21 13:07:02:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:08:39:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:08:39:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:08:39:INFO    :__main__: Recording attached comments:
+2024-03-21 13:08:39:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:08:39:INFO    :__main__: End of attached comments.
+2024-03-21 13:08:39:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:08:39:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:08:39:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:08:39:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:08:39:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:08:39:INFO    :__main__: Inserting data into database.
+2024-03-21 13:08:39:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:08:39:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:08:39:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:08:39:INFO    :__main__: Recording attached comments:
+2024-03-21 13:08:39:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:08:39:INFO    :__main__: End of attached comments.
+2024-03-21 13:08:39:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:08:39:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:08:39:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:08:39:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:08:39:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:08:39:INFO    :__main__: Inserting data into database.
+2024-03-21 13:08:39:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:08:39:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:10:11:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:10:46:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:10:46:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:10:46:INFO    :__main__: Recording attached comments:
+2024-03-21 13:10:46:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:10:46:INFO    :__main__: End of attached comments.
+2024-03-21 13:10:46:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:10:46:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:10:46:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:10:46:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:10:46:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:10:46:INFO    :__main__: Inserting data into database.
+2024-03-21 13:10:46:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:10:46:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:10:46:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:10:46:INFO    :__main__: Recording attached comments:
+2024-03-21 13:10:46:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:10:46:INFO    :__main__: End of attached comments.
+2024-03-21 13:10:46:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:10:46:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:10:46:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:10:46:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:10:46:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:10:46:INFO    :__main__: Inserting data into database.
+2024-03-21 13:10:46:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:10:46:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:10:46:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:10:46:INFO    :__main__: Recording attached comments:
+2024-03-21 13:10:46:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:10:46:INFO    :__main__: End of attached comments.
+2024-03-21 13:10:46:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:10:46:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:10:46:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:10:46:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:10:46:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:10:46:INFO    :__main__: Inserting data into database.
+2024-03-21 13:10:46:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:10:46:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:10:46:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:10:46:INFO    :__main__: Recording attached comments:
+2024-03-21 13:10:46:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:10:46:INFO    :__main__: End of attached comments.
+2024-03-21 13:10:46:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:10:46:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:10:46:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:10:46:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:10:46:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:10:46:INFO    :__main__: Inserting data into database.
+2024-03-21 13:11:53:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:11:53:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:11:53:INFO    :__main__: Recording attached comments:
+2024-03-21 13:11:53:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:11:53:INFO    :__main__: End of attached comments.
+2024-03-21 13:11:53:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:11:53:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:11:53:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:11:53:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:11:53:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:11:53:INFO    :__main__: Checking if duplicates contain updated information.
+2024-03-21 13:11:53:INFO    :__main__: Found a modifier with a higher 'maxRoll'.
+2024-03-21 13:11:53:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-03-21 13:11:53:INFO    :__main__: Inserting data into database.
+2024-03-21 13:11:53:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:11:53:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:11:53:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:11:53:INFO    :__main__: Recording attached comments:
+2024-03-21 13:11:53:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:11:53:INFO    :__main__: End of attached comments.
+2024-03-21 13:11:53:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:11:53:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:11:53:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:11:53:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:11:53:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:11:53:INFO    :__main__: Checking if duplicates contain updated information.
+2024-03-21 13:11:53:INFO    :__main__: Inserting data into database.
+2024-03-21 13:11:53:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:11:53:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:11:53:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:11:53:INFO    :__main__: Recording attached comments:
+2024-03-21 13:11:53:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:11:53:INFO    :__main__: End of attached comments.
+2024-03-21 13:11:53:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:11:53:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:11:53:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:11:53:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:11:53:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:11:53:INFO    :__main__: Checking if duplicates contain updated information.
+2024-03-21 13:11:53:INFO    :__main__: Inserting data into database.
+2024-03-21 13:11:53:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:11:53:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:11:53:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:11:53:INFO    :__main__: Recording attached comments:
+2024-03-21 13:11:53:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:11:53:INFO    :__main__: End of attached comments.
+2024-03-21 13:11:53:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:11:53:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:11:53:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:11:53:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:11:53:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:11:53:INFO    :__main__: Checking if duplicates contain updated information.
+2024-03-21 13:11:53:INFO    :__main__: Inserting data into database.
+2024-03-21 13:13:58:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:13:58:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:13:58:INFO    :__main__: Recording attached comments:
+2024-03-21 13:13:58:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:13:58:INFO    :__main__: End of attached comments.
+2024-03-21 13:13:58:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:13:58:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:13:58:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:13:58:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:13:58:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:13:58:INFO    :__main__: Inserting data into database.
+2024-03-21 13:13:58:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:13:58:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:13:58:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:13:58:INFO    :__main__: Recording attached comments:
+2024-03-21 13:13:58:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:13:58:INFO    :__main__: End of attached comments.
+2024-03-21 13:13:58:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:13:58:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:13:58:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:13:58:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:13:58:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:13:58:INFO    :__main__: Inserting data into database.
+2024-03-21 13:13:58:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:13:58:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:13:58:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:13:58:INFO    :__main__: Recording attached comments:
+2024-03-21 13:13:58:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:13:58:INFO    :__main__: End of attached comments.
+2024-03-21 13:13:58:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:13:58:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:13:58:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:13:58:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:13:58:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:13:58:INFO    :__main__: Inserting data into database.
+2024-03-21 13:13:58:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:13:58:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:13:58:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:13:58:INFO    :__main__: Recording attached comments:
+2024-03-21 13:13:58:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:13:58:INFO    :__main__: End of attached comments.
+2024-03-21 13:13:58:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:13:58:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:13:58:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:13:58:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:13:58:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:13:58:INFO    :__main__: Inserting data into database.
+2024-03-21 13:13:58:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:13:58:INFO    :__main__: Loading new data from 'PrecursorsEmblem.csv'.
+2024-03-21 13:13:58:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:13:58:INFO    :__main__: Recording attached comments:
+2024-03-21 13:13:58:INFO    :__main__: # Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
+2024-03-21 13:13:58:INFO    :__main__: End of attached comments.
+2024-03-21 13:13:58:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:13:58:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:13:58:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:13:58:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:13:58:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:13:58:INFO    :__main__: Inserting data into database.
+2024-03-21 13:15:36:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:15:36:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:15:36:INFO    :__main__: Recording attached comments:
+2024-03-21 13:15:36:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:15:36:INFO    :__main__: End of attached comments.
+2024-03-21 13:15:36:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:15:36:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:15:36:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:15:36:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:15:36:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:15:36:INFO    :__main__: Inserting data into database.
+2024-03-21 13:15:36:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:15:36:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:15:36:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:15:36:INFO    :__main__: Recording attached comments:
+2024-03-21 13:15:36:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:15:36:INFO    :__main__: End of attached comments.
+2024-03-21 13:15:36:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:15:36:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:15:36:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:15:36:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:15:36:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:15:36:INFO    :__main__: Inserting data into database.
+2024-03-21 13:15:36:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:15:36:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:15:36:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:15:36:INFO    :__main__: Recording attached comments:
+2024-03-21 13:15:36:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:15:36:INFO    :__main__: End of attached comments.
+2024-03-21 13:15:36:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:15:36:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:15:36:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:15:36:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:15:36:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:15:36:INFO    :__main__: Inserting data into database.
+2024-03-21 13:15:36:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:15:36:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:15:36:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:15:36:INFO    :__main__: Recording attached comments:
+2024-03-21 13:15:36:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:15:36:INFO    :__main__: End of attached comments.
+2024-03-21 13:15:36:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:15:36:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:15:36:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:15:36:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:15:36:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:15:36:INFO    :__main__: Inserting data into database.
+2024-03-21 13:15:36:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:15:36:INFO    :__main__: Loading new data from 'PrecursorsEmblem.csv'.
+2024-03-21 13:15:36:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:15:36:INFO    :__main__: Recording attached comments:
+2024-03-21 13:15:36:INFO    :__main__: # Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
+2024-03-21 13:15:36:INFO    :__main__: End of attached comments.
+2024-03-21 13:15:36:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:15:36:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:15:36:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:15:36:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:15:36:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:15:36:INFO    :__main__: Inserting data into database.
+2024-03-21 13:16:39:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:16:39:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:16:39:INFO    :__main__: Recording attached comments:
+2024-03-21 13:16:39:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:16:39:INFO    :__main__: End of attached comments.
+2024-03-21 13:16:39:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:16:39:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:16:39:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:16:39:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:16:39:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:16:39:INFO    :__main__: Inserting data into database.
+2024-03-21 13:16:39:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:16:39:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:16:39:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:16:39:INFO    :__main__: Recording attached comments:
+2024-03-21 13:16:39:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:16:39:INFO    :__main__: End of attached comments.
+2024-03-21 13:16:39:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:16:39:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:16:39:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:16:39:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:16:39:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:16:39:INFO    :__main__: Inserting data into database.
+2024-03-21 13:16:39:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:16:39:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:16:39:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:16:39:INFO    :__main__: Recording attached comments:
+2024-03-21 13:16:39:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:16:39:INFO    :__main__: End of attached comments.
+2024-03-21 13:16:39:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:16:39:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:16:39:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:16:39:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:16:39:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:16:39:INFO    :__main__: Inserting data into database.
+2024-03-21 13:16:39:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:16:39:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:16:39:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:16:39:INFO    :__main__: Recording attached comments:
+2024-03-21 13:16:39:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:16:39:INFO    :__main__: End of attached comments.
+2024-03-21 13:16:39:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:16:39:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:16:39:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:16:39:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:16:39:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:16:39:INFO    :__main__: Inserting data into database.
+2024-03-21 13:16:39:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:16:39:INFO    :__main__: Loading new data from 'PrecursorsEmblem.csv'.
+2024-03-21 13:16:39:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:16:39:INFO    :__main__: Recording attached comments:
+2024-03-21 13:16:39:INFO    :__main__: # Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
+2024-03-21 13:16:39:INFO    :__main__: End of attached comments.
+2024-03-21 13:16:39:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:16:39:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:16:39:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:16:39:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:16:39:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:16:39:INFO    :__main__: Inserting data into database.
+2024-03-21 13:17:16:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:17:16:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:17:16:INFO    :__main__: Recording attached comments:
+2024-03-21 13:17:16:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:17:16:INFO    :__main__: End of attached comments.
+2024-03-21 13:17:16:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:17:16:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:17:16:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:17:16:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:17:16:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:17:16:INFO    :__main__: Inserting data into database.
+2024-03-21 13:17:16:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:17:16:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:17:16:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:17:16:INFO    :__main__: Recording attached comments:
+2024-03-21 13:17:16:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:17:16:INFO    :__main__: End of attached comments.
+2024-03-21 13:17:16:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:17:16:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:17:16:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:17:16:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:17:16:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:17:16:INFO    :__main__: Inserting data into database.
+2024-03-21 13:17:16:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:17:16:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:17:16:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:17:16:INFO    :__main__: Recording attached comments:
+2024-03-21 13:17:16:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:17:16:INFO    :__main__: End of attached comments.
+2024-03-21 13:17:16:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:17:16:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:17:16:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:17:16:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:17:16:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:17:16:INFO    :__main__: Inserting data into database.
+2024-03-21 13:17:16:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:17:16:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:17:16:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:17:16:INFO    :__main__: Recording attached comments:
+2024-03-21 13:17:16:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:17:16:INFO    :__main__: End of attached comments.
+2024-03-21 13:17:16:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:17:16:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:17:16:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:17:16:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:17:16:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:17:16:INFO    :__main__: Inserting data into database.
+2024-03-21 13:17:16:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:17:16:INFO    :__main__: Loading new data from 'PrecursorsEmblem.csv'.
+2024-03-21 13:17:16:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:17:16:INFO    :__main__: Recording attached comments:
+2024-03-21 13:17:16:INFO    :__main__: # Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
+2024-03-21 13:17:16:INFO    :__main__: End of attached comments.
+2024-03-21 13:17:16:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:17:16:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:17:16:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:17:16:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:17:16:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:17:16:INFO    :__main__: Inserting data into database.
+2024-03-21 13:17:29:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:17:29:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:17:29:INFO    :__main__: Recording attached comments:
+2024-03-21 13:17:29:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:17:29:INFO    :__main__: End of attached comments.
+2024-03-21 13:17:29:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:17:29:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:17:29:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:17:29:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:17:29:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:17:29:INFO    :__main__: Inserting data into database.
+2024-03-21 13:17:29:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:17:29:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:17:29:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:17:29:INFO    :__main__: Recording attached comments:
+2024-03-21 13:17:29:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:17:29:INFO    :__main__: End of attached comments.
+2024-03-21 13:17:29:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:17:29:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:17:29:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:17:29:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:17:29:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:17:29:INFO    :__main__: Inserting data into database.
+2024-03-21 13:17:29:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:17:29:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:17:29:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:17:29:INFO    :__main__: Recording attached comments:
+2024-03-21 13:17:29:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:17:29:INFO    :__main__: End of attached comments.
+2024-03-21 13:17:29:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:17:29:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:17:29:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:17:29:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:17:29:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:17:29:INFO    :__main__: Inserting data into database.
+2024-03-21 13:17:29:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:17:29:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:17:29:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:17:29:INFO    :__main__: Recording attached comments:
+2024-03-21 13:17:29:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:17:29:INFO    :__main__: End of attached comments.
+2024-03-21 13:17:29:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:17:29:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:17:29:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:17:29:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:17:29:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:17:29:INFO    :__main__: Inserting data into database.
+2024-03-21 13:17:29:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:17:29:INFO    :__main__: Loading new data from 'PrecursorsEmblem.csv'.
+2024-03-21 13:17:29:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:17:29:INFO    :__main__: Recording attached comments:
+2024-03-21 13:17:29:INFO    :__main__: # Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
+2024-03-21 13:17:29:INFO    :__main__: End of attached comments.
+2024-03-21 13:17:29:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:17:29:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:17:29:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:17:29:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:17:29:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:17:29:INFO    :__main__: Inserting data into database.
+2024-03-21 13:17:45:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:17:45:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:17:45:INFO    :__main__: Recording attached comments:
+2024-03-21 13:17:45:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:17:45:INFO    :__main__: End of attached comments.
+2024-03-21 13:17:45:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:17:45:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:17:45:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:17:45:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:17:45:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:17:45:INFO    :__main__: Inserting data into database.
+2024-03-21 13:17:45:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:17:45:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:17:45:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:17:45:INFO    :__main__: Recording attached comments:
+2024-03-21 13:17:45:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:17:45:INFO    :__main__: End of attached comments.
+2024-03-21 13:17:45:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:17:45:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:17:45:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:17:45:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:17:45:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:17:45:INFO    :__main__: Inserting data into database.
+2024-03-21 13:17:45:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:17:45:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:17:45:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:17:45:INFO    :__main__: Recording attached comments:
+2024-03-21 13:17:45:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:17:45:INFO    :__main__: End of attached comments.
+2024-03-21 13:17:45:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:17:45:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:17:45:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:17:45:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:17:45:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:17:45:INFO    :__main__: Inserting data into database.
+2024-03-21 13:17:45:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:17:45:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:17:45:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:17:45:INFO    :__main__: Recording attached comments:
+2024-03-21 13:17:45:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:17:45:INFO    :__main__: End of attached comments.
+2024-03-21 13:17:45:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:17:45:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:17:45:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:17:45:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:17:45:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:17:45:INFO    :__main__: Inserting data into database.
+2024-03-21 13:17:45:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:17:45:INFO    :__main__: Loading new data from 'PrecursorsEmblem.csv'.
+2024-03-21 13:17:45:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:17:45:INFO    :__main__: Recording attached comments:
+2024-03-21 13:17:45:INFO    :__main__: # Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
+2024-03-21 13:17:45:INFO    :__main__: End of attached comments.
+2024-03-21 13:17:45:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:17:45:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:17:45:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:17:45:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:17:45:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:17:45:INFO    :__main__: Inserting data into database.
+2024-03-21 13:18:14:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:18:14:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:18:14:INFO    :__main__: Recording attached comments:
+2024-03-21 13:18:14:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:18:14:INFO    :__main__: End of attached comments.
+2024-03-21 13:18:14:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:18:14:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:18:14:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:18:14:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:18:14:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:18:14:INFO    :__main__: Inserting data into database.
+2024-03-21 13:18:14:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:18:14:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:18:14:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:18:14:INFO    :__main__: Recording attached comments:
+2024-03-21 13:18:14:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:18:14:INFO    :__main__: End of attached comments.
+2024-03-21 13:18:14:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:18:14:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:18:14:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:18:14:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:18:14:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:18:14:INFO    :__main__: Inserting data into database.
+2024-03-21 13:18:14:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:18:14:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:18:14:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:18:14:INFO    :__main__: Recording attached comments:
+2024-03-21 13:18:14:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:18:14:INFO    :__main__: End of attached comments.
+2024-03-21 13:18:14:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:18:14:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:18:14:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:18:14:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:18:14:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:18:14:INFO    :__main__: Inserting data into database.
+2024-03-21 13:18:14:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:18:14:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:18:14:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:18:14:INFO    :__main__: Recording attached comments:
+2024-03-21 13:18:14:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:18:14:INFO    :__main__: End of attached comments.
+2024-03-21 13:18:14:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:18:14:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:18:14:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:18:14:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:18:14:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:18:14:INFO    :__main__: Inserting data into database.
+2024-03-21 13:18:14:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:18:14:INFO    :__main__: Loading new data from 'PrecursorsEmblem.csv'.
+2024-03-21 13:18:14:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:18:14:INFO    :__main__: Recording attached comments:
+2024-03-21 13:18:14:INFO    :__main__: # Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
+2024-03-21 13:18:14:INFO    :__main__: End of attached comments.
+2024-03-21 13:18:14:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:18:14:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:18:14:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:18:14:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:18:14:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:18:14:INFO    :__main__: Inserting data into database.
+2024-03-21 13:18:27:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:18:27:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:18:27:INFO    :__main__: Recording attached comments:
+2024-03-21 13:18:27:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:18:27:INFO    :__main__: End of attached comments.
+2024-03-21 13:18:27:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:18:27:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:18:27:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:18:27:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:18:27:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:18:27:INFO    :__main__: Inserting data into database.
+2024-03-21 13:18:27:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:18:27:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:18:27:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:18:27:INFO    :__main__: Recording attached comments:
+2024-03-21 13:18:27:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:18:27:INFO    :__main__: End of attached comments.
+2024-03-21 13:18:27:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:18:27:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:18:27:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:18:27:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:18:27:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:18:27:INFO    :__main__: Inserting data into database.
+2024-03-21 13:18:27:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:18:27:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:18:27:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:18:27:INFO    :__main__: Recording attached comments:
+2024-03-21 13:18:27:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:18:27:INFO    :__main__: End of attached comments.
+2024-03-21 13:18:27:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:18:27:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:18:27:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:18:27:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:18:27:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:18:27:INFO    :__main__: Inserting data into database.
+2024-03-21 13:18:27:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:18:27:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:18:27:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:18:27:INFO    :__main__: Recording attached comments:
+2024-03-21 13:18:27:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:18:27:INFO    :__main__: End of attached comments.
+2024-03-21 13:18:27:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:18:27:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:18:27:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:18:27:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:18:27:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:18:27:INFO    :__main__: Inserting data into database.
+2024-03-21 13:18:27:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:18:27:INFO    :__main__: Loading new data from 'PrecursorsEmblem.csv'.
+2024-03-21 13:18:27:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:18:27:INFO    :__main__: Recording attached comments:
+2024-03-21 13:18:27:INFO    :__main__: # Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
+2024-03-21 13:18:27:INFO    :__main__: End of attached comments.
+2024-03-21 13:18:27:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:18:27:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:18:27:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:18:27:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:18:27:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:18:27:INFO    :__main__: Inserting data into database.
+2024-03-21 13:19:01:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:19:01:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:19:01:INFO    :__main__: Recording attached comments:
+2024-03-21 13:19:01:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:19:01:INFO    :__main__: End of attached comments.
+2024-03-21 13:19:01:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:19:01:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:19:01:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:19:01:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:19:01:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:19:01:INFO    :__main__: Inserting data into database.
+2024-03-21 13:19:01:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:19:01:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:19:01:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:19:01:INFO    :__main__: Recording attached comments:
+2024-03-21 13:19:01:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:19:01:INFO    :__main__: End of attached comments.
+2024-03-21 13:19:01:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:19:01:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:19:01:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:19:01:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:19:01:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:19:01:INFO    :__main__: Inserting data into database.
+2024-03-21 13:19:01:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:19:01:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:19:01:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:19:01:INFO    :__main__: Recording attached comments:
+2024-03-21 13:19:01:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:19:01:INFO    :__main__: End of attached comments.
+2024-03-21 13:19:01:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:19:01:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:19:01:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:19:01:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:19:01:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:19:01:INFO    :__main__: Inserting data into database.
+2024-03-21 13:19:01:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:19:01:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:19:01:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:19:01:INFO    :__main__: Recording attached comments:
+2024-03-21 13:19:01:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:19:01:INFO    :__main__: End of attached comments.
+2024-03-21 13:19:01:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:19:01:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:19:01:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:19:01:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:19:01:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:19:01:INFO    :__main__: Inserting data into database.
+2024-03-21 13:19:01:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:19:01:INFO    :__main__: Loading new data from 'PrecursorsEmblem.csv'.
+2024-03-21 13:19:01:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:19:01:INFO    :__main__: Recording attached comments:
+2024-03-21 13:19:01:INFO    :__main__: # Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
+2024-03-21 13:19:01:INFO    :__main__: End of attached comments.
+2024-03-21 13:19:01:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:19:01:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:19:01:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:19:01:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:19:01:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:19:01:INFO    :__main__: Inserting data into database.
+2024-03-21 13:19:34:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:19:34:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:19:34:INFO    :__main__: Recording attached comments:
+2024-03-21 13:19:34:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:19:34:INFO    :__main__: End of attached comments.
+2024-03-21 13:19:34:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:19:34:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:19:34:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:19:34:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:19:34:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:19:34:INFO    :__main__: Inserting data into database.
+2024-03-21 13:19:34:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:19:34:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:19:34:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:19:34:INFO    :__main__: Recording attached comments:
+2024-03-21 13:19:34:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:19:34:INFO    :__main__: End of attached comments.
+2024-03-21 13:19:35:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:19:35:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:19:35:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:19:35:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:19:35:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:19:35:INFO    :__main__: Inserting data into database.
+2024-03-21 13:19:35:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:19:35:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:19:35:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:19:35:INFO    :__main__: Recording attached comments:
+2024-03-21 13:19:35:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:19:35:INFO    :__main__: End of attached comments.
+2024-03-21 13:19:35:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:19:35:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:19:35:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:19:35:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:19:35:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:19:35:INFO    :__main__: Inserting data into database.
+2024-03-21 13:19:35:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:19:35:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:19:35:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:19:35:INFO    :__main__: Recording attached comments:
+2024-03-21 13:19:35:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:19:35:INFO    :__main__: End of attached comments.
+2024-03-21 13:19:35:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:19:35:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:19:35:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:19:35:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:19:35:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:19:35:INFO    :__main__: Inserting data into database.
+2024-03-21 13:19:35:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:19:35:INFO    :__main__: Loading new data from 'PrecursorsEmblem.csv'.
+2024-03-21 13:19:35:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:19:35:INFO    :__main__: Recording attached comments:
+2024-03-21 13:19:35:INFO    :__main__: # Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
+2024-03-21 13:19:35:INFO    :__main__: End of attached comments.
+2024-03-21 13:19:35:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:19:35:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:19:35:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:19:35:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:19:35:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:19:35:INFO    :__main__: Inserting data into database.
+2024-03-21 13:19:40:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:19:40:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:19:40:INFO    :__main__: Recording attached comments:
+2024-03-21 13:19:40:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:19:40:INFO    :__main__: End of attached comments.
+2024-03-21 13:19:40:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:19:40:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:19:40:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:19:40:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:19:40:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:19:40:INFO    :__main__: Inserting data into database.
+2024-03-21 13:19:40:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:19:40:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:19:40:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:19:40:INFO    :__main__: Recording attached comments:
+2024-03-21 13:19:40:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:19:40:INFO    :__main__: End of attached comments.
+2024-03-21 13:19:40:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:19:40:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:19:40:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:19:40:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:19:40:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:19:40:INFO    :__main__: Inserting data into database.
+2024-03-21 13:19:40:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:19:40:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:19:40:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:19:40:INFO    :__main__: Recording attached comments:
+2024-03-21 13:19:40:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:19:40:INFO    :__main__: End of attached comments.
+2024-03-21 13:19:40:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:19:40:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:19:40:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:19:40:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:19:40:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:19:40:INFO    :__main__: Inserting data into database.
+2024-03-21 13:19:40:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:19:40:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:19:40:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:19:40:INFO    :__main__: Recording attached comments:
+2024-03-21 13:19:40:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:19:40:INFO    :__main__: End of attached comments.
+2024-03-21 13:19:40:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:19:40:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:19:40:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:19:40:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:19:40:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:19:40:INFO    :__main__: Inserting data into database.
+2024-03-21 13:19:40:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:19:40:INFO    :__main__: Loading new data from 'PrecursorsEmblem.csv'.
+2024-03-21 13:21:10:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:21:10:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:21:10:INFO    :__main__: Recording attached comments:
+2024-03-21 13:21:10:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:21:10:INFO    :__main__: End of attached comments.
+2024-03-21 13:21:10:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:21:10:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:21:10:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:21:10:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:21:10:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:21:10:INFO    :__main__: Inserting data into database.
+2024-03-21 13:21:10:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:21:10:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:21:10:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:21:10:INFO    :__main__: Recording attached comments:
+2024-03-21 13:21:10:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:21:10:INFO    :__main__: End of attached comments.
+2024-03-21 13:21:10:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:21:10:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:21:10:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:21:10:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:21:10:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:21:10:INFO    :__main__: Inserting data into database.
+2024-03-21 13:21:10:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:21:10:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:21:10:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:21:10:INFO    :__main__: Recording attached comments:
+2024-03-21 13:21:10:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:21:10:INFO    :__main__: End of attached comments.
+2024-03-21 13:21:10:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:21:10:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:21:10:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:21:10:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:21:10:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:21:10:INFO    :__main__: Inserting data into database.
+2024-03-21 13:21:10:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:21:10:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:21:10:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:21:10:INFO    :__main__: Recording attached comments:
+2024-03-21 13:21:10:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:21:10:INFO    :__main__: End of attached comments.
+2024-03-21 13:21:10:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:21:10:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:21:10:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:21:10:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:21:10:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:21:10:INFO    :__main__: Inserting data into database.
+2024-03-21 13:21:10:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:21:10:INFO    :__main__: Loading new data from 'PrecursorsEmblem.csv'.
+2024-03-21 13:21:34:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:21:34:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:21:34:INFO    :__main__: Recording attached comments:
+2024-03-21 13:21:34:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:21:34:INFO    :__main__: End of attached comments.
+2024-03-21 13:21:34:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:21:34:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:21:34:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:21:34:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:21:34:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:21:34:INFO    :__main__: Inserting data into database.
+2024-03-21 13:21:34:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:21:34:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:21:34:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:21:34:INFO    :__main__: Recording attached comments:
+2024-03-21 13:21:34:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:21:34:INFO    :__main__: End of attached comments.
+2024-03-21 13:21:34:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:21:34:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:21:34:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:21:34:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:21:34:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:21:34:INFO    :__main__: Inserting data into database.
+2024-03-21 13:21:34:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:21:34:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:21:34:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:21:34:INFO    :__main__: Recording attached comments:
+2024-03-21 13:21:34:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:21:34:INFO    :__main__: End of attached comments.
+2024-03-21 13:21:34:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:21:34:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:21:34:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:21:34:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:21:34:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:21:34:INFO    :__main__: Inserting data into database.
+2024-03-21 13:21:34:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:21:34:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:21:34:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:21:34:INFO    :__main__: Recording attached comments:
+2024-03-21 13:21:34:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:21:34:INFO    :__main__: End of attached comments.
+2024-03-21 13:21:34:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:21:34:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:21:34:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:21:34:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:21:34:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:21:34:INFO    :__main__: Inserting data into database.
+2024-03-21 13:21:34:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:21:34:INFO    :__main__: Loading new data from 'PrecursorsEmblem.csv'.
+2024-03-21 13:21:34:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:21:34:INFO    :__main__: Recording attached comments:
+2024-03-21 13:21:34:INFO    :__main__: # Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
+2024-03-21 13:21:34:INFO    :__main__: End of attached comments.
+2024-03-21 13:21:34:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:21:34:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:21:34:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:21:34:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:21:34:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:21:34:INFO    :__main__: Inserting data into database.
+2024-03-21 13:21:41:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:21:41:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:21:41:INFO    :__main__: Recording attached comments:
+2024-03-21 13:21:41:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:21:41:INFO    :__main__: End of attached comments.
+2024-03-21 13:21:41:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:21:41:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:21:41:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:21:41:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:21:41:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:21:41:INFO    :__main__: Inserting data into database.
+2024-03-21 13:21:41:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:21:41:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:21:41:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:21:41:INFO    :__main__: Recording attached comments:
+2024-03-21 13:21:41:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:21:41:INFO    :__main__: End of attached comments.
+2024-03-21 13:21:41:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:21:41:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:21:41:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:21:41:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:21:41:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:21:41:INFO    :__main__: Inserting data into database.
+2024-03-21 13:21:41:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:21:41:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:21:41:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:21:41:INFO    :__main__: Recording attached comments:
+2024-03-21 13:21:41:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:21:41:INFO    :__main__: End of attached comments.
+2024-03-21 13:21:41:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:21:41:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:21:41:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:21:41:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:21:41:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:21:41:INFO    :__main__: Inserting data into database.
+2024-03-21 13:21:41:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:21:41:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:21:41:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:21:41:INFO    :__main__: Recording attached comments:
+2024-03-21 13:21:41:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:21:41:INFO    :__main__: End of attached comments.
+2024-03-21 13:21:41:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:21:41:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:21:41:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:21:41:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:21:41:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:21:41:INFO    :__main__: Inserting data into database.
+2024-03-21 13:21:41:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:21:41:INFO    :__main__: Loading new data from 'PrecursorsEmblem.csv'.
+2024-03-21 13:21:41:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:21:41:INFO    :__main__: Recording attached comments:
+2024-03-21 13:21:41:INFO    :__main__: # Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
+2024-03-21 13:21:41:INFO    :__main__: End of attached comments.
+2024-03-21 13:21:41:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:21:41:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:21:41:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:21:41:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:21:41:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:21:41:INFO    :__main__: Inserting data into database.
+2024-03-21 13:22:53:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:22:53:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:22:53:INFO    :__main__: Recording attached comments:
+2024-03-21 13:22:53:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:22:53:INFO    :__main__: End of attached comments.
+2024-03-21 13:22:53:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:22:53:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:22:53:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:22:53:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:22:53:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:22:53:INFO    :__main__: Inserting data into database.
+2024-03-21 13:22:53:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:22:53:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:22:53:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:22:53:INFO    :__main__: Recording attached comments:
+2024-03-21 13:22:53:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:22:53:INFO    :__main__: End of attached comments.
+2024-03-21 13:22:53:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:22:53:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:22:53:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:22:53:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:22:53:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:22:53:INFO    :__main__: Inserting data into database.
+2024-03-21 13:22:53:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:22:53:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:22:53:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:22:53:INFO    :__main__: Recording attached comments:
+2024-03-21 13:22:53:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:22:53:INFO    :__main__: End of attached comments.
+2024-03-21 13:22:53:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:22:53:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:22:53:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:22:53:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:22:53:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:22:53:INFO    :__main__: Inserting data into database.
+2024-03-21 13:22:53:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:22:53:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:22:53:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:22:53:INFO    :__main__: Recording attached comments:
+2024-03-21 13:22:53:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:22:53:INFO    :__main__: End of attached comments.
+2024-03-21 13:22:53:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:22:53:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:22:53:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:22:53:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:22:53:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:22:53:INFO    :__main__: Inserting data into database.
+2024-03-21 13:22:53:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:22:53:INFO    :__main__: Loading new data from 'PrecursorsEmblem.csv'.
+2024-03-21 13:22:53:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:22:53:INFO    :__main__: Recording attached comments:
+2024-03-21 13:22:53:INFO    :__main__: # Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
+2024-03-21 13:22:53:INFO    :__main__: End of attached comments.
+2024-03-21 13:22:53:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:22:53:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:22:53:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:22:53:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:22:53:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:22:53:INFO    :__main__: Inserting data into database.
+2024-03-21 13:22:53:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:22:53:INFO    :__main__: Loading new data from 'ShroudOfTheLightless.csv'.
+2024-03-21 13:22:53:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:22:53:INFO    :__main__: Recording attached comments:
+2024-03-21 13:22:53:INFO    :__main__: # Source: https://poedb.tw/Shroud_of_the_Lightless
+2024-03-21 13:22:53:INFO    :__main__: End of attached comments.
+2024-03-21 13:22:53:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:22:53:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:22:53:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:22:53:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:22:53:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:22:53:INFO    :__main__: Inserting data into database.
+2024-03-21 13:22:53:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:22:53:INFO    :__main__: Loading new data from 'SkinOfTheLords.csv'.
+2024-03-21 13:22:53:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:22:53:INFO    :__main__: Recording attached comments:
+2024-03-21 13:22:53:INFO    :__main__: # Source: https://poedb.tw/Skin_of_the_Lords#SkinoftheLordsUnique
+2024-03-21 13:22:53:INFO    :__main__: # Potential source of error due to very simple effect string
+2024-03-21 13:22:53:INFO    :__main__: End of attached comments.
+2024-03-21 13:22:53:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:23:32:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:23:32:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:23:32:INFO    :__main__: Recording attached comments:
+2024-03-21 13:23:32:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:23:32:INFO    :__main__: End of attached comments.
+2024-03-21 13:23:32:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:23:32:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:23:32:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:23:32:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:23:32:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:23:32:INFO    :__main__: Inserting data into database.
+2024-03-21 13:23:32:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:23:32:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:23:32:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:23:32:INFO    :__main__: Recording attached comments:
+2024-03-21 13:23:32:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:23:32:INFO    :__main__: End of attached comments.
+2024-03-21 13:23:32:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:23:32:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:23:32:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:23:32:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:23:32:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:23:32:INFO    :__main__: Inserting data into database.
+2024-03-21 13:23:32:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:23:32:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:23:32:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:23:32:INFO    :__main__: Recording attached comments:
+2024-03-21 13:23:32:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:23:32:INFO    :__main__: End of attached comments.
+2024-03-21 13:23:32:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:23:32:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:23:32:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:23:32:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:23:32:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:23:32:INFO    :__main__: Inserting data into database.
+2024-03-21 13:23:32:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:23:32:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:23:32:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:23:32:INFO    :__main__: Recording attached comments:
+2024-03-21 13:23:32:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:23:32:INFO    :__main__: End of attached comments.
+2024-03-21 13:23:32:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:23:32:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:23:32:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:23:32:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:23:32:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:23:32:INFO    :__main__: Inserting data into database.
+2024-03-21 13:23:32:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:23:32:INFO    :__main__: Loading new data from 'PrecursorsEmblem.csv'.
+2024-03-21 13:23:32:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:23:32:INFO    :__main__: Recording attached comments:
+2024-03-21 13:23:32:INFO    :__main__: # Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
+2024-03-21 13:23:32:INFO    :__main__: End of attached comments.
+2024-03-21 13:23:32:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:23:32:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:23:32:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:23:32:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:23:32:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:23:32:INFO    :__main__: Inserting data into database.
+2024-03-21 13:23:32:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:23:32:INFO    :__main__: Loading new data from 'ShroudOfTheLightless.csv'.
+2024-03-21 13:23:32:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:23:32:INFO    :__main__: Recording attached comments:
+2024-03-21 13:23:32:INFO    :__main__: # Source: https://poedb.tw/Shroud_of_the_Lightless
+2024-03-21 13:23:32:INFO    :__main__: End of attached comments.
+2024-03-21 13:23:32:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:23:32:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:23:32:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:23:32:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:23:32:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:23:32:INFO    :__main__: Inserting data into database.
+2024-03-21 13:23:32:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:23:32:INFO    :__main__: Loading new data from 'SkinOfTheLords.csv'.
+2024-03-21 13:23:32:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:23:32:INFO    :__main__: Recording attached comments:
+2024-03-21 13:23:32:INFO    :__main__: # Source: https://poedb.tw/Skin_of_the_Lords#SkinoftheLordsUnique
+2024-03-21 13:23:32:INFO    :__main__: # Potential source of error due to very simple effect string
+2024-03-21 13:23:32:INFO    :__main__: End of attached comments.
+2024-03-21 13:23:32:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:24:58:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:24:58:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:24:58:INFO    :__main__: Recording attached comments:
+2024-03-21 13:24:58:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:24:58:INFO    :__main__: End of attached comments.
+2024-03-21 13:24:58:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:24:58:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:24:58:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:24:58:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:24:58:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:24:58:INFO    :__main__: Inserting data into database.
+2024-03-21 13:24:58:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:24:58:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:24:58:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:24:58:INFO    :__main__: Recording attached comments:
+2024-03-21 13:24:58:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:24:58:INFO    :__main__: End of attached comments.
+2024-03-21 13:24:58:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:24:58:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:24:58:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:24:58:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:24:58:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:24:58:INFO    :__main__: Inserting data into database.
+2024-03-21 13:24:58:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:24:58:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:24:58:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:24:58:INFO    :__main__: Recording attached comments:
+2024-03-21 13:24:58:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:24:58:INFO    :__main__: End of attached comments.
+2024-03-21 13:24:58:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:24:58:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:24:58:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:24:58:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:24:58:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:24:58:INFO    :__main__: Inserting data into database.
+2024-03-21 13:24:58:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:24:58:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:24:58:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:24:58:INFO    :__main__: Recording attached comments:
+2024-03-21 13:24:58:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:24:58:INFO    :__main__: End of attached comments.
+2024-03-21 13:24:58:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:24:58:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:24:58:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:24:58:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:24:58:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:24:58:INFO    :__main__: Inserting data into database.
+2024-03-21 13:24:58:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:24:58:INFO    :__main__: Loading new data from 'PrecursorsEmblem.csv'.
+2024-03-21 13:24:58:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:24:58:INFO    :__main__: Recording attached comments:
+2024-03-21 13:24:58:INFO    :__main__: # Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
+2024-03-21 13:24:58:INFO    :__main__: End of attached comments.
+2024-03-21 13:24:58:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:24:58:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:24:58:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:24:58:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:24:58:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:24:58:INFO    :__main__: Inserting data into database.
+2024-03-21 13:24:58:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:24:58:INFO    :__main__: Loading new data from 'ShroudOfTheLightless.csv'.
+2024-03-21 13:24:58:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:24:58:INFO    :__main__: Recording attached comments:
+2024-03-21 13:24:58:INFO    :__main__: # Source: https://poedb.tw/Shroud_of_the_Lightless
+2024-03-21 13:24:58:INFO    :__main__: End of attached comments.
+2024-03-21 13:24:58:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:24:58:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:24:58:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:24:58:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:24:58:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:24:58:INFO    :__main__: Inserting data into database.
+2024-03-21 13:24:58:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:24:58:INFO    :__main__: Loading new data from 'SkinOfTheLords.csv'.
+2024-03-21 13:24:58:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:24:58:INFO    :__main__: Recording attached comments:
+2024-03-21 13:24:58:INFO    :__main__: # Source: https://poedb.tw/Skin_of_the_Lords#SkinoftheLordsUnique
+2024-03-21 13:24:58:INFO    :__main__: # Potential source of error due to very simple effect string
+2024-03-21 13:24:58:INFO    :__main__: End of attached comments.
+2024-03-21 13:24:58:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:26:08:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:26:08:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:26:08:INFO    :__main__: Recording attached comments:
+2024-03-21 13:26:08:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:26:08:INFO    :__main__: End of attached comments.
+2024-03-21 13:26:08:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:26:08:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:26:08:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:26:08:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:26:08:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:26:08:INFO    :__main__: Inserting data into database.
+2024-03-21 13:26:08:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:26:08:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:26:08:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:26:08:INFO    :__main__: Recording attached comments:
+2024-03-21 13:26:08:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:26:08:INFO    :__main__: End of attached comments.
+2024-03-21 13:26:08:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:26:08:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:26:08:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:26:08:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:26:08:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:26:08:INFO    :__main__: Inserting data into database.
+2024-03-21 13:26:08:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:26:08:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:26:08:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:26:08:INFO    :__main__: Recording attached comments:
+2024-03-21 13:26:08:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:26:08:INFO    :__main__: End of attached comments.
+2024-03-21 13:26:08:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:26:08:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:26:08:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:26:08:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:26:08:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:26:08:INFO    :__main__: Inserting data into database.
+2024-03-21 13:26:08:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:26:08:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:26:08:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:26:08:INFO    :__main__: Recording attached comments:
+2024-03-21 13:26:08:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:26:08:INFO    :__main__: End of attached comments.
+2024-03-21 13:26:08:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:26:08:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:26:08:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:26:08:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:26:08:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:26:08:INFO    :__main__: Inserting data into database.
+2024-03-21 13:26:08:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:26:08:INFO    :__main__: Loading new data from 'PrecursorsEmblem.csv'.
+2024-03-21 13:26:08:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:26:08:INFO    :__main__: Recording attached comments:
+2024-03-21 13:26:08:INFO    :__main__: # Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
+2024-03-21 13:26:08:INFO    :__main__: End of attached comments.
+2024-03-21 13:26:08:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:26:08:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:26:08:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:26:08:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:26:08:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:26:08:INFO    :__main__: Inserting data into database.
+2024-03-21 13:26:08:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:26:08:INFO    :__main__: Loading new data from 'ShroudOfTheLightless.csv'.
+2024-03-21 13:26:08:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:26:08:INFO    :__main__: Recording attached comments:
+2024-03-21 13:26:08:INFO    :__main__: # Source: https://poedb.tw/Shroud_of_the_Lightless
+2024-03-21 13:26:08:INFO    :__main__: End of attached comments.
+2024-03-21 13:26:08:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:26:08:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:26:08:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:26:08:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:26:08:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:26:08:INFO    :__main__: Inserting data into database.
+2024-03-21 13:26:08:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:26:08:INFO    :__main__: Loading new data from 'SkinOfTheLords.csv'.
+2024-03-21 13:26:08:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:26:08:INFO    :__main__: Recording attached comments:
+2024-03-21 13:26:08:INFO    :__main__: # Source: https://poedb.tw/Skin_of_the_Lords#SkinoftheLordsUnique
+2024-03-21 13:26:08:INFO    :__main__: # Potential source of error due to very simple effect string
+2024-03-21 13:26:08:INFO    :__main__: End of attached comments.
+2024-03-21 13:26:08:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:26:27:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:26:27:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:26:27:INFO    :__main__: Recording attached comments:
+2024-03-21 13:26:27:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:26:27:INFO    :__main__: End of attached comments.
+2024-03-21 13:26:27:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:26:27:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:26:27:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:26:27:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:26:27:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:26:27:INFO    :__main__: Inserting data into database.
+2024-03-21 13:26:27:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:26:27:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:26:27:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:26:27:INFO    :__main__: Recording attached comments:
+2024-03-21 13:26:27:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:26:27:INFO    :__main__: End of attached comments.
+2024-03-21 13:26:27:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:26:27:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:26:27:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:26:27:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:26:27:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:26:27:INFO    :__main__: Inserting data into database.
+2024-03-21 13:26:27:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:26:27:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:26:27:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:26:27:INFO    :__main__: Recording attached comments:
+2024-03-21 13:26:27:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:26:27:INFO    :__main__: End of attached comments.
+2024-03-21 13:26:27:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:26:27:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:26:27:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:26:27:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:26:27:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:26:27:INFO    :__main__: Inserting data into database.
+2024-03-21 13:26:27:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:26:27:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:26:27:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:26:27:INFO    :__main__: Recording attached comments:
+2024-03-21 13:26:27:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:26:27:INFO    :__main__: End of attached comments.
+2024-03-21 13:26:27:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:26:27:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:26:27:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:26:27:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:26:27:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:26:27:INFO    :__main__: Inserting data into database.
+2024-03-21 13:26:27:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:26:27:INFO    :__main__: Loading new data from 'PrecursorsEmblem.csv'.
+2024-03-21 13:26:27:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:26:27:INFO    :__main__: Recording attached comments:
+2024-03-21 13:26:27:INFO    :__main__: # Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
+2024-03-21 13:26:27:INFO    :__main__: End of attached comments.
+2024-03-21 13:26:27:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:26:27:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:26:27:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:26:27:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:26:27:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:26:27:INFO    :__main__: Inserting data into database.
+2024-03-21 13:26:27:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:26:27:INFO    :__main__: Loading new data from 'ShroudOfTheLightless.csv'.
+2024-03-21 13:26:27:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:26:27:INFO    :__main__: Recording attached comments:
+2024-03-21 13:26:27:INFO    :__main__: # Source: https://poedb.tw/Shroud_of_the_Lightless
+2024-03-21 13:26:27:INFO    :__main__: End of attached comments.
+2024-03-21 13:26:27:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:26:27:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:26:27:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:26:27:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:26:27:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:26:27:INFO    :__main__: Inserting data into database.
+2024-03-21 13:26:27:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:26:27:INFO    :__main__: Loading new data from 'SkinOfTheLords.csv'.
+2024-03-21 13:26:27:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:26:27:INFO    :__main__: Recording attached comments:
+2024-03-21 13:26:27:INFO    :__main__: # Source: https://poedb.tw/Skin_of_the_Lords#SkinoftheLordsUnique
+2024-03-21 13:26:27:INFO    :__main__: # Potential source of error due to very simple effect string
+2024-03-21 13:26:27:INFO    :__main__: End of attached comments.
+2024-03-21 13:26:27:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:26:27:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:26:27:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:26:27:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:26:27:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:26:27:INFO    :__main__: Inserting data into database.
+2024-03-21 13:33:33:INFO    :__main__: Loading new data from 'AulsUprising.csv'.
+2024-03-21 13:33:33:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:33:33:INFO    :__main__: Recording attached comments:
+2024-03-21 13:33:33:INFO    :__main__: # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
+2024-03-21 13:33:33:INFO    :__main__: End of attached comments.
+2024-03-21 13:33:33:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:33:33:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:33:33:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:33:33:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:33:33:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:33:33:INFO    :__main__: Checking if duplicates contain updated information.
+2024-03-21 13:33:33:INFO    :__main__: Inserting data into database.
+2024-03-21 13:33:33:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:33:33:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-03-21 13:33:33:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:33:33:INFO    :__main__: Recording attached comments:
+2024-03-21 13:33:33:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-03-21 13:33:33:INFO    :__main__: End of attached comments.
+2024-03-21 13:33:33:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:33:33:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:33:33:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:33:33:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:33:33:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:33:33:INFO    :__main__: Checking if duplicates contain updated information.
+2024-03-21 13:33:33:INFO    :__main__: Inserting data into database.
+2024-03-21 13:33:33:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:33:33:INFO    :__main__: Loading new data from 'ForbiddenShako.csv'.
+2024-03-21 13:33:33:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:33:33:INFO    :__main__: Recording attached comments:
+2024-03-21 13:33:33:INFO    :__main__: # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
+2024-03-21 13:33:33:INFO    :__main__: End of attached comments.
+2024-03-21 13:33:33:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:33:33:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:33:33:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:33:33:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:33:33:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:33:33:INFO    :__main__: Checking if duplicates contain updated information.
+2024-03-21 13:33:33:INFO    :__main__: Inserting data into database.
+2024-03-21 13:33:33:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:33:33:INFO    :__main__: Loading new data from 'Paradoxica.csv'.
+2024-03-21 13:33:33:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:33:33:INFO    :__main__: Recording attached comments:
+2024-03-21 13:33:33:INFO    :__main__: # Source: https://www.poewiki.net/wiki/Paradoxica
+2024-03-21 13:33:33:INFO    :__main__: End of attached comments.
+2024-03-21 13:33:33:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:33:33:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:33:33:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:33:33:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:33:33:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:33:33:INFO    :__main__: Checking if duplicates contain updated information.
+2024-03-21 13:33:33:INFO    :__main__: Inserting data into database.
+2024-03-21 13:33:33:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:33:33:INFO    :__main__: Loading new data from 'PrecursorsEmblem.csv'.
+2024-03-21 13:33:33:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:33:33:INFO    :__main__: Recording attached comments:
+2024-03-21 13:33:33:INFO    :__main__: # Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
+2024-03-21 13:33:33:INFO    :__main__: End of attached comments.
+2024-03-21 13:33:33:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:33:34:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:33:34:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:33:34:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:33:34:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:33:34:INFO    :__main__: Checking if duplicates contain updated information.
+2024-03-21 13:33:34:INFO    :__main__: Found a modifier with a lower 'minRoll'.
+2024-03-21 13:33:34:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-03-21 13:33:34:INFO    :__main__: Found a modifier with a lower 'minRoll'.
+2024-03-21 13:33:34:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-03-21 13:33:34:INFO    :__main__: Inserting data into database.
+2024-03-21 13:33:34:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:33:34:INFO    :__main__: Loading new data from 'ShroudOfTheLightless.csv'.
+2024-03-21 13:33:34:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:33:34:INFO    :__main__: Recording attached comments:
+2024-03-21 13:33:34:INFO    :__main__: # Source: https://poedb.tw/Shroud_of_the_Lightless
+2024-03-21 13:33:34:INFO    :__main__: End of attached comments.
+2024-03-21 13:33:34:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:33:34:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:33:34:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:33:34:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:33:34:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:33:34:INFO    :__main__: Checking if duplicates contain updated information.
+2024-03-21 13:33:34:INFO    :__main__: Inserting data into database.
+2024-03-21 13:33:34:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 13:33:34:INFO    :__main__: Loading new data from 'SkinOfTheLords.csv'.
+2024-03-21 13:33:34:INFO    :__main__: Successfully loaded new data.
+2024-03-21 13:33:34:INFO    :__main__: Recording attached comments:
+2024-03-21 13:33:34:INFO    :__main__: # Source: https://poedb.tw/Skin_of_the_Lords#SkinoftheLordsUnique
+2024-03-21 13:33:34:INFO    :__main__: # Potential source of error due to very simple effect string
+2024-03-21 13:33:34:INFO    :__main__: End of attached comments.
+2024-03-21 13:33:34:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 13:33:34:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 13:33:34:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 13:33:34:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 13:33:34:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 13:33:34:INFO    :__main__: Checking if duplicates contain updated information.
+2024-03-21 13:33:34:INFO    :__main__: Found a modifier with a higher 'maxRoll'.
+2024-03-21 13:33:34:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-03-21 13:33:34:INFO    :__main__: Inserting data into database.
