@@ -12,8 +12,12 @@ class PoeNinjaCurrencyAPIHandler:
         """
         Combines the currency data.
         """
+
+        currencies_sorted = sorted(currencies, key=lambda d: d['currencyTypeName'])
+        currency_details_sorted = sorted(currency_details, key=lambda d: d['name'])
+        
         combined_currency_data = []
-        for currency, currency_detail in zip(currencies, currency_details):
+        for currency, currency_detail in zip(currencies_sorted, currency_details_sorted):
             combined_currency_data.append({**currency, **currency_detail})
 
         return combined_currency_data
@@ -50,3 +54,9 @@ class PoeNinjaCurrencyAPIHandler:
         currencies_df = self.make_request()
 
         currencies_df.to_csv(path + "/poe_ninja_currencies.csv", index=False)
+
+
+handler = PoeNinjaCurrencyAPIHandler(
+    url="https://poe.ninja/api/data/currencyoverview?league=Affliction&type=Currency"
+)
+handler.store_data(path=".")
