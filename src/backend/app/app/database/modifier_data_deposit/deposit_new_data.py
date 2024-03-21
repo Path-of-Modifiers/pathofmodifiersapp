@@ -6,7 +6,7 @@ from typing import Iterator, Optional
 from copy import deepcopy
 
 from app.database.modifier_data_deposit.processing_modules import add_regex
-from app.database.modifier_data_deposit.utils import remove_empty_fields
+from app.database.modifier_data_deposit.utils import df_to_JSON
 
 logging.basicConfig(
     filename="history.log",
@@ -79,9 +79,7 @@ class DataDepositer:
             if not pd.isna(row_new["textRolls"]):
                 if row_cur["textRolls"] != row_new["textRolls"]:
                     self.logger.info("Found a modifier with new 'textRolls'.")
-                    row_new = row_new.fillna("")  # requests can not handle na
-                    data = row_new.to_dict()
-                    data = remove_empty_fields([data])[0]
+                    data = df_to_JSON(row_new, request_method="put")
                     data["modifierId"] = row_cur["modifierId"]
                     data["position"] = row_cur["position"]
                     response = requests.put(
@@ -116,9 +114,7 @@ class DataDepositer:
                     self.logger.info(
                         "Updating modifier to bring numerical roll range up-to-date."
                     )
-                    row_new = row_new.fillna("")  # requests can not handle na
-                    data = row_new.to_dict()
-                    data = remove_empty_fields([data])[0]
+                    data = df_to_JSON(row_new, request_method="put")
                     data["modifierId"] = row_cur["modifierId"]
                     data["position"] = row_cur["position"]
                     response = requests.put(
@@ -155,11 +151,7 @@ class DataDepositer:
         return df
 
     def _insert_data(self, df: pd.DataFrame) -> None:
-        df = df.fillna("")  # requests can not handle na
-        df_json = df.to_dict(
-            "records"
-        )  # Converts to a list of dicts, where each dict is a row
-        df_json = remove_empty_fields(df_json)  # Removes empty fields element-wise
+        df_json = df_to_JSON(df, request_method="post")
         self.logger.info("Inserting data into database.")
         response = requests.post(
             self.url,
