@@ -14,8 +14,8 @@ logging.basicConfig(
     format="%(asctime)s:%(levelname)-8s:%(name)s: %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
-TESTING = True
-BASEURL = "http://localhost"  # TODO update when on virtual machine
+TESTING = os.getenv("TESTING")
+BASEURL = os.getenv("DOMAIN")
 CASCADING_UPDATE = False
 
 
