@@ -11,6 +11,8 @@ services:
       - 80:80
     environment:
       - SERVER_HOST=http://${DOMAIN?Variable not set}
+      - TESTING=True
+      - DOMAIN=http://localhost
 
 
 
