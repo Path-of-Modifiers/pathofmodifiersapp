@@ -1,3 +1,4 @@
+# Source: https://poedb.tw/That_Which_Was_Taken
 minRoll,maxRoll,position,effect,static
 ,,0,"Movement Speed cannot be modified to below base value",True
 2,3,0,"#% of Armour applies to Fire, Cold and Lightning Damage taken from Hits",
