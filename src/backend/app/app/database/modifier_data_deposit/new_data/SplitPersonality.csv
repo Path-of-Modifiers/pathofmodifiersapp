@@ -1,5 +1,0 @@
-# Source: https://poedb.tw/Split_Personality#SplitPersonalityUnique
-textRolls,position,effect,static
-"Strength-Dexterity-Intelligence-maximum Life-maximum Mana-maxumum Energy Shield",0,+5 to #,
-"Armour-Evasion Rating-Accuracy Rating",0,+40 to #,
-,0,This Jewel's Socket has 25% increased effect per Allocated Passive Skill between\nit and your Class' starting location,True
