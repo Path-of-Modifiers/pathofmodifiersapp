@@ -33,7 +33,6 @@ minRoll,maxRoll,textRolls,position,effect,static
 ,,,0,15% chance to gain Arcane Surge when you Kill an Enemy,True
 ,,,0,"Trigger a Socketed Spell on Using a Skill, with a 4 second Cooldown",True
 ,,,0,Spells Triggered this way have 150#% more Cost,True
-18,22,,0,#% increased Attack Speed,
 28,32,,0,#% increased Critical Strike Chance,
 25,28,,0,+# to Strength and Intelligence,
 25,28,,0,+# to Dexterity and Intelligence,
