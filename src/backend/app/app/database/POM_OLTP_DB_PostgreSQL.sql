@@ -58,7 +58,7 @@ CREATE TABLE "Modifier" (
   "static" boolean,
   "minRoll" numeric(10, 2),
   "maxRoll" numeric(10, 2),
-  "textRoll" varchar(30),
+  "textRolls" varchar(30),
   "implicit" boolean,
   "explicit" boolean,
   "delve" boolean,
