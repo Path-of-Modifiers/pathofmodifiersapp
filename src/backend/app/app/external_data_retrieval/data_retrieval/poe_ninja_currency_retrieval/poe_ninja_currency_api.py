@@ -36,5 +36,12 @@ class PoeNinjaCurrencyAPIHandler:
         df_currencies = self._json_to_df(currencies)
         df_currency_details = self._json_to_df(currency_details)
 
-        df_currencies.to_csv(path)
-        df_currency_details.to_csv(path)
+        df_currencies.to_csv(path + "/poe_ninja_currencies.csv", index=False)
+        df_currency_details.to_csv(path + "/poe_ninja_currency_details.csv", index=False)
+
+
+PoeNinjaCurrencyAPIHandler(
+    url="https://poe.ninja/api/data/currencyoverview?league=Standard&type=Currency"
+).store_data(
+    "./app/external_data_retrieval/depricated_data/test_data"
+)
