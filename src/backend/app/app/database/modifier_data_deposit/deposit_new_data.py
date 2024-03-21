@@ -16,12 +16,14 @@ logging.basicConfig(
 )
 TESTING = True
 BASEURL = "http://localhost"  # TODO update when on virtual machine
+CASCADING_UPDATE = False
 
 
 class DataDepositer:
     def __init__(self) -> None:
         self.new_data_location = "new_data"
         self.url = BASEURL + "/api/api_v1/modifier/"
+        self.update_disabled = not CASCADING_UPDATE
 
         self.logger = logging.getLogger(__name__)
 
@@ -56,6 +58,8 @@ class DataDepositer:
     def _update_duplicates(
         self, duplicate_df: pd.DataFrame, current_modifiers_df: pd.DataFrame
     ) -> None:
+        if self.update_disabled:
+            return None
         self.logger.info("Checking if duplicates contain updated information.")
 
         current_duplicate_modifiers = current_modifiers_df.loc[
