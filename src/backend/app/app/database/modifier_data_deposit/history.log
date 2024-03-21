@@ -580,3 +580,728 @@
 2024-03-20 16:50:12:INFO    :__main__: Deleted 'Voices.csv'
 2024-03-20 16:50:12:INFO    :__main__: Deleting 'WatchersEye.csv'
 2024-03-20 16:50:12:INFO    :__main__: Deleted 'WatchersEye.csv'
+2024-03-20 17:09:26:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:09:26:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:09:26:INFO    :__main__: Recording attached comments:
+2024-03-20 17:09:26:INFO    :__main__: End of attached comments.
+2024-03-20 17:09:26:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:09:26:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:09:26:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:09:26:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:09:26:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:09:47:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:09:47:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:09:47:INFO    :__main__: Recording attached comments:
+2024-03-20 17:09:47:INFO    :__main__: End of attached comments.
+2024-03-20 17:09:47:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:09:47:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:09:47:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:09:47:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:09:47:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:10:19:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:10:19:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:10:19:INFO    :__main__: Recording attached comments:
+2024-03-20 17:10:19:INFO    :__main__: End of attached comments.
+2024-03-20 17:10:19:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:10:19:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:10:19:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:10:19:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:10:19:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:10:40:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:10:40:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:10:40:INFO    :__main__: Recording attached comments:
+2024-03-20 17:10:40:INFO    :__main__: End of attached comments.
+2024-03-20 17:10:40:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:10:40:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:10:40:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:10:40:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:10:40:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:10:50:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:10:50:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:10:50:INFO    :__main__: Recording attached comments:
+2024-03-20 17:10:50:INFO    :__main__: End of attached comments.
+2024-03-20 17:10:50:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:10:50:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:10:50:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:10:50:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:10:50:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:11:05:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:11:05:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:11:05:INFO    :__main__: Recording attached comments:
+2024-03-20 17:11:05:INFO    :__main__: End of attached comments.
+2024-03-20 17:11:05:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:11:05:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:11:05:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:11:05:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:11:05:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:11:15:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:11:15:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:11:15:INFO    :__main__: Recording attached comments:
+2024-03-20 17:11:15:INFO    :__main__: End of attached comments.
+2024-03-20 17:11:15:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:11:15:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:11:15:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:11:15:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:11:15:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:12:26:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:12:26:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:12:26:INFO    :__main__: Recording attached comments:
+2024-03-20 17:12:26:INFO    :__main__: End of attached comments.
+2024-03-20 17:12:26:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:12:26:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:12:26:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:12:26:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:12:26:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:12:33:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:12:33:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:12:33:INFO    :__main__: Recording attached comments:
+2024-03-20 17:12:33:INFO    :__main__: End of attached comments.
+2024-03-20 17:12:33:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:12:33:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:12:33:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:12:33:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:12:33:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:22:22:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:22:22:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:22:22:INFO    :__main__: Recording attached comments:
+2024-03-20 17:22:22:INFO    :__main__: End of attached comments.
+2024-03-20 17:22:22:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:22:22:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:22:22:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:22:22:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:22:22:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:22:33:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:22:33:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:22:33:INFO    :__main__: Recording attached comments:
+2024-03-20 17:22:33:INFO    :__main__: End of attached comments.
+2024-03-20 17:22:33:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:22:33:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:22:33:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:22:33:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:22:33:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:23:38:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:23:38:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:23:38:INFO    :__main__: Recording attached comments:
+2024-03-20 17:23:38:INFO    :__main__: End of attached comments.
+2024-03-20 17:23:38:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:23:38:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:23:38:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:23:38:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:23:38:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:40:48:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:40:48:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:40:48:INFO    :__main__: Recording attached comments:
+2024-03-20 17:40:48:INFO    :__main__: End of attached comments.
+2024-03-20 17:40:48:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:40:48:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:40:48:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:40:48:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:40:48:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:41:02:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:41:02:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:41:02:INFO    :__main__: Recording attached comments:
+2024-03-20 17:41:02:INFO    :__main__: End of attached comments.
+2024-03-20 17:41:02:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:41:02:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:41:02:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:41:02:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:41:02:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:42:11:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:42:11:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:42:11:INFO    :__main__: Recording attached comments:
+2024-03-20 17:42:11:INFO    :__main__: End of attached comments.
+2024-03-20 17:42:11:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:42:11:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:42:11:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:42:11:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:42:11:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:42:48:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:42:48:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:42:48:INFO    :__main__: Recording attached comments:
+2024-03-20 17:42:48:INFO    :__main__: End of attached comments.
+2024-03-20 17:42:48:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:42:48:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:42:48:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:42:48:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:42:48:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:43:09:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:43:09:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:43:09:INFO    :__main__: Recording attached comments:
+2024-03-20 17:43:09:INFO    :__main__: End of attached comments.
+2024-03-20 17:43:09:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:43:09:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:43:09:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:43:09:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:43:09:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:43:20:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:43:20:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:43:20:INFO    :__main__: Recording attached comments:
+2024-03-20 17:43:20:INFO    :__main__: End of attached comments.
+2024-03-20 17:43:20:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:43:20:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:43:20:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:43:20:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:43:20:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:43:39:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:43:39:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:43:39:INFO    :__main__: Recording attached comments:
+2024-03-20 17:43:39:INFO    :__main__: End of attached comments.
+2024-03-20 17:43:39:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:43:40:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:43:40:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:43:40:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:43:40:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:44:04:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:44:04:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:44:04:INFO    :__main__: Recording attached comments:
+2024-03-20 17:44:04:INFO    :__main__: End of attached comments.
+2024-03-20 17:44:04:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:44:04:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:44:04:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:44:04:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:44:04:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:44:45:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:44:45:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:44:45:INFO    :__main__: Recording attached comments:
+2024-03-20 17:44:45:INFO    :__main__: End of attached comments.
+2024-03-20 17:44:45:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:44:45:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:44:45:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:44:45:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:44:45:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:45:20:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:45:20:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:45:20:INFO    :__main__: Recording attached comments:
+2024-03-20 17:45:20:INFO    :__main__: End of attached comments.
+2024-03-20 17:45:20:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:45:20:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:45:20:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:45:20:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:45:20:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:45:50:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:45:50:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:45:50:INFO    :__main__: Recording attached comments:
+2024-03-20 17:45:50:INFO    :__main__: End of attached comments.
+2024-03-20 17:45:50:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:45:50:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:45:50:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:45:50:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:45:50:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:45:59:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:45:59:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:45:59:INFO    :__main__: Recording attached comments:
+2024-03-20 17:45:59:INFO    :__main__: End of attached comments.
+2024-03-20 17:45:59:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:45:59:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:45:59:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:45:59:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:45:59:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:46:49:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:46:49:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:46:49:INFO    :__main__: Recording attached comments:
+2024-03-20 17:46:49:INFO    :__main__: End of attached comments.
+2024-03-20 17:46:49:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:46:49:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:46:49:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:46:49:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:46:49:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:46:58:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:46:58:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:46:58:INFO    :__main__: Recording attached comments:
+2024-03-20 17:46:58:INFO    :__main__: End of attached comments.
+2024-03-20 17:46:58:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:46:58:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:46:58:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:46:58:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:46:58:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:47:32:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:47:32:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:47:32:INFO    :__main__: Recording attached comments:
+2024-03-20 17:47:32:INFO    :__main__: End of attached comments.
+2024-03-20 17:47:32:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:47:32:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:47:32:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:47:32:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:47:32:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:47:38:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:47:38:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:47:38:INFO    :__main__: Recording attached comments:
+2024-03-20 17:47:38:INFO    :__main__: End of attached comments.
+2024-03-20 17:47:38:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:47:38:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:47:38:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:47:38:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:47:38:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:47:51:INFO    :__main__: Loading new data from 'GrandSpectrum.csv'.
+2024-03-20 17:47:51:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:47:51:INFO    :__main__: Recording attached comments:
+2024-03-20 17:47:51:INFO    :__main__: End of attached comments.
+2024-03-20 17:47:51:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:47:51:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:47:51:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:47:51:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:47:51:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:49:07:INFO    :__main__: Loading new data from 'MilitantFaith.csv'.
+2024-03-20 17:49:07:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:49:07:INFO    :__main__: Recording attached comments:
+2024-03-20 17:49:07:INFO    :__main__: End of attached comments.
+2024-03-20 17:49:07:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:49:07:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:49:07:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:49:07:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:49:07:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:49:20:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 17:49:20:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:49:20:INFO    :__main__: Recording attached comments:
+2024-03-20 17:49:20:INFO    :__main__: End of attached comments.
+2024-03-20 17:49:20:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:49:20:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:49:20:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:49:20:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:49:20:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:49:45:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 17:49:45:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:49:45:INFO    :__main__: Recording attached comments:
+2024-03-20 17:49:45:INFO    :__main__: End of attached comments.
+2024-03-20 17:49:45:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:49:45:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:49:45:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:49:45:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:49:45:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:51:57:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 17:51:57:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:51:57:INFO    :__main__: Recording attached comments:
+2024-03-20 17:51:57:INFO    :__main__: End of attached comments.
+2024-03-20 17:51:57:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:51:57:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:51:57:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:51:57:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:51:57:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:53:03:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 17:53:03:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:53:03:INFO    :__main__: Recording attached comments:
+2024-03-20 17:53:03:INFO    :__main__: End of attached comments.
+2024-03-20 17:53:03:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:53:03:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:53:03:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:53:03:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:53:03:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:53:12:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 17:53:12:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:53:12:INFO    :__main__: Recording attached comments:
+2024-03-20 17:53:12:INFO    :__main__: End of attached comments.
+2024-03-20 17:53:12:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:53:12:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:53:12:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:53:12:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:53:12:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:54:07:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 17:54:07:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:54:07:INFO    :__main__: Recording attached comments:
+2024-03-20 17:54:07:INFO    :__main__: End of attached comments.
+2024-03-20 17:54:07:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:54:07:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:54:07:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:54:07:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:54:07:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:54:14:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 17:54:14:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:54:14:INFO    :__main__: Recording attached comments:
+2024-03-20 17:54:14:INFO    :__main__: End of attached comments.
+2024-03-20 17:54:14:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:54:14:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:54:14:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:54:14:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:54:14:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:54:42:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 17:54:42:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:54:42:INFO    :__main__: Recording attached comments:
+2024-03-20 17:54:42:INFO    :__main__: End of attached comments.
+2024-03-20 17:54:42:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:54:42:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:54:42:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:54:42:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:54:42:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:54:53:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 17:54:53:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:54:53:INFO    :__main__: Recording attached comments:
+2024-03-20 17:54:53:INFO    :__main__: End of attached comments.
+2024-03-20 17:54:53:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:54:53:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:54:53:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:54:53:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:54:53:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:56:11:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 17:56:11:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:56:11:INFO    :__main__: Recording attached comments:
+2024-03-20 17:56:11:INFO    :__main__: End of attached comments.
+2024-03-20 17:56:11:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:56:11:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:56:11:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:56:11:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:56:11:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:57:50:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 17:57:50:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:57:50:INFO    :__main__: Recording attached comments:
+2024-03-20 17:57:50:INFO    :__main__: End of attached comments.
+2024-03-20 17:57:50:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:57:50:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:57:50:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:57:50:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:57:50:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:59:14:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 17:59:14:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:59:14:INFO    :__main__: Recording attached comments:
+2024-03-20 17:59:14:INFO    :__main__: End of attached comments.
+2024-03-20 17:59:14:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:59:14:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:59:14:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:59:14:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:59:14:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 17:59:51:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 17:59:51:INFO    :__main__: Successfully loaded new data.
+2024-03-20 17:59:51:INFO    :__main__: Recording attached comments:
+2024-03-20 17:59:51:INFO    :__main__: End of attached comments.
+2024-03-20 17:59:51:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 17:59:51:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 17:59:51:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 17:59:51:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 17:59:51:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 18:01:42:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 18:01:42:INFO    :__main__: Successfully loaded new data.
+2024-03-20 18:01:42:INFO    :__main__: Recording attached comments:
+2024-03-20 18:01:42:INFO    :__main__: End of attached comments.
+2024-03-20 18:01:42:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 18:01:42:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 18:01:42:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 18:01:42:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 18:01:42:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 18:02:08:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 18:02:08:INFO    :__main__: Successfully loaded new data.
+2024-03-20 18:02:08:INFO    :__main__: Recording attached comments:
+2024-03-20 18:02:08:INFO    :__main__: End of attached comments.
+2024-03-20 18:02:08:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 18:02:08:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 18:02:08:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 18:02:08:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 18:02:08:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 18:03:11:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 18:03:11:INFO    :__main__: Successfully loaded new data.
+2024-03-20 18:03:11:INFO    :__main__: Recording attached comments:
+2024-03-20 18:03:11:INFO    :__main__: End of attached comments.
+2024-03-20 18:03:11:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 18:03:11:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 18:03:11:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 18:03:11:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 18:03:11:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 18:03:49:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 18:03:49:INFO    :__main__: Successfully loaded new data.
+2024-03-20 18:03:49:INFO    :__main__: Recording attached comments:
+2024-03-20 18:03:49:INFO    :__main__: End of attached comments.
+2024-03-20 18:03:49:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 18:03:49:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 18:03:49:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 18:03:49:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 18:03:49:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 18:04:26:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 18:04:26:INFO    :__main__: Successfully loaded new data.
+2024-03-20 18:04:26:INFO    :__main__: Recording attached comments:
+2024-03-20 18:04:26:INFO    :__main__: End of attached comments.
+2024-03-20 18:04:26:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 18:04:26:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 18:04:26:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 18:04:26:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 18:04:26:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 18:06:18:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 18:06:18:INFO    :__main__: Successfully loaded new data.
+2024-03-20 18:06:18:INFO    :__main__: Recording attached comments:
+2024-03-20 18:06:18:INFO    :__main__: End of attached comments.
+2024-03-20 18:06:18:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 18:06:18:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 18:06:18:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 18:06:18:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 18:06:18:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 18:06:43:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 18:06:43:INFO    :__main__: Successfully loaded new data.
+2024-03-20 18:06:43:INFO    :__main__: Recording attached comments:
+2024-03-20 18:06:43:INFO    :__main__: End of attached comments.
+2024-03-20 18:06:43:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 18:06:43:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 18:06:43:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 18:06:43:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 18:06:43:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 18:07:19:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 18:07:19:INFO    :__main__: Successfully loaded new data.
+2024-03-20 18:07:19:INFO    :__main__: Recording attached comments:
+2024-03-20 18:07:19:INFO    :__main__: End of attached comments.
+2024-03-20 18:07:19:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 18:07:19:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 18:07:19:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 18:07:19:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 18:07:19:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 18:08:12:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 18:08:12:INFO    :__main__: Successfully loaded new data.
+2024-03-20 18:08:12:INFO    :__main__: Recording attached comments:
+2024-03-20 18:08:12:INFO    :__main__: End of attached comments.
+2024-03-20 18:08:12:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 18:08:12:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 18:08:12:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 18:08:12:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 18:08:12:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 18:08:23:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 18:08:23:INFO    :__main__: Successfully loaded new data.
+2024-03-20 18:08:23:INFO    :__main__: Recording attached comments:
+2024-03-20 18:08:23:INFO    :__main__: End of attached comments.
+2024-03-20 18:08:23:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 18:08:23:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 18:08:23:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 18:08:23:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 18:08:23:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 18:09:41:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 18:09:41:INFO    :__main__: Successfully loaded new data.
+2024-03-20 18:09:41:INFO    :__main__: Recording attached comments:
+2024-03-20 18:09:41:INFO    :__main__: End of attached comments.
+2024-03-20 18:09:41:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 18:09:41:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 18:09:41:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 18:09:41:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 18:09:41:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 18:10:47:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 18:10:47:INFO    :__main__: Successfully loaded new data.
+2024-03-20 18:10:47:INFO    :__main__: Recording attached comments:
+2024-03-20 18:10:47:INFO    :__main__: End of attached comments.
+2024-03-20 18:10:47:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 18:10:47:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 18:10:47:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 18:10:47:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 18:10:47:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 18:11:26:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 18:11:26:INFO    :__main__: Successfully loaded new data.
+2024-03-20 18:11:26:INFO    :__main__: Recording attached comments:
+2024-03-20 18:11:26:INFO    :__main__: End of attached comments.
+2024-03-20 18:11:26:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 18:11:26:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 18:11:26:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 18:11:26:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 18:11:26:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:16:27:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:16:27:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:16:27:INFO    :__main__: Recording attached comments:
+2024-03-20 19:16:27:INFO    :__main__: End of attached comments.
+2024-03-20 19:16:27:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:16:27:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:16:27:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:16:27:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:16:27:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:17:14:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:17:14:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:17:14:INFO    :__main__: Recording attached comments:
+2024-03-20 19:17:14:INFO    :__main__: End of attached comments.
+2024-03-20 19:17:14:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:17:14:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:17:14:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:17:14:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:17:14:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:17:44:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:17:44:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:17:44:INFO    :__main__: Recording attached comments:
+2024-03-20 19:17:44:INFO    :__main__: End of attached comments.
+2024-03-20 19:17:44:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:17:44:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:17:44:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:17:44:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:17:44:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:18:43:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:18:43:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:18:43:INFO    :__main__: Recording attached comments:
+2024-03-20 19:18:43:INFO    :__main__: End of attached comments.
+2024-03-20 19:18:43:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:18:43:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:18:43:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:18:43:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:18:43:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:19:14:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:19:14:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:19:14:INFO    :__main__: Recording attached comments:
+2024-03-20 19:19:14:INFO    :__main__: End of attached comments.
+2024-03-20 19:19:14:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:19:14:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:19:14:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:19:14:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:19:14:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:19:34:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:19:34:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:19:34:INFO    :__main__: Recording attached comments:
+2024-03-20 19:19:34:INFO    :__main__: End of attached comments.
+2024-03-20 19:19:34:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:19:34:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:19:34:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:19:34:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:19:34:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:19:51:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:19:51:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:19:51:INFO    :__main__: Recording attached comments:
+2024-03-20 19:19:51:INFO    :__main__: End of attached comments.
+2024-03-20 19:19:51:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:19:51:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:19:51:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:19:52:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:19:52:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:20:08:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:20:08:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:20:08:INFO    :__main__: Recording attached comments:
+2024-03-20 19:20:08:INFO    :__main__: End of attached comments.
+2024-03-20 19:20:08:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:20:08:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:20:08:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:20:08:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:20:08:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:20:38:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:20:38:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:20:38:INFO    :__main__: Recording attached comments:
+2024-03-20 19:20:38:INFO    :__main__: End of attached comments.
+2024-03-20 19:20:38:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:20:38:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:20:38:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:20:38:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:20:38:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:21:04:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:21:04:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:21:04:INFO    :__main__: Recording attached comments:
+2024-03-20 19:21:04:INFO    :__main__: End of attached comments.
+2024-03-20 19:21:04:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:21:04:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:21:04:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:21:04:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:21:04:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:21:18:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:21:18:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:21:18:INFO    :__main__: Recording attached comments:
+2024-03-20 19:21:18:INFO    :__main__: End of attached comments.
+2024-03-20 19:21:18:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:21:18:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:21:18:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:21:18:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:21:18:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:23:26:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:23:26:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:23:26:INFO    :__main__: Recording attached comments:
+2024-03-20 19:23:26:INFO    :__main__: End of attached comments.
+2024-03-20 19:23:26:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:23:26:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:23:26:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:23:26:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:23:26:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:23:51:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:23:51:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:23:51:INFO    :__main__: Recording attached comments:
+2024-03-20 19:23:51:INFO    :__main__: End of attached comments.
+2024-03-20 19:23:51:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:23:51:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:23:51:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:23:51:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:23:51:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:25:01:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:25:01:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:25:01:INFO    :__main__: Recording attached comments:
+2024-03-20 19:25:01:INFO    :__main__: End of attached comments.
+2024-03-20 19:25:01:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:25:01:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:25:01:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:25:01:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:25:01:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:28:32:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:28:32:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:28:32:INFO    :__main__: Recording attached comments:
+2024-03-20 19:28:32:INFO    :__main__: End of attached comments.
+2024-03-20 19:28:32:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:28:32:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:28:32:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:28:32:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:28:32:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:29:03:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:29:03:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:29:03:INFO    :__main__: Recording attached comments:
+2024-03-20 19:29:03:INFO    :__main__: End of attached comments.
+2024-03-20 19:29:03:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:29:03:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:29:03:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:29:03:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:29:03:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:29:41:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:29:41:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:29:41:INFO    :__main__: Recording attached comments:
+2024-03-20 19:29:41:INFO    :__main__: End of attached comments.
+2024-03-20 19:29:41:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:29:41:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:29:41:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:29:41:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:29:41:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:29:56:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:29:56:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:29:56:INFO    :__main__: Recording attached comments:
+2024-03-20 19:29:56:INFO    :__main__: End of attached comments.
+2024-03-20 19:29:56:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:29:56:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:29:56:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:29:56:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:29:56:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:31:44:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:31:44:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:31:44:INFO    :__main__: Recording attached comments:
+2024-03-20 19:31:44:INFO    :__main__: End of attached comments.
+2024-03-20 19:31:44:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:31:44:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:31:44:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:31:44:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:31:44:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:32:01:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:32:01:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:32:01:INFO    :__main__: Recording attached comments:
+2024-03-20 19:32:01:INFO    :__main__: End of attached comments.
+2024-03-20 19:32:01:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:32:01:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:32:01:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:32:01:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:32:01:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:33:03:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:33:03:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:33:03:INFO    :__main__: Recording attached comments:
+2024-03-20 19:33:03:INFO    :__main__: End of attached comments.
+2024-03-20 19:33:03:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:33:03:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:33:03:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:33:03:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:33:03:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:33:11:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:33:11:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:33:11:INFO    :__main__: Recording attached comments:
+2024-03-20 19:33:11:INFO    :__main__: End of attached comments.
+2024-03-20 19:33:11:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:33:11:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:33:11:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:33:12:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:33:12:INFO    :__main__: Removing duplicate modifiers
+2024-03-20 19:35:01:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-20 19:35:01:INFO    :__main__: Successfully loaded new data.
+2024-03-20 19:35:01:INFO    :__main__: Recording attached comments:
+2024-03-20 19:35:01:INFO    :__main__: End of attached comments.
+2024-03-20 19:35:01:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-20 19:35:01:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-20 19:35:01:INFO    :__main__: Retrieving previously deposited data
+2024-03-20 19:35:01:INFO    :__main__: Successfully retrieved previously deposited data
+2024-03-20 19:35:01:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 08:17:51:INFO    :__main__: Loading new data from 'ElegantHubris.csv'.
+2024-03-21 08:17:51:INFO    :__main__: Successfully loaded new data.
+2024-03-21 08:17:51:INFO    :__main__: Recording attached comments:
+2024-03-21 08:17:51:INFO    :__main__: End of attached comments.
+2024-03-21 08:17:51:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-21 08:17:51:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-21 08:17:51:INFO    :__main__: Retrieving previously deposited data.
+2024-03-21 08:17:51:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-03-21 08:17:51:INFO    :__main__: Removing duplicate modifiers
+2024-03-21 08:17:51:INFO    :__main__: Checking if duplicates contain updated information.
+2024-03-21 08:17:51:INFO    :__main__: Inserting data into database.
+2024-03-21 08:17:51:INFO    :__main__: Successfully inserted data into database.
+2024-03-21 08:17:51:INFO    :__main__: Deleting 'ElegantHubris.csv'
+2024-03-21 08:17:51:INFO    :__main__: Deleted 'ElegantHubris.csv'
