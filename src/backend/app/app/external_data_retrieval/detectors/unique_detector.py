@@ -20,8 +20,14 @@ class UniqueDetector(DetectorBase):
 
 class UniqueJewelDetector(UniqueDetector):
     wanted_items_dict = {
-        "Cobalt Jewel": ["Grand Spectrum", "Forbidden Flesh"],
-        "Crimson Jewel": ["That Which Was Taken", "Grand Spectrum", "Forbidden Flame"],
+        "Cobalt Jewel": ["Grand Spectrum", "Forbidden Flesh", "The Balance of Terror"],
+        "Crimson Jewel": [
+            "That Which Was Taken",
+            "Grand Spectrum",
+            "Forbidden Flame",
+            "Split Personality",
+            "Thread of Hope",
+        ],
         "Viridian Jewel": ["Impossible Escape", "Grand Spectrum"],
         "Prismatic Jewel": ["Watcher's Eye", "Sublime Vision"],
         "Timeless Jewel": [
@@ -36,8 +42,11 @@ class UniqueJewelDetector(UniqueDetector):
     wanted_items = [
         "Grand Spectrum",
         "Forbidden Flesh",
+        "The Balance of Terror",
         "That Which Was Taken",
         "Forbidden Flame",
+        "Split Personality",
+        "Thread of Hope",
         "Impossible Escape",
         "Watcher's Eye",
         "Sublime Vision",
@@ -48,3 +57,24 @@ class UniqueJewelDetector(UniqueDetector):
         "Elegant Hubris",
         "Voices",
     ]
+
+
+class UniqueJewelleryDetector(UniqueDetector):
+    wanted_items_dict = {
+        "Onyx Amulet": ["Aul's Uprising"],
+        "Ruby Ring": ["Precursor's Emblem"],
+        "Sapphire Ring": ["Precursor's Emblem"],
+        "Topaz Ring": ["Precursor's Emblem"],
+        "Prismatic Ring": ["Precursor's Emblem"],
+        "Two-Stone Ring": ["Precursor's Emblem"],
+    }
+    wanted_items = ["Aul's Uprising", "Precursor's Emblem"]
+
+
+class UniqueArmourDetector(UniqueDetector):
+    wanted_items_dict = {
+        "Great Crown": ["Forbidden Shako"],
+        "Simple Robe": ["Skin of the Lords"],
+        "Carnal Armour": ["Shroud of the Lightless"],
+    }
+    wanted_items = ["Forbidden Shako", "Skin of the Lords", "Shroud of the Lightless"]
