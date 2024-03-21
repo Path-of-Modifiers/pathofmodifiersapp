@@ -22,11 +22,11 @@ def create_random_modifier_dict() -> Dict:
             maxRoll = random_float(small_float=True)
             if minRoll > maxRoll:
                 minRoll, maxRoll = maxRoll, minRoll
-            textRoll = None
+            textRolls = None
         else:
             minRoll = None
             maxRoll = None
-            textRoll = random_lower_string()
+            textRolls = random_lower_string()
         effect = (
             random_lower_string() + "#"
         )  # "#" is required if the modifier is not static
@@ -34,7 +34,7 @@ def create_random_modifier_dict() -> Dict:
     else:
         minRoll = None
         maxRoll = None
-        textRoll = None
+        textRolls = None
         effect = random_lower_string()
         regex = None
 
@@ -51,7 +51,7 @@ def create_random_modifier_dict() -> Dict:
         "position": position,
         "minRoll": minRoll,
         "maxRoll": maxRoll,
-        "textRoll": textRoll,
+        "textRolls": textRolls,
         "static": static,
         "effect": effect,
         "regex": regex,
