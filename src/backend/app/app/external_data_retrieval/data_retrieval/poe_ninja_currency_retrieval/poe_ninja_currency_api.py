@@ -1,7 +1,6 @@
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 import pandas as pd
 import requests
-from tqdm import tqdm
 
 
 class PoeNinjaCurrencyAPIHandler:
@@ -9,14 +8,28 @@ class PoeNinjaCurrencyAPIHandler:
 
         self.url = url
 
-    def _json_to_df(self, currencies: List) -> pd.DataFrame:
+    def _combine_currency_data(self, currencies: List[Dict], currency_details: List[Dict]) -> List[Dict]:
+        """
+        Combines the currency data.
+        """
+
+        currencies_sorted = sorted(currencies, key=lambda d: d['currencyTypeName'])
+        currency_details_sorted = sorted(currency_details, key=lambda d: d['name'])
+        
+        combined_currency_data = []
+        for currency, currency_detail in zip(currencies_sorted, currency_details_sorted):
+            combined_currency_data.append({**currency, **currency_detail})
+
+        return combined_currency_data
+
+    def _json_to_df(self, currencies: List[Dict]) -> pd.DataFrame:
         df = pd.json_normalize(currencies)
 
         return df
 
-    def _make_request(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def make_request(self) -> pd.DataFrame:
         """
-        Makes an initial, synchronous, API call.
+        Makes request to the API and returns the data as a DataFrame.
         """
         response = requests.get(self.url)
         if response.status_code >= 300:
@@ -26,15 +39,24 @@ class PoeNinjaCurrencyAPIHandler:
         currencies = response_json["lines"]
         currency_details = response_json["currencyDetails"]
 
-        return currencies, currency_details
+        combined_currency_data = self._combine_currency_data(
+            currencies, currency_details
+        )
+
+        combined_currency_data_df = self._json_to_df(combined_currency_data)
+
+        return combined_currency_data_df
 
     def store_data(self, path: str) -> None:
         """
         Stores the data in a CSV. Only to be used for testing purposes.
         """
-        currencies, currency_details = self._make_request()
-        df_currencies = self._json_to_df(currencies)
-        df_currency_details = self._json_to_df(currency_details)
+        currencies_df = self.make_request()
 
-        df_currencies.to_csv(path)
-        df_currency_details.to_csv(path)
+        currencies_df.to_csv(path + "/poe_ninja_currencies.csv", index=False)
+
+
+handler = PoeNinjaCurrencyAPIHandler(
+    url="https://poe.ninja/api/data/currencyoverview?league=Affliction&type=Currency"
+)
+handler.store_data(path=".")
