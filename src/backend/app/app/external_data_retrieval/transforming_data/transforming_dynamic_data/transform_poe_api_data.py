@@ -13,7 +13,7 @@ def load_test_data():
     return data
 
 
-class DataTransformer:
+class PoeAPIDataTransformer:
 
     def _create_stash_table(self, json_data: list) -> None:
         """
@@ -487,7 +487,7 @@ class DataTransformer:
         return processed_df
 
 
-class UniqueDataTransformer(DataTransformer):
+class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
     def _create_item_modifier_table(self, json_data: list) -> None:
         """
         A similiar process to creating the item table, only this time the
@@ -569,7 +569,7 @@ class UniqueDataTransformer(DataTransformer):
 def main():
     json_data = load_test_data()
     data_transformer = (
-        UniqueDataTransformer()
+        UniquePoeAPIDataTransformer()
     )  # eventually a system for sending the right JSON-data to the correct data-transformers need to be implemented
     data_transformer.transform_into_tables(json_data=json_data)
 
