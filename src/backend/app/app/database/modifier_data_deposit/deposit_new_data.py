@@ -155,6 +155,8 @@ class DataDepositer:
         return df
 
     def _insert_data(self, df: pd.DataFrame) -> None:
+        if df.empty:
+            return None
         df = df.fillna("")  # requests can not handle na
         df_json = df.to_dict(
             "records"
