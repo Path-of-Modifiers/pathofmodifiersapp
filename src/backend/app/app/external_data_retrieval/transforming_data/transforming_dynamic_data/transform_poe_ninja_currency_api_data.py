@@ -36,6 +36,13 @@ class TransformPoeNinjaCurrencyAPIData:
             },
             inplace=True
         )
+        
+    def _transform_currency_table(self) -> pd.DataFrame:
+        self.currencies_df["valueInChaos"][0] = 1
+        
+        self.currencies_df = self.currencies_df[self.currencies_df['tradeName'].notnull()]
+        
+        
 
 
     def _clean_currency_table(self) -> pd.DataFrame:
@@ -58,6 +65,7 @@ class TransformPoeNinjaCurrencyAPIData:
         """
         self._create_currency_table()
         self._clean_currency_table()
+        self._transform_currency_table()
 
         return self.currencies_df
 
@@ -70,7 +78,7 @@ def main():
     
     currency_table = currency_data_transformed.transform_into_tables()
     
-    # print(currency_table.head())
+    print(currency_table.head())
 
     return 0
 
