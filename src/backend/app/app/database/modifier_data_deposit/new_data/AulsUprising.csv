@@ -1,0 +1,16 @@
+minRoll,maxRoll,textRolls,position,effect,static
+20,30,,0,+# to Intelligence,
+20,30,,0,+# to Strength,
+20,30,,0,+# to Dexterity,
+15,20,,0,+# to all Attributes,
+15,20,,0,#% increased maximum Energy Shield,
+15,20,,0,#% increased Armour,
+15,20,,0,#% increased Evasion Rating,
+15,20,,0,#% increased Global Defences,
+50,120,,0,+# to maximum Life,
+,,,0,Hits against Nearby Enemies have 50% increased Critical Strike Chance,True
+,,,0,10% reduced Stun and Block Recovery,True
+,,,0,Nearby Enemies have 10% reduced Stun and Block Recovery,True
+,,,0,Nearby Enemies grant 25% increased Flask Charges,True
+,,,0,Grants Level 15 Envy Skill,True
+,,"Anger-Clarity-Determination-Discipline-Grace-Haste-Purity of Elements-Purity of Fire-Purity of Ice-Purity of Lightning-Vitality-Wrath-Envy-Malevolence-Zealotry-Pride",0,# has no Reservation
