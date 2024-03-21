@@ -28,8 +28,8 @@ minRoll,maxRoll,textRolls,position,effect,static
 ,,,0,+3% to Critical Strike Multiplier per Power Charge,True
 ,,"Endurance-Frenzy-Power",0,5% increased Damage per # Charge,
 ,,"Endurance-Frenzy-Power",0,+1% chance to Suppress Spell Damage per # Charge,
-20,40,,0,(20–40)% increased Endurance Charge Duration,
-,,"Endurance-Frenzy-Power",0,(20–40)% increased # Charge Duration,
+20,40,,0,#% increased Endurance Charge Duration,
+,,"Endurance-Frenzy-Power",0,#% increased # Charge Duration,
 ,,,0,Gain 1 Endurance Charge every second if you've been Hit Recently,True
 ,,,0,3% increased Energy Shield per Power Charge,True
 ,,,0,8% increased Evasion Rating per Frenzy Charge,True
