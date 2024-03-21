@@ -20,8 +20,14 @@ class UniqueDetector(DetectorBase):
 
 class UniqueJewelDetector(UniqueDetector):
     wanted_items_dict = {
-        "Cobalt Jewel": ["Grand Spectrum", "Forbidden Flesh"],
-        "Crimson Jewel": ["That Which Was Taken", "Grand Spectrum", "Forbidden Flame"],
+        "Cobalt Jewel": ["Grand Spectrum", "Forbidden Flesh", "The Balance of Terror"],
+        "Crimson Jewel": [
+            "That Which Was Taken",
+            "Grand Spectrum",
+            "Forbidden Flame",
+            "Split Personality",
+            "Thread of Hope",
+        ],
         "Viridian Jewel": ["Impossible Escape", "Grand Spectrum"],
         "Prismatic Jewel": ["Watcher's Eye", "Sublime Vision"],
         "Timeless Jewel": [
@@ -36,8 +42,11 @@ class UniqueJewelDetector(UniqueDetector):
     wanted_items = [
         "Grand Spectrum",
         "Forbidden Flesh",
+        "The Balance of Terror",
         "That Which Was Taken",
         "Forbidden Flame",
+        "Split Personality",
+        "Thread of Hope",
         "Impossible Escape",
         "Watcher's Eye",
         "Sublime Vision",
