@@ -29,7 +29,7 @@ class PoeNinjaCurrencyAPIHandler:
 
     def make_request(self) -> pd.DataFrame:
         """
-        Makes an initial, synchronous, API call.
+        Makes request to the API and returns the data as a DataFrame.
         """
         response = requests.get(self.url)
         if response.status_code >= 300:
