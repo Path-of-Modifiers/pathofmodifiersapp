@@ -7,7 +7,7 @@ from app.external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe
 )
 
 
-def load_data():
+def load_currency_data():
     """
     Loads data from the poe.ninja currency API.
     """
@@ -24,23 +24,25 @@ class TransformPoeNinjaCurrencyAPIData:
     def __init__(self, currencies_df: pd.DataFrame) -> None:
         self.currencies_df = currencies_df
 
-    def _create_currency_table(self) -> pd.DataFrame:
+    def _create_currency_table(self):
         """
         Creates the currency table.
         """
-        currency_table = self.currencies_df.copy()
-        currency_table = currency_table.rename(
+        self.currencies_df.rename(
             columns={
                 "tradeId": "tradeName",
                 "chaosEquivalent": "valueInChaos",
                 "icon": "iconURL",
-            }
+            },
+            inplace=True
         )
 
-        return currency_table
 
     def _clean_currency_table(self) -> pd.DataFrame:
-
+        """
+        Cleans the currency table of unnecessary columns.
+        """
+        
         self.currencies_df.drop(
             self.currencies_df.columns.difference(
                 ["tradeName", "valueInChaos", "iconURL"]
@@ -48,20 +50,30 @@ class TransformPoeNinjaCurrencyAPIData:
             axis=1,
             inplace=True,
         )
+        print(self.currencies_df)
 
-    def clean_currency_details_table(self) -> pd.DataFrame:
+    def transform_into_tables(self) -> pd.DataFrame:
         """
-        Cleans the currency details data.
+        Transforms the data into tables and transforms with help functions.
         """
-        currency_details_df = self.currency_details_df.copy()
+        self._create_currency_table()
+        self._clean_currency_table()
 
-        currency_details_df["icon"] = currency_details_df["icon"].apply(
-            lambda x: x.split("?")[0]
-        )
-        currency_details_df["icon"] = currency_details_df["icon"].apply(
-            lambda x: x.replace(
-                "https://web.poecdn.com/image/Art/2DItems/Currency/", ""
-            )
-        )
+        return self.currencies_df
 
-        return currency_details_df
+
+def main():
+    currency = load_currency_data()
+    currency_data_transformed = (
+        TransformPoeNinjaCurrencyAPIData(currencies_df=currency)
+    )  
+    
+    currency_table = currency_data_transformed.transform_into_tables()
+    
+    # print(currency_table.head())
+
+    return 0
+
+
+if __name__ == "__main__":
+    main()
