@@ -69,3 +69,8 @@ class UniqueJewelleryDetector(UniqueDetector):
         "Two-Stone Ring": ["Precursor's Emblem"],
     }
     wanted_items = ["Aul's Uprising", "Precursor's Emblem"]
+
+
+class UniqueArmourDetector(UniqueDetector):
+    wanted_items_dict = {"Great Crown": ["Forbidden Shako"]}
+    wanted_items = ["Forbidden Shako"]
