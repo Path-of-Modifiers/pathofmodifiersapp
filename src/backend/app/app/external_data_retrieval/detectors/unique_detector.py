@@ -72,5 +72,8 @@ class UniqueJewelleryDetector(UniqueDetector):
 
 
 class UniqueArmourDetector(UniqueDetector):
-    wanted_items_dict = {"Great Crown": ["Forbidden Shako"]}
-    wanted_items = ["Forbidden Shako"]
+    wanted_items_dict = {
+        "Great Crown": ["Forbidden Shako"],
+        "Simple Robe": ["Skin of the Lords"],
+    }
+    wanted_items = ["Forbidden Shako", "Skin of the Lords"]
