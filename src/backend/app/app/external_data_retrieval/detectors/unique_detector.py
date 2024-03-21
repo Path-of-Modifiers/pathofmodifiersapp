@@ -57,3 +57,15 @@ class UniqueJewelDetector(UniqueDetector):
         "Elegant Hubris",
         "Voices",
     ]
+
+
+class UniqueJewelleryDetector(UniqueDetector):
+    wanted_items_dict = {
+        "Onyx Amulet": ["Aul's Uprising"],
+        "Ruby Ring": ["Precursor's Emblem"],
+        "Sapphire Ring": ["Precursor's Emblem"],
+        "Topaz Ring": ["Precursor's Emblem"],
+        "Prismatic Ring": ["Precursor's Emblem"],
+        "Two-Stone Ring": ["Precursor's Emblem"],
+    }
+    wanted_items = ["Aul's Uprising"]
