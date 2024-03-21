@@ -1,6 +1,6 @@
 import asyncio
 
-from app.external_data_retrieval.data_retrieval.poe_api import APIHandler
+from app.external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import APIHandler
 
 
 def main():

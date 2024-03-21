@@ -1,3 +1,4 @@
+# Source: https://poedb.tw/Grand_Spectrum
 minRoll,maxRoll,position,effect,static
 ,,0,"+7% to all Elemental Resistances per Grand Spectrum",True
 ,,0,"25% increased Critical Strike Chance per Grand Spectrum",True
