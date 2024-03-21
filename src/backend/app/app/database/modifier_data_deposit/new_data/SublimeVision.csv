@@ -1,3 +1,4 @@
+# Source: https://poedb.tw/Sublime_Vision
 minRoll,maxRoll,textRolls,position,effect,static
 20,40,,0,"Auras from your Skills have #% increased Effect on you",
 20,40,,0,"#% increased Effect of Non-Curse Auras from your Skills on Enemies",
