@@ -32,7 +32,7 @@ class DataDepositer:
             filepath = os.path.join(self.new_data_location, filename)
 
             self.logger.info(f"Loading new data from '{filename}'.")
-            df = pd.read_csv(filepath, dtype=str, comment="#")
+            df = pd.read_csv(filepath, dtype=str, comment="#", index_col=False)
             self.logger.info("Successfully loaded new data.")
             self.logger.info("Recording attached comments:")
             with open(filepath) as infile:
@@ -155,6 +155,8 @@ class DataDepositer:
         return df
 
     def _insert_data(self, df: pd.DataFrame) -> None:
+        if df.empty:
+            return None
         df = df.fillna("")  # requests can not handle na
         df_json = df.to_dict(
             "records"
