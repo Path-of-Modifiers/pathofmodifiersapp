@@ -34,7 +34,7 @@ class Currency(Base):
         index=True,
         nullable=False,
     )
-    currencyName = _sql.Column(_sql.String(), index=True, nullable=False)
+    tradeName = _sql.Column(_sql.String(), index=True, nullable=False)
     valueInChaos = _sql.Column(_sql.Float(), nullable=False)
     iconUrl = _sql.Column(_sql.String(), nullable=False)
     createdAt = _sql.Column(
