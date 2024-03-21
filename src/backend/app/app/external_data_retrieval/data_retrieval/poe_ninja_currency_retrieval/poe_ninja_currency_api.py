@@ -50,8 +50,3 @@ class PoeNinjaCurrencyAPIHandler:
         currencies_df = self.make_request()
 
         currencies_df.to_csv(path + "/poe_ninja_currencies.csv", index=False)
-
-
-PoeNinjaCurrencyAPIHandler(
-    url="https://poe.ninja/api/data/currencyoverview?league=Standard&type=Currency"
-).store_data("./app/external_data_retrieval/depricated_data/test_data")
