@@ -1,8 +1,8 @@
 # Source: https://poedb.tw/Skin_of_the_Lords#SkinoftheLordsUnique
 # Potential source of error due to very simple effect string
 minRoll,maxRoll,textRolls,position,effect,static
-,,,0,Sockets cannot be modified,True
+,,,0,"Sockets cannot be modified",True
 2,2,,0,"+# to Level of Socketed Gems",
-100,100,,0,#% increased Global Defences,
-,,,0,You can only Socket Corrupted Gems in this item,
-,,"Minion Instability-Conduit-Acrobatics-Iron Reflexes-Resolute Technique-Unwavering Stance-Blood Magic-Pain Attunement-Elemental Equilibrium-Iron Grip-Point Blank-Arrow Dancing-Acrobatics-Ghost Reaver-Vaal Pact-Zealot's Oath-Mind Over Matter-Elemental Overload-Avatar of Fire-Eldritch Battery-Ancestral Bond-Crimson Dance-Perfect Agony-Runebinder-Wicked Ward-Blood Magic-Glancing Blows-Call to Arms-Eternal Youth-Wind Dancer-The Agnostic-Supreme Ego-Imbalanced Guard-The Impaler -Hex Master",0,#,
+100,100,,0,"#% increased Global Defences",
+,,,0,"You can only Socket Corrupted Gems in this item",
+,,"Minion Instability-Conduit-Acrobatics-Iron Reflexes-Resolute Technique-Unwavering Stance-Blood Magic-Pain Attunement-Elemental Equilibrium-Iron Grip-Point Blank-Arrow Dancing-Acrobatics-Ghost Reaver-Vaal Pact-Zealot's Oath-Mind Over Matter-Elemental Overload-Avatar of Fire-Eldritch Battery-Ancestral Bond-Crimson Dance-Perfect Agony-Runebinder-Wicked Ward-Blood Magic-Glancing Blows-Call to Arms-Eternal Youth-Wind Dancer-The Agnostic-Supreme Ego-Imbalanced Guard-The Impaler -Hex Master",0,"#",
