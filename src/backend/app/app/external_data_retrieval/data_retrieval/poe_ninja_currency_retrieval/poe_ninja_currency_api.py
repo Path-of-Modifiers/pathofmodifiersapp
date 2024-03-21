@@ -47,14 +47,9 @@ class PoeNinjaCurrencyAPIHandler:
         """
         Stores the data in a CSV. Only to be used for testing purposes.
         """
-        currencies, currency_details = self._make_request()
-        df_currencies = self._json_to_df(currencies)
-        df_currency_details = self._json_to_df(currency_details)
+        currencies_df = self.make_request()
 
-        df_currencies.to_csv(path + "/poe_ninja_currencies.csv", index=False)
-        df_currency_details.to_csv(
-            path + "/poe_ninja_currency_details.csv", index=False
-        )
+        currencies_df.to_csv(path + "/poe_ninja_currencies.csv", index=False)
 
 
 PoeNinjaCurrencyAPIHandler(
