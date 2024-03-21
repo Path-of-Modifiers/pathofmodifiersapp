@@ -68,4 +68,4 @@ class UniqueJewelleryDetector(UniqueDetector):
         "Prismatic Ring": ["Precursor's Emblem"],
         "Two-Stone Ring": ["Precursor's Emblem"],
     }
-    wanted_items = ["Aul's Uprising"]
+    wanted_items = ["Aul's Uprising", "Precursor's Emblem"]
