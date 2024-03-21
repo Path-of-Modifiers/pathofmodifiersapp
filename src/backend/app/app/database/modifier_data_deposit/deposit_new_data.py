@@ -16,7 +16,7 @@ logging.basicConfig(
 )
 TESTING = True
 BASEURL = "http://localhost"  # TODO update when on virtual machine
-CASCADING_UPDATE = False
+CASCADING_UPDATE = True
 
 
 class DataDepositer:
@@ -32,7 +32,7 @@ class DataDepositer:
             filepath = os.path.join(self.new_data_location, filename)
 
             self.logger.info(f"Loading new data from '{filename}'.")
-            df = pd.read_csv(filepath, dtype=str, comment="#")
+            df = pd.read_csv(filepath, dtype=str, comment="#", index_col=False)
             self.logger.info("Successfully loaded new data.")
             self.logger.info("Recording attached comments:")
             with open(filepath) as infile:
