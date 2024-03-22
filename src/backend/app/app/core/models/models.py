@@ -95,6 +95,7 @@ class Item(Base):
         ),
         nullable=False,
     )
+    ilvl = _sql.Column(_sql.SmallInteger(), nullable=False)
     rarity = _sql.Column(_sql.String(), nullable=False)
     identified = _sql.Column(_sql.Boolean(), nullable=False)
     itemLevel = _sql.Column(_sql.SmallInteger(), nullable=False)

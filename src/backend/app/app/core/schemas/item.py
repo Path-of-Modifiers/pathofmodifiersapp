@@ -23,6 +23,7 @@ class _BaseItem(_pydantic.BaseModel):
     league: str
     typeLine: str
     baseType: str
+    ilvl: int
     rarity: str
     identified: bool
     itemLevel: int
