@@ -72,39 +72,6 @@ def group_df(dynamic_modifier_df):
     return grouped_dynamic_modifier_df
 
 
-def create_regex_string_from_row(row):
-    """
-    row["rolls] is a concatenated list of `minRoll` and `textRolls`. Its length describes
-    how many positions the `effect` has.
-    The zip function iterates through the arguments until one of them has reached the end.
-    Originally the `positions` argument was necessary as `rolls` could contain the `minRoll`
-    of two different tiers.
-
-    "([+-]?([0-9]*[.])?[0-9]+)" matches any floats in base 10 and below. This may be replaced by
-    a regex matching only numbers within the range.
-    f"({row["textRolls"][0].replace("-","|")})" matches all possible text rolls.
-    """
-    effect = row["effect"]
-    positions = row["position"]
-    rolls = row["rolls"]
-    effect_parts = effect.split("#")
-    final_effect = ""
-    for i, (roll, part) in enumerate(zip(rolls, effect_parts)):
-        final_effect += part
-        if roll.isnumeric():
-            final_effect += "([+-]?([0-9]*[.])?[0-9]+)"  # catches all floats
-        else:
-            try:
-                final_effect += f"({row['textRolls'][0].replace('-','|')})"
-            except IndexError:  # In cases of roll is a float
-                final_effect += "([+-]?([0-9]*[.])?[0-9]+)"
-
-    final_effect += "".join(
-        effect_parts[i + 1 :]
-    )  # adds the final part of the effect if there is one
-    return final_effect
-
-
 def add_regex_column(grouped_dynamic_modifier_df):
     """
     Creats the `rolls` column temporarily, which is a concatenated list of `minRoll` and `textRolls`.
