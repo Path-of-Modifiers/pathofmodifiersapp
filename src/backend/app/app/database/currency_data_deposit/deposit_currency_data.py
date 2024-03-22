@@ -19,8 +19,8 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
-TESTING = True
-BASEURL = "http://localhost"  # TODO update when on virtual machine
+TESTING = os.getenv("TESTING")
+BASEURL = os.getenv("DOMAIN")
 CASCADING_UPDATE = False
 
 
@@ -35,7 +35,7 @@ class CurrencyDataDepositor:
         df_json = df.to_dict(
             "records"
         )  # Converts to a list of dicts, where each dict is a row
-                      
+
         return df_json
 
     def _insert_currency_data(self, currency_dict_list: List[Dict]) -> None:
@@ -57,7 +57,9 @@ class CurrencyDataDepositor:
 
 def main():
     currency_data = load_currency_data()
-    transformed_currency_data = TransformPoeNinjaCurrencyAPIData(currencies_df=currency_data).transform_into_tables()
+    transformed_currency_data = TransformPoeNinjaCurrencyAPIData(
+        currencies_df=currency_data
+    ).transform_into_tables()
 
     currency_data_depositor = CurrencyDataDepositor(transformed_currency_data)
     currency_data_depositor.deposit_currency_data()
