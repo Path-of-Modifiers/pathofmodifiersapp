@@ -6,10 +6,12 @@ import aiohttp
 import pandas as pd
 from tqdm import tqdm
 from datetime import datetime
-from typing import List, Union, Tuple, Dict, Coroutine
+from typing import List, Union, Tuple, Dict, Coroutine, Iterator
 
 from app.external_data_retrieval.detectors.unique_detector import (
     UniqueJewelDetector,
+    UniqueJewelleryDetector,
+    UniqueArmourDetector,
     UniqueDetector,
 )
 
@@ -25,7 +27,11 @@ class APIHandler:
         auth_token: str,
         n_wanted_items: int = 100,
         n_unique_wanted_items: int = 5,
-        item_detectors: List[Union[UniqueDetector]] = [UniqueJewelDetector()],
+        item_detectors: List[Union[UniqueDetector]] = [
+            UniqueJewelDetector(),
+            UniqueJewelleryDetector(),
+            UniqueArmourDetector(),
+        ],
     ) -> None:
         """
         Parameters:
@@ -149,7 +155,9 @@ class APIHandler:
             stashes = response_json["stashes"]
             return next_change_id, stashes
 
-    async def _follow_stream(self, initial_next_change_id: str) -> None:
+    async def _follow_stream(
+        self, initial_next_change_id: str
+    ) -> Tuple[pd.DataFrame, str]:
         """
         Follows the API stream until conditions are met
 
@@ -178,9 +186,6 @@ class APIHandler:
 
                 task_response = await asyncio.gather(future)
                 next_change_id, new_stashes = task_response[0]
-
-                # if iteration >= max_iterations:
-                #     break
                 if not new_stashes:
                     time.sleep(
                         300
@@ -194,25 +199,19 @@ class APIHandler:
             self.iteration_pbar.close()
             self.item_count_pbar.close()
             self.unique_items_count_pbar.close()
-            print(f"Final `next_change_id`: {next_change_id}")
-            # self._store_data(stashes=stashes)
 
-    async def dump_stream(
-        self, initial_next_change_id: str = None, max_iterations: int = None
-    ) -> None:
+            return df, next_change_id
+
+    def dump_stream(self, initial_next_change_id: str = None) -> Iterator[pd.DataFrame]:
         """
         The method which begins making API calls and fetching data.
 
         Parameters:
             :param initial_next_change_id: (str) A previously found `next_change_id`.
-            :param max_iterations: (int) The number of iteration before shutting down. (currently not implemented)
         """
-
         # Intializes progressbar context managers
         with (
-            tqdm(
-                total=max_iterations, desc="Iterations", position=0
-            ) as self.iteration_pbar,
+            tqdm(desc="Iterations", position=0) as self.iteration_pbar,
             tqdm(
                 total=self.n_wanted_items,
                 desc="    Items found",
@@ -226,7 +225,9 @@ class APIHandler:
                 position=2,
             ) as self.unique_items_count_pbar,
         ):
-            try:
-                await self._follow_stream(initial_next_change_id)
-            except KeyboardInterrupt:
-                print("Exiting program")
+            while True:
+                df, next_change_id = asyncio.run(
+                    self._follow_stream(initial_next_change_id)
+                )
+                initial_next_change_id = next_change_id
+                yield df
