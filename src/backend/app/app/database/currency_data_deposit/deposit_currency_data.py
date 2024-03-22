@@ -1,3 +1,4 @@
+import json
 import requests
 import logging
 import os
@@ -34,6 +35,9 @@ class CurrencyDataDepositor:
         df_json = df.to_dict(
             "records"
         )  # Converts to a list of dicts, where each dict is a row
+        with open("currency_data.json", "w") as f:
+            json.dump(df_json, f, indent=4)
+                      
         return df_json
 
     def _insert_currency_data(self, currency_dict_list: List[Dict]) -> None:
