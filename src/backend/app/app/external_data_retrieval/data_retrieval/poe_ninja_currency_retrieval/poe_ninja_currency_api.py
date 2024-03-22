@@ -56,10 +56,3 @@ class PoeNinjaCurrencyAPIHandler:
         currencies_df = self.make_request()
 
         currencies_df.to_csv(path + "/poe_ninja_currencies.csv", index=False)
-
-
-""" 
-handler = PoeNinjaCurrencyAPIHandler(
-    url="https://poe.ninja/api/data/currencyoverview?league=Affliction&type=Currency"
-)
-handler.store_data(path=".") """
