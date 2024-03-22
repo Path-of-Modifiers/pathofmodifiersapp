@@ -35,8 +35,6 @@ class CurrencyDataDepositor:
         df_json = df.to_dict(
             "records"
         )  # Converts to a list of dicts, where each dict is a row
-        with open("currency_data.json", "w") as f:
-            json.dump(df_json, f, indent=4)
                       
         return df_json
 
