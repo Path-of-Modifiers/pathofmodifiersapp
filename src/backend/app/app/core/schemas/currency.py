@@ -7,7 +7,7 @@ import pydantic as _pydantic
 class _BaseCurrency(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
-    currencyName: str
+    tradeName: str
     valueInChaos: float
     iconUrl: str
 
