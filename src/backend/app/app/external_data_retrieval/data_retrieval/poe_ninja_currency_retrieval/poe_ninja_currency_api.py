@@ -49,7 +49,7 @@ class PoeNinjaCurrencyAPIHandler:
 
         return combined_currency_data_df
 
-    def store_data(self, path: str) -> None:
+    def store_data_to_csv(self, path: str) -> None:
         """
         Stores the data in a CSV. Only to be used for testing purposes.
         """
