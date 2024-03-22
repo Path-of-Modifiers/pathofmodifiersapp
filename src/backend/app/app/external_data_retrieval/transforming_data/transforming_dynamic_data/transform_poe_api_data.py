@@ -167,7 +167,6 @@ class PoeAPIDataTransformer:
             "influences.warlord",
             "sockets",
             "socketedItems",
-            "ilvl",
             "lockedToAccount",
             "lockedToCharacter",
             "duplicated",
