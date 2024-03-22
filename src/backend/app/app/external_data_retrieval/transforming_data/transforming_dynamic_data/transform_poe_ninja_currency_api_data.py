@@ -32,7 +32,7 @@ class TransformPoeNinjaCurrencyAPIData:
             columns={
                 "tradeId": "tradeName",
                 "chaosEquivalent": "valueInChaos",
-                "icon": "iconURL",
+                "icon": "iconUrl",
             },
             inplace=True,
         )
@@ -51,7 +51,7 @@ class TransformPoeNinjaCurrencyAPIData:
 
         self.currencies_df.drop(
             self.currencies_df.columns.difference(
-                ["tradeName", "valueInChaos", "iconURL"]
+                ["tradeName", "valueInChaos", "iconUrl"]
             ),
             axis=1,
             inplace=True,
