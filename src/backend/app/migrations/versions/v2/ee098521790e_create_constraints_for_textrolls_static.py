@@ -35,19 +35,19 @@ def upgrade() -> None:
                         WHEN (modifier.static = TRUE) 
                         THEN (
                                 (modifier."minRoll" IS NULL AND modifier."maxRoll" IS NULL)
-                                AND modifier."textRoll" IS NULL 
+                                AND modifier."textRolls" IS NULL 
                                 AND modifier.regex IS NULL
                             )
                         ELSE (
                                 (
                                     (
                                         (modifier."minRoll" IS NOT NULL AND modifier."maxRoll" IS NOT NULL)
-                                        AND modifier."textRoll" IS NULL
+                                        AND modifier."textRolls" IS NULL
                                     )
                                     OR
                                     (
                                         (modifier."minRoll" IS  NULL AND modifier."maxRoll" IS  NULL)
-                                        AND modifier."textRoll" IS NOT NULL
+                                        AND modifier."textRolls" IS NOT NULL
                                     )
                                 )
                                 AND modifier.regex IS NOT NULL

@@ -34,7 +34,7 @@ class Currency(Base):
         index=True,
         nullable=False,
     )
-    currencyName = _sql.Column(_sql.String(), index=True, nullable=False)
+    tradeName = _sql.Column(_sql.String(), index=True, nullable=False)
     valueInChaos = _sql.Column(_sql.Float(), nullable=False)
     iconUrl = _sql.Column(_sql.String(), nullable=False)
     createdAt = _sql.Column(
@@ -90,7 +90,9 @@ class Item(Base):
     typeLine = _sql.Column(_sql.String(), nullable=False)
     baseType = _sql.Column(
         _sql.String(),
-        _sql.ForeignKey("item_base_type.baseType", ondelete="RESTRICT", onupdate="CASCADE"),
+        _sql.ForeignKey(
+            "item_base_type.baseType", ondelete="RESTRICT", onupdate="CASCADE"
+        ),
         nullable=False,
     )
     rarity = _sql.Column(_sql.String(), nullable=False)
@@ -143,7 +145,7 @@ class Modifier(Base):
     position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
     minRoll = _sql.Column(_sql.Float(24))
     maxRoll = _sql.Column(_sql.Float(24))
-    textRoll = _sql.Column(_sql.String())
+    textRolls = _sql.Column(_sql.String())
     static = _sql.Column(_sql.Boolean())
     effect = _sql.Column(_sql.String(), nullable=False)
     regex = _sql.Column(_sql.String())
@@ -171,19 +173,19 @@ class Modifier(Base):
                 WHEN (modifier.static = TRUE) 
                 THEN (
                         (modifier."minRoll" IS NULL AND modifier."maxRoll" IS NULL)
-                        AND modifier."textRoll" IS NULL 
+                        AND modifier."textRolls" IS NULL 
                         AND modifier.regex IS NULL
                     )
                 ELSE (
                         (
                             (
                                 (modifier."minRoll" IS NOT NULL AND modifier."maxRoll" IS NOT NULL)
-                                AND modifier."textRoll" IS NULL
+                                AND modifier."textRolls" IS NULL
                             )
                             OR
                             (
                                 (modifier."minRoll" IS  NULL AND modifier."maxRoll" IS  NULL)
-                                AND modifier."textRoll" IS NOT NULL
+                                AND modifier."textRolls" IS NOT NULL
                             )
                         )
                         AND modifier.regex IS NOT NULL
@@ -207,7 +209,7 @@ class Modifier(Base):
             name="check_modifier_if_not_static_then_modifier_contains_hashtag",
         ),
         _sql.CheckConstraint(
-            """ modifier."maxRoll" > modifier."minRoll" """,
+            """ modifier."maxRoll" >= modifier."minRoll" """,
             name="check_modifier_maxRoll_greaterThan_minRoll",
         ),
     )
@@ -238,7 +240,8 @@ class ItemModifier(Base):
         _sql.ForeignKeyConstraint(
             [modifierId, position],
             ["modifier.modifierId", "modifier.position"],
-            ondelete="CASCADE", onupdate="CASCADE",
+            ondelete="CASCADE",
+            onupdate="CASCADE",
         ),
     )
 
