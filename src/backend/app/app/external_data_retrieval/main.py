@@ -22,6 +22,7 @@ def main():
         initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272"
     ):  # From poe.ninja
         print(df)
+        df.to_csv("test.csv", index=False)
         quit()
 
     return 0
