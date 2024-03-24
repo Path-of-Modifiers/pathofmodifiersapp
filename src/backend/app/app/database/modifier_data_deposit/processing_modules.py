@@ -200,7 +200,7 @@ def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame
 
 
 def check_for_updated_text_rolls(
-    row_old: pd.DataFrame, row_new: pd.DataFrame, logger: logging.Logger
+    row_old: pd.Series, row_new: pd.Series, logger: logging.Logger
 ) -> Optional[List]:
     if row_old["textRolls"] != row_new["textRolls"]:
         logger.info("Found a modifier with new 'textRolls'.")
@@ -215,7 +215,7 @@ def check_for_updated_text_rolls(
 
 
 def check_for_updated_numerical_rolls(
-    row_old: pd.DataFrame, row_new: pd.DataFrame, logger: logging.Logger
+    row_old: pd.Series, row_new: pd.Series, logger: logging.Logger
 ) -> Optional[List]:
     min_roll = row_old["minRoll"]
     max_roll = row_old["maxRoll"]
