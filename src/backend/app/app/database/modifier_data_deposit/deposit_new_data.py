@@ -89,27 +89,29 @@ class DataDepositer:
         for (_, row_cur), (_, row_new) in zip(
             current_duplicate_modifiers.iterrows(), duplicate_df.iterrows()
         ):
+            put_update = False
             data = df_to_JSON(row_cur, request_method="put")
+            data.pop("updatedAt")
 
             if not pd.isna(row_new["static"]):
                 pass
             elif not pd.isna(row_new["textRolls"]):
-                data = check_for_updated_text_rolls(
+                data, put_update = check_for_updated_text_rolls(
                     data=data, row_new=row_new, logger=self.logger
                 )
             else:
-                data = check_for_updated_numerical_rolls(
+                data, put_update = check_for_updated_numerical_rolls(
                     data=data, row_new=row_new, logger=self.logger
                 )
 
-            data = check_for_additional_modifier_types(
+            data, put_update = check_for_additional_modifier_types(
                 data=data,
                 row_new=row_new,
                 modifier_types=self.modifier_types,
                 logger=self.logger,
             )
 
-            if data is not None:
+            if put_update:
                 response = requests.put(
                     update_url.format(row_cur["modifierId"], row_cur["position"]),
                     json=data,
