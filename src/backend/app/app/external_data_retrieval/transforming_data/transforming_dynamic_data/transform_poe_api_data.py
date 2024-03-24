@@ -1,65 +1,68 @@
-import json
 from typing import List
 import pandas as pd
 
 
-def load_test_data():
-    """
-    Temporary test data loader
-    """
-    with open("testing_data/2024_01_24 22_33.json", encoding="utf8") as infile:
-        data = json.load(infile)
-
-    return data
-
-
 class PoeAPIDataTransformer:
 
-    def _create_stash_table(self, json_data: list) -> None:
+    def _create_account_table(self, df: pd.DataFrame) -> None:
+        """
+        Creates the basis of the `account` table.
+        It is not immediately processed in order to save compute power later.
+        """
+        self.account_columns = ["accountName"]
+        account_df = df.loc[:, self.account_columns]
+
+        self.account_df = account_df
+
+    def _create_stash_table(self, df: pd.DataFrame) -> None:
         """
         Creates the basis of the `stash` table.
         It is not immediately processed in order to save compute power later.
         """
-        stash_df = pd.json_normalize(json_data)  # Contains columns of JSON-objects
-
-        stash_df.rename(columns={"id": "stashId"}, inplace=True)
+        self.stash_columns = ["stashId", "accountName", "public", "league"]
+        stash_df = df.loc[:, self.stash_columns]
 
         self.stash_df = stash_df
 
-    def _create_account_table(self, json_data: list) -> None:
-        """
-        The `account`
-        """
-
-        account_df = self.stash_df.copy(deep=True)  # Deep copy to avoid damage
-        account_df["isBanned"] = pd.NA
-
-        self.account_df = account_df
-
-    def _create_item_table(self, json_data: list) -> None:
+    def _create_item_table(self, df: pd.DataFrame) -> None:
         """
         Creates the basis of the `item` table, using parts of `stash` table.
 
         The `item` table requires the `stashId` as a foreign key. This is
         why the `stash` table was not immediately processed.
         """
-        stash_df = self.stash_df.copy(deep=True)  # Deep copy to avoid damage
-
-        stash_df = self._expand_df(
-            stash_df, "items", "id"
-        )  # Stretches `stash_df` into the same length as `item_df`
-
-        item_df = pd.json_normalize(
-            json_data, record_path="items"
-        )  # Extracts items-json
-
-        item_df["stashId"] = stash_df["stashId"]
-        item_df["itemId"] = (
-            item_df.index
-        )  # + n_items_in_db <------------ Needs to be implemented: TODO
-        item_df.rename(columns={"id": "gameItemId"}, inplace=True)
-        item_df.rename(columns={"icon": "iconUrl"}, inplace=True)
-        item_df.rename(columns={"forum_note": "forumNote"}, inplace=True)
+        self.item_columns = [
+            "gameItemId",
+            "stashId",
+            "name",
+            "icon",
+            "league",
+            "typeLine",
+            "baseType",
+            "rarity",
+            "identified",
+            "ilvl",
+            "forum_note",
+            "corrupted",
+            "delve",
+            "fractured",
+            "synthesized",
+            "replica",
+            "elder",
+            "shaper",
+            "influences.shaper",
+            "influences.elder",
+            "influences.crusader",
+            "influences.hunter",
+            "influences.redeemer",
+            "influences.warlord",
+            "searing",
+            "tangled",
+            "foilVariation",
+        ]
+        item_df = df.loc[
+            :, [column for column in self.item_columns if column in df.columns]
+        ]  # Can't guarantee all columns are present
 
         self.item_df = item_df
 
@@ -70,6 +73,10 @@ class PoeAPIDataTransformer:
         """
         self.item_modifier_df = pd.DataFrame()
         raise NotImplementedError("Only available in child classes")
+
+    def _transform_account_table(self) -> None:
+        # TODO get banned from db
+        pass
 
     def _transform_item_table(self) -> None:
         """
@@ -126,120 +133,17 @@ class PoeAPIDataTransformer:
         """
         raise NotImplementedError("Only available in child classes")
 
-    def _clean_stash_table(self):
-        """
-        Gets rid of unnecessay information, so that only fields needed for the DB remains.
-        """
-        self.stash_df.drop(["items", "stashType"], axis=1, inplace=True)
-
-    def _clean_account_table(self):
-        """
-        Gets rid of unnecessay information, so that only fields needed for the DB remains.
-        """
-        self.account_df.drop(
-            self.account_df.columns.difference(["accountName", "isBanned"]),
-            axis=1,
-            inplace=True,
-        )
-
     def _clean_item_table(self):
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
         drop_list = [
-            "verified",
-            "w",
-            "h",
-            "support",
-            "stackSize",
-            "maxStackSize",
-            "stackSizeText",
-            "note",
-            "extended.subcategories",
-            "extended.category",
-            "abyssJewel",
-            "implicitMods",
             "influences.shaper",
             "influences.elder",
             "influences.crusader",
             "influences.hunter",
             "influences.redeemer",
             "influences.warlord",
-            "sockets",
-            "socketedItems",
-            "ilvl",
-            "lockedToAccount",
-            "lockedToCharacter",
-            "duplicated",
-            "split",
-            "unmodifiable",
-            "cisRaceReward",
-            "seaRaceReward",
-            "thRaceReward",
-            "properties",
-            "noteableProperties",
-            "additionalProperties",
-            "nextLevelRequirements",
-            "talismanTier",
-            "rewards",
-            "secDescrText",
-            "utilityMods",
-            "logbookMods",
-            "enchantMods",
-            "scourgeMods",
-            "ultimatumMods",
-            "explicitMods",
-            "craftedMods",
-            "fracturedMods",
-            "crucibleMods",
-            "cosmeticMods",
-            "veiledMods",
-            "veiled",
-            "flavourTextParsed",
-            "flavourTextNote",
-            "prophecyText",
-            "isRelic",
-            "foreseeing",
-            "artFilename",
-            "inventoryId",
-            "socket",
-            "colour",
-            "incubatedItem.name",
-            "incubatedItem.level",
-            "incubatedItem.progress",
-            "incubatedItem.total",
-            "scourged.tier",
-            "scourged.level",
-            "scourged.progress",
-            "scourged.total",
-            "crucible.layout",
-            "crucible.nodes",
-            "crucible.nodes.stats",
-            "crucible.nodes.skill",
-            "crucible.nodes.tier",
-            "crucible.nodes.icon",
-            "crucible.nodes.allocated",
-            "crucible.nodes.isNoteable",
-            "crucible.nodes.orbit",
-            "crucible.nodes.orbitIndex",
-            "crucible.nodes.out",
-            "crucible.nodes.in",
-            "crucible.nodes.reminderText",
-            "crucible.nodes.isReward",
-            "hybrid.isVaalGem",
-            "hybrid.baseTypeName",
-            "hybrid.properties",
-            "hybrid.explicitMods",
-            "hybrid.secDescrText",
-            "extended.prefixes",
-            "extended.suffixes",
-            "descrText",
-            "flavourText",
-            "frameType",
-            "x",
-            "y",
-            "requirements",
-            "ruthless",
         ]
         self.item_df.drop(
             drop_list,
@@ -270,41 +174,22 @@ class PoeAPIDataTransformer:
         for key in tables:
             tables[key].to_csv(f"transformed_data/{key}.csv", index=False)
 
-    def transform_into_tables(self, json_data: list) -> None:
+    def transform_into_tables(self, df: pd.DataFrame) -> None:
         """
         The process of extracting data from the JSON-data, transforming it and cleaning it.
         """
-        self._create_stash_table(json_data=json_data)
-        self._create_account_table(json_data=json_data)
-        self._create_item_table(json_data=json_data)
-        self._create_item_modifier_table(json_data=json_data)
+        self._create_stash_table(df)
+        self._create_account_table(df)
+        self._create_item_table(df)
+        self._create_item_modifier_table(df)
 
         self._transform_item_table()
         self._transform_item_modifier_table()
 
-        self._clean_stash_table()
-        self._clean_account_table()
         self._clean_item_table()
         self._clean_item_modifier_table()
 
         self._save_tables_to_files()
-
-    @staticmethod
-    def _expand_df(
-        df: pd.DataFrame, json_column: str, target_column: str
-    ) -> pd.DataFrame:
-        """
-        An independent function that is highly related to the class. Was created as a static method
-        because it might be necessary to access from several methods. This turned out to be uneccessary
-        """
-        df["temp_col"] = df[json_column].apply(
-            lambda x: [item[target_column] for item in x]
-        )  # Extracts column out of the list_column's json-object, storing it as a list
-        df = df.explode(
-            "temp_col", ignore_index=True
-        )  # Explodes the list, making the df's dimensions equal to the number of items
-
-        return df
 
     @staticmethod
     def _get_ranges(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
@@ -488,93 +373,25 @@ class PoeAPIDataTransformer:
 
 
 class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
-    def _create_item_modifier_table(self, json_data: list) -> None:
+    def _create_item_modifier_table(self, df: pd.DataFrame) -> None:
         """
         A similiar process to creating the item table, only this time the
         relevant column contains a list and not a JSON-object
         """
-        item_df = self.item_df.copy(deep=True)
+        self.item_modifier_columns = ["name", "explicitMods"]
 
-        item_df = item_df.explode("explicitMods", ignore_index=True)
+        item_modifier_df = df.loc[:, self.item_modifier_columns]
 
-        item_modifier_df = pd.json_normalize(
-            json_data, record_path=["items", "explicitMods"]
-        )  # Extracts items-json
-
-        item_modifier_df["itemId"] = item_df["itemId"]
-        item_modifier_df["name"] = item_df["name"]
-        item_modifier_df.rename({0: "modifier"}, axis=1, inplace=True)
+        item_modifier_df = item_modifier_df.explode("explicitMods")
 
         self.item_modifier_df = item_modifier_df
 
     def _transform_item_modifier_table(self) -> None:
-        """
-        Currently relies on locally stored files to retrieve relevant modifiers
-        """
-        item_modifier_df = self.item_modifier_df
-
-        # --- Only relevant until we connect to the DB ---
-        item_modifier_df["roll_file_name"] = (
-            item_modifier_df["name"].str.replace("'", "").str.replace(" ", "")
-        )
-
-        modifier_df = pd.DataFrame(
-            columns=[
-                "minRoll",
-                "maxRoll",
-                "textRolls",
-                "position",
-                "effect",
-                "static",
-                "modifierId",
-            ]
-        )
-        for unique in item_modifier_df["roll_file_name"].unique():
-            # if unique != "WatchersEye":
-            #     continue
-            temp_df = pd.read_csv(f"modifier/{unique}.csv", dtype=str)
-            modifier_df = pd.concat((modifier_df, temp_df), axis=0, ignore_index=True)
-
-        # --- Always relevant ---
-
-        item_modifier_df = self._get_ranges(
-            df=item_modifier_df,
-            modifier_df=modifier_df,
-        )
-
-        self.item_modifier_df = item_modifier_df
+        # TODO part of another issue
+        pass
 
     def _clean_item_modifier_table(self):
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
-        self.item_modifier_df.drop(
-            [
-                "modifier",
-                "name",
-                "roll_file_name",
-                "effect",
-                "alternateEffect",
-                "minRoll",
-                "maxRoll",
-                "textRolls",
-                "static",
-                "regex",
-            ],
-            axis=1,
-            inplace=True,
-        )
-
-
-def main():
-    json_data = load_test_data()
-    data_transformer = (
-        UniquePoeAPIDataTransformer()
-    )  # eventually a system for sending the right JSON-data to the correct data-transformers need to be implemented
-    data_transformer.transform_into_tables(json_data=json_data)
-
-    return 0
-
-
-if __name__ == "__main__":
-    main()
+        pass
