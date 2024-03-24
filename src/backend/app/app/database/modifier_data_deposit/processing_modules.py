@@ -1,6 +1,8 @@
 import logging
 import pandas as pd
-from typing import Tuple
+from typing import Tuple, List, Optional
+
+from app.database.modifier_data_deposit.utils import df_to_JSON
 
 logging.basicConfig(
     filename="history.log",
@@ -195,3 +197,51 @@ def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame
     child_logger.info("Completed process of adding regex")
 
     return final_df
+
+
+def check_for_updated_text_rolls(
+    row_old: pd.DataFrame, row_new: pd.DataFrame, logger: logging.Logger
+) -> Optional[List]:
+    if row_old["textRolls"] != row_new["textRolls"]:
+        logger.info("Found a modifier with new 'textRolls'.")
+        data = df_to_JSON(row_new, request_method="put")
+        data["modifierId"] = row_new["modifierId"]
+        data["position"] = row_new["position"]
+
+        return data
+
+    else:
+        return None
+
+
+def check_for_updated_numerical_rolls(
+    row_old: pd.DataFrame, row_new: pd.DataFrame, logger: logging.Logger
+) -> Optional[List]:
+    min_roll = row_old["minRoll"]
+    max_roll = row_old["maxRoll"]
+
+    new_min_roll = row_new["minRoll"]
+    new_max_roll = row_new["maxRoll"]
+
+    if float(min_roll) > float(new_min_roll):
+        logger.info("Found a modifier with a lower 'minRoll'.")
+    else:
+        new_min_roll = min_roll
+
+    if float(max_roll) < float(new_max_roll):
+        logger.info("Found a modifier with a higher 'maxRoll'.")
+    else:
+        new_max_roll = max_roll
+
+    row_new["minRoll"] = float(new_min_roll)
+    row_new["maxRoll"] = float(new_max_roll)
+    if min_roll != new_min_roll or max_roll != new_max_roll:
+        logger.info("Updating modifier to bring numerical roll range up-to-date.")
+        data = df_to_JSON(row_new, request_method="put")
+        data["modifierId"] = row_old["modifierId"]
+        data["position"] = row_old["position"]
+
+        return data
+
+    else:
+        return None
