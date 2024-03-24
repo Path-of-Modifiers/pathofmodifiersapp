@@ -5,8 +5,8 @@ minRoll,maxRoll,position,effect,static,unique
 ,,0,"Immune to Curses if you've cast Despair in the past 10 seconds",True,True
 ,,0,"Inflict Withered for 2 seconds on Hit if you've cast Despair in the past 10 seconds",True,True
 ,,0,"Immune to Exposure if you've cast Elemental Weakness in the past 10 seconds",True,True
-30,40,0,"Gain #% of Physical Damage as a Random Element if you've cast Elemental Weakness in the past 10 seconds,,True
-30,40,0,"+#% to Critical Strike Multiplier if you've cast Enfeeble in the past 10 seconds,,True
+30,40,0,"Gain #% of Physical Damage as a Random Element if you've cast Elemental Weakness in the past 10 seconds",,True
+30,40,0,"+#% to Critical Strike Multiplier if you've cast Enfeeble in the past 10 seconds",,True
 ,,0,"Take no Extra Damage from Critical Strikes if you've cast Enfeeble in the past 10 seconds",True,True
 ,,0,"Inflict Fire Exposure on Hit if you've cast Flammability in the past 10 seconds",True,True
 ,,0,"You are Unaffected by Ignite if you've cast Flammability in the past 10 seconds",True,True
