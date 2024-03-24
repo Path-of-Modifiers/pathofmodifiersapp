@@ -1,6 +1,6 @@
 import logging
 import pandas as pd
-from typing import Tuple, List, Optional
+from typing import Tuple, List, Optional, Dict, Any
 
 from app.database.modifier_data_deposit.utils import df_to_JSON
 
@@ -153,9 +153,20 @@ def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame
     child_logger = logger.getChild("add_regex")
     child_logger.info("Starting process of adding regex")
 
-    # modifier_df = modifier_df.reindex(
-    #     columns=["minRoll", "maxRoll", "textRolls", "position", "effect", "static"]
-    # )
+    modifier_df_required_columns = [
+        "minRoll",
+        "maxRoll",
+        "textRolls",
+        "position",
+        "effect",
+        "static",
+    ]
+    modifier_df_columns = modifier_df_required_columns + [
+        column
+        for column in modifier_df.columns
+        if column not in modifier_df_required_columns
+    ]
+    modifier_df = modifier_df.reindex(columns=modifier_df_columns)
 
     # child_logger.info("Dividing modifier dataframe into dynamic and static modifiers.")
     dynamic_modifier_df, static_modifier_df = divide_modifiers_into_dynamic_static(
@@ -201,7 +212,7 @@ def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame
 
 def check_for_updated_text_rolls(
     row_old: pd.Series, row_new: pd.Series, logger: logging.Logger
-) -> Optional[List]:
+) -> Optional[Dict[str, Any]]:
     if row_old["textRolls"] != row_new["textRolls"]:
         logger.info("Found a modifier with new 'textRolls'.")
         data = df_to_JSON(row_new, request_method="put")
@@ -216,7 +227,7 @@ def check_for_updated_text_rolls(
 
 def check_for_updated_numerical_rolls(
     row_old: pd.Series, row_new: pd.Series, logger: logging.Logger
-) -> Optional[List]:
+) -> Optional[Dict[str, Any]]:
     min_roll = row_old["minRoll"]
     max_roll = row_old["maxRoll"]
 
@@ -245,3 +256,34 @@ def check_for_updated_numerical_rolls(
 
     else:
         return None
+
+
+def check_for_additional_modifier_types(
+    data: Dict[str, Any],
+    row_old: pd.Series,
+    row_new: pd.Series,
+    modifier_types: List[str],
+    logger: logging.Logger,
+) -> Optional[Dict[str, Any]]:
+    updated_modifier_types = []
+    if data is not None:
+        for modifier_type in modifier_types:
+            if modifier_type in row_old.index:
+                logger.info(f"Added a modifier type to a modifier.")
+                data[modifier_type] = row_old[modifier_type]
+                updated_modifier_types.append(modifier_type)
+    else:
+        for modifier_type in modifier_types:
+            if modifier_type in row_new.index:
+                logger.info(f"Added a modifier type to a modifier.")
+                row_old[modifier_type] = row_new[modifier_type]
+                updated_modifier_types.append(modifier_type)
+
+    if updated_modifier_types:
+        if data is not None:
+            return data
+        else:
+            data = df_to_JSON(row_old, request_method="put")
+            data.pop("updatedAt")
+    else:
+        return data
