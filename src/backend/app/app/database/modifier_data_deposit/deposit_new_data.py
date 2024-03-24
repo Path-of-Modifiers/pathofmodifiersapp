@@ -85,8 +85,6 @@ class DataDepositer:
         duplicate_df.sort_values(by=["effect", "position"], inplace=True)
 
         update_url = self.url + "{}?position={}"
-
-        print(current_duplicate_modifiers)
         for (_, row_cur), (_, row_new) in zip(
             current_duplicate_modifiers.iterrows(), duplicate_df.iterrows()
         ):

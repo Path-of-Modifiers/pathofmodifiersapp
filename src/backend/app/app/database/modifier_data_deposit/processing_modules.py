@@ -233,8 +233,8 @@ def check_for_updated_numerical_rolls(
     else:
         new_max_roll = max_roll
 
-    row_new["minRoll"] = float(new_min_roll)
-    row_new["maxRoll"] = float(new_max_roll)
+    row_new["minRoll"] = new_min_roll
+    row_new["maxRoll"] = new_max_roll
     if min_roll != new_min_roll or max_roll != new_max_roll:
         logger.info("Updating modifier to bring numerical roll range up-to-date.")
         data = df_to_JSON(row_new, request_method="put")
