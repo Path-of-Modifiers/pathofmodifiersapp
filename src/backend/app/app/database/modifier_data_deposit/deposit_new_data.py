@@ -90,6 +90,7 @@ class DataDepositer:
         for (_, row_cur), (_, row_new) in zip(
             current_duplicate_modifiers.iterrows(), duplicate_df.iterrows()
         ):
+            data = None
             updated_modifier_types = []
             for modifier_type in self.modifier_types:
                 if modifier_type in row_new.index:
