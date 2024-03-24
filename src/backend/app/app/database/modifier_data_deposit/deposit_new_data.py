@@ -35,6 +35,7 @@ class DataDepositer:
             "delve",
             "fractured",
             "synthesized",
+            "unique",
             "corrupted",
             "enchanted",
             "veiled",
