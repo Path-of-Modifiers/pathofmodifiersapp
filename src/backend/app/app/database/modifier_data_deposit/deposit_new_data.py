@@ -9,6 +9,7 @@ from app.database.modifier_data_deposit.processing_modules import (
     add_regex,
     check_for_updated_text_rolls,
     check_for_updated_numerical_rolls,
+    check_for_additional_modifier_types,
 )
 from app.database.modifier_data_deposit.utils import df_to_JSON
 
@@ -89,14 +90,6 @@ class DataDepositer:
             current_duplicate_modifiers.iterrows(), duplicate_df.iterrows()
         ):
             data = None
-            updated_modifier_types = []
-            for modifier_type in self.modifier_types:
-                if modifier_type in row_new.index:
-                    self.logger.info(f"Added a modifier type to a modifier.")
-                    row_cur[modifier_type] = True
-                    updated_modifier_types.append(modifier_type)
-            if updated_modifier_types:
-                data = df_to_JSON(row_cur, request_method="put")
 
             if not pd.isna(row_new["static"]):
                 pass
@@ -108,6 +101,14 @@ class DataDepositer:
                 data = check_for_updated_numerical_rolls(
                     row_old=row_cur, row_new=row_new, logger=self.logger
                 )
+
+            data = check_for_additional_modifier_types(
+                data=data,
+                row_old=row_cur,
+                row_new=row_new,
+                modifier_types=self.modifier_types,
+                logger=self.logger,
+            )
 
             if data is not None:
                 response = requests.put(
