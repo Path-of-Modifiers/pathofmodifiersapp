@@ -17,6 +17,7 @@ def df_to_JSON(
 ) -> Union[List[Dict[str, Any]], Dict]:
     if isinstance(df, pd.Series):
         df = df.to_frame().transpose()
+    df = df.replace(["nan", "None"], pd.NA)
     df = df.fillna("")  # requests can not handle na
     df_json = df.to_dict(
         orient="records"
