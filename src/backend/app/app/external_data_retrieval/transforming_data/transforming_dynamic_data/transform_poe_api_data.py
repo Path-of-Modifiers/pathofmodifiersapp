@@ -66,7 +66,9 @@ class PoeAPIDataTransformer:
 
         self.item_df = item_df
 
-    def _create_item_modifier_table(self, json_data: list) -> None:
+    def _create_item_modifier_table(
+        self, df: pd.DataFrame, modifier_df: pd.DataFrame
+    ) -> None:
         """
         The `item_modifier` table heavily relies on what type of item the modifiers
         belong to.
@@ -174,14 +176,16 @@ class PoeAPIDataTransformer:
         for key in tables:
             tables[key].to_csv(f"transformed_data/{key}.csv", index=False)
 
-    def transform_into_tables(self, df: pd.DataFrame) -> None:
+    def transform_into_tables(
+        self, df: pd.DataFrame, modifier_df: pd.DataFrame
+    ) -> None:
         """
         The process of extracting data from the JSON-data, transforming it and cleaning it.
         """
         self._create_stash_table(df)
         self._create_account_table(df)
         self._create_item_table(df)
-        self._create_item_modifier_table(df)
+        self._create_item_modifier_table(df, modifier_df)
 
         self._transform_item_table()
         self._transform_item_modifier_table()
@@ -373,7 +377,9 @@ class PoeAPIDataTransformer:
 
 
 class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
-    def _create_item_modifier_table(self, df: pd.DataFrame) -> None:
+    def _create_item_modifier_table(
+        self, df: pd.DataFrame, modifier_df: pd.DataFrame
+    ) -> None:
         """
         A similiar process to creating the item table, only this time the
         relevant column contains a list and not a JSON-object
