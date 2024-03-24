@@ -86,6 +86,7 @@ class DataDepositer:
 
         update_url = self.url + "{}?position={}"
 
+        print(current_duplicate_modifiers)
         for (_, row_cur), (_, row_new) in zip(
             current_duplicate_modifiers.iterrows(), duplicate_df.iterrows()
         ):
@@ -140,7 +141,7 @@ class DataDepositer:
 
     def _process_new_data(self, df: pd.DataFrame) -> pd.DataFrame:
         df = add_regex(df, logger=self.logger)
-        df = self._remove_duplicates(df)
+        df = self._remove_duplicates(df.copy(deep=True))
         return df
 
     def _insert_data(self, df: pd.DataFrame) -> None:
