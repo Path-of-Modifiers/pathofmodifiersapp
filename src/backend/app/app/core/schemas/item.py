@@ -26,7 +26,6 @@ class _BaseItem(_pydantic.BaseModel):
     ilvl: int
     rarity: str
     identified: bool
-    itemLevel: int
     forumNote: Optional[str] = None
     currencyAmount: Optional[float] = None
     currencyId: Optional[int] = None
