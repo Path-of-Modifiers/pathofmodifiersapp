@@ -153,9 +153,9 @@ def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame
     child_logger = logger.getChild("add_regex")
     child_logger.info("Starting process of adding regex")
 
-    modifier_df = modifier_df.reindex(
-        columns=["minRoll", "maxRoll", "textRolls", "position", "effect", "static"]
-    )
+    # modifier_df = modifier_df.reindex(
+    #     columns=["minRoll", "maxRoll", "textRolls", "position", "effect", "static"]
+    # )
 
     # child_logger.info("Dividing modifier dataframe into dynamic and static modifiers.")
     dynamic_modifier_df, static_modifier_df = divide_modifiers_into_dynamic_static(
