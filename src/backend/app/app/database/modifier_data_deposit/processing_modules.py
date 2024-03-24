@@ -212,17 +212,20 @@ def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame
 
 def check_for_updated_text_rolls(
     data: Dict[str, Any], row_new: pd.Series, logger: logging.Logger
-) -> Dict[str, Any]:
+) -> Tuple[Dict[str, Any], bool]:
     if data["textRolls"] != row_new["textRolls"]:
         logger.info("Found a modifier with new 'textRolls'.")
         data["textRolls"] = row_new["textRolls"]
+        put_update = True
+    else:
+        put_update = False
 
-    return data
+    return data, put_update
 
 
 def check_for_updated_numerical_rolls(
     data: Dict[str, Any], row_new: pd.Series, logger: logging.Logger
-) -> Dict[str, Any]:
+) -> Tuple[Dict[str, Any], bool]:
     min_roll = data["minRoll"]
     max_roll = data["maxRoll"]
 
@@ -239,8 +242,11 @@ def check_for_updated_numerical_rolls(
 
     if min_roll != new_min_roll or max_roll != new_max_roll:
         logger.info("Updating modifier to bring numerical roll range up-to-date.")
+        put_update = True
+    else:
+        put_update = False
 
-    return data
+    return data, put_update
 
 
 def check_for_additional_modifier_types(
@@ -248,9 +254,11 @@ def check_for_additional_modifier_types(
     row_new: pd.Series,
     modifier_types: List[str],
     logger: logging.Logger,
-) -> Dict[str, Any]:
+) -> Tuple[Dict[str, Any], bool]:
     for modifier_type in modifier_types:
         if modifier_type in row_new.index:
             logger.info(f"Added a modifier type to a modifier.")
             data[modifier_type] = row_new[modifier_type]
-    return data
+            put_update = True
+
+    return data, put_update
