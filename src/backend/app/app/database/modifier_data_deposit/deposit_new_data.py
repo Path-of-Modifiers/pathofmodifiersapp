@@ -88,13 +88,17 @@ class DataDepositer:
         for (_, row_cur), (_, row_new) in zip(
             current_duplicate_modifiers.iterrows(), duplicate_df.iterrows()
         ):
+            updated_modifier_types = []
             for modifier_type in self.modifier_types:
                 if modifier_type in row_new.columns:
                     self.logger.info(f"Added a modifier type to a modifier.")
                     row_cur[modifier_type] = True
+                    updated_modifier_types.append(modifier_type)
+            if updated_modifier_types:
+                data = df_to_JSON(row_cur, request_method="put")
 
             if not pd.isna(row_new["static"]):
-                continue
+                pass
             elif not pd.isna(row_new["textRolls"]):
                 data = check_for_updated_text_rolls(
                     row_old=row_cur, row_new=row_new, logger=self.logger
