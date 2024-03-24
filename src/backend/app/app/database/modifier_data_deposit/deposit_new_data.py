@@ -89,22 +89,21 @@ class DataDepositer:
         for (_, row_cur), (_, row_new) in zip(
             current_duplicate_modifiers.iterrows(), duplicate_df.iterrows()
         ):
-            data = None
+            data = df_to_JSON(row_cur, request_method="put")
 
             if not pd.isna(row_new["static"]):
                 pass
             elif not pd.isna(row_new["textRolls"]):
                 data = check_for_updated_text_rolls(
-                    row_old=row_cur, row_new=row_new, logger=self.logger
+                    data=data, row_new=row_new, logger=self.logger
                 )
             else:
                 data = check_for_updated_numerical_rolls(
-                    row_old=row_cur, row_new=row_new, logger=self.logger
+                    data=data, row_new=row_new, logger=self.logger
                 )
 
             data = check_for_additional_modifier_types(
                 data=data,
-                row_old=row_cur,
                 row_new=row_new,
                 modifier_types=self.modifier_types,
                 logger=self.logger,
