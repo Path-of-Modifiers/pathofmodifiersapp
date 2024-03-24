@@ -211,79 +211,46 @@ def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame
 
 
 def check_for_updated_text_rolls(
-    row_old: pd.Series, row_new: pd.Series, logger: logging.Logger
-) -> Optional[Dict[str, Any]]:
-    if row_old["textRolls"] != row_new["textRolls"]:
+    data: Dict[str, Any], row_new: pd.Series, logger: logging.Logger
+) -> Dict[str, Any]:
+    if data["textRolls"] != row_new["textRolls"]:
         logger.info("Found a modifier with new 'textRolls'.")
-        data = df_to_JSON(row_new, request_method="put")
-        data["modifierId"] = row_new["modifierId"]
-        data["position"] = row_new["position"]
+        data["textRolls"] = row_new["textRolls"]
 
-        return data
-
-    else:
-        return None
+    return data
 
 
 def check_for_updated_numerical_rolls(
-    row_old: pd.Series, row_new: pd.Series, logger: logging.Logger
-) -> Optional[Dict[str, Any]]:
-    min_roll = row_old["minRoll"]
-    max_roll = row_old["maxRoll"]
+    data: Dict[str, Any], row_new: pd.Series, logger: logging.Logger
+) -> Dict[str, Any]:
+    min_roll = data["minRoll"]
+    max_roll = data["maxRoll"]
 
     new_min_roll = row_new["minRoll"]
     new_max_roll = row_new["maxRoll"]
 
     if float(min_roll) > float(new_min_roll):
         logger.info("Found a modifier with a lower 'minRoll'.")
-    else:
-        new_min_roll = min_roll
+        data["minRoll"] = new_min_roll
 
     if float(max_roll) < float(new_max_roll):
         logger.info("Found a modifier with a higher 'maxRoll'.")
-    else:
-        new_max_roll = max_roll
+        data["maxRoll"] = new_max_roll
 
-    row_new["minRoll"] = new_min_roll
-    row_new["maxRoll"] = new_max_roll
     if min_roll != new_min_roll or max_roll != new_max_roll:
         logger.info("Updating modifier to bring numerical roll range up-to-date.")
-        data = df_to_JSON(row_new, request_method="put")
-        data["modifierId"] = row_old["modifierId"]
-        data["position"] = row_old["position"]
 
-        return data
-
-    else:
-        return None
+    return data
 
 
 def check_for_additional_modifier_types(
     data: Dict[str, Any],
-    row_old: pd.Series,
     row_new: pd.Series,
     modifier_types: List[str],
     logger: logging.Logger,
-) -> Optional[Dict[str, Any]]:
-    updated_modifier_types = []
-    if data is not None:
-        for modifier_type in modifier_types:
-            if modifier_type in row_old.index:
-                logger.info(f"Added a modifier type to a modifier.")
-                data[modifier_type] = row_old[modifier_type]
-                updated_modifier_types.append(modifier_type)
-    else:
-        for modifier_type in modifier_types:
-            if modifier_type in row_new.index:
-                logger.info(f"Added a modifier type to a modifier.")
-                row_old[modifier_type] = row_new[modifier_type]
-                updated_modifier_types.append(modifier_type)
-
-    if updated_modifier_types:
-        if data is not None:
-            return data
-        else:
-            data = df_to_JSON(row_old, request_method="put")
-            data.pop("updatedAt")
-    else:
-        return data
+) -> Dict[str, Any]:
+    for modifier_type in modifier_types:
+        if modifier_type in row_new.index:
+            logger.info(f"Added a modifier type to a modifier.")
+            data[modifier_type] = row_new[modifier_type]
+    return data
