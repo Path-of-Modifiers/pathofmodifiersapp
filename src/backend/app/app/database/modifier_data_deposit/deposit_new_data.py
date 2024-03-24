@@ -92,7 +92,7 @@ class DataDepositer:
         ):
             updated_modifier_types = []
             for modifier_type in self.modifier_types:
-                if modifier_type in row_new.columns:
+                if modifier_type in row_new.index:
                     self.logger.info(f"Added a modifier type to a modifier.")
                     row_cur[modifier_type] = True
                     updated_modifier_types.append(modifier_type)
