@@ -20,7 +20,7 @@ logging.basicConfig(
 )
 TESTING = os.getenv("TESTING")
 BASEURL = os.getenv("DOMAIN")
-CASCADING_UPDATE = False
+CASCADING_UPDATE = True
 
 
 class DataDepositer:
