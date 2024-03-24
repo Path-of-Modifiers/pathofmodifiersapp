@@ -22,6 +22,7 @@ def df_to_JSON(
         orient="records"
     )  # Converts to a list of dicts, where each dict is a row
     df_json = remove_empty_fields(df_json)  # Removes empty fields element-wise
+    print(df_json)
 
     if request_method == "post":
         return df_json
