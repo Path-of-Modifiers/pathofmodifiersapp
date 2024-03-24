@@ -42,6 +42,7 @@ class PoeAPIDataTransformer:
             "rarity",
             "identified",
             "ilvl",
+            "note",
             "forum_note",
             "corrupted",
             "delve",
@@ -193,7 +194,7 @@ class PoeAPIDataTransformer:
         self._clean_item_table()
         self._clean_item_modifier_table()
 
-        self._save_tables_to_files()
+        # self._save_tables_to_files()
 
     @staticmethod
     def _get_ranges(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
