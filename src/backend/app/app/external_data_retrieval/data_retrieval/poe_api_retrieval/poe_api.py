@@ -69,7 +69,7 @@ class APIHandler:
 
         df_temp.index = df.index
         df[df_temp.columns.to_list()] = df_temp
-        df_temp.rename(columns={"id": "gameItemId"}, inplace=True)
+        df.rename(columns={"id": "gameItemId"}, inplace=True)
 
         return df
 
