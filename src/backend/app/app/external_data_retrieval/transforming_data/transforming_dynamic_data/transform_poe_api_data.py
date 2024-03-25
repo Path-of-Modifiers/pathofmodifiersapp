@@ -5,7 +5,7 @@ from typing import List
 
 from app.database.modifier_data_deposit.utils import df_to_JSON
 from app.external_data_retrieval.transforming_data.transforming_dynamic_data.utils import (
-    get_ranges,
+    get_rolls,
 )
 
 
@@ -28,7 +28,7 @@ class PoeAPIDataTransformer:
 
     def _post_table(self, df: pd.DataFrame, table_name: str) -> None:
         data = df_to_JSON(df, request_method="post")
-        requests.post(self.url + f"/{table_name}/", data=data)
+        requests.post(self.url + f"/{table_name}/", json=data)
 
     def _create_account_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -50,6 +50,8 @@ class PoeAPIDataTransformer:
     def _clean_account_table(self, account_df: pd.DataFrame) -> pd.DataFrame:
 
         db_account_df = pd.read_json(self.url + "/account/", dtype=str)
+        if db_account_df.empty:
+            return account_df
 
         account_df = account_df.loc[
             ~account_df["accountName"].isin(db_account_df["accountName"])
@@ -246,7 +248,7 @@ class PoeAPIDataTransformer:
         self._process_account_table(df.copy(deep=True))
         self._process_stash_table(df.copy(deep=True))
         self._process_item_table(df.copy(deep=True))
-        self._process_item_modifier_table(df.copy(deep=True))
+        self._process_item_modifier_table(df.copy(deep=True), modifier_df=modifier_df)
 
 
 class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
@@ -263,12 +265,14 @@ class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
 
         item_modifier_df = item_modifier_df.explode("explicitMods", ignore_index=True)
 
-        self.item_modifier_df = item_modifier_df
+        item_modifier_df.rename({"explicitMods": "modifier"}, axis=1, inplace=True)
+
+        return item_modifier_df
 
     def _transform_item_modifier_table(
         self, item_modifier_df: pd.DataFrame, modifier_df: pd.DataFrame
     ) -> pd.DataFrame:
-        item_modifier_df = get_ranges(df=item_modifier_df, modifier_df=modifier_df)
+        item_modifier_df = get_rolls(df=item_modifier_df, modifier_df=modifier_df)
 
         return item_modifier_df
 
@@ -276,4 +280,6 @@ class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
+        print(item_modifer_df)
+        quit()
         return item_modifer_df
