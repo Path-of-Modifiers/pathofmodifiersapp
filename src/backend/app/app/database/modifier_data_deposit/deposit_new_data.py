@@ -5,13 +5,13 @@ import pandas as pd
 from typing import Iterator, Optional
 from copy import deepcopy
 
-from app.database.modifier_data_deposit.processing_modules import (
+from backend.app.app.database.modifier_data_deposit.modifier_processing_modules import (
     add_regex,
     check_for_updated_text_rolls,
     check_for_updated_numerical_rolls,
     check_for_additional_modifier_types,
 )
-from app.database.modifier_data_deposit.utils import df_to_JSON
+from backend.app.app.database.utils import df_to_JSON
 
 logging.basicConfig(
     filename="history.log",
