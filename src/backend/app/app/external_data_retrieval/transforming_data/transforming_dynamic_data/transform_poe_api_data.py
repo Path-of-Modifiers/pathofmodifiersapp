@@ -1,9 +1,13 @@
-from typing import List
+import os
+import requests
 import pandas as pd
+from typing import List
+
+
+BASEURL = os.getenv("DOMAIN")
 
 
 class PoeAPIDataTransformer:
-
     def _create_account_table(self, df: pd.DataFrame) -> None:
         """
         Creates the basis of the `account` table.
@@ -64,6 +68,10 @@ class PoeAPIDataTransformer:
         item_df = df.loc[
             :, [column for column in self.item_columns if column in df.columns]
         ]  # Can't guarantee all columns are present
+
+        response = requests.get(BASEURL + "/api/api_v1/item/latest_item_id/")
+        print(response.text)
+        quit()
 
         self.item_df = item_df
 
