@@ -3,7 +3,6 @@ import logging
 import os
 import pandas as pd
 from typing import Dict, List
-from copy import deepcopy
 
 from app.database.utils import df_to_JSON
 
