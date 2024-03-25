@@ -30,10 +30,7 @@ async def get_item(itemId: str, db: Session = Depends(get_db)):
     return item
 
 
-@router.get(
-    "/latest_item_id/",
-    response_model=int,
-)
+@router.get("/latest_item_id/", response_model=int, tags=["latest_item_id"])
 async def get_latest_item_id(db: Session = Depends(get_db)):
     """
     TODO
