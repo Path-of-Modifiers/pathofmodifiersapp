@@ -24,9 +24,15 @@ BASEURL = os.getenv("DOMAIN")
 CASCADING_UPDATE = False
 
 
-class DynamioDataDepositor:
-    def __init__(self, currency_data: pd.DataFrame) -> None:
-        self.url = BASEURL + "/api/api_v1/currency/"
+class DynamicDataDepositor:
+    def __init__(self, currency_data: pd.DataFrame, api_v1_object: str) -> None:
+        """_summary_
+
+        Args:
+            currency_data (pd.DataFrame): _description_
+            api_v1_object (str): _description_. For instance, "currency"
+        """
+        self.api_v1_url = BASEURL + f"/api/api_v1/{api_v1_object}/"
         self.currency_data: pd.DataFrame = currency_data
 
         self.logger = logging.getLogger(__name__)
