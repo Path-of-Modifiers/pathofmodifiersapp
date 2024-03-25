@@ -7,6 +7,7 @@ import pandas as pd
 from tqdm import tqdm
 from datetime import datetime
 from typing import List, Union, Tuple, Dict, Coroutine, Iterator
+import os
 
 from app.external_data_retrieval.detectors.unique_detector import (
     UniqueJewelDetector,
@@ -14,6 +15,8 @@ from app.external_data_retrieval.detectors.unique_detector import (
     UniqueArmourDetector,
     UniqueDetector,
 )
+
+BASE_URL = os.getenv("DOMAIN")
 
 
 class APIHandler:
@@ -42,6 +45,7 @@ class APIHandler:
             :param item_detectors: (List[ItemDetector]) A list of `ItemDetector` instances.
         """
         self.url = url
+        self.next_change_id_database_url = BASE_URL + "/api/api_v1/next_change_id/"
         self.auth_token = auth_token
         self.headers["Authorization"] = "Bearer " + auth_token
 
@@ -188,6 +192,7 @@ class APIHandler:
 
                 task_response = await asyncio.gather(future)
                 next_change_id, new_stashes = task_response[0]
+                self._insert_next_change_id_to_db({"nextChangeId": next_change_id})
                 if not new_stashes:
                     time.sleep(
                         300
@@ -208,6 +213,25 @@ class APIHandler:
             self.unique_items_count_pbar.close()
 
             return df, next_change_id
+
+    # TEMPORARY LOCATION. NEEDS ITS OWN MODULE
+    def _insert_next_change_id_to_db(self, next_change_id: Dict) -> None:
+        """
+        TEMPORARY LOCATION. NEEDS ITS OWN MODULE
+
+        Args:
+            next_change_id (Dict): _description_
+        """
+        self.logger.info("Inserting next change id  into database.")
+
+        response = requests.post(
+            self.url,
+            json=next_change_id,
+            headers={"accept": "application/json", "Content-Type": "application/json"},
+        )
+        response.raise_for_status()
+
+        self.logger.info("Successfully inserted next change id into database.")
 
     def dump_stream(
         self, initial_next_change_id: str = None, track_progress: bool = True
