@@ -21,7 +21,7 @@ router = APIRouter()
 async def get_item(itemId: str, db: Session = Depends(get_db)):
     """
     Get item by key and value for "itemId".
-    
+
     Always returns one item.
     """
     item_map = {"itemId": itemId}
@@ -30,11 +30,24 @@ async def get_item(itemId: str, db: Session = Depends(get_db)):
     return item
 
 
+@router.get(
+    "/latest_item_id/",
+    response_model=int,
+)
+async def get_latest_item_id(db: Session = Depends(get_db)):
+    """
+    TODO
+    """
+    all_items = await CRUD_item.get(db=db)
+
+    return len(all_items)
+
+
 @router.get("/", response_model=Union[schemas.Item, List[schemas.Item]])
 async def get_all_items(db: Session = Depends(get_db)):
     """
     Get all items.
-    
+
     Returns a list of all items.
     """
     all_items = await CRUD_item.get(db=db)
@@ -52,7 +65,7 @@ async def create_item(
 ):
     """
     Create one or a list of new items.
-    
+
     Returns the created item or list of items.
     """
     return await CRUD_item.create(db=db, obj_in=item)
@@ -66,7 +79,7 @@ async def update_item(
 ):
     """
     Update an item by key and value for "itemId".
-    
+
     Returns the updated item.
     """
     item_map = {"itemId": itemId}
@@ -82,7 +95,7 @@ async def update_item(
 async def delete_item(itemId: str, db: Session = Depends(get_db)):
     """
     Delete an item by key and value for "itemId".
-    
+
     Returns a message indicating the item was deleted.
     Always deletes one item.
     """
