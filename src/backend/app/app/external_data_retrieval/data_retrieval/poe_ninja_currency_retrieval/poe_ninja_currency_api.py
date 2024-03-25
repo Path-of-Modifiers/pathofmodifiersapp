@@ -12,8 +12,14 @@ class PoeNinjaCurrencyAPIHandler:
         """
         Combines the currency data.
         """
+
+        currencies_sorted = sorted(currencies, key=lambda d: d["currencyTypeName"])
+        currency_details_sorted = sorted(currency_details, key=lambda d: d["name"])
+
         combined_currency_data = []
-        for currency, currency_detail in zip(currencies, currency_details):
+        for currency, currency_detail in zip(
+            currencies_sorted, currency_details_sorted
+        ):
             combined_currency_data.append({**currency, **currency_detail})
 
         return combined_currency_data
@@ -43,15 +49,10 @@ class PoeNinjaCurrencyAPIHandler:
 
         return combined_currency_data_df
 
-    def store_data(self, path: str) -> None:
+    def store_data_to_csv(self, path: str) -> None:
         """
         Stores the data in a CSV. Only to be used for testing purposes.
         """
         currencies_df = self.make_request()
 
         currencies_df.to_csv(path + "/poe_ninja_currencies.csv", index=False)
-
-
-PoeNinjaCurrencyAPIHandler(
-    url="https://poe.ninja/api/data/currencyoverview?league=Standard&type=Currency"
-).store_data("./app/external_data_retrieval/depricated_data/test_data")
