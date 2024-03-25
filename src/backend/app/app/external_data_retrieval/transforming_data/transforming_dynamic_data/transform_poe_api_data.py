@@ -3,7 +3,7 @@ import requests
 import pandas as pd
 from typing import List
 
-from app.database.modifier_data_deposit.utils import df_to_JSON
+from backend.app.app.database.utils import df_to_JSON
 from app.external_data_retrieval.transforming_data.transforming_dynamic_data.utils import (
     get_rolls,
 )
