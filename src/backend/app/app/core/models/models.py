@@ -154,6 +154,7 @@ class Modifier(Base):
     delve = _sql.Column(_sql.Boolean())
     fractured = _sql.Column(_sql.Boolean())
     synthesized = _sql.Column(_sql.Boolean())
+    unique = _sql.Column(_sql.Boolean())
     corrupted = _sql.Column(_sql.Boolean())
     enchanted = _sql.Column(_sql.Boolean())
     veiled = _sql.Column(_sql.Boolean())
@@ -227,7 +228,7 @@ class ItemModifier(Base):
     )
     modifierId = _sql.Column(_sql.BigInteger(), nullable=False, index=True)
     position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
-    range = _sql.Column(_sql.Float(24))
+    roll = _sql.Column(_sql.Float(24))
     createdAt = _sql.Column(
         _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
     )
