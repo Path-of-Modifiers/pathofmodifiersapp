@@ -23,6 +23,7 @@ def get_rolls(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
 
     The method contains assertions to ensure successful steps.
     """
+    print(df)
     df.loc[:, "modifier"] = df["modifier"].replace(
         r"\\n|\n", " ", regex=True
     )  # Replaces newline with a space, so that it does not mess up the regex and matches modifiers in the `modifier` table
@@ -146,8 +147,9 @@ def get_rolls(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
     try:
         assert failed_df.empty
     except AssertionError:
-        print(failed_df)
-        print("Failed to merge dynamic modifier with static modifier in DB.")
+        print(failed_df.columns)
+        print(failed_df[["effect", "minRoll", "maxRoll", "textRolls"]])
+        print("Failed to merge dynamic modifier with dynamic modifier in DB.")
         quit()
 
     # merged_dynamic_df["range"] = merged_dynamic_df.apply(
