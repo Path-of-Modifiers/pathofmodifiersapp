@@ -15,9 +15,7 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
-TESTING = os.getenv("TESTING")
 BASEURL = os.getenv("DOMAIN")
-CASCADING_UPDATE = False
 
 
 class DynamicDataDepositor:
