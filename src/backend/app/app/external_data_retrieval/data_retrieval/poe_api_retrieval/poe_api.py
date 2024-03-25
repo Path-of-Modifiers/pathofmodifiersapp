@@ -65,7 +65,7 @@ class APIHandler:
 
         df_temp.index = df.index
         df[df_temp.columns.to_list()] = df_temp
-        df_temp.rename(columns={"id": "gameItemId"}, inplace=True)
+        df.rename(columns={"id": "gameItemId"}, inplace=True)
 
         return df
 
@@ -197,6 +197,11 @@ class APIHandler:
         except requests.HTTPError as e:
             print(e)
         finally:  # Probably needs some more exception catches
+            df_wanted = self._check_stashes(stashes=new_stashes)
+            df = pd.concat((df, df_wanted))
+
+            self.iteration_pbar.update()
+
             await session.close()
             self.iteration_pbar.close()
             self.item_count_pbar.close()
@@ -204,7 +209,9 @@ class APIHandler:
 
             return df, next_change_id
 
-    def dump_stream(self, initial_next_change_id: str = None) -> Iterator[pd.DataFrame]:
+    def dump_stream(
+        self, initial_next_change_id: str = None, track_progress: bool = True
+    ) -> Iterator[pd.DataFrame]:
         """
         The method which begins making API calls and fetching data.
 
@@ -231,5 +238,9 @@ class APIHandler:
                 df, next_change_id = asyncio.run(
                     self._follow_stream(initial_next_change_id)
                 )
+
+                # Ready for next iteration
                 initial_next_change_id = next_change_id
+                self.n_found_items = 0
+                self.n_unique_items_found = 0
                 yield df
