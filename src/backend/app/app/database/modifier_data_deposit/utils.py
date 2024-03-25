@@ -13,11 +13,14 @@ def remove_empty_fields(json_in: List[Dict[str, str]]) -> List[Dict[str, Any]]:
 
 
 def df_to_JSON(
-    df: pd.DataFrame, request_method: str
+    df: Union[pd.DataFrame, pd.Series], request_method: str
 ) -> Union[List[Dict[str, Any]], Dict]:
+    if isinstance(df, pd.Series):
+        df = df.to_frame().transpose()
+    df = df.replace(["nan", "None"], pd.NA)
     df = df.fillna("")  # requests can not handle na
     df_json = df.to_dict(
-        "records"
+        orient="records"
     )  # Converts to a list of dicts, where each dict is a row
     df_json = remove_empty_fields(df_json)  # Removes empty fields element-wise
 
