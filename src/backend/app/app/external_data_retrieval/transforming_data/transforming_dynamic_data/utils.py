@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def get_ranges(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
+def get_rolls(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
     """
     A very complex function for extracting the range out of the `modifier` field.
 
@@ -89,7 +89,7 @@ def get_ranges(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
 
     dynamic_df = add_alternate_effect(df=dynamic_df)
 
-    def add_range_roll(row):
+    def add_roll(row):
         """
         The main part of this method.
 
@@ -109,16 +109,16 @@ def get_ranges(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
         for part in effect_parts:
             modifier = modifier.replace(part, "---")
 
-        ranges = modifier.split("---")
+        rolls = modifier.split("---")
 
-        return [range_roll for range_roll in ranges if range_roll]
+        return [roll for roll in rolls if roll]
 
-    dynamic_df.loc[:, "range"] = dynamic_df.apply(
-        add_range_roll, axis=1
+    dynamic_df.loc[:, "roll"] = dynamic_df.apply(
+        add_roll, axis=1
     )  # the `roll` modifier is stored in the `range` field temporarily
 
     # If there are rows in the dataframe which contain empty lists, something has failed
-    failed_df = dynamic_df.loc[dynamic_df["range"].str.len() == 0]
+    failed_df = dynamic_df.loc[dynamic_df["roll"].str.len() == 0]
     try:
         assert failed_df.empty
     except AssertionError:
@@ -127,12 +127,12 @@ def get_ranges(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
         quit()
 
     # Creates a column for position, which contains a list of numerical strings
-    dynamic_df.loc[:, "position"] = dynamic_df.loc[:, "range"].apply(
+    dynamic_df.loc[:, "position"] = dynamic_df.loc[:, "roll"].apply(
         lambda x: [str(i) for i in range(len(x))]
     )
 
     # Each row describes one range
-    dynamic_df = dynamic_df.explode(["range", "position"])
+    dynamic_df = dynamic_df.explode(["roll", "position"])
 
     merged_dynamic_df = dynamic_df.merge(
         dynamic_modifier_df, on=["effect", "position"], how="left"
@@ -150,28 +150,9 @@ def get_ranges(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
         print("Failed to merge dynamic modifier with static modifier in DB.")
         quit()
 
-    def convert_range_roll_to_range(row):
-        """
-        The formula mentioned earlier
-        """
-        un_processed_range = row["range"]
-        if not pd.isna(row["textRolls"]):
-            text_rolls = row["textRolls"].split("-")
-            min_roll = 0
-            max_roll = len(text_rolls)
-            x = text_rolls.index(un_processed_range)
-        else:
-            min_roll = float(row["minRoll"])
-            max_roll = float(row["maxRoll"])
-            x = float(un_processed_range)
-
-        converted_range = (x - min_roll) / (max_roll - min_roll)
-
-        return converted_range
-
-    merged_dynamic_df["range"] = merged_dynamic_df.apply(
-        convert_range_roll_to_range, axis=1
-    )  # The `range` column now truly contains the range
+    # merged_dynamic_df["range"] = merged_dynamic_df.apply(
+    #     convert_range_roll_to_range, axis=1
+    # )  # The `range` column now truly contains the range
 
     # ---- Finishing touches ----
     processed_df = pd.concat(
