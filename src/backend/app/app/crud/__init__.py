@@ -2,6 +2,7 @@ from .base import CRUDBase
 
 from app.core.models.models import Currency
 
+from app.core.models.models import NextChangeId as model_NextChangeId
 from app.core.models.models import Account as model_Account
 from app.core.models.models import Currency as model_Currency
 from app.core.models.models import ItemBaseType as model_ItemBaseType
@@ -10,13 +11,34 @@ from app.core.models.models import Item as model_Item
 from app.core.models.models import Modifier as model_Modifier
 from app.core.models.models import Stash as model_Stash
 
+from app.core.schemas.next_change_id import (
+    NextChangeIdCreate,
+    NextChangeIdUpdate,
+    NextChangeId,
+)
 from app.core.schemas.account import AccountCreate, AccountUpdate, Account
 from app.core.schemas.currency import CurrencyCreate, CurrencyUpdate, Currency
-from app.core.schemas.item_base_type import ItemBaseTypeCreate, ItemBaseTypeUpdate, ItemBaseType
-from app.core.schemas.item_modifier import ItemModifierCreate, ItemModifierUpdate, ItemModifier
+from app.core.schemas.item_base_type import (
+    ItemBaseTypeCreate,
+    ItemBaseTypeUpdate,
+    ItemBaseType,
+)
+from app.core.schemas.item_modifier import (
+    ItemModifierCreate,
+    ItemModifierUpdate,
+    ItemModifier,
+)
 from app.core.schemas.item import ItemCreate, ItemUpdate, Item
 from app.core.schemas.modifier import ModifierCreate, ModifierUpdate, Modifier
 from app.core.schemas.stash import StashCreate, StashUpdate, Stash
+
+
+CRUD_next_change_id = CRUDBase[
+    model_NextChangeId,
+    NextChangeId,
+    NextChangeIdCreate,
+    NextChangeIdUpdate,
+](model=model_NextChangeId, schema=NextChangeId, create_schema=NextChangeIdCreate)
 
 
 CRUD_account = CRUDBase[
@@ -70,4 +92,3 @@ CRUD_stash = CRUDBase[
     StashCreate,
     StashUpdate,
 ](model=model_Stash, schema=Stash, create_schema=StashCreate)
-
