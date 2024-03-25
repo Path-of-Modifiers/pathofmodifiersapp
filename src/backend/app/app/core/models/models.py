@@ -238,7 +238,7 @@ class ItemModifier(Base):
     )
     modifierId = _sql.Column(_sql.BigInteger(), nullable=False, index=True)
     position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
-    range = _sql.Column(_sql.Float(24))
+    roll = _sql.Column(_sql.Float(24))
     createdAt = _sql.Column(
         _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
     )
