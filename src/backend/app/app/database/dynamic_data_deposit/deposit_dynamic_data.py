@@ -1,15 +1,10 @@
-import json
 import requests
 import logging
 import os
 import pandas as pd
-from typing import Dict, Iterator, List, Optional
+from typing import Dict, List
 from copy import deepcopy
 
-from app.external_data_retrieval.transforming_data.transforming_dynamic_data.transform_poe_ninja_currency_api_data import (
-    TransformPoeNinjaCurrencyAPIData,
-    load_df_data,
-)
 from app.database.utils import df_to_JSON
 
 
@@ -39,7 +34,7 @@ class DynamicDataDepositor:
         self.logger = logging.getLogger(__name__)
 
     def _insert_data(self, data_dict_list: List[Dict]) -> None:
-        self.logger.info("Inserting currency data into database.")
+        self.logger.info("Inserting dynamic data into database.")
 
         response = requests.post(
             self.url,
@@ -48,7 +43,7 @@ class DynamicDataDepositor:
         )
         response.raise_for_status()
 
-        self.logger.info("Successfully inserted currency data into database.")
+        self.logger.info("Successfully inserted dynamic data into database.")
 
     def deposit_data(self) -> None:
         data_dict_list = df_to_JSON(self.df_data)
