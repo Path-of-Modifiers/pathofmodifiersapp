@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from app.api.api_v1.endpoints import (
+    next_change_id,
     account,
     currency,
     item_base_type,
@@ -12,6 +13,7 @@ from app.api.api_v1.endpoints import (
 
 api_router = APIRouter()
 
+api_router.include_router(next_change_id.router, prefix="/nextChangeId", tags=["nextChangeIds"])
 api_router.include_router(account.router, prefix="/account", tags=["accounts"])
 api_router.include_router(currency.router, prefix="/currency", tags=["currencies"])
 api_router.include_router(
