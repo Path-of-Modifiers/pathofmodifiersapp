@@ -5,7 +5,7 @@ from typing import List
 
 from app.database.modifier_data_deposit.utils import df_to_JSON
 from app.external_data_retrieval.transforming_data.transforming_dynamic_data.utils import (
-    get_ranges,
+    get_rolls,
 )
 
 
@@ -268,7 +268,7 @@ class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
     def _transform_item_modifier_table(
         self, item_modifier_df: pd.DataFrame, modifier_df: pd.DataFrame
     ) -> pd.DataFrame:
-        item_modifier_df = get_ranges(df=item_modifier_df, modifier_df=modifier_df)
+        item_modifier_df = get_rolls(df=item_modifier_df, modifier_df=modifier_df)
 
         return item_modifier_df
 
@@ -276,4 +276,6 @@ class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
+        print(item_modifer_df)
+        quit()
         return item_modifer_df
