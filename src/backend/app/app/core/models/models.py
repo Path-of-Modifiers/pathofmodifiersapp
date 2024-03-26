@@ -18,7 +18,7 @@ class NextChangeId(Base):
     __tablename__ = "next_change_id"
 
     id = _sql.Column(
-        _sql.BigInteger, _sql.Identity(), primary_key=True, index=True, nullable=False
+        _sql.BigInteger, _sql.Identity(start=1, increment=1, cycle=True), primary_key=True, index=True, nullable=False
     )
     nextChangeId = _sql.Column(_sql.String(), nullable=False)
 
