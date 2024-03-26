@@ -19,7 +19,7 @@ class Currency(Base):
 
     currencyId = _sql.Column(
         _sql.BigInteger,
-        _sql.Identity(start=1, cycle=True),
+        _sql.Identity(start=1, increment=1, cycle=True),
         primary_key=True,
         index=True,
         nullable=False,
@@ -52,7 +52,7 @@ class Item(Base):
     __tablename__ = "item"
 
     itemId = _sql.Column(
-        _sql.BigInteger, _sql.Identity(start=1, cycle=True), primary_key=True, index=True, nullable=False
+        _sql.BigInteger, _sql.Identity(start=1, increment=1, cycle=True), primary_key=True, index=True, nullable=False
     )
     gameItemId = _sql.Column(_sql.String(), index=True, nullable=False)
     stashId = _sql.Column(
@@ -103,7 +103,7 @@ class Modifier(Base):
     __tablename__ = "modifier"
 
     modifierId = _sql.Column(
-        _sql.BigInteger, _sql.Identity(start=1, cycle=True), primary_key=True, index=True, nullable=False
+        _sql.BigInteger, _sql.Identity(start=1, increment=1, cycle=True), primary_key=True, index=True, nullable=False
     )
     position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
     minRoll = _sql.Column(_sql.Float(24))
