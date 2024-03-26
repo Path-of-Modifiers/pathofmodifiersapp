@@ -3,17 +3,17 @@ import pandas as pd
 
 def get_rolls(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
     """
-    A very complex function for extracting the range out of the `modifier` field.
+    A very complex function for extracting the roll out of the `modifier` field.
 
     Modifiers can be split into two categories: static and dynamic. A static modifier
-    has no range, while a dynamic modifier has one or more ranges.
+    has no roll, while a dynamic modifier has one or more rolls.
 
     Using regex, we can link item modifiers to the already-prepared `modifier` table.
-    From there we extract the range based on `minRoll` and `maxRoll` or just `textRolls`
+    From there we extract the roll based on `minRoll` and `maxRoll` or just `textRolls`
     if the roll is not numerical.
 
-    The formula for calculating the range:
-        range = (roll - minRoll)/(maxRoll - minRoll)
+    The formula for calculating the roll:
+        roll = (roll - minRoll)/(maxRoll - minRoll)
 
     Where:
         `roll` is extracted from the `modifier` field
