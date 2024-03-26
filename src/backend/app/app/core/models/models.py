@@ -17,22 +17,8 @@ class Currency(Base):
 
     __tablename__ = "currency"
 
-    currency_field_seq = _sql.Sequence(
-        "currency_id_seq",
-        start=1,
-        increment=1,
-        minvalue=1,
-        cycle=False,
-        cache=1,
-        schema=None,
-    )
     currencyId = _sql.Column(
-        _sql.BigInteger(),
-        currency_field_seq,
-        server_default=currency_field_seq.next_value(),
-        primary_key=True,
-        index=True,
-        nullable=False,
+        _sql.BigInteger, _sql.Identity(), primary_key=True, index=True, nullable=False
     )
     tradeName = _sql.Column(_sql.String(), index=True, nullable=False)
     valueInChaos = _sql.Column(_sql.Float(), nullable=False)
@@ -61,22 +47,8 @@ class Item(Base):
 
     __tablename__ = "item"
 
-    item_field_seq = _sql.Sequence(
-        "item_id_seq",
-        start=1,
-        increment=1,
-        minvalue=1,
-        cycle=False,
-        cache=1,
-        schema=None,
-    )
     itemId = _sql.Column(
-        _sql.BigInteger(),
-        item_field_seq,
-        index=True,
-        nullable=False,
-        primary_key=True,
-        server_default=item_field_seq.next_value(),
+        _sql.BigInteger, _sql.Identity(), primary_key=True, index=True, nullable=False
     )
     gameItemId = _sql.Column(_sql.String(), index=True, nullable=False)
     stashId = _sql.Column(
@@ -126,21 +98,8 @@ class Modifier(Base):
 
     __tablename__ = "modifier"
 
-    modifier_field_seq = _sql.Sequence(
-        "modifier_id_seq",
-        start=1,
-        increment=1,
-        minvalue=1,
-        cycle=False,
-        cache=1,
-        schema=None,
-    )
     modifierId = _sql.Column(
-        _sql.BigInteger(),
-        modifier_field_seq,
-        index=True,
-        nullable=False,
-        server_default=modifier_field_seq.next_value(),
+        _sql.BigInteger, _sql.Identity(), primary_key=True, index=True, nullable=False
     )
     position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
     minRoll = _sql.Column(_sql.Float(24))
