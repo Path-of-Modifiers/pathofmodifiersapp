@@ -30,7 +30,7 @@ async def create_random_item_modifier_dict(
         ],
     ],
 ]:
-    range_value = random_float()
+    roll_value = random_float()
 
     if not retrieve_dependencies:
         item_dict, item = await generate_random_item(db)
@@ -47,7 +47,7 @@ async def create_random_item_modifier_dict(
         "itemId": itemId,
         "modifierId": modifierId,
         "position": position,
-        "range": range_value,
+        "roll": roll_value,
     }
     if not retrieve_dependencies:
         return item_modifier_dict
