@@ -31,7 +31,7 @@ async def create_random_item_dict(
     typeLine = random_lower_string()
     rarity = random_lower_string()
     identified = random_bool()
-    itemLevel = random_int(small_int=True)
+    ilvl = random_int(small_int=True)
     forumNote = random_lower_string()
     currencyAmount = random_float(small_float=True)
     corrupted = random_bool()
@@ -77,7 +77,7 @@ async def create_random_item_dict(
         "baseType": baseType,
         "rarity": rarity,
         "identified": identified,
-        "itemLevel": itemLevel,
+        "ilvl": ilvl,
         "forumNote": forumNote,
         "currencyAmount": currencyAmount,
         "currencyId": currencyId,
