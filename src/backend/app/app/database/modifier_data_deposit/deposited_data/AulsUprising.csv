@@ -14,4 +14,4 @@ minRoll,maxRoll,textRolls,position,effect,static,unique
 ,,,0,"Nearby Enemies have 10% reduced Stun and Block Recovery",True,True
 ,,,0,"Nearby Enemies grant 25% increased Flask Charges",True,True
 ,,,0,"Grants Level 15 Envy Skill",True,True
-,,"Anger-Clarity-Determination-Discipline-Grace-Haste-Purity of Elements-Purity of Fire-Purity of Ice-Purity of Lightning-Vitality-Wrath-Envy-Malevolence-Zealotry-Pride",0,"# has no Reservation",True,True
+,,"Anger-Clarity-Determination-Discipline-Grace-Haste-Purity of Elements-Purity of Fire-Purity of Ice-Purity of Lightning-Vitality-Wrath-Envy-Malevolence-Zealotry-Pride",0,"# has no Reservation",,True

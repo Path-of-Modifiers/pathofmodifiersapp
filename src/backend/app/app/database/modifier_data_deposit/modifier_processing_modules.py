@@ -2,8 +2,6 @@ import logging
 import pandas as pd
 from typing import Tuple, List, Optional, Dict, Any
 
-from backend.app.app.database.utils import df_to_JSON
-
 logging.basicConfig(
     filename="history.log",
     level=logging.INFO,
