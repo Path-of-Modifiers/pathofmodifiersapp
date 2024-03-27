@@ -69,6 +69,7 @@ def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame
         a regex matching only numbers within the range.
         f"({row["textRolls"][0].replace("-","|")})" matches all possible text rolls.
         """
+        # print(row)
         effect = row["effect"]
         positions = row["position"]
         rolls = row["rolls"]
@@ -76,13 +77,19 @@ def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame
         final_effect = ""
         for i, (roll, part) in enumerate(zip(rolls, effect_parts)):
             final_effect += part
-            if roll.isnumeric():
+            try:
+                float(roll)
                 final_effect += "([+-]?([0-9]*[.])?[0-9]+)"  # catches all floats
-            else:
-                try:
-                    final_effect += f"({row['textRolls'][0].replace('-','|')})"
-                except IndexError:  # In cases of roll is a float
-                    final_effect += "([+-]?([0-9]*[.])?[0-9]+)"
+
+            except ValueError:
+                final_effect += f"({row['textRolls'][0].replace('-','|')})"
+            # if roll.isnumeric():
+            #     final_effect += "([+-]?([0-9]*[.])?[0-9]+)"  # catches all floats
+            # else:
+            #     try:
+            #         final_effect += f"({row['textRolls'][0].replace('-','|')})"
+            #     except IndexError:  # In cases of roll is a float
+            #         final_effect += "([+-]?([0-9]*[.])?[0-9]+)"
 
         final_effect += "".join(
             effect_parts[i + 1 :]

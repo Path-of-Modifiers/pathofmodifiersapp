@@ -138,7 +138,6 @@ class Modifier(Base):
 
     __table_args__ = (
         _sql.PrimaryKeyConstraint(modifierId, position),
-        _sql.UniqueConstraint(effect, position),
         _sql.CheckConstraint(
             """
             CASE 
