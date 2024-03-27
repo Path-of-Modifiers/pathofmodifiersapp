@@ -9,12 +9,12 @@ from app.tests.utils.utils import random_lower_string, random_float, random_url
 
 
 def create_random_currency_dict() -> Dict:
-    currencyName = random_lower_string()
+    tradeName = random_lower_string()
     valueInChaos = random_float()
     iconUrl = random_url()
 
     currency = {
-        "currencyName": currencyName,
+        "tradeName": tradeName,
         "valueInChaos": valueInChaos,
         "iconUrl": iconUrl,
     }
