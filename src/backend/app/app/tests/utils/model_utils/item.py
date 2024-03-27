@@ -3,7 +3,7 @@ from typing import Dict, Tuple, Optional, List, Union
 from sqlalchemy.orm import Session
 
 from app import crud
-from app.core.models.models import Item, Account, Stash, Currency, ItemBaseType
+from app.core.models.models import Item, Account, Currency, ItemBaseType
 from app.core.schemas.item import ItemCreate
 from app.tests.utils.utils import (
     random_lower_string,
@@ -14,7 +14,6 @@ from app.tests.utils.utils import (
     random_url,
 )
 
-from app.tests.utils.model_utils.stash import generate_random_stash
 from app.tests.utils.model_utils.item_base_type import generate_random_item_base_type
 from app.tests.utils.model_utils.currency import generate_random_currency
 
@@ -22,16 +21,17 @@ from app.tests.utils.model_utils.currency import generate_random_currency
 async def create_random_item_dict(
     db: Session, retrieve_dependencies: Optional[bool] = False
 ) -> Union[
-    Dict, Tuple[Dict, List[Union[Dict, Account, Stash, ItemBaseType, Currency]]]
+    Dict, Tuple[Dict, List[Union[Dict, Account, ItemBaseType, Currency]]]
 ]:
     gameItemId = random_lower_string()
+    changeId = random_lower_string()
     name = random_lower_string()
     iconUrl = random_url()
     league = random_lower_string()
     typeLine = random_lower_string()
     rarity = random_lower_string()
     identified = random_bool()
-    itemLevel = random_int(small_int=True)
+    ilvl = random_int(small_int=True)
     forumNote = random_lower_string()
     currencyAmount = random_float(small_float=True)
     corrupted = random_bool()
@@ -55,13 +55,6 @@ async def create_random_item_dict(
     suffixes = random_int(small_int=True)
     foilVariation = random_int(small_int=True)
 
-    if not retrieve_dependencies:
-        stash_dict, stash = await generate_random_stash(db)
-    else:
-        stash_dict, stash, deps = await generate_random_stash(
-            db, retrieve_dependencies=retrieve_dependencies
-        )
-    stashId = stash.stashId
     item_base_type_dict, item_base_type = await generate_random_item_base_type(db)
     baseType = item_base_type.baseType
     currency_dict, currency = await generate_random_currency(db)
@@ -69,7 +62,7 @@ async def create_random_item_dict(
 
     item = {
         "gameItemId": gameItemId,
-        "stashId": stashId,
+        "changeId": changeId,  
         "name": name,
         "iconUrl": iconUrl,
         "league": league,
@@ -77,7 +70,7 @@ async def create_random_item_dict(
         "baseType": baseType,
         "rarity": rarity,
         "identified": identified,
-        "itemLevel": itemLevel,
+        "ilvl": ilvl,
         "forumNote": forumNote,
         "currencyAmount": currencyAmount,
         "currencyId": currencyId,
@@ -100,7 +93,6 @@ async def create_random_item_dict(
     if not retrieve_dependencies:
         return item
     else:
-        deps += [stash_dict, stash]
         deps += [item_base_type_dict, item_base_type]
         deps += [currency_dict, currency]
         return item, deps
@@ -109,7 +101,7 @@ async def create_random_item_dict(
 async def generate_random_item(
     db: Session, retrieve_dependencies: Optional[bool] = False
 ) -> Tuple[
-    Dict, Item, Optional[List[Union[Dict, Account, Stash, ItemBaseType, Currency]]]
+    Dict, Item, Optional[List[Union[Dict, Account, ItemBaseType, Currency]]]
 ]:
     output = await create_random_item_dict(db, retrieve_dependencies)
     if not retrieve_dependencies:
