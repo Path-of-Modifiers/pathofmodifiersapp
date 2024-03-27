@@ -280,6 +280,6 @@ class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
-        print(item_modifer_df)
-        quit()
+        # print(item_modifer_df)
+        # quit()
         return item_modifer_df
