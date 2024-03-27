@@ -176,14 +176,16 @@ class APIHandler:
         old_next_change_id = initial_next_change_id
 
         iteration = 2
-        session = aiohttp.ClientSession(headers=self.headers)
+        self.session = aiohttp.ClientSession(headers=self.headers)
         try:
             while (
                 self.n_found_items < self.n_wanted_items
                 or self.n_unique_items_found < self.n_unique_wanted_items
             ):
                 future = asyncio.ensure_future(
-                    self._start_next_request(session, next_change_id=next_change_id)
+                    self._start_next_request(
+                        self.session, next_change_id=next_change_id
+                    )
                 )
 
                 df_wanted = self._check_stashes(stashes=new_stashes)
@@ -208,11 +210,6 @@ class APIHandler:
             df = pd.concat((df, df_wanted))
 
             self.iteration_pbar.update()
-
-            await session.close()
-            self.iteration_pbar.close()
-            self.item_count_pbar.close()
-            self.unique_items_count_pbar.close()
 
             return df, next_change_id
 
@@ -241,13 +238,22 @@ class APIHandler:
                 position=2,
             ) as self.unique_items_count_pbar,
         ):
-            while True:
-                df, next_change_id = asyncio.run(
-                    self._follow_stream(initial_next_change_id)
-                )
+            try:
+                while True:
+                    df, next_change_id = asyncio.run(
+                        self._follow_stream(initial_next_change_id)
+                    )
 
-                # Ready for next iteration
-                initial_next_change_id = next_change_id
-                self.n_found_items = 0
-                self.n_unique_items_found = 0
-                yield df
+                    # Ready for next iteration
+                    initial_next_change_id = next_change_id
+                    self.n_found_items = 0
+                    self.n_unique_items_found = 0
+                    yield df
+                    self.item_count_pbar.reset()
+            except Exception as e:
+                print(e)
+            finally:
+                asyncio.run(self.session.close())
+                self.iteration_pbar.close()
+                self.item_count_pbar.close()
+                self.unique_items_count_pbar.close()
