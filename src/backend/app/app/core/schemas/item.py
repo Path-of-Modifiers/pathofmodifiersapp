@@ -19,6 +19,7 @@ class _BaseItem(_pydantic.BaseModel):
     stashId: str
     gameItemId: str
     name: Optional[str] = None
+    changeId: str
     iconUrl: Optional[str] = None
     league: str
     typeLine: str
