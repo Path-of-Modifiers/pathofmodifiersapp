@@ -80,7 +80,7 @@ def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame
                 final_effect += "([+-]?([0-9]*[.])?[0-9]+)"  # catches all floats
             else:
                 try:
-                    final_effect += f"({row['textRolls'][0].replace('-','|')})"
+                    final_effect += f"({roll.replace('-','|')})"
                 except IndexError:  # In cases of roll is a float
                     final_effect += "([+-]?([0-9]*[.])?[0-9]+)"
 
