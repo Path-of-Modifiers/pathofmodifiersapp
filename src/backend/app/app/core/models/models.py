@@ -28,7 +28,7 @@ class Currency(Base):
     valueInChaos = _sql.Column(_sql.Float(), nullable=False)
     iconUrl = _sql.Column(_sql.String(), nullable=False)
     createdAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
     )
 
 
@@ -40,10 +40,10 @@ class ItemBaseType(Base):
     category = _sql.Column(_sql.String(), nullable=False, unique=True)
     subCategory = _sql.Column(_sql.String(), nullable=False)
     createdAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
     )
     updatedAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
     )
 
 
@@ -98,7 +98,7 @@ class Item(Base):
     suffixes = _sql.Column(_sql.SmallInteger())
     foilVariation = _sql.Column(_sql.SmallInteger())
     createdAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
     )
 
 
@@ -128,10 +128,10 @@ class Modifier(Base):
     enchanted = _sql.Column(_sql.Boolean())
     veiled = _sql.Column(_sql.Boolean())
     createdAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
     )
     updatedAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
     )
 
     __table_args__ = (
@@ -199,10 +199,10 @@ class ItemModifier(Base):
     position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
     range = _sql.Column(_sql.Float(24))
     createdAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
     )
     updatedAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
     )
 
     __table_args__ = (
@@ -229,10 +229,10 @@ class Stash(Base):
     public = _sql.Column(_sql.Boolean(), nullable=False)
     league = _sql.Column(_sql.String(), nullable=False)
     createdAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
     )
     updatedAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
     )
 
 
@@ -245,8 +245,8 @@ class Account(Base):
     )
     isBanned = _sql.Column(_sql.Boolean())
     createdAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
     )
     updatedAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.utcnow, nullable=False
+        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
     )
