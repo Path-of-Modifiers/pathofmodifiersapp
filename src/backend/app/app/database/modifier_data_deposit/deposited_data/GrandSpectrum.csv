@@ -3,7 +3,7 @@ minRoll,maxRoll,position,effect,static,unique
 ,,0,"+7% to all Elemental Resistances per Grand Spectrum",True,True
 ,,0,"25% increased Critical Strike Chance per Grand Spectrum",True,True
 5,15,0,"#% increased Elemental Damage per Grand Spectrum",,True
-,,0,Gain 200 Armour per Grand Spectrum,True,True
+75,200,0,"Gain # Armour per Grand Spectrum",,True
 ,,0,"Gain 30 Mana per Grand Spectrum",True,True
 ,,0,"+1 to Minimum Endurance Charges per Grand Spectrum",True,True
 ,,0,"Minions have +10% to Critical Strike Multiplier per Grand Spectrum",True,True
