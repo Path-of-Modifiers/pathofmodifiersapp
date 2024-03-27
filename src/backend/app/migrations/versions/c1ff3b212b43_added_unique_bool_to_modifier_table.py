@@ -1,7 +1,7 @@
 """Added unique bool to modifier table
 
 Revision ID: c1ff3b212b43
-Revises: 43b8615411bb
+Revises: 5df530645887
 Create Date: 2024-03-24 11:06:36.234366
 
 """
