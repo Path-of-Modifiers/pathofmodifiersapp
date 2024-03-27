@@ -21,6 +21,7 @@ minRoll,maxRoll,position,effect,static,unique
 10,15,0,"#% increased Energy Shield Recovery Rate while affected by Discipline",,True
 10,15,0,"Damage Penetrates #% Lightning Resistance while affected by Wrath",,True
 1,1.5,0,"#% of Lightning Damage is Leeched as Energy Shield while affected by Wrath",,True
+1,1.5,0,"#% of Lightning Damage is Leeched as Mana while affected by Wrath",,True
 15,25,0,"Gain #% of Physical Damage as Extra Lightning Damage while affected by Wrath",,True
 25,40,0,"#% of Physical Damage Converted to Lightning Damage while affected by Wrath",,True
 40,60,0,"#% increased Lightning Damage while affected by Wrath",,True
