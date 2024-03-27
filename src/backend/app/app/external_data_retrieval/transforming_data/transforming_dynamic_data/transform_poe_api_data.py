@@ -31,8 +31,6 @@ class PoeAPIDataTransformer:
         if df.empty:
             return None
         data = df_to_JSON(df, request_method="post")
-        if table_name == "itemModifier":
-            print(data)
         response = requests.post(self.url + f"/{table_name}/", json=data)
         response.raise_for_status()
 
