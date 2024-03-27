@@ -31,7 +31,7 @@ class PoeAPIDataTransformer:
         if df.empty:
             return None
         data = df_to_JSON(df, request_method="post")
-        if table_name == "itemBaseType":
+        if table_name == "itemModifier":
             print(data)
         response = requests.post(self.url + f"/{table_name}/", json=data)
         response.raise_for_status()
@@ -186,6 +186,7 @@ class PoeAPIDataTransformer:
             "searing",
             "tangled",
             "foilVariation",
+            "stash",
         ]
         item_df = df.loc[
             :, [column for column in self.item_columns if column in df.columns]
@@ -201,10 +202,6 @@ class PoeAPIDataTransformer:
         There are two types of listings in POE, exact price and asking price which are
         represented by `price` and `b/o` respectively.
         """
-        currency_series = item_df["note"].str.split(" ")
-        influence_columns = [
-            column for column in item_df.columns if "influences" in column
-        ]
 
         def get_currency_amount(element):
             if isinstance(element, list):
@@ -230,8 +227,18 @@ class PoeAPIDataTransformer:
                         )
                 return influence_dict
 
+        influence_columns = [
+            column for column in item_df.columns if "influences" in column
+        ]
         item_df["influences"] = item_df.apply(
             lambda row: transform_influences(row, influence_columns), axis=1
+        )
+
+        stash_series = item_df["stash"].str.split(" ")
+        currency_series = item_df["note"].str.split(" ")
+
+        currency_series = currency_series.where(
+            item_df["note"].str.contains("~"), stash_series
         )
 
         item_df["currencyAmount"] = currency_series.apply(get_currency_amount)
@@ -250,6 +257,7 @@ class PoeAPIDataTransformer:
             "influences.hunter",
             "influences.redeemer",
             "influences.warlord",
+            "stash",
         ]
         item_df.drop(
             drop_list,
