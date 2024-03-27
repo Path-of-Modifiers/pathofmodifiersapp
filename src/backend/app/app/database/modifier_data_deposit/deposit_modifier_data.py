@@ -94,6 +94,9 @@ class DataDepositer:
 
             if not pd.isna(row_new["static"]):
                 pass
+            elif pd.isna(row_cur["static"]):
+                data.pop("static")
+                put_update = True
             elif not pd.isna(row_new["textRolls"]):
                 data, put_update = check_for_updated_text_rolls(
                     data=data, row_new=row_new, logger=self.logger
