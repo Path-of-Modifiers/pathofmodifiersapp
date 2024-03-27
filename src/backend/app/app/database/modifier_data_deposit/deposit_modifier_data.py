@@ -103,11 +103,6 @@ class DataDepositer:
                     data=data, row_new=row_new, logger=self.logger
                 )
 
-            print(row_cur)
-            if not pd.isna(row_cur["static"]) and not pd.isna(row_new["static"]):
-                data.pop("static")
-                put_update = True
-
             data, put_update = check_for_additional_modifier_types(
                 data=data,
                 row_new=row_new,
@@ -136,7 +131,7 @@ class DataDepositer:
             return new_modifiers_df
 
         self.logger.info("Removing duplicate modifiers")
-        duplicate_mask = new_modifiers_df["regex"].isin(current_modifiers_df["effect"])
+        duplicate_mask = new_modifiers_df["effect"].isin(current_modifiers_df["effect"])
 
         duplicate_df = new_modifiers_df.loc[duplicate_mask]
         self._update_duplicates(duplicate_df, current_modifiers_df)
