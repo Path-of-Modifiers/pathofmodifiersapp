@@ -5158,3 +5158,17 @@
 2024-03-27 08:57:32:INFO    :__main__: Deleted 'Voices.csv'
 2024-03-27 08:57:32:INFO    :__main__: Deleting 'WatchersEye.csv'
 2024-03-27 08:57:32:INFO    :__main__: Deleted 'WatchersEye.csv'
+2024-03-27 09:24:49:INFO    :__main__: Loading new data from 'WatchersEye.csv'.
+2024-03-27 09:24:49:INFO    :__main__: Successfully loaded new data.
+2024-03-27 09:24:49:INFO    :__main__: Recording attached comments:
+2024-03-27 09:24:49:INFO    :__main__: # Source: https://poedb.tw/Watchers_Eye
+2024-03-27 09:24:49:INFO    :__main__: End of attached comments.
+2024-03-27 09:24:49:INFO    :__main__.add_regex: Starting process of adding regex
+2024-03-27 09:24:49:INFO    :__main__.add_regex: Completed process of adding regex
+2024-03-27 09:24:49:INFO    :__main__: Retrieving previously deposited data.
+2024-03-27 09:24:49:INFO    :__main__: Found no previously deposited data.
+2024-03-27 09:24:49:INFO    :__main__: Skipping duplicate removing due to no previous data
+2024-03-27 09:24:49:INFO    :__main__: Inserting data into database.
+2024-03-27 09:24:49:INFO    :__main__: Successfully inserted data into database.
+2024-03-27 09:24:49:INFO    :__main__: Deleting 'WatchersEye.csv'
+2024-03-27 09:24:49:INFO    :__main__: Deleted 'WatchersEye.csv'
