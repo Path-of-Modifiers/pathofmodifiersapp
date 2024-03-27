@@ -28,8 +28,13 @@ class PoeAPIDataTransformer:
         return df
 
     def _post_table(self, df: pd.DataFrame, table_name: str) -> None:
+        if df.empty:
+            return None
         data = df_to_JSON(df, request_method="post")
-        requests.post(self.url + f"/{table_name}/", json=data)
+        if table_name == "itemBaseType":
+            print(data)
+        response = requests.post(self.url + f"/{table_name}/", json=data)
+        response.raise_for_status()
 
     def _create_account_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -41,15 +46,15 @@ class PoeAPIDataTransformer:
 
         return account_df
 
-    def _transform_account_table(self, account_df: pd.DataFrame) -> pd.DataFrame:
-        account_df.drop_duplicates("accountName")
-
-        account_df["isBanned"] = None
+    def _clean_account_table(self, account_df: pd.DataFrame) -> pd.DataFrame:
+        account_df.drop_duplicates(inplace=True)
 
         return account_df
 
-    def _clean_account_table(self, account_df: pd.DataFrame) -> pd.DataFrame:
+    def _transform_account_table(self, account_df: pd.DataFrame) -> pd.DataFrame:
+        account_df.drop_duplicates("accountName", inplace=True)
 
+        account_df["isBanned"] = None
         db_account_df = pd.read_json(self.url + "/account/", dtype=str)
         if db_account_df.empty:
             return account_df
@@ -63,7 +68,6 @@ class PoeAPIDataTransformer:
     def _process_account_table(self, df: pd.DataFrame) -> None:
         account_df = self._create_account_table(df)
         account_df = self._transform_account_table(account_df)
-        account_df = self._clean_account_table(account_df)
         self._post_table(account_df, table_name="account")
 
     def _create_stash_table(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -71,20 +75,78 @@ class PoeAPIDataTransformer:
         Creates the basis of the `stash` table.
         It is not immediately processed in order to save compute power later.
         """
-        self.stash_columns = ["stashId", "accountName", "public", "league"]
+        self.stash_columns = ["stashId", "accountName", "public", "league", "changeId"]
         stash_df = df.loc[:, self.stash_columns]
 
         return stash_df
 
     def _clean_stash_table(self, stash_df: pd.DataFrame) -> pd.DataFrame:
-        stash_df = stash_df.drop_duplicates(["stashId", "accountName", "league"])
+        stash_df = stash_df.drop_duplicates(["stashId"])  # , "accountName", "league"])
+        db_stash_df = pd.read_json(self.url + "/stash/", dtype=str)
+        if db_stash_df.empty:
+            return stash_df
 
+        stash_df = stash_df.loc[~stash_df["stashId"].isin(db_stash_df["stashId"])]
         return stash_df
 
     def _process_stash_table(self, df: pd.DataFrame) -> None:
         stash_df = self._create_stash_table(df)
         stash_df = self._clean_stash_table(stash_df)
         self._post_table(stash_df, table_name="stash")
+
+    def _create_item_basetype_table(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Creates the basis of the `item_basetype` table.
+        It is not immediately processed in order to save compute power later.
+        """
+        self.item_basetype_columns = [
+            "baseType",
+            "extended.category",
+            "extended.subcategories",
+        ]
+
+        item_basetype_df = df.loc[
+            :, [column for column in self.item_basetype_columns if column in df.columns]
+        ]  # Can't guarantee all columns are present
+
+        return item_basetype_df
+
+    def _transform_item_basetype_table(
+        self, item_basetype_df: pd.DataFrame
+    ) -> pd.DataFrame:
+
+        item_basetype_df.rename(
+            {
+                "extended.category": "category",
+                "extended.subcategories": "subCategory",
+            },
+            axis=1,
+            inplace=True,
+        )
+        if "subCategory" in item_basetype_df.columns:
+            item_basetype_df["subCategory"] = item_basetype_df["subCategory"].str.join(
+                "-"
+            )
+        return item_basetype_df
+
+    def _clean_item_basetype_table(
+        self, item_basetype_df: pd.DataFrame
+    ) -> pd.DataFrame:
+        item_basetype_df = item_basetype_df.drop_duplicates(["baseType"])
+        db_item_basetype_df = pd.read_json(self.url + "/itemBaseType/", dtype=str)
+        if db_item_basetype_df.empty:
+            return item_basetype_df
+
+        item_basetype_df = item_basetype_df.loc[
+            ~item_basetype_df["baseType"].isin(db_item_basetype_df["baseType"])
+        ]
+        return item_basetype_df
+
+    def _process_item_basetype_table(self, df: pd.DataFrame) -> None:
+        item_basetype_df = self._create_item_basetype_table(df)
+        item_basetype_df = self._transform_item_basetype_table(item_basetype_df)
+        item_basetype_df = self._clean_item_basetype_table(item_basetype_df)
+        self._post_table(item_basetype_df, table_name="itemBaseType")
 
     def _create_item_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -128,7 +190,6 @@ class PoeAPIDataTransformer:
         item_df = df.loc[
             :, [column for column in self.item_columns if column in df.columns]
         ]  # Can't guarantee all columns are present
-
         return item_df
 
     def _transform_item_table(self, item_df: pd.DataFrame) -> pd.DataFrame:
@@ -249,6 +310,7 @@ class PoeAPIDataTransformer:
         df = self._preprocessing(df)
         self._process_account_table(df.copy(deep=True))
         self._process_stash_table(df.copy(deep=True))
+        self._process_item_basetype_table(df.copy(deep=True))
         self._process_item_table(df.copy(deep=True))
         self._process_item_modifier_table(df.copy(deep=True), modifier_df=modifier_df)
 
