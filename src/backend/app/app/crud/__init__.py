@@ -12,8 +12,16 @@ from app.core.models.models import Stash as model_Stash
 
 from app.core.schemas.account import AccountCreate, AccountUpdate, Account
 from app.core.schemas.currency import CurrencyCreate, CurrencyUpdate, Currency
-from app.core.schemas.item_base_type import ItemBaseTypeCreate, ItemBaseTypeUpdate, ItemBaseType
-from app.core.schemas.item_modifier import ItemModifierCreate, ItemModifierUpdate, ItemModifier
+from app.core.schemas.item_base_type import (
+    ItemBaseTypeCreate,
+    ItemBaseTypeUpdate,
+    ItemBaseType,
+)
+from app.core.schemas.item_modifier import (
+    ItemModifierCreate,
+    ItemModifierUpdate,
+    ItemModifier,
+)
 from app.core.schemas.item import ItemCreate, ItemUpdate, Item
 from app.core.schemas.modifier import ModifierCreate, ModifierUpdate, Modifier
 from app.core.schemas.stash import StashCreate, StashUpdate, Stash
@@ -70,4 +78,3 @@ CRUD_stash = CRUDBase[
     StashCreate,
     StashUpdate,
 ](model=model_Stash, schema=Stash, create_schema=StashCreate)
-
