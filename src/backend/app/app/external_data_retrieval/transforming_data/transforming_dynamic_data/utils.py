@@ -158,13 +158,15 @@ def get_rolls(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
         quit()
 
     def convert_text_roll_to_index(row):
-        if not pd.isna(row["textRolls"]):
+        if row["textRolls"] != "None":
             text_rolls = row["textRolls"].split("-")
-            row["roll"] = text_rolls.index(row["roll"])
+            roll = text_rolls.index(row["roll"])
+        else:
+            roll = row["roll"]
 
-        return row
+        return roll
 
-    merged_dynamic_df["range"] = merged_dynamic_df.apply(
+    merged_dynamic_df["roll"] = merged_dynamic_df.apply(
         convert_text_roll_to_index, axis=1
     )  # The `roll` column now contains a number
 
