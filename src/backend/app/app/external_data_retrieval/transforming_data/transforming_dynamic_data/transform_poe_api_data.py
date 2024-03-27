@@ -8,6 +8,7 @@ from app.external_data_retrieval.transforming_data.transforming_dynamic_data.uti
     get_rolls,
 )
 
+pd.options.mode.chained_assignment = None  # default='warn'
 
 BASEURL = os.getenv("DOMAIN")
 

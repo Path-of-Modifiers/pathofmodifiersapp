@@ -1,5 +1,7 @@
 import pandas as pd
 
+pd.options.mode.chained_assignment = None  # default='warn'
+
 
 def get_rolls(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
     """

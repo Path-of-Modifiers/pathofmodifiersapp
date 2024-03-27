@@ -19,6 +19,9 @@ from app.external_data_retrieval.detectors.unique_detector import (
 from app.database.dynamic_data_deposit.deposit_dynamic_data import DynamicDataDepositor
 
 
+pd.options.mode.chained_assignment = None  # default='warn'
+
+
 class APIHandler:
     headers = {
         "User-Agent": "OAuth pathofmodifiers/0.1.0 (contact: ***REMOVED***) StrictMode"
