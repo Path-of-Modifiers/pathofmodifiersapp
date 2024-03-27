@@ -3,7 +3,7 @@ import requests
 import pandas as pd
 from typing import List
 
-from backend.app.app.database.utils import df_to_JSON
+from app.database.utils import df_to_JSON
 from app.external_data_retrieval.transforming_data.transforming_dynamic_data.utils import (
     get_rolls,
 )
@@ -354,6 +354,6 @@ class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
-        print(item_modifer_df)
-        quit()
+        # print(item_modifer_df)
+        # quit()
         return item_modifer_df
