@@ -49,8 +49,6 @@ class APIHandler:
         self.headers["Authorization"] = "Bearer " + auth_token
 
         self.item_detectors = item_detectors
-        
-        self.next_change_id_data_depositor = DynamicDataDepositor(df_data=pd.DataFrame(), api_v1_object="nextChangeId") # Placeholder
 
         self.n_found_items = 0
         self.n_wanted_items = n_wanted_items
@@ -193,8 +191,6 @@ class APIHandler:
 
                 task_response = await asyncio.gather(future)
                 next_change_id, new_stashes = task_response[0]
-                self.next_change_id_data_depositor.df_data = self._json_to_df(new_stashes) # Currently uses deprecated function _json_to_df
-                self.next_change_id_data_depositor.deposit_data()
                 if not new_stashes:
                     time.sleep(
                         300
