@@ -5,7 +5,6 @@ import pytest
 from app.crud import (
     CRUD_itemModifier,
     CRUD_account,
-    CRUD_stash,
     CRUD_itemBaseType,
     CRUD_currency,
     CRUD_item,
@@ -14,7 +13,6 @@ from app.crud import (
 from app.core.models.models import (
     ItemModifier,
     Account,
-    Stash,
     ItemBaseType,
     Currency,
     Item,
@@ -36,7 +34,7 @@ def object_generator_func_w_deps() -> Callable[
     Tuple[
         Dict,
         ItemModifier,
-        List[Union[Dict, Account, Stash, ItemBaseType, Currency, Item, Modifier]],
+        List[Union[Dict, Account, ItemBaseType, Currency, Item, Modifier]],
     ],
 ]:
     def generate_random_item_modifier_w_deps(
@@ -46,7 +44,7 @@ def object_generator_func_w_deps() -> Callable[
         Tuple[
             Dict,
             ItemModifier,
-            List[Union[Dict, Item, Account, Stash, ItemBaseType, Currency, Modifier]],
+            List[Union[Dict, Item, Account, ItemBaseType, Currency, Modifier]],
         ],
     ]:
         return generate_random_item_modifier(db, retrieve_dependencies=True)
@@ -63,7 +61,6 @@ def crud_instance() -> CRUDBase:
 def crud_deps_instances() -> List[CRUDBase]:
     return [
         CRUD_account,
-        CRUD_stash,
         CRUD_itemBaseType,
         CRUD_currency,
         CRUD_item,
