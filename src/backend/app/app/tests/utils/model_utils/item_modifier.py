@@ -6,7 +6,6 @@ from app import crud
 from app.core.models.models import (
     ItemModifier,
     Account,
-    Stash,
     ItemBaseType,
     Currency,
     Item,
@@ -26,11 +25,11 @@ async def create_random_item_modifier_dict(
     Tuple[
         Dict,
         Optional[
-            List[Union[Dict, Account, Stash, ItemBaseType, Currency, Item, Modifier]]
+            List[Union[Dict, Account, ItemBaseType, Currency, Item, Modifier]]
         ],
     ],
 ]:
-    range_value = random_float()
+    roll_value = random_float()
 
     if not retrieve_dependencies:
         item_dict, item = await generate_random_item(db)
@@ -47,7 +46,7 @@ async def create_random_item_modifier_dict(
         "itemId": itemId,
         "modifierId": modifierId,
         "position": position,
-        "range": range_value,
+        "roll": roll_value,
     }
     if not retrieve_dependencies:
         return item_modifier_dict
@@ -61,7 +60,7 @@ async def generate_random_item_modifier(
 ) -> Tuple[
     Dict,
     ItemModifier,
-    Optional[List[Union[Dict, Account, Stash, ItemBaseType, Currency, Item, Modifier]]],
+    Optional[List[Union[Dict, Account, ItemBaseType, Currency, Item, Modifier]]],
 ]:
     output = await create_random_item_modifier_dict(db, retrieve_dependencies)
     if not retrieve_dependencies:
