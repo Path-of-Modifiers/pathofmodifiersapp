@@ -173,6 +173,8 @@ class APIHandler:
         next_change_id, new_stashes = self._initialize_stream(initial_next_change_id)
         df = pd.DataFrame()
 
+        old_next_change_id = initial_next_change_id
+
         iteration = 2
         session = aiohttp.ClientSession(headers=self.headers)
         try:
@@ -185,11 +187,13 @@ class APIHandler:
                 )
 
                 df_wanted = self._check_stashes(stashes=new_stashes)
+                df_wanted["changeId"] = old_next_change_id
                 df = pd.concat((df, df_wanted))
 
                 self.iteration_pbar.update()
 
                 task_response = await asyncio.gather(future)
+                old_next_change_id = next_change_id
                 next_change_id, new_stashes = task_response[0]
                 if not new_stashes:
                     time.sleep(
