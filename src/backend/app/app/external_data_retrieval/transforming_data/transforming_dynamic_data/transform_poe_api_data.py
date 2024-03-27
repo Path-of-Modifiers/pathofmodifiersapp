@@ -96,6 +96,7 @@ class PoeAPIDataTransformer:
             "itemId",
             "gameItemId",
             "stashId",
+            "changeId",
             "name",
             "icon",
             "league",
