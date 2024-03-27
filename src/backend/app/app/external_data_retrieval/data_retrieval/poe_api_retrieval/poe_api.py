@@ -180,41 +180,37 @@ class APIHandler:
 
         iteration = 2
         self.session = aiohttp.ClientSession(headers=self.headers)
-        try:
-            while (
-                self.n_found_items < self.n_wanted_items
-                or self.n_unique_items_found < self.n_unique_wanted_items
-            ):
-                future = asyncio.ensure_future(
-                    self._start_next_request(
-                        self.session, next_change_id=next_change_id
-                    )
-                )
+        while (
+            self.n_found_items < self.n_wanted_items
+            or self.n_unique_items_found < self.n_unique_wanted_items
+        ):
+            future = asyncio.ensure_future(
+                self._start_next_request(self.session, next_change_id=next_change_id)
+            )
 
-                df_wanted = self._check_stashes(stashes=new_stashes)
-                df_wanted["changeId"] = old_next_change_id
-                df = pd.concat((df, df_wanted))
-
-                self.iteration_pbar.update()
-
-                task_response = await asyncio.gather(future)
-                old_next_change_id = next_change_id
-                next_change_id, new_stashes = task_response[0]
-                if not new_stashes:
-                    time.sleep(
-                        300
-                    )  # Waits 5 minutes before continuing to persue the stream
-
-                iteration += 1
-        except requests.HTTPError as e:
-            print(e)
-        finally:  # Probably needs some more exception catches
             df_wanted = self._check_stashes(stashes=new_stashes)
+            df_wanted["changeId"] = old_next_change_id
             df = pd.concat((df, df_wanted))
 
             self.iteration_pbar.update()
 
-            return df, next_change_id
+            task_response = await asyncio.gather(future)
+            old_next_change_id = next_change_id
+            next_change_id, new_stashes = task_response[0]
+            if not new_stashes:
+                time.sleep(
+                    300
+                )  # Waits 5 minutes before continuing to persue the stream
+
+            iteration += 1
+
+        df_wanted = self._check_stashes(stashes=new_stashes)
+        df_wanted["changeId"] = old_next_change_id
+        df = pd.concat((df, df_wanted))
+
+        self.iteration_pbar.update()
+
+        return df, next_change_id
 
     def dump_stream(
         self, initial_next_change_id: str = None, track_progress: bool = True
