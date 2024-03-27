@@ -23,7 +23,6 @@ def get_rolls(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
 
     The method contains assertions to ensure successful steps.
     """
-    print(df)
     df.loc[:, "modifier"] = df["modifier"].replace(
         r"\\n|\n", " ", regex=True
     )  # Replaces newline with a space, so that it does not mess up the regex and matches modifiers in the `modifier` table
@@ -61,6 +60,10 @@ def get_rolls(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
     ]  # Everything not static is dynamic
 
     dynamic_df.loc[:, "effect"] = dynamic_df.loc[:, "modifier"]
+
+    dynamic_modifier_df.sort_values(
+        "effect", key=lambda x: x.str.len(), ascending=False, inplace=True
+    )
     # The process must be broken down into a for-loop as the replacement is unique
     for regex, effect in dynamic_modifier_df[["regex", "effect"]].itertuples(
         index=False
