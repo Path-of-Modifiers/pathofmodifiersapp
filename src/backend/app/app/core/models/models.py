@@ -13,16 +13,6 @@ def update(self, **new_data):
 Base.update = update
 
 
-class NextChangeId(Base):
-
-    __tablename__ = "next_change_id"
-
-    id = _sql.Column(
-        _sql.BigInteger, _sql.Identity(start=1, increment=1, cycle=True), primary_key=True, index=True, nullable=False
-    )
-    nextChangeId = _sql.Column(_sql.String(), nullable=False)
-
-
 class Currency(Base):
 
     __tablename__ = "currency"
@@ -74,6 +64,7 @@ class Item(Base):
         _sql.ForeignKey("stash.stashId", ondelete="CASCADE"),
         nullable=False,
     )
+    changeId = _sql.Column(_sql.String(), nullable=False)
     name = _sql.Column(_sql.String())
     iconUrl = _sql.Column(_sql.String())
     league = _sql.Column(_sql.String(), nullable=False)
