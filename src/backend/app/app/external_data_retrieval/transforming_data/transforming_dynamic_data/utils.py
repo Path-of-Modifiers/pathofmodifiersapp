@@ -157,9 +157,16 @@ def get_rolls(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
         print("Failed to merge dynamic modifier with dynamic modifier in DB.")
         quit()
 
-    # merged_dynamic_df["range"] = merged_dynamic_df.apply(
-    #     convert_range_roll_to_range, axis=1
-    # )  # The `range` column now truly contains the range
+    def convert_text_roll_to_index(row):
+        if not pd.isna(row["textRolls"]):
+            text_rolls = row["textRolls"].split("-")
+            row["roll"] = text_rolls.index(row["roll"])
+
+        return row
+
+    merged_dynamic_df["range"] = merged_dynamic_df.apply(
+        convert_text_roll_to_index, axis=1
+    )  # The `roll` column now contains a number
 
     # ---- Finishing touches ----
     processed_df = pd.concat(
