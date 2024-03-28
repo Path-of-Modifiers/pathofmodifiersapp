@@ -276,16 +276,21 @@ class PoeAPIDataTransformer:
         response.raise_for_status()
         latest_item_id = int(response.text)
 
-        item_id = pd.Series(range(latest_item_id - len(item_df) + 1, latest_item_id))
+        item_id = pd.Series(
+            range(latest_item_id - len(item_df) + 1, latest_item_id + 1)
+        )
 
         return item_id
 
-    def _process_item_table(self, df: pd.DataFrame, currency_df: pd.DataFrame) -> None:
+    def _process_item_table(
+        self, df: pd.DataFrame, currency_df: pd.DataFrame
+    ) -> pd.Series:
         item_df = self._create_item_table(df)
         item_df = self._transform_item_table(item_df, currency_df)
         item_df = self._clean_item_table(item_df)
         insert_data(item_df, url=self.url, table_name="item")
         item_id = self._get_latest_item_id_series(item_df)
+        return item_id
 
     def _create_item_modifier_table(
         self, df: pd.DataFrame, *, item_id: pd.Series, modifier_df: pd.DataFrame
@@ -317,9 +322,11 @@ class PoeAPIDataTransformer:
         raise NotImplementedError("Only available in child classes")
 
     def _process_item_modifier_table(
-        self, df: pd.DataFrame, modifier_df: pd.DataFrame
+        self, df: pd.DataFrame, modifier_df: pd.DataFrame, item_id: pd.Series
     ) -> None:
-        item_modifier_df = self._create_item_modifier_table(df, modifier_df)
+        item_modifier_df = self._create_item_modifier_table(
+            df, item_id=item_id, modifier_df=modifier_df
+        )
         item_modifier_df = self._transform_item_modifier_table(
             item_modifier_df, modifier_df
         )
