@@ -66,7 +66,7 @@ class TransformPoeNinjaCurrencyAPIData:
         currency_df = self._create_currency_table(currency_df)
         currency_df = self._clean_currency_table(currency_df)
         currency_df = self._transform_currency_table(currency_df)
-        insert_data(currency_df, table_name="currency")
+        insert_data(currency_df, url=self.url, table_name="currency")
         currency_df = retrieve_data(url=self.url, table_name="currency")
 
         return currency_df
