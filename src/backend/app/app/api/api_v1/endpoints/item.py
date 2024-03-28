@@ -9,6 +9,7 @@ from app.crud import CRUD_item
 import app.core.schemas as schemas
 
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 
 
 router = APIRouter()
@@ -35,9 +36,13 @@ async def get_latest_item_id(db: Session = Depends(get_db)):
     """
     TODO
     """
-    result = db.execute("SELECT IDENT_CURRENT('item')")
-
-    return result
+    params = {"tablename": "item"}
+    # result = db.execute(text("""SELECT currval("itemId") FROM item""")).fetchall()
+    result = db.execute(text("""DBCC CHECKIDENT("item",NORESEED)"""))
+    if result:
+        return result[0]
+    else:
+        return 1
 
 
 @router.get("/", response_model=Union[schemas.Item, List[schemas.Item]])
