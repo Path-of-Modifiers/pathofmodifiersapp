@@ -271,14 +271,24 @@ class PoeAPIDataTransformer:
         )
         return item_df
 
+    def _get_latest_item_id_series(self, item_df: pd.DataFrame) -> pd.Series:
+        response = requests.get(self.url + "/item/latest_item_id/")
+        response.raise_for_status()
+        latest_item_id = int(response.text)
+
+        item_id = pd.Series(range(latest_item_id - len(item_df) + 1, latest_item_id))
+
+        return item_id
+
     def _process_item_table(self, df: pd.DataFrame, currency_df: pd.DataFrame) -> None:
         item_df = self._create_item_table(df)
         item_df = self._transform_item_table(item_df, currency_df)
         item_df = self._clean_item_table(item_df)
         insert_data(item_df, url=self.url, table_name="item")
+        item_id = self._get_latest_item_id_series(item_df)
 
     def _create_item_modifier_table(
-        self, df: pd.DataFrame, modifier_df: pd.DataFrame
+        self, df: pd.DataFrame, *, item_id: pd.Series, modifier_df: pd.DataFrame
     ) -> pd.DataFrame:
         """
         The `item_modifier` table heavily relies on what type of item the modifiers
@@ -287,7 +297,7 @@ class PoeAPIDataTransformer:
         raise NotImplementedError("Only available in child classes")
 
     def _transform_item_modifier_table(
-        self, item_modifier_df: pd.DataFrame, modifier_df: pd.DataFrame
+        self, item_modifier_df: pd.DataFrame, *, modifier_df: pd.DataFrame
     ) -> pd.DataFrame:
         """
         The `item_modifier` table heavily relies on what type of item the modifiers
@@ -319,26 +329,29 @@ class PoeAPIDataTransformer:
     def transform_into_tables(
         self, df: pd.DataFrame, modifier_df: pd.DataFrame, currency_df: pd.DataFrame
     ) -> None:
-        df = self._preprocessing(df)
+        # df = self._preprocessing(df)
         self._process_account_table(df.copy(deep=True))
         self._process_stash_table(df.copy(deep=True))
         self._process_item_basetype_table(df.copy(deep=True))
-        self._process_item_table(df.copy(deep=True), currency_df=currency_df)
-        self._process_item_modifier_table(df.copy(deep=True), modifier_df=modifier_df)
+        item_id = self._process_item_table(df.copy(deep=True), currency_df=currency_df)
+        self._process_item_modifier_table(
+            df.copy(deep=True), item_id=item_id, modifier_df=modifier_df
+        )
 
 
 class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
     def _create_item_modifier_table(
-        self, df: pd.DataFrame, modifier_df: pd.DataFrame
+        self, df: pd.DataFrame, *, item_id: pd.Series, modifier_df: pd.DataFrame
     ) -> pd.DataFrame:
         """
         A similiar process to creating the item table, only this time the
         relevant column contains a list and not a JSON-object
         """
-        self.item_modifier_columns = ["name", "explicitMods", "itemId"]
+        self.item_modifier_columns = ["name", "explicitMods"]
 
         item_modifier_df = df.loc[:, self.item_modifier_columns]
 
+        item_modifier_df["itemId"] = item_id
         item_modifier_df = item_modifier_df.explode("explicitMods", ignore_index=True)
 
         item_modifier_df.rename({"explicitMods": "modifier"}, axis=1, inplace=True)
