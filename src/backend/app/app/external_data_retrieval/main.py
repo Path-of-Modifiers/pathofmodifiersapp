@@ -7,6 +7,12 @@ from typing import List, Union, Dict
 from app.external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
     APIHandler,
 )
+from app.external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_ninja_currency_api import (
+    PoeNinjaCurrencyAPIHandler,
+)
+from app.external_data_retrieval.transforming_data.transforming_dynamic_data.transform_poe_ninja_currency_api_data import (
+    TransformPoeNinjaCurrencyAPIData,
+)
 from app.external_data_retrieval.transforming_data.transforming_dynamic_data.transform_poe_api_data import (
     PoeAPIDataTransformer,
     UniquePoeAPIDataTransformer,
@@ -25,12 +31,17 @@ class ContiniousDataRetrieval:
     ):
         self.data_transformers = data_transformers
 
-        self.api_handler = APIHandler(
+        self.poe_api_handler = APIHandler(
             url=self.url,
             auth_token=self.auth_token,
             n_wanted_items=items_per_batch,
             n_unique_wanted_items=10,
         )
+
+        self.poe_ninja_currency_api_handler = PoeNinjaCurrencyAPIHandler(
+            url="https://poe.ninja/api/data/currencyoverview?league=Affliction&type=Currency"
+        )
+        self.poe_ninja_transformer = TransformPoeNinjaCurrencyAPIData()
 
     def _get_modifiers(self) -> Dict[str, pd.DataFrame]:
         modifier_df = pd.read_json(self.modifier_url, dtype=str)
@@ -81,17 +92,25 @@ class ContiniousDataRetrieval:
 
         return split_dfs
 
+    def _get_new_currency_data(self) -> pd.DataFrame:
+        currency_df = self.poe_ninja_currency_api_handler.make_request()
+        currency_df = self.poe_ninja_transformer.transform_into_tables(currency_df)
+        return currency_df
+
     def retrieve_data(self, initial_next_change_id: str):
         modifier_dfs = self._get_modifiers()
-        get_df = self.api_handler.dump_stream(
+        get_df = self.poe_api_handler.dump_stream(
             initial_next_change_id=initial_next_change_id
         )
         for i, df in enumerate(get_df):
             split_dfs = self._categorize_new_items(df)
+            if i % 5 == 0:
+                currency_df = self._get_new_currency_data()
             for data_transformer_type in self.data_transformers:
                 self.data_transformers[data_transformer_type].transform_into_tables(
                     df=split_dfs[data_transformer_type],
                     modifier_df=modifier_dfs[data_transformer_type],
+                    currency_df=currency_df.copy(deep=True),
                 )
 
 
