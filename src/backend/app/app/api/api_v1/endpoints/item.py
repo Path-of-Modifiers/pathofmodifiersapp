@@ -35,9 +35,9 @@ async def get_latest_item_id(db: Session = Depends(get_db)):
     """
     TODO
     """
-    all_items = await CRUD_item.get(db=db)
+    result = db.execute("SELECT IDENT_CURRENT('item')")
 
-    return len(all_items)
+    return result
 
 
 @router.get("/", response_model=Union[schemas.Item, List[schemas.Item]])
