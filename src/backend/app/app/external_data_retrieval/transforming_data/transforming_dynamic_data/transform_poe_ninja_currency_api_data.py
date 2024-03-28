@@ -66,7 +66,8 @@ class TransformPoeNinjaCurrencyAPIData:
         latest_currency_id = int(response.text)
 
         currency_id = pd.Series(
-            range(latest_currency_id - len(currency_df) + 1, latest_currency_id + 1)
+            range(latest_currency_id - len(currency_df) + 1, latest_currency_id + 1),
+            dtype=int,
         )
         return currency_id
 
