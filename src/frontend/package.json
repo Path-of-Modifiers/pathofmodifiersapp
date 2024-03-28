@@ -10,9 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.8.2",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.0",
     "@tanstack/react-query": "^5.28.9",
     "@tanstack/router-cli": "^1.23.0",
     "@tanstack/router-devtools": "^1.23.1",
+    "framer-motion": "^11.0.23",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
