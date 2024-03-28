@@ -182,7 +182,6 @@ class PoeAPIDataTransformer:
         item_df = df.loc[
             :, [column for column in self.item_columns if column in df.columns]
         ]  # Can't guarantee all columns are present
-        item_df.rename({"icon": "iconUrl"}, axis=1, inplace=True)
         return item_df
 
     def _transform_item_table(
@@ -261,7 +260,7 @@ class PoeAPIDataTransformer:
             "valueInChaos",
             "itemId",
             "createdAt",
-            "iconUrl_y",
+            "iconUrl",
         ]
         item_df.drop(
             drop_list,
@@ -269,6 +268,8 @@ class PoeAPIDataTransformer:
             inplace=True,
             errors="ignore",
         )
+
+        item_df.rename({"icon": "iconUrl"}, axis=1, inplace=True)
         return item_df
 
     def _get_latest_item_id_series(self, item_df: pd.DataFrame) -> pd.Series:
