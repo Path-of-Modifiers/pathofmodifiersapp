@@ -182,6 +182,7 @@ class PoeAPIDataTransformer:
         item_df = df.loc[
             :, [column for column in self.item_columns if column in df.columns]
         ]  # Can't guarantee all columns are present
+        item_df.rename({"icon": "iconUrl"}, axis=1, inplace=True)
         return item_df
 
     def _transform_item_table(
@@ -237,6 +238,10 @@ class PoeAPIDataTransformer:
         item_df["currencyAmount"] = currency_series.apply(get_currency_amount)
         item_df["currencyType"] = currency_series.apply(get_currency_type)
 
+        item_df = item_df.merge(
+            currency_df, how="left", left_on="currencyType", right_on="tradeName"
+        )
+
         return item_df
 
     def _clean_item_table(self, item_df: pd.DataFrame) -> pd.DataFrame:
@@ -251,6 +256,12 @@ class PoeAPIDataTransformer:
             "influences.redeemer",
             "influences.warlord",
             "stash",
+            "currencyType",
+            "tradeName",
+            "valueInChaos",
+            "itemId",
+            "createdAt",
+            "iconUrl_y",
         ]
         item_df.drop(
             drop_list,
