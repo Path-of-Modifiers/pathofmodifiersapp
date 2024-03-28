@@ -1,4 +1,5 @@
 import os
+import requests
 from typing import Dict, List
 import pandas as pd
 
@@ -59,6 +60,16 @@ class TransformPoeNinjaCurrencyAPIData:
         )
         return currency_df
 
+    def _get_latest_item_id_series(self, currency_df: pd.DataFrame) -> pd.Series:
+        response = requests.get(self.url + "/currency/latest_currency_id/")
+        response.raise_for_status()
+        latest_currency_id = int(response.text)
+
+        currency_id = pd.Series(
+            range(latest_currency_id - len(currency_df) + 1, latest_currency_id + 1)
+        )
+        return currency_id
+
     def transform_into_tables(self, currency_df: pd.DataFrame) -> pd.DataFrame:
         """
         Transforms the data into tables and transforms with help functions.
@@ -67,7 +78,9 @@ class TransformPoeNinjaCurrencyAPIData:
         currency_df = self._clean_currency_table(currency_df)
         currency_df = self._transform_currency_table(currency_df)
         insert_data(currency_df, url=self.url, table_name="currency")
-        currency_df = retrieve_data(url=self.url, table_name="currency")
+        currency_id = self._get_latest_item_id_series(currency_df)
+
+        currency_df["currencyId"] = currency_id
 
         return currency_df
 
