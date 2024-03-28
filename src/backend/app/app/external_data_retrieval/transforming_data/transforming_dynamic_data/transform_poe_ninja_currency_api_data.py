@@ -21,14 +21,11 @@ def load_currency_data():
 
 
 class TransformPoeNinjaCurrencyAPIData:
-    def __init__(self, currencies_df: pd.DataFrame) -> None:
-        self.currencies_df = currencies_df
-
-    def _create_currency_table(self):
+    def _create_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
         """
         Creates the currency table.
         """
-        self.currencies_df.rename(
+        currency_df.rename(
             columns={
                 "tradeId": "tradeName",
                 "chaosEquivalent": "valueInChaos",
@@ -36,37 +33,35 @@ class TransformPoeNinjaCurrencyAPIData:
             },
             inplace=True,
         )
+        return currency_df
 
-    def _transform_currency_table(self) -> pd.DataFrame:
-        self.currencies_df["valueInChaos"][0] = 1
+    def _transform_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
+        currency_df.loc[0, "valueInChaos"] = 1
 
-        self.currencies_df = self.currencies_df[
-            self.currencies_df["tradeName"].notnull()
-        ]
+        currency_df = currency_df[currency_df["tradeName"].notnull()]
+        return currency_df
 
-    def _clean_currency_table(self) -> pd.DataFrame:
+    def _clean_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
         """
         Cleans the currency table of unnecessary columns.
         """
 
-        self.currencies_df.drop(
-            self.currencies_df.columns.difference(
-                ["tradeName", "valueInChaos", "iconUrl"]
-            ),
+        currency_df.drop(
+            currency_df.columns.difference(["tradeName", "valueInChaos", "iconUrl"]),
             axis=1,
             inplace=True,
         )
-        print(self.currencies_df)
+        return currency_df
 
-    def transform_into_tables(self) -> pd.DataFrame:
+    def transform_into_tables(self, currency_df: pd.DataFrame) -> pd.DataFrame:
         """
         Transforms the data into tables and transforms with help functions.
         """
-        self._create_currency_table()
-        self._clean_currency_table()
-        self._transform_currency_table()
+        currency_df = self._create_currency_table(currency_df)
+        currency_df = self._clean_currency_table(currency_df)
+        currency_df = self._transform_currency_table(currency_df)
 
-        return self.currencies_df
+        return currency_df
 
 
 def main():
