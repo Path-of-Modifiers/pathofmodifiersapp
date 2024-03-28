@@ -1,10 +1,13 @@
-import json
+import os
 from typing import Dict, List
 import pandas as pd
 
 from app.external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_ninja_currency_api import (
     PoeNinjaCurrencyAPIHandler,
 )
+from app.database.utils import insert_data, retrieve_data
+
+BASEURL = os.getenv("DOMAIN")
 
 
 def load_currency_data():
@@ -21,6 +24,9 @@ def load_currency_data():
 
 
 class TransformPoeNinjaCurrencyAPIData:
+    def __init__(self):
+        self.url = BASEURL + "/api/api_v1"
+
     def _create_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
         """
         Creates the currency table.
@@ -60,6 +66,8 @@ class TransformPoeNinjaCurrencyAPIData:
         currency_df = self._create_currency_table(currency_df)
         currency_df = self._clean_currency_table(currency_df)
         currency_df = self._transform_currency_table(currency_df)
+        insert_data(currency_df, table_name="currency")
+        currency_df = retrieve_data(url=self.url, table_name="currency")
 
         return currency_df
 
