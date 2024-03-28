@@ -243,7 +243,7 @@ class APIHandler:
                     initial_next_change_id = next_change_id
                     self.n_found_items = 0
                     self.n_unique_items_found = 0
-                    yield df
+                    yield df.reset_index()
                     self.item_count_pbar.reset()
             except Exception as e:
                 print(e)
