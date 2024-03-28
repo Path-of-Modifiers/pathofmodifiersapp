@@ -32,7 +32,9 @@ class PoeAPIDataTransformer:
             return None
         data = df_to_JSON(df, request_method="post")
         response = requests.post(self.url + f"/{table_name}/", json=data)
-        response.raise_for_status()
+        if response.status_code >= 300:
+            print(data)
+            response.raise_for_status()
 
     def _create_account_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
