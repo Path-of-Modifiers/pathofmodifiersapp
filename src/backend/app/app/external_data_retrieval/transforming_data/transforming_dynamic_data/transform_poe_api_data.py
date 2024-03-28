@@ -184,7 +184,9 @@ class PoeAPIDataTransformer:
         ]  # Can't guarantee all columns are present
         return item_df
 
-    def _transform_item_table(self, item_df: pd.DataFrame) -> pd.DataFrame:
+    def _transform_item_table(
+        self, item_df: pd.DataFrame, currency_df: pd.DataFrame
+    ) -> pd.DataFrame:
         """
         The `item` table requires a foreign key to the `currency` table.
         Everything related to the price of the item is stored in the `node`
@@ -258,9 +260,9 @@ class PoeAPIDataTransformer:
         )
         return item_df
 
-    def _process_item_table(self, df: pd.DataFrame) -> None:
+    def _process_item_table(self, df: pd.DataFrame, currency_df: pd.DataFrame) -> None:
         item_df = self._create_item_table(df)
-        item_df = self._transform_item_table(item_df)
+        item_df = self._transform_item_table(item_df, currency_df)
         item_df = self._clean_item_table(item_df)
         insert_data(item_df, table_name="item")
 
@@ -304,13 +306,13 @@ class PoeAPIDataTransformer:
         insert_data(item_modifier_df, table_name="itemModifier")
 
     def transform_into_tables(
-        self, df: pd.DataFrame, modifier_df: pd.DataFrame
+        self, df: pd.DataFrame, modifier_df: pd.DataFrame, currency_df: pd.DataFrame
     ) -> None:
         df = self._preprocessing(df)
         self._process_account_table(df.copy(deep=True))
         self._process_stash_table(df.copy(deep=True))
         self._process_item_basetype_table(df.copy(deep=True))
-        self._process_item_table(df.copy(deep=True))
+        self._process_item_table(df.copy(deep=True), currency_df=currency_df)
         self._process_item_modifier_table(df.copy(deep=True), modifier_df=modifier_df)
 
 
