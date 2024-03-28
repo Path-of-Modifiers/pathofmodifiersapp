@@ -35,11 +35,18 @@ def df_to_JSON(
         )
 
 
-def insert_data(self, df: pd.DataFrame, table_name: str) -> None:
+def insert_data(df: pd.DataFrame, *, url: str, table_name: str) -> None:
     if df.empty:
         return None
     data = df_to_JSON(df, request_method="post")
-    response = requests.post(self.url + f"/{table_name}/", json=data)
+    response = requests.post(url + f"/{table_name}/", json=data)
     if response.status_code >= 300:
         print(data)
         response.raise_for_status()
+
+
+def retrieve_data(*, url: str, table_name: str) -> pd.DataFrame | None:
+    df = pd.read_json(url + f"/{table_name}/", dtype=str)
+    if df.empty:
+        return None
+    return df
