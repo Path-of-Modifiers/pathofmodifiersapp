@@ -227,6 +227,12 @@ class PoeAPIDataTransformer:
         item_df["currencyAmount"] = currency_series.apply(get_currency_amount)
         item_df["currencyType"] = currency_series.apply(get_currency_type)
 
+        invalid_amount_mask = ~item_df["currencyAmount"].str.contains(
+            r"^(([0-9]*[.])?[0-9]+)$", na=False
+        )
+        item_df.loc[invalid_amount_mask, "currencyAmount"] = pd.NA
+        item_df.loc[invalid_amount_mask, "currencyType"] = ""
+
         item_df = item_df.merge(
             currency_df, how="left", left_on="currencyType", right_on="tradeName"
         )

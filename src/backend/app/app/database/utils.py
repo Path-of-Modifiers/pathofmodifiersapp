@@ -41,7 +41,14 @@ def insert_data(df: pd.DataFrame, *, url: str, table_name: str) -> None:
     data = df_to_JSON(df, request_method="post")
     response = requests.post(url + f"/{table_name}/", json=data)
     if response.status_code >= 300:
+        if response.status_code == 422:
+            for data_json in data:
+                response = requests.post(url + f"/{table_name}/", json=data_json)
+                if response.status_code >= 300:
+                    print(data_json)
+                    response.raise_for_status()
         print(data)
+
         response.raise_for_status()
 
 
