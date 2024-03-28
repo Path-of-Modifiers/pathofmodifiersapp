@@ -204,7 +204,7 @@ class APIHandler:
         df = pd.concat((df, df_wanted))
 
         self.iteration_pbar.update()
-        session.close()
+        await session.close()
 
         return df, next_change_id
 
