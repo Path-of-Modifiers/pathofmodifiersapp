@@ -5,9 +5,7 @@ import asyncio
 import aiohttp
 import pandas as pd
 from tqdm import tqdm
-from datetime import datetime
 from typing import List, Union, Tuple, Dict, Coroutine, Iterator
-import os
 
 from app.external_data_retrieval.detectors.unique_detector import (
     UniqueJewelDetector,
@@ -15,9 +13,6 @@ from app.external_data_retrieval.detectors.unique_detector import (
     UniqueArmourDetector,
     UniqueDetector,
 )
-
-from app.database.dynamic_data_deposit.deposit_dynamic_data import DynamicDataDepositor
-
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
