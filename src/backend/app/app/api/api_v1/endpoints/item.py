@@ -34,13 +34,13 @@ async def get_item(itemId: str, db: Session = Depends(get_db)):
 @router.get("/latest_item_id/", response_model=int, tags=["latest_item_id"])
 async def get_latest_item_id(db: Session = Depends(get_db)):
     """
-    TODO
+    Get the latest itemId
+
+    Can only be used safely on an empty table or directly after an insertion.
     """
-    params = {"tablename": "item"}
-    # result = db.execute(text("""SELECT currval("itemId") FROM item""")).fetchall()
-    result = db.execute(text("""DBCC CHECKIDENT("item",NORESEED)"""))
+    result = db.execute(text("""SELECT MAX("itemId") FROM item""")).fetchone()
     if result:
-        return result[0]
+        return int(result[0])
     else:
         return 1
 
