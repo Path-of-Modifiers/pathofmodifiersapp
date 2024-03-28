@@ -17,16 +17,6 @@ class PoeAPIDataTransformer:
     def __init__(self):
         self.url = BASEURL + "/api/api_v1"
 
-    def _preprocessing(self, df: pd.DataFrame) -> pd.DataFrame:
-        response = requests.get(self.url + "/item/latest_item_id/")
-        response.raise_for_status()
-        n_items_in_db = int(response.text)
-
-        df = df.reset_index()
-        df["itemId"] = df.index + n_items_in_db
-
-        return df
-
     def _create_account_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
         Creates the basis of the `account` table.
@@ -337,7 +327,6 @@ class PoeAPIDataTransformer:
     def transform_into_tables(
         self, df: pd.DataFrame, modifier_df: pd.DataFrame, currency_df: pd.DataFrame
     ) -> None:
-        # df = self._preprocessing(df)
         self._process_account_table(df.copy(deep=True))
         self._process_stash_table(df.copy(deep=True))
         self._process_item_basetype_table(df.copy(deep=True))
