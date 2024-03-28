@@ -99,7 +99,7 @@ def main():
     auth_token = "750d4f685cfa83d024d86508e7ede4ab55b5acc7"
     url = "https://api.pathofexile.com/public-stash-tabs"
 
-    n_wanted_items = 100
+    n_wanted_items = 3000
     data_transformers = {"unique": UniquePoeAPIDataTransformer()}
 
     data_retriever = ContiniousDataRetrieval(
