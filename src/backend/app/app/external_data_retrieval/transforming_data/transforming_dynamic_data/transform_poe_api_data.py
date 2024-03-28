@@ -278,7 +278,7 @@ class PoeAPIDataTransformer:
         latest_item_id = int(response.text)
 
         item_id = pd.Series(
-            range(latest_item_id - len(item_df) + 1, latest_item_id + 1)
+            range(latest_item_id - len(item_df) + 1, latest_item_id + 1), dtype=int
         )
 
         return item_id
