@@ -1,5 +1,6 @@
-from typing import List, Dict, Any, Union
+import requests
 import pandas as pd
+from typing import List, Dict, Any, Union
 
 
 def remove_empty_fields(json_in: List[Dict[str, str]]) -> List[Dict[str, Any]]:
@@ -32,3 +33,13 @@ def df_to_JSON(
         raise NotImplementedError(
             f"df to json for the request method {request_method} is not implemented."
         )
+
+
+def insert_data(self, df: pd.DataFrame, table_name: str) -> None:
+    if df.empty:
+        return None
+    data = df_to_JSON(df, request_method="post")
+    response = requests.post(self.url + f"/{table_name}/", json=data)
+    if response.status_code >= 300:
+        print(data)
+        response.raise_for_status()
