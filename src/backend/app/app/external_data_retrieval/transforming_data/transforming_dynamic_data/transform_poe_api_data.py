@@ -3,12 +3,12 @@ import requests
 import pandas as pd
 from typing import List
 
-from app.database.utils import df_to_JSON
+from app.database.utils import df_to_JSON, insert_data
 from app.external_data_retrieval.transforming_data.transforming_dynamic_data.utils import (
     get_rolls,
 )
 
-pd.options.mode.chained_assignment = None  # default='warn'
+pd.options.mode.chained_assignment = None  # default="warn"
 
 BASEURL = os.getenv("DOMAIN")
 
@@ -26,15 +26,6 @@ class PoeAPIDataTransformer:
         df["itemId"] = df.index + n_items_in_db
 
         return df
-
-    def _post_table(self, df: pd.DataFrame, table_name: str) -> None:
-        if df.empty:
-            return None
-        data = df_to_JSON(df, request_method="post")
-        response = requests.post(self.url + f"/{table_name}/", json=data)
-        if response.status_code >= 300:
-            print(data)
-            response.raise_for_status()
 
     def _create_account_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -68,7 +59,7 @@ class PoeAPIDataTransformer:
     def _process_account_table(self, df: pd.DataFrame) -> None:
         account_df = self._create_account_table(df)
         account_df = self._transform_account_table(account_df)
-        self._post_table(account_df, table_name="account")
+        insert_data(account_df, table_name="account")
 
     def _create_stash_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -92,7 +83,7 @@ class PoeAPIDataTransformer:
     def _process_stash_table(self, df: pd.DataFrame) -> None:
         stash_df = self._create_stash_table(df)
         stash_df = self._clean_stash_table(stash_df)
-        self._post_table(stash_df, table_name="stash")
+        insert_data(stash_df, table_name="stash")
 
     def _create_item_basetype_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -146,7 +137,7 @@ class PoeAPIDataTransformer:
         item_basetype_df = self._create_item_basetype_table(df)
         item_basetype_df = self._transform_item_basetype_table(item_basetype_df)
         item_basetype_df = self._clean_item_basetype_table(item_basetype_df)
-        self._post_table(item_basetype_df, table_name="itemBaseType")
+        insert_data(item_basetype_df, table_name="itemBaseType")
 
     def _create_item_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -271,7 +262,7 @@ class PoeAPIDataTransformer:
         item_df = self._create_item_table(df)
         item_df = self._transform_item_table(item_df)
         item_df = self._clean_item_table(item_df)
-        self._post_table(item_df, table_name="item")
+        insert_data(item_df, table_name="item")
 
     def _create_item_modifier_table(
         self, df: pd.DataFrame, modifier_df: pd.DataFrame
@@ -310,7 +301,7 @@ class PoeAPIDataTransformer:
             item_modifier_df, modifier_df
         )
         item_modifier_df = self._clean_item_modifier_table(item_modifier_df)
-        self._post_table(item_modifier_df, table_name="itemModifier")
+        insert_data(item_modifier_df, table_name="itemModifier")
 
     def transform_into_tables(
         self, df: pd.DataFrame, modifier_df: pd.DataFrame
