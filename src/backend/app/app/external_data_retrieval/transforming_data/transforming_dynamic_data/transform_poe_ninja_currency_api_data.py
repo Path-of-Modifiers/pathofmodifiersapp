@@ -1,10 +1,13 @@
-import json
+import os
 from typing import Dict, List
 import pandas as pd
 
 from app.external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_ninja_currency_api import (
     PoeNinjaCurrencyAPIHandler,
 )
+from app.database.utils import insert_data, retrieve_data
+
+BASEURL = os.getenv("DOMAIN")
 
 
 def load_currency_data():
@@ -21,14 +24,14 @@ def load_currency_data():
 
 
 class TransformPoeNinjaCurrencyAPIData:
-    def __init__(self, currencies_df: pd.DataFrame) -> None:
-        self.currencies_df = currencies_df
+    def __init__(self):
+        self.url = BASEURL + "/api/api_v1"
 
-    def _create_currency_table(self):
+    def _create_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
         """
         Creates the currency table.
         """
-        self.currencies_df.rename(
+        currency_df.rename(
             columns={
                 "tradeId": "tradeName",
                 "chaosEquivalent": "valueInChaos",
@@ -36,37 +39,37 @@ class TransformPoeNinjaCurrencyAPIData:
             },
             inplace=True,
         )
+        return currency_df
 
-    def _transform_currency_table(self) -> pd.DataFrame:
-        self.currencies_df["valueInChaos"][0] = 1
+    def _transform_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
+        currency_df.loc[0, "valueInChaos"] = 1
 
-        self.currencies_df = self.currencies_df[
-            self.currencies_df["tradeName"].notnull()
-        ]
+        currency_df = currency_df[currency_df["tradeName"].notnull()]
+        return currency_df
 
-    def _clean_currency_table(self) -> pd.DataFrame:
+    def _clean_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
         """
         Cleans the currency table of unnecessary columns.
         """
 
-        self.currencies_df.drop(
-            self.currencies_df.columns.difference(
-                ["tradeName", "valueInChaos", "iconUrl"]
-            ),
+        currency_df.drop(
+            currency_df.columns.difference(["tradeName", "valueInChaos", "iconUrl"]),
             axis=1,
             inplace=True,
         )
-        print(self.currencies_df)
+        return currency_df
 
-    def transform_into_tables(self) -> pd.DataFrame:
+    def transform_into_tables(self, currency_df: pd.DataFrame) -> pd.DataFrame:
         """
         Transforms the data into tables and transforms with help functions.
         """
-        self._create_currency_table()
-        self._clean_currency_table()
-        self._transform_currency_table()
+        currency_df = self._create_currency_table(currency_df)
+        currency_df = self._clean_currency_table(currency_df)
+        currency_df = self._transform_currency_table(currency_df)
+        insert_data(currency_df, url=self.url, table_name="currency")
+        currency_df = retrieve_data(url=self.url, table_name="currency")
 
-        return self.currencies_df
+        return currency_df
 
 
 def main():
