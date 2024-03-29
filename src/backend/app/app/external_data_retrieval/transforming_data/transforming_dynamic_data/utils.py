@@ -1,9 +1,12 @@
+import logging
 import pandas as pd
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
 
-def get_rolls(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
+def get_rolls(
+    df: pd.DataFrame, modifier_df: pd.DataFrame, logger: logging.Logger
+) -> pd.DataFrame:
     """
     A very complex function for extracting the roll out of the `modifier` field.
 
@@ -51,9 +54,10 @@ def get_rolls(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
     try:
         assert failed_df.empty
     except AssertionError:
-        print(failed_df)
-        print("Failed to merge static modifier with modifier in DB.")
-        quit()
+        logger.info(
+            f"Failed to merge static modifier with modifier in DB.\n{failed_df}"
+        )
+        merged_static_df = merged_static_df.loc[~merged_static_df["static"].isna()]
 
     # ---- Dynamic modifier processing ----
     # A much more expensive process
@@ -128,9 +132,9 @@ def get_rolls(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
     try:
         assert failed_df.empty
     except AssertionError:
-        print(failed_df)
-        print("Failed to merge dynamic modifier with modifier in DB.")
-        quit()
+        logger.info(
+            f"Failed to add rolls to listed modifiers, this likely means the modifier is legacy.\n{failed_df}"
+        )
 
     # Creates a column for position, which contains a list of numerical strings
     dynamic_df.loc[:, "position"] = dynamic_df.loc[:, "roll"].apply(
@@ -152,10 +156,7 @@ def get_rolls(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
     try:
         assert failed_df.empty
     except AssertionError:
-        print(failed_df.columns)
-        print(failed_df[["effect", "minRoll", "maxRoll", "textRolls"]])
-        print("Failed to merge dynamic modifier with dynamic modifier in DB.")
-        quit()
+        logger.info(f"Some modifiers did not find their counterpart in the database.\n{failed_df[["effect", "minRoll", "maxRoll", "textRolls"]]}")
 
     def convert_text_roll_to_index(row):
         if row["textRolls"] != "None":
