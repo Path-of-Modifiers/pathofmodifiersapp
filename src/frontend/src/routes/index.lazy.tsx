@@ -13,8 +13,7 @@ function Index() {
       <Header />
       <Flex flex="1" direction="row">
         <SideBar />
-        yoo!
-        {/* Add your main content here */}
+        <Flex flex="1" direction="row" p="1rem" bg="ui.main"/>
       </Flex>
     </Flex>
   );
