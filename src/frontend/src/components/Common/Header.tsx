@@ -1,7 +1,7 @@
 import { Flex, Text } from "@chakra-ui/react";
 
 
-export default function Header() {
+ const Header = () => {
   return (
     <Flex
       as="header"
@@ -17,5 +17,7 @@ export default function Header() {
       </Text>
       {/* Add any additional header content here */}
     </Flex>
-  );
+  )
 }
+
+export default Header

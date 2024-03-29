@@ -47,7 +47,7 @@ const LinkItems = [
   },
 ];
 
-function VerticalNavBar() {
+const VerticalNavBar = () => {
   return (
     <VStack p="1rem" bg="ui.secondary" opacity={1} align="stretch">
       <Text opacity={0.7} fontSize="xl" color="ui.white">
