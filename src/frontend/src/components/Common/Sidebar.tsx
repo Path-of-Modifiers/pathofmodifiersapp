@@ -1,4 +1,4 @@
-import { Button, VStack, Text } from '@chakra-ui/react';
+import { Button, VStack, Text } from "@chakra-ui/react";
 
 const LinkItems = [
   {
@@ -47,12 +47,24 @@ const LinkItems = [
   },
 ];
 
-function VerticalNavBar () {
+function VerticalNavBar() {
   return (
-    <VStack spacing={4} align="stretch">
-      <Text fontSize="xl" >Jewels</Text>
+    <VStack p="1rem" bg="ui.secondary" opacity={1} align="stretch">
+      <Text opacity={0.7} fontSize="xl" color="ui.white">
+        Jewels
+      </Text>
       {LinkItems.map((item, index) => (
-        <Button key={index} leftIcon={<img src={item.icon} alt={item.name} width="24px" height="24px" />}>
+        <Button
+          key={index}
+          bg="ui.secondary"
+          justifyContent="flex-start"
+          p={0}
+          fontSize="lg"
+          fontWeight="fontWeights.normal"
+          fontFamily="fonts.sidebar"
+          color="ui.white"
+          leftIcon={<img src={item.icon} alt={item.name} width="35px" />}
+        >
           {item.name}
         </Button>
       ))}

@@ -9,10 +9,10 @@ export default function Header() {
       justify="space-between"
       padding="1rem"
       boxShadow="md"
-      borderBottom="1px solid"
+      bg="ui.main"
       borderColor="gray.200"
     >
-      <Text fontSize="2xl" fontWeight="bold">
+      <Text color="ui.white" fontSize="2xl" fontFamily="fonts.heading" fontWeight="fontWeights.bold">
         Path Of Modifiers
       </Text>
       {/* Add any additional header content here */}
