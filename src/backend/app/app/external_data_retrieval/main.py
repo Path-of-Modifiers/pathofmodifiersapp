@@ -1,6 +1,5 @@
-import asyncio
+import logging
 import os
-import requests
 import pandas as pd
 from typing import List, Union, Dict
 
@@ -16,6 +15,13 @@ from app.external_data_retrieval.transforming_data.transforming_dynamic_data.tra
 from app.external_data_retrieval.transforming_data.transforming_dynamic_data.transform_poe_api_data import (
     PoeAPIDataTransformer,
     UniquePoeAPIDataTransformer,
+)
+
+logging.basicConfig(
+    filename="history.log",
+    level=logging.INFO,
+    format="%(asctime)s:%(levelname)-8s:%(name)s: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
 )
 
 BASEURL = os.getenv("DOMAIN")
@@ -42,6 +48,8 @@ class ContiniousDataRetrieval:
             url="https://poe.ninja/api/data/currencyoverview?league=Affliction&type=Currency"
         )
         self.poe_ninja_transformer = TransformPoeNinjaCurrencyAPIData()
+
+        self.logger = logging.getLogger(__name__)
 
     def _get_modifiers(self) -> Dict[str, pd.DataFrame]:
         modifier_df = pd.read_json(self.modifier_url, dtype=str)
@@ -98,7 +106,10 @@ class ContiniousDataRetrieval:
         return currency_df
 
     def retrieve_data(self, initial_next_change_id: str):
+        self.logger.info("Program starting up.")
+        self.logger.info("Retrieving modifiers from db.")
         modifier_dfs = self._get_modifiers()
+        self.logger.info("Initiating data stream.")
         get_df = self.poe_api_handler.dump_stream(
             initial_next_change_id=initial_next_change_id
         )
@@ -111,6 +122,7 @@ class ContiniousDataRetrieval:
                     df=split_dfs[data_transformer_type],
                     modifier_df=modifier_dfs[data_transformer_type],
                     currency_df=currency_df.copy(deep=True),
+                    logger=self.logger,
                 )
 
 
@@ -118,7 +130,7 @@ def main():
     auth_token = "***REMOVED***"
     url = "https://api.pathofexile.com/public-stash-tabs"
 
-    n_wanted_items = 300
+    n_wanted_items = 3000
     data_transformers = {"unique": UniquePoeAPIDataTransformer()}
 
     data_retriever = ContiniousDataRetrieval(
