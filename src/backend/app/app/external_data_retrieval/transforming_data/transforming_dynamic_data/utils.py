@@ -135,6 +135,7 @@ def get_rolls(
         logger.info(
             f"Failed to add rolls to listed modifiers, this likely means the modifier is legacy.\n{failed_df}"
         )
+        dynamic_df = dynamic_df.loc[~dynamic_df["roll"].str.len() == 0]
 
     # Creates a column for position, which contains a list of numerical strings
     dynamic_df.loc[:, "position"] = dynamic_df.loc[:, "roll"].apply(
