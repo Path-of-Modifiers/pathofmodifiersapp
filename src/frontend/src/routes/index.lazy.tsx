@@ -1,7 +1,7 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import SideBar from "../components/Common/Sidebar";
 import Header from "../components/Common/Header";
-import { Flex, Box } from "@chakra-ui/layout";
+import { Flex } from "@chakra-ui/layout";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
