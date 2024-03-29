@@ -1,0 +1,9 @@
+2024-03-29 15:21:45:INFO    :__main__: Program starting up.
+2024-03-29 15:21:45:INFO    :__main__: Retrieving modifiers from db.
+2024-03-29 15:21:45:INFO    :__main__: Initiating data stream.
+2024-03-29 15:29:09:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+               name                         modifier  itemId                           effect alternateEffect roll
+837  Grand Spectrum  Gain 15 Mana per Grand Spectrum   32630  Gain 15 Mana per Grand Spectrum            <NA>   []
+2024-03-29 15:29:09:INFO    :__main__.transform_poe: Some modifiers did not find their counterpart in the database.
+                              effect minRoll maxRoll textRolls
+705  Gain 15 Mana per Grand Spectrum     NaN     NaN       NaN
