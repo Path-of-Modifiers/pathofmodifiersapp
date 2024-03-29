@@ -1,6 +1,5 @@
-import asyncio
+import logging
 import os
-import requests
 import pandas as pd
 from typing import List, Union, Dict
 
@@ -18,6 +17,13 @@ from app.external_data_retrieval.transforming_data.transforming_dynamic_data.tra
     UniquePoeAPIDataTransformer,
 )
 
+logging.basicConfig(
+    filename="history.log",
+    level=logging.INFO,
+    format="%(asctime)s:%(levelname)-8s:%(name)s: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+
 BASEURL = os.getenv("DOMAIN")
 
 
@@ -29,7 +35,12 @@ class ContiniousDataRetrieval:
     def __init__(
         self, items_per_batch: int, data_transformers: Dict[str, PoeAPIDataTransformer]
     ):
-        self.data_transformers = data_transformers
+
+        self.logger = logging.getLogger(__name__)
+        self.data_transformers = {
+            key: data_transformers[key](main_logger=self.logger)
+            for key in data_transformers
+        }
 
         self.poe_api_handler = APIHandler(
             url=self.url,
@@ -41,7 +52,9 @@ class ContiniousDataRetrieval:
         self.poe_ninja_currency_api_handler = PoeNinjaCurrencyAPIHandler(
             url="https://poe.ninja/api/data/currencyoverview?league=Affliction&type=Currency"
         )
-        self.poe_ninja_transformer = TransformPoeNinjaCurrencyAPIData()
+        self.poe_ninja_transformer = TransformPoeNinjaCurrencyAPIData(
+            main_logger=self.logger
+        )
 
     def _get_modifiers(self) -> Dict[str, pd.DataFrame]:
         modifier_df = pd.read_json(self.modifier_url, dtype=str)
@@ -98,13 +111,16 @@ class ContiniousDataRetrieval:
         return currency_df
 
     def retrieve_data(self, initial_next_change_id: str):
+        self.logger.info("Program starting up.")
+        self.logger.info("Retrieving modifiers from db.")
         modifier_dfs = self._get_modifiers()
+        self.logger.info("Initiating data stream.")
         get_df = self.poe_api_handler.dump_stream(
             initial_next_change_id=initial_next_change_id
         )
         for i, df in enumerate(get_df):
             split_dfs = self._categorize_new_items(df)
-            if i % 5 == 0:
+            if i % 10 == 0:
                 currency_df = self._get_new_currency_data()
             for data_transformer_type in self.data_transformers:
                 self.data_transformers[data_transformer_type].transform_into_tables(
@@ -118,11 +134,11 @@ def main():
     auth_token = "***REMOVED***"
     url = "https://api.pathofexile.com/public-stash-tabs"
 
-    n_wanted_items = 300
-    data_transformers = {"unique": UniquePoeAPIDataTransformer()}
+    items_per_batch = 300
+    data_transformers = {"unique": UniquePoeAPIDataTransformer}
 
     data_retriever = ContiniousDataRetrieval(
-        items_per_batch=n_wanted_items, data_transformers=data_transformers
+        items_per_batch=items_per_batch, data_transformers=data_transformers
     )
     initial_next_change_id = "2304883465-2293076633-2219109349-2460729612-2390966652"
     # initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272" #earlier
