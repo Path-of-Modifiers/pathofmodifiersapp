@@ -360,7 +360,9 @@ class PoeAPIDataTransformer:
             )
         except requests.exceptions.HTTPError as e:
             self.logger.exception(f"Something went wrong:\n{repr(e)}")
-            self.logger.info(f"These changeId's were present in data:\n{df["changeId"].unique().tolist()}")
+            self.logger.info(
+                f"These changeId's were present in data:\n{df['changeId'].unique().tolist()}"
+            )
             raise e
 
 
@@ -386,7 +388,9 @@ class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
     def _transform_item_modifier_table(
         self, item_modifier_df: pd.DataFrame, modifier_df: pd.DataFrame
     ) -> pd.DataFrame:
-        item_modifier_df = get_rolls(df=item_modifier_df, modifier_df=modifier_df, logger=self.logger)
+        item_modifier_df = get_rolls(
+            df=item_modifier_df, modifier_df=modifier_df, logger=self.logger
+        )
 
         return item_modifier_df
 
