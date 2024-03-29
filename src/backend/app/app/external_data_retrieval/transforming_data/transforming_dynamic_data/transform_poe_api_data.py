@@ -1,77 +1,182 @@
-import json
-from typing import List
+import os
+import requests
 import pandas as pd
+from typing import List
 
+from app.database.utils import insert_data
+from app.external_data_retrieval.transforming_data.transforming_dynamic_data.utils import (
+    get_rolls,
+)
 
-def load_test_data():
-    """
-    Temporary test data loader
-    """
-    with open("testing_data/2024_01_24 22_33.json", encoding="utf8") as infile:
-        data = json.load(infile)
+pd.options.mode.chained_assignment = None  # default="warn"
 
-    return data
+BASEURL = os.getenv("DOMAIN")
 
 
 class PoeAPIDataTransformer:
+    def __init__(self):
+        self.url = BASEURL + "/api/api_v1"
 
-    def _create_stash_table(self, json_data: list) -> None:
+    def _create_account_table(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Creates the basis of the `account` table.
+        It is not immediately processed in order to save compute power later.
+        """
+        self.account_columns = ["accountName"]
+        account_df = df.loc[:, self.account_columns]
+
+        return account_df
+
+    def _clean_account_table(self, account_df: pd.DataFrame) -> pd.DataFrame:
+        account_df.drop_duplicates(inplace=True)
+
+        return account_df
+
+    def _transform_account_table(self, account_df: pd.DataFrame) -> pd.DataFrame:
+        account_df.drop_duplicates("accountName", inplace=True)
+
+        account_df["isBanned"] = None
+        db_account_df = pd.read_json(self.url + "/account/", dtype=str)
+        if db_account_df.empty:
+            return account_df
+
+        account_df = account_df.loc[
+            ~account_df["accountName"].isin(db_account_df["accountName"])
+        ]
+
+        return account_df
+
+    def _process_account_table(self, df: pd.DataFrame) -> None:
+        account_df = self._create_account_table(df)
+        account_df = self._transform_account_table(account_df)
+        insert_data(account_df, url=self.url, table_name="account")
+
+    def _create_stash_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
         Creates the basis of the `stash` table.
         It is not immediately processed in order to save compute power later.
         """
-        stash_df = pd.json_normalize(json_data)  # Contains columns of JSON-objects
+        self.stash_columns = ["stashId", "accountName", "public", "league", "changeId"]
+        stash_df = df.loc[:, self.stash_columns]
 
-        stash_df.rename(columns={"id": "stashId"}, inplace=True)
+        return stash_df
 
-        self.stash_df = stash_df
+    def _clean_stash_table(self, stash_df: pd.DataFrame) -> pd.DataFrame:
+        stash_df = stash_df.drop_duplicates(["stashId"])  # , "accountName", "league"])
+        db_stash_df = pd.read_json(self.url + "/stash/", dtype=str)
+        if db_stash_df.empty:
+            return stash_df
 
-    def _create_account_table(self, json_data: list) -> None:
+        stash_df = stash_df.loc[~stash_df["stashId"].isin(db_stash_df["stashId"])]
+        return stash_df
+
+    def _process_stash_table(self, df: pd.DataFrame) -> None:
+        stash_df = self._create_stash_table(df)
+        stash_df = self._clean_stash_table(stash_df)
+        insert_data(stash_df, url=self.url, table_name="stash")
+
+    def _create_item_basetype_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
-        The `account`
+        Creates the basis of the `item_basetype` table.
+        It is not immediately processed in order to save compute power later.
         """
+        self.item_basetype_columns = [
+            "baseType",
+            "extended.category",
+            "extended.subcategories",
+        ]
 
-        account_df = self.stash_df.copy(deep=True)  # Deep copy to avoid damage
-        account_df["isBanned"] = pd.NA
+        item_basetype_df = df.loc[
+            :, [column for column in self.item_basetype_columns if column in df.columns]
+        ]  # Can't guarantee all columns are present
 
-        self.account_df = account_df
+        return item_basetype_df
 
-    def _create_item_table(self, json_data: list) -> None:
+    def _transform_item_basetype_table(
+        self, item_basetype_df: pd.DataFrame
+    ) -> pd.DataFrame:
+
+        item_basetype_df.rename(
+            {
+                "extended.category": "category",
+                "extended.subcategories": "subCategory",
+            },
+            axis=1,
+            inplace=True,
+        )
+        if "subCategory" in item_basetype_df.columns:
+            item_basetype_df["subCategory"] = item_basetype_df["subCategory"].str.join(
+                "-"
+            )
+        return item_basetype_df
+
+    def _clean_item_basetype_table(
+        self, item_basetype_df: pd.DataFrame
+    ) -> pd.DataFrame:
+        item_basetype_df = item_basetype_df.drop_duplicates(["baseType"])
+        db_item_basetype_df = pd.read_json(self.url + "/itemBaseType/", dtype=str)
+        if db_item_basetype_df.empty:
+            return item_basetype_df
+
+        item_basetype_df = item_basetype_df.loc[
+            ~item_basetype_df["baseType"].isin(db_item_basetype_df["baseType"])
+        ]
+        return item_basetype_df
+
+    def _process_item_basetype_table(self, df: pd.DataFrame) -> None:
+        item_basetype_df = self._create_item_basetype_table(df)
+        item_basetype_df = self._transform_item_basetype_table(item_basetype_df)
+        item_basetype_df = self._clean_item_basetype_table(item_basetype_df)
+        insert_data(item_basetype_df, url=self.url, table_name="itemBaseType")
+
+    def _create_item_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
         Creates the basis of the `item` table, using parts of `stash` table.
 
         The `item` table requires the `stashId` as a foreign key. This is
         why the `stash` table was not immediately processed.
         """
-        stash_df = self.stash_df.copy(deep=True)  # Deep copy to avoid damage
+        self.item_columns = [
+            "itemId",
+            "gameItemId",
+            "stashId",
+            "changeId",
+            "name",
+            "icon",
+            "league",
+            "typeLine",
+            "baseType",
+            "rarity",
+            "identified",
+            "ilvl",
+            "note",
+            "forum_note",
+            "corrupted",
+            "delve",
+            "fractured",
+            "synthesized",
+            "replica",
+            "elder",
+            "shaper",
+            "influences.shaper",
+            "influences.elder",
+            "influences.crusader",
+            "influences.hunter",
+            "influences.redeemer",
+            "influences.warlord",
+            "searing",
+            "tangled",
+            "foilVariation",
+            "stash",
+        ]
+        item_df = df.loc[
+            :, [column for column in self.item_columns if column in df.columns]
+        ]  # Can't guarantee all columns are present
+        return item_df
 
-        stash_df = self._expand_df(
-            stash_df, "items", "id"
-        )  # Stretches `stash_df` into the same length as `item_df`
-
-        item_df = pd.json_normalize(
-            json_data, record_path="items"
-        )  # Extracts items-json
-
-        item_df["stashId"] = stash_df["stashId"]
-        item_df["itemId"] = (
-            item_df.index
-        )  # + n_items_in_db <------------ Needs to be implemented: TODO
-        item_df.rename(columns={"id": "gameItemId"}, inplace=True)
-        item_df.rename(columns={"icon": "iconUrl"}, inplace=True)
-        item_df.rename(columns={"forum_note": "forumNote"}, inplace=True)
-
-        self.item_df = item_df
-
-    def _create_item_modifier_table(self, json_data: list) -> None:
-        """
-        The `item_modifier` table heavily relies on what type of item the modifiers
-        belong to.
-        """
-        self.item_modifier_df = pd.DataFrame()
-        raise NotImplementedError("Only available in child classes")
-
-    def _transform_item_table(self) -> None:
+    def _transform_item_table(
+        self, item_df: pd.DataFrame, currency_df: pd.DataFrame
+    ) -> pd.DataFrame:
         """
         The `item` table requires a foreign key to the `currency` table.
         Everything related to the price of the item is stored in the `node`
@@ -80,11 +185,6 @@ class PoeAPIDataTransformer:
         There are two types of listings in POE, exact price and asking price which are
         represented by `price` and `b/o` respectively.
         """
-        item_df = self.item_df
-        currency_series = item_df["note"].str.split(" ")
-        influence_columns = [
-            column for column in item_df.columns if "influences" in column
-        ]
 
         def get_currency_amount(element):
             if isinstance(element, list):
@@ -110,144 +210,106 @@ class PoeAPIDataTransformer:
                         )
                 return influence_dict
 
+        influence_columns = [
+            column for column in item_df.columns if "influences" in column
+        ]
         item_df["influences"] = item_df.apply(
             lambda row: transform_influences(row, influence_columns), axis=1
+        )
+
+        stash_series = item_df["stash"].str.split(" ")
+        currency_series = item_df["note"].str.split(" ")
+
+        currency_series = currency_series.where(
+            item_df["note"].str.contains("~"), stash_series
         )
 
         item_df["currencyAmount"] = currency_series.apply(get_currency_amount)
         item_df["currencyType"] = currency_series.apply(get_currency_type)
 
-        self.item_df = item_df
+        invalid_amount_mask = ~item_df["currencyAmount"].str.contains(
+            r"^(([0-9]*[.])?[0-9]+)$", na=False
+        )
+        item_df.loc[invalid_amount_mask, "currencyAmount"] = pd.NA
+        item_df.loc[invalid_amount_mask, "currencyType"] = ""
 
-    def _transform_item_modifier_table(self) -> None:
-        """
-        The `item_modifier` table heavily relies on what type of item the modifiers
-        belong to.
-        """
-        raise NotImplementedError("Only available in child classes")
-
-    def _clean_stash_table(self):
-        """
-        Gets rid of unnecessay information, so that only fields needed for the DB remains.
-        """
-        self.stash_df.drop(["items", "stashType"], axis=1, inplace=True)
-
-    def _clean_account_table(self):
-        """
-        Gets rid of unnecessay information, so that only fields needed for the DB remains.
-        """
-        self.account_df.drop(
-            self.account_df.columns.difference(["accountName", "isBanned"]),
-            axis=1,
-            inplace=True,
+        item_df = item_df.merge(
+            currency_df, how="left", left_on="currencyType", right_on="tradeName"
         )
 
-    def _clean_item_table(self):
+        return item_df
+
+    def _clean_item_table(self, item_df: pd.DataFrame) -> pd.DataFrame:
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
         drop_list = [
-            "verified",
-            "w",
-            "h",
-            "support",
-            "stackSize",
-            "maxStackSize",
-            "stackSizeText",
-            "note",
-            "extended.subcategories",
-            "extended.category",
-            "abyssJewel",
-            "implicitMods",
             "influences.shaper",
             "influences.elder",
             "influences.crusader",
             "influences.hunter",
             "influences.redeemer",
             "influences.warlord",
-            "sockets",
-            "socketedItems",
-            "lockedToAccount",
-            "lockedToCharacter",
-            "duplicated",
-            "split",
-            "unmodifiable",
-            "cisRaceReward",
-            "seaRaceReward",
-            "thRaceReward",
-            "properties",
-            "noteableProperties",
-            "additionalProperties",
-            "nextLevelRequirements",
-            "talismanTier",
-            "rewards",
-            "secDescrText",
-            "utilityMods",
-            "logbookMods",
-            "enchantMods",
-            "scourgeMods",
-            "ultimatumMods",
-            "explicitMods",
-            "craftedMods",
-            "fracturedMods",
-            "crucibleMods",
-            "cosmeticMods",
-            "veiledMods",
-            "veiled",
-            "flavourTextParsed",
-            "flavourTextNote",
-            "prophecyText",
-            "isRelic",
-            "foreseeing",
-            "artFilename",
-            "inventoryId",
-            "socket",
-            "colour",
-            "incubatedItem.name",
-            "incubatedItem.level",
-            "incubatedItem.progress",
-            "incubatedItem.total",
-            "scourged.tier",
-            "scourged.level",
-            "scourged.progress",
-            "scourged.total",
-            "crucible.layout",
-            "crucible.nodes",
-            "crucible.nodes.stats",
-            "crucible.nodes.skill",
-            "crucible.nodes.tier",
-            "crucible.nodes.icon",
-            "crucible.nodes.allocated",
-            "crucible.nodes.isNoteable",
-            "crucible.nodes.orbit",
-            "crucible.nodes.orbitIndex",
-            "crucible.nodes.out",
-            "crucible.nodes.in",
-            "crucible.nodes.reminderText",
-            "crucible.nodes.isReward",
-            "hybrid.isVaalGem",
-            "hybrid.baseTypeName",
-            "hybrid.properties",
-            "hybrid.explicitMods",
-            "hybrid.secDescrText",
-            "extended.prefixes",
-            "extended.suffixes",
-            "descrText",
-            "flavourText",
-            "frameType",
-            "x",
-            "y",
-            "requirements",
-            "ruthless",
+            "stash",
+            "currencyType",
+            "tradeName",
+            "valueInChaos",
+            "itemId",
+            "createdAt",
+            "iconUrl",
         ]
-        self.item_df.drop(
+        item_df.drop(
             drop_list,
             axis=1,
             inplace=True,
             errors="ignore",
         )
 
-    def _clean_item_modifier_table(self):
+        item_df.rename({"icon": "iconUrl"}, axis=1, inplace=True)
+        return item_df
+
+    def _get_latest_item_id_series(self, item_df: pd.DataFrame) -> pd.Series:
+        response = requests.get(self.url + "/item/latest_item_id/")
+        response.raise_for_status()
+        latest_item_id = int(response.text)
+
+        item_id = pd.Series(
+            range(latest_item_id - len(item_df) + 1, latest_item_id + 1), dtype=int
+        )
+
+        return item_id
+
+    def _process_item_table(
+        self, df: pd.DataFrame, currency_df: pd.DataFrame
+    ) -> pd.Series:
+        item_df = self._create_item_table(df)
+        item_df = self._transform_item_table(item_df, currency_df)
+        item_df = self._clean_item_table(item_df)
+        insert_data(item_df, url=self.url, table_name="item")
+        item_id = self._get_latest_item_id_series(item_df)
+        return item_id
+
+    def _create_item_modifier_table(
+        self, df: pd.DataFrame, *, item_id: pd.Series, modifier_df: pd.DataFrame
+    ) -> pd.DataFrame:
+        """
+        The `item_modifier` table heavily relies on what type of item the modifiers
+        belong to.
+        """
+        raise NotImplementedError("Only available in child classes")
+
+    def _transform_item_modifier_table(
+        self, item_modifier_df: pd.DataFrame, *, modifier_df: pd.DataFrame
+    ) -> pd.DataFrame:
+        """
+        The `item_modifier` table heavily relies on what type of item the modifiers
+        belong to.
+        """
+        raise NotImplementedError("Only available in child classes")
+
+    def _clean_item_modifier_table(
+        self, item_modifier_df: pd.DataFrame
+    ) -> pd.DataFrame:
         """
         The `item_modifier` table heavily relies on what type of item the modifiers
         belong to.
@@ -256,324 +318,65 @@ class PoeAPIDataTransformer:
         """
         raise NotImplementedError("Only available in child classes")
 
-    def _save_tables_to_files(self):
-        """
-        Saves the tables into their own file
-        """
-        tables = {
-            "stash": self.stash_df,
-            "item": self.item_df,
-            "item_modifer": self.item_modifier_df,
-            "account": self.account_df,
-        }
-        for key in tables:
-            tables[key].to_csv(f"transformed_data/{key}.csv", index=False)
-
-    def transform_into_tables(self, json_data: list) -> None:
-        """
-        The process of extracting data from the JSON-data, transforming it and cleaning it.
-        """
-        self._create_stash_table(json_data=json_data)
-        self._create_account_table(json_data=json_data)
-        self._create_item_table(json_data=json_data)
-        self._create_item_modifier_table(json_data=json_data)
-
-        self._transform_item_table()
-        self._transform_item_modifier_table()
-
-        self._clean_stash_table()
-        self._clean_account_table()
-        self._clean_item_table()
-        self._clean_item_modifier_table()
-
-        self._save_tables_to_files()
-
-    @staticmethod
-    def _expand_df(
-        df: pd.DataFrame, json_column: str, target_column: str
-    ) -> pd.DataFrame:
-        """
-        An independent function that is highly related to the class. Was created as a static method
-        because it might be necessary to access from several methods. This turned out to be uneccessary
-        """
-        df["temp_col"] = df[json_column].apply(
-            lambda x: [item[target_column] for item in x]
-        )  # Extracts column out of the list_column's json-object, storing it as a list
-        df = df.explode(
-            "temp_col", ignore_index=True
-        )  # Explodes the list, making the df's dimensions equal to the number of items
-
-        return df
-
-    @staticmethod
-    def _get_ranges(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
-        """
-        A very complex function for extracting the range out of the `modifier` field.
-
-        Modifiers can be split into two categories: static and dynamic. A static modifier
-        has no range, while a dynamic modifier has one or more ranges.
-
-        Using regex, we can link item modifiers to the already-prepared `modifier` table.
-        From there we extract the range based on `minRoll` and `maxRoll` or just `textRolls`
-        if the roll is not numerical.
-
-        The formula for calculating the range:
-            range = (roll - minRoll)/(maxRoll - minRoll)
-
-        Where:
-            `roll` is extracted from the `modifier` field
-
-            For text rolls, `roll` is the index of roll in a stored list. In this case
-            `maxRoll` is the length of the list and `minRoll` is zero
-
-        The method contains assertions to ensure successful steps.
-        """
-        df.loc[:, "modifier"] = df["modifier"].replace(
-            r"\\n|\n", " ", regex=True
-        )  # Replaces newline with a space, so that it does not mess up the regex and matches modifiers in the `modifier` table
-
-        # We divide the modifier into the two categories
-        static_modifier_mask = modifier_df["static"] == "True"
-
-        dynamic_modifier_df = modifier_df.loc[~static_modifier_mask]
-        static_modifier_df = modifier_df.loc[static_modifier_mask]
-
-        # ---- Static modifier processing ----
-        # Static modifiers must be processed first, to reduce the amount of modifiers
-        # processed by the much more expensive dynamic modifier processing
-        static_df = df.loc[df["modifier"].isin(static_modifier_df["effect"])]
-        static_df.loc[:, "position"] = "0"
-        static_df.loc[:, "effect"] = static_df.loc[:, "modifier"]
-
-        merged_static_df = static_df.merge(
-            static_modifier_df, on=["effect", "position"], how="left"
+    def _process_item_modifier_table(
+        self, df: pd.DataFrame, modifier_df: pd.DataFrame, item_id: pd.Series
+    ) -> None:
+        item_modifier_df = self._create_item_modifier_table(
+            df, item_id=item_id, modifier_df=modifier_df
         )
-        failed_df = merged_static_df.loc[merged_static_df["static"].isna()]
-
-        # Should never fail, by the nature of the process
-        try:
-            assert failed_df.empty
-        except AssertionError:
-            print(failed_df)
-            print("Failed to merge static modifier with modifier in DB.")
-            quit()
-
-        # ---- Dynamic modifier processing ----
-        # A much more expensive process
-        dynamic_df = df.loc[
-            ~df["modifier"].isin(static_modifier_df["effect"])
-        ]  # Everything not static is dynamic
-
-        dynamic_df.loc[:, "effect"] = dynamic_df.loc[:, "modifier"]
-        # The process must be broken down into a for-loop as the replacement is unique
-        for regex, effect in dynamic_modifier_df[["regex", "effect"]].itertuples(
-            index=False
-        ):
-            dynamic_df.loc[:, "effect"] = dynamic_df.loc[:, "effect"].str.replace(
-                regex, effect, regex=True
-            )
-
-        def add_alternate_effect(df):
-            """
-            Alternate effect is the wording of an effect when the roll is negative
-
-            This assumes all modifiers in the `modifier` table are stored with only
-            positive elements.
-            """
-            df.loc[:, "alternateEffect"] = df["effect"]
-            df.loc[:, "alternateEffect"] = df["alternateEffect"].str.replace("+#", "-#")
-            df.loc[:, "alternateEffect"] = df["alternateEffect"].str.replace(
-                "increased", "reduced"
-            )
-            df.loc[
-                df["alternateEffect"] == df["effect"],
-                "alternateEffect",
-            ] = pd.NA  # Gets rid of unneccesary alternate effects
-
-            return df
-
-        dynamic_df = add_alternate_effect(df=dynamic_df)
-
-        def add_range_roll(row):
-            """
-            The main part of this method.
-
-            The `effect` modifier contains `#` as a placeholder for the `roll`.
-            By replacing one part of the `effect` at a time, we end up with
-            only the roll and `---`. We then split this into a list, which is
-            the filtered to only return elements which are not empty strings.
-            """
-            modifier = row["modifier"]
-            effect = row["effect"]
-            effect_parts = [part for part in effect.split("#") if part]
-
-            if not pd.isna(row["alternateEffect"]):
-                alternate_effect = row["alternateEffect"]
-                effect_parts += [part for part in alternate_effect.split("#") if part]
-
-            for part in effect_parts:
-                modifier = modifier.replace(part, "---")
-
-            ranges = modifier.split("---")
-
-            return [range_roll for range_roll in ranges if range_roll]
-
-        dynamic_df.loc[:, "range"] = dynamic_df.apply(
-            add_range_roll, axis=1
-        )  # the `roll` modifier is stored in the `range` field temporarily
-
-        # If there are rows in the dataframe which contain empty lists, something has failed
-        failed_df = dynamic_df.loc[dynamic_df["range"].str.len() == 0]
-        try:
-            assert failed_df.empty
-        except AssertionError:
-            print(failed_df)
-            print("Failed to merge dynamic modifier with modifier in DB.")
-            quit()
-
-        # Creates a column for position, which contains a list of numerical strings
-        dynamic_df.loc[:, "position"] = dynamic_df.loc[:, "range"].apply(
-            lambda x: [str(i) for i in range(len(x))]
+        item_modifier_df = self._transform_item_modifier_table(
+            item_modifier_df, modifier_df
         )
+        item_modifier_df = self._clean_item_modifier_table(item_modifier_df)
+        insert_data(item_modifier_df, url=self.url, table_name="itemModifier")
 
-        # Each row describes one range
-        dynamic_df = dynamic_df.explode(["range", "position"])
-
-        merged_dynamic_df = dynamic_df.merge(
-            dynamic_modifier_df, on=["effect", "position"], how="left"
+    def transform_into_tables(
+        self, df: pd.DataFrame, modifier_df: pd.DataFrame, currency_df: pd.DataFrame
+    ) -> None:
+        self._process_account_table(df.copy(deep=True))
+        self._process_stash_table(df.copy(deep=True))
+        self._process_item_basetype_table(df.copy(deep=True))
+        item_id = self._process_item_table(df.copy(deep=True), currency_df=currency_df)
+        self._process_item_modifier_table(
+            df.copy(deep=True), item_id=item_id, modifier_df=modifier_df
         )
-
-        # If all of these fields are still NA, it means that modifier was not matched with a modifier in our DB
-        failed_df = merged_dynamic_df.loc[
-            merged_dynamic_df[["minRoll", "maxRoll", "textRolls"]].isna().all(axis=1)
-        ]
-
-        try:
-            assert failed_df.empty
-        except AssertionError:
-            print(failed_df)
-            print("Failed to merge dynamic modifier with static modifier in DB.")
-            quit()
-
-        def convert_range_roll_to_range(row):
-            """
-            The formula mentioned earlier
-            """
-            un_processed_range = row["range"]
-            if not pd.isna(row["textRolls"]):
-                text_rolls = row["textRolls"].split("-")
-                min_roll = 0
-                max_roll = len(text_rolls)
-                x = text_rolls.index(un_processed_range)
-            else:
-                min_roll = float(row["minRoll"])
-                max_roll = float(row["maxRoll"])
-                x = float(un_processed_range)
-
-            converted_range = (x - min_roll) / (max_roll - min_roll)
-
-            return converted_range
-
-        merged_dynamic_df["range"] = merged_dynamic_df.apply(
-            convert_range_roll_to_range, axis=1
-        )  # The `range` column now truly contains the range
-
-        # ---- Finishing touches ----
-        processed_df = pd.concat(
-            (merged_dynamic_df, merged_static_df), axis=0, ignore_index=True
-        )  # static and dynamic item modifiers are combined into one dataframe again
-
-        return processed_df
 
 
 class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
-    def _create_item_modifier_table(self, json_data: list) -> None:
+    def _create_item_modifier_table(
+        self, df: pd.DataFrame, *, item_id: pd.Series, modifier_df: pd.DataFrame
+    ) -> pd.DataFrame:
         """
         A similiar process to creating the item table, only this time the
         relevant column contains a list and not a JSON-object
         """
-        item_df = self.item_df.copy(deep=True)
+        self.item_modifier_columns = ["name", "explicitMods"]
 
-        item_df = item_df.explode("explicitMods", ignore_index=True)
+        item_modifier_df = df.loc[:, self.item_modifier_columns]
 
-        item_modifier_df = pd.json_normalize(
-            json_data, record_path=["items", "explicitMods"]
-        )  # Extracts items-json
+        item_modifier_df["itemId"] = item_id
+        item_modifier_df = item_modifier_df.explode("explicitMods", ignore_index=True)
 
-        item_modifier_df["itemId"] = item_df["itemId"]
-        item_modifier_df["name"] = item_df["name"]
-        item_modifier_df.rename({0: "modifier"}, axis=1, inplace=True)
+        item_modifier_df.rename({"explicitMods": "modifier"}, axis=1, inplace=True)
 
-        self.item_modifier_df = item_modifier_df
+        return item_modifier_df
 
-    def _transform_item_modifier_table(self) -> None:
-        """
-        Currently relies on locally stored files to retrieve relevant modifiers
-        """
-        item_modifier_df = self.item_modifier_df
+    def _transform_item_modifier_table(
+        self, item_modifier_df: pd.DataFrame, modifier_df: pd.DataFrame
+    ) -> pd.DataFrame:
+        item_modifier_df = get_rolls(df=item_modifier_df, modifier_df=modifier_df)
 
-        # --- Only relevant until we connect to the DB ---
-        item_modifier_df["roll_file_name"] = (
-            item_modifier_df["name"].str.replace("'", "").str.replace(" ", "")
-        )
+        return item_modifier_df
 
-        modifier_df = pd.DataFrame(
-            columns=[
-                "minRoll",
-                "maxRoll",
-                "textRolls",
-                "position",
-                "effect",
-                "static",
-                "modifierId",
-            ]
-        )
-        for unique in item_modifier_df["roll_file_name"].unique():
-            # if unique != "WatchersEye":
-            #     continue
-            temp_df = pd.read_csv(f"modifier/{unique}.csv", dtype=str)
-            modifier_df = pd.concat((modifier_df, temp_df), axis=0, ignore_index=True)
-
-        # --- Always relevant ---
-
-        item_modifier_df = self._get_ranges(
-            df=item_modifier_df,
-            modifier_df=modifier_df,
-        )
-
-        self.item_modifier_df = item_modifier_df
-
-    def _clean_item_modifier_table(self):
+    def _clean_item_modifier_table(self, item_modifer_df: pd.DataFrame):
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
-        self.item_modifier_df.drop(
-            [
-                "modifier",
-                "name",
-                "roll_file_name",
-                "effect",
-                "alternateEffect",
-                "minRoll",
-                "maxRoll",
-                "textRolls",
-                "static",
-                "regex",
-            ],
+        item_modifer_df.drop(
+            item_modifer_df.columns.difference(
+                ["itemId", "modifierId", "position", "roll"]
+            ),
             axis=1,
             inplace=True,
         )
-
-
-def main():
-    json_data = load_test_data()
-    data_transformer = (
-        UniquePoeAPIDataTransformer()
-    )  # eventually a system for sending the right JSON-data to the correct data-transformers need to be implemented
-    data_transformer.transform_into_tables(json_data=json_data)
-
-    return 0
-
-
-if __name__ == "__main__":
-    main()
+        return item_modifer_df

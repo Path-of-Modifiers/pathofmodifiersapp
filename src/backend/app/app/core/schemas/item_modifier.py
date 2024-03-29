@@ -10,7 +10,7 @@ class _BaseItemModifier(_pydantic.BaseModel):
     itemId: int
     modifierId: int
     position: int
-    range: Optional[float] = None
+    roll: Optional[float] = None
 
 
 # Properties to receive on item modifier creation
