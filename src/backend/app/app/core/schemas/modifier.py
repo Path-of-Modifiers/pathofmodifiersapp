@@ -20,6 +20,7 @@ class _BaseModifier(_pydantic.BaseModel):
     delve: Optional[bool] = None
     fractured: Optional[bool] = None
     synthesized: Optional[bool] = None
+    unique: Optional[bool] = None
     corrupted: Optional[bool] = None
     enchanted: Optional[bool] = None
     veiled: Optional[bool] = None

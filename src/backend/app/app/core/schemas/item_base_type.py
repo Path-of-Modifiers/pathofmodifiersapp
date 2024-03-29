@@ -9,7 +9,7 @@ class _BaseItemBaseType(_pydantic.BaseModel):
 
     baseType: str
     category: str
-    subCategory: str
+    subCategory: Optional[str] = None
 
 
 # Properties to receive on item base type creation
