@@ -146,7 +146,7 @@ class APIHandler:
                 if response.status == 429:
                     # https://www.pathofexile.com/developer/docs/index#ratelimits
                     # Rate limits are dynamic
-                    headers = await response.headers
+                    headers = response.headers
                     retry_after = int(headers["Retry-After"])
                     await asyncio.sleep(retry_after + 1)
                     return await self._start_next_request(session, next_change_id)
