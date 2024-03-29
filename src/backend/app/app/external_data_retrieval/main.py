@@ -37,7 +37,10 @@ class ContiniousDataRetrieval:
     ):
 
         self.logger = logging.getLogger(__name__)
-        self.data_transformers = data_transformers
+        self.data_transformers = {
+            key: data_transformers[key](main_logger=self.logger)
+            for key in data_transformers
+        }
 
         self.poe_api_handler = APIHandler(
             url=self.url,
@@ -47,11 +50,10 @@ class ContiniousDataRetrieval:
         )
 
         self.poe_ninja_currency_api_handler = PoeNinjaCurrencyAPIHandler(
-            url="https://poe.ninja/api/data/currencyoverview?league=Affliction&type=Currency",
-            logger=self.logger,
+            url="https://poe.ninja/api/data/currencyoverview?league=Affliction&type=Currency"
         )
         self.poe_ninja_transformer = TransformPoeNinjaCurrencyAPIData(
-            logger=self.logger
+            main_logger=self.logger
         )
 
     def _get_modifiers(self) -> Dict[str, pd.DataFrame]:
@@ -133,7 +135,7 @@ def main():
     url = "https://api.pathofexile.com/public-stash-tabs"
 
     n_wanted_items = 3000
-    data_transformers = {"unique": UniquePoeAPIDataTransformer()}
+    data_transformers = {"unique": UniquePoeAPIDataTransformer}
 
     data_retriever = ContiniousDataRetrieval(
         items_per_batch=n_wanted_items, data_transformers=data_transformers
