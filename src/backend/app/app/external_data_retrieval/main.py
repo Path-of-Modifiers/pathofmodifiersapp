@@ -35,6 +35,8 @@ class ContiniousDataRetrieval:
     def __init__(
         self, items_per_batch: int, data_transformers: Dict[str, PoeAPIDataTransformer]
     ):
+
+        self.logger = logging.getLogger(__name__)
         self.data_transformers = data_transformers
 
         self.poe_api_handler = APIHandler(
@@ -45,11 +47,12 @@ class ContiniousDataRetrieval:
         )
 
         self.poe_ninja_currency_api_handler = PoeNinjaCurrencyAPIHandler(
-            url="https://poe.ninja/api/data/currencyoverview?league=Affliction&type=Currency"
+            url="https://poe.ninja/api/data/currencyoverview?league=Affliction&type=Currency",
+            logger=self.logger,
         )
-        self.poe_ninja_transformer = TransformPoeNinjaCurrencyAPIData()
-
-        self.logger = logging.getLogger(__name__)
+        self.poe_ninja_transformer = TransformPoeNinjaCurrencyAPIData(
+            logger=self.logger
+        )
 
     def _get_modifiers(self) -> Dict[str, pd.DataFrame]:
         modifier_df = pd.read_json(self.modifier_url, dtype=str)
@@ -122,7 +125,6 @@ class ContiniousDataRetrieval:
                     df=split_dfs[data_transformer_type],
                     modifier_df=modifier_dfs[data_transformer_type],
                     currency_df=currency_df.copy(deep=True),
-                    logger=self.logger,
                 )
 
 
