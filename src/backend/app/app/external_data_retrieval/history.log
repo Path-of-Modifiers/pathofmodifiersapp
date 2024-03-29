@@ -62,3 +62,12 @@ client_session: <aiohttp.client.ClientSession object at 0x7fdcb263b990>
 2024-03-29 16:00:57:ERROR   :asyncio: Unclosed connector
 connections: ['[(<aiohttp.client_proto.ResponseHandler object at 0x7fdca3aa6190>, 47513.283201073)]']
 connector: <aiohttp.connector.TCPConnector object at 0x7fdcb2639c90>
+2024-03-29 16:01:29:INFO    :__main__: Program starting up.
+2024-03-29 16:01:29:INFO    :__main__: Retrieving modifiers from db.
+2024-03-29 16:01:29:INFO    :__main__: Initiating data stream.
+2024-03-29 16:05:00:INFO    :__main__: Program starting up.
+2024-03-29 16:05:00:INFO    :__main__: Retrieving modifiers from db.
+2024-03-29 16:05:00:INFO    :__main__: Initiating data stream.
+2024-03-29 16:05:45:INFO    :__main__: Program starting up.
+2024-03-29 16:05:45:INFO    :__main__: Retrieving modifiers from db.
+2024-03-29 16:05:45:INFO    :__main__: Initiating data stream.
