@@ -1,5 +1,6 @@
 import os
 import requests
+import logging
 import pandas as pd
 from typing import List
 
@@ -14,8 +15,9 @@ BASEURL = os.getenv("DOMAIN")
 
 
 class PoeAPIDataTransformer:
-    def __init__(self):
+    def __init__(self, main_logger: logging.Logger):
         self.url = BASEURL + "/api/api_v1"
+        self.logger = main_logger.getChild("transform_poe")
 
     def _create_account_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -49,7 +51,7 @@ class PoeAPIDataTransformer:
     def _process_account_table(self, df: pd.DataFrame) -> None:
         account_df = self._create_account_table(df)
         account_df = self._transform_account_table(account_df)
-        insert_data(account_df, url=self.url, table_name="account")
+        insert_data(account_df, url=self.url, table_name="account", logger=self.logger)
 
     def _create_stash_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -73,7 +75,7 @@ class PoeAPIDataTransformer:
     def _process_stash_table(self, df: pd.DataFrame) -> None:
         stash_df = self._create_stash_table(df)
         stash_df = self._clean_stash_table(stash_df)
-        insert_data(stash_df, url=self.url, table_name="stash")
+        insert_data(stash_df, url=self.url, table_name="stash", logger=self.logger)
 
     def _create_item_basetype_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -127,7 +129,12 @@ class PoeAPIDataTransformer:
         item_basetype_df = self._create_item_basetype_table(df)
         item_basetype_df = self._transform_item_basetype_table(item_basetype_df)
         item_basetype_df = self._clean_item_basetype_table(item_basetype_df)
-        insert_data(item_basetype_df, url=self.url, table_name="itemBaseType")
+        insert_data(
+            item_basetype_df,
+            url=self.url,
+            table_name="itemBaseType",
+            logger=self.logger,
+        )
 
     def _create_item_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -227,7 +234,7 @@ class PoeAPIDataTransformer:
         item_df["currencyAmount"] = currency_series.apply(get_currency_amount)
         item_df["currencyType"] = currency_series.apply(get_currency_type)
 
-        invalid_amount_mask = ~item_df["currencyAmount"].str.contains(
+        invalid_amount_mask = ~item_df["currencyAmount"].str.match(
             r"^(([0-9]*[.])?[0-9]+)$", na=False
         )
         item_df.loc[invalid_amount_mask, "currencyAmount"] = pd.NA
@@ -285,7 +292,7 @@ class PoeAPIDataTransformer:
         item_df = self._create_item_table(df)
         item_df = self._transform_item_table(item_df, currency_df)
         item_df = self._clean_item_table(item_df)
-        insert_data(item_df, url=self.url, table_name="item")
+        insert_data(item_df, url=self.url, table_name="item", logger=self.logger)
         item_id = self._get_latest_item_id_series(item_df)
         return item_id
 
@@ -328,18 +335,35 @@ class PoeAPIDataTransformer:
             item_modifier_df, modifier_df
         )
         item_modifier_df = self._clean_item_modifier_table(item_modifier_df)
-        insert_data(item_modifier_df, url=self.url, table_name="itemModifier")
+        insert_data(
+            item_modifier_df,
+            url=self.url,
+            table_name="itemModifier",
+            logger=self.logger,
+        )
 
     def transform_into_tables(
-        self, df: pd.DataFrame, modifier_df: pd.DataFrame, currency_df: pd.DataFrame
+        self,
+        df: pd.DataFrame,
+        modifier_df: pd.DataFrame,
+        currency_df: pd.DataFrame,
     ) -> None:
-        self._process_account_table(df.copy(deep=True))
-        self._process_stash_table(df.copy(deep=True))
-        self._process_item_basetype_table(df.copy(deep=True))
-        item_id = self._process_item_table(df.copy(deep=True), currency_df=currency_df)
-        self._process_item_modifier_table(
-            df.copy(deep=True), item_id=item_id, modifier_df=modifier_df
-        )
+        try:
+            self._process_account_table(df.copy(deep=True))
+            self._process_stash_table(df.copy(deep=True))
+            self._process_item_basetype_table(df.copy(deep=True))
+            item_id = self._process_item_table(
+                df.copy(deep=True), currency_df=currency_df
+            )
+            self._process_item_modifier_table(
+                df.copy(deep=True), item_id=item_id, modifier_df=modifier_df
+            )
+        except requests.exceptions.HTTPError as e:
+            self.logger.exception(f"Something went wrong:\n{repr(e)}")
+            self.logger.info(
+                f"These changeId's were present in data:\n{df['changeId'].unique().tolist()}"
+            )
+            raise e
 
 
 class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
@@ -364,7 +388,9 @@ class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
     def _transform_item_modifier_table(
         self, item_modifier_df: pd.DataFrame, modifier_df: pd.DataFrame
     ) -> pd.DataFrame:
-        item_modifier_df = get_rolls(df=item_modifier_df, modifier_df=modifier_df)
+        item_modifier_df = get_rolls(
+            df=item_modifier_df, modifier_df=modifier_df, logger=self.logger
+        )
 
         return item_modifier_df
 

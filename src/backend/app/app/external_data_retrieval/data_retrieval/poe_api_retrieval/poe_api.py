@@ -129,6 +129,14 @@ class APIHandler:
             self.url, headers=self.headers, params={"id": next_change_id}
         )
         if response.status_code >= 300:
+            if response.status_code == 429:
+                # https://www.pathofexile.com/developer/docs/index#ratelimits
+                # Rate limits are dynamic
+                headers = response.headers
+                retry_after = int(headers["Retry-After"])
+                time.sleep(retry_after + 1)
+                return self._initialize_stream(next_change_id=next_change_id)
+
             response.raise_for_status()
         response_json = response.json()
 
@@ -146,7 +154,7 @@ class APIHandler:
                 if response.status == 429:
                     # https://www.pathofexile.com/developer/docs/index#ratelimits
                     # Rate limits are dynamic
-                    headers = await response.headers
+                    headers = response.headers
                     retry_after = int(headers["Retry-After"])
                     await asyncio.sleep(retry_after + 1)
                     return await self._start_next_request(session, next_change_id)
