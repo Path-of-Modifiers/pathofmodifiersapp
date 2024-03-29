@@ -156,7 +156,9 @@ def get_rolls(
     try:
         assert failed_df.empty
     except AssertionError:
-        logger.info(f"Some modifiers did not find their counterpart in the database.\n{failed_df[["effect", "minRoll", "maxRoll", "textRolls"]]}")
+        logger.info(
+            f"Some modifiers did not find their counterpart in the database.\n{failed_df[['effect', 'minRoll', 'maxRoll', 'textRolls']]}"
+        )
 
     def convert_text_roll_to_index(row):
         if row["textRolls"] != "None":
