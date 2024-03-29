@@ -37,8 +37,8 @@ class ItemBaseType(Base):
     __tablename__ = "item_base_type"
 
     baseType = _sql.Column(_sql.String(), nullable=False, primary_key=True, index=True)
-    category = _sql.Column(_sql.String(), nullable=False, unique=True)
-    subCategory = _sql.Column(_sql.String(), nullable=False)
+    category = _sql.Column(_sql.String(), nullable=False)
+    subCategory = _sql.Column(_sql.String())
     createdAt = _sql.Column(
         _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
     )
@@ -64,6 +64,7 @@ class Item(Base):
         _sql.ForeignKey("stash.stashId", ondelete="CASCADE"),
         nullable=False,
     )
+    changeId = _sql.Column(_sql.String(), nullable=False)
     name = _sql.Column(_sql.String())
     iconUrl = _sql.Column(_sql.String())
     league = _sql.Column(_sql.String(), nullable=False)
@@ -124,6 +125,7 @@ class Modifier(Base):
     delve = _sql.Column(_sql.Boolean())
     fractured = _sql.Column(_sql.Boolean())
     synthesized = _sql.Column(_sql.Boolean())
+    unique = _sql.Column(_sql.Boolean())
     corrupted = _sql.Column(_sql.Boolean())
     enchanted = _sql.Column(_sql.Boolean())
     veiled = _sql.Column(_sql.Boolean())
@@ -136,7 +138,6 @@ class Modifier(Base):
 
     __table_args__ = (
         _sql.PrimaryKeyConstraint(modifierId, position),
-        _sql.UniqueConstraint(effect, position),
         _sql.CheckConstraint(
             """
             CASE 
@@ -197,7 +198,7 @@ class ItemModifier(Base):
     )
     modifierId = _sql.Column(_sql.BigInteger(), nullable=False, index=True)
     position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
-    range = _sql.Column(_sql.Float(24))
+    roll = _sql.Column(_sql.Float(24))
     createdAt = _sql.Column(
         _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
     )

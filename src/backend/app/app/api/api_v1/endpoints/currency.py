@@ -9,6 +9,7 @@ from app.crud import CRUD_currency
 import app.core.schemas as schemas
 
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 
 
 router = APIRouter()
@@ -21,7 +22,7 @@ router = APIRouter()
 async def get_currency(currencyId: str, db: Session = Depends(get_db)):
     """
     Get currency by key and value for "currencyId".
-    
+
     Always returns one currency.
     """
     currency_map = {"currencyId": currencyId}
@@ -34,12 +35,26 @@ async def get_currency(currencyId: str, db: Session = Depends(get_db)):
 async def get_all_currencies(db: Session = Depends(get_db)):
     """
     Get all currencies.
-    
+
     Returns a list of all currencies.
     """
     all_currencies = await CRUD_currency.get(db=db)
 
     return all_currencies
+
+
+@router.get("/latest_currency_id/", response_model=int, tags=["latest_currency_id"])
+async def get_latest_currency_id(db: Session = Depends(get_db)):
+    """
+    Get the latest currencyId
+
+    Can only be used safely on an empty table or directly after an insertion.
+    """
+    result = db.execute(text("""SELECT MAX("currencyId") FROM currency""")).fetchone()
+    if result:
+        return int(result[0])
+    else:
+        return 1
 
 
 @router.post(
@@ -52,7 +67,7 @@ async def create_currency(
 ):
     """
     Create one or a list of currencies.
-    
+
     Returns the created currency or list of currencies.
     """
     return await CRUD_currency.create(db=db, obj_in=currency)
@@ -66,7 +81,7 @@ async def update_currency(
 ):
     """
     Update a currency by key and value for "currencyId".
-    
+
     Returns the updated currency.
     """
     currency_map = {"currencyId": currencyId}
@@ -82,7 +97,7 @@ async def update_currency(
 async def delete_currency(currencyId: str, db: Session = Depends(get_db)):
     """
     Delete a currency by key and value for "currencyId".
-    
+
     Returns a message indicating the currency was deleted.
     Always deletes one currency.
     """

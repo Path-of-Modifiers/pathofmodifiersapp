@@ -1,5 +1,5 @@
 # Source: https://poedb.tw/Brutal_Restraint
-minRoll,maxRoll,textRolls,position,effect,static
-500,8000,,0,"Denoted service of # dekhara in the akhara of # Passives in radius are Conquered by the Maraketh",
-,,"Balbala-Asenath-Nasima-Deshret",1,"Denoted service of # dekhara in the akhara of # Passives in radius are Conquered by the Maraketh",
-,,,0,"Historic",True
+minRoll,maxRoll,textRolls,position,effect,static,unique
+500,8000,,0,"Denoted service of # dekhara in the akhara of # Passives in radius are Conquered by the Maraketh",,True
+,,"Balbala-Asenath-Nasima-Deshret",1,"Denoted service of # dekhara in the akhara of # Passives in radius are Conquered by the Maraketh",,True
+,,,0,"Historic",True,True

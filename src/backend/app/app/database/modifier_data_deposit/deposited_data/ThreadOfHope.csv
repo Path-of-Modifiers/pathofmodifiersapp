@@ -1,5 +1,5 @@
 # Source: https://poedb.tw/Thread_of_Hope
-minRoll,maxRoll,textRolls,position,effect,static
-,,"Small-Medium-Large-Very Large-Massive",0,"Only affects Passives in # Ring",
-,,,0,"Passives in Radius can be Allocated without being connected to your tree",True
--20,-10,,0,"#% to all Elemental Resistances",
+minRoll,maxRoll,textRolls,position,effect,static,unique
+,,"Small-Medium-Large-Very Large-Massive",0,"Only affects Passives in # Ring",,True
+,,,0,"Passives in Radius can be Allocated without being connected to your tree",True,True
+-20,-10,,0,"#% to all Elemental Resistances",,True

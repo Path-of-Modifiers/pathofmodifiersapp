@@ -1,20 +1,20 @@
 # Source: https://poedb.tw/The_Balance_of_Terror
-minRoll,maxRoll,position,effect,static
-,,0,"Inflict Lightning Exposure on Hit if you've cast Conductivity in the past 10 seconds",True
-,,0,"You are Unaffected by Shock if you've cast Conductivity in the past 10 seconds",True
-,,0,"Immune to Curses if you've cast Despair in the past 10 seconds",True
-,,0,"Inflict Withered for 2 seconds on Hit if you've cast Despair in the past 10 seconds",True
-,,0,"Immune to Exposure if you've cast Elemental Weakness in the past 10 seconds",True
-30,40,0,"Gain #% of Physical Damage as a Random Element if you've cast Elemental Weakness in the past 10 seconds,
-30,40,0,"+#% to Critical Strike Multiplier if you've cast Enfeeble in the past 10 seconds,
-,,0,"Take no Extra Damage from Critical Strikes if you've cast Enfeeble in the past 10 seconds",True
-,,0,"Inflict Fire Exposure on Hit if you've cast Flammability in the past 10 seconds",True
-,,0,"You are Unaffected by Ignite if you've cast Flammability in the past 10 seconds",True
-,,0,"Cold Exposure on Hit if you've cast Frostbite in the past 10 seconds",True
-,,0,"You are Unaffected by Freeze if you've cast Frostbite in the past 10 seconds",True
-,,0,"Immune to Reflected Damage if you've cast Punishment in the past 10 seconds",True
-,,0,"Intimidate Enemies on Hit if you've cast Punishment in the past 10 seconds",True
-,,0,"Action Speed cannot be Slowed below Base Value if you've cast Temporal Chains in the past 10 seconds",True
-20,25,0,"#% increased Cooldown Recovery Rate if you've cast Temporal Chains in the past 10 seconds,
-6,10,0,"#% chance to deal Double Damage if you've cast Vulnerability in the past 10 seconds,
-,,0,"You are Unaffected by Bleeding if you've cast Vulnerability in the past 10 seconds",True
+minRoll,maxRoll,position,effect,static,unique
+,,0,"Inflict Lightning Exposure on Hit if you've cast Conductivity in the past 10 seconds",True,True
+,,0,"You are Unaffected by Shock if you've cast Conductivity in the past 10 seconds",True,True
+,,0,"Immune to Curses if you've cast Despair in the past 10 seconds",True,True
+,,0,"Inflict Withered for 2 seconds on Hit if you've cast Despair in the past 10 seconds",True,True
+,,0,"Immune to Exposure if you've cast Elemental Weakness in the past 10 seconds",True,True
+30,40,0,"Gain #% of Physical Damage as a Random Element if you've cast Elemental Weakness in the past 10 seconds",,True
+30,40,0,"+#% to Critical Strike Multiplier if you've cast Enfeeble in the past 10 seconds",,True
+,,0,"Take no Extra Damage from Critical Strikes if you've cast Enfeeble in the past 10 seconds",True,True
+,,0,"Inflict Fire Exposure on Hit if you've cast Flammability in the past 10 seconds",True,True
+,,0,"You are Unaffected by Ignite if you've cast Flammability in the past 10 seconds",True,True
+,,0,"Cold Exposure on Hit if you've cast Frostbite in the past 10 seconds",True,True
+,,0,"You are Unaffected by Freeze if you've cast Frostbite in the past 10 seconds",True,True
+,,0,"Immune to Reflected Damage if you've cast Punishment in the past 10 seconds",True,True
+,,0,"Intimidate Enemies on Hit if you've cast Punishment in the past 10 seconds",True,True
+,,0,"Action Speed cannot be Slowed below Base Value if you've cast Temporal Chains in the past 10 seconds",True,True
+20,25,0,"#% increased Cooldown Recovery Rate if you've cast Temporal Chains in the past 10 seconds",,True
+6,10,0,"#% chance to deal Double Damage if you've cast Vulnerability in the past 10 seconds",,True
+,,0,"You are Unaffected by Bleeding if you've cast Vulnerability in the past 10 seconds",True,True

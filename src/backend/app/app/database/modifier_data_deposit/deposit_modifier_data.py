@@ -3,10 +3,14 @@ import logging
 import os
 import pandas as pd
 from typing import Iterator, Optional
-from copy import deepcopy
 
-from app.database.modifier_data_deposit.processing_modules import add_regex
-from app.database.modifier_data_deposit.utils import df_to_JSON
+from app.database.modifier_data_deposit.modifier_processing_modules import (
+    add_regex,
+    check_for_updated_text_rolls,
+    check_for_updated_numerical_rolls,
+    check_for_additional_modifier_types,
+)
+from app.database.utils import df_to_JSON
 
 logging.basicConfig(
     filename="history.log",
@@ -16,7 +20,7 @@ logging.basicConfig(
 )
 TESTING = os.getenv("TESTING")
 BASEURL = os.getenv("DOMAIN")
-CASCADING_UPDATE = False
+CASCADING_UPDATE = True
 
 
 class DataDepositer:
@@ -24,6 +28,18 @@ class DataDepositer:
         self.new_data_location = "new_data"
         self.url = BASEURL + "/api/api_v1/modifier/"
         self.update_disabled = not CASCADING_UPDATE
+
+        self.modifier_types = [
+            "implicit",
+            "explicit",
+            "delve",
+            "fractured",
+            "synthesized",
+            "unique",
+            "corrupted",
+            "enchanted",
+            "veiled",
+        ]
 
         self.logger = logging.getLogger(__name__)
 
@@ -69,63 +85,41 @@ class DataDepositer:
         duplicate_df.sort_values(by=["effect", "position"], inplace=True)
 
         update_url = self.url + "{}?position={}"
-
         for (_, row_cur), (_, row_new) in zip(
             current_duplicate_modifiers.iterrows(), duplicate_df.iterrows()
         ):
+            put_update = False
+            data = df_to_JSON(row_cur, request_method="put")
+            data.pop("updatedAt")
+
             if not pd.isna(row_new["static"]):
-                continue
-
-            if not pd.isna(row_new["textRolls"]):
-                if row_cur["textRolls"] != row_new["textRolls"]:
-                    self.logger.info("Found a modifier with new 'textRolls'.")
-                    data = df_to_JSON(row_new, request_method="put")
-                    data["modifierId"] = row_cur["modifierId"]
-                    data["position"] = row_cur["position"]
-                    response = requests.put(
-                        update_url.format(row_cur["modifierId"], row_cur["position"]),
-                        json=data,
-                        headers={
-                            "accept": "application/json",
-                            "Content-Type": "application/json",
-                        },
-                    )
-                    response.raise_for_status()
+                pass
+            elif not pd.isna(row_new["textRolls"]):
+                data, put_update = check_for_updated_text_rolls(
+                    data=data, row_new=row_new, logger=self.logger
+                )
             else:
-                min_roll = row_cur["minRoll"]
-                max_roll = row_cur["maxRoll"]
+                data, put_update = check_for_updated_numerical_rolls(
+                    data=data, row_new=row_new, logger=self.logger
+                )
 
-                new_min_roll = row_new["minRoll"]
-                new_max_roll = row_new["maxRoll"]
+            data, put_update = check_for_additional_modifier_types(
+                data=data,
+                row_new=row_new,
+                modifier_types=self.modifier_types,
+                logger=self.logger,
+            )
 
-                if float(min_roll) > float(new_min_roll):
-                    self.logger.info("Found a modifier with a lower 'minRoll'.")
-                else:
-                    new_min_roll = min_roll
-
-                if float(max_roll) < float(new_max_roll):
-                    self.logger.info("Found a modifier with a higher 'maxRoll'.")
-                else:
-                    new_max_roll = max_roll
-
-                row_new["minRoll"] = float(new_min_roll)
-                row_new["maxRoll"] = float(new_max_roll)
-                if min_roll != new_min_roll or max_roll != new_max_roll:
-                    self.logger.info(
-                        "Updating modifier to bring numerical roll range up-to-date."
-                    )
-                    data = df_to_JSON(row_new, request_method="put")
-                    data["modifierId"] = row_cur["modifierId"]
-                    data["position"] = row_cur["position"]
-                    response = requests.put(
-                        update_url.format(row_cur["modifierId"], row_cur["position"]),
-                        json=data,
-                        headers={
-                            "accept": "application/json",
-                            "Content-Type": "application/json",
-                        },
-                    )
-                    response.raise_for_status()
+            if put_update:
+                response = requests.put(
+                    update_url.format(row_cur["modifierId"], row_cur["position"]),
+                    json=data,
+                    headers={
+                        "accept": "application/json",
+                        "Content-Type": "application/json",
+                    },
+                )
+                response.raise_for_status()
 
     def _remove_duplicates(self, new_modifiers_df: pd.DataFrame) -> pd.DataFrame:
         current_modifiers_df = self._get_current_modifiers()
@@ -147,7 +141,7 @@ class DataDepositer:
 
     def _process_new_data(self, df: pd.DataFrame) -> pd.DataFrame:
         df = add_regex(df, logger=self.logger)
-        df = self._remove_duplicates(df)
+        df = self._remove_duplicates(df.copy(deep=True))
         return df
 
     def _insert_data(self, df: pd.DataFrame) -> None:
