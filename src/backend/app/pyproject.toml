@@ -28,6 +28,7 @@ pandas = "2.2.0" # for dataframe processing
 requests = "^2.31.0"
 tqdm = "^4.66.2"
 aiohttp = "^3.9.3"
+plotly = "^5.20.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.11.0" # for formatting code
