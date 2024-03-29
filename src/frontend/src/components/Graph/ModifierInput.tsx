@@ -6,6 +6,9 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { useState } from "react";
+import { Modifier } from "../../client";
+
+const queryClient = new QueryClient();
 
 const ModiferInput = () => {
   return (
@@ -15,28 +18,7 @@ const ModiferInput = () => {
   );
 };
 
-interface Modifier {
-  modifierId: number;
-  position: number;
-  minRoll: number;
-  maxRoll: number;
-  textRolls: string;
-  static: boolean;
-  effect: string;
-  regex: string;
-  implicit: boolean;
-  explicit: boolean;
-  delve: boolean;
-  fractured: boolean;
-  synthesized: boolean;
-  corrupted: boolean;
-  enchanted: boolean;
-  veiled: boolean;
-}
-
 function GetModifiers() {
-  const queryClient = new QueryClient();
-
   const [effectValueSearchInpuut, setEffectValueSearchInput] = useState("");
   const [effectValueList, setEffectValueList] = useState("");
 
