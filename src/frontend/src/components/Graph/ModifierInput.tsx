@@ -1,42 +1,53 @@
 import { Input, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
 
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from "@tanstack/react-query";
 import { useState } from "react";
-import { Modifier } from "../../client";
-
-const queryClient = new QueryClient();
+import { Modifier, ModifiersService } from "../../client";
+import { useQuery } from "@tanstack/react-query";
 
 const ModiferInput = () => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <GetModifiers />
-    </QueryClientProvider>
-  );
+  return <ModifierListInput />;
 };
 
-function GetModifiers() {
+const GetModifiers = () => {
+  let modifiers = [
+    {
+      position: 0,
+      effect: "",
+      createdAt: "",
+      updatedAt: "",
+    },
+  ] as Modifier | Modifier[];
+
+  try {
+    useQuery({
+      queryKey: ["allModifiers"],
+      queryFn: async () => {
+        modifiers = await ModifiersService.getAllModifiersApiApiV1ModifierGet();
+      },
+    });
+    if (Array.isArray(modifiers)) {
+      return modifiers; // If modifiers is already an array, return it directly
+    } else {
+      return [modifiers]; // If modifiers is not an array, wrap it in an array
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+function ModifierListInput() {
   const [effectValueSearchInpuut, setEffectValueSearchInput] = useState("");
   const [effectValueList, setEffectValueList] = useState("");
 
-  const { isPending, error, data } = useQuery({
-    queryKey: ["modifiers"],
-    queryFn: () =>
-      fetch("http://localhost/api/api_v1/modifier/").then((res) => res.json()),
-  });
+  const modifiers = GetModifiers();
 
-  console.log(data);
+  if (modifiers === undefined) {
+    return <div>Error retrieving modifiers</div>;
+  }
 
   const effects: Array<string> = Array.from(
-    new Set(data.map((modifier: Modifier) => modifier.effect))
+    new Set(modifiers.map((modifier: Modifier) => modifier.effect))
   );
-
-  if (isPending) return "Loading...";
-
-  if (error) return "An error has occurred: " + error.message;
 
   return (
     <>
