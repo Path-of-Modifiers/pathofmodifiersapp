@@ -8,25 +8,25 @@ services:
 
   backend:
     ports:
-      - 80:80
+      - 5000:80
     environment:
       - SERVER_HOST=http://${DOMAIN?Variable not set}
       - TESTING=True
       - DOMAIN=http://localhost
 
-  # frontend:
-  #   # restart: "no"
-  #   ports:
-  #     - 5173:5173
-  #   environment:
-  #     - SERVER_HOST=http://${DOMAIN?Variable not set}
-  #     - TESTING=True
-  #     - DOMAIN=http://localhost
-  #   build:
-  #     context: ./frontend
-  #     args:
-  #       - VITE_API_URL=http://${DOMAIN?Variable not set}
-  #       - NODE_ENV=development
+  frontend:
+    restart: "no"
+    ports:
+      - 80:80
+    environment:
+      - SERVER_HOST=http://${DOMAIN?Variable not set}
+      - TESTING=True
+      - DOMAIN=http://localhost
+    build:
+      context: ./frontend
+      args:
+        - VITE_API_URL=http://${DOMAIN?Variable not set}
+        - NODE_ENV=development
 
 
 networks:
