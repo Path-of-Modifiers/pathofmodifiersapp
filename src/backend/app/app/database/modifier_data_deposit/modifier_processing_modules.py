@@ -1,6 +1,6 @@
 import logging
 import pandas as pd
-from typing import Tuple
+from typing import Tuple, List, Optional, Dict, Any
 
 logging.basicConfig(
     filename="history.log",
@@ -69,6 +69,7 @@ def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame
         a regex matching only numbers within the range.
         f"({row["textRolls"][0].replace("-","|")})" matches all possible text rolls.
         """
+        # print(row)
         effect = row["effect"]
         positions = row["position"]
         rolls = row["rolls"]
@@ -76,13 +77,19 @@ def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame
         final_effect = ""
         for i, (roll, part) in enumerate(zip(rolls, effect_parts)):
             final_effect += part
-            if roll.isnumeric():
+            try:
+                float(roll)
                 final_effect += "([+-]?([0-9]*[.])?[0-9]+)"  # catches all floats
-            else:
-                try:
-                    final_effect += f"({row['textRolls'][0].replace('-','|')})"
-                except IndexError:  # In cases of roll is a float
-                    final_effect += "([+-]?([0-9]*[.])?[0-9]+)"
+
+            except ValueError:
+                final_effect += f"({row['textRolls'][0].replace('-','|')})"
+            # if roll.isnumeric():
+            #     final_effect += "([+-]?([0-9]*[.])?[0-9]+)"  # catches all floats
+            # else:
+            #     try:
+            #         final_effect += f"({row['textRolls'][0].replace('-','|')})"
+            #     except IndexError:  # In cases of roll is a float
+            #         final_effect += "([+-]?([0-9]*[.])?[0-9]+)"
 
         final_effect += "".join(
             effect_parts[i + 1 :]
@@ -151,9 +158,20 @@ def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame
     child_logger = logger.getChild("add_regex")
     child_logger.info("Starting process of adding regex")
 
-    modifier_df = modifier_df.reindex(
-        columns=["minRoll", "maxRoll", "textRolls", "position", "effect", "static"]
-    )
+    modifier_df_required_columns = [
+        "minRoll",
+        "maxRoll",
+        "textRolls",
+        "position",
+        "effect",
+        "static",
+    ]
+    modifier_df_columns = modifier_df_required_columns + [
+        column
+        for column in modifier_df.columns
+        if column not in modifier_df_required_columns
+    ]
+    modifier_df = modifier_df.reindex(columns=modifier_df_columns)
 
     # child_logger.info("Dividing modifier dataframe into dynamic and static modifiers.")
     dynamic_modifier_df, static_modifier_df = divide_modifiers_into_dynamic_static(
@@ -195,3 +213,57 @@ def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame
     child_logger.info("Completed process of adding regex")
 
     return final_df
+
+
+def check_for_updated_text_rolls(
+    data: Dict[str, Any], row_new: pd.Series, logger: logging.Logger
+) -> Tuple[Dict[str, Any], bool]:
+    if data["textRolls"] != row_new["textRolls"]:
+        logger.info("Found a modifier with new 'textRolls'.")
+        data["textRolls"] = row_new["textRolls"]
+        put_update = True
+    else:
+        put_update = False
+
+    return data, put_update
+
+
+def check_for_updated_numerical_rolls(
+    data: Dict[str, Any], row_new: pd.Series, logger: logging.Logger
+) -> Tuple[Dict[str, Any], bool]:
+    min_roll = data["minRoll"]
+    max_roll = data["maxRoll"]
+
+    new_min_roll = row_new["minRoll"]
+    new_max_roll = row_new["maxRoll"]
+
+    if float(min_roll) > float(new_min_roll):
+        logger.info("Found a modifier with a lower 'minRoll'.")
+        data["minRoll"] = new_min_roll
+
+    if float(max_roll) < float(new_max_roll):
+        logger.info("Found a modifier with a higher 'maxRoll'.")
+        data["maxRoll"] = new_max_roll
+
+    if min_roll != new_min_roll or max_roll != new_max_roll:
+        logger.info("Updating modifier to bring numerical roll range up-to-date.")
+        put_update = True
+    else:
+        put_update = False
+
+    return data, put_update
+
+
+def check_for_additional_modifier_types(
+    data: Dict[str, Any],
+    row_new: pd.Series,
+    modifier_types: List[str],
+    logger: logging.Logger,
+) -> Tuple[Dict[str, Any], bool]:
+    for modifier_type in modifier_types:
+        if modifier_type in row_new.index:
+            logger.info(f"Added a modifier type to a modifier.")
+            data[modifier_type] = row_new[modifier_type]
+            put_update = True
+
+    return data, put_update

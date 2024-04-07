@@ -5,13 +5,16 @@ import asyncio
 import aiohttp
 import pandas as pd
 from tqdm import tqdm
-from datetime import datetime
-from typing import List, Union, Tuple, Dict, Coroutine
+from typing import List, Union, Tuple, Dict, Coroutine, Iterator
 
 from app.external_data_retrieval.detectors.unique_detector import (
     UniqueJewelDetector,
+    UniqueJewelleryDetector,
+    UniqueArmourDetector,
     UniqueDetector,
 )
+
+pd.options.mode.chained_assignment = None  # default='warn'
 
 
 class APIHandler:
@@ -25,7 +28,11 @@ class APIHandler:
         auth_token: str,
         n_wanted_items: int = 100,
         n_unique_wanted_items: int = 5,
-        item_detectors: List[Union[UniqueDetector]] = [UniqueJewelDetector()],
+        item_detectors: List[Union[UniqueDetector]] = [
+            UniqueJewelDetector(),
+            UniqueJewelleryDetector(),
+            UniqueArmourDetector(),
+        ],
     ) -> None:
         """
         Parameters:
@@ -52,12 +59,14 @@ class APIHandler:
         df_temp = df_temp.explode(["items"])
         df_temp = df_temp.loc[~df_temp["items"].isnull()]
         df_temp.drop("items", axis=1, inplace=True)
+        df_temp.rename(columns={"id": "stashId"}, inplace=True)
 
         df = pd.json_normalize(stashes, record_path=["items"])
         df["stash_index"] = df_temp.index
 
         df_temp.index = df.index
         df[df_temp.columns.to_list()] = df_temp
+        df.rename(columns={"id": "gameItemId"}, inplace=True)
 
         return df
 
@@ -120,6 +129,14 @@ class APIHandler:
             self.url, headers=self.headers, params={"id": next_change_id}
         )
         if response.status_code >= 300:
+            if response.status_code == 429:
+                # https://www.pathofexile.com/developer/docs/index#ratelimits
+                # Rate limits are dynamic
+                headers = response.headers
+                retry_after = int(headers["Retry-After"])
+                time.sleep(retry_after + 1)
+                return self._initialize_stream(next_change_id=next_change_id)
+
             response.raise_for_status()
         response_json = response.json()
 
@@ -137,7 +154,7 @@ class APIHandler:
                 if response.status == 429:
                     # https://www.pathofexile.com/developer/docs/index#ratelimits
                     # Rate limits are dynamic
-                    headers = await response.headers
+                    headers = response.headers
                     retry_after = int(headers["Retry-After"])
                     await asyncio.sleep(retry_after + 1)
                     return await self._start_next_request(session, next_change_id)
@@ -149,7 +166,9 @@ class APIHandler:
             stashes = response_json["stashes"]
             return next_change_id, stashes
 
-    async def _follow_stream(self, initial_next_change_id: str) -> None:
+    async def _follow_stream(
+        self, initial_next_change_id: str
+    ) -> Tuple[pd.DataFrame, str]:
         """
         Follows the API stream until conditions are met
 
@@ -160,59 +179,55 @@ class APIHandler:
         next_change_id, new_stashes = self._initialize_stream(initial_next_change_id)
         df = pd.DataFrame()
 
+        old_next_change_id = initial_next_change_id
+
         iteration = 2
         session = aiohttp.ClientSession(headers=self.headers)
-        try:
-            while (
-                self.n_found_items < self.n_wanted_items
-                or self.n_unique_items_found < self.n_unique_wanted_items
-            ):
-                future = asyncio.ensure_future(
-                    self._start_next_request(session, next_change_id=next_change_id)
-                )
+        while (
+            self.n_found_items < self.n_wanted_items
+            or self.n_unique_items_found < self.n_unique_wanted_items
+        ):
+            future = asyncio.ensure_future(
+                self._start_next_request(session, next_change_id=next_change_id)
+            )
 
-                df_wanted = self._check_stashes(stashes=new_stashes)
-                df = pd.concat((df, df_wanted))
+            df_wanted = self._check_stashes(stashes=new_stashes)
+            df_wanted["changeId"] = old_next_change_id
+            df = pd.concat((df, df_wanted))
 
-                self.iteration_pbar.update()
+            self.iteration_pbar.update()
 
-                task_response = await asyncio.gather(future)
-                next_change_id, new_stashes = task_response[0]
+            task_response = await asyncio.gather(future)
+            old_next_change_id = next_change_id
+            next_change_id, new_stashes = task_response[0]
+            if not new_stashes:
+                time.sleep(
+                    300
+                )  # Waits 5 minutes before continuing to persue the stream
 
-                # if iteration >= max_iterations:
-                #     break
-                if not new_stashes:
-                    time.sleep(
-                        300
-                    )  # Waits 5 minutes before continuing to persue the stream
+            iteration += 1
 
-                iteration += 1
-        except requests.HTTPError as e:
-            print(e)
-        finally:  # Probably needs some more exception catches
-            await session.close()
-            self.iteration_pbar.close()
-            self.item_count_pbar.close()
-            self.unique_items_count_pbar.close()
-            print(f"Final `next_change_id`: {next_change_id}")
-            # self._store_data(stashes=stashes)
+        df_wanted = self._check_stashes(stashes=new_stashes)
+        df_wanted["changeId"] = old_next_change_id
+        df = pd.concat((df, df_wanted))
 
-    async def dump_stream(
-        self, initial_next_change_id: str = None, max_iterations: int = None
-    ) -> None:
+        self.iteration_pbar.update()
+        await session.close()
+
+        return df, next_change_id
+
+    def dump_stream(
+        self, initial_next_change_id: str = None, track_progress: bool = True
+    ) -> Iterator[pd.DataFrame]:
         """
         The method which begins making API calls and fetching data.
 
         Parameters:
             :param initial_next_change_id: (str) A previously found `next_change_id`.
-            :param max_iterations: (int) The number of iteration before shutting down. (currently not implemented)
         """
-
         # Intializes progressbar context managers
         with (
-            tqdm(
-                total=max_iterations, desc="Iterations", position=0
-            ) as self.iteration_pbar,
+            tqdm(desc="Iterations", position=0) as self.iteration_pbar,
             tqdm(
                 total=self.n_wanted_items,
                 desc="    Items found",
@@ -227,6 +242,20 @@ class APIHandler:
             ) as self.unique_items_count_pbar,
         ):
             try:
-                await self._follow_stream(initial_next_change_id)
-            except KeyboardInterrupt:
-                print("Exiting program")
+                while True:
+                    df, next_change_id = asyncio.run(
+                        self._follow_stream(initial_next_change_id)
+                    )
+
+                    # Ready for next iteration
+                    initial_next_change_id = next_change_id
+                    self.n_found_items = 0
+                    self.n_unique_items_found = 0
+                    yield df.reset_index()
+                    self.item_count_pbar.reset()
+            except Exception as e:
+                print(e)
+            finally:
+                self.iteration_pbar.close()
+                self.item_count_pbar.close()
+                self.unique_items_count_pbar.close()

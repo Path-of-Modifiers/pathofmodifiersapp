@@ -19,13 +19,14 @@ class _BaseItem(_pydantic.BaseModel):
     stashId: str
     gameItemId: str
     name: Optional[str] = None
+    changeId: str
     iconUrl: Optional[str] = None
     league: str
     typeLine: str
     baseType: str
     ilvl: int
     rarity: str
-    identified: bool
+    identified: bool = True
     forumNote: Optional[str] = None
     currencyAmount: Optional[float] = None
     currencyId: Optional[int] = None
