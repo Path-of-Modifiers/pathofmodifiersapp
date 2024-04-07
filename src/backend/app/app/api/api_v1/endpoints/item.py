@@ -9,6 +9,7 @@ from app.crud import CRUD_item
 import app.core.schemas as schemas
 
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 
 
 router = APIRouter()
@@ -21,7 +22,7 @@ router = APIRouter()
 async def get_item(itemId: str, db: Session = Depends(get_db)):
     """
     Get item by key and value for "itemId".
-    
+
     Always returns one item.
     """
     item_map = {"itemId": itemId}
@@ -30,11 +31,25 @@ async def get_item(itemId: str, db: Session = Depends(get_db)):
     return item
 
 
+@router.get("/latest_item_id/", response_model=int, tags=["latest_item_id"])
+async def get_latest_item_id(db: Session = Depends(get_db)):
+    """
+    Get the latest itemId
+
+    Can only be used safely on an empty table or directly after an insertion.
+    """
+    result = db.execute(text("""SELECT MAX("itemId") FROM item""")).fetchone()
+    if result:
+        return int(result[0])
+    else:
+        return 1
+
+
 @router.get("/", response_model=Union[schemas.Item, List[schemas.Item]])
 async def get_all_items(db: Session = Depends(get_db)):
     """
     Get all items.
-    
+
     Returns a list of all items.
     """
     all_items = await CRUD_item.get(db=db)
@@ -52,7 +67,7 @@ async def create_item(
 ):
     """
     Create one or a list of new items.
-    
+
     Returns the created item or list of items.
     """
     return await CRUD_item.create(db=db, obj_in=item)
@@ -66,7 +81,7 @@ async def update_item(
 ):
     """
     Update an item by key and value for "itemId".
-    
+
     Returns the updated item.
     """
     item_map = {"itemId": itemId}
@@ -82,7 +97,7 @@ async def update_item(
 async def delete_item(itemId: str, db: Session = Depends(get_db)):
     """
     Delete an item by key and value for "itemId".
-    
+
     Returns a message indicating the item was deleted.
     Always deletes one item.
     """

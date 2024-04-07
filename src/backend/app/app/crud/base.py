@@ -77,7 +77,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
                 status_code=404,
                 detail=f"No object matching the query ({', '.join([key + ': ' + str(item) for key, item in filter.items()])}) in the table {self.model.__tablename__} was found.",
             )
-        if len(db_obj) == 1:
+        if len(db_obj) == 1 and filter:
             db_obj = db_obj[0]
         else:
             db_obj = self._sort_objects(db_obj, key=sort_key, sort=sort)
