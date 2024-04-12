@@ -95,4 +95,4 @@ volumes:
 networks:
   traefik-public:
     # Allow setting it to false for testing
-    external: false
+    external: true
