@@ -59,6 +59,8 @@ services:
       - --accesslog
       # Enable the Traefik log, for configurations and errors
       - --log
+      # Traefik log path
+      - --log.filePath=/home/traefik.log
       # Enable the Dashboard and API
       - --api
     networks:
