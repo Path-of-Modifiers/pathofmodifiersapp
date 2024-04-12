@@ -27,8 +27,9 @@ services:
     env_file:
       - .env
     environment:
-      - SERVER_NAME=${DOMAIN?Variable not set}
-      - SERVER_HOST=https://${DOMAIN?Variable not set}
+      - DOMAIN=${DOMAIN?Variable not set}
+      - ENVIRONMENT=${ENVIRONMENT}
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS?Variable not set}
       # Allow explicit env var override for tests
       - SMTP_HOST=${SMTP_HOST}
     build:
@@ -65,8 +66,6 @@ services:
     image: dpage/pgadmin4
     container_name: pgadmin4_container
     restart: always
-    ports:
-      - "8888:80"
     environment:
       PGADMIN_DEFAULT_EMAIL: user@pgadmin.com
       PGADMIN_DEFAULT_PASSWORD: password
