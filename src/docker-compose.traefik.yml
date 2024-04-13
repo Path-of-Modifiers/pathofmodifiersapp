@@ -7,6 +7,8 @@ services:
       # Listen on port 443, default for HTTPS
       - 443:443
     restart: always
+    env_file:
+      - .env
     labels:
       # Enable Traefik for this service, to make it available in the public network
       - traefik.enable=true
