@@ -26,7 +26,7 @@ CASCADING_UPDATE = True
 class DataDepositer:
     def __init__(self) -> None:
         self.new_data_location = "new_data"
-        self.url = BASEURL + "/api/api_v1/modifier/"
+        self.url = "https://" + BASEURL + "/api/api_v1/modifier/"
         self.update_disabled = not CASCADING_UPDATE
 
         self.modifier_types = [
