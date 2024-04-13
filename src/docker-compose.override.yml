@@ -12,7 +12,7 @@ services:
     environment:
       - SERVER_HOST=http://${DOMAIN?Variable not set}
       - TESTING=True
-      - DOMAIN=http://localhost
+      - DOMAIN=localhost
 
   # frontend:
   #   # restart: "no"
