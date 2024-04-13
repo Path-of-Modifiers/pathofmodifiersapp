@@ -67,12 +67,25 @@ services:
     container_name: pgadmin4_container
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: user@pgadmin.com
-      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_DEFAULT_EMAIL: pomodifiers@outlook.com
+      PGADMIN_DEFAULT_PASSWORD: sjukebarna123
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - default
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.constraint-label=traefik-public
+      - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-http.rule=Host(`pgadmin.${DOMAIN?Variable not set}`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-http.entrypoints=http
+      - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-http.middlewares=https-redirect
+      - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-https.rule=Host(`pgadmin.${DOMAIN?Variable not set}`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-https.entrypoints=https
+      - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-https.tls=true
+      - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-https.tls.certresolver=le
+      - traefik.http.services.${STACK_NAME?Variable not set}-pgadmin.loadbalancer.server.port=5432
 
   # frontend:
   #   image: '${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}'
