@@ -33,6 +33,8 @@ class ContiniousDataRetrieval:
 
     if BASEURL != "localhost":
         modifier_url = "https://"
+    else:
+        modifier_url = ""
     modifier_url += BASEURL + "/api/api_v1/modifier/"
 
     def __init__(

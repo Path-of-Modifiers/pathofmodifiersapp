@@ -28,6 +28,8 @@ class DataDepositer:
         self.new_data_location = "new_data"
         if BASEURL != "localhost":
             self.url = "https://"
+        else:
+            self.url = ""
         self.url += BASEURL + "/api/api_v1/modifier/"
         self.update_disabled = not CASCADING_UPDATE
 
