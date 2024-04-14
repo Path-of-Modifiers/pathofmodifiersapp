@@ -16,7 +16,7 @@ BASEURL = os.getenv("DOMAIN")
 
 class PoeAPIDataTransformer:
     def __init__(self, main_logger: logging.Logger):
-        if BASEURL != "localhost":
+        if "localhost" not in BASEURL:
             self.url = "https://"
         else:
             self.url = ""

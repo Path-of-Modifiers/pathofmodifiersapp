@@ -31,7 +31,7 @@ class ContiniousDataRetrieval:
     auth_token = "750d4f685cfa83d024d86508e7ede4ab55b5acc7"
     url = "https://api.pathofexile.com/public-stash-tabs"
 
-    if BASEURL != "localhost":
+    if "localhost" not in BASEURL:
         modifier_url = "https://"
     else:
         modifier_url = ""
