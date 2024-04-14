@@ -30,7 +30,7 @@ BASEURL = os.getenv("DOMAIN")
 class ContiniousDataRetrieval:
     auth_token = "***REMOVED***"
     url = "https://api.pathofexile.com/public-stash-tabs"
-    modifier_url = BASEURL + "/api/api_v1/modifier/"
+    modifier_url = "https://" + BASEURL + "/api/api_v1/modifier/"
 
     def __init__(
         self, items_per_batch: int, data_transformers: Dict[str, PoeAPIDataTransformer]
