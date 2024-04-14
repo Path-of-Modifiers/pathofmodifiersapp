@@ -27,7 +27,7 @@ def load_currency_data():
 
 class TransformPoeNinjaCurrencyAPIData:
     def __init__(self, main_logger: logging.Logger):
-        self.url = BASEURL + "/api/api_v1"
+        self.url = "https://" + BASEURL + "/api/api_v1"
         self.logger = main_logger.getChild("transform_ninja")
 
     def _create_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
