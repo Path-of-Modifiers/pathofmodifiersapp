@@ -7,6 +7,8 @@ services:
       # Listen on port 443, default for HTTPS
       - 443:443
     restart: always
+    environment:
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN?Variable not set}
     labels:
       # Enable Traefik for this service, to make it available in the public network
       - traefik.enable=true
