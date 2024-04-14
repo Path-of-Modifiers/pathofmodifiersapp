@@ -67,6 +67,7 @@ class DataDepositer:
 
     def _get_current_modifiers(self) -> Optional[pd.DataFrame]:
         self.logger.info("Retrieving previously deposited data.")
+        print(self.url)
         df = pd.read_json(self.url, dtype=str)
         if df.empty:
             self.logger.info("Found no previously deposited data.")
