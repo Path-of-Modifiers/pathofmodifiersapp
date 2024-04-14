@@ -87,16 +87,16 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-https.tls.certresolver=le
       - traefik.http.services.${STACK_NAME?Variable not set}-pgadmin.loadbalancer.server.port=5432
 
-  # frontend:
-  #   image: '${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}'
-  #   # restart: always
-  #   networks:
-  #     - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
-  #   build:
-  #     context: ./frontend
-  #     args:
-  #       - VITE_API_URL=https://${DOMAIN?Variable not set}
-  #       - NODE_ENV=production
+  frontend:
+    image: '${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}'
+    restart: always
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+    build:
+      context: ./frontend
+      args:
+        - VITE_API_URL=https://${DOMAIN?Variable not set}
+        - NODE_ENV=production
 
 volumes:
   pom-db-data: 
