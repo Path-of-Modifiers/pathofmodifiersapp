@@ -170,9 +170,15 @@ def get_rolls(
 
         return roll
 
-    merged_dynamic_df["roll"] = merged_dynamic_df.apply(
-        convert_text_roll_to_index, axis=1
-    )  # The `roll` column now contains a number
+    print(
+        merged_dynamic_df.apply(
+            convert_text_roll_to_index, axis=1
+        )  # The `roll` column now contains a number)
+    )
+    quit()
+    # merged_dynamic_df["roll"] = merged_dynamic_df.apply(
+    #     convert_text_roll_to_index, axis=1
+    # )  # The `roll` column now contains a number
 
     # ---- Finishing touches ----
     processed_df = pd.concat(
