@@ -26,7 +26,7 @@ class DynamicDataDepositor:
             api_v1_object (str): _description_. For instance, "currency"
         """
 
-        if BASEURL != "localhost":
+        if "localhost" not in BASEURL:
             self.api_v1_url = "https://"
         else:
             self.url = ""
