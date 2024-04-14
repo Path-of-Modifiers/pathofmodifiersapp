@@ -1,0 +1,3834 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Path of Modifiers",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Read Main",
+        "operationId": "read_main__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/account/{accountName}": {
+      "get": {
+        "tags": [
+          "accounts"
+        ],
+        "summary": "Get Account",
+        "description": "Get the account by mapping with key and value for \"accountName\" . \n\nAlways returns one account.",
+        "operationId": "get_account_api_api_v1_account__accountName__get",
+        "parameters": [
+          {
+            "name": "accountName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Accountname"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Account"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Account"
+                      }
+                    }
+                  ],
+                  "title": "Response Get Account Api Api V1 Account  Accountname  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "accounts"
+        ],
+        "summary": "Update Account",
+        "description": "Update an account by key and value for \"accountName\".\n\nReturns the updated account.",
+        "operationId": "update_account_api_api_v1_account__accountName__put",
+        "parameters": [
+          {
+            "name": "accountName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Accountname"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Account"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "accounts"
+        ],
+        "summary": "Delete Account",
+        "description": "Delete an account by key and value \"accountName\".\n\nReturns a message indicating the account was deleted.\nAlways deletes one account.",
+        "operationId": "delete_account_api_api_v1_account__accountName__delete",
+        "parameters": [
+          {
+            "name": "accountName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Accountname"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "title": "Response Delete Account Api Api V1 Account  Accountname  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/account/": {
+      "get": {
+        "tags": [
+          "accounts"
+        ],
+        "summary": "Get All Accounts",
+        "description": "Get all accounts.\n\nReturns a list of all accounts.",
+        "operationId": "get_all_accounts_api_api_v1_account__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Account"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/Account"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Get All Accounts Api Api V1 Account  Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "accounts"
+        ],
+        "summary": "Create Account",
+        "description": "Create one or a list of accounts.\n\nReturns the created account or list of accounts.",
+        "operationId": "create_account_api_api_v1_account__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/AccountCreate"
+                  },
+                  {
+                    "items": {
+                      "$ref": "#/components/schemas/AccountCreate"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "title": "Account"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/AccountCreate"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/AccountCreate"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Create Account Api Api V1 Account  Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/currency/{currencyId}": {
+      "get": {
+        "tags": [
+          "currencies"
+        ],
+        "summary": "Get Currency",
+        "description": "Get currency by key and value for \"currencyId\".\n\nAlways returns one currency.",
+        "operationId": "get_currency_api_api_v1_currency__currencyId__get",
+        "parameters": [
+          {
+            "name": "currencyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Currencyid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Currency"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Currency"
+                      }
+                    }
+                  ],
+                  "title": "Response Get Currency Api Api V1 Currency  Currencyid  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "currencies"
+        ],
+        "summary": "Update Currency",
+        "description": "Update a currency by key and value for \"currencyId\".\n\nReturns the updated currency.",
+        "operationId": "update_currency_api_api_v1_currency__currencyId__put",
+        "parameters": [
+          {
+            "name": "currencyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Currencyid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CurrencyUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Currency"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "currencies"
+        ],
+        "summary": "Delete Currency",
+        "description": "Delete a currency by key and value for \"currencyId\".\n\nReturns a message indicating the currency was deleted.\nAlways deletes one currency.",
+        "operationId": "delete_currency_api_api_v1_currency__currencyId__delete",
+        "parameters": [
+          {
+            "name": "currencyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Currencyid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "title": "Response Delete Currency Api Api V1 Currency  Currencyid  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/currency/": {
+      "get": {
+        "tags": [
+          "currencies"
+        ],
+        "summary": "Get All Currencies",
+        "description": "Get all currencies.\n\nReturns a list of all currencies.",
+        "operationId": "get_all_currencies_api_api_v1_currency__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Currency"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/Currency"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Get All Currencies Api Api V1 Currency  Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "currencies"
+        ],
+        "summary": "Create Currency",
+        "description": "Create one or a list of currencies.\n\nReturns the created currency or list of currencies.",
+        "operationId": "create_currency_api_api_v1_currency__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/CurrencyCreate"
+                  },
+                  {
+                    "items": {
+                      "$ref": "#/components/schemas/CurrencyCreate"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "title": "Currency"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/CurrencyCreate"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/CurrencyCreate"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Create Currency Api Api V1 Currency  Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/currency/latest_currency_id/": {
+      "get": {
+        "tags": [
+          "currencies",
+          "latest_currency_id"
+        ],
+        "summary": "Get Latest Currency Id",
+        "description": "Get the latest currencyId\n\nCan only be used safely on an empty table or directly after an insertion.",
+        "operationId": "get_latest_currency_id_api_api_v1_currency_latest_currency_id__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "title": "Response Get Latest Currency Id Api Api V1 Currency Latest Currency Id  Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/itemBaseType/{baseType}": {
+      "get": {
+        "tags": [
+          "itemBaseTypes"
+        ],
+        "summary": "Get Item Base Type",
+        "description": "Get item base type by key and value for \"baseType\".\n\nAlways returns one item base type.",
+        "operationId": "get_item_base_type_api_api_v1_itemBaseType__baseType__get",
+        "parameters": [
+          {
+            "name": "baseType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Basetype"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ItemBaseType"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ItemBaseType"
+                      }
+                    }
+                  ],
+                  "title": "Response Get Item Base Type Api Api V1 Itembasetype  Basetype  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "itemBaseTypes"
+        ],
+        "summary": "Update Item Base Type",
+        "description": "Update an item base type by key and value for \"baseType\".\n\nReturns the updated item base type.",
+        "operationId": "update_item_base_type_api_api_v1_itemBaseType__baseType__put",
+        "parameters": [
+          {
+            "name": "baseType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Basetype"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ItemBaseTypeUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemBaseType"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "itemBaseTypes"
+        ],
+        "summary": "Delete Item Base Type",
+        "description": "Delete an item base type by key and value for \"baseType\".\n\nReturns a message that the item base type was deleted successfully.\nAlways deletes one item base type.",
+        "operationId": "delete_item_base_type_api_api_v1_itemBaseType__baseType__delete",
+        "parameters": [
+          {
+            "name": "baseType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Basetype"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "title": "Response Delete Item Base Type Api Api V1 Itembasetype  Basetype  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/itemBaseType/": {
+      "get": {
+        "tags": [
+          "itemBaseTypes"
+        ],
+        "summary": "Get All Item Base Types",
+        "description": "Get all item base types.\n\nReturns a list of all item base types.",
+        "operationId": "get_all_item_base_types_api_api_v1_itemBaseType__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ItemBaseType"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemBaseType"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Get All Item Base Types Api Api V1 Itembasetype  Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "itemBaseTypes"
+        ],
+        "summary": "Create Item Base Type",
+        "description": "Create one or a list of new item base types.\n\nReturns the created item base type or list of item base types.",
+        "operationId": "create_item_base_type_api_api_v1_itemBaseType__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ItemBaseTypeCreate"
+                  },
+                  {
+                    "items": {
+                      "$ref": "#/components/schemas/ItemBaseTypeCreate"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "title": "Itembasetype"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ItemBaseTypeCreate"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemBaseTypeCreate"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Create Item Base Type Api Api V1 Itembasetype  Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/itemModifier/{itemId}": {
+      "get": {
+        "tags": [
+          "itemModifiers"
+        ],
+        "summary": "Get Item Modifier",
+        "description": "Get item modifier or list of item modifiers by key and \nvalue for \"itemId\", optional \"modifierId\" and optional \"position\".    \n\nDominant key is \"itemId\".\n\nReturns one or a list of item modifiers.",
+        "operationId": "get_item_modifier_api_api_v1_itemModifier__itemId__get",
+        "parameters": [
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Itemid"
+            }
+          },
+          {
+            "name": "modifierId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Modifierid"
+            }
+          },
+          {
+            "name": "position",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Position"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ItemModifier"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ItemModifier"
+                      }
+                    }
+                  ],
+                  "title": "Response Get Item Modifier Api Api V1 Itemmodifier  Itemid  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/itemModifier/": {
+      "get": {
+        "tags": [
+          "itemModifiers"
+        ],
+        "summary": "Get All Item Modifiers",
+        "description": "Get all item modifiers.\n\nReturns a list of all item modifiers.",
+        "operationId": "get_all_item_modifiers_api_api_v1_itemModifier__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ItemModifier"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemModifier"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Get All Item Modifiers Api Api V1 Itemmodifier  Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "itemModifiers"
+        ],
+        "summary": "Create Item Modifier",
+        "description": "Create one or a list item modifiers.\n\nReturns the created item modifier or list of item modifiers.",
+        "operationId": "create_item_modifier_api_api_v1_itemModifier__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ItemModifierCreate"
+                  },
+                  {
+                    "items": {
+                      "$ref": "#/components/schemas/ItemModifierCreate"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "title": "Itemmodifier"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ItemModifierCreate"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemModifierCreate"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Create Item Modifier Api Api V1 Itemmodifier  Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/itemModifier/item={itemId}": {
+      "put": {
+        "tags": [
+          "itemModifiers"
+        ],
+        "summary": "Update Item Modifier",
+        "description": "Update an item modifier by key and value for \n\"itemId\", optional \"modifierId\" and optional \"position\".\n    \nDominant key is \"itemId\".\n\nReturns the updated item modifier.",
+        "operationId": "update_item_modifier_api_api_v1_itemModifier_item__itemId__put",
+        "parameters": [
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Itemid"
+            }
+          },
+          {
+            "name": "modifierId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Modifierid"
+            }
+          },
+          {
+            "name": "position",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Position"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ItemModifierUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemModifier"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "itemModifiers"
+        ],
+        "summary": "Delete Item Modifier",
+        "description": "Delete an item modifier by key and value for \n\"itemId\", optional \"modifierId\" and optional \"position\".\n    \nDominant key is \"itemId\".\n\nReturns a message that the item modifier was deleted successfully.\nAlways deletes one item modifier.",
+        "operationId": "delete_item_modifier_api_api_v1_itemModifier_item__itemId__delete",
+        "parameters": [
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Itemid"
+            }
+          },
+          {
+            "name": "modifierId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Modifierid"
+            }
+          },
+          {
+            "name": "position",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Position"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/item/{itemId}": {
+      "get": {
+        "tags": [
+          "items"
+        ],
+        "summary": "Get Item",
+        "description": "Get item by key and value for \"itemId\".\n\nAlways returns one item.",
+        "operationId": "get_item_api_api_v1_item__itemId__get",
+        "parameters": [
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Itemid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Item"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Item"
+                      }
+                    }
+                  ],
+                  "title": "Response Get Item Api Api V1 Item  Itemid  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "items"
+        ],
+        "summary": "Update Item",
+        "description": "Update an item by key and value for \"itemId\".\n\nReturns the updated item.",
+        "operationId": "update_item_api_api_v1_item__itemId__put",
+        "parameters": [
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Itemid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ItemUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "items"
+        ],
+        "summary": "Delete Item",
+        "description": "Delete an item by key and value for \"itemId\".\n\nReturns a message indicating the item was deleted.\nAlways deletes one item.",
+        "operationId": "delete_item_api_api_v1_item__itemId__delete",
+        "parameters": [
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Itemid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "title": "Response Delete Item Api Api V1 Item  Itemid  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/item/latest_item_id/": {
+      "get": {
+        "tags": [
+          "items",
+          "latest_item_id"
+        ],
+        "summary": "Get Latest Item Id",
+        "description": "Get the latest itemId\n\nCan only be used safely on an empty table or directly after an insertion.",
+        "operationId": "get_latest_item_id_api_api_v1_item_latest_item_id__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "title": "Response Get Latest Item Id Api Api V1 Item Latest Item Id  Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/item/": {
+      "get": {
+        "tags": [
+          "items"
+        ],
+        "summary": "Get All Items",
+        "description": "Get all items.\n\nReturns a list of all items.",
+        "operationId": "get_all_items_api_api_v1_item__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Item"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/Item"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Get All Items Api Api V1 Item  Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "items"
+        ],
+        "summary": "Create Item",
+        "description": "Create one or a list of new items.\n\nReturns the created item or list of items.",
+        "operationId": "create_item_api_api_v1_item__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ItemCreate"
+                  },
+                  {
+                    "items": {
+                      "$ref": "#/components/schemas/ItemCreate"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "title": "Item"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ItemCreate"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemCreate"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Create Item Api Api V1 Item  Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/modifier/{modifierId}": {
+      "get": {
+        "tags": [
+          "modifiers"
+        ],
+        "summary": "Get Modifier",
+        "description": "Get modifier or list of modifiers by key and \nvalue for \"modifierId\" and optional \"position\" \n\nDominant key is \"modifierId\".\n\nReturns one or a list of modifiers.",
+        "operationId": "get_modifier_api_api_v1_modifier__modifierId__get",
+        "parameters": [
+          {
+            "name": "modifierId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Modifierid"
+            }
+          },
+          {
+            "name": "position",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Position"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Modifier"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Modifier"
+                      }
+                    }
+                  ],
+                  "title": "Response Get Modifier Api Api V1 Modifier  Modifierid  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "modifiers"
+        ],
+        "summary": "Update Modifier",
+        "description": "Update a modifier by key and value for \"modifierId\" and \"position\".\n\nDominant key is \"modifierId\".\n\nReturns the updated modifier.",
+        "operationId": "update_modifier_api_api_v1_modifier__modifierId__put",
+        "parameters": [
+          {
+            "name": "modifierId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Modifierid"
+            }
+          },
+          {
+            "name": "position",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Position"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModifierUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Modifier"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "modifiers"
+        ],
+        "summary": "Delete Modifier",
+        "description": "Delete a modifier by key and value for \"modifierId\" \nand optional \"position\".\n\nDominant key is \"modifierId\".\n\nReturns a message that the modifier was deleted.\nAlways deletes one modifier.",
+        "operationId": "delete_modifier_api_api_v1_modifier__modifierId__delete",
+        "parameters": [
+          {
+            "name": "modifierId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Modifierid"
+            }
+          },
+          {
+            "name": "position",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Position"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "title": "Response Delete Modifier Api Api V1 Modifier  Modifierid  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/modifier/": {
+      "get": {
+        "tags": [
+          "modifiers"
+        ],
+        "summary": "Get All Modifiers",
+        "description": "Get all modifiers.\n\nReturns a list of all modifiers.",
+        "operationId": "get_all_modifiers_api_api_v1_modifier__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Modifier"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/Modifier"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Get All Modifiers Api Api V1 Modifier  Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "modifiers"
+        ],
+        "summary": "Create Modifier",
+        "description": "Create one or a list of new modifiers.\n\nReturns the created modifier or list of modifiers.",
+        "operationId": "create_modifier_api_api_v1_modifier__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ModifierCreate"
+                  },
+                  {
+                    "items": {
+                      "$ref": "#/components/schemas/ModifierCreate"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "title": "Modifier"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ModifierCreate"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/ModifierCreate"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Create Modifier Api Api V1 Modifier  Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/stash/{stashId}": {
+      "get": {
+        "tags": [
+          "stashes"
+        ],
+        "summary": "Get Stash",
+        "description": "Get stash by key and value for \"stashId\".\n\nAlways returns one stash.",
+        "operationId": "get_stash_api_api_v1_stash__stashId__get",
+        "parameters": [
+          {
+            "name": "stashId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Stashid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Stash"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Stash"
+                      }
+                    }
+                  ],
+                  "title": "Response Get Stash Api Api V1 Stash  Stashid  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "stashes"
+        ],
+        "summary": "Update Stash",
+        "description": "Update a stash by key and value for \"stashId\".\n\nReturns the updated stash.",
+        "operationId": "update_stash_api_api_v1_stash__stashId__put",
+        "parameters": [
+          {
+            "name": "stashId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Stashid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StashUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Stash"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "stashes"
+        ],
+        "summary": "Delete Stash",
+        "description": "Delete a stash by key and value for \"stashId\".\n\nReturns a message that the stash was deleted successfully.\nAlways deletes one stash.",
+        "operationId": "delete_stash_api_api_v1_stash__stashId__delete",
+        "parameters": [
+          {
+            "name": "stashId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Stashid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "title": "Response Delete Stash Api Api V1 Stash  Stashid  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/stash/": {
+      "get": {
+        "tags": [
+          "stashes"
+        ],
+        "summary": "Get All Stashes",
+        "description": "Get all stashes.\n\nReturns a list of all stashes.",
+        "operationId": "get_all_stashes_api_api_v1_stash__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Stash"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/Stash"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Get All Stashes Api Api V1 Stash  Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "stashes"
+        ],
+        "summary": "Create Stash",
+        "description": "Create one or a list of new stashes.\n\nReturns the created stash or list of stashes.",
+        "operationId": "create_stash_api_api_v1_stash__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/StashCreate"
+                  },
+                  {
+                    "items": {
+                      "$ref": "#/components/schemas/StashCreate"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "title": "Stash"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/StashCreate"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/StashCreate"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Create Stash Api Api V1 Stash  Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Account": {
+        "properties": {
+          "accountName": {
+            "type": "string",
+            "title": "Accountname"
+          },
+          "isBanned": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isbanned"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accountName",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "Account"
+      },
+      "AccountCreate": {
+        "properties": {
+          "accountName": {
+            "type": "string",
+            "title": "Accountname"
+          },
+          "isBanned": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isbanned"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accountName"
+        ],
+        "title": "AccountCreate"
+      },
+      "AccountUpdate": {
+        "properties": {
+          "accountName": {
+            "type": "string",
+            "title": "Accountname"
+          },
+          "isBanned": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isbanned"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accountName"
+        ],
+        "title": "AccountUpdate"
+      },
+      "Currency": {
+        "properties": {
+          "tradeName": {
+            "type": "string",
+            "title": "Tradename"
+          },
+          "valueInChaos": {
+            "type": "number",
+            "title": "Valueinchaos"
+          },
+          "iconUrl": {
+            "type": "string",
+            "title": "Iconurl"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "currencyId": {
+            "type": "integer",
+            "title": "Currencyid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tradeName",
+          "valueInChaos",
+          "iconUrl",
+          "createdAt",
+          "currencyId"
+        ],
+        "title": "Currency"
+      },
+      "CurrencyCreate": {
+        "properties": {
+          "tradeName": {
+            "type": "string",
+            "title": "Tradename"
+          },
+          "valueInChaos": {
+            "type": "number",
+            "title": "Valueinchaos"
+          },
+          "iconUrl": {
+            "type": "string",
+            "title": "Iconurl"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tradeName",
+          "valueInChaos",
+          "iconUrl"
+        ],
+        "title": "CurrencyCreate"
+      },
+      "CurrencyUpdate": {
+        "properties": {
+          "tradeName": {
+            "type": "string",
+            "title": "Tradename"
+          },
+          "valueInChaos": {
+            "type": "number",
+            "title": "Valueinchaos"
+          },
+          "iconUrl": {
+            "type": "string",
+            "title": "Iconurl"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tradeName",
+          "valueInChaos",
+          "iconUrl"
+        ],
+        "title": "CurrencyUpdate"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Influences": {
+        "properties": {
+          "elder": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elder"
+          },
+          "shaper": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shaper"
+          },
+          "crusader": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crusader"
+          },
+          "redeemer": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Redeemer"
+          },
+          "hunter": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hunter"
+          },
+          "warlord": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Warlord"
+          }
+        },
+        "type": "object",
+        "title": "Influences"
+      },
+      "Item": {
+        "properties": {
+          "stashId": {
+            "type": "string",
+            "title": "Stashid"
+          },
+          "gameItemId": {
+            "type": "string",
+            "title": "Gameitemid"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "changeId": {
+            "type": "string",
+            "title": "Changeid"
+          },
+          "iconUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Iconurl"
+          },
+          "league": {
+            "type": "string",
+            "title": "League"
+          },
+          "typeLine": {
+            "type": "string",
+            "title": "Typeline"
+          },
+          "baseType": {
+            "type": "string",
+            "title": "Basetype"
+          },
+          "ilvl": {
+            "type": "integer",
+            "title": "Ilvl"
+          },
+          "rarity": {
+            "type": "string",
+            "title": "Rarity"
+          },
+          "identified": {
+            "type": "boolean",
+            "title": "Identified",
+            "default": true
+          },
+          "forumNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forumnote"
+          },
+          "currencyAmount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currencyamount"
+          },
+          "currencyId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currencyid"
+          },
+          "corrupted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corrupted"
+          },
+          "delve": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delve"
+          },
+          "fractured": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fractured"
+          },
+          "synthesized": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synthesized"
+          },
+          "replica": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replica"
+          },
+          "elder": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elder"
+          },
+          "shaper": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shaper"
+          },
+          "influences": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Influences"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "searing": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Searing"
+          },
+          "tangled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tangled"
+          },
+          "isRelic": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isrelic"
+          },
+          "prefixes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prefixes"
+          },
+          "suffixes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suffixes"
+          },
+          "foilVariation": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Foilvariation"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "itemId": {
+            "type": "integer",
+            "title": "Itemid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stashId",
+          "gameItemId",
+          "changeId",
+          "league",
+          "typeLine",
+          "baseType",
+          "ilvl",
+          "rarity",
+          "createdAt",
+          "itemId"
+        ],
+        "title": "Item"
+      },
+      "ItemBaseType": {
+        "properties": {
+          "baseType": {
+            "type": "string",
+            "title": "Basetype"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "subCategory": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subcategory"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "baseType",
+          "category",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "ItemBaseType"
+      },
+      "ItemBaseTypeCreate": {
+        "properties": {
+          "baseType": {
+            "type": "string",
+            "title": "Basetype"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "subCategory": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subcategory"
+          }
+        },
+        "type": "object",
+        "required": [
+          "baseType",
+          "category"
+        ],
+        "title": "ItemBaseTypeCreate"
+      },
+      "ItemBaseTypeUpdate": {
+        "properties": {
+          "baseType": {
+            "type": "string",
+            "title": "Basetype"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "subCategory": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subcategory"
+          }
+        },
+        "type": "object",
+        "required": [
+          "baseType",
+          "category"
+        ],
+        "title": "ItemBaseTypeUpdate"
+      },
+      "ItemCreate": {
+        "properties": {
+          "stashId": {
+            "type": "string",
+            "title": "Stashid"
+          },
+          "gameItemId": {
+            "type": "string",
+            "title": "Gameitemid"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "changeId": {
+            "type": "string",
+            "title": "Changeid"
+          },
+          "iconUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Iconurl"
+          },
+          "league": {
+            "type": "string",
+            "title": "League"
+          },
+          "typeLine": {
+            "type": "string",
+            "title": "Typeline"
+          },
+          "baseType": {
+            "type": "string",
+            "title": "Basetype"
+          },
+          "ilvl": {
+            "type": "integer",
+            "title": "Ilvl"
+          },
+          "rarity": {
+            "type": "string",
+            "title": "Rarity"
+          },
+          "identified": {
+            "type": "boolean",
+            "title": "Identified",
+            "default": true
+          },
+          "forumNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forumnote"
+          },
+          "currencyAmount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currencyamount"
+          },
+          "currencyId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currencyid"
+          },
+          "corrupted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corrupted"
+          },
+          "delve": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delve"
+          },
+          "fractured": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fractured"
+          },
+          "synthesized": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synthesized"
+          },
+          "replica": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replica"
+          },
+          "elder": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elder"
+          },
+          "shaper": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shaper"
+          },
+          "influences": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Influences"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "searing": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Searing"
+          },
+          "tangled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tangled"
+          },
+          "isRelic": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isrelic"
+          },
+          "prefixes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prefixes"
+          },
+          "suffixes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suffixes"
+          },
+          "foilVariation": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Foilvariation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stashId",
+          "gameItemId",
+          "changeId",
+          "league",
+          "typeLine",
+          "baseType",
+          "ilvl",
+          "rarity"
+        ],
+        "title": "ItemCreate"
+      },
+      "ItemModifier": {
+        "properties": {
+          "itemId": {
+            "type": "integer",
+            "title": "Itemid"
+          },
+          "modifierId": {
+            "type": "integer",
+            "title": "Modifierid"
+          },
+          "position": {
+            "type": "integer",
+            "title": "Position"
+          },
+          "roll": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Roll"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "itemId",
+          "modifierId",
+          "position",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "ItemModifier"
+      },
+      "ItemModifierCreate": {
+        "properties": {
+          "itemId": {
+            "type": "integer",
+            "title": "Itemid"
+          },
+          "modifierId": {
+            "type": "integer",
+            "title": "Modifierid"
+          },
+          "position": {
+            "type": "integer",
+            "title": "Position"
+          },
+          "roll": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Roll"
+          }
+        },
+        "type": "object",
+        "required": [
+          "itemId",
+          "modifierId",
+          "position"
+        ],
+        "title": "ItemModifierCreate"
+      },
+      "ItemModifierUpdate": {
+        "properties": {
+          "itemId": {
+            "type": "integer",
+            "title": "Itemid"
+          },
+          "modifierId": {
+            "type": "integer",
+            "title": "Modifierid"
+          },
+          "position": {
+            "type": "integer",
+            "title": "Position"
+          },
+          "roll": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Roll"
+          }
+        },
+        "type": "object",
+        "required": [
+          "itemId",
+          "modifierId",
+          "position"
+        ],
+        "title": "ItemModifierUpdate"
+      },
+      "ItemUpdate": {
+        "properties": {
+          "stashId": {
+            "type": "string",
+            "title": "Stashid"
+          },
+          "gameItemId": {
+            "type": "string",
+            "title": "Gameitemid"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "changeId": {
+            "type": "string",
+            "title": "Changeid"
+          },
+          "iconUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Iconurl"
+          },
+          "league": {
+            "type": "string",
+            "title": "League"
+          },
+          "typeLine": {
+            "type": "string",
+            "title": "Typeline"
+          },
+          "baseType": {
+            "type": "string",
+            "title": "Basetype"
+          },
+          "ilvl": {
+            "type": "integer",
+            "title": "Ilvl"
+          },
+          "rarity": {
+            "type": "string",
+            "title": "Rarity"
+          },
+          "identified": {
+            "type": "boolean",
+            "title": "Identified",
+            "default": true
+          },
+          "forumNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forumnote"
+          },
+          "currencyAmount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currencyamount"
+          },
+          "currencyId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currencyid"
+          },
+          "corrupted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corrupted"
+          },
+          "delve": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delve"
+          },
+          "fractured": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fractured"
+          },
+          "synthesized": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synthesized"
+          },
+          "replica": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replica"
+          },
+          "elder": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elder"
+          },
+          "shaper": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shaper"
+          },
+          "influences": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Influences"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "searing": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Searing"
+          },
+          "tangled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tangled"
+          },
+          "isRelic": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isrelic"
+          },
+          "prefixes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prefixes"
+          },
+          "suffixes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suffixes"
+          },
+          "foilVariation": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Foilvariation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stashId",
+          "gameItemId",
+          "changeId",
+          "league",
+          "typeLine",
+          "baseType",
+          "ilvl",
+          "rarity"
+        ],
+        "title": "ItemUpdate"
+      },
+      "Modifier": {
+        "properties": {
+          "modifierId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Modifierid"
+          },
+          "position": {
+            "type": "integer",
+            "title": "Position"
+          },
+          "minRoll": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minroll"
+          },
+          "maxRoll": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maxroll"
+          },
+          "textRolls": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Textrolls"
+          },
+          "static": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Static"
+          },
+          "effect": {
+            "type": "string",
+            "title": "Effect"
+          },
+          "regex": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Regex"
+          },
+          "implicit": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Implicit"
+          },
+          "explicit": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explicit"
+          },
+          "delve": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delve"
+          },
+          "fractured": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fractured"
+          },
+          "synthesized": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synthesized"
+          },
+          "unique": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unique"
+          },
+          "corrupted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corrupted"
+          },
+          "enchanted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enchanted"
+          },
+          "veiled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Veiled"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "position",
+          "effect",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "Modifier"
+      },
+      "ModifierCreate": {
+        "properties": {
+          "modifierId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Modifierid"
+          },
+          "position": {
+            "type": "integer",
+            "title": "Position"
+          },
+          "minRoll": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minroll"
+          },
+          "maxRoll": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maxroll"
+          },
+          "textRolls": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Textrolls"
+          },
+          "static": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Static"
+          },
+          "effect": {
+            "type": "string",
+            "title": "Effect"
+          },
+          "regex": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Regex"
+          },
+          "implicit": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Implicit"
+          },
+          "explicit": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explicit"
+          },
+          "delve": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delve"
+          },
+          "fractured": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fractured"
+          },
+          "synthesized": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synthesized"
+          },
+          "unique": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unique"
+          },
+          "corrupted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corrupted"
+          },
+          "enchanted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enchanted"
+          },
+          "veiled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Veiled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "position",
+          "effect"
+        ],
+        "title": "ModifierCreate"
+      },
+      "ModifierUpdate": {
+        "properties": {
+          "modifierId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Modifierid"
+          },
+          "position": {
+            "type": "integer",
+            "title": "Position"
+          },
+          "minRoll": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minroll"
+          },
+          "maxRoll": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maxroll"
+          },
+          "textRolls": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Textrolls"
+          },
+          "static": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Static"
+          },
+          "effect": {
+            "type": "string",
+            "title": "Effect"
+          },
+          "regex": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Regex"
+          },
+          "implicit": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Implicit"
+          },
+          "explicit": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explicit"
+          },
+          "delve": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delve"
+          },
+          "fractured": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fractured"
+          },
+          "synthesized": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synthesized"
+          },
+          "unique": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unique"
+          },
+          "corrupted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corrupted"
+          },
+          "enchanted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enchanted"
+          },
+          "veiled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Veiled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "position",
+          "effect"
+        ],
+        "title": "ModifierUpdate"
+      },
+      "Stash": {
+        "properties": {
+          "accountName": {
+            "type": "string",
+            "title": "Accountname"
+          },
+          "public": {
+            "type": "boolean",
+            "title": "Public"
+          },
+          "league": {
+            "type": "string",
+            "title": "League"
+          },
+          "stashId": {
+            "type": "string",
+            "title": "Stashid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accountName",
+          "public",
+          "league",
+          "stashId",
+          "createdAt",
+          "updatedAt"
+        ],
+        "title": "Stash"
+      },
+      "StashCreate": {
+        "properties": {
+          "accountName": {
+            "type": "string",
+            "title": "Accountname"
+          },
+          "public": {
+            "type": "boolean",
+            "title": "Public"
+          },
+          "league": {
+            "type": "string",
+            "title": "League"
+          },
+          "stashId": {
+            "type": "string",
+            "title": "Stashid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accountName",
+          "public",
+          "league",
+          "stashId"
+        ],
+        "title": "StashCreate"
+      },
+      "StashUpdate": {
+        "properties": {
+          "accountName": {
+            "type": "string",
+            "title": "Accountname"
+          },
+          "public": {
+            "type": "boolean",
+            "title": "Public"
+          },
+          "league": {
+            "type": "string",
+            "title": "League"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accountName",
+          "public",
+          "league"
+        ],
+        "title": "StashUpdate"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
