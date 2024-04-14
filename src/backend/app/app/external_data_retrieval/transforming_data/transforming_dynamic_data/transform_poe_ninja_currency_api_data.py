@@ -29,6 +29,8 @@ class TransformPoeNinjaCurrencyAPIData:
     def __init__(self, main_logger: logging.Logger):
         if BASEURL != "localhost":
             self.url = "https://"
+        else:
+            self.url = ""
         self.url += BASEURL + "/api/api_v1"
         self.logger = main_logger.getChild("transform_ninja")
 

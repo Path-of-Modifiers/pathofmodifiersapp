@@ -28,6 +28,8 @@ class DynamicDataDepositor:
 
         if BASEURL != "localhost":
             self.api_v1_url = "https://"
+        else:
+            self.url = ""
         self.api_v1_url += BASEURL + f"/api/api_v1/{api_v1_object}/"
 
         self.df_data: pd.DataFrame = df_data

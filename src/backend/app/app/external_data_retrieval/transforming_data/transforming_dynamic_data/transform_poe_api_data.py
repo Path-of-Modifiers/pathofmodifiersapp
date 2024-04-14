@@ -16,7 +16,12 @@ BASEURL = os.getenv("DOMAIN")
 
 class PoeAPIDataTransformer:
     def __init__(self, main_logger: logging.Logger):
-        self.url = "https://" + BASEURL + "/api/api_v1"
+        if BASEURL != "localhost":
+            self.url = "https://"
+        else:
+            self.url = ""
+        self.url += BASEURL + "/api/api_v1"
+
         self.logger = main_logger.getChild("transform_poe")
 
     def _create_account_table(self, df: pd.DataFrame) -> pd.DataFrame:
