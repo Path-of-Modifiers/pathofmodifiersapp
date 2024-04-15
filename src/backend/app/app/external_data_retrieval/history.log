@@ -71,3 +71,67 @@ connector: <aiohttp.connector.TCPConnector object at 0x7fdcb2639c90>
 2024-03-29 16:05:45:INFO    :__main__: Program starting up.
 2024-03-29 16:05:45:INFO    :__main__: Retrieving modifiers from db.
 2024-03-29 16:05:45:INFO    :__main__: Initiating data stream.
+2024-04-15 14:43:37:INFO    :__main__: Program starting up.
+2024-04-15 14:43:37:INFO    :__main__: Retrieving modifiers from db.
+2024-04-15 14:44:45:INFO    :__main__: Program starting up.
+2024-04-15 14:44:45:INFO    :__main__: Retrieving modifiers from db.
+2024-04-15 14:44:45:INFO    :__main__: Initiating data stream.
+2024-04-15 14:45:07:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                           modifier  itemId                                             effect alternateEffect roll
+417  Impossible Escape  Passives in Radius of Warlord's Call can be Al...     126  Passives in Radius of Warlord's Call can be Al...            <NA>   []
+2024-04-15 14:46:22:INFO    :__main__: Program starting up.
+2024-04-15 14:46:22:INFO    :__main__: Retrieving modifiers from db.
+2024-04-15 14:46:22:INFO    :__main__: Initiating data stream.
+2024-04-15 14:46:40:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                           modifier  itemId                                             effect alternateEffect roll
+417  Impossible Escape  Passives in Radius of Warlord's Call can be Al...     927  Passives in Radius of Warlord's Call can be Al...            <NA>   []
+2024-04-15 14:47:20:INFO    :__main__: Program starting up.
+2024-04-15 14:47:20:INFO    :__main__: Retrieving modifiers from db.
+2024-04-15 14:47:21:INFO    :__main__: Initiating data stream.
+2024-04-15 14:51:46:INFO    :__main__: Program starting up.
+2024-04-15 14:51:46:INFO    :__main__: Retrieving modifiers from db.
+2024-04-15 14:51:46:INFO    :__main__: Initiating data stream.
+2024-04-15 14:52:06:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                           modifier  itemId                                             effect alternateEffect roll
+417  Impossible Escape  Passives in Radius of Warlord's Call can be Al...    2529  Passives in Radius of Warlord's Call can be Al...            <NA>   []
+2024-04-15 14:53:16:INFO    :__main__: Program starting up.
+2024-04-15 14:53:16:INFO    :__main__: Retrieving modifiers from db.
+2024-04-15 14:53:16:INFO    :__main__: Initiating data stream.
+2024-04-15 14:53:36:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                           modifier  itemId                                             effect alternateEffect roll
+417  Impossible Escape  Passives in Radius of Warlord's Call can be Al...    3330  Passives in Radius of Warlord's Call can be Al...            <NA>   []
+2024-04-15 14:55:22:INFO    :__main__: Program starting up.
+2024-04-15 14:55:22:INFO    :__main__: Retrieving modifiers from db.
+2024-04-15 14:55:22:INFO    :__main__: Initiating data stream.
+2024-04-15 14:55:49:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                           modifier  itemId                                             effect alternateEffect roll
+417  Impossible Escape  Passives in Radius of Warlord's Call can be Al...    4131  Passives in Radius of Warlord's Call can be Al...            <NA>   []
+2024-04-15 14:56:48:INFO    :__main__: Program starting up.
+2024-04-15 14:56:48:INFO    :__main__: Retrieving modifiers from db.
+2024-04-15 14:56:48:INFO    :__main__: Initiating data stream.
+2024-04-15 14:57:09:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                           modifier  itemId                                             effect alternateEffect roll
+417  Impossible Escape  Passives in Radius of Warlord's Call can be Al...    4932  Passives in Radius of Warlord's Call can be Al...            <NA>   []
+2024-04-15 14:57:36:INFO    :__main__: Program starting up.
+2024-04-15 14:57:36:INFO    :__main__: Retrieving modifiers from db.
+2024-04-15 14:57:36:INFO    :__main__: Initiating data stream.
+2024-04-15 14:57:59:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                           modifier  itemId                                             effect alternateEffect roll
+417  Impossible Escape  Passives in Radius of Warlord's Call can be Al...    5733  Passives in Radius of Warlord's Call can be Al...            <NA>   []
+2024-04-15 14:58:16:INFO    :__main__: Program starting up.
+2024-04-15 14:58:16:INFO    :__main__: Retrieving modifiers from db.
+2024-04-15 14:58:16:INFO    :__main__: Initiating data stream.
+2024-04-15 15:00:18:INFO    :__main__: Program starting up.
+2024-04-15 15:00:18:INFO    :__main__: Retrieving modifiers from db.
+2024-04-15 15:00:18:INFO    :__main__: Initiating data stream.
+2024-04-15 15:00:39:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                           modifier  itemId                                             effect alternateEffect roll
+417  Impossible Escape  Passives in Radius of Warlord's Call can be Al...    7335  Passives in Radius of Warlord's Call can be Al...            <NA>   []
+2024-04-15 15:04:03:INFO    :__main__: Program starting up.
+2024-04-15 15:04:03:INFO    :__main__: Retrieving modifiers from db.
+2024-04-15 15:04:03:INFO    :__main__: Initiating data stream.
+2024-04-15 15:04:52:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                           modifier  itemId                                             effect alternateEffect roll
+417  Impossible Escape  Passives in Radius of Warlord's Call can be Al...    8136  Passives in Radius of Warlord's Call can be Al...            <NA>   []
+2024-04-15 15:05:06:ERROR   :asyncio: Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x7f79e79aeb90>
