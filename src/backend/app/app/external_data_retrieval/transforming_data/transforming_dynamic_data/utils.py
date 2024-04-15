@@ -135,7 +135,7 @@ def get_rolls(
         logger.info(
             f"Failed to add rolls to listed modifiers, this likely means the modifier is legacy.\n{failed_df}"
         )
-        dynamic_df = dynamic_df.loc[~dynamic_df["roll"].str.len() == 0]
+        dynamic_df = dynamic_df.loc[dynamic_df["roll"].str.len() != 0]
 
     # Creates a column for position, which contains a list of numerical strings
     dynamic_df.loc[:, "position"] = dynamic_df.loc[:, "roll"].apply(
@@ -144,7 +144,6 @@ def get_rolls(
 
     # Each row describes one range
     dynamic_df = dynamic_df.explode(["roll", "position"])
-
     merged_dynamic_df = dynamic_df.merge(
         dynamic_modifier_df, on=["effect", "position"], how="left"
     )
@@ -170,15 +169,9 @@ def get_rolls(
 
         return roll
 
-    print(
-        merged_dynamic_df.apply(
-            convert_text_roll_to_index, axis=1
-        )  # The `roll` column now contains a number)
-    )
-    quit()
-    # merged_dynamic_df["roll"] = merged_dynamic_df.apply(
-    #     convert_text_roll_to_index, axis=1
-    # )  # The `roll` column now contains a number
+    merged_dynamic_df["roll"] = merged_dynamic_df.apply(
+        convert_text_roll_to_index, axis=1
+    )  # The `roll` column now contains a number
 
     # ---- Finishing touches ----
     processed_df = pd.concat(
