@@ -19,9 +19,13 @@ services:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
 
   backend:
-    volumes:
-      - ./backend/app:/app
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    restart: always
+    networks:
+      # Use the public network created to be shared between Traefik and
+      # any other service that needs to be publicly available with HTTPS
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - default
     depends_on:
       - db
     env_file:
@@ -32,9 +36,9 @@ services:
       - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS?Variable not set}
       # Allow explicit env var override for tests
       - SMTP_HOST=${SMTP_HOST}
+    platform: linux/amd64 # Patch for M1 Mac
     build:
       context: ./backend
-      dockerfile: Dockerfile
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
     labels:
@@ -55,12 +59,7 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.middlewares=${STACK_NAME?Variable not set}-www-redirect
 
-    networks:
-      # Use the public network created to be shared between Traefik and
-      # any other service that needs to be publicly available with HTTPS
-      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
-      - default
-    restart: always
+
 
   pgadmin:
     image: dpage/pgadmin4
