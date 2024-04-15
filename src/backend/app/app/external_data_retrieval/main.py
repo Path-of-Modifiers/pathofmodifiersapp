@@ -34,7 +34,7 @@ class ContiniousDataRetrieval:
     if "localhost" not in BASEURL:
         modifier_url = "https://"
     else:
-        modifier_url = ""
+        modifier_url = "http://"
     modifier_url += BASEURL + "/api/api_v1/modifier/"
 
     def __init__(
@@ -62,6 +62,7 @@ class ContiniousDataRetrieval:
         )
 
     def _get_modifiers(self) -> Dict[str, pd.DataFrame]:
+
         modifier_df = pd.read_json(self.modifier_url, dtype=str)
         modifier_types = [
             "implicit",
