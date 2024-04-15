@@ -19,7 +19,7 @@ class PoeAPIDataTransformer:
         if "localhost" not in BASEURL:
             self.url = "https://"
         else:
-            self.url = ""
+            self.url = "http://"
         self.url += BASEURL + "/api/api_v1"
 
         self.logger = main_logger.getChild("transform_poe")
