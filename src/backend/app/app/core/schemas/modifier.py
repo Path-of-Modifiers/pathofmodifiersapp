@@ -7,7 +7,7 @@ import pydantic as _pydantic
 class _BaseModifier(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
-    modifierId: Optional[int] = None
+    modifierId: int
     position: int
     minRoll: Optional[float] = None
     maxRoll: Optional[float] = None
