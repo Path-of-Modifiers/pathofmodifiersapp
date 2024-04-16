@@ -25,7 +25,13 @@ class DynamicDataDepositor:
             df_data (pd.DataFrame): _description_
             api_v1_object (str): _description_. For instance, "currency"
         """
-        self.api_v1_url = BASEURL + f"/api/api_v1/{api_v1_object}/"
+
+        if "localhost" not in BASEURL:
+            self.api_v1_url = "https://"
+        else:
+            self.url = "http://"
+        self.api_v1_url += BASEURL + f"/api/api_v1/{api_v1_object}/"
+
         self.df_data: pd.DataFrame = df_data
 
         self.logger = logging.getLogger(__name__)

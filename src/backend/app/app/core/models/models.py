@@ -112,6 +112,7 @@ class Modifier(Base):
         _sql.Identity(start=1, increment=1, cycle=True),
         nullable=False,
         index=True,
+        primary_key=True,
     )
     position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
     minRoll = _sql.Column(_sql.Float(24))
@@ -137,7 +138,6 @@ class Modifier(Base):
     )
 
     __table_args__ = (
-        _sql.PrimaryKeyConstraint(modifierId, position),
         _sql.CheckConstraint(
             """
             CASE 
@@ -183,6 +183,7 @@ class Modifier(Base):
             """ modifier."maxRoll" >= modifier."minRoll" """,
             name="check_modifier_maxRoll_greaterThan_minRoll",
         ),
+        _sql.UniqueConstraint(modifierId, position),
     )
 
 
@@ -207,7 +208,7 @@ class ItemModifier(Base):
     )
 
     __table_args__ = (
-        _sql.PrimaryKeyConstraint(itemId, modifierId, position),
+        _sql.PrimaryKeyConstraint(itemId, modifierId),
         _sql.ForeignKeyConstraint(
             [modifierId, position],
             ["modifier.modifierId", "modifier.position"],

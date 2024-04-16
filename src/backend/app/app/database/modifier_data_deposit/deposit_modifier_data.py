@@ -26,7 +26,11 @@ CASCADING_UPDATE = True
 class DataDepositer:
     def __init__(self) -> None:
         self.new_data_location = "new_data"
-        self.url = BASEURL + "/api/api_v1/modifier/"
+        if "localhost" not in BASEURL:
+            self.url = "https://"
+        else:
+            self.url = "http://"
+        self.url += BASEURL + "/api/api_v1/modifier/"
         self.update_disabled = not CASCADING_UPDATE
 
         self.modifier_types = [
@@ -63,6 +67,7 @@ class DataDepositer:
 
     def _get_current_modifiers(self) -> Optional[pd.DataFrame]:
         self.logger.info("Retrieving previously deposited data.")
+        print(self.url)
         df = pd.read_json(self.url, dtype=str)
         if df.empty:
             self.logger.info("Found no previously deposited data.")
