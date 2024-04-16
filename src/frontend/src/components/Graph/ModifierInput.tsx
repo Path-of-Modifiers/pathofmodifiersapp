@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import { Modifier } from "../../client";
 import { useQuery } from "@tanstack/react-query";
+import { useOutsideClick } from "../../hooks/useOutsideClick";
 
 const ModiferInput = () => {
   return <ModifierListInput />;
@@ -147,10 +148,6 @@ function ModifierListInput() {
     },
   ];
 
-  if (modifiers === undefined) {
-    return <>Error retrieving modifiers</>;
-  }
-
   const filteredModifiers: Modifier[] = testModifiers
     .filter((modifier) =>
       modifier.effect.toLowerCase().includes(searchText.toLowerCase())
@@ -167,6 +164,10 @@ function ModifierListInput() {
       isSelected: false,
     })
   );
+
+  const ref = useOutsideClick(() => {
+    setIsExpanded(false);
+  });
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(event.target.value);
@@ -214,17 +215,19 @@ function ModifierListInput() {
   };
 
   const handleInputBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    const relatedTarget = event.relatedTarget as HTMLElement | null;
-    if (relatedTarget && relatedTarget.closest(".chakra-stack options-list css-cex25x")) {
+    console.log(event.target.className);
+    if (event.target.className.includes("modifiers-list")) {
       return;
     }
-    setIsExpanded(false);
+    if (isExpanded) {
+      setIsExpanded(false);
+    }
   };
 
   const selectedModifiersList = selectedModifiers.map((modifier) => (
     <Flex key={modifier.modifierId} alignItems="center">
       <Checkbox
-        isChecked={modifier.isSelected || true}
+        isChecked={modifier.isSelected}
         onChange={() => handleCheckboxChange(modifier.modifierId)}
       />
       <Text ml={2}>{modifier.effect}</Text>
@@ -247,27 +250,33 @@ function ModifierListInput() {
   ));
 
   return (
-    <Flex direction="column">
-      <Box bgColor={"ui.white"}>
+    <Flex direction="column" color="ui.dark" width={500}>
+      <Box bgColor={"ui.white"} ref={ref}>
+        <Input
+          className="modifiers-list"
+          value={searchText}
+          onChange={handleInputChange}
+          placeholder="Search modifiers..."
+          onFocus={() => {
+            if (!isExpanded) {
+              toggleExpand();
+            }
+          }}
+          onBlur={handleInputBlur}
+        />
+
         {isExpanded && (
           <Stack
             mt={2}
-            maxHeight="120px"
+            maxHeight="200px"
             overflowY="auto"
             onScroll={handleScroll}
-            className="options-list"
           >
             {modifiersList}
           </Stack>
         )}
-        <Stack  mt={2}>{selectedModifiersList}</Stack>
-        <Input
-          value={searchText}
-          onChange={handleInputChange}
-          placeholder="Search modifiers..."
-          onFocus={toggleExpand}
-          onBlur={handleInputBlur}
-        />
+
+        <Stack mt={2}>{selectedModifiersList}</Stack>
       </Box>
       {/* <Input
         placeholder="Enter a modifier"
