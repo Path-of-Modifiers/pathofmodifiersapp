@@ -8,6 +8,7 @@ from app.api.api_v1.endpoints import (
     item,
     modifier,
     stash,
+    plot,
 )
 
 api_router = APIRouter()
@@ -23,3 +24,4 @@ api_router.include_router(
 api_router.include_router(item.router, prefix="/item", tags=["items"])
 api_router.include_router(modifier.router, prefix="/modifier", tags=["modifiers"])
 api_router.include_router(stash.router, prefix="/stash", tags=["stashes"])
+api_router.include_router(plot.router, prefix="/plot", tags=["plotting"])
