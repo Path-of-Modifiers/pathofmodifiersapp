@@ -15002,3 +15002,41 @@
 2024-04-15 14:41:33:INFO    :__main__: Deleted 'Voices.csv'
 2024-04-15 14:41:33:INFO    :__main__: Deleting 'WatchersEye.csv'
 2024-04-15 14:41:33:INFO    :__main__: Deleted 'WatchersEye.csv'
+2024-04-16 16:38:51:INFO    :__main__: Loading new data from 'BalanceOfTerror.csv'.
+2024-04-16 16:38:51:INFO    :__main__: Successfully loaded new data.
+2024-04-16 16:38:51:INFO    :__main__: Recording attached comments:
+2024-04-16 16:38:51:INFO    :__main__: # Source: https://poedb.tw/The_Balance_of_Terror
+2024-04-16 16:38:51:INFO    :__main__: End of attached comments.
+2024-04-16 16:38:51:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-16 16:38:51:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-16 16:38:51:INFO    :__main__: Retrieving previously deposited data.
+2024-04-16 16:38:51:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-16 16:38:51:INFO    :__main__: Removing duplicate modifiers
+2024-04-16 16:38:51:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-16 16:38:51:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-16 16:38:51:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-16 16:38:51:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-16 16:38:51:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-16 16:38:51:INFO    :__main__: Found a modifier with a higher 'maxRoll'.
+2024-04-16 16:38:51:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-16 16:38:51:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-16 16:38:51:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-16 16:38:51:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-16 16:38:51:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-16 16:38:51:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-16 16:38:51:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-16 16:38:51:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-16 16:38:51:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-16 16:38:51:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-16 16:38:51:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-16 16:38:51:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-16 16:38:51:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-16 16:38:51:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-16 16:38:51:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-16 16:38:51:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-16 16:38:51:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-16 16:38:51:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-16 16:38:51:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-16 16:38:51:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-16 16:38:51:INFO    :__main__: Deleting 'BalanceOfTerror.csv'
+2024-04-16 16:38:51:INFO    :__main__: Deleted 'BalanceOfTerror.csv'
