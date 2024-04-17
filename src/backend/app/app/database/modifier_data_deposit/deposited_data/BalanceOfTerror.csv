@@ -1,5 +1,6 @@
 # Source: https://poedb.tw/The_Balance_of_Terror
 minRoll,maxRoll,position,effect,static,unique
+10,15,0,"#% to all Elemental Resistances",,True
 ,,0,"Inflict Lightning Exposure on Hit if you've cast Conductivity in the past 10 seconds",True,True
 ,,0,"You are Unaffected by Shock if you've cast Conductivity in the past 10 seconds",True,True
 ,,0,"Immune to Curses if you've cast Despair in the past 10 seconds",True,True
