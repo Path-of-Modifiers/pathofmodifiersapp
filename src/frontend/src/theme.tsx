@@ -10,6 +10,7 @@ const theme = extendTheme({
       danger: "#FF1D1D",
       white: "#FFFFFF",
       dark: "#1A202C",
+      input: "#2d3333",
       darkSlate: "#252D3D",
     },
   },
