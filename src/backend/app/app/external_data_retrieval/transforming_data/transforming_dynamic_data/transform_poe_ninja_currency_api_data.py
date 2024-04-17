@@ -17,7 +17,7 @@ def load_currency_data():
     Loads data from the poe.ninja currency API.
     """
     poe_ninja_currency_api_handler = PoeNinjaCurrencyAPIHandler(
-        url="https://poe.ninja/api/data/currencyoverview?league=Affliction&type=Currency"
+        url="https://poe.ninja/api/data/currencyoverview?league=Necropolis&type=Currency"
     )
 
     currencies_df = poe_ninja_currency_api_handler.make_request()
@@ -48,12 +48,6 @@ class TransformPoeNinjaCurrencyAPIData:
         )
         return currency_df
 
-    def _transform_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
-        currency_df.loc[0, "valueInChaos"] = 1
-
-        currency_df = currency_df[currency_df["tradeName"].notnull()]
-        return currency_df
-
     def _clean_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
         """
         Cleans the currency table of unnecessary columns.
@@ -64,6 +58,7 @@ class TransformPoeNinjaCurrencyAPIData:
             axis=1,
             inplace=True,
         )
+        currency_df = currency_df.loc[~currency_df["tradeName"].isna()]
         return currency_df
 
     def _get_latest_item_id_series(self, currency_df: pd.DataFrame) -> pd.Series:
@@ -83,8 +78,9 @@ class TransformPoeNinjaCurrencyAPIData:
         """
         currency_df = self._create_currency_table(currency_df)
         currency_df = self._clean_currency_table(currency_df)
-        currency_df = self._transform_currency_table(currency_df)
-        insert_data(currency_df, url=self.url, table_name="currency")
+        insert_data(
+            currency_df, url=self.url, table_name="currency", logger=self.logger
+        )
         currency_id = self._get_latest_item_id_series(currency_df)
 
         currency_df["currencyId"] = currency_id
