@@ -55,7 +55,7 @@ class ContiniousDataRetrieval:
         )
 
         self.poe_ninja_currency_api_handler = PoeNinjaCurrencyAPIHandler(
-            url="https://poe.ninja/api/data/currencyoverview?league=Affliction&type=Currency"
+            url="https://poe.ninja/api/data/currencyoverview?league=Necropolis&type=Currency"
         )
         self.poe_ninja_transformer = TransformPoeNinjaCurrencyAPIData(
             main_logger=self.logger
