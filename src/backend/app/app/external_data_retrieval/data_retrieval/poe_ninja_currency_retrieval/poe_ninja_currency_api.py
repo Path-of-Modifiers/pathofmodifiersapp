@@ -12,17 +12,18 @@ class PoeNinjaCurrencyAPIHandler:
         """
         Combines the currency data.
         """
+        currencies_df = self._json_to_df(currencies)
+        currency_details_df = self._json_to_df(currency_details)
 
-        currencies_sorted = sorted(currencies, key=lambda d: d["currencyTypeName"])
-        currency_details_sorted = sorted(currency_details, key=lambda d: d["name"])
-
-        combined_currency_data = []
-        for currency, currency_detail in zip(
-            currencies_sorted, currency_details_sorted
-        ):
-            combined_currency_data.append({**currency, **currency_detail})
-
-        return combined_currency_data
+        combined_currency_data_df = currencies_df.merge(
+            currency_details_df,
+            how="left",
+            # left_on="pay.pay_currency_id",
+            # right_on="id",
+            left_on="currencyTypeName",
+            right_on="name",
+        )
+        return combined_currency_data_df
 
     def _json_to_df(self, currencies: List) -> pd.DataFrame:
         df = pd.json_normalize(currencies)
@@ -41,11 +42,9 @@ class PoeNinjaCurrencyAPIHandler:
         currencies = response_json["lines"]
         currency_details = response_json["currencyDetails"]
 
-        combined_currency_data = self._combine_currency_data(
+        combined_currency_data_df = self._combine_currency_data(
             currencies, currency_details
         )
-
-        combined_currency_data_df = self._json_to_df(combined_currency_data)
 
         return combined_currency_data_df
 
