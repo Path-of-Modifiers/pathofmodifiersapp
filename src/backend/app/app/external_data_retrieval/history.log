@@ -135,3 +135,157 @@ connector: <aiohttp.connector.TCPConnector object at 0x7fdcb2639c90>
 417  Impossible Escape  Passives in Radius of Warlord's Call can be Al...    8136  Passives in Radius of Warlord's Call can be Al...            <NA>   []
 2024-04-15 15:05:06:ERROR   :asyncio: Unclosed client session
 client_session: <aiohttp.client.ClientSession object at 0x7f79e79aeb90>
+2024-04-17 18:26:18:INFO    :__main__: Program starting up.
+2024-04-17 18:26:18:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 18:26:18:INFO    :__main__: Initiating data stream.
+2024-04-17 18:27:40:INFO    :__main__: Program starting up.
+2024-04-17 18:27:40:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 18:27:40:INFO    :__main__: Initiating data stream.
+2024-04-17 18:27:58:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                           modifier  itemId                                             effect alternateEffect roll
+417  Impossible Escape  Passives in Radius of Warlord's Call can be Al...     126  Passives in Radius of Warlord's Call can be Al...            <NA>   []
+2024-04-17 18:28:17:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                           modifier  itemId                                             effect alternateEffect roll
+346  Impossible Escape  Passives in Radius of Warlord's Call can be Al...     941  Passives in Radius of Warlord's Call can be Al...            <NA>   []
+2024-04-17 18:29:48:ERROR   :asyncio: Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x7f0572df8d10>
+2024-04-17 18:34:42:INFO    :__main__: Program starting up.
+2024-04-17 18:34:42:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 18:34:42:INFO    :__main__: Initiating data stream.
+2024-04-17 18:37:33:INFO    :__main__: Program starting up.
+2024-04-17 18:37:33:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 18:37:33:INFO    :__main__: Initiating data stream.
+2024-04-17 18:39:11:INFO    :__main__: Program starting up.
+2024-04-17 18:39:11:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 18:39:11:INFO    :__main__: Initiating data stream.
+2024-04-17 18:42:56:INFO    :__main__: Program starting up.
+2024-04-17 18:42:56:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 18:42:56:INFO    :__main__: Initiating data stream.
+2024-04-17 18:47:34:INFO    :__main__: Program starting up.
+2024-04-17 18:47:34:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 18:47:34:INFO    :__main__: Initiating data stream.
+2024-04-17 18:57:45:INFO    :__main__: Program starting up.
+2024-04-17 18:57:45:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 18:57:45:INFO    :__main__: Initiating data stream.
+2024-04-17 19:03:02:INFO    :__main__: Program starting up.
+2024-04-17 19:03:02:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 19:03:02:INFO    :__main__: Initiating data stream.
+2024-04-17 19:03:32:INFO    :__main__: Program starting up.
+2024-04-17 19:03:32:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 19:03:32:INFO    :__main__: Initiating data stream.
+2024-04-17 19:08:02:INFO    :__main__: Program starting up.
+2024-04-17 19:08:02:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 19:08:02:INFO    :__main__: Initiating data stream.
+2024-04-17 19:09:35:INFO    :__main__: Program starting up.
+2024-04-17 19:09:35:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 19:09:35:INFO    :__main__: Initiating data stream.
+2024-04-17 19:12:33:INFO    :__main__: Program starting up.
+2024-04-17 19:12:33:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 19:12:33:INFO    :__main__: Initiating data stream.
+2024-04-17 19:17:17:INFO    :__main__: Program starting up.
+2024-04-17 19:17:17:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 19:17:17:INFO    :__main__: Initiating data stream.
+2024-04-17 19:18:58:INFO    :__main__: Program starting up.
+2024-04-17 19:18:58:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 19:18:58:INFO    :__main__: Initiating data stream.
+2024-04-17 19:19:55:INFO    :__main__: Program starting up.
+2024-04-17 19:19:55:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 19:19:55:INFO    :__main__: Initiating data stream.
+2024-04-17 19:21:28:INFO    :__main__: Program starting up.
+2024-04-17 19:21:28:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 19:21:28:INFO    :__main__: Initiating data stream.
+2024-04-17 19:25:11:INFO    :__main__: Program starting up.
+2024-04-17 19:25:11:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 19:25:11:INFO    :__main__: Initiating data stream.
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Recieved a 422 response, indicating an unprocessable entity was submitted, while posting a currency table.
+Sending smaller batches, trying to locate specific error.
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located chunk of data that contains the unprocessable entity.
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located the unprocessable entity:
+
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located chunk of data that contains the unprocessable entity.
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located the unprocessable entity:
+
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located chunk of data that contains the unprocessable entity.
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located the unprocessable entity:
+
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located the unprocessable entity:
+
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located the unprocessable entity:
+
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located the unprocessable entity:
+
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located the unprocessable entity:
+
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located chunk of data that contains the unprocessable entity.
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located the unprocessable entity:
+
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located the unprocessable entity:
+
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located the unprocessable entity:
+
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located chunk of data that contains the unprocessable entity.
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located the unprocessable entity:
+
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located the unprocessable entity:
+
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located the unprocessable entity:
+
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located the unprocessable entity:
+
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located the unprocessable entity:
+
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located chunk of data that contains the unprocessable entity.
+2024-04-17 19:25:35:WARNING :__main__.transform_ninja: Located the unprocessable entity:
+
+2024-04-17 19:25:35:CRITICAL:__main__.transform_poe: Recieved a 500 response, indicating client side error.
+2024-04-17 19:25:35:ERROR   :__main__.transform_poe: Something went wrong:
+HTTPError('500 Server Error: Internal Server Error for url: http://localhost/api/api_v1/item/')
+Traceback (most recent call last):
+  File "/app/app/external_data_retrieval/transforming_data/transforming_dynamic_data/transform_poe_api_data.py", line 368, in transform_into_tables
+    self.logger.info(
+              ^^^^^^^
+  File "/app/app/external_data_retrieval/transforming_data/transforming_dynamic_data/transform_poe_api_data.py", line 308, in _process_item_table
+    The `item_modifier` table heavily relies on what type of item the modifiers
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/database/utils.py", line 84, in insert_data
+    response.raise_for_status()
+  File "/usr/local/lib/python3.11/site-packages/requests/models.py", line 1021, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 500 Server Error: Internal Server Error for url: http://localhost/api/api_v1/item/
+2024-04-17 19:25:35:INFO    :__main__.transform_poe: These changeId's were present in data:
+['2304883465-2293076633-2219109349-2460729612-2390966652', '2304922174-2293110644-2219127040-2460737268-2390997043', '2304930635-2293149709-2219147988-2460767381-2391013091', '2304955514-2293151979-2219159955-2460806643-2391018012', '2304968792-2293168455-2219177127-2460831188-2391018267', '2304975508-2293184345-2219189911-2460866397-2391034856', '2304977775-2293192101-2219203956-2460911065-2391045008', '2305008113-2293211221-2219226799-2460912586-2391054388', '2305016046-2293226213-2219272303-2460932749-2391063244', '2305038048-2293228746-2219273415-2460954583-2391074415', '2305044247-2293231523-2219288215-2460963276-2391086115', '2305064465-2293237631-2219294000-2460972971-2391091157', '2305083131-2293237886-2219309357-2460987181-2391118175', '2305090140-2293249895-2219345105-2460989614-2391123058', '2305106113-2293270644-2219390218-2460993095-2391130830', '2305110879-2293278396-2219412640-2461021350-2391147175', '2305138620-2293301041-2219465667-2461034403-2391167139']
+2024-04-17 19:30:02:INFO    :__main__: Program starting up.
+2024-04-17 19:30:02:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 19:30:03:INFO    :__main__: Initiating data stream.
+2024-04-17 19:30:49:INFO    :__main__: Program starting up.
+2024-04-17 19:30:49:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 19:30:49:INFO    :__main__: Initiating data stream.
+2024-04-17 19:41:52:INFO    :__main__: Program starting up.
+2024-04-17 19:41:52:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 19:41:52:INFO    :__main__: Initiating data stream.
+2024-04-17 19:44:18:INFO    :__main__: Program starting up.
+2024-04-17 19:44:18:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 19:44:18:INFO    :__main__: Initiating data stream.
+2024-04-17 19:45:06:INFO    :__main__: Program starting up.
+2024-04-17 19:45:06:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 19:45:06:INFO    :__main__: Initiating data stream.
+2024-04-17 19:45:56:INFO    :__main__: Program starting up.
+2024-04-17 19:45:56:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 19:45:56:INFO    :__main__: Initiating data stream.
+2024-04-17 19:50:06:INFO    :__main__: Program starting up.
+2024-04-17 19:50:06:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 19:50:06:INFO    :__main__: Initiating data stream.
+2024-04-17 19:51:28:INFO    :__main__: Program starting up.
+2024-04-17 19:51:28:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 19:51:28:INFO    :__main__: Initiating data stream.
+2024-04-17 19:55:25:INFO    :__main__: Program starting up.
+2024-04-17 19:55:25:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 19:55:25:INFO    :__main__: Initiating data stream.
+2024-04-17 19:56:05:INFO    :__main__: Program starting up.
+2024-04-17 19:56:05:INFO    :__main__: Retrieving modifiers from db.
+2024-04-17 19:56:05:INFO    :__main__: Initiating data stream.
+2024-04-17 19:56:25:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                           modifier  itemId                                             effect alternateEffect roll
+417  Impossible Escape  Passives in Radius of Warlord's Call can be Al...     924  Passives in Radius of Warlord's Call can be Al...            <NA>   []
+2024-04-17 19:56:36:ERROR   :asyncio: Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x7f6156f20ad0>
