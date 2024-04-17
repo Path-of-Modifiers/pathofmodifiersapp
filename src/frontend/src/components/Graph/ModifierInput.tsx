@@ -8,6 +8,8 @@ import {
   Text,
 } from "@chakra-ui/react";
 
+import AddIconCheckbox from "../Icon/AddIconCheckbox";
+
 import { useState } from "react";
 import { Modifier } from "../../client";
 import { useQuery } from "@tanstack/react-query";
@@ -47,6 +49,12 @@ const GetModifiers = () => {
 interface ModifierEffect {
   modifierId: number;
   effect: string;
+  min_roll_position_one?: number;
+  max_roll_position_one?: number;
+  min_roll_position_two?: number;
+  max_roll_position_two?: number;
+  text_roll_position_one?: string;
+  text_roll_position_two?: string;
   isSelected?: boolean;
 }
 
@@ -129,6 +137,28 @@ function ModifierListInput() {
       position: 0,
       minRoll: null,
       maxRoll: null,
+      textRolls: "Xibaqua-Xopec-Xoph-Xoph's Blood",
+      static: true,
+      effect:
+        "Hits against Nearby Enemies have 50% increased Critical Strike Chance",
+      regex: null,
+      implicit: null,
+      explicit: null,
+      delve: null,
+      fractured: null,
+      synthesized: null,
+      unique: true,
+      corrupted: null,
+      enchanted: null,
+      veiled: null,
+      createdAt: "2024-04-15T14:32:49.651728",
+      updatedAt: "2024-04-15T14:32:49.651766",
+    },
+    {
+      modifierId: 12,
+      position: 1,
+      minRoll: 34,
+      maxRoll: 67,
       textRolls: null,
       static: true,
       effect:
@@ -157,16 +187,72 @@ function ModifierListInput() {
         !selectedModifiers.some((m) => m.modifierId === modifier.modifierId)
     );
 
-  const filteredModifierEffects: ModifierEffect[] = filteredModifiers.map(
-    (modifier) => ({
-      modifierId: modifier.modifierId,
-      effect: modifier.effect,
+  // Group modifiers by effect
+  const groupedModifiers = filteredModifiers.reduce<{
+    [effect: string]: Modifier[];
+  }>((acc, modifier) => {
+    const effect = modifier.effect;
+    acc[effect] = acc[effect] || [];
+    acc[effect].push(modifier);
+    return acc;
+  }, {});
+
+  const filteredModifierEffects: ModifierEffect[] = [];
+
+  // Process each group
+  for (const modifiers of Object.values(groupedModifiers)) {
+    const positionOne: Partial<ModifierEffect> = {};
+    const positionTwo: Partial<ModifierEffect> = {};
+
+    for (const modifier of modifiers) {
+      if (modifier.position === 0) {
+        if (modifier.minRoll && modifier.maxRoll) {
+          positionOne.min_roll_position_one = modifier.minRoll;
+          positionOne.max_roll_position_one = modifier.maxRoll;
+        } else if (modifier.textRolls) {
+          positionOne.text_roll_position_one = modifier.textRolls;
+        }
+      } else if (modifier.position === 1) {
+        if (modifier.minRoll && modifier.maxRoll) {
+          positionTwo.min_roll_position_two = modifier.minRoll;
+          positionTwo.max_roll_position_two = modifier.maxRoll;
+        } else if (modifier.textRolls) {
+          positionTwo.text_roll_position_two = modifier.textRolls;
+        }
+      }
+    }
+
+    filteredModifierEffects.push({
+      modifierId: modifiers[0].modifierId,
+      effect: modifiers[0].effect,
       isSelected: false,
-    })
-  );
+      ...positionOne,
+      ...positionTwo,
+    });
+  }
+
+  // const filteredModifierEffects: ModifierEffect[] = filteredModifiers.map(
+  //   (modifier) => ({
+  //     modifierId: modifier.modifierId,
+  //     effect: modifier.effect,
+  //     min_roll_position_one: modifier.minRoll,
+  //     max_roll_position_one: modifier.maxRoll,
+  //     min_roll_position_two: modifier.minRoll,
+  //     max_roll_position_two: modifier.maxRoll,
+  //     text_roll_position_one: modifier.textRolls,
+  //     text_roll_position_two: modifier.textRolls,
+  //     isSelected: false,
+  //   })
+  // );
 
   const ref = useOutsideClick(() => {
     setIsExpanded(false);
+    console.log("Selected modifiers: \n");
+    console.log(selectedModifiers);
+    console.log("Filtered modifiers: \n");
+    console.log(filteredModifierEffects);
+    console.log("Grouped modifiers: \n");
+    console.log(groupedModifiers);
   });
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -174,14 +260,30 @@ function ModifierListInput() {
   };
 
   const handleModifierSelect = (selectedModifierEffect: ModifierEffect) => {
-    if (
-      !selectedModifiers.some(
-        (modifierEffect) =>
-          modifierEffect.modifierId === selectedModifierEffect.modifierId
-      )
-    ) {
-      setSelectedModifiers([...selectedModifiers, selectedModifierEffect]);
-    }
+    // Set the clicked modifier as selected
+    selectedModifierEffect.isSelected = true;
+
+    // Find all modifiers with the same effect
+    const modifiersWithSameEffect =
+      groupedModifiers[selectedModifierEffect.effect];
+
+    // Mark all modifiers with the same effect as selected
+    modifiersWithSameEffect.forEach((modifier) => {
+      if (
+        !selectedModifiers.some((m) => m.modifierId === modifier.modifierId)
+      ) {
+        setSelectedModifiers((prevModifiers) => [
+          ...prevModifiers,
+          {
+            modifierId: modifier.modifierId,
+            effect: modifier.effect,
+            isSelected: true,
+            // Add other properties if needed
+          },
+        ]);
+      }
+    });
+
     setSearchText("");
   };
 
@@ -190,7 +292,6 @@ function ModifierListInput() {
       selectedModifiers.filter((modifier) => modifier.modifierId !== id)
     );
   };
-
   const handleCheckboxChange = (id: number) => {
     setSelectedModifiers(
       selectedModifiers.map((modifier) =>
@@ -214,27 +315,37 @@ function ModifierListInput() {
     }
   };
 
-  const handleInputBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    console.log(event.target.className);
-    if (event.target.className.includes("modifiers-list")) {
-      return;
-    }
-    if (isExpanded) {
-      setIsExpanded(false);
-    }
-  };
+  const selectedModifiersList = selectedModifiers.map((modifierEffect) => (
+    <Flex
+      key={modifierEffect.modifierId}
+      alignItems="center"
+      bgColor={"ui.secondary"}
+    >
+      <Box bgColor={"ui.main"} width={8} height={8}>
+        <AddIconCheckbox
+          isChecked={modifierEffect.isSelected}
+          top={"24%"}
+          left={"24%"}
+          onChange={() => handleCheckboxChange(modifierEffect.modifierId)}
+        />
+      </Box>
 
-  const selectedModifiersList = selectedModifiers.map((modifier) => (
-    <Flex key={modifier.modifierId} alignItems="center">
-      <Checkbox
-        isChecked={modifier.isSelected}
-        onChange={() => handleCheckboxChange(modifier.modifierId)}
-      />
-      <Text ml={2}>{modifier.effect}</Text>
-      <CloseButton
-        ml={2}
-        onClick={() => handleRemoveModifier(modifier.modifierId)}
-      />
+      <Text ml={3}>{modifierEffect.effect}</Text>
+
+      {modifierEffect.min_roll_position_one &&
+        modifierEffect.max_roll_position_one && (
+          <Text ml={3}>
+            {modifierEffect.min_roll_position_one} -{" "}
+            {modifierEffect.max_roll_position_one}
+          </Text>
+        )}
+
+      <Box ml={"auto"} bgColor={"ui.main"}>
+        <CloseButton
+          _hover={{ background: "gray.100", cursor: "pointer" }}
+          onClick={() => handleRemoveModifier(modifierEffect.modifierId)}
+        />
+      </Box>
     </Flex>
   ));
 
@@ -250,33 +361,35 @@ function ModifierListInput() {
   ));
 
   return (
-    <Flex direction="column" color="ui.dark" width={500}>
-      <Box bgColor={"ui.white"} ref={ref}>
+    <Flex direction="column" color="ui.dark" width={900}>
+      <Stack color={"ui.white"} mb={2}>
+        {selectedModifiersList}
+      </Stack>
+
+      <Box bgColor={"ui.input"} color={"ui.white"} ref={ref} mr={8} ml={8}>
         <Input
-          className="modifiers-list"
           value={searchText}
           onChange={handleInputChange}
-          placeholder="Search modifiers..."
+          placeholder="+ Add modifier"
+          _placeholder={{ color: "ui.white" }}
+          textAlign={"center"}
           onFocus={() => {
             if (!isExpanded) {
               toggleExpand();
             }
           }}
-          onBlur={handleInputBlur}
         />
 
         {isExpanded && (
           <Stack
-            mt={2}
             maxHeight="200px"
             overflowY="auto"
+            bgColor={"ui.input"}
             onScroll={handleScroll}
           >
             {modifiersList}
           </Stack>
         )}
-
-        <Stack mt={2}>{selectedModifiersList}</Stack>
       </Box>
       {/* <Input
         placeholder="Enter a modifier"
