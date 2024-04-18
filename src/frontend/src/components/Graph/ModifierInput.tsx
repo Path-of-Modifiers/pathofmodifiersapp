@@ -198,42 +198,102 @@ function ModifierListInput() {
     return acc;
   }, {});
 
-  const filteredModifierEffects: ModifierEffect[] = [];
+  function generateFilteredModifierEffects(): ModifierEffect[] {
+    const filteredModifierEffects: ModifierEffect[] = [];
 
-  // Process each group
-  for (const modifiers of Object.values(groupedModifiers)) {
-    const positionOne: Partial<ModifierEffect> = {};
-    const positionTwo: Partial<ModifierEffect> = {};
+    // Process each group
+    for (const modifiers of Object.values(groupedModifiers)) {
+      const positionOne: Partial<ModifierEffect> = {};
+      const positionTwo: Partial<ModifierEffect> = {};
 
-    for (const modifier of modifiers) {
-      if (modifier.position === 0) {
-        if (modifier.minRoll && modifier.maxRoll) {
-          positionOne.min_roll_position_one = modifier.minRoll;
-          positionOne.max_roll_position_one = modifier.maxRoll;
-        } else if (modifier.textRolls) {
-          positionOne.text_roll_position_one = modifier.textRolls;
-        }
-      } else if (modifier.position === 1) {
-        if (modifier.minRoll && modifier.maxRoll) {
-          positionTwo.min_roll_position_two = modifier.minRoll;
-          positionTwo.max_roll_position_two = modifier.maxRoll;
-        } else if (modifier.textRolls) {
-          positionTwo.text_roll_position_two = modifier.textRolls;
+      for (const modifier of modifiers) {
+        if (modifier.position === 0) {
+          if (modifier.minRoll && modifier.maxRoll) {
+            positionOne.min_roll_position_one = modifier.minRoll;
+            positionOne.max_roll_position_one = modifier.maxRoll;
+          } else if (modifier.textRolls) {
+            positionOne.text_roll_position_one = modifier.textRolls;
+          }
+        } else if (modifier.position === 1) {
+          if (modifier.minRoll && modifier.maxRoll) {
+            positionTwo.min_roll_position_two = modifier.minRoll;
+            positionTwo.max_roll_position_two = modifier.maxRoll;
+          } else if (modifier.textRolls) {
+            positionTwo.text_roll_position_two = modifier.textRolls;
+          }
         }
       }
+
+      modifiers.map((modifier) => {
+        const modifierEffect: ModifierEffect = {
+          modifierId: modifier.modifierId,
+          effect: modifier.effect,
+          isSelected: false,
+          ...positionOne,
+          ...positionTwo,
+        };
+        filteredModifierEffects.push(modifierEffect);
+      }, []);
     }
 
-    modifiers.map((modifier) => {
-      const modifierEffect: ModifierEffect = {
-        modifierId: modifier.modifierId,
-        effect: modifier.effect,
-        isSelected: false,
-        ...positionOne,
-        ...positionTwo,
-      };
-      filteredModifierEffects.push(modifierEffect);
-    }, []);
+    return filteredModifierEffects;
   }
+
+  // const filteredModifiers: Modifier[] = testModifiers
+  //   .filter((modifier) =>
+  //     modifier.effect.toLowerCase().includes(searchText.toLowerCase())
+  //   )
+  //   .filter(
+  //     (modifier) =>
+  //       !selectedModifiers.some((m) => m.modifierId === modifier.modifierId)
+  //   );
+
+  // // Group modifiers by effect
+  // const groupedModifiers = filteredModifiers.reduce<{
+  //   [effect: string]: Modifier[];
+  // }>((acc, modifier) => {
+  //   const effect = modifier.effect;
+  //   acc[effect] = acc[effect] || [];
+  //   acc[effect].push(modifier);
+  //   return acc;
+  // }, {});
+
+  // const filteredModifierEffects: ModifierEffect[] = [];
+
+  // // Process each group
+  // for (const modifiers of Object.values(groupedModifiers)) {
+  //   const positionOne: Partial<ModifierEffect> = {};
+  //   const positionTwo: Partial<ModifierEffect> = {};
+
+  //   for (const modifier of modifiers) {
+  //     if (modifier.position === 0) {
+  //       if (modifier.minRoll && modifier.maxRoll) {
+  //         positionOne.min_roll_position_one = modifier.minRoll;
+  //         positionOne.max_roll_position_one = modifier.maxRoll;
+  //       } else if (modifier.textRolls) {
+  //         positionOne.text_roll_position_one = modifier.textRolls;
+  //       }
+  //     } else if (modifier.position === 1) {
+  //       if (modifier.minRoll && modifier.maxRoll) {
+  //         positionTwo.min_roll_position_two = modifier.minRoll;
+  //         positionTwo.max_roll_position_two = modifier.maxRoll;
+  //       } else if (modifier.textRolls) {
+  //         positionTwo.text_roll_position_two = modifier.textRolls;
+  //       }
+  //     }
+  //   }
+
+  //   modifiers.map((modifier) => {
+  //     const modifierEffect: ModifierEffect = {
+  //       modifierId: modifier.modifierId,
+  //       effect: modifier.effect,
+  //       isSelected: false,
+  //       ...positionOne,
+  //       ...positionTwo,
+  //     };
+  //     filteredModifierEffects.push(modifierEffect);
+  //   }, []);
+  // }
 
   // const filteredModifierEffects: ModifierEffect[] = filteredModifiers.map(
   //   (modifier) => ({
@@ -254,11 +314,8 @@ function ModifierListInput() {
     console.log("Selected modifiers: \n");
     console.log(selectedModifiers);
     console.log("Filtered modifiers: \n");
-    console.log(filteredModifierEffects);
-    console.log("Grouped modifiers: \n");
-    console.log(groupedModifiers);
+    console.log(generateFilteredModifierEffects());
   });
-
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(event.target.value);
   };
@@ -312,6 +369,7 @@ function ModifierListInput() {
       )
     );
   };
+
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
@@ -325,18 +383,27 @@ function ModifierListInput() {
     }
   };
 
-  // Group selected modifiers by effect
-  const groupedSelectedModifiers = selectedModifiers.reduce<{
-    [effect: string]: ModifierEffect[];
-  }>((acc, modifier) => {
-    const effect = modifier.effect;
-    acc[effect] = acc[effect] || [];
-    acc[effect].push(modifier);
-    return acc;
-  }, {});
+  function groupSelectedModifiers(
+    selectedModifiers: ModifierEffect[]
+  ): ModifierEffect[][] {
+    // Group selected modifiers by effect
+    const groupedSelectedModifiers = selectedModifiers.reduce<{
+      [effect: string]: ModifierEffect[];
+    }>((acc, modifier) => {
+      const effect = modifier.effect;
+      acc[effect] = acc[effect] || [];
+      acc[effect].push(modifier);
+      return acc;
+    }, {});
+
+    // Convert object of arrays to array of arrays
+    const groupedModifiersArray = Object.values(groupedSelectedModifiers);
+
+    return groupedModifiersArray;
+  }
 
   // Render selected modifiers list
-  const selectedModifiersList = Object.values(groupedSelectedModifiers).map(
+  const selectedModifiersList = groupSelectedModifiers(selectedModifiers).map(
     (modifiersWithSameEffect, index) => (
       <Flex
         key={index} // You might want to use a more unique key here
@@ -379,7 +446,7 @@ function ModifierListInput() {
     )
   );
 
-  const modifiersList = filteredModifierEffects.map((modifier) => (
+  const modifiersList = generateFilteredModifierEffects().map((modifier) => (
     <Box
       key={modifier.modifierId}
       p={2}
