@@ -14,6 +14,7 @@ import { useState } from "react";
 import { Modifier } from "../../client";
 import { useQuery } from "@tanstack/react-query";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
+import React from "react";
 
 const ModiferInput = () => {
   return <ModifierListInput />;
@@ -222,13 +223,16 @@ function ModifierListInput() {
       }
     }
 
-    filteredModifierEffects.push({
-      modifierId: modifiers[0].modifierId,
-      effect: modifiers[0].effect,
-      isSelected: false,
-      ...positionOne,
-      ...positionTwo,
-    });
+    modifiers.map((modifier) => {
+      const modifierEffect: ModifierEffect = {
+        modifierId: modifier.modifierId,
+        effect: modifier.effect,
+        isSelected: false,
+        ...positionOne,
+        ...positionTwo,
+      };
+      filteredModifierEffects.push(modifierEffect);
+    }, []);
   }
 
   // const filteredModifierEffects: ModifierEffect[] = filteredModifiers.map(
@@ -288,20 +292,26 @@ function ModifierListInput() {
   };
 
   const handleRemoveModifier = (id: number) => {
-    setSelectedModifiers(
-      selectedModifiers.filter((modifier) => modifier.modifierId !== id)
-    );
+    const effectToRemove = selectedModifiers.find(
+      (modifier) => modifier.modifierId === id
+    )?.effect;
+
+    if (effectToRemove) {
+      setSelectedModifiers((prevModifiers) =>
+        prevModifiers.filter((modifier) => modifier.effect !== effectToRemove)
+      );
+    }
   };
+
   const handleCheckboxChange = (id: number) => {
-    setSelectedModifiers(
-      selectedModifiers.map((modifier) =>
+    setSelectedModifiers((prevModifiers) =>
+      prevModifiers.map((modifier) =>
         modifier.modifierId === id
           ? { ...modifier, isSelected: !modifier.isSelected }
           : modifier
       )
     );
   };
-
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
@@ -315,39 +325,59 @@ function ModifierListInput() {
     }
   };
 
-  const selectedModifiersList = selectedModifiers.map((modifierEffect) => (
-    <Flex
-      key={modifierEffect.modifierId}
-      alignItems="center"
-      bgColor={"ui.secondary"}
-    >
-      <Box bgColor={"ui.main"} width={8} height={8}>
-        <AddIconCheckbox
-          isChecked={modifierEffect.isSelected}
-          top={"24%"}
-          left={"24%"}
-          onChange={() => handleCheckboxChange(modifierEffect.modifierId)}
-        />
-      </Box>
+  // Group selected modifiers by effect
+  const groupedSelectedModifiers = selectedModifiers.reduce<{
+    [effect: string]: ModifierEffect[];
+  }>((acc, modifier) => {
+    const effect = modifier.effect;
+    acc[effect] = acc[effect] || [];
+    acc[effect].push(modifier);
+    return acc;
+  }, {});
 
-      <Text ml={3}>{modifierEffect.effect}</Text>
+  // Render selected modifiers list
+  const selectedModifiersList = Object.values(groupedSelectedModifiers).map(
+    (modifiersWithSameEffect, index) => (
+      <Flex
+        key={index} // You might want to use a more unique key here
+        alignItems="center"
+        bgColor={"ui.secondary"}
+      >
+        <Box bgColor={"ui.main"} width={8} height={8}>
+          <AddIconCheckbox
+            isChecked={modifiersWithSameEffect[0].isSelected}
+            top={"24%"}
+            left={"24%"}
+            onChange={() =>
+              handleCheckboxChange(modifiersWithSameEffect[0].modifierId)
+            }
+          />
+        </Box>
 
-      {modifierEffect.min_roll_position_one &&
-        modifierEffect.max_roll_position_one && (
-          <Text ml={3}>
-            {modifierEffect.min_roll_position_one} -{" "}
-            {modifierEffect.max_roll_position_one}
-          </Text>
-        )}
+        <Text ml={3}>{modifiersWithSameEffect[0].effect}</Text>
 
-      <Box ml={"auto"} bgColor={"ui.main"}>
-        <CloseButton
-          _hover={{ background: "gray.100", cursor: "pointer" }}
-          onClick={() => handleRemoveModifier(modifierEffect.modifierId)}
-        />
-      </Box>
-    </Flex>
-  ));
+        {modifiersWithSameEffect.map((modifier, modifierIndex) => (
+          <React.Fragment key={modifierIndex}>
+            {modifier.min_roll_position_one != null &&
+              modifier.max_roll_position_one != null && (
+                <Text mr={"auto"} ml={3}>
+                  YII
+                </Text>
+              )}
+          </React.Fragment>
+        ))}
+
+        <Box ml={"auto"} bgColor={"ui.main"}>
+          <CloseButton
+            _hover={{ background: "gray.100", cursor: "pointer" }}
+            onClick={() =>
+              handleRemoveModifier(modifiersWithSameEffect[0].modifierId)
+            }
+          />
+        </Box>
+      </Flex>
+    )
+  );
 
   const modifiersList = filteredModifierEffects.map((modifier) => (
     <Box
