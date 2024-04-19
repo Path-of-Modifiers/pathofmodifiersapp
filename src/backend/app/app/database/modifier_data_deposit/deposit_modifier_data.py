@@ -67,7 +67,6 @@ class DataDepositer:
 
     def _get_current_modifiers(self) -> Optional[pd.DataFrame]:
         self.logger.info("Retrieving previously deposited data.")
-        print(self.url)
         df = pd.read_json(self.url, dtype=str)
         if df.empty:
             self.logger.info("Found no previously deposited data.")
@@ -110,12 +109,14 @@ class DataDepositer:
 
             data, put_update = check_for_additional_modifier_types(
                 data=data,
+                put_update=put_update,
                 row_new=row_new,
                 modifier_types=self.modifier_types,
                 logger=self.logger,
             )
 
             if put_update:
+                self.logger.info("Pushed updated modifier to the database.")
                 response = requests.put(
                     update_url.format(row_cur["modifierId"], row_cur["position"]),
                     json=data,
