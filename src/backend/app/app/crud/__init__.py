@@ -1,4 +1,5 @@
 from .base import CRUDBase
+from app.crud.extensions.crud_modifier import CRUDModifier
 
 from app.core.models.models import Currency
 
@@ -6,8 +7,8 @@ from app.core.models.models import Account as model_Account
 from app.core.models.models import Currency as model_Currency
 from app.core.models.models import ItemBaseType as model_ItemBaseType
 from app.core.models.models import ItemModifier as model_ItemModifier
-from app.core.models.models import Item as model_Item
 from app.core.models.models import Modifier as model_Modifier
+from app.core.models.models import Item as model_Item
 from app.core.models.models import Stash as model_Stash
 
 from app.core.schemas.account import AccountCreate, AccountUpdate, Account
@@ -22,8 +23,8 @@ from app.core.schemas.item_modifier import (
     ItemModifierUpdate,
     ItemModifier,
 )
-from app.core.schemas.item import ItemCreate, ItemUpdate, Item
 from app.core.schemas.modifier import ModifierCreate, ModifierUpdate, Modifier
+from app.core.schemas.item import ItemCreate, ItemUpdate, Item
 from app.core.schemas.stash import StashCreate, StashUpdate, Stash
 
 
@@ -65,12 +66,9 @@ CRUD_item = CRUDBase[
     ItemUpdate,
 ](model=model_Item, schema=Item, create_schema=ItemCreate)
 
-CRUD_modifier = CRUDBase[
-    model_Modifier,
-    Modifier,
-    ModifierCreate,
-    ModifierUpdate,
-](model=model_Modifier, schema=Modifier, create_schema=ModifierCreate)
+CRUD_modifier = CRUDModifier(
+    model=model_Modifier, schema=Modifier, create_schema=ModifierCreate
+)
 
 CRUD_stash = CRUDBase[
     model_Stash,
