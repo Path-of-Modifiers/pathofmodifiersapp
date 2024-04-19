@@ -2,6 +2,7 @@ import logging
 import pandas as pd
 
 pd.options.mode.chained_assignment = None  # default='warn'
+pd.set_option("display.max_colwidth", None)
 
 
 def get_rolls(
