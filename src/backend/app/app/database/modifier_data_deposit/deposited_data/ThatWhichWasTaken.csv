@@ -1,6 +1,6 @@
 # Source: https://poedb.tw/That_Which_Was_Taken
 minRoll,maxRoll,position,effect,static,unique
-,,0,"Movement Speed cannot be modified to below base value",True,True
+,,0,"Movement Speed cannot be modified to below Base Value",True,True
 2,3,0,"#% of Armour applies to Fire, Cold and Lightning Damage taken from Hits",,True
 10,30,0,"#% chance to gain an Endurance Charge when you Stun an Enemy",,True
 3,6,0,"#% increased Area of Effect per Endurance Charge",,True
