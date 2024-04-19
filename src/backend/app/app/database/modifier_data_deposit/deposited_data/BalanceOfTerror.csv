@@ -15,7 +15,7 @@ minRoll,maxRoll,position,effect,static,unique
 ,,0,"You are Unaffected by Freeze if you've cast Frostbite in the past 10 seconds",True,True
 ,,0,"Immune to Reflected Damage if you've cast Punishment in the past 10 seconds",True,True
 ,,0,"Intimidate Enemies on Hit if you've cast Punishment in the past 10 seconds",True,True
-,,0,"Action Speed cannot be Slowed below Base Value if you've cast Temporal Chains in the past 10 seconds",True,True
+,,0,"Action Speed cannot be modified to below Base Value if you've cast Temporal Chains in the past 10 seconds",True,True
 20,25,0,"#% increased Cooldown Recovery Rate if you've cast Temporal Chains in the past 10 seconds",,True
 6,10,0,"#% chance to deal Double Damage if you've cast Vulnerability in the past 10 seconds",,True
 ,,0,"You are Unaffected by Bleeding if you've cast Vulnerability in the past 10 seconds",True,True
