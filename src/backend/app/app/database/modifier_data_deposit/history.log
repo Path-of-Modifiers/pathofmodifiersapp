@@ -15481,3 +15481,334 @@
 2024-04-19 10:14:56:INFO    :__main__: Successfully inserted data into database.
 2024-04-19 10:14:56:INFO    :__main__: Deleting 'BalanceOfTerror.csv'
 2024-04-19 10:14:56:INFO    :__main__: Deleted 'BalanceOfTerror.csv'
+2024-04-19 10:25:11:INFO    :__main__: Loading new data from 'ImpossibleEscape.csv'.
+2024-04-19 10:25:11:INFO    :__main__: Successfully loaded new data.
+2024-04-19 10:25:11:INFO    :__main__: Recording attached comments:
+2024-04-19 10:25:11:INFO    :__main__: # Source: https://poedb.tw/Impossible_Escape
+2024-04-19 10:25:11:INFO    :__main__: End of attached comments.
+2024-04-19 10:25:11:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 10:25:11:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 10:25:11:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 10:25:11:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 10:25:11:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 10:25:11:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 10:25:11:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-19 10:25:11:INFO    :__main__: Deleting 'ImpossibleEscape.csv'
+2024-04-19 10:25:11:INFO    :__main__: Deleted 'ImpossibleEscape.csv'
+2024-04-19 10:27:43:INFO    :__main__: Loading new data from 'SkinOfTheLords.csv'.
+2024-04-19 10:27:43:INFO    :__main__: Successfully loaded new data.
+2024-04-19 10:27:43:INFO    :__main__: Recording attached comments:
+2024-04-19 10:27:43:INFO    :__main__: # Source: https://poedb.tw/Skin_of_the_Lords#SkinoftheLordsUnique
+2024-04-19 10:27:43:INFO    :__main__: # Potential source of error due to very simple effect string
+2024-04-19 10:27:43:INFO    :__main__: End of attached comments.
+2024-04-19 10:27:43:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 10:27:43:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 10:27:43:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 10:27:43:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 10:27:43:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 10:27:43:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 10:27:43:INFO    :__main__: Found a modifier with new 'textRolls'.
+2024-04-19 10:27:43:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-19 10:27:43:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 10:27:43:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-19 10:27:43:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 10:27:43:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-19 10:27:43:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-19 10:27:43:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-19 10:27:43:INFO    :__main__: Deleting 'SkinOfTheLords.csv'
+2024-04-19 10:27:43:INFO    :__main__: Deleted 'SkinOfTheLords.csv'
+2024-04-19 10:45:04:INFO    :__main__: Loading new data from 'SkinOfTheLords.csv'.
+2024-04-19 10:45:04:INFO    :__main__: Successfully loaded new data.
+2024-04-19 10:45:04:INFO    :__main__: Recording attached comments:
+2024-04-19 10:45:04:INFO    :__main__: # Source: https://poedb.tw/Skin_of_the_Lords#SkinoftheLordsUnique
+2024-04-19 10:45:04:INFO    :__main__: # Potential source of error due to very simple effect string
+2024-04-19 10:45:04:INFO    :__main__: End of attached comments.
+2024-04-19 10:45:04:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 10:45:04:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 10:45:04:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 10:45:04:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 10:45:04:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 10:45:04:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 10:45:04:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-19 10:45:04:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 10:45:04:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 10:45:04:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-19 10:45:04:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 10:45:04:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 10:45:04:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-19 10:45:04:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 10:45:04:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-19 10:45:04:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 10:45:04:INFO    :__main__: Added a modifier type to a modifier.
+2024-04-19 10:45:04:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 10:45:04:INFO    :__main__: Deleting 'SkinOfTheLords.csv'
+2024-04-19 10:45:04:INFO    :__main__: Deleted 'SkinOfTheLords.csv'
+2024-04-19 10:46:31:INFO    :__main__: Loading new data from 'SkinOfTheLords.csv'.
+2024-04-19 10:46:31:INFO    :__main__: Successfully loaded new data.
+2024-04-19 10:46:31:INFO    :__main__: Recording attached comments:
+2024-04-19 10:46:31:INFO    :__main__: # Source: https://poedb.tw/Skin_of_the_Lords#SkinoftheLordsUnique
+2024-04-19 10:46:31:INFO    :__main__: # Potential source of error due to very simple effect string
+2024-04-19 10:46:31:INFO    :__main__: End of attached comments.
+2024-04-19 10:46:31:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 10:46:31:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 10:46:31:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 10:46:31:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 10:46:31:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 10:46:31:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 10:49:26:INFO    :__main__: Loading new data from 'SkinOfTheLords.csv'.
+2024-04-19 10:49:26:INFO    :__main__: Successfully loaded new data.
+2024-04-19 10:49:26:INFO    :__main__: Recording attached comments:
+2024-04-19 10:49:26:INFO    :__main__: # Source: https://poedb.tw/Skin_of_the_Lords#SkinoftheLordsUnique
+2024-04-19 10:49:26:INFO    :__main__: # Potential source of error due to very simple effect string
+2024-04-19 10:49:26:INFO    :__main__: End of attached comments.
+2024-04-19 10:49:26:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 10:49:26:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 10:49:26:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 10:49:26:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 10:49:26:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 10:49:26:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 10:49:26:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 10:49:26:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 10:49:26:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 10:49:26:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 10:49:26:INFO    :__main__: Deleting 'SkinOfTheLords.csv'
+2024-04-19 10:49:26:INFO    :__main__: Deleted 'SkinOfTheLords.csv'
+2024-04-19 10:51:01:INFO    :__main__: Loading new data from 'ImpossibleEscape.csv'.
+2024-04-19 10:51:01:INFO    :__main__: Successfully loaded new data.
+2024-04-19 10:51:01:INFO    :__main__: Recording attached comments:
+2024-04-19 10:51:01:INFO    :__main__: # Source: https://poedb.tw/Impossible_Escape
+2024-04-19 10:51:01:INFO    :__main__: End of attached comments.
+2024-04-19 10:51:01:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 10:51:01:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 10:51:01:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 10:51:01:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 10:51:01:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 10:51:01:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 10:51:01:INFO    :__main__: Loading new data from 'SkinOfTheLords.csv'.
+2024-04-19 10:51:01:INFO    :__main__: Successfully loaded new data.
+2024-04-19 10:51:01:INFO    :__main__: Recording attached comments:
+2024-04-19 10:51:01:INFO    :__main__: # Source: https://poedb.tw/Skin_of_the_Lords#SkinoftheLordsUnique
+2024-04-19 10:51:01:INFO    :__main__: # Potential source of error due to very simple effect string
+2024-04-19 10:51:01:INFO    :__main__: End of attached comments.
+2024-04-19 10:51:01:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 10:51:01:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 10:51:01:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 10:51:01:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 10:51:01:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 10:51:01:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 10:51:01:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 10:51:01:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 10:51:01:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 10:51:01:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 10:51:01:INFO    :__main__: Deleting 'ImpossibleEscape.csv'
+2024-04-19 10:51:01:INFO    :__main__: Deleted 'ImpossibleEscape.csv'
+2024-04-19 10:51:01:INFO    :__main__: Deleting 'SkinOfTheLords.csv'
+2024-04-19 10:51:01:INFO    :__main__: Deleted 'SkinOfTheLords.csv'
+2024-04-19 10:57:28:INFO    :__main__: Loading new data from 'ImpossibleEscape.csv'.
+2024-04-19 10:57:28:INFO    :__main__: Successfully loaded new data.
+2024-04-19 10:57:28:INFO    :__main__: Recording attached comments:
+2024-04-19 10:57:28:INFO    :__main__: # Source: https://poedb.tw/Impossible_Escape
+2024-04-19 10:57:28:INFO    :__main__: End of attached comments.
+2024-04-19 10:57:28:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 10:57:28:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 10:57:28:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 10:57:28:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 10:57:28:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 10:57:28:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 10:57:28:INFO    :__main__: Loading new data from 'SkinOfTheLords.csv'.
+2024-04-19 10:57:28:INFO    :__main__: Successfully loaded new data.
+2024-04-19 10:57:28:INFO    :__main__: Recording attached comments:
+2024-04-19 10:57:28:INFO    :__main__: # Source: https://poedb.tw/Skin_of_the_Lords#SkinoftheLordsUnique
+2024-04-19 10:57:28:INFO    :__main__: # Potential source of error due to very simple effect string
+2024-04-19 10:57:28:INFO    :__main__: End of attached comments.
+2024-04-19 10:57:28:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 10:57:28:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 10:57:28:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 10:57:28:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 10:57:28:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 10:57:28:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 10:57:29:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 10:57:29:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 10:57:29:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 10:57:29:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 10:57:29:INFO    :__main__: Deleting 'ImpossibleEscape.csv'
+2024-04-19 10:57:29:INFO    :__main__: Deleted 'ImpossibleEscape.csv'
+2024-04-19 10:57:29:INFO    :__main__: Deleting 'SkinOfTheLords.csv'
+2024-04-19 10:57:29:INFO    :__main__: Deleted 'SkinOfTheLords.csv'
+2024-04-19 11:03:40:INFO    :__main__: Loading new data from 'ImpossibleEscape.csv'.
+2024-04-19 11:03:40:INFO    :__main__: Successfully loaded new data.
+2024-04-19 11:03:40:INFO    :__main__: Recording attached comments:
+2024-04-19 11:03:40:INFO    :__main__: # Source: https://poedb.tw/Impossible_Escape
+2024-04-19 11:03:40:INFO    :__main__: End of attached comments.
+2024-04-19 11:03:40:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 11:03:40:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 11:03:40:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 11:03:40:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 11:03:40:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 11:03:40:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 11:04:32:INFO    :__main__: Loading new data from 'ImpossibleEscape.csv'.
+2024-04-19 11:04:32:INFO    :__main__: Successfully loaded new data.
+2024-04-19 11:04:32:INFO    :__main__: Recording attached comments:
+2024-04-19 11:04:32:INFO    :__main__: # Source: https://poedb.tw/Impossible_Escape
+2024-04-19 11:04:32:INFO    :__main__: End of attached comments.
+2024-04-19 11:04:32:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 11:04:32:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 11:04:32:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 11:04:32:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 11:04:32:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 11:04:32:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 11:04:32:INFO    :__main__: Loading new data from 'SkinOfTheLords.csv'.
+2024-04-19 11:04:32:INFO    :__main__: Successfully loaded new data.
+2024-04-19 11:04:32:INFO    :__main__: Recording attached comments:
+2024-04-19 11:04:32:INFO    :__main__: # Source: https://poedb.tw/Skin_of_the_Lords#SkinoftheLordsUnique
+2024-04-19 11:04:32:INFO    :__main__: # Potential source of error due to very simple effect string
+2024-04-19 11:04:32:INFO    :__main__: End of attached comments.
+2024-04-19 11:04:32:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 11:04:32:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 11:04:32:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 11:04:32:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 11:04:32:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 11:04:32:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 11:04:32:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:04:32:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:04:32:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:04:32:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:04:32:INFO    :__main__: Deleting 'ImpossibleEscape.csv'
+2024-04-19 11:04:32:INFO    :__main__: Deleted 'ImpossibleEscape.csv'
+2024-04-19 11:04:32:INFO    :__main__: Deleting 'SkinOfTheLords.csv'
+2024-04-19 11:04:32:INFO    :__main__: Deleted 'SkinOfTheLords.csv'
+2024-04-19 11:05:10:INFO    :__main__: Loading new data from 'ImpossibleEscape.csv'.
+2024-04-19 11:05:10:INFO    :__main__: Successfully loaded new data.
+2024-04-19 11:05:10:INFO    :__main__: Recording attached comments:
+2024-04-19 11:05:10:INFO    :__main__: # Source: https://poedb.tw/Impossible_Escape
+2024-04-19 11:05:10:INFO    :__main__: End of attached comments.
+2024-04-19 11:05:10:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 11:05:10:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 11:05:10:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 11:05:10:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 11:05:10:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 11:05:10:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 11:05:10:INFO    :__main__: Loading new data from 'SkinOfTheLords.csv'.
+2024-04-19 11:05:10:INFO    :__main__: Successfully loaded new data.
+2024-04-19 11:05:10:INFO    :__main__: Recording attached comments:
+2024-04-19 11:05:10:INFO    :__main__: # Source: https://poedb.tw/Skin_of_the_Lords#SkinoftheLordsUnique
+2024-04-19 11:05:10:INFO    :__main__: # Potential source of error due to very simple effect string
+2024-04-19 11:05:10:INFO    :__main__: End of attached comments.
+2024-04-19 11:05:10:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 11:05:10:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 11:05:10:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 11:05:10:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 11:05:10:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 11:05:10:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 11:05:10:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:05:10:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:05:10:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:05:10:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:05:10:INFO    :__main__: Deleting 'ImpossibleEscape.csv'
+2024-04-19 11:05:10:INFO    :__main__: Deleted 'ImpossibleEscape.csv'
+2024-04-19 11:05:10:INFO    :__main__: Deleting 'SkinOfTheLords.csv'
+2024-04-19 11:05:10:INFO    :__main__: Deleted 'SkinOfTheLords.csv'
+2024-04-19 11:05:45:INFO    :__main__: Loading new data from 'ImpossibleEscape.csv'.
+2024-04-19 11:05:45:INFO    :__main__: Successfully loaded new data.
+2024-04-19 11:05:45:INFO    :__main__: Recording attached comments:
+2024-04-19 11:05:45:INFO    :__main__: # Source: https://poedb.tw/Impossible_Escape
+2024-04-19 11:05:45:INFO    :__main__: End of attached comments.
+2024-04-19 11:05:45:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 11:05:45:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 11:05:45:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 11:05:45:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 11:05:45:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 11:05:45:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 11:06:06:INFO    :__main__: Loading new data from 'ImpossibleEscape.csv'.
+2024-04-19 11:06:06:INFO    :__main__: Successfully loaded new data.
+2024-04-19 11:06:06:INFO    :__main__: Recording attached comments:
+2024-04-19 11:06:06:INFO    :__main__: # Source: https://poedb.tw/Impossible_Escape
+2024-04-19 11:06:06:INFO    :__main__: End of attached comments.
+2024-04-19 11:06:06:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 11:06:06:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 11:06:06:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 11:06:06:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 11:06:06:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 11:06:06:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 11:06:06:INFO    :__main__: Loading new data from 'SkinOfTheLords.csv'.
+2024-04-19 11:06:06:INFO    :__main__: Successfully loaded new data.
+2024-04-19 11:06:06:INFO    :__main__: Recording attached comments:
+2024-04-19 11:06:06:INFO    :__main__: # Source: https://poedb.tw/Skin_of_the_Lords#SkinoftheLordsUnique
+2024-04-19 11:06:06:INFO    :__main__: # Potential source of error due to very simple effect string
+2024-04-19 11:06:06:INFO    :__main__: End of attached comments.
+2024-04-19 11:06:06:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 11:06:06:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 11:06:06:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 11:06:06:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 11:06:06:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 11:06:06:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 11:06:06:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:06:06:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:06:06:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:06:06:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:06:06:INFO    :__main__: Deleting 'ImpossibleEscape.csv'
+2024-04-19 11:06:06:INFO    :__main__: Deleted 'ImpossibleEscape.csv'
+2024-04-19 11:06:06:INFO    :__main__: Deleting 'SkinOfTheLords.csv'
+2024-04-19 11:06:06:INFO    :__main__: Deleted 'SkinOfTheLords.csv'
+2024-04-19 11:06:27:INFO    :__main__: Loading new data from 'ImpossibleEscape.csv'.
+2024-04-19 11:06:27:INFO    :__main__: Successfully loaded new data.
+2024-04-19 11:06:27:INFO    :__main__: Recording attached comments:
+2024-04-19 11:06:27:INFO    :__main__: # Source: https://poedb.tw/Impossible_Escape
+2024-04-19 11:06:27:INFO    :__main__: End of attached comments.
+2024-04-19 11:06:27:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 11:06:27:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 11:06:27:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 11:06:27:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 11:06:27:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 11:06:27:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 11:06:27:INFO    :__main__: Loading new data from 'SkinOfTheLords.csv'.
+2024-04-19 11:06:27:INFO    :__main__: Successfully loaded new data.
+2024-04-19 11:06:27:INFO    :__main__: Recording attached comments:
+2024-04-19 11:06:27:INFO    :__main__: # Source: https://poedb.tw/Skin_of_the_Lords#SkinoftheLordsUnique
+2024-04-19 11:06:27:INFO    :__main__: # Potential source of error due to very simple effect string
+2024-04-19 11:06:27:INFO    :__main__: End of attached comments.
+2024-04-19 11:06:27:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 11:06:27:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 11:06:27:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 11:06:27:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 11:06:27:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 11:06:27:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 11:06:27:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:06:27:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:06:27:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:06:27:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:06:27:INFO    :__main__: Deleting 'ImpossibleEscape.csv'
+2024-04-19 11:06:27:INFO    :__main__: Deleted 'ImpossibleEscape.csv'
+2024-04-19 11:06:27:INFO    :__main__: Deleting 'SkinOfTheLords.csv'
+2024-04-19 11:06:27:INFO    :__main__: Deleted 'SkinOfTheLords.csv'
+2024-04-19 11:09:18:INFO    :__main__: Loading new data from 'ImpossibleEscape.csv'.
+2024-04-19 11:09:18:INFO    :__main__: Successfully loaded new data.
+2024-04-19 11:09:18:INFO    :__main__: Recording attached comments:
+2024-04-19 11:09:18:INFO    :__main__: # Source: https://poedb.tw/Impossible_Escape
+2024-04-19 11:09:18:INFO    :__main__: End of attached comments.
+2024-04-19 11:09:18:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 11:09:18:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 11:09:18:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 11:09:18:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 11:09:18:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 11:09:18:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 11:09:18:INFO    :__main__: Loading new data from 'SkinOfTheLords.csv'.
+2024-04-19 11:09:18:INFO    :__main__: Successfully loaded new data.
+2024-04-19 11:09:18:INFO    :__main__: Recording attached comments:
+2024-04-19 11:09:18:INFO    :__main__: # Source: https://poedb.tw/Skin_of_the_Lords#SkinoftheLordsUnique
+2024-04-19 11:09:18:INFO    :__main__: # Potential source of error due to very simple effect string
+2024-04-19 11:09:18:INFO    :__main__: End of attached comments.
+2024-04-19 11:09:18:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 11:09:18:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 11:09:18:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 11:09:18:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 11:09:18:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 11:09:18:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 11:09:18:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:09:18:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:09:18:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:09:18:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:09:18:INFO    :__main__: Deleting 'ImpossibleEscape.csv'
+2024-04-19 11:09:18:INFO    :__main__: Deleted 'ImpossibleEscape.csv'
+2024-04-19 11:09:18:INFO    :__main__: Deleting 'SkinOfTheLords.csv'
+2024-04-19 11:09:18:INFO    :__main__: Deleted 'SkinOfTheLords.csv'
