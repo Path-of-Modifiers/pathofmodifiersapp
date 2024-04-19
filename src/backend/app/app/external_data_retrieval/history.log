@@ -365,3 +365,20 @@ requests.exceptions.HTTPError: 500 Server Error: Internal Server Error for url: 
 417  Impossible Escape  Passives in Radius of Warlord's Call can be Al...     924  Passives in Radius of Warlord's Call can be Al...            <NA>   []
 2024-04-17 19:56:36:ERROR   :asyncio: Unclosed client session
 client_session: <aiohttp.client.ClientSession object at 0x7f6156f20ad0>
+2024-04-19 12:31:09:INFO    :__main__: Program starting up.
+2024-04-19 12:31:09:INFO    :__main__: Retrieving modifiers from db.
+2024-04-19 12:31:09:INFO    :__main__: Initiating data stream.
+2024-04-19 12:33:17:ERROR   :asyncio: Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x7fa6fc1a1150>
+2024-04-19 12:45:48:INFO    :__main__: Program starting up.
+2024-04-19 12:45:48:INFO    :__main__: Retrieving modifiers from db.
+2024-04-19 12:45:48:INFO    :__main__: Initiating data stream.
+2024-04-19 13:06:19:INFO    :__main__: Program starting up.
+2024-04-19 13:06:19:INFO    :__main__: Retrieving modifiers from db.
+2024-04-19 13:06:19:INFO    :__main__: Initiating data stream.
+2024-04-19 13:07:23:INFO    :__main__: Program starting up.
+2024-04-19 13:07:23:INFO    :__main__: Retrieving modifiers from db.
+2024-04-19 13:07:23:INFO    :__main__: Initiating data stream.
+2024-04-19 13:08:00:INFO    :__main__: Program starting up.
+2024-04-19 13:08:00:INFO    :__main__: Retrieving modifiers from db.
+2024-04-19 13:08:00:INFO    :__main__: Initiating data stream.
