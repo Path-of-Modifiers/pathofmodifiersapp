@@ -383,7 +383,7 @@ class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
         """
         self.item_modifier_columns = ["name", "explicitMods"]
 
-        item_modifier_df = df.loc[:, self.item_modifier_columns]
+        item_modifier_df = df.loc[:, self.item_modifier_columns].reset_index()
 
         item_modifier_df["itemId"] = item_id
         item_modifier_df = item_modifier_df.explode("explicitMods", ignore_index=True)
