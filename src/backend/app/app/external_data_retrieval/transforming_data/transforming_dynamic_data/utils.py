@@ -158,8 +158,11 @@ def get_rolls(
         assert failed_df.empty
     except AssertionError:
         logger.info(
-            f"Some modifiers did not find their counterpart in the database.\n{failed_df[['effect', 'minRoll', 'maxRoll', 'textRolls']]}"
+            f"Some modifiers did not find their counterpart in the database. This likely means the modifier is new or has been reworded.\n{failed_df[['effect', 'minRoll', 'maxRoll', 'textRolls']]}"
         )
+        merged_dynamic_df = merged_dynamic_df.loc[
+            ~merged_dynamic_df[["minRoll", "maxRoll", "textRolls"]].isna().all(axis=1)
+        ]
 
     def convert_text_roll_to_index(row):
         if row["textRolls"] != "None":
