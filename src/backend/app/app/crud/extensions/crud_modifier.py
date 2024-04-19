@@ -2,7 +2,12 @@ from typing import Any, List, Union
 
 from fastapi import HTTPException
 from pydantic import TypeAdapter
-from app.crud.base import CRUDBase, SchemaType
+
+from sqlalchemy.orm import Session
+from sqlalchemy import Column, select
+from sqlalchemy import func
+from sqlalchemy import String, Integer, Boolean, Float
+from sqlalchemy.dialects.postgresql import ARRAY
 
 from app.core.schemas.modifier import (
     ModifierCreate,
@@ -11,11 +16,7 @@ from app.core.schemas.modifier import (
     GroupedModifierByEffect,
 )
 from app.core.models.models import Modifier as model_Modifier
-from sqlalchemy.orm import Session
-from sqlalchemy import Column, select
-from sqlalchemy import func
-from sqlalchemy import String, Integer, Boolean, Float
-from sqlalchemy.dialects.postgresql import ARRAY
+from app.crud.base import CRUDBase, SchemaType
 
 
 class CRUDModifier(
@@ -31,12 +32,18 @@ class CRUDModifier(
         return func.array_agg(column, type_=type_).label(column.name)
 
     async def get_grouped_modifier_by_effect(self, db: Session):
-        modifier_agg = self._create_array_agg(model_Modifier.modifierId, type_=Integer)
-        position_agg = self._create_array_agg(model_Modifier.position, type_=Integer)
-        minRoll_agg = self._create_array_agg(model_Modifier.minRoll, type_=Float)
-        maxRoll_agg = self._create_array_agg(model_Modifier.maxRoll, type_=Float)
-        textRolls_agg = self._create_array_agg(model_Modifier.textRolls, type_=String)
-        static_agg = self._create_array_agg(model_Modifier.static, type_=Boolean)
+        modifier_agg = self._create_array_agg(
+            model_Modifier.modifierId, type_=ARRAY(Integer)
+        )
+        position_agg = self._create_array_agg(
+            model_Modifier.position, type_=ARRAY(Integer)
+        )
+        minRoll_agg = self._create_array_agg(model_Modifier.minRoll, type_=ARRAY(Float))
+        maxRoll_agg = self._create_array_agg(model_Modifier.maxRoll, type_=ARRAY(Float))
+        textRolls_agg = self._create_array_agg(
+            model_Modifier.textRolls, type_=ARRAY(String)
+        )
+        static_agg = self._create_array_agg(model_Modifier.static, type_=ARRAY(Boolean))
 
         statement = (
             select(
@@ -57,7 +64,7 @@ class CRUDModifier(
         if not db_obj:
             raise HTTPException(
                 status_code=404,
-                detail=f"No objects ({', '.join([key + ': ' + str(item) for key, item in filter.items()])}) found in the table {self.model.__tablename__} was found.",
+                detail=f"No objects found in the table {self.model.__tablename__}.",
             )
 
         if len(db_obj) == 1:
