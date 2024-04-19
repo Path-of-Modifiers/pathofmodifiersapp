@@ -15812,3 +15812,232 @@
 2024-04-19 11:09:18:INFO    :__main__: Deleted 'ImpossibleEscape.csv'
 2024-04-19 11:09:18:INFO    :__main__: Deleting 'SkinOfTheLords.csv'
 2024-04-19 11:09:18:INFO    :__main__: Deleted 'SkinOfTheLords.csv'
+2024-04-19 11:20:04:INFO    :__main__: Loading new data from 'ThatWhichWasTaken.csv'.
+2024-04-19 11:20:04:INFO    :__main__: Successfully loaded new data.
+2024-04-19 11:20:04:INFO    :__main__: Recording attached comments:
+2024-04-19 11:20:04:INFO    :__main__: # Source: https://poedb.tw/That_Which_Was_Taken
+2024-04-19 11:20:04:INFO    :__main__: End of attached comments.
+2024-04-19 11:20:04:INFO    :__main__.add_regex: Starting process of adding regex
+2024-04-19 11:20:04:INFO    :__main__.add_regex: Completed process of adding regex
+2024-04-19 11:20:04:INFO    :__main__: Retrieving previously deposited data.
+2024-04-19 11:20:05:INFO    :__main__: Successfully retrieved previously deposited data.
+2024-04-19 11:20:05:INFO    :__main__: Removing duplicate modifiers
+2024-04-19 11:20:05:INFO    :__main__: Checking if duplicates contain updated information.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Updating modifier to bring numerical roll range up-to-date.
+2024-04-19 11:20:05:INFO    :__main__: Pushed updated modifier to the database.
+2024-04-19 11:20:05:INFO    :__main__: Inserting data into database.
+2024-04-19 11:20:05:INFO    :__main__: Successfully inserted data into database.
+2024-04-19 11:20:05:INFO    :__main__: Deleting 'ThatWhichWasTaken.csv'
+2024-04-19 11:20:05:INFO    :__main__: Deleted 'ThatWhichWasTaken.csv'
