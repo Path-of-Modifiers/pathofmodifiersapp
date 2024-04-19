@@ -73,7 +73,7 @@ class TransformPoeNinjaCurrencyAPIData:
             axis=1,
             inplace=True,
         )
-        currency_df = currency_df.loc[~currency_df["tradeName"].isna()]
+        currency_df = currency_df.loc[~currency_df["tradeName"].isna()].reset_index()
         return currency_df
 
     def _get_latest_currency_id_series(self, currency_df: pd.DataFrame) -> pd.Series:
@@ -99,9 +99,7 @@ class TransformPoeNinjaCurrencyAPIData:
         )
         currency_id = self._get_latest_currency_id_series(currency_df)
 
-        currency_df["currencyId"] = currency_id
-        currency_df.index = currency_id
-
+        currency_df = currency_df.assign(currencyId=currency_id)
         return currency_df
 
 
