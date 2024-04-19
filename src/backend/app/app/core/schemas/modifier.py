@@ -1,5 +1,5 @@
 import datetime as _dt
-from typing import Optional
+from typing import List, Optional
 import pydantic as _pydantic
 
 
@@ -24,6 +24,16 @@ class _BaseModifier(_pydantic.BaseModel):
     corrupted: Optional[bool] = None
     enchanted: Optional[bool] = None
     veiled: Optional[bool] = None
+
+
+class GroupedModifierByEffect(_pydantic.BaseModel):
+    modifierId: Optional[List[int]] = None
+    position: List[int]
+    minRoll: Optional[List[Optional[float]]] = None
+    maxRoll: Optional[List[Optional[float]]] = None
+    textRolls: Optional[List[Optional[str]]] = None
+    effect: str
+    static: Optional[List[Optional[bool]]] = None
 
 
 # Properties to receive on modifier creation

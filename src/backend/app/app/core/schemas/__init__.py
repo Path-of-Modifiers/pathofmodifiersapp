@@ -2,7 +2,7 @@
 
 from .account import Account, AccountInDB, AccountCreate, AccountUpdate
 from .currency import Currency, CurrencyInDB, CurrencyCreate, CurrencyUpdate
-from .modifier import Modifier, ModifierInDB, ModifierCreate, ModifierUpdate
+from .modifier import Modifier, GroupedModifierByEffect, ModifierInDB, ModifierCreate, ModifierUpdate
 from .item_base_type import (
     ItemBaseType,
     ItemBaseTypeInDB,
