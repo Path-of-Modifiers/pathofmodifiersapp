@@ -135,3 +135,79 @@ connector: <aiohttp.connector.TCPConnector object at 0x7fdcb2639c90>
 417  Impossible Escape  Passives in Radius of Warlord's Call can be Al...    8136  Passives in Radius of Warlord's Call can be Al...            <NA>   []
 2024-04-15 15:05:06:ERROR   :asyncio: Unclosed client session
 client_session: <aiohttp.client.ClientSession object at 0x7f79e79aeb90>
+2024-04-19 09:46:22:INFO    :__main__: Program starting up.
+2024-04-19 09:46:22:INFO    :__main__: Retrieving modifiers from db.
+2024-04-19 09:46:22:INFO    :__main__: Initiating data stream.
+2024-04-19 09:46:45:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                           modifier  itemId                                             effect alternateEffect roll
+417  Impossible Escape  Passives in Radius of Warlord's Call can be Al...     126  Passives in Radius of Warlord's Call can be Al...            <NA>   []
+2024-04-19 09:47:05:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                           modifier  itemId                                             effect alternateEffect roll
+332  Impossible Escape  Passives in Radius of Warlord's Call can be Al...     931  Passives in Radius of Warlord's Call can be Al...            <NA>   []
+2024-04-19 09:48:51:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                           modifier  itemId                                             effect alternateEffect roll
+900  Impossible Escape  Passives in Radius of Warlord's Call can be Al...    2350  Passives in Radius of Warlord's Call can be Al...            <NA>   []
+2024-04-19 09:50:10:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                      name                                           modifier  itemId                                             effect alternateEffect roll
+659  The Balance of Terror  Action Speed cannot be modified to below Base ...    3330  Action Speed cannot be modified to below Base ...            <NA>   []
+2024-04-19 09:51:36:INFO    :__main__.transform_poe: Some modifiers did not find their counterpart in the database.
+                                                effect minRoll maxRoll textRolls
+299  #% increased Critical Strike Chance against En...     NaN     NaN       NaN
+2024-04-19 10:17:46:INFO    :__main__: Program starting up.
+2024-04-19 10:17:46:INFO    :__main__: Retrieving modifiers from db.
+2024-04-19 10:17:46:INFO    :__main__: Initiating data stream.
+2024-04-19 10:18:05:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                                                                    modifier  itemId                                                                                      effect alternateEffect roll
+417  Impossible Escape  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree    4282  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree            <NA>   []
+2024-04-19 10:18:19:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                                                                    modifier  itemId                                                                                      effect alternateEffect roll
+346  Impossible Escape  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree    5094  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree            <NA>   []
+2024-04-19 10:20:29:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                                                                    modifier  itemId                                                                                      effect alternateEffect roll
+893  Impossible Escape  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree    6504  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree            <NA>   []
+2024-04-19 11:11:18:INFO    :__main__: Program starting up.
+2024-04-19 11:11:18:INFO    :__main__: Retrieving modifiers from db.
+2024-04-19 11:11:18:INFO    :__main__: Initiating data stream.
+2024-04-19 11:11:34:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                                                                    modifier  itemId                                                                                      effect alternateEffect roll
+417  Impossible Escape  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree    8438  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree            <NA>   []
+2024-04-19 11:11:51:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                                                                    modifier  itemId                                                                                      effect alternateEffect roll
+346  Impossible Escape  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree    9250  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree            <NA>   []
+2024-04-19 11:13:22:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                                                                    modifier  itemId                                                                                      effect alternateEffect roll
+893  Impossible Escape  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree   10660  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree            <NA>   []
+2024-04-19 11:15:02:INFO    :__main__.transform_poe: Some modifiers did not find their counterpart in the database.
+                                                                        effect minRoll maxRoll textRolls
+299  #% increased Critical Strike Chance against Enemies that are on Full Life     NaN     NaN       NaN
+2024-04-19 11:20:20:INFO    :__main__: Program starting up.
+2024-04-19 11:20:20:INFO    :__main__: Retrieving modifiers from db.
+2024-04-19 11:20:20:INFO    :__main__: Initiating data stream.
+2024-04-19 11:20:35:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                                                                    modifier  itemId                                                                                      effect alternateEffect roll
+417  Impossible Escape  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree   12594  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree            <NA>   []
+2024-04-19 11:20:47:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                                                                    modifier  itemId                                                                                      effect alternateEffect roll
+332  Impossible Escape  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree   13399  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree            <NA>   []
+2024-04-19 11:22:06:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                                                                    modifier  itemId                                                                                      effect alternateEffect roll
+893  Impossible Escape  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree   14816  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree            <NA>   []
+2024-04-19 11:26:23:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+               name                         modifier  itemId                           effect alternateEffect roll
+544  Grand Spectrum  Gain 15 Mana per Grand Spectrum   20696  Gain 15 Mana per Grand Spectrum            <NA>   []
+2024-04-19 11:26:39:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                     name                                               modifier  itemId                                                 effect alternateEffect roll
+496  That Which Was Taken  Movement Speed cannot be modified to below Base Value   20997  Movement Speed cannot be modified to below Base Value            <NA>   []
+2024-04-19 11:27:08:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                                                                    modifier  itemId                                                                                      effect alternateEffect roll
+141  Impossible Escape  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree   21856  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree            <NA>   []
+968  Impossible Escape  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree   22179  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree            <NA>   []
+2024-04-19 11:28:03:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                 name                                                                                    modifier  itemId                                                                                      effect alternateEffect roll
+39  Impossible Escape  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree   23343  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree            <NA>   []
+2024-04-19 11:29:10:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                      name                                               modifier  itemId                                                 effect alternateEffect roll
+1488  That Which Was Taken  Movement Speed cannot be modified to below Base Value   25467  Movement Speed cannot be modified to below Base Value            <NA>   []
+2024-04-19 11:30:00:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                 name                                                                                    modifier  itemId                                                                                      effect alternateEffect roll
+39  Impossible Escape  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree   26184  Passives in Radius of Warlord's Call can be Allocated without being connected to your tree            <NA>   []
