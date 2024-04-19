@@ -48,6 +48,21 @@ class TransformPoeNinjaCurrencyAPIData:
         )
         return currency_df
 
+    def _transform_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Since a chaos orb is always worth one chaos orb, ninja does not include it in its price api.
+        """
+        chaos_dict = {
+            "tradeName": ["chaos"],
+            "valueInChaos": [1],
+            "iconUrl": [
+                "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lSZXJvbGxSYXJlIiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/d119a0d734/CurrencyRerollRare.png"
+            ],
+        }
+        chaos_df = pd.DataFrame.from_dict(chaos_dict)
+        currency_df = pd.concat((currency_df, chaos_df), ignore_index=True)
+        return currency_df
+
     def _clean_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
         """
         Cleans the currency table of unnecessary columns.
@@ -61,7 +76,7 @@ class TransformPoeNinjaCurrencyAPIData:
         currency_df = currency_df.loc[~currency_df["tradeName"].isna()]
         return currency_df
 
-    def _get_latest_item_id_series(self, currency_df: pd.DataFrame) -> pd.Series:
+    def _get_latest_currency_id_series(self, currency_df: pd.DataFrame) -> pd.Series:
         response = requests.get(self.url + "/currency/latest_currency_id/")
         response.raise_for_status()
         latest_currency_id = int(response.text)
@@ -77,13 +92,15 @@ class TransformPoeNinjaCurrencyAPIData:
         Transforms the data into tables and transforms with help functions.
         """
         currency_df = self._create_currency_table(currency_df)
+        currency_df = self._transform_currency_table(currency_df)
         currency_df = self._clean_currency_table(currency_df)
         insert_data(
             currency_df, url=self.url, table_name="currency", logger=self.logger
         )
-        currency_id = self._get_latest_item_id_series(currency_df)
+        currency_id = self._get_latest_currency_id_series(currency_df)
 
         currency_df["currencyId"] = currency_id
+        currency_df.index = currency_id
 
         return currency_df
 
