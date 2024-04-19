@@ -1,6 +1,5 @@
 import {
   Box,
-  Checkbox,
   CloseButton,
   Flex,
   Input,
@@ -11,7 +10,7 @@ import {
 import AddIconCheckbox from "../Icon/AddIconCheckbox";
 
 import { useState } from "react";
-import { Modifier } from "../../client";
+import { GroupedModifierByEffect, ModifiersService } from "../../client";
 import { useQuery } from "@tanstack/react-query";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 import React from "react";
@@ -23,18 +22,22 @@ const ModiferInput = () => {
 const GetModifiers = () => {
   let modifiers = [
     {
-      position: 0,
-      effect: "Could not retrieve modifiers...",
-      createdAt: "",
-      updatedAt: "",
+      modifierId: [0],
+      position: [0],
+      minRoll: null,
+      maxRoll: null,
+      textRolls: null,
+      effect: "",
+      static: null,
     },
-  ] as Modifier | Modifier[];
+  ] as GroupedModifierByEffect | GroupedModifierByEffect[];
 
   try {
     useQuery({
       queryKey: ["allModifiers"],
       queryFn: async () => {
-        // modifiers = await ModifiersService.getAllModifiersApiApiV1ModifierGet();
+        modifiers =
+          await ModifiersService.getGroupedModifierByEffectApiApiV1ModifierGroupedModifiersByEffectGet();
       },
     });
     if (Array.isArray(modifiers)) {
@@ -47,303 +50,176 @@ const GetModifiers = () => {
   }
 };
 
-interface ModifierEffect {
-  modifierId: number;
+interface ModifierInput {
+  modifierId: Array<number>;
+  position: Array<number>;
+  minRoll?: null | undefined;
+  maxRoll?: null | undefined;
+  textRolls?: null | undefined;
   effect: string;
-  min_roll_position_one?: number;
-  max_roll_position_one?: number;
-  min_roll_position_two?: number;
-  max_roll_position_two?: number;
-  text_roll_position_one?: string;
-  text_roll_position_two?: string;
+  static?: null | undefined;
   isSelected?: boolean;
 }
 
 function ModifierListInput() {
   const [searchText, setSearchText] = useState("");
-  const [selectedModifiers, setSelectedModifiers] = useState<ModifierEffect[]>(
-    []
-  );
+  const [selectedModifiers, setSelectedModifiers] = useState<Modifier[]>([]);
+  const [filteredModifiers, setFilteredModifiers] = useState<Modifier[]>([
+    {
+      modifierId: [0],
+      position: [0],
+      effect: "",
+    },
+  ]);
   const [isExpanded, setIsExpanded] = useState(false);
 
   const modifiers: Modifier[] | undefined = GetModifiers();
-  const testModifiers: Modifier[] = [
-    {
-      modifierId: 6,
-      position: 0,
-      minRoll: 15.0,
-      maxRoll: 20.0,
-      textRolls: null,
-      static: null,
-      effect: "#% increased Armour",
-      regex: "([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Armour",
-      implicit: null,
-      explicit: null,
-      delve: null,
-      fractured: null,
-      synthesized: null,
-      unique: true,
-      corrupted: null,
-      enchanted: null,
-      veiled: null,
-      createdAt: "2024-04-15T14:32:49.651728",
-      updatedAt: "2024-04-15T14:32:49.651766",
-    },
-    {
-      modifierId: 7,
-      position: 0,
-      minRoll: 15.0,
-      maxRoll: 20.0,
-      textRolls: null,
-      static: null,
-      effect: "#% increased Evasion Rating",
-      regex: "([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Evasion Rating",
-      implicit: null,
-      explicit: null,
-      delve: null,
-      fractured: null,
-      synthesized: null,
-      unique: true,
-      corrupted: null,
-      enchanted: null,
-      veiled: null,
-      createdAt: "2024-04-15T14:32:49.651728",
-      updatedAt: "2024-04-15T14:32:49.651766",
-    },
-    {
-      modifierId: 10,
-      position: 0,
-      minRoll: null,
-      maxRoll: null,
-      textRolls:
-        "Anger-Clarity-Determination-Discipline-Grace-Haste-Purity of Elements-Purity of Fire-Purity of Ice-Purity of Lightning-Vitality-Wrath-Envy-Malevolence-Zealotry-Pride",
-      static: null,
-      effect: "# has no Reservation",
-      regex:
-        "(Anger|Clarity|Determination|Discipline|Grace|Haste|Purity of Elements|Purity of Fire|Purity of Ice|Purity of Lightning|Vitality|Wrath|Envy|Malevolence|Zealotry|Pride) has no Reservation",
-      implicit: null,
-      explicit: null,
-      delve: null,
-      fractured: null,
-      synthesized: null,
-      unique: true,
-      corrupted: null,
-      enchanted: null,
-      veiled: null,
-      createdAt: "2024-04-15T14:32:49.651728",
-      updatedAt: "2024-04-15T14:32:49.651766",
-    },
-    {
-      modifierId: 11,
-      position: 0,
-      minRoll: null,
-      maxRoll: null,
-      textRolls: "Xibaqua-Xopec-Xoph-Xoph's Blood",
-      static: true,
-      effect:
-        "Hits against Nearby Enemies have 50% increased Critical Strike Chance",
-      regex: null,
-      implicit: null,
-      explicit: null,
-      delve: null,
-      fractured: null,
-      synthesized: null,
-      unique: true,
-      corrupted: null,
-      enchanted: null,
-      veiled: null,
-      createdAt: "2024-04-15T14:32:49.651728",
-      updatedAt: "2024-04-15T14:32:49.651766",
-    },
-    {
-      modifierId: 12,
-      position: 1,
-      minRoll: 34,
-      maxRoll: 67,
-      textRolls: null,
-      static: true,
-      effect:
-        "Hits against Nearby Enemies have 50% increased Critical Strike Chance",
-      regex: null,
-      implicit: null,
-      explicit: null,
-      delve: null,
-      fractured: null,
-      synthesized: null,
-      unique: true,
-      corrupted: null,
-      enchanted: null,
-      veiled: null,
-      createdAt: "2024-04-15T14:32:49.651728",
-      updatedAt: "2024-04-15T14:32:49.651766",
-    },
-  ];
+  // const testModifiers: Modifier[] = [
+  //   {
+  //     modifierId: 6,
+  //     position: 0,
+  //     minRoll: 15.0,
+  //     maxRoll: 20.0,
+  //     textRolls: null,
+  //     static: null,
+  //     effect: "#% increased Armour",
+  //     regex: "([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Armour",
+  //     implicit: null,
+  //     explicit: null,
+  //     delve: null,
+  //     fractured: null,
+  //     synthesized: null,
+  //     unique: true,
+  //     corrupted: null,
+  //     enchanted: null,
+  //     veiled: null,
+  //     createdAt: "2024-04-15T14:32:49.651728",
+  //     updatedAt: "2024-04-15T14:32:49.651766",
+  //   },
+  //   {
+  //     modifierId: 7,
+  //     position: 0,
+  //     minRoll: 15.0,
+  //     maxRoll: 20.0,
+  //     textRolls: null,
+  //     static: null,
+  //     effect: "#% increased Evasion Rating",
+  //     regex: "([+-]?([0-9]*[.])?[0-9]+)% (increased|reduced) Evasion Rating",
+  //     implicit: null,
+  //     explicit: null,
+  //     delve: null,
+  //     fractured: null,
+  //     synthesized: null,
+  //     unique: true,
+  //     corrupted: null,
+  //     enchanted: null,
+  //     veiled: null,
+  //     createdAt: "2024-04-15T14:32:49.651728",
+  //     updatedAt: "2024-04-15T14:32:49.651766",
+  //   },
+  //   {
+  //     modifierId: 10,
+  //     position: 0,
+  //     minRoll: null,
+  //     maxRoll: null,
+  //     textRolls:
+  //       "Anger-Clarity-Determination-Discipline-Grace-Haste-Purity of Elements-Purity of Fire-Purity of Ice-Purity of Lightning-Vitality-Wrath-Envy-Malevolence-Zealotry-Pride",
+  //     static: null,
+  //     effect: "# has no Reservation",
+  //     regex:
+  //       "(Anger|Clarity|Determination|Discipline|Grace|Haste|Purity of Elements|Purity of Fire|Purity of Ice|Purity of Lightning|Vitality|Wrath|Envy|Malevolence|Zealotry|Pride) has no Reservation",
+  //     implicit: null,
+  //     explicit: null,
+  //     delve: null,
+  //     fractured: null,
+  //     synthesized: null,
+  //     unique: true,
+  //     corrupted: null,
+  //     enchanted: null,
+  //     veiled: null,
+  //     createdAt: "2024-04-15T14:32:49.651728",
+  //     updatedAt: "2024-04-15T14:32:49.651766",
+  //   },
+  //   {
+  //     modifierId: 11,
+  //     position: 0,
+  //     minRoll: null,
+  //     maxRoll: null,
+  //     textRolls: "Xibaqua-Xopec-Xoph-Xoph's Blood",
+  //     static: true,
+  //     effect:
+  //       "Hits against Nearby Enemies have 50% increased Critical Strike Chance",
+  //     regex: null,
+  //     implicit: null,
+  //     explicit: null,
+  //     delve: null,
+  //     fractured: null,
+  //     synthesized: null,
+  //     unique: true,
+  //     corrupted: null,
+  //     enchanted: null,
+  //     veiled: null,
+  //     createdAt: "2024-04-15T14:32:49.651728",
+  //     updatedAt: "2024-04-15T14:32:49.651766",
+  //   },
+  //   {
+  //     modifierId: 12,
+  //     position: 1,
+  //     minRoll: 34,
+  //     maxRoll: 67,
+  //     textRolls: null,
+  //     static: true,
+  //     effect:
+  //       "Hits against Nearby Enemies have 50% increased Critical Strike Chance",
+  //     regex: null,
+  //     implicit: null,
+  //     explicit: null,
+  //     delve: null,
+  //     fractured: null,
+  //     synthesized: null,
+  //     unique: true,
+  //     corrupted: null,
+  //     enchanted: null,
+  //     veiled: null,
+  //     createdAt: "2024-04-15T14:32:49.651728",
+  //     updatedAt: "2024-04-15T14:32:49.651766",
+  //   },
+  // ];
 
-  const filteredModifiers: Modifier[] = testModifiers
-    .filter((modifier) =>
-      modifier.effect.toLowerCase().includes(searchText.toLowerCase())
-    )
-    .filter(
-      (modifier) =>
-        !selectedModifiers.some((m) => m.modifierId === modifier.modifierId)
+  if (modifiers) {
+    setFilteredModifiers(
+      modifiers
+        .filter((modifier) =>
+          modifier.effect.toLowerCase().includes(searchText.toLowerCase())
+        )
+        .filter(
+          (modifier) =>
+            !selectedModifiers.some((m) => m.modifierId === modifier.modifierId)
+        )
     );
-
-  // Group modifiers by effect
-  const groupedModifiers = filteredModifiers.reduce<{
-    [effect: string]: Modifier[];
-  }>((acc, modifier) => {
-    const effect = modifier.effect;
-    acc[effect] = acc[effect] || [];
-    acc[effect].push(modifier);
-    return acc;
-  }, {});
-
-  function generateFilteredModifierEffects(): ModifierEffect[] {
-    const filteredModifierEffects: ModifierEffect[] = [];
-
-    // Process each group
-    for (const modifiers of Object.values(groupedModifiers)) {
-      const positionOne: Partial<ModifierEffect> = {};
-      const positionTwo: Partial<ModifierEffect> = {};
-
-      for (const modifier of modifiers) {
-        if (modifier.position === 0) {
-          if (modifier.minRoll && modifier.maxRoll) {
-            positionOne.min_roll_position_one = modifier.minRoll;
-            positionOne.max_roll_position_one = modifier.maxRoll;
-          } else if (modifier.textRolls) {
-            positionOne.text_roll_position_one = modifier.textRolls;
-          }
-        } else if (modifier.position === 1) {
-          if (modifier.minRoll && modifier.maxRoll) {
-            positionTwo.min_roll_position_two = modifier.minRoll;
-            positionTwo.max_roll_position_two = modifier.maxRoll;
-          } else if (modifier.textRolls) {
-            positionTwo.text_roll_position_two = modifier.textRolls;
-          }
-        }
-      }
-
-      modifiers.map((modifier) => {
-        const modifierEffect: ModifierEffect = {
-          modifierId: modifier.modifierId,
-          effect: modifier.effect,
-          isSelected: false,
-          ...positionOne,
-          ...positionTwo,
-        };
-        filteredModifierEffects.push(modifierEffect);
-      }, []);
-    }
-
-    return filteredModifierEffects;
   }
-
-  // const filteredModifiers: Modifier[] = testModifiers
-  //   .filter((modifier) =>
-  //     modifier.effect.toLowerCase().includes(searchText.toLowerCase())
-  //   )
-  //   .filter(
-  //     (modifier) =>
-  //       !selectedModifiers.some((m) => m.modifierId === modifier.modifierId)
-  //   );
-
-  // // Group modifiers by effect
-  // const groupedModifiers = filteredModifiers.reduce<{
-  //   [effect: string]: Modifier[];
-  // }>((acc, modifier) => {
-  //   const effect = modifier.effect;
-  //   acc[effect] = acc[effect] || [];
-  //   acc[effect].push(modifier);
-  //   return acc;
-  // }, {});
-
-  // const filteredModifierEffects: ModifierEffect[] = [];
-
-  // // Process each group
-  // for (const modifiers of Object.values(groupedModifiers)) {
-  //   const positionOne: Partial<ModifierEffect> = {};
-  //   const positionTwo: Partial<ModifierEffect> = {};
-
-  //   for (const modifier of modifiers) {
-  //     if (modifier.position === 0) {
-  //       if (modifier.minRoll && modifier.maxRoll) {
-  //         positionOne.min_roll_position_one = modifier.minRoll;
-  //         positionOne.max_roll_position_one = modifier.maxRoll;
-  //       } else if (modifier.textRolls) {
-  //         positionOne.text_roll_position_one = modifier.textRolls;
-  //       }
-  //     } else if (modifier.position === 1) {
-  //       if (modifier.minRoll && modifier.maxRoll) {
-  //         positionTwo.min_roll_position_two = modifier.minRoll;
-  //         positionTwo.max_roll_position_two = modifier.maxRoll;
-  //       } else if (modifier.textRolls) {
-  //         positionTwo.text_roll_position_two = modifier.textRolls;
-  //       }
-  //     }
-  //   }
-
-  //   modifiers.map((modifier) => {
-  //     const modifierEffect: ModifierEffect = {
-  //       modifierId: modifier.modifierId,
-  //       effect: modifier.effect,
-  //       isSelected: false,
-  //       ...positionOne,
-  //       ...positionTwo,
-  //     };
-  //     filteredModifierEffects.push(modifierEffect);
-  //   }, []);
-  // }
-
-  // const filteredModifierEffects: ModifierEffect[] = filteredModifiers.map(
-  //   (modifier) => ({
-  //     modifierId: modifier.modifierId,
-  //     effect: modifier.effect,
-  //     min_roll_position_one: modifier.minRoll,
-  //     max_roll_position_one: modifier.maxRoll,
-  //     min_roll_position_two: modifier.minRoll,
-  //     max_roll_position_two: modifier.maxRoll,
-  //     text_roll_position_one: modifier.textRolls,
-  //     text_roll_position_two: modifier.textRolls,
-  //     isSelected: false,
-  //   })
-  // );
 
   const ref = useOutsideClick(() => {
     setIsExpanded(false);
     console.log("Selected modifiers: \n");
     console.log(selectedModifiers);
     console.log("Filtered modifiers: \n");
-    console.log(generateFilteredModifierEffects());
+    console.log(filteredModifiers);
   });
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(event.target.value);
   };
 
-  const handleModifierSelect = (selectedModifierEffect: ModifierEffect) => {
+  const handleModifierSelect = (
+    selectedModifierEffect: GroupedModifierByEffect
+  ) => {
     // Set the clicked modifier as selected
     selectedModifierEffect.isSelected = true;
-
-    // Find all modifiers with the same effect
-    const modifiersWithSameEffect =
-      groupedModifiers[selectedModifierEffect.effect];
-
-    // Mark all modifiers with the same effect as selected
-    modifiersWithSameEffect.forEach((modifier) => {
-      if (
-        !selectedModifiers.some((m) => m.modifierId === modifier.modifierId)
-      ) {
-        setSelectedModifiers((prevModifiers) => [
-          ...prevModifiers,
-          {
-            modifierId: modifier.modifierId,
-            effect: modifier.effect,
-            isSelected: true,
-            // Add other properties if needed
-          },
-        ]);
-      }
-    });
+    setSelectedModifiers((prevModifiers) => [
+      ...prevModifiers,
+      selectedModifierEffect,
+    ]);
 
     setSearchText("");
   };
