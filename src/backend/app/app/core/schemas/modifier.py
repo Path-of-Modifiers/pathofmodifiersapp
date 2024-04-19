@@ -27,7 +27,7 @@ class _BaseModifier(_pydantic.BaseModel):
 
 
 class GroupedModifierByEffect(_pydantic.BaseModel):
-    modifierId: List[int] = None
+    modifierId: List[int]
     position: List[int]
     minRoll: Optional[List[Optional[float]]] = None
     maxRoll: Optional[List[Optional[float]]] = None
