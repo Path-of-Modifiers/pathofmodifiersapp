@@ -1,37 +1,37 @@
 from sqlalchemy.orm import Session, Bundle
-from sqlalchemy import select, union_all
+from sqlalchemy import select, intersect_all
 from sqlalchemy.sql.expression import Select
 from sqlalchemy.engine import CursorResult
+from pydantic import TypeAdapter
+from fastapi import HTTPException
+import pandas as pd
 
 from .schemas import PlotQuery, PlotData
 from app.core.models.models import Currency as model_Currency
 from app.core.models.models import Item as model_Item
 from app.core.models.models import ItemModifier as model_ItemModifier
 from app.core.models.models import ItemBaseType as model_ItemBaseType
-from app.core.models.models import Stash as model_Stash
 
 
 class Plotter:
     def __init__(self):
-        pass
+        self.validate = TypeAdapter(PlotData).validate_python
 
     def _init_query(self, query: PlotQuery) -> Select:
         league = query.league
 
         statement = (
             select(
-                Bundle(
-                    "item",
-                    model_Item.itemId,
-                    model_Item.baseType,
-                    model_Item.currencyId,
-                    model_Item.currencyAmount,
-                ),
-                Bundle("currency", model_Currency.tradeName),
-                Bundle("stash", model_Stash.accountName),
+                model_Item.itemId,
+                model_Item.createdAt,
+                model_Item.baseType,
+                model_Item.currencyId,
+                model_Item.currencyAmount,
+                model_Currency.tradeName,
+                model_Currency.valueInChaos,
+                model_Currency.createdAt.label("currencyCreatedAt"),
             )
             .join_from(model_Currency, model_Item)
-            .join_from(model_Currency, model_Stash)
             .where(model_Item.league == league)
         )
         return statement
@@ -107,24 +107,59 @@ class Plotter:
                     statement_w_limitations.append(limitation_statement)
                 else:
                     pass
-            union_statement = union_all(*statement_w_limitations)
-            statement = statement.from_statement(union_statement)
+            intersect_statement = intersect_all(
+                *statement_w_limitations
+            )  # Selects only the intersection
+            statement = statement.from_statement(intersect_statement)
 
         return statement
 
-    def _create_plot_data(self, result: CursorResult) -> PlotData:
-        pass
+    def _create_plot_data(self, df: pd.DataFrame) -> tuple:
+        most_common_currency_used = df.tradeName.mode()[0]
+        value_in_chaos = df["currencyAmount"] * df["valueInChaos"]
+        conversionValue = value_in_chaos.copy(deep=True)
+        time_stamps = df["createdAt"]
 
-    def plot(self, db: Session, *, query: PlotQuery) -> PlotData:
+        most_common_currency_used_unique_ids = df.loc[
+            df["tradeName"] == most_common_currency_used, "currencyId"
+        ].unique()
+
+        for id in most_common_currency_used_unique_ids:
+            most_common_currency_value = df.loc[
+                df["currencyId"] == id, "valueInChaos"
+            ].iloc[0]
+            most_common_currency_timestamp = df.loc[
+                df["currencyId"] == id, "currencyCreatedAt"
+            ].iloc[0]
+
+            current_timestamp_mask = (
+                df["currencyCreatedAt"] == most_common_currency_timestamp
+            )
+            conversionValue[current_timestamp_mask] = most_common_currency_value
+
+    async def plot(self, db: Session, *, query: PlotQuery) -> PlotData:
         statement = self._init_query(query)
         statement = self._item_spec_query(statement, query=query)
         statement = self._base_spec_query(statement, query=query)
         statement = self._modifier_id_query(statement, query=query)
         statement = self._modifier_limitation_query(statement, query=query)
 
-        result = db.execute(statement)
-        for row in result:
-            # print(
-            #     f"createdAt: {row.item.createdAt}, price: {row.item.currencyAmount}, currencyId: {row.currency.tradeName}"
-            # )
-            print(row)
+        result = db.execute(statement).mappings().all()
+        df = pd.DataFrame(result)
+        if df.empty:
+            raise HTTPException(
+                status_code=404, detail="No data matching criteria found."
+            )
+        else:
+            value_in_chaos, time_stamps, most_common_currency_used, conversionValue = (
+                self._create_plot_data()
+            )
+
+        output_dict = {
+            "valueInChaos": value_in_chaos,
+            "timeStamp": time_stamps,
+            "mostCommonCurrencyUsed": most_common_currency_used,
+            "conversionValue": conversionValue,
+        }
+
+        return self.validate(output_dict)
