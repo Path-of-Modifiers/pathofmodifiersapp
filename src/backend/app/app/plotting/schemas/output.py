@@ -7,4 +7,4 @@ class PlotData(_pydantic.BaseModel):
     valueInChaos: List[float]
     timeStamp: List[_dt.datetime]
     mostCommonCurrencyUsed: str
-    conversionValue: float
+    conversionValue: List[float]
