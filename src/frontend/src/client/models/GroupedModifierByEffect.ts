@@ -3,12 +3,11 @@
 /* tslint:disable */
 /* eslint-disable */
 export type GroupedModifierByEffect = {
-    modifierId: Array<number>;
-    position: Array<number>;
-    minRoll?: null;
-    maxRoll?: null;
-    textRolls?: null;
-    effect: string;
-    static?: null;
+  modifierId: Array<number | null>;
+  position: Array<number | null>;
+  minRoll?: Array<number | null> | null;
+  maxRoll?: Array<number | null> | null;
+  textRolls?: Array<string | null> | null | null;
+  effect: string;
+  static?: Array<boolean | null> | null;
 };
-
