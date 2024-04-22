@@ -15,12 +15,9 @@ const ModiferInput = () => {
 
 interface ModifierInput extends GroupedModifierByEffect {
   isSelected?: boolean;
-}
-
-interface ModifierInputState {
-  minroll?: string;
-  maxroll?: string;
-  textroll?: string;
+  minRollInputs?: (number | null)[] | null;
+  maxRollInputs?: (number | null)[] | null;
+  textRollInputs?: (string | null)[] | null;
 }
 
 function ModifierListInput() {
@@ -37,10 +34,6 @@ function ModifierListInput() {
   const [selectedModifiers, setSelectedModifiers] = useState<ModifierInput[]>(
     []
   );
-
-  const [inputStates, setInputStates] = useState<{
-    [key: number]: ModifierInputState;
-  }>({});
 
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -72,8 +65,6 @@ function ModifierListInput() {
     console.log(selectedModifiers);
     console.log("Filtered modifiers: \n");
     console.log(filteredModifiers);
-    console.log("Input states: \n");
-    console.log(inputStates);
     // console.log("Min roll position one: " + inputMinRollPositionOne);
     // console.log("Max roll position one: " + inputMaxRollPositionOne);
     // console.log("Min roll position two: " + inputMinRollPositionTwo);
@@ -272,74 +263,73 @@ function ModifierListInput() {
       <React.Fragment key={index}>
         {/* Check if minRoll at position 1 exists and is not all null */}
         {/* Check if minRoll exists and is not all null */}
-        {modifier.minRoll &&
-          !isArrayNullOrContainsOnlyNull(modifier.minRoll) &&
+        {isArrayNullOrContainsOnlyNull(modifier.static) &&
           (() => {
             const elements = [];
-            console.log(modifier.minRoll);
-            for (let i = 0; i < modifier.minRoll.length; i++) {
+            for (
+              let modifierInputIndex = 0;
+              modifierInputIndex < modifier.position.length;
+              modifierInputIndex++
+            ) {
               if (
                 modifier.minRoll &&
-                modifier.minRoll[i] !== null &&
-                modifier.minRoll[i] !== undefined
+                modifier.minRoll[modifierInputIndex] !== null &&
+                modifier.minRoll[modifierInputIndex] !== undefined
               ) {
                 elements.push(
                   renderInputBasedOnConditions({
                     input: modifier.minRoll,
-                    inputValue: "minPosition" + i,
+                    inputValue: "minPosition" + modifierInputIndex,
                     handleInputChangeCase: ("minPosition" + index) as InputCase,
                     width: "10%",
-                    position: i,
+                    position: modifierInputIndex,
                     placeholder: "MIN",
-                    key: "minPosition" + i,
+                    key: "minPosition" + modifierInputIndex,
                   })
                 );
-                // setInputStates((prevInputStates) => ({
-                //   ...prevInputStates,
-                //   ["minPosition" + i]: modifier.minRoll ? [i].toString() : "",
-                // }));
               }
+
               if (
                 modifier.maxRoll &&
-                modifier.maxRoll[i] !== null &&
-                modifier.maxRoll[i] !== undefined
+                modifier.maxRoll[modifierInputIndex] !== null &&
+                modifier.maxRoll[modifierInputIndex] !== undefined
               ) {
                 elements.push(
                   renderInputBasedOnConditions({
                     input: modifier.maxRoll,
-                    inputValue: "maxPosition" + i,
+                    inputValue: "maxPosition" + modifierInputIndex,
                     handleInputChangeCase: ("maxPosition" + index) as InputCase,
                     width: "10%",
-                    position: i,
-                    key: "maxPosition" + i,
+                    position: modifierInputIndex,
+                    key: "maxPosition" + modifierInputIndex,
                     placeholder: "MAX",
                   })
                 );
                 // setInputStates((prevInputStates) => ({
                 //   ...prevInputStates,
-                //   ["maxPosition" + i]: modifier.maxRoll ? [i].toString() : "",
+                //   ["maxPosition" + modifierInputIndex]: modifier.maxRoll ? [modifierInputIndex].toString() : "",
                 // }));
               }
               if (
                 modifier.textRolls &&
-                modifier.textRolls[i] !== null &&
-                modifier.textRolls[i] !== undefined
+                modifier.textRolls[modifierInputIndex] !== null &&
+                modifier.textRolls[modifierInputIndex] !== undefined
               ) {
                 elements.push(
                   renderInputBasedOnConditions({
                     input: modifier.textRolls,
-                    inputValue: "textPosition" + i,
+                    inputValue: "textPosition" + modifierInputIndex,
                     handleInputChangeCase: ("textPosition" +
                       index) as InputCase,
                     width: "10%",
-                    position: i,
-                    key: "textPosition" + i,
+                    position: modifierInputIndex,
+                    key: "textPosition" + modifierInputIndex,
                     placeholder: "TEXT",
                   })
                 );
                 // setInputStates((prevInputStates) => ({
                 //   ...prevInputStates,
-                //   ["textPosition" + i]: modifier.textRolls ? [i].toString() : "",
+                //   ["textPosition" + modifierInputIndex]: modifier.textRolls ? [modifierInputIndex].toString() : "",
                 // }));
               }
             }
