@@ -257,11 +257,12 @@ def check_for_updated_numerical_rolls(
 def check_for_additional_modifier_types(
     data: Dict[str, Any],
     row_new: pd.Series,
+    put_update: bool,
     modifier_types: List[str],
     logger: logging.Logger,
 ) -> Tuple[Dict[str, Any], bool]:
     for modifier_type in modifier_types:
-        if modifier_type in row_new.index:
+        if modifier_type in row_new.index and modifier_type not in data:
             logger.info(f"Added a modifier type to a modifier.")
             data[modifier_type] = row_new[modifier_type]
             put_update = True

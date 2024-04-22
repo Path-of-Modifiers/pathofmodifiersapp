@@ -1,6 +1,6 @@
 # Source: https://poedb.tw/That_Which_Was_Taken
 minRoll,maxRoll,position,effect,static,unique
-,,0,"Movement Speed cannot be modified to below base value",True,True
+,,0,"Movement Speed cannot be modified to below Base Value",True,True
 2,3,0,"#% of Armour applies to Fire, Cold and Lightning Damage taken from Hits",,True
 10,30,0,"#% chance to gain an Endurance Charge when you Stun an Enemy",,True
 3,6,0,"#% increased Area of Effect per Endurance Charge",,True
@@ -95,7 +95,7 @@ minRoll,maxRoll,position,effect,static,unique
 2,5,0,"+#% to Critical Strike Multiplier per Power Charge",,True
 0.4,1,0,"+#% Critical Strike Chance while at maximum Power Charges",,True
 ,,0,"Critical Strikes have Culling Strike",True,True
-80,160,0,"#% increased Critical Strike Chance against Enemies on Full Life",,True
+80,160,0,"#% increased Critical Strike Chance against Enemies that are on Full Life",,True
 ,,0,"Damage from your Critical Strikes cannot be Reflected",True,True
 10,25,0,"#% increased Elusive Effect",,True
 ,,0,"You take no Extra Damage from Critical Strikes while Elusive",True,True
