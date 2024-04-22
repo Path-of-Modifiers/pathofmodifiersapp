@@ -503,3 +503,8 @@ client_session: <aiohttp.client.ClientSession object at 0x7f423902a510>
 346  Impossible Escape  Passives in Radius of Warlord's Call can be Al...     937  Passives in Radius of Warlord's Call can be Al...            <NA>   []
 2024-04-22 10:12:07:ERROR   :asyncio: Unclosed client session
 client_session: <aiohttp.client.ClientSession object at 0x7f2d14bdafd0>
+2024-04-22 10:21:43:INFO    :__main__: Program starting up.
+2024-04-22 10:21:43:INFO    :__main__: Retrieving modifiers from db.
+2024-04-22 10:21:43:INFO    :__main__: Initiating data stream.
+2024-04-22 10:24:49:ERROR   :asyncio: Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x7fa2e8140e10>
