@@ -1,5 +1,5 @@
 import datetime as _dt
-from typing import Optional
+from typing import List, Optional
 import pydantic as _pydantic
 
 
@@ -26,6 +26,16 @@ class _BaseModifier(_pydantic.BaseModel):
     veiled: Optional[bool] = None
 
 
+class GroupedModifierByEffect(_pydantic.BaseModel):
+    modifierId: List[int]
+    position: List[int]
+    minRoll: Optional[List[Optional[float]]] = None
+    maxRoll: Optional[List[Optional[float]]] = None
+    textRolls: Optional[List[Optional[str]]] = None
+    effect: str
+    static: Optional[List[Optional[bool]]] = None
+
+
 # Properties to receive on modifier creation
 class ModifierCreate(_BaseModifier):
     pass
@@ -39,7 +49,7 @@ class ModifierUpdate(_BaseModifier):
 # Properties shared by models stored in DB
 class ModifierInDBBase(_BaseModifier):
     createdAt: _dt.datetime
-    updatedAt: _dt.datetime
+    updatedAt: Optional[_dt.datetime] = None
 
 
 # Properties to return to client

@@ -26,7 +26,7 @@ class StashUpdate(_BaseStash):
 class StashInDBBase(_BaseStash):
     stashId: str
     createdAt: _dt.datetime
-    updatedAt: _dt.datetime 
+    updatedAt: Optional[_dt.datetime] = None
 
 
 # Properties to return to client
