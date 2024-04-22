@@ -15,22 +15,11 @@ router = APIRouter()
 
 
 @router.post("/", response_model=schemas.PlotData)
-async def get_plot_data(
-    query: schemas.PlotQuery, db: Session = Depends(get_db)
-):  #: typing TODO
+async def get_plot_data(query: schemas.PlotQuery, db: Session = Depends(get_db)):
     """
-    TODO
+    Takes a query based on the 'PlotQuery' schema and retrieves data
+    to be used for plotting in the format of the 'PlotData' schema.
+
+    The 'PlotQuery' schema allows for modifier restriction and item specifications.
     """
     return await plotter_tool.plot(db, query=query)
-
-
-# Input
-# league -> str
-# item specifications -> dict
-# modifiers w min/max/text rolls -> List
-
-# Output
-# value -> List[float]
-# dates -> List[datetime]
-# most common currency -> str
-# most common currency value in chaos -> List[float]
