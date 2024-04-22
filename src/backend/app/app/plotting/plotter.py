@@ -34,6 +34,11 @@ class Plotter:
             .join_from(model_Currency, model_Item)
             .where(model_Item.league == league)
         )
+        if len(query.wantedModifiers) == 0:
+            raise HTTPException(
+                status_code=406,
+                detail="The plotting tool requires you to select at least one modifier",
+            )
         return statement
 
     def _item_spec_query(self, statement: Select, *, query: PlotQuery) -> Select:
