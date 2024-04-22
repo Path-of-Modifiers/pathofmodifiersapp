@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import Column, select
 from sqlalchemy import func
 from sqlalchemy import String, Integer, Boolean, Float
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.dialects.postgresql import ARRAY, aggregate_order_by
 
 from app.core.schemas.modifier import (
     ModifierCreate,
@@ -28,16 +28,19 @@ class CRUDModifier(
     ]
 ):
 
-    def _create_array_agg(self, column: Column[Any], type_=String):
+    def _create_array_agg(self, column: Column[Any], type_: ARRAY):
         return func.array_agg(column, type_=type_).label(column.name)
+
+    def _create_array_agg_position(self):
+        return func.array_agg(
+            aggregate_order_by(model_Modifier.position, model_Modifier.position.asc()), type_=ARRAY(Integer)
+        ).label(model_Modifier.position.name)
 
     async def get_grouped_modifier_by_effect(self, db: Session):
         modifier_agg = self._create_array_agg(
             model_Modifier.modifierId, type_=ARRAY(Integer)
         )
-        position_agg = self._create_array_agg(
-            model_Modifier.position, type_=ARRAY(Integer)
-        )
+        position_agg = self._create_array_agg_position()
         minRoll_agg = self._create_array_agg(model_Modifier.minRoll, type_=ARRAY(Float))
         maxRoll_agg = self._create_array_agg(model_Modifier.maxRoll, type_=ARRAY(Float))
         textRolls_agg = self._create_array_agg(
@@ -46,7 +49,7 @@ class CRUDModifier(
         static_agg = self._create_array_agg(model_Modifier.static, type_=ARRAY(Boolean))
 
         statement = (
-            select(
+            select (
                 modifier_agg,
                 position_agg,
                 minRoll_agg,
@@ -56,7 +59,9 @@ class CRUDModifier(
                 static_agg,
             )
             .group_by(model_Modifier.effect)
-            .order_by(model_Modifier.effect)
+            .order_by(
+                model_Modifier.effect,
+            )
         )
 
         db_obj = db.execute(statement).mappings().all()
