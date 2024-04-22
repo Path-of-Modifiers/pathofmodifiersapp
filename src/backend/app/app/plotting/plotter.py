@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session, Bundle
-from sqlalchemy import select, intersect_all
+from sqlalchemy import select
 from sqlalchemy.sql.expression import Select
 from sqlalchemy.engine import CursorResult
 from pydantic import TypeAdapter
@@ -62,62 +62,37 @@ class Plotter:
 
         return statement
 
-    def _modifier_id_query(self, statement: Select, *, query: PlotQuery) -> Select:
-        modifier_ids = [
-            wanted_modifier.modifierId for wanted_modifier in query.wantedModifiers
-        ]
+    def _wanted_modifier_query(self, statement: Select, *, query: PlotQuery) -> Select:
+        joined_statement = statement.join(model_ItemModifier)
 
-        statement = statement.join(model_ItemModifier).where(
-            model_ItemModifier.modifierId.in_(modifier_ids)
-        )
-
-        return statement
-
-    def _modifier_limitation_query(
-        self, statement: Select, *, query: PlotQuery
-    ) -> Select:
-        modifier_limitations = [
-            wanted_modifier.modifierLimitations
-            for wanted_modifier in query.wantedModifiers
-            if wanted_modifier.modifierLimitations is not None
-        ]
-
-        if modifier_limitations:  # Checks if there was any limitations
-            statement_w_limitations = []
-            for (
-                wanted_modifier
-            ) in query.wantedModifiers:  # Goes through the limitations of each modifier
-                if (
-                    wanted_modifier.modifierLimitations is not None
-                ):  # check if modifier has a limitation
-                    limitations = []
-                    # Adds limitations if they exist
-                    if wanted_modifier.modifierLimitations.minRoll is not None:
-                        limitations.append(
-                            model_ItemModifier.roll
-                            >= wanted_modifier.modifierLimitations.minRoll
-                        )
-                    if wanted_modifier.modifierLimitations.maxRoll is not None:
-                        limitations.append(
-                            model_ItemModifier.roll
-                            <= wanted_modifier.modifierLimitations.maxRoll
-                        )
-                    if wanted_modifier.modifierLimitations.textRoll is not None:
-                        limitations.append(
-                            model_ItemModifier.roll
-                            == wanted_modifier.modifierLimitations.textRoll
-                        )
-                    # Adding the limitations to the statement
-                    limitation_statement = statement.where(*limitations)
-                    statement_w_limitations.append(limitation_statement)
-                else:
-                    pass
-            intersect_statement = intersect_all(
-                *statement_w_limitations
-            )  # Selects only the intersection
-            statement = statement.from_statement(intersect_statement)
-
-        return statement
+        for wanted_modifier in query.wantedModifiers:
+            modifier_id = wanted_modifier.modifierId
+            modifier_limitation = wanted_modifier.modifierLimitations
+            limitations = []
+            if modifier_limitation is not None:
+                # Adds limitations if they exist
+                if wanted_modifier.modifierLimitations.minRoll is not None:
+                    limitations.append(
+                        model_ItemModifier.roll
+                        >= wanted_modifier.modifierLimitations.minRoll
+                    )
+                if wanted_modifier.modifierLimitations.maxRoll is not None:
+                    limitations.append(
+                        model_ItemModifier.roll
+                        <= wanted_modifier.modifierLimitations.maxRoll
+                    )
+                if wanted_modifier.modifierLimitations.textRoll is not None:
+                    limitations.append(
+                        model_ItemModifier.roll
+                        == (wanted_modifier.modifierLimitations.textRoll)
+                    )
+            [print(limitation) for limitation in limitations]
+            intersect_segment_statement = joined_statement.where(
+                model_ItemModifier.modifierId == modifier_id, *limitations
+            )
+            joined_statement = joined_statement.intersect(intersect_segment_statement)
+        print(joined_statement)
+        return joined_statement
 
     def _create_plot_data(self, df: pd.DataFrame) -> tuple:
         most_common_currency_used = df.tradeName.mode()[0]
@@ -142,12 +117,15 @@ class Plotter:
             )
             conversionValue[current_timestamp_mask] = most_common_currency_value
 
+        return value_in_chaos, time_stamps, most_common_currency_used, conversionValue
+
     async def plot(self, db: Session, *, query: PlotQuery) -> PlotData:
         statement = self._init_query(query)
         statement = self._item_spec_query(statement, query=query)
         statement = self._base_spec_query(statement, query=query)
-        statement = self._modifier_id_query(statement, query=query)
-        statement = self._modifier_limitation_query(statement, query=query)
+        statement = self._wanted_modifier_query(statement, query=query)
+        # statement = self._modifier_id_query(statement, query=query)
+        # statement = self._modifier_limitation_query(statement, query=query)
 
         result = db.execute(statement).mappings().all()
         df = pd.DataFrame(result)
