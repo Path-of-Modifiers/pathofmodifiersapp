@@ -1,6 +1,6 @@
-import datetime as _dt
 import sqlalchemy as _sql
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import func
 
 from app.core.models.database import Base
 
@@ -27,9 +27,7 @@ class Currency(Base):
     tradeName = _sql.Column(_sql.String(), index=True, nullable=False)
     valueInChaos = _sql.Column(_sql.Float(), nullable=False)
     iconUrl = _sql.Column(_sql.String(), nullable=False)
-    createdAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
-    )
+    createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
 
 
 class ItemBaseType(Base):
@@ -39,11 +37,10 @@ class ItemBaseType(Base):
     baseType = _sql.Column(_sql.String(), nullable=False, primary_key=True, index=True)
     category = _sql.Column(_sql.String(), nullable=False)
     subCategory = _sql.Column(_sql.String())
-    createdAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
-    )
+    createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
     updatedAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
+        _sql.DateTime(),
+        onupdate=func.now(),
     )
 
 
@@ -98,9 +95,7 @@ class Item(Base):
     prefixes = _sql.Column(_sql.SmallInteger())
     suffixes = _sql.Column(_sql.SmallInteger())
     foilVariation = _sql.Column(_sql.SmallInteger())
-    createdAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
-    )
+    createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
 
 
 class Modifier(Base):
@@ -130,11 +125,10 @@ class Modifier(Base):
     corrupted = _sql.Column(_sql.Boolean())
     enchanted = _sql.Column(_sql.Boolean())
     veiled = _sql.Column(_sql.Boolean())
-    createdAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
-    )
+    createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
     updatedAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
+        _sql.DateTime(),
+        onupdate=func.now(),
     )
 
     __table_args__ = (
@@ -200,11 +194,10 @@ class ItemModifier(Base):
     modifierId = _sql.Column(_sql.BigInteger(), nullable=False, index=True)
     position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
     roll = _sql.Column(_sql.Float(24))
-    createdAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
-    )
+    createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
     updatedAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
+        _sql.DateTime(),
+        onupdate=func.now(),
     )
 
     __table_args__ = (
@@ -230,11 +223,10 @@ class Stash(Base):
     )
     public = _sql.Column(_sql.Boolean(), nullable=False)
     league = _sql.Column(_sql.String(), nullable=False)
-    createdAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
-    )
+    createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
     updatedAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
+        _sql.DateTime(),
+        onupdate=func.now(),
     )
 
 
@@ -246,9 +238,8 @@ class Account(Base):
         _sql.String(), primary_key=True, index=True, nullable=False
     )
     isBanned = _sql.Column(_sql.Boolean())
-    createdAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
-    )
+    createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
     updatedAt = _sql.Column(
-        _sql.DateTime(), default=_dt.datetime.now(_dt.UTC), nullable=False
+        _sql.DateTime(),
+        onupdate=func.now(),
     )
