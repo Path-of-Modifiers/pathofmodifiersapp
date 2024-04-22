@@ -157,7 +157,7 @@ class Plotter:
             )
         else:
             value_in_chaos, time_stamps, most_common_currency_used, conversionValue = (
-                self._create_plot_data()
+                self._create_plot_data(df)
             )
 
         output_dict = {
