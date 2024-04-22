@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type GroupedModifierByEffect = {
-  modifierId: Array<number | null>;
+  modifierId: Array<number>;
   position: Array<number | null>;
   minRoll?: Array<number | null> | null;
   maxRoll?: Array<number | null> | null;
