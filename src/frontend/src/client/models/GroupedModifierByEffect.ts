@@ -7,7 +7,7 @@ export type GroupedModifierByEffect = {
   position: Array<number | null>;
   minRoll?: Array<number | null> | null;
   maxRoll?: Array<number | null> | null;
-  textRolls?: Array<string | null> | null | null;
+  textRolls?: Array<string | null> | null;
   effect: string;
   static?: Array<boolean | null> | null;
 };
