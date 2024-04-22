@@ -97,12 +97,12 @@ class Plotter:
                             model_ItemModifier.roll
                             >= wanted_modifier.modifierLimitations.minRoll
                         )
-                    elif wanted_modifier.modifierLimitations.maxRoll is not None:
+                    if wanted_modifier.modifierLimitations.maxRoll is not None:
                         limitations.append(
                             model_ItemModifier.roll
                             <= wanted_modifier.modifierLimitations.maxRoll
                         )
-                    elif wanted_modifier.modifierLimitations.textRoll is not None:
+                    if wanted_modifier.modifierLimitations.textRoll is not None:
                         limitations.append(
                             model_ItemModifier.roll
                             == wanted_modifier.modifierLimitations.textRoll
