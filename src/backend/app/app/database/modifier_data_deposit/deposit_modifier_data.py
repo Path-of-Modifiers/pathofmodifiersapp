@@ -95,7 +95,8 @@ class DataDepositer:
         ):
             put_update = False
             data = df_to_JSON(row_cur, request_method="put")
-            data.pop("updatedAt")
+            if "updatedAt" in data:
+                data.pop("updatedAt")
 
             if not pd.isna(row_new["static"]):
                 pass
