@@ -65,6 +65,8 @@ class Plotter:
     def _wanted_modifier_query(self, statement: Select, *, query: PlotQuery) -> Select:
         joined_statement = statement.join(model_ItemModifier)
 
+        intersection_statement = None
+        segments = []
         for wanted_modifier in query.wantedModifiers:
             modifier_id = wanted_modifier.modifierId
             modifier_limitation = wanted_modifier.modifierLimitations
@@ -86,13 +88,21 @@ class Plotter:
                         model_ItemModifier.roll
                         == (wanted_modifier.modifierLimitations.textRoll)
                     )
-            [print(limitation) for limitation in limitations]
             intersect_segment_statement = joined_statement.where(
                 model_ItemModifier.modifierId == modifier_id, *limitations
             )
-            joined_statement = joined_statement.intersect(intersect_segment_statement)
-        print(joined_statement)
-        return joined_statement
+            segments.append(intersect_segment_statement)
+            # if intersection_statement is None:
+            #     intersection_statement = joined_statement.intersect(
+            #         intersect_segment_statement
+            #     )
+            # else:
+            #     intersection_statement = intersection_statement.intersect(
+            #         intersect_segment_statement
+            #     )
+
+        intersection_statement = joined_statement.intersect(*segments)
+        return intersection_statement
 
     def _create_plot_data(self, df: pd.DataFrame) -> tuple:
         most_common_currency_used = df.tradeName.mode()[0]
