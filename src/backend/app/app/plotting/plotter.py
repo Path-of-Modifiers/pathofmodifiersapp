@@ -1,7 +1,6 @@
-from sqlalchemy.orm import Session, Bundle
+from sqlalchemy.orm import Session
 from sqlalchemy import select
 from sqlalchemy.sql.expression import Select
-from sqlalchemy.engine import CursorResult
 from pydantic import TypeAdapter
 from fastapi import HTTPException
 import pandas as pd
@@ -92,14 +91,6 @@ class Plotter:
                 model_ItemModifier.modifierId == modifier_id, *limitations
             )
             segments.append(intersect_segment_statement)
-            # if intersection_statement is None:
-            #     intersection_statement = joined_statement.intersect(
-            #         intersect_segment_statement
-            #     )
-            # else:
-            #     intersection_statement = intersection_statement.intersect(
-            #         intersect_segment_statement
-            #     )
 
         intersection_statement = joined_statement.intersect(*segments)
         return intersection_statement
@@ -134,8 +125,6 @@ class Plotter:
         statement = self._item_spec_query(statement, query=query)
         statement = self._base_spec_query(statement, query=query)
         statement = self._wanted_modifier_query(statement, query=query)
-        # statement = self._modifier_id_query(statement, query=query)
-        # statement = self._modifier_limitation_query(statement, query=query)
 
         result = db.execute(statement).mappings().all()
         df = pd.DataFrame(result)
