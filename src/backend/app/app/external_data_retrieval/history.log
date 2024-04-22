@@ -289,3 +289,25 @@ requests.exceptions.HTTPError: 500 Server Error: Internal Server Error for url: 
 417  Impossible Escape  Passives in Radius of Warlord's Call can be Al...     924  Passives in Radius of Warlord's Call can be Al...            <NA>   []
 2024-04-17 19:56:36:ERROR   :asyncio: Unclosed client session
 client_session: <aiohttp.client.ClientSession object at 0x7f6156f20ad0>
+2024-04-20 12:21:25:INFO    :__main__: Program starting up.
+2024-04-20 12:21:25:INFO    :__main__: Retrieving modifiers from db.
+2024-04-20 12:21:25:INFO    :__main__: Initiating data stream.
+2024-04-20 12:21:42:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                           modifier  itemId                                             effect alternateEffect roll
+415  Impossible Escape  Passives in Radius of Warlord's Call can be Al...     125  Passives in Radius of Warlord's Call can be Al...            <NA>   []
+2024-04-20 12:22:01:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                           modifier  itemId                                             effect alternateEffect roll
+332  Impossible Escape  Passives in Radius of Warlord's Call can be Al...     930  Passives in Radius of Warlord's Call can be Al...            <NA>   []
+2024-04-20 12:22:03:ERROR   :asyncio: Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x7f423902a510>
+2024-04-22 10:09:55:INFO    :__main__: Program starting up.
+2024-04-22 10:09:55:INFO    :__main__: Retrieving modifiers from db.
+2024-04-22 10:09:55:INFO    :__main__: Initiating data stream.
+2024-04-22 10:10:13:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                           modifier  itemId                                             effect alternateEffect roll
+415  Impossible Escape  Passives in Radius of Warlord's Call can be Al...     125  Passives in Radius of Warlord's Call can be Al...            <NA>   []
+2024-04-22 10:10:34:INFO    :__main__.transform_poe: Failed to add rolls to listed modifiers, this likely means the modifier is legacy.
+                  name                                           modifier  itemId                                             effect alternateEffect roll
+346  Impossible Escape  Passives in Radius of Warlord's Call can be Al...     937  Passives in Radius of Warlord's Call can be Al...            <NA>   []
+2024-04-22 10:12:07:ERROR   :asyncio: Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x7f2d14bdafd0>
