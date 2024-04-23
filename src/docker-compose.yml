@@ -18,6 +18,12 @@ services:
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
     restart: always
@@ -27,7 +33,8 @@ services:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - default
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     env_file:
       - .env
     environment:
@@ -57,6 +64,8 @@ services:
 
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.middlewares=${STACK_NAME?Variable not set}-www-redirect
+
+    command: bash -c "alembic upgrade head && python app/database/modifier_data_deposit/deposit_modifier_data.py"
 
 
 
