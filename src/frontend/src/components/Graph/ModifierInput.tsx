@@ -1,4 +1,12 @@
-import { Box, CloseButton, Flex, Input, Stack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  CloseButton,
+  Flex,
+  Input,
+  Select,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 
 import AddIconCheckbox from "../Icon/AddIconCheckbox";
 
@@ -7,7 +15,6 @@ import { GroupedModifierByEffect } from "../../client";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 import React from "react";
 import { modifiers } from "../../test_data/modifier_data";
-import { isatty } from "tty";
 // import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
 
 const ModiferInput = () => {
@@ -73,12 +80,11 @@ function ModifierListInput() {
 
   // Define the function to handle input changes
   const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    value: string,
     inputCase: InputCase,
     position?: number,
     modifier?: ModifierInput
   ) => {
-    const value = event.target.value;
     // Regular expression to allow numbers and scientific notation
     // const scientificPattern = /^-?\d*\.?\d*(e-?\d+)?$/i;
 
@@ -209,7 +215,6 @@ function ModifierListInput() {
         } else if (newTextRollInputs) {
           modifierToUpdate.textRollInputs = newTextRollInputs;
         }
-        // You can update other inputs in a similar way
         updatedModifiers[index] = modifierToUpdate; // Replace the old modifier with the updated one
       }
       return updatedModifiers; // Set the updated array back to state
@@ -220,20 +225,16 @@ function ModifierListInput() {
   function isArrayNullOrContainsOnlyNull<T>(
     arr: T[] | null | undefined
   ): boolean {
-    if (arr === null) {
+    if (arr === null || arr === undefined) {
       return true; // If the array is null, return true
     }
-
     // Check if every element in the array is null
-    if (arr === undefined) {
-      return true;
-    }
     return arr.every((value) => value === null);
   }
 
   interface RenderInputProps {
     modifier: ModifierInput;
-    input: number | undefined | null;
+    input: string | number | undefined | null;
     handleInputChangeCase: InputCase;
     inputPosition: number;
     width: string;
@@ -254,25 +255,79 @@ function ModifierListInput() {
       (selectedModifier) =>
         selectedModifier.modifierId[0] === modifier.modifierId[0]
     );
+
     if (selectedModifierInput) {
-      // Access the specific property of the ModifierInput object based on inputParameter
-      let input_value: number | undefined;
-      if (input === null && input === undefined) {
-        input_value = input;
+      const handleChange = (
+        event:
+          | React.ChangeEvent<HTMLInputElement>
+          | React.ChangeEvent<HTMLSelectElement>
+      ) => {
+        const selectedValue = event.target.value;
+        // Call function to handle the change
+        handleInputChange(
+          selectedValue,
+          handleInputChangeCase,
+          inputPosition,
+          modifier
+        );
+      };
+
+      // Access the specific property of the ModifierInput object based on handleInputChangeCase
+      if (
+        handleInputChangeCase === "minPosition" ||
+        (handleInputChangeCase === "maxPosition" &&
+          selectedModifierInput.minRollInputs &&
+          selectedModifierInput.maxRollInputs)
+      ) {
+        let input_value: number | undefined;
+        if (input === null && input === undefined) {
+          input_value = input;
+        }
+
+        return (
+          <Input
+            value={input_value}
+            key={key}
+            bgColor={"ui.input"}
+            onChange={handleChange}
+            width={width}
+            placeholder={placeholder}
+            _placeholder={{ color: "ui.white" }}
+            textAlign={"center"}
+          />
+        );
       }
-      return (
-        <Input
-          value={input_value}
-          key={key}
-          onChange={(e) =>
-            handleInputChange(e, handleInputChangeCase, inputPosition, modifier)
-          }
-          width={width}
-          placeholder={placeholder}
-          _placeholder={{ color: "ui.white" }}
-          textAlign={"center"}
-        />
-      );
+      if (
+        handleInputChangeCase === "textPosition" &&
+        !isArrayNullOrContainsOnlyNull(modifier.textRolls) &&
+        modifier.textRolls
+      ) {
+        console.log("TextRolls: " + modifier.textRolls[0]);
+        const textRolls = modifier.textRolls[0]
+          ? (modifier.textRolls[0] as string)
+          : (modifier.textRolls[1] as string);
+        console.log("HEYHEYHHEY" + textRolls);
+        const textRollsList = textRolls.split("-");
+
+        const textRollsOptions = textRollsList.map((textRoll, index) => (
+          <option value={textRoll} key={key + textRoll + index}>
+            {textRoll}
+          </option>
+        ));
+
+        return (
+          <Select
+            bgColor={"ui.white"}
+            color={"ui.dark"}
+            defaultValue={"TextRolls"}
+            onChange={handleChange}
+            width={width}
+            key={key}
+          >
+            {textRollsOptions}
+          </Select>
+        );
+      }
     }
     return null;
   };
@@ -309,10 +364,15 @@ function ModifierListInput() {
                 (selectedModifier) =>
                   selectedModifier.modifierId[0] === modifier.modifierId[0]
               );
-              const selectedModifierInput = selectedModifier?.minRollInputs
-                ? selectedModifier.minRollInputs[modifierInputIndex]
-                : undefined;
-              if (!isArrayNullOrContainsOnlyNull(modifier.minRoll)) {
+              if (
+                !isArrayNullOrContainsOnlyNull(modifier.minRoll) &&
+                modifier.minRoll &&
+                modifier.minRoll[modifierInputIndex] !== null
+              ) {
+                const selectedModifierInput = selectedModifier?.minRollInputs
+                  ? selectedModifier.minRollInputs[modifierInputIndex]
+                  : undefined;
+
                 elements.push(
                   renderInputBasedOnConditions({
                     modifier: modifier,
@@ -326,7 +386,15 @@ function ModifierListInput() {
                 );
               }
 
-              if (!isArrayNullOrContainsOnlyNull(modifier.maxRoll)) {
+              if (
+                !isArrayNullOrContainsOnlyNull(modifier.maxRoll) &&
+                modifier.maxRoll &&
+                modifier.maxRoll[modifierInputIndex] !== null
+              ) {
+                const selectedModifierInput = selectedModifier?.maxRollInputs
+                  ? selectedModifier.maxRollInputs[modifierInputIndex]
+                  : undefined;
+
                 elements.push(
                   renderInputBasedOnConditions({
                     modifier: modifier,
@@ -339,14 +407,22 @@ function ModifierListInput() {
                   })
                 );
               }
-              if (!isArrayNullOrContainsOnlyNull(modifier.textRolls)) {
+              if (
+                !isArrayNullOrContainsOnlyNull(modifier.textRolls) &&
+                modifier.textRolls &&
+                modifier.textRolls[modifierInputIndex] !== null
+              ) {
+                const selectedModifierInput = selectedModifier?.textRollInputs
+                  ? selectedModifier.textRollInputs[modifierInputIndex]
+                  : undefined;
+
                 elements.push(
                   renderInputBasedOnConditions({
                     modifier: modifier,
                     input: selectedModifierInput,
                     handleInputChangeCase: "textPosition" as InputCase,
                     inputPosition: modifierInputIndex,
-                    width: "10%",
+                    width: "18%",
                     key: "textPosition" + index + modifierInputIndex,
                     placeholder: "TEXT",
                   })
@@ -390,7 +466,7 @@ function ModifierListInput() {
       <Box bgColor={"ui.input"} color={"ui.white"} ref={ref} mr={8} ml={8}>
         <Input
           value={searchModifierText}
-          onChange={(e) => handleInputChange(e, "modifier")}
+          onChange={(e) => handleInputChange(e.target.value, "modifier")}
           placeholder="+ Add modifier"
           _placeholder={{ color: "ui.white" }}
           textAlign={"center"}
