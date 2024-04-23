@@ -25,7 +25,7 @@ CASCADING_UPDATE = True
 
 class DataDepositer:
     def __init__(self) -> None:
-        self.new_data_location = "modifier_data"
+        self.new_data_location = "app/database/modifier_data_deposit/modifier_data"
         if "localhost" not in BASEURL:
             self.url = "https://"
         else:
