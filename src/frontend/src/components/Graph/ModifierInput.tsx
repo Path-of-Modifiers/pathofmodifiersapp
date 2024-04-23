@@ -97,9 +97,7 @@ function ModifierListInput() {
         }
         updateModifierInput(
           modifier.modifierId[position],
-          modifier.minRollInputs,
-          undefined,
-          undefined
+          modifier.minRollInputs
         );
         break;
       case "maxPosition":
@@ -196,7 +194,6 @@ function ModifierListInput() {
     newMaxRollInputs?: (number | null)[] | undefined,
     newTextRollInputs?: (string | null)[] | undefined
   ): void => {
-    console.log("SUCKMYDICK");
     setSelectedModifiers((prevModifiers) => {
       const updatedModifiers = [...prevModifiers]; // Step 1: Create a copy of the array
       const index = updatedModifiers.findIndex(
@@ -206,13 +203,10 @@ function ModifierListInput() {
         // Ensure modifier with given modifierId exists
         const modifierToUpdate = { ...updatedModifiers[index] }; // Copy the modifier object
         if (newMinRollInputs) {
-          console.log("HUE");
           modifierToUpdate.minRollInputs = newMinRollInputs; // Update minRollInputs
         } else if (newMaxRollInputs) {
-          console.log("INNI");
           modifierToUpdate.maxRollInputs = newMaxRollInputs;
         } else if (newTextRollInputs) {
-          console.log("BEAST");
           modifierToUpdate.textRollInputs = newTextRollInputs;
         }
         // You can update other inputs in a similar way
@@ -318,11 +312,7 @@ function ModifierListInput() {
               const selectedModifierInput = selectedModifier?.minRollInputs
                 ? selectedModifier.minRollInputs[modifierInputIndex]
                 : undefined;
-              if (
-                modifier.minRoll &&
-                modifier.minRoll[modifierInputIndex] !== null &&
-                modifier.minRoll[modifierInputIndex] !== undefined
-              ) {
+              if (!isArrayNullOrContainsOnlyNull(modifier.minRoll)) {
                 elements.push(
                   renderInputBasedOnConditions({
                     modifier: modifier,
@@ -336,11 +326,7 @@ function ModifierListInput() {
                 );
               }
 
-              if (
-                modifier.maxRoll &&
-                modifier.maxRoll[modifierInputIndex] !== null &&
-                modifier.maxRoll[modifierInputIndex] !== undefined
-              ) {
+              if (!isArrayNullOrContainsOnlyNull(modifier.maxRoll)) {
                 elements.push(
                   renderInputBasedOnConditions({
                     modifier: modifier,
@@ -353,13 +339,7 @@ function ModifierListInput() {
                   })
                 );
               }
-              if (
-                modifier.textRolls &&
-                modifier.textRolls[modifierInputIndex] !== null &&
-                modifier.textRolls[modifierInputIndex] !== undefined
-              ) {
-                console.log("INDEX: " + modifierInputIndex);
-                console.log("POSITION LENGTH: " + modifier.position.length);
+              if (!isArrayNullOrContainsOnlyNull(modifier.textRolls)) {
                 elements.push(
                   renderInputBasedOnConditions({
                     modifier: modifier,
