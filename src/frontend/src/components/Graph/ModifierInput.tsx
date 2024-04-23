@@ -7,6 +7,7 @@ import { GroupedModifierByEffect } from "../../client";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 import React from "react";
 import { modifiers } from "../../test_data/modifier_data";
+import { isatty } from "tty";
 // import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
 
 const ModiferInput = () => {
@@ -15,9 +16,9 @@ const ModiferInput = () => {
 
 interface ModifierInput extends GroupedModifierByEffect {
   isSelected?: boolean;
-  minRollInputs?: (number | null)[] | null;
-  maxRollInputs?: (number | null)[] | null;
-  textRollInputs?: (string | null)[] | null;
+  minRollInputs?: (number | null)[];
+  maxRollInputs?: (number | null)[];
+  textRollInputs?: (string | null)[];
 }
 
 function ModifierListInput() {
@@ -65,33 +66,17 @@ function ModifierListInput() {
     console.log(selectedModifiers);
     console.log("Filtered modifiers: \n");
     console.log(filteredModifiers);
-    // console.log("Min roll position one: " + inputMinRollPositionOne);
-    // console.log("Max roll position one: " + inputMaxRollPositionOne);
-    // console.log("Min roll position two: " + inputMinRollPositionTwo);
-    // console.log("Max roll position two: " + inputMaxRollPositionTwo);
-    // console.log("Min roll position three: " + inputMinRollPositionThree);
-    // console.log("Max roll position three: " + inputMaxRollPositionThree);
-    // console.log("Text roll position one: " + inputTextRollPositionOne);
-    // console.log("Text roll position two: " + inputTextRollPositionTwo);
   });
 
   // Define types for input cases
-  type InputCase =
-    | "modifier"
-    | "minPosition1"
-    | "maxPosition1"
-    | "textPosition1"
-    | "minPosition2"
-    | "maxPosition2"
-    | "textPosition2"
-    | "minPosition3"
-    | "maxPosition3"
-    | "textPosition3";
+  type InputCase = "modifier" | "minPosition" | "maxPosition" | "textPosition";
 
   // Define the function to handle input changes
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>,
-    inputCase: InputCase
+    inputCase: InputCase,
+    position?: number,
+    modifier?: ModifierInput
   ) => {
     const value = event.target.value;
     // Regular expression to allow numbers and scientific notation
@@ -99,43 +84,56 @@ function ModifierListInput() {
 
     if (inputCase === "modifier") {
       setSearchModifierText(value);
-      // }
-      // if (scientificPattern.test(value) || value === "") {
-      //   switch (inputCase) {
-      //     // case "minPosition1":
-      //     //   setInputMinRollPositionOne(value);
-      //     //   break;
-      //     // case "maxPosition1":
-      //     //   setInputMaxRollPositionOne(value);
-      //     //   break;
-      //     // case "textPosition1":
-      //     //   setInputTextRollPositionOne(value);
-      //     //   break;
-      //     // case "minPosition2":
-      //     //   setInputMinRollPositionTwo(value);
-      //     //   break;
-      //     // case "maxPosition2":
-      //     //   setInputMaxRollPositionTwo(value);
-      //     //   break;
-      //     // case "textPosition2":
-      //     //   setInputTextRollPositionTwo(value);
-      //     //   break;
-      //     // case "minPosition3":
-      //     //   setInputMinRollPositionThree(value);
-      //     //   break;
-      //     // case "maxPosition3":
-      //     //   setInputMaxRollPositionThree(value);
-      //     //   break;
-      //     // case "textPosition3":
-      //     //   setInputTextRollPositionThree(value);
-      //     case
-      //       break;
-      //     default:
-      //       // Handle default case
-      //       break;
-      //   }
+    }
+    if (!modifier || position === undefined || position < 0) {
+      return;
+    }
+    switch (inputCase) {
+      case "minPosition":
+        if (modifier.minRollInputs) {
+          modifier.minRollInputs[position] = parseInt(value);
+        } else {
+          modifier.minRollInputs = [parseInt(value)];
+        }
+        updateModifierInput(
+          modifier.modifierId[position],
+          modifier.minRollInputs,
+          undefined,
+          undefined
+        );
+        break;
+      case "maxPosition":
+        if (modifier.maxRollInputs) {
+          modifier.maxRollInputs[position] = parseInt(value);
+        } else {
+          modifier.maxRollInputs = [parseInt(value)];
+        }
+        updateModifierInput(
+          modifier.modifierId[position],
+          undefined,
+          modifier.maxRollInputs,
+          undefined
+        );
+        break;
+      case "textPosition":
+        if (modifier.textRollInputs) {
+          modifier.textRollInputs[position] = value;
+        } else {
+          modifier.textRollInputs = [value];
+        }
+        updateModifierInput(
+          modifier.modifierId[position],
+          undefined,
+          undefined,
+          modifier.textRollInputs
+        );
+        break;
+      default:
+        // Handle default case
+        break;
     }
   };
+
   const handleModifierSelect = (selectedModifierEffect: ModifierInput) => {
     // Set the clicked modifier as selected
     selectedModifierEffect.isSelected = true;
@@ -143,6 +141,16 @@ function ModifierListInput() {
       ...prevModifiers,
       selectedModifierEffect,
     ]);
+
+    if (!isArrayNullOrContainsOnlyNull(selectedModifierEffect.minRoll)) {
+      selectedModifierEffect.minRollInputs = [0];
+    }
+    if (!isArrayNullOrContainsOnlyNull(selectedModifierEffect.maxRoll)) {
+      selectedModifierEffect.maxRollInputs = [0];
+    }
+    if (!isArrayNullOrContainsOnlyNull(selectedModifierEffect.textRolls)) {
+      selectedModifierEffect.textRollInputs = [""];
+    }
 
     setSearchModifierText("");
   };
@@ -182,6 +190,38 @@ function ModifierListInput() {
     }
   };
 
+  const updateModifierInput = (
+    modifierId: number,
+    newMinRollInputs?: (number | null)[] | undefined,
+    newMaxRollInputs?: (number | null)[] | undefined,
+    newTextRollInputs?: (string | null)[] | undefined
+  ): void => {
+    console.log("SUCKMYDICK");
+    setSelectedModifiers((prevModifiers) => {
+      const updatedModifiers = [...prevModifiers]; // Step 1: Create a copy of the array
+      const index = updatedModifiers.findIndex(
+        (modifier) => modifier.modifierId[0] === modifierId
+      ); // Find index based on modifierId
+      if (index !== -1) {
+        // Ensure modifier with given modifierId exists
+        const modifierToUpdate = { ...updatedModifiers[index] }; // Copy the modifier object
+        if (newMinRollInputs) {
+          console.log("HUE");
+          modifierToUpdate.minRollInputs = newMinRollInputs; // Update minRollInputs
+        } else if (newMaxRollInputs) {
+          console.log("INNI");
+          modifierToUpdate.maxRollInputs = newMaxRollInputs;
+        } else if (newTextRollInputs) {
+          console.log("BEAST");
+          modifierToUpdate.textRollInputs = newTextRollInputs;
+        }
+        // You can update other inputs in a similar way
+        updatedModifiers[index] = modifierToUpdate; // Replace the old modifier with the updated one
+      }
+      return updatedModifiers; // Set the updated array back to state
+    });
+  };
+
   // Define a function to check if an array has only null values
   function isArrayNullOrContainsOnlyNull<T>(
     arr: T[] | null | undefined
@@ -198,35 +238,41 @@ function ModifierListInput() {
   }
 
   interface RenderInputProps {
-    input: (number | string | null)[] | null | undefined;
-    inputValue: string;
+    modifier: ModifierInput;
+    input: number | undefined | null;
     handleInputChangeCase: InputCase;
+    inputPosition: number;
     width: string;
-    position: number;
     placeholder: string;
     key: string;
   }
 
   const renderInputBasedOnConditions = ({
+    modifier,
     input,
-    inputValue,
     handleInputChangeCase,
+    inputPosition,
     width,
-    position,
     key,
     placeholder,
   }: RenderInputProps): JSX.Element | null => {
-    if (
-      !isArrayNullOrContainsOnlyNull(input) &&
-      input !== null &&
-      input !== undefined &&
-      input[position] !== null
-    ) {
+    const selectedModifierInput = selectedModifiers.find(
+      (selectedModifier) =>
+        selectedModifier.modifierId[0] === modifier.modifierId[0]
+    );
+    if (selectedModifierInput) {
+      // Access the specific property of the ModifierInput object based on inputParameter
+      let input_value: number | undefined;
+      if (input === null && input === undefined) {
+        input_value = input;
+      }
       return (
         <Input
-          value={inputValue}
+          value={input_value}
           key={key}
-          onChange={(e) => handleInputChange(e, handleInputChangeCase)}
+          onChange={(e) =>
+            handleInputChange(e, handleInputChangeCase, inputPosition, modifier)
+          }
           width={width}
           placeholder={placeholder}
           _placeholder={{ color: "ui.white" }}
@@ -234,17 +280,12 @@ function ModifierListInput() {
         />
       );
     }
-
     return null;
   };
 
   // Render selected modifiers list
   const selectedModifiersList = selectedModifiers.map((modifier, index) => (
-    <Flex
-      key={index} // You might want to use a more unique key here
-      alignItems="center"
-      bgColor={"ui.secondary"}
-    >
+    <Flex key={index} alignItems="center" bgColor={"ui.secondary"}>
       <Box bgColor={"ui.main"} width={8} height={8}>
         <AddIconCheckbox
           isChecked={modifier.isSelected}
@@ -261,8 +302,7 @@ function ModifierListInput() {
       <Text ml={3}>{modifier.effect}</Text>
 
       <React.Fragment key={index}>
-        {/* Check if minRoll at position 1 exists and is not all null */}
-        {/* Check if minRoll exists and is not all null */}
+        {/* Check if modifier static exists and is not all null */}
         {isArrayNullOrContainsOnlyNull(modifier.static) &&
           (() => {
             const elements = [];
@@ -271,6 +311,13 @@ function ModifierListInput() {
               modifierInputIndex < modifier.position.length;
               modifierInputIndex++
             ) {
+              const selectedModifier = selectedModifiers.find(
+                (selectedModifier) =>
+                  selectedModifier.modifierId[0] === modifier.modifierId[0]
+              );
+              const selectedModifierInput = selectedModifier?.minRollInputs
+                ? selectedModifier.minRollInputs[modifierInputIndex]
+                : undefined;
               if (
                 modifier.minRoll &&
                 modifier.minRoll[modifierInputIndex] !== null &&
@@ -278,13 +325,13 @@ function ModifierListInput() {
               ) {
                 elements.push(
                   renderInputBasedOnConditions({
-                    input: modifier.minRoll,
-                    inputValue: "minPosition" + modifierInputIndex,
-                    handleInputChangeCase: ("minPosition" + index) as InputCase,
+                    modifier: modifier,
+                    input: selectedModifierInput,
                     width: "10%",
-                    position: modifierInputIndex,
+                    handleInputChangeCase: "minPosition" as InputCase,
+                    inputPosition: modifierInputIndex,
+                    key: "minPosition" + index + modifierInputIndex,
                     placeholder: "MIN",
-                    key: "minPosition" + modifierInputIndex,
                   })
                 );
               }
@@ -296,71 +343,39 @@ function ModifierListInput() {
               ) {
                 elements.push(
                   renderInputBasedOnConditions({
-                    input: modifier.maxRoll,
-                    inputValue: "maxPosition" + modifierInputIndex,
-                    handleInputChangeCase: ("maxPosition" + index) as InputCase,
+                    modifier: modifier,
+                    input: selectedModifierInput,
+                    handleInputChangeCase: "maxPosition" as InputCase,
+                    inputPosition: modifierInputIndex,
                     width: "10%",
-                    position: modifierInputIndex,
-                    key: "maxPosition" + modifierInputIndex,
+                    key: "maxPosition" + index + modifierInputIndex,
                     placeholder: "MAX",
                   })
                 );
-                // setInputStates((prevInputStates) => ({
-                //   ...prevInputStates,
-                //   ["maxPosition" + modifierInputIndex]: modifier.maxRoll ? [modifierInputIndex].toString() : "",
-                // }));
               }
               if (
                 modifier.textRolls &&
                 modifier.textRolls[modifierInputIndex] !== null &&
                 modifier.textRolls[modifierInputIndex] !== undefined
               ) {
+                console.log("INDEX: " + modifierInputIndex);
+                console.log("POSITION LENGTH: " + modifier.position.length);
                 elements.push(
                   renderInputBasedOnConditions({
-                    input: modifier.textRolls,
-                    inputValue: "textPosition" + modifierInputIndex,
-                    handleInputChangeCase: ("textPosition" +
-                      index) as InputCase,
+                    modifier: modifier,
+                    input: selectedModifierInput,
+                    handleInputChangeCase: "textPosition" as InputCase,
+                    inputPosition: modifierInputIndex,
                     width: "10%",
-                    position: modifierInputIndex,
-                    key: "textPosition" + modifierInputIndex,
+                    key: "textPosition" + index + modifierInputIndex,
                     placeholder: "TEXT",
                   })
                 );
-                // setInputStates((prevInputStates) => ({
-                //   ...prevInputStates,
-                //   ["textPosition" + modifierInputIndex]: modifier.textRolls ? [modifierInputIndex].toString() : "",
-                // }));
               }
             }
             return elements;
           })()}
       </React.Fragment>
-
-      {/* {selectedModifiers.map(
-        (modifier_m2, index) =>
-          !isArrayNullOrContainsOnlyNull(modifier_m2.minRoll[0]) &&
-          !isArrayNullOrContainsOnlyNull(modifier_m2.maxRoll) && (
-            <React.Fragment key={index}>
-              <Input
-                value={searchModifierText}
-                onChange={handleInputChange}
-                width={"10%"}
-                placeholder="MIN"
-                _placeholder={{ color: "ui.white" }}
-                textAlign={"center"}
-              />
-              <Input
-                value={searchModifierText}
-                onChange={handleInputChange}
-                width={"10%"}
-                placeholder="MAX"
-                _placeholder={{ color: "ui.white" }}
-                textAlign={"center"}
-              />
-            </React.Fragment>
-          )
-      )} */}
 
       <Box ml={"auto"} bgColor={"ui.main"}>
         <CloseButton
