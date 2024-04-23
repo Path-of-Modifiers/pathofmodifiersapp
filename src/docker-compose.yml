@@ -65,7 +65,7 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.middlewares=${STACK_NAME?Variable not set}-www-redirect
 
-    command: bash -c "alembic upgrade head && python app/database/modifier_data_deposit/deposit_modifier_data.py"
+    command: bash -c "alembic upgrade head"
 
 
 
