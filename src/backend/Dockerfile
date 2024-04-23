@@ -33,3 +33,6 @@ RUN poetry install --no-interaction
 
 COPY ./app /app
 ENV PYTHONPATH=/app
+
+RUN alembic upgrade head
+RUN python app/database/modifier_data_deposit/deposit_modifier_data.py
