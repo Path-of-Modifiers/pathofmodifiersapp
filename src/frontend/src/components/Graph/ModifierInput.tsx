@@ -8,7 +8,6 @@ import {
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  Select,
   Stack,
   Text,
 } from "@chakra-ui/react";
@@ -20,6 +19,7 @@ import { GroupedModifierByEffect } from "../../client";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 import React from "react";
 import { modifiers } from "../../test_data/modifier_data";
+import { TextRollInput } from "../Input/TextRollInput";
 // import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
 
 export const ModifierInput = () => {
@@ -404,32 +404,19 @@ const ModifierListInput = () => {
         !isArrayNullOrContainsOnlyNull(modifierSelected.textRolls) &&
         modifierSelected.textRolls
       ) {
-        const textRolls = modifierSelected.textRolls[inputPosition] as string;
-        const textRollsList = textRolls.split("-");
-
-        const textRollsOptions = textRollsList.map((textRoll, index) => (
-          <option
-            value={textRoll}
-            key={key + textRoll + index}
-            style={{ backgroundColor: "#2d3333" }}
-          >
-            {textRoll}
-          </option>
-        ));
-
         return (
-          <Select
-            bgColor={"ui.input"}
-            defaultValue={"TextRolls"}
-            onChange={handleChange}
-            focusBorderColor={"ui.white"}
-            borderColor={"ui.grey"}
-            width={"40%"}
-            mr={1}
-            key={key}
-          >
-            {textRollsOptions}
-          </Select>
+          <TextRollInput
+            modifierSelected={modifierSelected}
+            inputPosition={inputPosition}
+            updateModifierInputFunction={() =>
+              updateModifierInput(
+                modifierSelected.modifierId[0],
+                undefined,
+                undefined,
+                modifierSelected.textRollInputs
+              )
+            }
+          />
         );
       }
     }
