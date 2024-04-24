@@ -2,7 +2,7 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 import SideBar from "../components/Common/Sidebar";
 import Header from "../components/Common/Header";
 import { Flex } from "@chakra-ui/layout";
-import ModifierInput from "../components/Graph/ModifierInput";
+import { ModifierInput } from "../components/Graph/ModifierInput";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/")({
