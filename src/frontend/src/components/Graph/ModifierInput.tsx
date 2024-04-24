@@ -51,12 +51,9 @@ function ModifierListInput() {
     const testModifiers: ModifierInput[] = modifiers;
 
     if (testModifiers) {
-      const filtered = testModifiers
-        .filter((modifier) =>
-          modifier.effect
-            .toLowerCase()
-            .includes(searchModifierText.toLowerCase())
-        )
+      const filtered = testModifiers.filter((modifier) =>
+        modifier.effect.toLowerCase().includes(searchModifierText.toLowerCase())
+      );
       setFilteredModifiers(filtered);
     }
   }, [searchModifierText]);
@@ -297,11 +294,7 @@ function ModifierListInput() {
         !isArrayNullOrContainsOnlyNull(modifier.textRolls) &&
         modifier.textRolls
       ) {
-        console.log("TextRolls: " + modifier.textRolls[0]);
-        const textRolls = modifier.textRolls[0]
-          ? (modifier.textRolls[0] as string)
-          : (modifier.textRolls[1] as string);
-        console.log("HEYHEYHHEY" + textRolls);
+        const textRolls = modifier.textRolls[inputPosition] as string;
         const textRollsList = textRolls.split("-");
 
         const textRollsOptions = textRollsList.map((textRoll, index) => (
@@ -344,7 +337,9 @@ function ModifierListInput() {
         />
       </Box>
 
-      <Text ml={3} mr={"auto"}>{modifier.effect}</Text>
+      <Text ml={3} mr={"auto"}>
+        {modifier.effect}
+      </Text>
 
       <Flex width={"80"} justifyContent="flex-end" ml={"auto"}>
         {/* Check if modifier static exists and is not all null */}
