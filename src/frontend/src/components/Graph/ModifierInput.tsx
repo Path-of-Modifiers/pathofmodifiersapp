@@ -22,18 +22,25 @@ import React from "react";
 import { modifiers } from "../../test_data/modifier_data";
 // import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
 
-const ModiferInput = () => {
+export const ModifierInput = () => {
   return <ModifierListInput />;
 };
 
-interface ModifierInput extends GroupedModifierByEffect {
+export interface ModifierInput extends GroupedModifierByEffect {
   isSelected?: boolean;
   minRollInputs?: (number | null)[];
   maxRollInputs?: (number | null)[];
   textRollInputs?: (string | null)[];
 }
 
-function ModifierListInput() {
+export type UpdateModifierInputFunction = (
+  modifierId: number,
+  newMinRollInputs?: (number | null)[] | undefined,
+  newMaxRollInputs?: (number | null)[] | undefined,
+  newTextRollInputs?: (string | null)[] | undefined
+) => void;
+
+const ModifierListInput = () => {
   const [searchModifierText, setSearchModifierText] = useState("");
 
   const [filteredModifiers, setFilteredModifiers] = useState<ModifierInput[]>([
@@ -344,6 +351,7 @@ function ModifierListInput() {
             borderColor={"ui.grey"}
             onChange={handleChange}
             width={"30%"}
+            mr={1}
             _placeholder={{ color: "ui.white" }}
             textAlign={"center"}
           >
@@ -379,6 +387,7 @@ function ModifierListInput() {
             focusBorderColor={"ui.white"}
             borderColor={"ui.grey"}
             width={"30%"}
+            mr={1}
             _placeholder={{ color: "ui.white" }}
             textAlign={"center"}
           >
@@ -416,6 +425,7 @@ function ModifierListInput() {
             focusBorderColor={"ui.white"}
             borderColor={"ui.grey"}
             width={"40%"}
+            mr={1}
             key={key}
           >
             {textRollsOptions}
@@ -606,6 +616,4 @@ function ModifierListInput() {
       </Menu> */}
     </Flex>
   );
-}
-
-export default ModiferInput;
+};
