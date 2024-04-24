@@ -57,15 +57,9 @@ function ModifierListInput() {
             .toLowerCase()
             .includes(searchModifierText.toLowerCase())
         )
-        .filter(
-          (modifier) =>
-            !selectedModifiers.some(
-              (selectedModifier) => selectedModifier.effect === modifier.effect
-            )
-        );
       setFilteredModifiers(filtered);
     }
-  }, [searchModifierText, selectedModifiers]);
+  }, [searchModifierText]);
 
   const ref = useOutsideClick(() => {
     setIsExpanded(false);
@@ -157,6 +151,7 @@ function ModifierListInput() {
     }
 
     setSearchModifierText("");
+    toggleExpand();
   };
 
   const handleRemoveModifier = (id: number) => {
@@ -340,6 +335,7 @@ function ModifierListInput() {
           isChecked={modifier.isSelected}
           top={"24%"}
           left={"24%"}
+          key={modifier.modifierId[0]}
           onChange={() => {
             if (modifier.modifierId[0] !== null) {
               handleCheckboxChange(modifier.modifierId[0]);
@@ -348,9 +344,9 @@ function ModifierListInput() {
         />
       </Box>
 
-      <Text ml={3}>{modifier.effect}</Text>
+      <Text ml={3} mr={"auto"}>{modifier.effect}</Text>
 
-      <React.Fragment key={index}>
+      <Flex width={"80"} justifyContent="flex-end" ml={"auto"}>
         {/* Check if modifier static exists and is not all null */}
         {isArrayNullOrContainsOnlyNull(modifier.static) &&
           (() => {
@@ -377,7 +373,7 @@ function ModifierListInput() {
                   renderInputBasedOnConditions({
                     modifier: modifier,
                     input: selectedModifierInput,
-                    width: "10%",
+                    width: "20",
                     handleInputChangeCase: "minPosition" as InputCase,
                     inputPosition: modifierInputIndex,
                     key: "minPosition" + index + modifierInputIndex,
@@ -401,7 +397,7 @@ function ModifierListInput() {
                     input: selectedModifierInput,
                     handleInputChangeCase: "maxPosition" as InputCase,
                     inputPosition: modifierInputIndex,
-                    width: "10%",
+                    width: "20",
                     key: "maxPosition" + index + modifierInputIndex,
                     placeholder: "MAX",
                   })
@@ -422,7 +418,7 @@ function ModifierListInput() {
                     input: selectedModifierInput,
                     handleInputChangeCase: "textPosition" as InputCase,
                     inputPosition: modifierInputIndex,
-                    width: "18%",
+                    width: "35",
                     key: "textPosition" + index + modifierInputIndex,
                     placeholder: "TEXT",
                   })
@@ -431,9 +427,9 @@ function ModifierListInput() {
             }
             return elements;
           })()}
-      </React.Fragment>
+      </Flex>
 
-      <Box ml={"auto"} bgColor={"ui.main"}>
+      <Box bgColor={"ui.main"}>
         <CloseButton
           _hover={{ background: "gray.100", cursor: "pointer" }}
           onClick={() => {
@@ -458,7 +454,7 @@ function ModifierListInput() {
   ));
 
   return (
-    <Flex direction="column" color="ui.dark" width={900}>
+    <Flex direction="column" color="ui.dark" width={1200}>
       <Stack color={"ui.white"} mb={2}>
         {selectedModifiersList}
       </Stack>
