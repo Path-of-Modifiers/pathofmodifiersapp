@@ -3,6 +3,11 @@ import {
   CloseButton,
   Flex,
   Input,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
   Select,
   Stack,
   Text,
@@ -51,12 +56,23 @@ function ModifierListInput() {
     const testModifiers: ModifierInput[] = modifiers;
 
     if (testModifiers) {
-      const filtered = testModifiers.filter((modifier) =>
-        modifier.effect.toLowerCase().includes(searchModifierText.toLowerCase())
-      );
+      const filtered = testModifiers
+        .filter((modifier) =>
+          modifier.effect
+            .toLowerCase()
+            .includes(searchModifierText.toLowerCase())
+        )
+        .filter(
+          (modifier) =>
+            !selectedModifiers.some(
+              (selectedModifier) =>
+                selectedModifier.modifierId[0] === modifier.modifierId[0]
+            )
+        );
+
       setFilteredModifiers(filtered);
     }
-  }, [searchModifierText]);
+  }, [searchModifierText, selectedModifiers]);
 
   const ref = useOutsideClick(() => {
     setIsExpanded(false);
@@ -137,14 +153,56 @@ function ModifierListInput() {
       selectedModifierEffect,
     ]);
 
-    if (!isArrayNullOrContainsOnlyNull(selectedModifierEffect.minRoll)) {
-      selectedModifierEffect.minRollInputs = [0];
+    if (
+      !isArrayNullOrContainsOnlyNull(selectedModifierEffect.minRoll) &&
+      selectedModifierEffect.minRoll
+    ) {
+      selectedModifierEffect.minRollInputs = new Array(
+        selectedModifierEffect.minRoll.length
+      ).fill(undefined);
+
+      if (selectedModifierEffect.minRollInputs !== undefined) {
+        for (let i = 0; i < selectedModifierEffect.minRoll.length; i++) {
+          selectedModifierEffect.minRollInputs[i] =
+            selectedModifierEffect.minRoll[i];
+        }
+      }
     }
-    if (!isArrayNullOrContainsOnlyNull(selectedModifierEffect.maxRoll)) {
-      selectedModifierEffect.maxRollInputs = [0];
+    if (
+      !isArrayNullOrContainsOnlyNull(selectedModifierEffect.maxRoll) &&
+      selectedModifierEffect.maxRoll
+    ) {
+      selectedModifierEffect.maxRollInputs = new Array(
+        selectedModifierEffect.maxRoll.length
+      ).fill(undefined);
+
+      if (selectedModifierEffect.maxRollInputs !== undefined) {
+        for (let i = 0; i < selectedModifierEffect.maxRoll.length; i++) {
+          selectedModifierEffect.maxRollInputs[i] =
+            selectedModifierEffect.maxRoll[i];
+        }
+      }
     }
-    if (!isArrayNullOrContainsOnlyNull(selectedModifierEffect.textRolls)) {
-      selectedModifierEffect.textRollInputs = [""];
+    if (
+      !isArrayNullOrContainsOnlyNull(selectedModifierEffect.textRolls) &&
+      selectedModifierEffect.textRolls
+    ) {
+      selectedModifierEffect.textRollInputs = new Array(
+        selectedModifierEffect.textRolls.length
+      ).fill(undefined);
+
+      if (selectedModifierEffect.textRollInputs !== undefined) {
+        for (let i = 0; i < selectedModifierEffect.textRolls.length; i++) {
+          if (
+            selectedModifierEffect.textRolls[i] !== null &&
+            selectedModifierEffect.textRolls[i] !== undefined
+          ) {
+            selectedModifierEffect.textRollInputs[i] =
+              selectedModifierEffect.textRolls[i]?.split("-")[0] as string;
+            break;
+          }
+        }
+      }
     }
 
     setSearchModifierText("");
@@ -225,27 +283,23 @@ function ModifierListInput() {
   }
 
   interface RenderInputProps {
-    modifier: ModifierInput;
+    modifierSelected: ModifierInput;
     input: string | number | undefined | null;
     handleInputChangeCase: InputCase;
     inputPosition: number;
-    width: string;
-    placeholder: string;
     key: string;
   }
 
   const renderInputBasedOnConditions = ({
-    modifier,
+    modifierSelected,
     input,
     handleInputChangeCase,
     inputPosition,
-    width,
     key,
-    placeholder,
   }: RenderInputProps): JSX.Element | null => {
     const selectedModifierInput = selectedModifiers.find(
       (selectedModifier) =>
-        selectedModifier.modifierId[0] === modifier.modifierId[0]
+        selectedModifier.modifierId[0] === modifierSelected.modifierId[0]
     );
 
     if (selectedModifierInput) {
@@ -253,63 +307,115 @@ function ModifierListInput() {
         event:
           | React.ChangeEvent<HTMLInputElement>
           | React.ChangeEvent<HTMLSelectElement>
+          | string
+          | number
       ) => {
+        if (typeof event === "string" || typeof event === "number") {
+          event = {
+            target: { value: event },
+          } as React.ChangeEvent<HTMLInputElement>;
+        }
         const selectedValue = event.target.value;
         // Call function to handle the change
         handleInputChange(
           selectedValue,
           handleInputChangeCase,
           inputPosition,
-          modifier
+          modifierSelected
         );
       };
 
       // Access the specific property of the ModifierInput object based on handleInputChangeCase
       if (
-        handleInputChangeCase === "minPosition" ||
-        (handleInputChangeCase === "maxPosition" &&
-          selectedModifierInput.minRollInputs &&
-          selectedModifierInput.maxRollInputs)
+        handleInputChangeCase === "minPosition" &&
+        selectedModifierInput.minRollInputs &&
+        modifierSelected.minRoll
       ) {
-        let input_value: number | undefined;
-        if (input === null && input === undefined) {
-          input_value = input;
+        const defaultValue = modifierSelected.minRoll[inputPosition] as number;
+
+        return (
+          <NumberInput
+            value={input ? input : defaultValue}
+            defaultValue={defaultValue}
+            step={1}
+            key={key}
+            bgColor={"ui.input"}
+            focusBorderColor={"ui.white"}
+            borderColor={"ui.grey"}
+            onChange={handleChange}
+            width={"30%"}
+            _placeholder={{ color: "ui.white" }}
+            textAlign={"center"}
+          >
+            <NumberInputField />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
+        );
+      }
+      if (
+        handleInputChangeCase === "maxPosition" &&
+        selectedModifierInput.maxRollInputs &&
+        selectedModifierInput.maxRoll
+      ) {
+        const defaultValue = selectedModifierInput.maxRoll[
+          inputPosition
+        ] as number;
+
+        if (input === 0) {
+          input = defaultValue;
         }
 
         return (
-          <Input
-            value={input_value}
+          <NumberInput
+            value={input ? input : 0}
+            defaultValue={defaultValue}
+            step={1}
             key={key}
             bgColor={"ui.input"}
             onChange={handleChange}
-            width={width}
-            placeholder={placeholder}
+            focusBorderColor={"ui.white"}
+            borderColor={"ui.grey"}
+            width={"30%"}
             _placeholder={{ color: "ui.white" }}
             textAlign={"center"}
-          />
+          >
+            <NumberInputField />
+            <NumberInputStepper textColor={"ui.white"}>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
         );
       }
       if (
         handleInputChangeCase === "textPosition" &&
-        !isArrayNullOrContainsOnlyNull(modifier.textRolls) &&
-        modifier.textRolls
+        !isArrayNullOrContainsOnlyNull(modifierSelected.textRolls) &&
+        modifierSelected.textRolls
       ) {
-        const textRolls = modifier.textRolls[inputPosition] as string;
+        const textRolls = modifierSelected.textRolls[inputPosition] as string;
         const textRollsList = textRolls.split("-");
 
         const textRollsOptions = textRollsList.map((textRoll, index) => (
-          <option value={textRoll} key={key + textRoll + index}>
+          <option
+            value={textRoll}
+            key={key + textRoll + index}
+            style={{ backgroundColor: "#2d3333" }}
+          >
             {textRoll}
           </option>
         ));
 
         return (
           <Select
-            bgColor={"ui.white"}
-            color={"ui.dark"}
+            bgColor={"ui.input"}
             defaultValue={"TextRolls"}
             onChange={handleChange}
-            width={width}
+            focusBorderColor={"ui.white"}
+            borderColor={"ui.grey"}
+            width={"40%"}
             key={key}
           >
             {textRollsOptions}
@@ -321,121 +427,113 @@ function ModifierListInput() {
   };
 
   // Render selected modifiers list
-  const selectedModifiersList = selectedModifiers.map((modifier, index) => (
-    <Flex key={index} alignItems="center" bgColor={"ui.secondary"}>
-      <Box bgColor={"ui.main"} width={8} height={8}>
-        <AddIconCheckbox
-          isChecked={modifier.isSelected}
-          top={"24%"}
-          left={"24%"}
-          key={modifier.modifierId[0]}
-          onChange={() => {
-            if (modifier.modifierId[0] !== null) {
-              handleCheckboxChange(modifier.modifierId[0]);
-            }
-          }}
-        />
-      </Box>
-
-      <Text ml={3} mr={"auto"}>
-        {modifier.effect}
-      </Text>
-
-      <Flex width={"80"} justifyContent="flex-end" ml={"auto"}>
-        {/* Check if modifier static exists and is not all null */}
-        {isArrayNullOrContainsOnlyNull(modifier.static) &&
-          (() => {
-            const elements = [];
-            for (
-              let modifierInputIndex = 0;
-              modifierInputIndex < modifier.position.length;
-              modifierInputIndex++
-            ) {
-              const selectedModifier = selectedModifiers.find(
-                (selectedModifier) =>
-                  selectedModifier.modifierId[0] === modifier.modifierId[0]
-              );
-              if (
-                !isArrayNullOrContainsOnlyNull(modifier.minRoll) &&
-                modifier.minRoll &&
-                modifier.minRoll[modifierInputIndex] !== null
-              ) {
-                const selectedModifierInput = selectedModifier?.minRollInputs
-                  ? selectedModifier.minRollInputs[modifierInputIndex]
-                  : undefined;
-
-                elements.push(
-                  renderInputBasedOnConditions({
-                    modifier: modifier,
-                    input: selectedModifierInput,
-                    width: "20",
-                    handleInputChangeCase: "minPosition" as InputCase,
-                    inputPosition: modifierInputIndex,
-                    key: "minPosition" + index + modifierInputIndex,
-                    placeholder: "MIN",
-                  })
-                );
+  const selectedModifiersList = selectedModifiers.map(
+    (modifierSelected, index) => (
+      <Flex key={index} alignItems="center" bgColor={"ui.secondary"}>
+        <Box bgColor={"ui.main"} width={8} height={8}>
+          <AddIconCheckbox
+            isChecked={modifierSelected.isSelected}
+            top={"24%"}
+            left={"24%"}
+            key={modifierSelected.modifierId[0] + index}
+            onChange={() => {
+              if (modifierSelected.modifierId[0] !== null) {
+                handleCheckboxChange(modifierSelected.modifierId[0]);
               }
+            }}
+          />
+        </Box>
 
-              if (
-                !isArrayNullOrContainsOnlyNull(modifier.maxRoll) &&
-                modifier.maxRoll &&
-                modifier.maxRoll[modifierInputIndex] !== null
+        <Text ml={3} mr={"auto"}>
+          {modifierSelected.effect}
+        </Text>
+
+        <Flex width={"35%"} justifyContent="flex-end" ml={"auto"}>
+          {/* Check if modifierSelected static exists and is not all null */}
+          {isArrayNullOrContainsOnlyNull(modifierSelected.static) &&
+            (() => {
+              const elements = [];
+              for (
+                let modifierInputIndex = 0;
+                modifierInputIndex < modifierSelected.position.length;
+                modifierInputIndex++
               ) {
-                const selectedModifierInput = selectedModifier?.maxRollInputs
-                  ? selectedModifier.maxRollInputs[modifierInputIndex]
-                  : undefined;
+                if (
+                  !isArrayNullOrContainsOnlyNull(modifierSelected.minRoll) &&
+                  modifierSelected.minRoll &&
+                  modifierSelected.minRoll[modifierInputIndex] !== null
+                ) {
+                  const selectedModifierInput = modifierSelected?.minRollInputs
+                    ? modifierSelected.minRollInputs[modifierInputIndex]
+                    : undefined;
 
-                elements.push(
-                  renderInputBasedOnConditions({
-                    modifier: modifier,
-                    input: selectedModifierInput,
-                    handleInputChangeCase: "maxPosition" as InputCase,
-                    inputPosition: modifierInputIndex,
-                    width: "20",
-                    key: "maxPosition" + index + modifierInputIndex,
-                    placeholder: "MAX",
-                  })
-                );
-              }
-              if (
-                !isArrayNullOrContainsOnlyNull(modifier.textRolls) &&
-                modifier.textRolls &&
-                modifier.textRolls[modifierInputIndex] !== null
-              ) {
-                const selectedModifierInput = selectedModifier?.textRollInputs
-                  ? selectedModifier.textRollInputs[modifierInputIndex]
-                  : undefined;
+                  elements.push(
+                    renderInputBasedOnConditions({
+                      modifierSelected: modifierSelected,
+                      input: selectedModifierInput,
+                      handleInputChangeCase: "minPosition" as InputCase,
+                      inputPosition: modifierInputIndex,
+                      key: "minPosition" + index + modifierInputIndex,
+                    })
+                  );
+                }
 
-                elements.push(
-                  renderInputBasedOnConditions({
-                    modifier: modifier,
-                    input: selectedModifierInput,
-                    handleInputChangeCase: "textPosition" as InputCase,
-                    inputPosition: modifierInputIndex,
-                    width: "35",
-                    key: "textPosition" + index + modifierInputIndex,
-                    placeholder: "TEXT",
-                  })
-                );
+                if (
+                  !isArrayNullOrContainsOnlyNull(modifierSelected.maxRoll) &&
+                  modifierSelected.maxRoll &&
+                  modifierSelected.maxRoll[modifierInputIndex] !== null
+                ) {
+                  const selectedModifierInput = modifierSelected?.maxRollInputs
+                    ? modifierSelected.maxRollInputs[modifierInputIndex]
+                    : undefined;
+
+                  elements.push(
+                    renderInputBasedOnConditions({
+                      modifierSelected: modifierSelected,
+                      input: selectedModifierInput,
+                      handleInputChangeCase: "maxPosition" as InputCase,
+                      inputPosition: modifierInputIndex,
+                      key: "maxPosition" + index + modifierInputIndex,
+                    })
+                  );
+                }
+                if (
+                  !isArrayNullOrContainsOnlyNull(modifierSelected.textRolls) &&
+                  modifierSelected.textRolls &&
+                  modifierSelected.textRolls[modifierInputIndex] !== null
+                ) {
+                  const selectedModifierInput = modifierSelected?.textRollInputs
+                    ? modifierSelected.textRollInputs[modifierInputIndex]
+                    : undefined;
+
+                  elements.push(
+                    renderInputBasedOnConditions({
+                      modifierSelected: modifierSelected,
+                      input: selectedModifierInput,
+                      handleInputChangeCase: "textPosition" as InputCase,
+                      inputPosition: modifierInputIndex,
+                      key: "textPosition" + index + modifierInputIndex,
+                    })
+                  );
+                }
               }
-            }
-            return elements;
-          })()}
+              return elements;
+            })()}
+        </Flex>
+
+        <Box bgColor={"ui.main"}>
+          <CloseButton
+            _hover={{ background: "gray.100", cursor: "pointer" }}
+            onClick={() => {
+              if (modifierSelected.modifierId[0] !== null) {
+                handleRemoveModifier(modifierSelected.modifierId[0]);
+              }
+            }}
+          />
+        </Box>
       </Flex>
-
-      <Box bgColor={"ui.main"}>
-        <CloseButton
-          _hover={{ background: "gray.100", cursor: "pointer" }}
-          onClick={() => {
-            if (modifier.modifierId[0] !== null) {
-              handleRemoveModifier(modifier.modifierId[0]);
-            }
-          }}
-        />
-      </Box>
-    </Flex>
-  ));
+    )
+  );
 
   const modifiersList = filteredModifiers.map((modifier) => (
     <Box
@@ -461,6 +559,8 @@ function ModifierListInput() {
           placeholder="+ Add modifier"
           _placeholder={{ color: "ui.white" }}
           textAlign={"center"}
+          focusBorderColor={"ui.white"}
+          borderColor={"ui.grey"}
           onFocus={() => {
             if (!isExpanded) {
               toggleExpand();
