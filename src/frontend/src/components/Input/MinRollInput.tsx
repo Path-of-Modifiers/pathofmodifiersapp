@@ -5,14 +5,12 @@ import {
   UpdateModifierInputFunction,
 } from "../Graph/ModifierInput";
 
-const handleInputTextRollChange = (
+const handleInputMinRollChange = (
   value: string,
   position: number,
   modifier: ModifierInput,
   updateModifierInputFunction: UpdateModifierInputFunction
 ) => {
-  // Regular expression to allow numbers and scientific notation
-  // const scientificPattern = /^-?\d*\.?\d*(e-?\d+)?$/i;
 
   if (modifier.textRollInputs) {
     modifier.textRollInputs[position] = value;
@@ -35,7 +33,7 @@ const handleChange = (
 ) => {
   const selectedValue = event.target.value;
   // Call function to handle the change
-  handleInputTextRollChange(
+  handleInputMinRollChange(
     selectedValue,
     inputPosition,
     modifierSelected,
