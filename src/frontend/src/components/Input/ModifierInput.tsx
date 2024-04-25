@@ -18,7 +18,8 @@ import { TextRollInput } from "./TextRollInput";
 import { MinRollInput } from "./MinRollInput";
 import { MaxRollInput } from "./MaxRollInput";
 import { isArrayNullOrContainsOnlyNull } from "../../hooks/utils";
-import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
+// import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
+import { modifiers } from "../../test_data/modifier_data";
 // import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
 
 export interface ModifierInput extends GroupedModifierByEffect {
@@ -63,13 +64,13 @@ export const ModifierInput = () => {
 
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const getModifiers = GetGroupedModifiersByEffect();
+  // const getModifiers = GetGroupedModifiersByEffect();
 
   // const modifiers: ModifierInput[] | undefined = GetGroupedModifiersByEffect();
 
   useEffect(() => {
-    if (getModifiers) {
-      const filtered = getModifiers
+    if (modifiers) {
+      const filtered = modifiers
         .filter((modifier) =>
           modifier.effect
             .toLowerCase()
@@ -93,7 +94,7 @@ export const ModifierInput = () => {
         },
       ]);
     }
-  }, [searchModifierText, selectedModifiers, getModifiers]);
+  }, [searchModifierText, selectedModifiers]);
 
   const ref = useOutsideClick(() => {
     setIsExpanded(false);
@@ -125,13 +126,6 @@ export const ModifierInput = () => {
       selectedModifierEffect.minRollInputs = new Array(
         selectedModifierEffect.minRoll.length
       ).fill(undefined);
-
-      if (selectedModifierEffect.minRollInputs !== undefined) {
-        for (let i = 0; i < selectedModifierEffect.minRoll.length; i++) {
-          selectedModifierEffect.minRollInputs[i] =
-            selectedModifierEffect.minRoll[i];
-        }
-      }
     }
     if (
       !isArrayNullOrContainsOnlyNull(selectedModifierEffect.maxRoll) &&
@@ -140,13 +134,6 @@ export const ModifierInput = () => {
       selectedModifierEffect.maxRollInputs = new Array(
         selectedModifierEffect.maxRoll.length
       ).fill(undefined);
-
-      if (selectedModifierEffect.maxRollInputs !== undefined) {
-        for (let i = 0; i < selectedModifierEffect.maxRoll.length; i++) {
-          selectedModifierEffect.maxRollInputs[i] =
-            selectedModifierEffect.maxRoll[i];
-        }
-      }
     }
     if (
       !isArrayNullOrContainsOnlyNull(selectedModifierEffect.textRolls) &&
@@ -155,18 +142,6 @@ export const ModifierInput = () => {
       selectedModifierEffect.textRollInputs = new Array(
         selectedModifierEffect.textRolls.length
       ).fill(undefined);
-
-      if (selectedModifierEffect.textRollInputs !== undefined) {
-        for (let i = 0; i < selectedModifierEffect.textRolls.length; i++) {
-          if (
-            selectedModifierEffect.textRolls[i] !== null &&
-            selectedModifierEffect.textRolls[i] !== undefined
-          ) {
-            selectedModifierEffect.textRollInputs[i] =
-              selectedModifierEffect.textRolls[i]?.split("-")[0] as string;
-          }
-        }
-      }
     }
 
     setSearchModifierText("");
