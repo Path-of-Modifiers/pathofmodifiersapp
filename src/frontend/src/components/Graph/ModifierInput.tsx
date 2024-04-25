@@ -21,10 +21,6 @@ import { MaxRollInput } from "../Input/MaxRollInput";
 import { isArrayNullOrContainsOnlyNull } from "../../hooks/utils";
 // import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
 
-export const ModifierInput = () => {
-  return <ModifierListInput />;
-};
-
 export interface ModifierInput extends GroupedModifierByEffect {
   isSelected?: boolean;
   minRollInputs?: (number | null)[];
@@ -50,7 +46,7 @@ export type UpdateModifierInputFunction = (
   newTextRollInputs?: (string | null)[] | undefined
 ) => void;
 
-const ModifierListInput = () => {
+export const ModifierInput = () => {
   const [searchModifierText, setSearchModifierText] = useState("");
 
   const [filteredModifiers, setFilteredModifiers] = useState<ModifierInput[]>([
