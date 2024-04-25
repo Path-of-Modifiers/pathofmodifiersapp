@@ -90,67 +90,11 @@ const ModifierListInput = () => {
     console.log(filteredModifiers);
   });
 
-  // Define types for input cases
-  type InputCase = "modifier" | "minPosition" | "maxPosition" | "textPosition";
-
   // Define the function to handle input changes
-  const handleInputChange = (
-    value: string,
-    inputCase: InputCase,
-    position?: number,
-    modifier?: ModifierInput
-  ) => {
+  const handleInputChange = (value: string) => {
     // Regular expression to allow numbers and scientific notation
     // const scientificPattern = /^-?\d*\.?\d*(e-?\d+)?$/i;
-
-    if (inputCase === "modifier") {
-      setSearchModifierText(value);
-    }
-    if (!modifier || position === undefined || position < 0) {
-      return;
-    }
-    switch (inputCase) {
-      case "minPosition":
-        if (modifier.minRollInputs) {
-          modifier.minRollInputs[position] = value;
-        } else {
-          modifier.minRollInputs = [value];
-        }
-        updateModifierInput(
-          modifier.modifierId[position],
-          modifier.minRollInputs
-        );
-        break;
-      case "maxPosition":
-        if (modifier.maxRollInputs) {
-          modifier.maxRollInputs[position] = value;
-        } else {
-          modifier.maxRollInputs = [value];
-        }
-        updateModifierInput(
-          modifier.modifierId[position],
-          undefined,
-          modifier.maxRollInputs,
-          undefined
-        );
-        break;
-      case "textPosition":
-        if (modifier.textRollInputs) {
-          modifier.textRollInputs[position] = value;
-        } else {
-          modifier.textRollInputs = [value];
-        }
-        updateModifierInput(
-          modifier.modifierId[position],
-          undefined,
-          undefined,
-          modifier.textRollInputs
-        );
-        break;
-      default:
-        // Handle default case
-        break;
-    }
+    setSearchModifierText(value);
   };
 
   const handleModifierSelect = (selectedModifierEffect: ModifierInput) => {
@@ -336,7 +280,12 @@ const ModifierListInput = () => {
                       modifierSelected={modifierSelected}
                       input={selectedModifierInput}
                       inputPosition={modifierInputIndex}
-                      updateModifierInputFunction={updateModifierInput}
+                      updateModifierInputFunction={() =>
+                        updateModifierInput(
+                          modifierSelected.modifierId[0],
+                          modifierSelected.minRollInputs
+                        )
+                      }
                       key={"minRollPosition" + index + modifierInputIndex}
                     />
                   );
@@ -356,7 +305,13 @@ const ModifierListInput = () => {
                       modifierSelected={modifierSelected}
                       input={selectedModifierInput}
                       inputPosition={modifierInputIndex}
-                      updateModifierInputFunction={updateModifierInput}
+                      updateModifierInputFunction={() =>
+                        updateModifierInput(
+                          modifierSelected.modifierId[0],
+                          undefined,
+                          modifierSelected.maxRollInputs
+                        )
+                      }
                       key={"maxRollPosition" + index + modifierInputIndex}
                     />
                   );
@@ -421,7 +376,7 @@ const ModifierListInput = () => {
       <Box bgColor={"ui.input"} color={"ui.white"} ref={ref} mr={8} ml={8}>
         <Input
           value={searchModifierText}
-          onChange={(e) => handleInputChange(e.target.value, "modifier")}
+          onChange={(e) => handleInputChange(e.target.value)}
           placeholder="+ Add modifier"
           _placeholder={{ color: "ui.white" }}
           textAlign={"center"}
