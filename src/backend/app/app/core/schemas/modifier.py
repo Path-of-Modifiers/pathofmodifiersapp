@@ -7,7 +7,6 @@ import pydantic as _pydantic
 class _BaseModifier(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
-    modifierId: int
     position: int
     minRoll: Optional[float] = None
     maxRoll: Optional[float] = None
@@ -38,7 +37,7 @@ class GroupedModifierByEffect(_pydantic.BaseModel):
 
 # Properties to receive on modifier creation
 class ModifierCreate(_BaseModifier):
-    pass
+    modifierId: Optional[int] = None
 
 
 # Properties to receive on update
@@ -48,6 +47,7 @@ class ModifierUpdate(_BaseModifier):
 
 # Properties shared by models stored in DB
 class ModifierInDBBase(_BaseModifier):
+    modifierId: int
     createdAt: _dt.datetime
     updatedAt: Optional[_dt.datetime] = None
 
