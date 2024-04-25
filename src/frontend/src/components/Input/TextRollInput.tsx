@@ -65,25 +65,34 @@ export const TextRollInput = ({
   ));
 
   return (
-      <Select
-        bgColor={"ui.input"}
-        defaultValue={"TextRolls"}
-        onChange={(e) =>
-          handleChange(
-            e,
-            inputPosition,
-            modifierSelected,
-            updateModifierInputFunction
-          )
-        }
-        width={150}
-        focusBorderColor={"ui.white"}
-        borderColor={"ui.grey"}
-        mr={1}
-        ml={1}
-        key={modifierSelected.effect + inputPosition}
-      >
-        {textRollsOptions}
-      </Select>
+    <Select
+      bgColor={"ui.input"}
+      defaultValue={"TextRolls"}
+      onChange={(e) =>
+        handleChange(
+          e,
+          inputPosition,
+          modifierSelected,
+          updateModifierInputFunction
+        )
+      }
+      width={150}
+      focusBorderColor={"ui.white"}
+      borderColor={"ui.grey"}
+      mr={1}
+      ml={1}
+      key={modifierSelected.effect + inputPosition}
+    >
+      {
+        <option
+          value={"undefined"}
+          key={modifierSelected.effect + "undefined"}
+          style={{ color: "#B3B3B3", backgroundColor: "#2d3333" }}
+        >
+          Any
+        </option>
+      }
+      {textRollsOptions}
+    </Select>
   );
 };
