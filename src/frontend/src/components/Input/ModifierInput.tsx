@@ -18,6 +18,7 @@ import { TextRollInput } from "./TextRollInput";
 import { MinRollInput } from "./MinRollInput";
 import { MaxRollInput } from "./MaxRollInput";
 import { isArrayNullOrContainsOnlyNull } from "../../hooks/utils";
+import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
 // import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
 
 export interface ModifierInput extends GroupedModifierByEffect {
@@ -45,7 +46,7 @@ export type UpdateModifierInputFunction = (
   newTextRollInputs?: (string | null)[] | undefined
 ) => void;
 
-export const ModifierInput = (modifiers: ModifierInput[]) => {
+export const ModifierInput = () => {
   const [searchModifierText, setSearchModifierText] = useState("");
 
   const [filteredModifiers, setFilteredModifiers] = useState<ModifierInput[]>([
@@ -62,11 +63,13 @@ export const ModifierInput = (modifiers: ModifierInput[]) => {
 
   const [isExpanded, setIsExpanded] = useState(false);
 
+  const getModifiers = GetGroupedModifiersByEffect();
+
   // const modifiers: ModifierInput[] | undefined = GetGroupedModifiersByEffect();
 
   useEffect(() => {
-    if (modifiers) {
-      const filtered = modifiers
+    if (getModifiers) {
+      const filtered = getModifiers
         .filter((modifier) =>
           modifier.effect
             .toLowerCase()
@@ -90,9 +93,7 @@ export const ModifierInput = (modifiers: ModifierInput[]) => {
         },
       ]);
     }
-    console.log("Filtered modifiers: \n");
-    console.log(filteredModifiers);
-  }, [searchModifierText, selectedModifiers, modifiers]);
+  }, [searchModifierText, selectedModifiers, getModifiers]);
 
   const ref = useOutsideClick(() => {
     setIsExpanded(false);
