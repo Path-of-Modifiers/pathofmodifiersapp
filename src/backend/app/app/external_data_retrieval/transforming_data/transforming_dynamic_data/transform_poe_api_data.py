@@ -200,15 +200,17 @@ class PoeAPIDataTransformer:
 
         def get_currency_amount(element):
             if isinstance(element, list):
-                return element[1] if element[0] in ["~b/o", "~price"] else pd.NA
-            else:
-                return pd.NA
+                if len(element) == 3:
+                    return element[1] if element[0] in ["~b/o", "~price"] else pd.NA
+
+            return pd.NA
 
         def get_currency_type(element):
             if isinstance(element, list):
-                return element[2] if element[0] in ["~b/o", "~price"] else ""
-            else:
-                return ""
+                if len(element) == 3:
+                    return element[2] if element[0] in ["~b/o", "~price"] else ""
+
+            return ""
 
         def transform_influences(row: pd.DataFrame, influence_columns: List[str]):
             if not row[influence_columns].any():
@@ -381,7 +383,7 @@ class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
         """
         self.item_modifier_columns = ["name", "explicitMods"]
 
-        item_modifier_df = df.loc[:, self.item_modifier_columns]
+        item_modifier_df = df.loc[:, self.item_modifier_columns].reset_index()
 
         item_modifier_df["itemId"] = item_id
         item_modifier_df = item_modifier_df.explode("explicitMods", ignore_index=True)
