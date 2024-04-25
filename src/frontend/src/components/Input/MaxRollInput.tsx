@@ -1,7 +1,13 @@
-import { Select } from "@chakra-ui/react";
+import {
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+} from "@chakra-ui/react";
 import {
   ModifierInput,
-  RenderInputProps,
+  RenderInputMaxMinRollProps,
   UpdateModifierInputFunction,
 } from "../Graph/ModifierInput";
 
@@ -11,27 +17,26 @@ const handleInputMaxRollChange = (
   modifier: ModifierInput,
   updateModifierInputFunction: UpdateModifierInputFunction
 ) => {
-
-  if (modifier.textRollInputs) {
-    modifier.textRollInputs[position] = value;
+  if (modifier.maxRollInputs) {
+    modifier.maxRollInputs[position] = value;
   } else {
-    modifier.textRollInputs = [value];
+    modifier.maxRollInputs = [value];
   }
   updateModifierInputFunction(
     modifier.modifierId[position],
     undefined,
     undefined,
-    modifier.textRollInputs
+    modifier.maxRollInputs
   );
 };
 
 const handleChange = (
-  event: React.ChangeEvent<HTMLSelectElement>,
+  eventValue: string,
   inputPosition: number,
   modifierSelected: ModifierInput,
   updateModifierInputFunction: UpdateModifierInputFunction
 ) => {
-  const selectedValue = event.target.value;
+  const selectedValue = eventValue;
   // Call function to handle the change
   handleInputMaxRollChange(
     selectedValue,
@@ -41,48 +46,44 @@ const handleChange = (
   );
 };
 
-export const TextRollInput = ({
+export const MaxRollInput = ({
   modifierSelected,
+  input,
   inputPosition,
   updateModifierInputFunction,
-}: RenderInputProps) => {
-  if (!modifierSelected.textRolls) {
+}: RenderInputMaxMinRollProps) => {
+  if (!modifierSelected.maxRoll) {
     return null;
   }
-  const textRolls = modifierSelected.textRolls[inputPosition] as string;
-  const textRollsList = textRolls.split("-");
-
-  const textRollsOptions = textRollsList.map((textRoll, index) => (
-    <option
-      value={textRoll}
-      key={modifierSelected.effect + textRoll + index}
-      style={{ backgroundColor: "#2d3333" }}
-    >
-      {textRoll}
-    </option>
-  ));
+  const defaultValue = modifierSelected.maxRoll[inputPosition] as number;
 
   return (
-    <>
-      <Select
-        bgColor={"ui.input"}
-        defaultValue={"TextRolls"}
-        onChange={(e) =>
-          handleChange(
-            e,
-            inputPosition,
-            modifierSelected,
-            updateModifierInputFunction
-          )
-        }
-        focusBorderColor={"ui.white"}
-        borderColor={"ui.grey"}
-        width={"40%"}
-        mr={1}
-        key={modifierSelected.effect + inputPosition}
-      >
-        {textRollsOptions}
-      </Select>
-    </>
+    <NumberInput
+      value={input ? input : defaultValue}
+      defaultValue={defaultValue}
+      step={1}
+      key={modifierSelected.modifierId[0] + inputPosition}
+      bgColor={"ui.input"}
+      focusBorderColor={"ui.white"}
+      borderColor={"ui.grey"}
+      onChange={(e) =>
+        handleChange(
+          e,
+          inputPosition,
+          modifierSelected,
+          updateModifierInputFunction
+        )
+      }
+      width={"30%"}
+      mr={1}
+      _placeholder={{ color: "ui.white" }}
+      textAlign={"center"}
+    >
+      <NumberInputField />
+      <NumberInputStepper>
+        <NumberIncrementStepper />
+        <NumberDecrementStepper />
+      </NumberInputStepper>
+    </NumberInput>
   );
 };

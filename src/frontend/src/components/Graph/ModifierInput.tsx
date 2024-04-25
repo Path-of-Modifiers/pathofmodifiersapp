@@ -1,16 +1,4 @@
-import {
-  Box,
-  CloseButton,
-  Flex,
-  Input,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Box, CloseButton, Flex, Input, Stack, Text } from "@chakra-ui/react";
 
 import AddIconCheckbox from "../Icon/AddIconCheckbox";
 
@@ -20,6 +8,8 @@ import { useOutsideClick } from "../../hooks/useOutsideClick";
 import React from "react";
 import { modifiers } from "../../test_data/modifier_data";
 import { TextRollInput } from "../Input/TextRollInput";
+import { MinRollInput } from "../Input/MinRollInput";
+import { MaxRollInput } from "../Input/MaxRollInput";
 // import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
 
 export const ModifierInput = () => {
@@ -28,8 +18,8 @@ export const ModifierInput = () => {
 
 export interface ModifierInput extends GroupedModifierByEffect {
   isSelected?: boolean;
-  minRollInputs?: (number | null)[];
-  maxRollInputs?: (number | null)[];
+  minRollInputs?: (string | null)[];
+  maxRollInputs?: (string | null)[];
   textRollInputs?: (string | null)[];
 }
 
@@ -39,10 +29,15 @@ export interface RenderInputProps {
   updateModifierInputFunction: UpdateModifierInputFunction;
 }
 
+export interface RenderInputMaxMinRollProps extends RenderInputProps {
+  input: string | number | undefined | null;
+  inputPosition: number;
+}
+
 export type UpdateModifierInputFunction = (
   modifierId: number,
-  newMinRollInputs?: (number | null)[] | undefined,
-  newMaxRollInputs?: (number | null)[] | undefined,
+  newMinRollInputs?: (string | null)[] | undefined,
+  newMaxRollInputs?: (string | null)[] | undefined,
   newTextRollInputs?: (string | null)[] | undefined
 ) => void;
 
@@ -117,9 +112,9 @@ const ModifierListInput = () => {
     switch (inputCase) {
       case "minPosition":
         if (modifier.minRollInputs) {
-          modifier.minRollInputs[position] = parseInt(value);
+          modifier.minRollInputs[position] = value;
         } else {
-          modifier.minRollInputs = [parseInt(value)];
+          modifier.minRollInputs = [value];
         }
         updateModifierInput(
           modifier.modifierId[position],
@@ -128,9 +123,9 @@ const ModifierListInput = () => {
         break;
       case "maxPosition":
         if (modifier.maxRollInputs) {
-          modifier.maxRollInputs[position] = parseInt(value);
+          modifier.maxRollInputs[position] = value;
         } else {
-          modifier.maxRollInputs = [parseInt(value)];
+          modifier.maxRollInputs = [value];
         }
         updateModifierInput(
           modifier.modifierId[position],
@@ -177,7 +172,7 @@ const ModifierListInput = () => {
       if (selectedModifierEffect.minRollInputs !== undefined) {
         for (let i = 0; i < selectedModifierEffect.minRoll.length; i++) {
           selectedModifierEffect.minRollInputs[i] =
-            selectedModifierEffect.minRoll[i];
+            selectedModifierEffect.minRoll[i]?.toString() as string;
         }
       }
     }
@@ -192,7 +187,7 @@ const ModifierListInput = () => {
       if (selectedModifierEffect.maxRollInputs !== undefined) {
         for (let i = 0; i < selectedModifierEffect.maxRoll.length; i++) {
           selectedModifierEffect.maxRollInputs[i] =
-            selectedModifierEffect.maxRoll[i];
+            selectedModifierEffect.maxRoll[i]?.toString() as string;
         }
       }
     }
@@ -259,8 +254,8 @@ const ModifierListInput = () => {
 
   const updateModifierInput = (
     modifierId: number,
-    newMinRollInputs?: (number | null)[] | undefined,
-    newMaxRollInputs?: (number | null)[] | undefined,
+    newMinRollInputs?: (string | null)[] | undefined,
+    newMaxRollInputs?: (string | null)[] | undefined,
     newTextRollInputs?: (string | null)[] | undefined
   ): void => {
     setSelectedModifiers((prevModifiers) => {
@@ -294,127 +289,6 @@ const ModifierListInput = () => {
     // Check if every element in the array is null
     return arr.every((value) => value === null);
   }
-
-  interface RenderInputProps {
-    modifierSelected: ModifierInput;
-    input: string | number | undefined | null;
-    handleInputChangeCase: InputCase;
-    inputPosition: number;
-    key: string;
-  }
-
-  const renderInputBasedOnConditions = ({
-    modifierSelected,
-    input,
-    handleInputChangeCase,
-    inputPosition,
-    key,
-  }: RenderInputProps): JSX.Element | null => {
-    const selectedModifierInput = selectedModifiers.find(
-      (selectedModifier) =>
-        selectedModifier.modifierId[0] === modifierSelected.modifierId[0]
-    );
-
-    if (selectedModifierInput) {
-      const handleChange = (
-        event:
-          | React.ChangeEvent<HTMLInputElement>
-          | React.ChangeEvent<HTMLSelectElement>
-          | string
-          | number
-      ) => {
-        if (typeof event === "string" || typeof event === "number") {
-          event = {
-            target: { value: event },
-          } as React.ChangeEvent<HTMLInputElement>;
-        }
-        const selectedValue = event.target.value;
-        // Call function to handle the change
-        handleInputChange(
-          selectedValue,
-          handleInputChangeCase,
-          inputPosition,
-          modifierSelected
-        );
-      };
-
-      // Access the specific property of the ModifierInput object based on handleInputChangeCase
-      if (
-        handleInputChangeCase === "minPosition" &&
-        selectedModifierInput.minRollInputs &&
-        modifierSelected.minRoll
-      ) {
-        const defaultValue = modifierSelected.minRoll[inputPosition] as number;
-
-        return (
-          <NumberInput
-            value={input ? input : defaultValue}
-            defaultValue={defaultValue}
-            step={1}
-            key={key}
-            bgColor={"ui.input"}
-            focusBorderColor={"ui.white"}
-            borderColor={"ui.grey"}
-            onChange={handleChange}
-            width={"30%"}
-            mr={1}
-            _placeholder={{ color: "ui.white" }}
-            textAlign={"center"}
-          >
-            <NumberInputField />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
-        );
-      }
-      if (
-        handleInputChangeCase === "maxPosition" &&
-        selectedModifierInput.maxRollInputs &&
-        selectedModifierInput.maxRoll
-      ) {
-        const defaultValue = selectedModifierInput.maxRoll[
-          inputPosition
-        ] as number;
-
-        if (input === 0) {
-          input = defaultValue;
-        }
-
-        return (
-          <NumberInput
-            value={input ? input : 0}
-            defaultValue={defaultValue}
-            step={1}
-            key={key}
-            bgColor={"ui.input"}
-            onChange={handleChange}
-            focusBorderColor={"ui.white"}
-            borderColor={"ui.grey"}
-            width={"30%"}
-            mr={1}
-            _placeholder={{ color: "ui.white" }}
-            textAlign={"center"}
-          >
-            <NumberInputField />
-            <NumberInputStepper textColor={"ui.white"}>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
-        );
-      }
-      if (
-        handleInputChangeCase === "textPosition" &&
-        !isArrayNullOrContainsOnlyNull(modifierSelected.textRolls) &&
-        modifierSelected.textRolls
-      ) {
-        console.log("");
-      }
-    }
-    return null;
-  };
 
   // Render selected modifiers list
   const selectedModifiersList = selectedModifiers.map(
@@ -458,13 +332,13 @@ const ModifierListInput = () => {
                     : undefined;
 
                   elements.push(
-                    renderInputBasedOnConditions({
-                      modifierSelected: modifierSelected,
-                      input: selectedModifierInput,
-                      handleInputChangeCase: "minPosition" as InputCase,
-                      inputPosition: modifierInputIndex,
-                      key: "minPosition" + index + modifierInputIndex,
-                    })
+                    <MinRollInput
+                      modifierSelected={modifierSelected}
+                      input={selectedModifierInput}
+                      inputPosition={modifierInputIndex}
+                      updateModifierInputFunction={updateModifierInput}
+                      key={"minRollPosition" + index + modifierInputIndex}
+                    />
                   );
                 }
 
@@ -478,13 +352,13 @@ const ModifierListInput = () => {
                     : undefined;
 
                   elements.push(
-                    renderInputBasedOnConditions({
-                      modifierSelected: modifierSelected,
-                      input: selectedModifierInput,
-                      handleInputChangeCase: "maxPosition" as InputCase,
-                      inputPosition: modifierInputIndex,
-                      key: "maxPosition" + index + modifierInputIndex,
-                    })
+                    <MaxRollInput
+                      modifierSelected={modifierSelected}
+                      input={selectedModifierInput}
+                      inputPosition={modifierInputIndex}
+                      updateModifierInputFunction={updateModifierInput}
+                      key={"maxRollPosition" + index + modifierInputIndex}
+                    />
                   );
                 }
                 if (
@@ -492,7 +366,6 @@ const ModifierListInput = () => {
                   modifierSelected.textRolls &&
                   modifierSelected.textRolls[modifierInputIndex] !== null
                 ) {
-
                   elements.push(
                     <TextRollInput
                       modifierSelected={modifierSelected}
