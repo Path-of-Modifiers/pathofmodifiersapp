@@ -55,12 +55,10 @@ export const MaxRollInput = ({
   if (!modifierSelected.maxRoll) {
     return null;
   }
-  const defaultValue = modifierSelected.maxRoll[inputPosition] as number;
 
   return (
     <NumberInput
-      value={input ? input : defaultValue}
-      defaultValue={defaultValue}
+      value={input ? input : undefined}
       step={1}
       key={modifierSelected.modifierId[0] + inputPosition}
       bgColor={"ui.input"}
@@ -80,7 +78,7 @@ export const MaxRollInput = ({
       _placeholder={{ color: "ui.white" }}
       textAlign={"center"}
     >
-      <NumberInputField />
+      <NumberInputField placeholder={"Max"} />
       <NumberInputStepper>
         <NumberIncrementStepper />
         <NumberDecrementStepper />
