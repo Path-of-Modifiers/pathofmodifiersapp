@@ -4,7 +4,6 @@ import Header from "../components/Common/Header";
 import { Flex } from "@chakra-ui/layout";
 import { ModifierInput } from "../components/Input/ModifierInput";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { GetGroupedModifiersByEffect } from "../hooks/getGroupedModifiers";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
@@ -14,13 +13,6 @@ export const Route = createLazyFileRoute("/")({
 const queryClient = new QueryClient();
 
 function Index() {
-  const modifiersList = GetGroupedModifiersByEffect() as ModifierInput[];
-  console.log(modifiersList)
-
-  if (!modifiersList) {
-    return "Error loading data. Please try again later.";
-  }
-
   return (
     <Flex direction="column" minHeight="100vh">
       <Header />
@@ -28,7 +20,7 @@ function Index() {
         <SideBar />
         <Flex flex="1" direction="row" p="1rem" bg="ui.main">
           <QueryClientProvider client={queryClient}>
-            <ModifierInput {...modifiersList} />
+            <ModifierInput />
           </QueryClientProvider>
         </Flex>
       </Flex>
