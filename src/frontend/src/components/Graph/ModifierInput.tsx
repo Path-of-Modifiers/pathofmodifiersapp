@@ -1,4 +1,12 @@
-import { Box, CloseButton, Flex, Input, Stack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Center,
+  CloseButton,
+  Flex,
+  Input,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 
 import AddIconCheckbox from "../Icon/AddIconCheckbox";
 
@@ -36,8 +44,8 @@ export interface RenderInputMaxMinRollProps extends RenderInputProps {
 
 export type UpdateModifierInputFunction = (
   modifierId: number,
-  newMinRollInputs?: (string | null)[] | undefined,
-  newMaxRollInputs?: (string | null)[] | undefined,
+  newMinRollInputs?: (number | null)[] | undefined,
+  newMaxRollInputs?: (number | null)[] | undefined,
   newTextRollInputs?: (string | null)[] | undefined
 ) => void;
 
@@ -238,11 +246,9 @@ const ModifierListInput = () => {
   const selectedModifiersList = selectedModifiers.map(
     (modifierSelected, index) => (
       <Flex key={index} alignItems="center" bgColor={"ui.secondary"}>
-        <Box bgColor={"ui.main"} width={8} height={8}>
+        <Center bgColor={"ui.main"} width={9} height={12}>
           <AddIconCheckbox
             isChecked={modifierSelected.isSelected}
-            top={"24%"}
-            left={"24%"}
             key={modifierSelected.modifierId[0] + index}
             onChange={() => {
               if (modifierSelected.modifierId[0] !== null) {
@@ -250,13 +256,13 @@ const ModifierListInput = () => {
               }
             }}
           />
-        </Box>
+        </Center>
 
         <Text ml={3} mr={"auto"}>
           {modifierSelected.effect}
         </Text>
 
-        <Flex width={"35%"} justifyContent="flex-end" ml={"auto"}>
+        <Flex justifyContent="flex-end" ml={"auto"}>
           {/* Check if modifierSelected static exists and is not all null */}
           {isArrayNullOrContainsOnlyNull(modifierSelected.static) &&
             (() => {
@@ -342,7 +348,7 @@ const ModifierListInput = () => {
             })()}
         </Flex>
 
-        <Box bgColor={"ui.main"}>
+        <Center bgColor={"ui.main"}>
           <CloseButton
             _hover={{ background: "gray.100", cursor: "pointer" }}
             onClick={() => {
@@ -351,7 +357,7 @@ const ModifierListInput = () => {
               }
             }}
           />
-        </Box>
+        </Center>
       </Flex>
     )
   );
