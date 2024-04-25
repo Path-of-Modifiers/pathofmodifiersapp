@@ -1,4 +1,4 @@
-import { ModifierInput } from "../components/Graph/ModifierInput";
+import { ModifierInput } from "../components/Input/ModifierInput";
 
 
 
