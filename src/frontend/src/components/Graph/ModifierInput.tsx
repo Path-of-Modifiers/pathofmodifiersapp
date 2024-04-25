@@ -18,6 +18,7 @@ import { modifiers } from "../../test_data/modifier_data";
 import { TextRollInput } from "../Input/TextRollInput";
 import { MinRollInput } from "../Input/MinRollInput";
 import { MaxRollInput } from "../Input/MaxRollInput";
+import { isArrayNullOrContainsOnlyNull } from "../../hooks/utils";
 // import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
 
 export const ModifierInput = () => {
@@ -229,17 +230,6 @@ const ModifierListInput = () => {
       return updatedModifiers; // Set the updated array back to state
     });
   };
-
-  // Define a function to check if an array has only null values
-  function isArrayNullOrContainsOnlyNull<T>(
-    arr: T[] | null | undefined
-  ): boolean {
-    if (arr === null || arr === undefined) {
-      return true; // If the array is null, return true
-    }
-    // Check if every element in the array is null
-    return arr.every((value) => value === null);
-  }
 
   // Render selected modifiers list
   const selectedModifiersList = selectedModifiers.map(
