@@ -402,7 +402,7 @@ const ModifierListInput = () => {
 
         {isExpanded && (
           <Stack
-            maxHeight="200px"
+            maxHeight={400}
             overflowY="auto"
             bgColor={"ui.input"}
             onScroll={handleScroll}
