@@ -22,7 +22,7 @@ ENV POETRY_ENV=${POETRY_ENV} \
 # Install Poetry
 RUN curl -sSL https://install.python-poetry.org | python3 - 
 
-WORKDIR /app
+WORKDIR /app/
 
 # Copy only the dependencies files
 COPY ./app/pyproject.toml ./app/poetry.lock* /app/
@@ -31,5 +31,7 @@ COPY ./app/pyproject.toml ./app/poetry.lock* /app/
 RUN POETRY_VIRTUALENVS_CREATE=false poetry install
 RUN poetry install --no-interaction
 
-COPY ./app /app
 ENV PYTHONPATH=/app
+
+COPY ./prestart.sh /app/
+COPY ./app /app
