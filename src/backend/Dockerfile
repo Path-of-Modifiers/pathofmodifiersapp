@@ -16,8 +16,8 @@ ENV POETRY_ENV=${POETRY_ENV} \
   POETRY_CACHE_DIR='/var/cache/pypoetry' \
   POETRY_HOME='/usr/local' \
   POETRY_VERSION=1.7.1
-  # ^^^
-  # Make sure to update it!
+# ^^^
+# Make sure to update it!
 
 # Install Poetry
 RUN curl -sSL https://install.python-poetry.org | python3 - 
@@ -33,3 +33,6 @@ RUN poetry install --no-interaction
 
 COPY ./app /app
 ENV PYTHONPATH=/app
+
+RUN alembic upgrade head
+RUN python /app/database/modifier_data_deposit/deposit_modifier_data.py
