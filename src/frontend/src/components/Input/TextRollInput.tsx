@@ -3,7 +3,7 @@ import {
   ModifierInput,
   RenderInputProps,
   UpdateModifierInputFunction,
-} from "../Graph/ModifierInput";
+} from "./ModifierInput";
 
 const handleInputTextRollChange = (
   value: string,

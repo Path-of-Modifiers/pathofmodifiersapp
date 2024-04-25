@@ -15,9 +15,9 @@ import { GroupedModifierByEffect } from "../../client";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 import React from "react";
 import { modifiers } from "../../test_data/modifier_data";
-import { TextRollInput } from "../Input/TextRollInput";
-import { MinRollInput } from "../Input/MinRollInput";
-import { MaxRollInput } from "../Input/MaxRollInput";
+import { TextRollInput } from "./TextRollInput";
+import { MinRollInput } from "./MinRollInput";
+import { MaxRollInput } from "./MaxRollInput";
 import { isArrayNullOrContainsOnlyNull } from "../../hooks/utils";
 // import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
 
