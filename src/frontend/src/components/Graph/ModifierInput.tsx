@@ -400,31 +400,6 @@ const ModifierListInput = () => {
           </Stack>
         )}
       </Box>
-      {/* <Input
-        placeholder="Enter a modifier"
-        value={effectValueSearchInput}
-        onChange={(e) => setEffectValueSearchInput(e.target.value)}
-        width="200px"
-        color={"ui.white"}
-      /> */}
-
-      {/* 
-      <Menu>
-        <MenuButton bgColor={"ui.white"} color={"ui.dark"}>
-          Filter by Effect
-        </MenuButton>
-        <MenuList color={"ui.dark"} maxHeight="200px" overflowY="auto">
-          {effects.map((effect, index) => (
-            <MenuItem
-              color={"ui.dark"}
-              key={index}
-              onClick={() => setEffectValueList(effect)}
-            >
-              {effect === effectValueList ? "✓" : ""} {effect}
-            </MenuItem>
-          ))}
-        </MenuList>
-      </Menu> */}
     </Flex>
   );
 };
