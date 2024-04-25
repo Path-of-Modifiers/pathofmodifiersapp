@@ -74,8 +74,9 @@ export const MaxRollInput = ({
           updateModifierInputFunction
         )
       }
-      width={"30%"}
+      width={150}
       mr={1}
+      ml={1}
       _placeholder={{ color: "ui.white" }}
       textAlign={"center"}
     >

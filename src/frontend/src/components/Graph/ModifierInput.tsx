@@ -245,8 +245,8 @@ const ModifierListInput = () => {
   // Render selected modifiers list
   const selectedModifiersList = selectedModifiers.map(
     (modifierSelected, index) => (
-      <Flex key={index} alignItems="center" bgColor={"ui.secondary"}>
-        <Center bgColor={"ui.main"} width={9} height={12}>
+      <Flex key={index} bgColor={"ui.main"}>
+        <Center width={9}>
           <AddIconCheckbox
             isChecked={modifierSelected.isSelected}
             key={modifierSelected.modifierId[0] + index}
@@ -258,97 +258,103 @@ const ModifierListInput = () => {
           />
         </Center>
 
-        <Text ml={3} mr={"auto"}>
-          {modifierSelected.effect}
-        </Text>
+        <Center bgColor={"ui.secondary"} width={"100%"}>
+          <Text ml={3} mr={"auto"}>
+            {modifierSelected.effect}
+          </Text>
 
-        <Flex justifyContent="flex-end" ml={"auto"}>
-          {/* Check if modifierSelected static exists and is not all null */}
-          {isArrayNullOrContainsOnlyNull(modifierSelected.static) &&
-            (() => {
-              const elements = [];
-              for (
-                let modifierInputIndex = 0;
-                modifierInputIndex < modifierSelected.position.length;
-                modifierInputIndex++
-              ) {
-                if (
-                  !isArrayNullOrContainsOnlyNull(modifierSelected.minRoll) &&
-                  modifierSelected.minRoll &&
-                  modifierSelected.minRoll[modifierInputIndex] !== null
+          <Flex justifyContent="flex-end">
+            {/* Check if modifierSelected static exists and is not all null */}
+            {isArrayNullOrContainsOnlyNull(modifierSelected.static) &&
+              (() => {
+                const elements = [];
+                for (
+                  let modifierInputIndex = 0;
+                  modifierInputIndex < modifierSelected.position.length;
+                  modifierInputIndex++
                 ) {
-                  const selectedModifierInput = modifierSelected?.minRollInputs
-                    ? modifierSelected.minRollInputs[modifierInputIndex]
-                    : undefined;
+                  if (
+                    !isArrayNullOrContainsOnlyNull(modifierSelected.minRoll) &&
+                    modifierSelected.minRoll &&
+                    modifierSelected.minRoll[modifierInputIndex] !== null
+                  ) {
+                    const selectedModifierInput =
+                      modifierSelected?.minRollInputs
+                        ? modifierSelected.minRollInputs[modifierInputIndex]
+                        : undefined;
 
-                  elements.push(
-                    <MinRollInput
-                      modifierSelected={modifierSelected}
-                      input={selectedModifierInput}
-                      inputPosition={modifierInputIndex}
-                      updateModifierInputFunction={() =>
-                        updateModifierInput(
-                          modifierSelected.modifierId[0],
-                          modifierSelected.minRollInputs
-                        )
-                      }
-                      key={"minRollPosition" + index + modifierInputIndex}
-                    />
-                  );
+                    elements.push(
+                      <MinRollInput
+                        modifierSelected={modifierSelected}
+                        input={selectedModifierInput}
+                        inputPosition={modifierInputIndex}
+                        updateModifierInputFunction={() =>
+                          updateModifierInput(
+                            modifierSelected.modifierId[0],
+                            modifierSelected.minRollInputs
+                          )
+                        }
+                        key={"minRollPosition" + index + modifierInputIndex}
+                      />
+                    );
+                  }
+
+                  if (
+                    !isArrayNullOrContainsOnlyNull(modifierSelected.maxRoll) &&
+                    modifierSelected.maxRoll &&
+                    modifierSelected.maxRoll[modifierInputIndex] !== null
+                  ) {
+                    const selectedModifierInput =
+                      modifierSelected?.maxRollInputs
+                        ? modifierSelected.maxRollInputs[modifierInputIndex]
+                        : undefined;
+
+                    elements.push(
+                      <MaxRollInput
+                        modifierSelected={modifierSelected}
+                        input={selectedModifierInput}
+                        inputPosition={modifierInputIndex}
+                        updateModifierInputFunction={() =>
+                          updateModifierInput(
+                            modifierSelected.modifierId[0],
+                            undefined,
+                            modifierSelected.maxRollInputs
+                          )
+                        }
+                        key={"maxRollPosition" + index + modifierInputIndex}
+                      />
+                    );
+                  }
+                  if (
+                    !isArrayNullOrContainsOnlyNull(
+                      modifierSelected.textRolls
+                    ) &&
+                    modifierSelected.textRolls &&
+                    modifierSelected.textRolls[modifierInputIndex] !== null
+                  ) {
+                    elements.push(
+                      <TextRollInput
+                        modifierSelected={modifierSelected}
+                        inputPosition={modifierInputIndex}
+                        updateModifierInputFunction={() =>
+                          updateModifierInput(
+                            modifierSelected.modifierId[0],
+                            undefined,
+                            undefined,
+                            modifierSelected.textRollInputs
+                          )
+                        }
+                        key={"textRollPosition" + index + modifierInputIndex}
+                      />
+                    );
+                  }
                 }
+                return elements;
+              })()}
+          </Flex>
+        </Center>
 
-                if (
-                  !isArrayNullOrContainsOnlyNull(modifierSelected.maxRoll) &&
-                  modifierSelected.maxRoll &&
-                  modifierSelected.maxRoll[modifierInputIndex] !== null
-                ) {
-                  const selectedModifierInput = modifierSelected?.maxRollInputs
-                    ? modifierSelected.maxRollInputs[modifierInputIndex]
-                    : undefined;
-
-                  elements.push(
-                    <MaxRollInput
-                      modifierSelected={modifierSelected}
-                      input={selectedModifierInput}
-                      inputPosition={modifierInputIndex}
-                      updateModifierInputFunction={() =>
-                        updateModifierInput(
-                          modifierSelected.modifierId[0],
-                          undefined,
-                          modifierSelected.maxRollInputs
-                        )
-                      }
-                      key={"maxRollPosition" + index + modifierInputIndex}
-                    />
-                  );
-                }
-                if (
-                  !isArrayNullOrContainsOnlyNull(modifierSelected.textRolls) &&
-                  modifierSelected.textRolls &&
-                  modifierSelected.textRolls[modifierInputIndex] !== null
-                ) {
-                  elements.push(
-                    <TextRollInput
-                      modifierSelected={modifierSelected}
-                      inputPosition={modifierInputIndex}
-                      updateModifierInputFunction={() =>
-                        updateModifierInput(
-                          modifierSelected.modifierId[0],
-                          undefined,
-                          undefined,
-                          modifierSelected.textRollInputs
-                        )
-                      }
-                      key={"textRollPosition" + index + modifierInputIndex}
-                    />
-                  );
-                }
-              }
-              return elements;
-            })()}
-        </Flex>
-
-        <Center bgColor={"ui.main"}>
+        <Center>
           <CloseButton
             _hover={{ background: "gray.100", cursor: "pointer" }}
             onClick={() => {
