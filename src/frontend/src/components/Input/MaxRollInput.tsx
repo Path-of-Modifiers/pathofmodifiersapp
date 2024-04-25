@@ -9,7 +9,7 @@ import {
   ModifierInput,
   RenderInputMaxMinRollProps,
   UpdateModifierInputFunction,
-} from "../Graph/ModifierInput";
+} from "./ModifierInput";
 
 const handleInputMaxRollChange = (
   value: string,
