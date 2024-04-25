@@ -159,7 +159,6 @@ const ModifierListInput = () => {
           ) {
             selectedModifierEffect.textRollInputs[i] =
               selectedModifierEffect.textRolls[i]?.split("-")[0] as string;
-            break;
           }
         }
       }
