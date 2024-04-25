@@ -5,6 +5,7 @@ from app.core.schemas.item import Influences
 
 
 class ItemSpecs(_pydantic.BaseModel):
+    name: Optional[str] = None
     identified: Optional[bool] = None
     ilvl: Optional[int] = None
     rarity: Optional[str] = None
