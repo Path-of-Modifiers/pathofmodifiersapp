@@ -1,14 +1,11 @@
 import { Select } from "@chakra-ui/react";
 import {
   ModifierInput,
+  RenderInputProps,
   UpdateModifierInputFunction,
 } from "../Graph/ModifierInput";
 
-interface RenderInputProps {
-  modifierSelected: ModifierInput;
-  inputPosition: number;
-  updateModifierInputFunction: UpdateModifierInputFunction;
-}
+
 
 const handleInputChange = (
   value: string,
@@ -53,8 +50,6 @@ export const TextRollInput = ({
   inputPosition,
   updateModifierInputFunction,
 }: RenderInputProps) => {
-  console.log("BEAST YES");
-  console.log("modifierSelected: ", modifierSelected);
   if (!modifierSelected.textRolls) {
     return null;
   }

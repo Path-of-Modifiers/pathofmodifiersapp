@@ -33,6 +33,12 @@ export interface ModifierInput extends GroupedModifierByEffect {
   textRollInputs?: (string | null)[];
 }
 
+export interface RenderInputProps {
+  modifierSelected: ModifierInput;
+  inputPosition: number;
+  updateModifierInputFunction: UpdateModifierInputFunction;
+}
+
 export type UpdateModifierInputFunction = (
   modifierId: number,
   newMinRollInputs?: (number | null)[] | undefined,
@@ -404,20 +410,7 @@ const ModifierListInput = () => {
         !isArrayNullOrContainsOnlyNull(modifierSelected.textRolls) &&
         modifierSelected.textRolls
       ) {
-        return (
-          <TextRollInput
-            modifierSelected={modifierSelected}
-            inputPosition={inputPosition}
-            updateModifierInputFunction={() =>
-              updateModifierInput(
-                modifierSelected.modifierId[0],
-                undefined,
-                undefined,
-                modifierSelected.textRollInputs
-              )
-            }
-          />
-        );
+        console.log("");
       }
     }
     return null;
@@ -499,18 +492,21 @@ const ModifierListInput = () => {
                   modifierSelected.textRolls &&
                   modifierSelected.textRolls[modifierInputIndex] !== null
                 ) {
-                  const selectedModifierInput = modifierSelected?.textRollInputs
-                    ? modifierSelected.textRollInputs[modifierInputIndex]
-                    : undefined;
 
                   elements.push(
-                    renderInputBasedOnConditions({
-                      modifierSelected: modifierSelected,
-                      input: selectedModifierInput,
-                      handleInputChangeCase: "textPosition" as InputCase,
-                      inputPosition: modifierInputIndex,
-                      key: "textPosition" + index + modifierInputIndex,
-                    })
+                    <TextRollInput
+                      modifierSelected={modifierSelected}
+                      inputPosition={modifierInputIndex}
+                      updateModifierInputFunction={() =>
+                        updateModifierInput(
+                          modifierSelected.modifierId[0],
+                          undefined,
+                          undefined,
+                          modifierSelected.textRollInputs
+                        )
+                      }
+                      key={"textRollPosition" + index + modifierInputIndex}
+                    />
                   );
                 }
               }
