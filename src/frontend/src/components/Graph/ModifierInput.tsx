@@ -18,8 +18,8 @@ export const ModifierInput = () => {
 
 export interface ModifierInput extends GroupedModifierByEffect {
   isSelected?: boolean;
-  minRollInputs?: (string | null)[];
-  maxRollInputs?: (string | null)[];
+  minRollInputs?: (number | null)[];
+  maxRollInputs?: (number | null)[];
   textRollInputs?: (string | null)[];
 }
 
@@ -116,7 +116,7 @@ const ModifierListInput = () => {
       if (selectedModifierEffect.minRollInputs !== undefined) {
         for (let i = 0; i < selectedModifierEffect.minRoll.length; i++) {
           selectedModifierEffect.minRollInputs[i] =
-            selectedModifierEffect.minRoll[i]?.toString() as string;
+            selectedModifierEffect.minRoll[i];
         }
       }
     }
@@ -131,7 +131,7 @@ const ModifierListInput = () => {
       if (selectedModifierEffect.maxRollInputs !== undefined) {
         for (let i = 0; i < selectedModifierEffect.maxRoll.length; i++) {
           selectedModifierEffect.maxRollInputs[i] =
-            selectedModifierEffect.maxRoll[i]?.toString() as string;
+            selectedModifierEffect.maxRoll[i];
         }
       }
     }
@@ -198,8 +198,8 @@ const ModifierListInput = () => {
 
   const updateModifierInput = (
     modifierId: number,
-    newMinRollInputs?: (string | null)[] | undefined,
-    newMaxRollInputs?: (string | null)[] | undefined,
+    newMinRollInputs?: (number | null)[] | undefined,
+    newMaxRollInputs?: (number | null)[] | undefined,
     newTextRollInputs?: (string | null)[] | undefined
   ): void => {
     setSelectedModifiers((prevModifiers) => {
@@ -211,9 +211,9 @@ const ModifierListInput = () => {
         // Ensure modifier with given modifierId exists
         const modifierToUpdate = { ...updatedModifiers[index] }; // Copy the modifier object
         if (newMinRollInputs) {
-          modifierToUpdate.minRollInputs = newMinRollInputs; // Update minRollInputs
+          modifierToUpdate.minRollInputs = newMinRollInputs.map(Number); // Update minRollInputs
         } else if (newMaxRollInputs) {
-          modifierToUpdate.maxRollInputs = newMaxRollInputs;
+          modifierToUpdate.maxRollInputs = newMaxRollInputs.map(Number);
         } else if (newTextRollInputs) {
           modifierToUpdate.textRollInputs = newTextRollInputs;
         }
