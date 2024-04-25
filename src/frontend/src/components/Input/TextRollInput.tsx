@@ -65,7 +65,6 @@ export const TextRollInput = ({
   ));
 
   return (
-    <>
       <Select
         bgColor={"ui.input"}
         defaultValue={"TextRolls"}
@@ -77,14 +76,14 @@ export const TextRollInput = ({
             updateModifierInputFunction
           )
         }
+        width={150}
         focusBorderColor={"ui.white"}
         borderColor={"ui.grey"}
-        width={"40%"}
         mr={1}
+        ml={1}
         key={modifierSelected.effect + inputPosition}
       >
         {textRollsOptions}
       </Select>
-    </>
   );
 };
