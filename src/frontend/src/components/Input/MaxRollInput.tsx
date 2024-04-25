@@ -18,15 +18,15 @@ const handleInputMaxRollChange = (
   updateModifierInputFunction: UpdateModifierInputFunction
 ) => {
   if (modifier.maxRollInputs) {
-    modifier.maxRollInputs[position] = value;
+    modifier.maxRollInputs[position] = parseInt(value);
   } else {
-    modifier.maxRollInputs = [value];
+    modifier.maxRollInputs = [parseInt(value)];
   }
   updateModifierInputFunction(
     modifier.modifierId[position],
     undefined,
     undefined,
-    modifier.maxRollInputs
+    modifier.maxRollInputs.map((input) => (input ? input.toString() : ""))
   );
 };
 
