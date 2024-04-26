@@ -33,5 +33,5 @@ RUN poetry install --no-interaction
 
 ENV PYTHONPATH=/app
 
-COPY ./prestart.sh /app/
 COPY ./app /app
+COPY ./prestart.sh /./
