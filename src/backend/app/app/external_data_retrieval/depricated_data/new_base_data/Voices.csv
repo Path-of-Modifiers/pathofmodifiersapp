@@ -1,4 +1,0 @@
-minRoll,maxRoll,textRolls,position,effect,static,regex,modifierId
-,,3-5-7,0,Adds # Small Passive Skills which grant nothing,,Adds (3|5|7) Small Passive Skills which grant nothing,223
-,,,0,Adds 1 Small Passive Skill which grant nothing,True,,224
-,,,0,Adds 3 Jewel Socket Passive Skills,True,,225
