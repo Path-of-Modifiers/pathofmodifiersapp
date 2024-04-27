@@ -3,7 +3,8 @@ import { useGraphInputStore } from "../../store/GraphInputStore";
 
 const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
   const itemRarityInput = event.target.value;
-  useGraphInputStore.setState({ itemSpecState: itemRarityInput });
+  useGraphInputStore.setState({ itemSpecState: { rarity: itemRarityInput } });
+  // console.log(useGraphInputStore.getState().itemSpecState);
 };
 
 export const ItemRarityInput = () => {
@@ -32,13 +33,16 @@ export const ItemRarityInput = () => {
         }
         ,
         {
-          <option
-            value={"Non_Unique"}
-            key={"ItemRarityInput" + "_option_" + "Any Non-Unique"}
-            style={{ color: "#B3B3B3", backgroundColor: "#2d3333" }}
-          >
-            Any Non-Unique
-          </option>
+          // Future implementation for non-unique items
+
+          
+          // <option
+          //   value={"Non_Unique"}
+          //   key={"ItemRarityInput" + "_option_" + "Any Non-Unique"}
+          //   style={{ color: "#B3B3B3", backgroundColor: "#2d3333" }}
+          // >
+          //   Any Non-Unique
+          // </option>
         }
       </Select>
     </Box>
