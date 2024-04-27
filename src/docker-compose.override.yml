@@ -39,7 +39,7 @@ services:
 
   db:
     restart: "no"
-    ports: 
+    ports:
       - 5432:5432
 
   backend:
@@ -47,12 +47,12 @@ services:
     ports:
       - "8888:8888"
     volumes:
-      - ./backend/app:/app
+      - ./backend_api:/app
     build:
-      context: ./backend
+      context: ./backend_api
       args:
         INSTALL_DEV: ${INSTALL_DEV-true}
-      
+
   frontend:
     restart: "no"
     build:
@@ -60,7 +60,6 @@ services:
       args:
         - VITE_API_URL=http://${DOMAIN?Variable not set}
         - NODE_ENV=development
-
 
 networks:
   traefik-public:
