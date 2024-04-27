@@ -4,10 +4,10 @@ import logging
 from typing import Dict, List
 import pandas as pd
 
-from app.external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_ninja_currency_api import (
+from external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_ninja_currency_api import (
     PoeNinjaCurrencyAPIHandler,
 )
-from app.database.utils import insert_data, retrieve_data
+from database.utils import insert_data, retrieve_data
 
 BASEURL = os.getenv("DOMAIN")
 

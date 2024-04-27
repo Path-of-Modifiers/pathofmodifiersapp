@@ -4,8 +4,8 @@ import logging
 import pandas as pd
 from typing import List
 
-from app.database.utils import insert_data
-from app.external_data_retrieval.transforming_data.transforming_dynamic_data.utils import (
+from database.utils import insert_data
+from external_data_retrieval.transforming_data.utils import (
     get_rolls,
 )
 
