@@ -7,7 +7,7 @@ import pandas as pd
 from tqdm import tqdm
 from typing import List, Union, Tuple, Dict, Coroutine, Iterator
 
-from app.external_data_retrieval.detectors.unique_detector import (
+from external_data_retrieval.detectors.unique_detector import (
     UniqueJewelDetector,
     UniqueJewelleryDetector,
     UniqueArmourDetector,
