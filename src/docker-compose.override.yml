@@ -40,7 +40,6 @@ services:
   db:
     restart: "no"
     ports:
-    ports:
       - 5432:5432
 
   backend:
@@ -66,4 +65,3 @@ networks:
   traefik-public:
     # For local dev, don't expect an external Traefik network
     external: false
-
