@@ -16,8 +16,8 @@ ENV POETRY_ENV=${POETRY_ENV} \
   POETRY_CACHE_DIR='/var/cache/pypoetry' \
   POETRY_HOME='/usr/local' \
   POETRY_VERSION=1.7.1
-  # ^^^
-  # Make sure to update it!
+# ^^^
+# Make sure to update it!
 
 # Install Poetry
 RUN curl -sSL https://install.python-poetry.org | python3 - 
@@ -25,11 +25,12 @@ RUN curl -sSL https://install.python-poetry.org | python3 -
 WORKDIR /app
 
 # Copy only the dependencies files
-COPY ./app/pyproject.toml ./app/poetry.lock* /app/
+COPY ./pyproject.toml ./poetry.lock* /app/
 
 # Project initialization:
 RUN POETRY_VIRTUALENVS_CREATE=false poetry install
 RUN poetry install --no-interaction
 
-COPY ./app /app
+COPY ./alembic.ini /app/
+COPY ./app /app/app
 ENV PYTHONPATH=/app
