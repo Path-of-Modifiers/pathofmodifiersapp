@@ -1,6 +1,6 @@
 import pandas as pd
 
-from app.external_data_retrieval.detectors.base import DetectorBase
+from external_data_retrieval.detectors.base import DetectorBase
 
 
 class UniqueDetector(DetectorBase):

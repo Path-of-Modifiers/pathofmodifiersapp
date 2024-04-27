@@ -3,16 +3,16 @@ import os
 import pandas as pd
 from typing import List, Union, Dict
 
-from app.external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
+from external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
     APIHandler,
 )
-from app.external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_ninja_currency_api import (
+from external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_ninja_currency_api import (
     PoeNinjaCurrencyAPIHandler,
 )
-from app.external_data_retrieval.transforming_data.transforming_dynamic_data.transform_poe_ninja_currency_api_data import (
+from external_data_retrieval.transforming_data.transforming_dynamic_data.transform_poe_ninja_currency_api_data import (
     TransformPoeNinjaCurrencyAPIData,
 )
-from app.external_data_retrieval.transforming_data.transforming_dynamic_data.transform_poe_api_data import (
+from external_data_retrieval.transforming_data.transforming_dynamic_data.transform_poe_api_data import (
     PoeAPIDataTransformer,
     UniquePoeAPIDataTransformer,
 )
