@@ -26,7 +26,7 @@ RUN curl -sSL https://install.python-poetry.org | python3 -
 
 
 # Copy only the dependencies files
-COPY ./pyproject.toml ./poetry.lock* /app/
+COPY ./app/pyproject.toml ./app/poetry.lock* /app/
 
 # Project initialization:
 RUN POETRY_VIRTUALENVS_CREATE=false poetry install
@@ -34,6 +34,5 @@ RUN poetry install --no-interaction
 
 ENV PYTHONPATH=/app
 
-COPY ./alembic.ini /app/
 COPY ./prestart.sh /app/
 COPY ./app /app/app
