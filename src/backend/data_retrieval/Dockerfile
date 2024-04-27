@@ -21,17 +21,19 @@ ENV POETRY_ENV=${POETRY_ENV} \
 # Install Poetry
 RUN curl -sSL https://install.python-poetry.org | python3 - 
 
-WORKDIR /app/
+WORKDIR /data_retrieval/
 
 # Copy only the dependencies files
-COPY ./app/pyproject.toml ./app/poetry.lock* /app/
+COPY ./pyproject.toml ./poetry.lock* /data_retrieval/
 
 # Project initialization:
 RUN POETRY_VIRTUALENVS_CREATE=false poetry install
 RUN poetry install --no-interaction
 
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/data_retrieval
 
-# ENTRYPOINT ["./app/data_retrieval_startup.sh"]
-COPY ./app /app
-# COPY ./data_retrieval_startup.sh /./
+
+COPY ./external_data_retrieval /data_retrieval/external_data_retrieval/
+COPY ./modifier_data_deposit /data_retrieval/modifier_data_deposit/
+COPY ./prestart.sh /./
+# ENTRYPOINT [ "prestart.sh" ]
