@@ -4,7 +4,7 @@ import os
 import pandas as pd
 from typing import Dict, List
 
-from app.database.utils import df_to_JSON
+from database.utils import df_to_JSON
 
 
 logging.basicConfig(

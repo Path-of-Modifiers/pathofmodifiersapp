@@ -4,13 +4,13 @@ import os
 import pandas as pd
 from typing import Iterator, Optional
 
-from app.database.modifier_data_deposit.modifier_processing_modules import (
+from database.modifier_data_deposit.modifier_processing_modules import (
     add_regex,
     check_for_updated_text_rolls,
     check_for_updated_numerical_rolls,
     check_for_additional_modifier_types,
 )
-from app.database.utils import df_to_JSON
+from database.utils import df_to_JSON
 
 logging.basicConfig(
     filename="history.log",
