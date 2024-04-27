@@ -65,24 +65,23 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.middlewares=${STACK_NAME?Variable not set}-www-redirect
 
-  backend-data-retrieval:
-    image: backend_data_retrieval:latest
-    depends_on:
-      db:
-        condition: service_healthy
-    env_file:
-      - .env
-    environment:
-      - DOMAIN=${DOMAIN?Variable not set}
-      - ENVIRONMENT=${ENVIRONMENT}
-      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS?Variable not set}
-      # Allow explicit env var override for tests
-      - SMTP_HOST=${SMTP_HOST}
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.data_retrieval
-      args:
-        INSTALL_DEV: ${INSTALL_DEV-false}
+  # backend-data-retrieval:
+  #   image: backend_data_retrieval:latest
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - DOMAIN=${DOMAIN?Variable not set}
+  #     - ENVIRONMENT=${ENVIRONMENT}
+  #     - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS?Variable not set}
+  #     # Allow explicit env var override for tests
+  #     - SMTP_HOST=${SMTP_HOST}
+  #   build:
+  #     context: ./backend/data_retrieval
+  #     args:
+  #       INSTALL_DEV: ${INSTALL_DEV-false}
 
   pgadmin:
     image: dpage/pgadmin4
