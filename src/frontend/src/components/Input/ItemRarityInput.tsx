@@ -1,15 +1,15 @@
 import { Select } from "@chakra-ui/react";
-import { RenderInputProps } from "./ModifierInput";
 
 const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  const selectedValue = event.target.value;
+  console.log(event.target.value);
 };
 
 export const ItemRarityInput = () => {
   return (
     <Select
       bgColor={"ui.input"}
-      defaultValue={"TextRolls"}
+      color={"ui.white"}
+      defaultValue={"Unique"}
       onChange={(e) => handleChange(e)}
       width={150}
       focusBorderColor={"ui.white"}
@@ -20,7 +20,7 @@ export const ItemRarityInput = () => {
     >
       {
         <option
-          value={"undefined"}
+          value={"Unique"}
           key={"ItemRarityInput" + "_option_" + "Unique"}
           style={{ color: "#B3B3B3", backgroundColor: "#2d3333" }}
         >
