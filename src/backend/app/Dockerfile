@@ -1,6 +1,8 @@
 # Build stage
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.11 
 
+WORKDIR /app/
+
 ARG POETRY_ENV
 
 ENV POETRY_ENV=${POETRY_ENV} \
@@ -22,7 +24,6 @@ ENV POETRY_ENV=${POETRY_ENV} \
 # Install Poetry
 RUN curl -sSL https://install.python-poetry.org | python3 - 
 
-WORKDIR /app/
 
 # Copy only the dependencies files
 COPY ./pyproject.toml ./poetry.lock* /app/
@@ -31,12 +32,8 @@ COPY ./pyproject.toml ./poetry.lock* /app/
 RUN POETRY_VIRTUALENVS_CREATE=false poetry install
 RUN poetry install --no-interaction
 
-<<<<<<< HEAD:src/backend/Dockerfile
-=======
-COPY ./alembic.ini /app/
-COPY ./app /app/app
->>>>>>> 9d6c1a972a2c5419bf64251c0a0ab07781aa6e08:src/backend/app/Dockerfile
 ENV PYTHONPATH=/app
 
-COPY ./app /app
-COPY ./prestart.sh /./
+COPY ./alembic.ini /app/
+COPY ./prestart.sh /app/
+COPY ./app /app/app

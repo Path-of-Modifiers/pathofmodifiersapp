@@ -47,21 +47,20 @@ services:
     ports:
       - "8888:8888"
     volumes:
-      - ./backend/app:/app
+      - ./backend/app/:/app
     build:
-      context: ./backend
+      context: ./backend/app
       args:
         INSTALL_DEV: ${INSTALL_DEV-true}
 
-  backend-data-retrieval:
-    restart: "no"
-    volumes:
-      - ./backend/app:/app
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.data_retrieval
-      args:
-        INSTALL_DEV: ${INSTALL_DEV-true}
+  # backend-data-retrieval:
+  #   restart: "no"
+  #   volumes:
+  #     - ./backend/data_retrieval:/data_retrieval
+  #   build:
+  #     context: ./backend/data_retrieval
+  #     args:
+  #       INSTALL_DEV: ${INSTALL_DEV-true}
 
   frontend:
     restart: "no"
