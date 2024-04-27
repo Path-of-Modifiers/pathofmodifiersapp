@@ -39,7 +39,7 @@ services:
 
   db:
     restart: "no"
-    ports: 
+    ports:
       - 5432:5432
 
   backend:
@@ -52,7 +52,17 @@ services:
       context: ./backend
       args:
         INSTALL_DEV: ${INSTALL_DEV-true}
-      
+
+  backend-data-retrieval:
+    restart: "no"
+    volumes:
+      - ./backend/app:/app
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.data_retrieval
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-true}
+
   frontend:
     restart: "no"
     build:
@@ -60,7 +70,6 @@ services:
       args:
         - VITE_API_URL=http://${DOMAIN?Variable not set}
         - NODE_ENV=development
-
 
 networks:
   traefik-public:
