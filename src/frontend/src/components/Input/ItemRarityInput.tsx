@@ -1,4 +1,4 @@
-import { Box, Select } from "@chakra-ui/react";
+import { Select } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 
 const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -9,7 +9,6 @@ const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 
 export const ItemRarityInput = () => {
   return (
-    <Box>
       <Select
         bgColor={"ui.input"}
         color={"ui.white"}
@@ -45,6 +44,5 @@ export const ItemRarityInput = () => {
           // </option>
         }
       </Select>
-    </Box>
   );
 };
