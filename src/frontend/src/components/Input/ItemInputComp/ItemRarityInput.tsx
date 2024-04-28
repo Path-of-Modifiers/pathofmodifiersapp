@@ -1,5 +1,5 @@
 import { Select } from "@chakra-ui/react";
-import { useGraphInputStore } from "../../store/GraphInputStore";
+import { useGraphInputStore } from "../../../store/GraphInputStore";
 
 const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
   const itemRarityInput = event.target.value;
