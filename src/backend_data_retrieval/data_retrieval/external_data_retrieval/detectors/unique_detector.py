@@ -61,14 +61,28 @@ class UniqueJewelDetector(UniqueDetector):
 
 class UniqueJewelleryDetector(UniqueDetector):
     wanted_items_dict = {
-        "Onyx Amulet": ["Aul's Uprising"],
-        "Ruby Ring": ["Precursor's Emblem"],
-        "Sapphire Ring": ["Precursor's Emblem"],
-        "Topaz Ring": ["Precursor's Emblem"],
-        "Prismatic Ring": ["Precursor's Emblem"],
+        "Onyx Amulet": ["Aul's Uprising", "Replica Dragonfang's Flight"],
+        "Gold Amulet": ["The Utmost"],
+        "Ruby Ring": ["Precursor's Emblem", "Circle of Anguish"],
+        "Sapphire Ring": ["Precursor's Emblem", "Circle of Fear"],
+        "Topaz Ring": ["Precursor's Emblem", "Circle of Regret"],
+        "Prismatic Ring": ["Precursor's Emblem", "Circle of Ambition"],
         "Two-Stone Ring": ["Precursor's Emblem"],
+        "Iron Ring": ["Circle of Guilt"],
+        "Amethyst Ring": ["Circle of Nostalgia"]
     }
-    wanted_items = ["Aul's Uprising", "Precursor's Emblem"]
+    wanted_items = [
+        "Aul's Uprising",
+        "Replica Dragonfang's Flight"
+        "The Utmost",
+        "Precursor's Emblem",
+        "Circle of Ambition",
+        "Circle of Guilt",
+        "Circle of Anguish",
+        "Circle of Regret",
+        "Circle of Fear",
+        "Circle of Nostalgia",
+        ]
 
 
 class UniqueArmourDetector(UniqueDetector):
