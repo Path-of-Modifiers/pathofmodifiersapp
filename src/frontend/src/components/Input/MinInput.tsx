@@ -58,7 +58,7 @@ export const MinRollInput = ({
 
   return (
     <NumberInput
-      value={input? input : undefined}
+      value={input ? input : undefined}
       step={1}
       key={modifierSelected.modifierId[0] + inputPosition}
       bgColor={"ui.input"}

@@ -107,6 +107,9 @@ export const ModifierInput = () => {
     console.log(selectedModifiers);
     console.log("Filtered modifiers: \n");
     console.log(filteredModifiers);
+
+    console.log("STORE MODIFIERS SELECTED: \n");
+    console.log(useGraphInputStore.getState().modifierSpecs);
   });
 
   // Define the function to handle input changes
