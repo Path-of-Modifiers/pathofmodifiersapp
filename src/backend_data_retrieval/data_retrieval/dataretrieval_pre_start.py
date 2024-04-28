@@ -23,7 +23,11 @@ wait_seconds = 1
 )
 def init() -> None:
     try:
-        response = requests.get(BASEURL)
+        if "localhost" not in BASEURL:
+            test_url = "https://" + BASEURL + "/api/api_v1/modifier/"
+        else:
+            test_url = "http://src-backend-1/api/api_v1/modifier/"
+        response = requests.get(test_url)
         response.raise_for_status()
     except Exception as e:
         logger.error(e)

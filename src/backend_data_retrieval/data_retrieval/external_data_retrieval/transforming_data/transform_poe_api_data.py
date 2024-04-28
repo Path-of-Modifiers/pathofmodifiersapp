@@ -4,7 +4,7 @@ import logging
 import pandas as pd
 from typing import List
 
-from database.utils import insert_data
+from modifier_data_deposit.utils import insert_data
 from external_data_retrieval.transforming_data.utils import (
     get_rolls,
 )
@@ -16,11 +16,12 @@ BASEURL = os.getenv("DOMAIN")
 
 class PoeAPIDataTransformer:
     def __init__(self, main_logger: logging.Logger):
+
         if "localhost" not in BASEURL:
-            self.url = "https://"
+            self.url = f"https://{BASEURL}"
         else:
-            self.url = "http://"
-        self.url += BASEURL + "/api/api_v1"
+            self.url = "http://src-backend-1"
+        self.url += "/api/api_v1"
 
         self.logger = main_logger.getChild("transform_poe")
 
