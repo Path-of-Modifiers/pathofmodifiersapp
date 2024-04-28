@@ -4,13 +4,13 @@ import os
 import pandas as pd
 from typing import Iterator, Optional
 
-from database.modifier_data_deposit.modifier_processing_modules import (
+from modifier_data_deposit.modifier_processing_modules import (
     add_regex,
     check_for_updated_text_rolls,
     check_for_updated_numerical_rolls,
     check_for_additional_modifier_types,
 )
-from database.utils import df_to_JSON
+from modifier_data_deposit.utils import df_to_JSON
 
 logging.basicConfig(
     filename="history.log",
@@ -18,19 +18,19 @@ logging.basicConfig(
     format="%(asctime)s:%(levelname)-8s:%(name)s: %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
-TESTING = os.getenv("TESTING")
+
 BASEURL = os.getenv("DOMAIN")
 CASCADING_UPDATE = True
 
 
 class DataDepositer:
     def __init__(self) -> None:
-        self.new_data_location = "new_data"
+        self.new_data_location = "modifier_data_deposit/modifier_data"
         if "localhost" not in BASEURL:
-            self.url = "https://"
+            self.url = f"https://{BASEURL}"
         else:
-            self.url = "http://"
-        self.url += BASEURL + "/api/api_v1/modifier/"
+            self.url = "http://src-backend-1"
+        self.url += "/api/api_v1/modifier/"
         self.update_disabled = not CASCADING_UPDATE
 
         self.modifier_types = [
@@ -47,7 +47,7 @@ class DataDepositer:
 
         self.logger = logging.getLogger(__name__)
 
-    def _load_new_data(self) -> Iterator[pd.DataFrame]:
+    def _load_data(self) -> Iterator[pd.DataFrame]:
         for filename in os.listdir(self.new_data_location):
             filepath = os.path.join(self.new_data_location, filename)
 
@@ -146,7 +146,7 @@ class DataDepositer:
 
         return non_duplicate_df
 
-    def _process_new_data(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _process_data(self, df: pd.DataFrame) -> pd.DataFrame:
         df = add_regex(df, logger=self.logger)
         df = self._remove_duplicates(df.copy(deep=True))
         return df
@@ -165,28 +165,17 @@ class DataDepositer:
 
         self.logger.info("Successfully inserted data into database.")
 
-    def _delete_processed_data(self):
-        for filename in os.listdir(self.new_data_location):
-            filepath = os.path.join(self.new_data_location, filename)
-            self.logger.info(f"Deleting '{filename}'")
-            if TESTING:
-                os.rename(filepath, filepath.replace("new_data", "deposited_data"))
-            else:
-                os.remove(filepath)
-            self.logger.info(f"Deleted '{filename}'")
-
     def deposit_data(self) -> None:
-        for df in self._load_new_data():
-            df = self._process_new_data(df)
+        for df in self._load_data():
+            df = self._process_data(df)
             self._insert_data(df)
-
-        self._delete_processed_data()
 
 
 def main():
-    test = DataDepositer()
-    test.deposit_data()
+    data_depositer = DataDepositer()
+    data_depositer.deposit_data()
     return 0
 
 
-main()
+if __name__ == "__main__":
+    main()

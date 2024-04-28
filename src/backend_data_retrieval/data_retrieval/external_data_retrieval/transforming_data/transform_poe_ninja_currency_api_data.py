@@ -7,7 +7,7 @@ import pandas as pd
 from external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_ninja_currency_api import (
     PoeNinjaCurrencyAPIHandler,
 )
-from database.utils import insert_data, retrieve_data
+from modifier_data_deposit.utils import insert_data, retrieve_data
 
 BASEURL = os.getenv("DOMAIN")
 
@@ -28,10 +28,10 @@ def load_currency_data():
 class TransformPoeNinjaCurrencyAPIData:
     def __init__(self, main_logger: logging.Logger):
         if "localhost" not in BASEURL:
-            self.url = "https://"
+            self.url = f"https://{BASEURL}"
         else:
-            self.url = "http://"
-        self.url += BASEURL + "/api/api_v1"
+            self.url = "http://src-backend-1"
+        self.url += "/api/api_v1"
         self.logger = main_logger.getChild("transform_ninja")
 
     def _create_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
