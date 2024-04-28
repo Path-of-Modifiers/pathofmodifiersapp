@@ -6,7 +6,7 @@ import {
 } from "./ModifierInput";
 
 const handleInputTextRollChange = (
-  value: string,
+  value: number,
   position: number,
   modifier: ModifierInput,
   updateModifierInputFunction: UpdateModifierInputFunction
@@ -15,9 +15,9 @@ const handleInputTextRollChange = (
   // const scientificPattern = /^-?\d*\.?\d*(e-?\d+)?$/i;
 
   if (modifier.textRollInputs) {
-    modifier.textRollInputs[position] = value;
+    modifier.textRollInputs[position] = value.toString();
   } else {
-    modifier.textRollInputs = [value];
+    modifier.textRollInputs = [value.toString()];
   }
   updateModifierInputFunction(
     modifier.modifierId[position],
@@ -33,7 +33,7 @@ const handleChange = (
   modifierSelected: ModifierInput,
   updateModifierInputFunction: UpdateModifierInputFunction
 ) => {
-  const selectedValue = event.target.value;
+  const selectedValue = parseInt(event.target.value);
   // Call function to handle the change
   handleInputTextRollChange(
     selectedValue,
@@ -56,7 +56,7 @@ export const TextRollInput = ({
 
   const textRollsOptions = textRollsList.map((textRoll, index) => (
     <option
-      value={textRoll}
+      value={index}
       key={modifierSelected.effect + textRoll + index}
       style={{ backgroundColor: "#2d3333" }}
     >
