@@ -25,8 +25,8 @@ const handleInputMaxRollChange = (
   updateModifierInputFunction(
     modifier.modifierId[position],
     undefined,
-    undefined,
-    modifier.maxRollInputs.map((input) => (input ? input.toString() : ""))
+    modifier.maxRollInputs.map((input) => (input)),
+    undefined
   );
 };
 

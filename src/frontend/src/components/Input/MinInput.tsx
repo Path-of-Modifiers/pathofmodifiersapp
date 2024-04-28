@@ -24,9 +24,9 @@ const handleInputMinRollChange = (
   }
   updateModifierInputFunction(
     modifier.modifierId[position],
+    modifier.minRollInputs.map((input) => (input ? input : null)),
     undefined,
-    undefined,
-    modifier.minRollInputs.map((input) => (input ? input.toString() : ""))
+    undefined
   );
 };
 
