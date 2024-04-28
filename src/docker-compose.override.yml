@@ -54,6 +54,18 @@ services:
         INSTALL_DEV: ${INSTALL_DEV-true}
     command: /start-reload.sh
 
+  backend-data-retrieval:
+    restart: "no"
+    ports:
+      - "8889:8889"
+    volumes:
+      - ./backend_data_retrieval/data_retrieval:/data_retrieval
+    build:
+      context: ./backend_data_retrieval
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-true}
+    command: /prestart.sh
+
   frontend:
     restart: "no"
     build:
