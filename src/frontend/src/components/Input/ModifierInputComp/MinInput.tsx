@@ -9,7 +9,7 @@ import {
   ModifierInput,
   RenderInputMaxMinRollProps,
   UpdateModifierInputFunction,
-} from "./ModifierInput";
+} from "../ModifierInput";
 
 const handleInputMinRollChange = (
   value: string,
