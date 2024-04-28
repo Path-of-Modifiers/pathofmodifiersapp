@@ -20,13 +20,14 @@ import { MaxRollInput } from "./MaxInput";
 import { isArrayNullOrContainsOnlyNull } from "../../hooks/utils";
 // import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
 import { modifiers } from "../../test_data/modifier_data";
+import { useGraphInputStore } from "../../store/GraphInputStore";
 // import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
 
 export interface ModifierInput extends GroupedModifierByEffect {
   isSelected?: boolean;
   minRollInputs?: (number | null)[];
   maxRollInputs?: (number | null)[];
-  textRollInputs?: (string | null)[];
+  textRollInputs?: (number | null)[];
 }
 
 export interface RenderInputProps {
@@ -44,7 +45,7 @@ export type UpdateModifierInputFunction = (
   modifierId: number,
   newMinRollInputs?: (number | null)[] | undefined,
   newMaxRollInputs?: (number | null)[] | undefined,
-  newTextRollInputs?: (string | null)[] | undefined
+  newTextRollInputs?: (number | null)[] | undefined
 ) => void;
 
 export const ModifierInput = () => {
@@ -62,8 +63,12 @@ export const ModifierInput = () => {
     []
   );
 
+  const { addModifierSpec, removeModifierSpec, updateModifierSpec } =
+    useGraphInputStore();
+
   const [isExpanded, setIsExpanded] = useState(false);
 
+  // API call to get modifiers
   // const getModifiers = GetGroupedModifiersByEffect();
 
   // const modifiers: ModifierInput[] | undefined = GetGroupedModifiersByEffect();
@@ -144,11 +149,35 @@ export const ModifierInput = () => {
       ).fill(undefined);
     }
 
+    for (let i = 0; i < selectedModifierEffect.position.length; i++) {
+      addModifierSpec({
+        modifierId: selectedModifierEffect.modifierId[i],
+        position: i,
+        limitations: {
+          minRoll: selectedModifierEffect.minRollInputs
+            ? selectedModifierEffect.minRollInputs[i]
+            : null,
+          maxRoll: selectedModifierEffect.maxRollInputs
+            ? selectedModifierEffect.maxRollInputs[i]
+            : null,
+          textRoll: selectedModifierEffect.textRollInputs
+            ? selectedModifierEffect.textRollInputs[i]
+            : null,
+        },
+      });
+    }
+
+    console.log("STORE MODIFIERS SELECTED: \n");
+    console.log(useGraphInputStore.getState().modifierSpecs);
+
     setSearchModifierText("");
     toggleExpand();
   };
 
-  const handleRemoveModifier = (id: number) => {
+  const handleRemoveModifier = (
+    id: number,
+    modifierSelected: ModifierInput
+  ) => {
     const effectToRemove = selectedModifiers.find(
       (modifier) => modifier.modifierId[0] === id
     )?.effect;
@@ -158,9 +187,20 @@ export const ModifierInput = () => {
         prevModifiers.filter((modifier) => modifier.effect !== effectToRemove)
       );
     }
+
+    for (let i = 0; i < modifierSelected.position.length; i++) {
+      removeModifierSpec(modifierSelected.modifierId[i]);
+    }
+
+    console.log("STORE MODIFIERS REMOVE: \n");
+    console.log(useGraphInputStore.getState().modifierSpecs);
   };
 
-  const handleCheckboxChange = (id: number) => {
+  const handleCheckboxChange = (
+    id: number,
+    modifierSelected: ModifierInput,
+    modifierIsSelected: boolean | undefined
+  ) => {
     setSelectedModifiers((modifiers) =>
       modifiers.map((modifier) =>
         modifier.modifierId[0] === id
@@ -168,6 +208,27 @@ export const ModifierInput = () => {
           : modifier
       )
     );
+
+    if (modifierIsSelected) {
+      for (let i = 0; i < modifierSelected.position.length; i++) {
+        removeModifierSpec(modifierSelected.modifierId[i]);
+      }
+    } else {
+      for (let i = 0; i < modifierSelected.position.length; i++) {
+        addModifierSpec({
+          modifierId: id,
+          position: modifierSelected.position[i],
+          limitations: {
+            minRoll: modifierSelected.minRollInputs?.[i] ?? null,
+            maxRoll: modifierSelected.maxRollInputs?.[i] ?? null,
+            textRoll: modifierSelected.textRollInputs?.[i] ?? null,
+          },
+        });
+      }
+    }
+
+    console.log("STORE MODIFIERS SELECTED: \n");
+    console.log(useGraphInputStore.getState().modifierSpecs);
   };
 
   const toggleExpand = () => {
@@ -185,9 +246,10 @@ export const ModifierInput = () => {
 
   const updateModifierInput = (
     modifierId: number,
+    modifierToUpdate: ModifierInput,
     newMinRollInputs?: (number | null)[] | undefined,
     newMaxRollInputs?: (number | null)[] | undefined,
-    newTextRollInputs?: (string | null)[] | undefined
+    newTextRollInputs?: (number | null)[] | undefined
   ): void => {
     setSelectedModifiers((prevModifiers) => {
       const updatedModifiers = [...prevModifiers]; // Step 1: Create a copy of the array
@@ -208,6 +270,21 @@ export const ModifierInput = () => {
       }
       return updatedModifiers; // Set the updated array back to state
     });
+
+    for (let i = 0; i < modifierToUpdate.position.length; i++) {
+      updateModifierSpec({
+        modifierId: modifierToUpdate.modifierId[i],
+        position: modifierToUpdate.position[i],
+        limitations: {
+          minRoll: modifierToUpdate.minRollInputs?.[i] ?? null,
+          maxRoll: modifierToUpdate.maxRollInputs?.[i] ?? null,
+          textRoll: modifierToUpdate.textRollInputs?.[i] ?? null,
+        },
+      });
+    }
+
+    console.log("STORE MODIFIERS SELECTED UPDATED: \n");
+    console.log(useGraphInputStore.getState().modifierSpecs);
   };
 
   // Render selected modifiers list
@@ -220,7 +297,11 @@ export const ModifierInput = () => {
             key={modifierSelected.modifierId[0] + index}
             onChange={() => {
               if (modifierSelected.modifierId[0] !== null) {
-                handleCheckboxChange(modifierSelected.modifierId[0]);
+                handleCheckboxChange(
+                  modifierSelected.modifierId[0],
+                  modifierSelected,
+                  modifierSelected.isSelected
+                );
               }
             }}
           />
@@ -259,6 +340,7 @@ export const ModifierInput = () => {
                         updateModifierInputFunction={() =>
                           updateModifierInput(
                             modifierSelected.modifierId[0],
+                            modifierSelected,
                             modifierSelected.minRollInputs
                           )
                         }
@@ -285,6 +367,7 @@ export const ModifierInput = () => {
                         updateModifierInputFunction={() =>
                           updateModifierInput(
                             modifierSelected.modifierId[0],
+                            modifierSelected,
                             undefined,
                             modifierSelected.maxRollInputs
                           )
@@ -307,6 +390,7 @@ export const ModifierInput = () => {
                         updateModifierInputFunction={() =>
                           updateModifierInput(
                             modifierSelected.modifierId[0],
+                            modifierSelected,
                             undefined,
                             undefined,
                             modifierSelected.textRollInputs
@@ -327,7 +411,10 @@ export const ModifierInput = () => {
             _hover={{ background: "gray.100", cursor: "pointer" }}
             onClick={() => {
               if (modifierSelected.modifierId[0] !== null) {
-                handleRemoveModifier(modifierSelected.modifierId[0]);
+                handleRemoveModifier(
+                  modifierSelected.modifierId[0],
+                  modifierSelected
+                );
               }
             }}
           />

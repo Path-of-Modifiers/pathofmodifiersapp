@@ -15,9 +15,9 @@ const handleInputTextRollChange = (
   // const scientificPattern = /^-?\d*\.?\d*(e-?\d+)?$/i;
 
   if (modifier.textRollInputs) {
-    modifier.textRollInputs[position] = value.toString();
+    modifier.textRollInputs[position] = value;
   } else {
-    modifier.textRollInputs = [value.toString()];
+    modifier.textRollInputs = [value];
   }
   updateModifierInputFunction(
     modifier.modifierId[position],
