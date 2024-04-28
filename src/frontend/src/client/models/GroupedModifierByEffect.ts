@@ -4,7 +4,7 @@
 /* eslint-disable */
 export type GroupedModifierByEffect = {
   modifierId: Array<number>;
-  position: Array<number | null>;
+  position: Array<number>;
   minRoll?: Array<number | null> | null;
   maxRoll?: Array<number | null> | null;
   textRolls?: Array<string | null> | null;
