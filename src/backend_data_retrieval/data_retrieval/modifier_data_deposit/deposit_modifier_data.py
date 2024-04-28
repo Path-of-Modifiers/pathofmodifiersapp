@@ -4,13 +4,13 @@ import os
 import pandas as pd
 from typing import Iterator, Optional
 
-from database.modifier_data_deposit.modifier_processing_modules import (
+from modifier_data_deposit.modifier_processing_modules import (
     add_regex,
     check_for_updated_text_rolls,
     check_for_updated_numerical_rolls,
     check_for_additional_modifier_types,
 )
-from database.utils import df_to_JSON
+from modifier_data_deposit.utils import df_to_JSON
 
 logging.basicConfig(
     filename="history.log",
@@ -25,12 +25,12 @@ CASCADING_UPDATE = True
 
 class DataDepositer:
     def __init__(self) -> None:
-        self.new_data_location = "app/database/modifier_data_deposit/modifier_data"
+        self.new_data_location = "modifier_data_deposit/modifier_data"
         if "localhost" not in BASEURL:
-            self.url = "https://"
+            self.url = f"https://{BASEURL}"
         else:
-            self.url = "http://"
-        self.url += BASEURL + "/api/api_v1/modifier/"
+            self.url = "http://src-backend-1"
+        self.url += "/api/api_v1/modifier/"
         self.update_disabled = not CASCADING_UPDATE
 
         self.modifier_types = [
