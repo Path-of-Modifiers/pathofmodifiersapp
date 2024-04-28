@@ -31,13 +31,29 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
     isRelic: false,
     foilVariation: 0,
   },
-  itemRarity: "Unique",
   baseSpec: { baseType: "", category: "", subCategory: "" },
   modifierSpecs: [],
+
+  setLeague: (league: string) => set(() => ({ league: league })),
 
   setItemSpecState: (itemSpecState: ItemSpecState) =>
     set(() => ({ itemSpecState: itemSpecState })),
   setBaseSpec: (baseSpec: BaseSpecState) => set(() => ({ baseSpec: baseSpec })),
-  setModifierSpecs: (modifierSpecs: ModifierSpecState[]) =>
-    set(() => ({ modifierSpecs: modifierSpecs })),
+
+  addModifierSpec: (modifierSpec: ModifierSpecState) =>
+    set((state) => ({ modifierSpecs: [...state.modifierSpecs, modifierSpec] })),
+
+  removeModifierSpec: (modifierId: number) =>
+    set((state) => ({
+      modifierSpecs: state.modifierSpecs.filter(
+        (modifierSpec) => modifierSpec.modifierId !== modifierId
+      ),
+    })),
+
+  updateModifierSpec: (modifierSpec: ModifierSpecState) =>
+    set((state) => ({
+      modifierSpecs: state.modifierSpecs.map((spec) =>
+        spec.modifierId === modifierSpec.modifierId ? modifierSpec : spec
+      ),
+    })),
 }));
