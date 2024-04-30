@@ -1,4 +1,4 @@
-import { Input } from "@chakra-ui/react";
+import { Input, Flex, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 
 const handleNameChange = (value: string) => {
@@ -10,18 +10,26 @@ const handleNameChange = (value: string) => {
 
 export const ItemNameInput = () => {
   return (
-    <Input
-      bgColor={"ui.input"}
+    <Flex
       color={"ui.white"}
-      defaultValue={""}
-      onChange={(e) => handleNameChange(e.target.value)}
-      width={150}
-      focusBorderColor={"ui.white"}
-      placeholder="Item Name"
-      borderColor={"ui.grey"}
-      mr={1}
-      ml={1}
-      key={"ItemRarityInput"}
-    />
+      bgColor={"ui.secondary"}
+      alignItems={"center"}
+      m={2}
+    >
+      <Text width={150}>Item name</Text>
+      <Input
+        bgColor={"ui.input"}
+        color={"ui.white"}
+        defaultValue={""}
+        onChange={(e) => handleNameChange(e.target.value)}
+        width={250}
+        focusBorderColor={"ui.white"}
+        placeholder="Item Name"
+        borderColor={"ui.grey"}
+        mr={1}
+        ml={1}
+        key={"ItemRarityInput"}
+      />
+    </Flex>
   );
 };
