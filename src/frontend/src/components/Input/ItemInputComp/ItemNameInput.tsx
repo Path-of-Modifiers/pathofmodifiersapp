@@ -14,9 +14,9 @@ export const ItemNameInput = () => {
       color={"ui.white"}
       bgColor={"ui.secondary"}
       alignItems={"center"}
-      m={2}
+      m={1}
     >
-      <Text width={150}>Item name</Text>
+      <Text ml={1} width={150}>Item name</Text>
       <Input
         bgColor={"ui.input"}
         color={"ui.white"}
