@@ -22,6 +22,7 @@
     "@tanstack/router-devtools": "^1.23.1",
     "axios": "^1.6.8",
     "framer-motion": "^11.0.23",
+    "plotly.js": "^2.32.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.0.1"
@@ -31,6 +32,7 @@
     "@tanstack/react-router": "^1.23.1",
     "@tanstack/router-vite-plugin": "^1.23.0",
     "@types/node": "^20.11.30",
+    "@types/plotly.js": "^2.29.2",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
