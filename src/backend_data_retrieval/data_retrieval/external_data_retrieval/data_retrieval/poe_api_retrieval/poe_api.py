@@ -11,6 +11,7 @@ from external_data_retrieval.detectors.unique_detector import (
     UniqueJewelDetector,
     UniqueJewelleryDetector,
     UniqueArmourDetector,
+    UniqueWeaponDetector,
     UniqueDetector,
 )
 
@@ -32,6 +33,7 @@ class APIHandler:
             UniqueJewelDetector(),
             UniqueJewelleryDetector(),
             UniqueArmourDetector(),
+            UniqueWeaponDetector(),
         ],
     ) -> None:
         """
