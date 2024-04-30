@@ -10,7 +10,8 @@ export interface InfluenceSpecState {
 export interface ItemSpecState {
   name?: string | null;
   identified?: boolean | null;
-  ilvl?: number | null;
+  minIlvl?: number | null;
+  maxIlvl?: number | null;
   rarity?: string | null;
   corrupted?: boolean | null;
   delve?: boolean | null;

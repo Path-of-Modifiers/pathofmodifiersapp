@@ -1,4 +1,4 @@
-import { Select } from "@chakra-ui/react";
+import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 
 const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -9,6 +9,13 @@ const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 
 export const ItemRarityInput = () => {
   return (
+    <Flex
+      alignItems={"center"}
+      color={"ui.white"}
+      bgColor={"ui.secondary"}
+      m={2}
+    >
+      <Text width={150}>Item Rarity</Text>
       <Select
         bgColor={"ui.input"}
         color={"ui.white"}
@@ -33,8 +40,6 @@ export const ItemRarityInput = () => {
         ,
         {
           // Future implementation for non-unique items
-
-          
           // <option
           //   value={"Non_Unique"}
           //   key={"ItemRarityInput" + "_option_" + "Any Non-Unique"}
@@ -44,5 +49,6 @@ export const ItemRarityInput = () => {
           // </option>
         }
       </Select>
+    </Flex>
   );
 };
