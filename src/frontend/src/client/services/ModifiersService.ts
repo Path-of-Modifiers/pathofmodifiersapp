@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { GroupedModifierByEffect } from '../models/GroupedModifierByEffect';
 import type { Modifier } from '../models/Modifier';
 import type { ModifierCreate } from '../models/ModifierCreate';
 import type { ModifierUpdate } from '../models/ModifierUpdate';
@@ -144,6 +145,20 @@ export class ModifiersService {
             errors: {
                 422: `Validation Error`,
             },
+        });
+    }
+    /**
+     * Get Grouped Modifier By Effect
+     * Get all grouped modifiers by effect.
+     *
+     * Returns a list of all grouped modifiers by effect.
+     * @returns any Successful Response
+     * @throws ApiError
+     */
+    public static getGroupedModifierByEffectApiApiV1ModifierGroupedModifiersByEffectGet(): CancelablePromise<(GroupedModifierByEffect | Array<GroupedModifierByEffect>)> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/api_v1/modifier/grouped_modifiers_by_effect/',
         });
     }
 }
