@@ -48,10 +48,13 @@ export const MinMaxInput = ({
     <Flex
       color={"ui.white"}
       m={2}
+      ml={1}
       bgColor={"ui.secondary"}
       alignItems={"center"}
     >
-      <Text width={150}>{text}</Text>
+      <Text ml={1} width={150}>
+        {text}
+      </Text>
       <NumberInput
         value={undefined}
         step={1}

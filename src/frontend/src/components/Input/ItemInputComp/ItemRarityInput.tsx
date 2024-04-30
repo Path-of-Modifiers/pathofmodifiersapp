@@ -13,9 +13,9 @@ export const ItemRarityInput = () => {
       alignItems={"center"}
       color={"ui.white"}
       bgColor={"ui.secondary"}
-      m={2}
+      m={1}
     >
-      <Text width={150}>Item Rarity</Text>
+      <Text ml={1} width={150}>Item Rarity</Text>
       <Select
         bgColor={"ui.input"}
         color={"ui.white"}
