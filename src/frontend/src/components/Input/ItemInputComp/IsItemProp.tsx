@@ -100,7 +100,7 @@ interface IsItemInputProps {
 
 export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
   return (
-    <Flex alignItems="center" bgColor={"ui.secondary"} color={"ui.white"} m={2}>
+    <Flex alignItems="center" bgColor={"ui.secondary"} color={"ui.white"} m={1}>
       <Text width={150}>{text}</Text>
       <Select
         bgColor={"ui.input"}

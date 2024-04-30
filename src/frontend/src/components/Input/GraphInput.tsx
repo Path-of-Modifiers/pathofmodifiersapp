@@ -8,10 +8,7 @@ import { MinMaxInput } from "./ItemInputComp/MinMaxProp";
 export const GraphInput = () => {
   return (
     <Box p={5}>
-      <IsItemInput itemSpecKey={"identified"} text={"Identified"} />
-      <MinMaxInput itemMinSpecKey="minIlvl" itemMaxSpecKey="maxIlvl" text="Item level"/>
       <ItemInput />
-      <ItemRarityInput />
       <ModifierInput />
     </Box>
   );
