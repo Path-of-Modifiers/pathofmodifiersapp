@@ -69,11 +69,11 @@ class UniqueJewelleryDetector(UniqueDetector):
         "Prismatic Ring": ["Precursor's Emblem", "Circle of Ambition"],
         "Two-Stone Ring": ["Precursor's Emblem"],
         "Iron Ring": ["Circle of Guilt"],
-        "Amethyst Ring": ["Circle of Nostalgia"]
+        "Amethyst Ring": ["Circle of Nostalgia"],
     }
     wanted_items = [
         "Aul's Uprising",
-        "Replica Dragonfang's Flight"
+        "Replica Dragonfang's Flight",
         "The Utmost",
         "Precursor's Emblem",
         "Circle of Ambition",
@@ -82,7 +82,7 @@ class UniqueJewelleryDetector(UniqueDetector):
         "Circle of Regret",
         "Circle of Fear",
         "Circle of Nostalgia",
-        ]
+    ]
 
 
 class UniqueArmourDetector(UniqueDetector):
@@ -92,3 +92,8 @@ class UniqueArmourDetector(UniqueDetector):
         "Carnal Armour": ["Shroud of the Lightless"],
     }
     wanted_items = ["Forbidden Shako", "Skin of the Lords", "Shroud of the Lightless"]
+
+
+class UniqueWeaponDetector(UniqueDetector):
+    wanted_items_dict = {"Vaal Rapier": ["Paradoxica"]}
+    wanted_items = ["Paradoxica"]
