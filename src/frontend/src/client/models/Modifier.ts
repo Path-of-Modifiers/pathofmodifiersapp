@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type Modifier = {
-    modifierId?: (number | null);
     position: number;
     minRoll?: (number | null);
     maxRoll?: (number | null);
@@ -20,7 +19,8 @@ export type Modifier = {
     corrupted?: (boolean | null);
     enchanted?: (boolean | null);
     veiled?: (boolean | null);
+    modifierId: number;
     createdAt: string;
-    updatedAt: string;
+    updatedAt?: (string | null);
 };
 

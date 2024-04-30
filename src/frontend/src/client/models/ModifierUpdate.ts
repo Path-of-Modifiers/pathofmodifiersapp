@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ModifierUpdate = {
-    modifierId?: (number | null);
     position: number;
     minRoll?: (number | null);
     maxRoll?: (number | null);

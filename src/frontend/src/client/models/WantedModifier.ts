@@ -2,12 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type ItemModifier = {
-    itemId: number;
+import type { ModifierLimitations } from './ModifierLimitations';
+export type WantedModifier = {
     modifierId: number;
     position: number;
-    roll?: (number | null);
-    createdAt: string;
-    updatedAt?: (string | null);
+    modifierLimitations?: (ModifierLimitations | null);
 };
 
