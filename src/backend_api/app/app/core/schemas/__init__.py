@@ -5,6 +5,9 @@ from .currency import Currency, CurrencyInDB, CurrencyCreate, CurrencyUpdate
 from .modifier import Modifier, GroupedModifierByEffect, ModifierInDB, ModifierCreate, ModifierUpdate
 from .item_base_type import (
     ItemBaseType,
+    BaseType,
+    Category,
+    SubCategory,
     ItemBaseTypeInDB,
     ItemBaseTypeCreate,
     ItemBaseTypeUpdate,

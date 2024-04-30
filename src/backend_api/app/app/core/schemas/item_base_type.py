@@ -12,6 +12,18 @@ class _BaseItemBaseType(_pydantic.BaseModel):
     subCategory: Optional[str] = None
 
 
+class BaseType(_pydantic.BaseModel):
+    baseType: str
+
+
+class Category(_pydantic.BaseModel):
+    category: str
+
+
+class SubCategory(_pydantic.BaseModel):
+    subCategory: str
+
+
 # Properties to receive on item base type creation
 class ItemBaseTypeCreate(_BaseItemBaseType):
     pass

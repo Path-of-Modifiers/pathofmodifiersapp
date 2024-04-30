@@ -21,7 +21,7 @@ router = APIRouter()
 async def get_item_base_type(baseType: str, db: Session = Depends(get_db)):
     """
     Get item base type by key and value for "baseType".
-    
+
     Always returns one item base type.
     """
     item_base_type_map = {"baseType": baseType}
@@ -34,12 +34,56 @@ async def get_item_base_type(baseType: str, db: Session = Depends(get_db)):
 async def get_all_item_base_types(db: Session = Depends(get_db)):
     """
     Get all item base types.
-    
+
     Returns a list of all item base types.
     """
     all_item_base_types = await CRUD_itemBaseType.get(db=db)
 
     return all_item_base_types
+
+
+@router.get(
+    "/baseTypes", response_model=Union[schemas.BaseType, List[schemas.BaseType]]
+)
+async def get_base_types(db: Session = Depends(get_db)):
+    """
+    Get all base types.
+
+    Returns a list of all base types.
+    """
+    all_base_types = await CRUD_itemBaseType.get_item_base_type(db=db)
+
+    return all_base_types
+
+
+@router.get(
+    "/uniqueCategories",
+    response_model=Union[schemas.Category, List[schemas.Category]],
+)
+async def get_categories(db: Session = Depends(get_db)):
+    """
+    Get all unique categories.
+
+    Returns a list of all categories.
+    """
+    all_categories = await CRUD_itemBaseType.get_unique_item_categories(db=db)
+
+    return all_categories
+
+
+@router.get(
+    "/uniqueSubCategories",
+    response_model=Union[schemas.SubCategory, List[schemas.SubCategory]],
+)
+async def get_sub_categories(db: Session = Depends(get_db)):
+    """
+    Get all unique sub categories.
+
+    Returns a list of all sub categories.
+    """
+    all_sub_categories = await CRUD_itemBaseType.get_unique_item_sub_categories(db=db)
+
+    return all_sub_categories
 
 
 @router.post(
@@ -52,7 +96,7 @@ async def create_item_base_type(
 ):
     """
     Create one or a list of new item base types.
-    
+
     Returns the created item base type or list of item base types.
     """
     return await CRUD_itemBaseType.create(db=db, obj_in=itemBaseType)
@@ -66,7 +110,7 @@ async def update_item_base_type(
 ):
     """
     Update an item base type by key and value for "baseType".
-    
+
     Returns the updated item base type.
     """
     item_base_type_map = {"baseType": baseType}
@@ -84,7 +128,7 @@ async def update_item_base_type(
 async def delete_item_base_type(baseType: str, db: Session = Depends(get_db)):
     """
     Delete an item base type by key and value for "baseType".
-    
+
     Returns a message that the item base type was deleted successfully.
     Always deletes one item base type.
     """
