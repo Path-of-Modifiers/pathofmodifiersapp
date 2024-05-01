@@ -2,11 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type ItemBaseType = {
-    baseType: string;
-    category: string;
+export type BaseSpecs = {
+    baseType?: (string | null);
+    category?: (string | null);
     subCategory?: (string | null);
-    createdAt: string;
-    updatedAt?: (string | null);
 };
 
