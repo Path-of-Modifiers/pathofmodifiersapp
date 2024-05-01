@@ -31,8 +31,6 @@ class CRUDItemBaseType(
 
         db_obj = db.execute(statement).mappings().all()
 
-        print("hey")
-
         if not db_obj:
             raise HTTPException(
                 status_code=404,
@@ -74,8 +72,6 @@ class CRUDItemBaseType(
         )
 
         db_obj = db.execute(statement).mappings().all()
-
-        print(db_obj)
 
         if not db_obj:
             raise HTTPException(
