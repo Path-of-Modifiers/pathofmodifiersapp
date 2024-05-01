@@ -8,6 +8,6 @@ export type Stash = {
     league: string;
     stashId: string;
     createdAt: string;
-    updatedAt: string;
+    updatedAt?: (string | null);
 };
 

@@ -1,5 +1,5 @@
 import datetime as _dt
-from typing import List, Optional
+from typing import List, Optional, Union
 import pydantic as _pydantic
 
 
@@ -28,11 +28,11 @@ class _BaseModifier(_pydantic.BaseModel):
 class GroupedModifierByEffect(_pydantic.BaseModel):
     modifierId: List[int]
     position: List[int]
-    minRoll: Optional[List[Optional[float]]] = None
-    maxRoll: Optional[List[Optional[float]]] = None
-    textRolls: Optional[List[Optional[str]]] = None
+    minRoll: List[Union[float, None]]
+    maxRoll: List[Union[float, None]]
+    textRolls: List[Union[str, None]]
     effect: str
-    static: Optional[List[Optional[bool]]] = None
+    static: List[Union[bool, None]]
 
 
 # Properties to receive on modifier creation
