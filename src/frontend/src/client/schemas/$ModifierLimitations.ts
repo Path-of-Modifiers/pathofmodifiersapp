@@ -2,30 +2,28 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export const $Account = {
+export const $ModifierLimitations = {
     properties: {
-        accountName: {
-            type: 'string',
-            isRequired: true,
-        },
-        isBanned: {
+        maxRoll: {
             type: 'any-of',
             contains: [{
-                type: 'boolean',
+                type: 'number',
             }, {
                 type: 'null',
             }],
         },
-        createdAt: {
-            type: 'string',
-            isRequired: true,
-            format: 'date-time',
-        },
-        updatedAt: {
+        minRoll: {
             type: 'any-of',
             contains: [{
-                type: 'string',
-                format: 'date-time',
+                type: 'number',
+            }, {
+                type: 'null',
+            }],
+        },
+        textRoll: {
+            type: 'any-of',
+            contains: [{
+                type: 'number',
             }, {
                 type: 'null',
             }],
