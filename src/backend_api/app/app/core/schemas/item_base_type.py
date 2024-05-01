@@ -16,13 +16,12 @@ class BaseType(_pydantic.BaseModel):
     baseType: str
 
 
-class Category(_pydantic.BaseModel):
+class ItemBaseTypeCategory(_pydantic.BaseModel):
     category: str
 
 
-class SubCategory(_pydantic.BaseModel):
+class ItemBaseTypeSubCategory(_pydantic.BaseModel):
     subCategory: str
-
 
 # Properties to receive on item base type creation
 class ItemBaseTypeCreate(_BaseItemBaseType):

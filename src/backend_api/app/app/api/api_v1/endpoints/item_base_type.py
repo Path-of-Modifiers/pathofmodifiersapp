@@ -43,7 +43,7 @@ async def get_all_item_base_types(db: Session = Depends(get_db)):
 
 
 @router.get(
-    "/baseTypes", response_model=Union[schemas.BaseType, List[schemas.BaseType]]
+    "/baseTypes/", response_model=Union[schemas.BaseType, List[schemas.BaseType]]
 )
 async def get_base_types(db: Session = Depends(get_db)):
     """
@@ -51,16 +51,16 @@ async def get_base_types(db: Session = Depends(get_db)):
 
     Returns a list of all base types.
     """
-    all_base_types = await CRUD_itemBaseType.get_item_base_type(db=db)
+    all_base_types = await CRUD_itemBaseType.get_base_types(db=db)
 
     return all_base_types
 
 
 @router.get(
-    "/uniqueCategories",
-    response_model=Union[schemas.Category, List[schemas.Category]],
+    "/uniqueCategories/",
+    response_model=Union[schemas.ItemBaseTypeCategory, List[schemas.ItemBaseTypeCategory]],
 )
-async def get_categories(db: Session = Depends(get_db)):
+async def get_unique_categories(db: Session = Depends(get_db)):
     """
     Get all unique categories.
 
@@ -72,10 +72,10 @@ async def get_categories(db: Session = Depends(get_db)):
 
 
 @router.get(
-    "/uniqueSubCategories",
-    response_model=Union[schemas.SubCategory, List[schemas.SubCategory]],
+    "/uniqueSubCategories/",
+    response_model=Union[schemas.ItemBaseTypeSubCategory, List[schemas.ItemBaseTypeSubCategory]],
 )
-async def get_sub_categories(db: Session = Depends(get_db)):
+async def get_unique_sub_categories(db: Session = Depends(get_db)):
     """
     Get all unique sub categories.
 

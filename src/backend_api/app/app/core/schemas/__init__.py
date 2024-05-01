@@ -6,8 +6,8 @@ from .modifier import Modifier, GroupedModifierByEffect, ModifierInDB, ModifierC
 from .item_base_type import (
     ItemBaseType,
     BaseType,
-    Category,
-    SubCategory,
+    ItemBaseTypeCategory,
+    ItemBaseTypeSubCategory,
     ItemBaseTypeInDB,
     ItemBaseTypeCreate,
     ItemBaseTypeUpdate,

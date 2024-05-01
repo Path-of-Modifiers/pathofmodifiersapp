@@ -5,16 +5,17 @@ from pydantic import TypeAdapter
 
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from sqlalchemy import String, Integer, Boolean, Float
-from sqlalchemy.dialects.postgresql import ARRAY
 
 from app.core.schemas.item_base_type import (
+    BaseType,
+    ItemBaseTypeCategory,
     ItemBaseTypeCreate,
+    ItemBaseTypeSubCategory,
     ItemBaseTypeUpdate,
     ItemBaseType,
 )
 from app.core.models.models import ItemBaseType as model_item_base_type
-from app.crud.base import CRUDBase, SchemaType
+from app.crud.base import CRUDBase
 
 
 class CRUDItemBaseType(
@@ -25,10 +26,12 @@ class CRUDItemBaseType(
         ItemBaseTypeUpdate,
     ]
 ):
-    async def get_item_base_type(self, db: Session):
+    async def get_base_types(self, db: Session):
         statement = select(model_item_base_type.baseType)
 
         db_obj = db.execute(statement).mappings().all()
+
+        print("hey")
 
         if not db_obj:
             raise HTTPException(
@@ -39,7 +42,7 @@ class CRUDItemBaseType(
         if len(db_obj) == 1:
             db_obj = db_obj[0]
 
-        validate = TypeAdapter(Union[ItemBaseType, List[ItemBaseType]]).validate_python
+        validate = TypeAdapter(Union[BaseType, List[BaseType]]).validate_python
 
         return validate(db_obj)
 
@@ -57,14 +60,22 @@ class CRUDItemBaseType(
         if len(db_obj) == 1:
             db_obj = db_obj[0]
 
-        validate = TypeAdapter(Union[ItemBaseType, List[ItemBaseType]]).validate_python
+        validate = TypeAdapter(
+            Union[ItemBaseTypeCategory, List[ItemBaseTypeCategory]]
+        ).validate_python
 
         return validate(db_obj)
 
     async def get_unique_item_sub_categories(self, db: Session):
-        statement = select(model_item_base_type.subCategory).distinct()
+        statement = (
+            select(model_item_base_type.subCategory)
+            .distinct()
+            .where(model_item_base_type.subCategory != None)
+        )
 
         db_obj = db.execute(statement).mappings().all()
+
+        print(db_obj)
 
         if not db_obj:
             raise HTTPException(
@@ -75,6 +86,8 @@ class CRUDItemBaseType(
         if len(db_obj) == 1:
             db_obj = db_obj[0]
 
-        validate = TypeAdapter(Union[ItemBaseType, List[ItemBaseType]]).validate_python
+        validate = TypeAdapter(
+            Union[ItemBaseTypeSubCategory, List[ItemBaseTypeSubCategory]]
+        ).validate_python
 
         return validate(db_obj)
