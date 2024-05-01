@@ -738,6 +738,105 @@
         }
       }
     },
+    "/api/api_v1/itemBaseType/baseTypes/": {
+      "get": {
+        "tags": [
+          "itemBaseTypes"
+        ],
+        "summary": "Get Base Types",
+        "description": "Get all base types.\n\nReturns a list of all base types.",
+        "operationId": "get_base_types_api_api_v1_itemBaseType_baseTypes__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseType"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/BaseType"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Get Base Types Api Api V1 Itembasetype Basetypes  Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/itemBaseType/uniqueCategories/": {
+      "get": {
+        "tags": [
+          "itemBaseTypes"
+        ],
+        "summary": "Get Unique Categories",
+        "description": "Get all unique categories.\n\nReturns a list of all categories.",
+        "operationId": "get_unique_categories_api_api_v1_itemBaseType_uniqueCategories__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ItemBaseTypeCategory"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemBaseTypeCategory"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Get Unique Categories Api Api V1 Itembasetype Uniquecategories  Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/itemBaseType/uniqueSubCategories/": {
+      "get": {
+        "tags": [
+          "itemBaseTypes"
+        ],
+        "summary": "Get Unique Sub Categories",
+        "description": "Get all unique sub categories.\n\nReturns a list of all sub categories.",
+        "operationId": "get_unique_sub_categories_api_api_v1_itemBaseType_uniqueSubCategories__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ItemBaseTypeSubCategory"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemBaseTypeSubCategory"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Get Unique Sub Categories Api Api V1 Itembasetype Uniquesubcategories  Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/api_v1/itemModifier/{itemId}": {
       "get": {
         "tags": ["itemModifiers"],
@@ -2012,6 +2111,19 @@
         "type": "object",
         "title": "BaseSpecs"
       },
+      "BaseType": {
+        "properties": {
+          "baseType": {
+            "type": "string",
+            "title": "Basetype"
+          }
+        },
+        "type": "object",
+        "required": [
+          "baseType"
+        ],
+        "title": "BaseType"
+      },
       "Currency": {
         "properties": {
           "tradeName": {
@@ -2577,6 +2689,19 @@
         ],
         "title": "ItemBaseType"
       },
+      "ItemBaseTypeCategory": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "title": "Category"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category"
+        ],
+        "title": "ItemBaseTypeCategory"
+      },
       "ItemBaseTypeCreate": {
         "properties": {
           "baseType": {
@@ -2602,6 +2727,19 @@
         "type": "object",
         "required": ["baseType", "category"],
         "title": "ItemBaseTypeCreate"
+      },
+      "ItemBaseTypeSubCategory": {
+        "properties": {
+          "subCategory": {
+            "type": "string",
+            "title": "Subcategory"
+          }
+        },
+        "type": "object",
+        "required": [
+          "subCategory"
+        ],
+        "title": "ItemBaseTypeSubCategory"
       },
       "ItemBaseTypeUpdate": {
         "properties": {
