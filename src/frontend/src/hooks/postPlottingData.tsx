@@ -10,17 +10,17 @@ const plotData: PlotData = {
 }
 
 export const PostPlottingData = (requestBody: PlotQuery) => {
-  const [responseBody, setPlotData] = useState<PlotData>(plotData);
+  const [responseBody, setPlotData] = useState<PlotData>();
   try {
     // setPlotData(plotData)
-    // useQuery({
-    //   queryKey: ["allPlotData"],
-    //   queryFn: async () => {
-    //     setPlotData(
-    //       await PlottingService.getPlotDataApiApiV1PlotPost({requestBody})
-    //     );
-    //   },
-    // });
+    useQuery({
+      queryKey: ["allPlotData"],
+      queryFn: async () => {
+        setPlotData(
+          await PlottingService.getPlotDataApiApiV1PlotPost({requestBody})
+        );
+      },
+    });
     console.log(responseBody)
     return responseBody
   } catch (error) {
