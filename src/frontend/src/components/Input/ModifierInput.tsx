@@ -56,6 +56,10 @@ export const ModifierInput = () => {
       modifierId: [0],
       position: [0],
       effect: "",
+      static: [false],
+      minRoll: [0],
+      maxRoll: [0],
+      textRolls: [""],
     },
   ]);
 
@@ -96,6 +100,10 @@ export const ModifierInput = () => {
           modifierId: [0],
           position: [0],
           effect: "",
+          static: [false],
+          minRoll: [0],
+          maxRoll: [0],
+          textRolls: [""],
         },
       ]);
     }
