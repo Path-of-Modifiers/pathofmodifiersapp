@@ -19,32 +19,56 @@ export const $GroupedModifierByEffect = {
             isRequired: true,
         },
         minRoll: {
-            type: 'any-of',
-            contains: [{
-                type: 'null',
-            }],
+            type: 'array',
+            contains: {
+                type: 'any-of',
+                contains: [{
+                    type: 'number',
+                }, {
+                    type: 'null',
+                }],
+            },
+            isRequired: true,
         },
         maxRoll: {
-            type: 'any-of',
-            contains: [{
-                type: 'null',
-            }],
+            type: 'array',
+            contains: {
+                type: 'any-of',
+                contains: [{
+                    type: 'number',
+                }, {
+                    type: 'null',
+                }],
+            },
+            isRequired: true,
         },
         textRolls: {
-            type: 'any-of',
-            contains: [{
-                type: 'null',
-            }],
+            type: 'array',
+            contains: {
+                type: 'any-of',
+                contains: [{
+                    type: 'string',
+                }, {
+                    type: 'null',
+                }],
+            },
+            isRequired: true,
         },
         effect: {
             type: 'string',
             isRequired: true,
         },
         static: {
-            type: 'any-of',
-            contains: [{
-                type: 'null',
-            }],
+            type: 'array',
+            contains: {
+                type: 'any-of',
+                contains: [{
+                    type: 'boolean',
+                }, {
+                    type: 'null',
+                }],
+            },
+            isRequired: true,
         },
     },
 } as const;
