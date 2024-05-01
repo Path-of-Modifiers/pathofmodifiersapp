@@ -5,10 +5,9 @@
 export type GroupedModifierByEffect = {
     modifierId: Array<number>;
     position: Array<number>;
-    minRoll?: null;
-    maxRoll?: null;
-    textRolls?: null;
+    minRoll: Array<(number | null)>;
+    maxRoll: Array<(number | null)>;
+    textRolls: Array<(string | null)>;
     effect: string;
-    static?: null;
+    static: Array<(boolean | null)>;
 };
-

@@ -1366,7 +1366,7 @@
           "modifiers"
         ],
         "summary": "Get Modifier",
-        "description": "Get modifier or list of modifiers by key and\nvalue for \"modifierId\" and optional \"position\"\n\nDominant key is \"modifierId\".\n\nReturns one or a list of modifiers.",
+        "description": "Get modifier or list of modifiers by key and \nvalue for \"modifierId\" and optional \"position\" \n\nDominant key is \"modifierId\".\n\nReturns one or a list of modifiers.",
         "operationId": "get_modifier_api_api_v1_modifier__modifierId__get",
         "parameters": [
           {
@@ -2189,66 +2189,45 @@
             "title": "Position"
           },
           "minRoll": {
-            "anyOf": [
-              {
-                "items": {
-                  "anyOf": [
-                    {
-                      "type": "number"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
                 },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
             "title": "Minroll"
           },
           "maxRoll": {
-            "anyOf": [
-              {
-                "items": {
-                  "anyOf": [
-                    {
-                      "type": "number"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
                 },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
             "title": "Maxroll"
           },
           "textRolls": {
-            "anyOf": [
-              {
-                "items": {
-                  "anyOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
                 },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
             "title": "Textrolls"
           },
           "effect": {
@@ -2256,24 +2235,17 @@
             "title": "Effect"
           },
           "static": {
-            "anyOf": [
-              {
-                "items": {
-                  "anyOf": [
-                    {
-                      "type": "boolean"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+            "items": {
+              "anyOf": [
+                {
+                  "type": "boolean"
                 },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
             "title": "Static"
           }
         },
@@ -2281,7 +2253,11 @@
         "required": [
           "modifierId",
           "position",
-          "effect"
+          "minRoll",
+          "maxRoll",
+          "textRolls",
+          "effect",
+          "static"
         ],
         "title": "GroupedModifierByEffect"
       },
