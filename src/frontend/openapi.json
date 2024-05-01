@@ -1579,7 +1579,9 @@
     },
     "/api/api_v1/modifier/grouped_modifiers_by_effect/": {
       "get": {
-        "tags": ["modifiers"],
+        "tags": [
+          "modifiers"
+        ],
         "summary": "Get Grouped Modifier By Effect",
         "description": "Get all grouped modifiers by effect.\n\nReturns a list of all grouped modifiers by effect.",
         "operationId": "get_grouped_modifier_by_effect_api_api_v1_modifier_grouped_modifiers_by_effect__get",
@@ -1839,6 +1841,48 @@
           }
         }
       }
+    },
+    "/api/api_v1/plot/": {
+      "post": {
+        "tags": [
+          "plotting"
+        ],
+        "summary": "Get Plot Data",
+        "description": "Takes a query based on the 'PlotQuery' schema and retrieves data\nto be used for plotting in the format of the 'PlotData' schema.\n\nThe 'PlotQuery' schema allows for modifier restriction and item specifications.",
+        "operationId": "get_plot_data_api_api_v1_plot__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlotQuery"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlotData"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1866,13 +1910,23 @@
             "title": "Createdat"
           },
           "updatedAt": {
-            "type": "string",
-            "format": "date-time",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Updatedat"
           }
         },
         "type": "object",
-        "required": ["accountName", "createdAt", "updatedAt"],
+        "required": [
+          "accountName",
+          "createdAt"
+        ],
         "title": "Account"
       },
       "AccountCreate": {
@@ -1918,6 +1972,45 @@
         "type": "object",
         "required": ["accountName"],
         "title": "AccountUpdate"
+      },
+      "BaseSpecs": {
+        "properties": {
+          "baseType": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Basetype"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "subCategory": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subcategory"
+          }
+        },
+        "type": "object",
+        "title": "BaseSpecs"
       },
       "Currency": {
         "properties": {
@@ -2008,66 +2101,45 @@
             "title": "Position"
           },
           "minRoll": {
-            "anyOf": [
-              {
-                "items": {
-                  "anyOf": [
-                    {
-                      "type": "number"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
                 },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
             "title": "Minroll"
           },
           "maxRoll": {
-            "anyOf": [
-              {
-                "items": {
-                  "anyOf": [
-                    {
-                      "type": "number"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
                 },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
             "title": "Maxroll"
           },
           "textRolls": {
-            "anyOf": [
-              {
-                "items": {
-                  "anyOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
                 },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
             "title": "Textrolls"
           },
           "effect": {
@@ -2075,29 +2147,30 @@
             "title": "Effect"
           },
           "static": {
-            "anyOf": [
-              {
-                "items": {
-                  "anyOf": [
-                    {
-                      "type": "boolean"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+            "items": {
+              "anyOf": [
+                {
+                  "type": "boolean"
                 },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
             "title": "Static"
           }
         },
         "type": "object",
-        "required": ["modifierId", "position", "effect"],
+        "required": [
+          "modifierId",
+          "position",
+          "minRoll",
+          "maxRoll",
+          "textRolls",
+          "effect",
+          "static"
+        ],
         "title": "GroupedModifierByEffect"
       },
       "HTTPValidationError": {
@@ -2484,13 +2557,24 @@
             "title": "Createdat"
           },
           "updatedAt": {
-            "type": "string",
-            "format": "date-time",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Updatedat"
           }
         },
         "type": "object",
-        "required": ["baseType", "category", "createdAt", "updatedAt"],
+        "required": [
+          "baseType",
+          "category",
+          "createdAt"
+        ],
         "title": "ItemBaseType"
       },
       "ItemBaseTypeCreate": {
@@ -2837,8 +2921,15 @@
             "title": "Createdat"
           },
           "updatedAt": {
-            "type": "string",
-            "format": "date-time",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Updatedat"
           }
         },
@@ -2847,8 +2938,7 @@
           "itemId",
           "modifierId",
           "position",
-          "createdAt",
-          "updatedAt"
+          "createdAt"
         ],
         "title": "ItemModifier"
       },
@@ -2911,6 +3001,165 @@
         "type": "object",
         "required": ["itemId", "modifierId", "position"],
         "title": "ItemModifierUpdate"
+      },
+      "ItemSpecs": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "identified": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Identified"
+          },
+          "ilvl": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ilvl"
+          },
+          "rarity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rarity"
+          },
+          "corrupted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corrupted"
+          },
+          "delve": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delve"
+          },
+          "fractured": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fractured"
+          },
+          "synthesized": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synthesized"
+          },
+          "replica": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replica"
+          },
+          "influences": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Influences"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "searing": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Searing"
+          },
+          "tangled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tangled"
+          },
+          "isRelic": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isrelic"
+          },
+          "foilVariation": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Foilvariation"
+          }
+        },
+        "type": "object",
+        "title": "ItemSpecs"
       },
       "ItemUpdate": {
         "properties": {
@@ -3175,17 +3424,6 @@
       },
       "Modifier": {
         "properties": {
-          "modifierId": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Modifierid"
-          },
           "position": {
             "type": "integer",
             "title": "Position"
@@ -3347,6 +3585,10 @@
               }
             ],
             "title": "Veiled"
+          },
+          "modifierId": {
+            "type": "integer",
+            "title": "Modifierid"
           },
           "createdAt": {
             "type": "string",
@@ -3354,28 +3596,29 @@
             "title": "Createdat"
           },
           "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Updatedat"
-          }
-        },
-        "type": "object",
-        "required": ["position", "effect", "createdAt", "updatedAt"],
-        "title": "Modifier"
-      },
-      "ModifierCreate": {
-        "properties": {
-          "modifierId": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "string",
+                "format": "date-time"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Modifierid"
-          },
+            "title": "Updatedat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "position",
+          "effect",
+          "modifierId",
+          "createdAt"
+        ],
+        "title": "Modifier"
+      },
+      "ModifierCreate": {
+        "properties": {
           "position": {
             "type": "integer",
             "title": "Position"
@@ -3537,14 +3780,7 @@
               }
             ],
             "title": "Veiled"
-          }
-        },
-        "type": "object",
-        "required": ["position", "effect"],
-        "title": "ModifierCreate"
-      },
-      "ModifierUpdate": {
-        "properties": {
+          },
           "modifierId": {
             "anyOf": [
               {
@@ -3555,7 +3791,53 @@
               }
             ],
             "title": "Modifierid"
+          }
+        },
+        "type": "object",
+        "required": ["position", "effect"],
+        "title": "ModifierCreate"
+      },
+      "ModifierLimitations": {
+        "properties": {
+          "maxRoll": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maxroll"
           },
+          "minRoll": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minroll"
+          },
+          "textRoll": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Textroll"
+          }
+        },
+        "type": "object",
+        "title": "ModifierLimitations"
+      },
+      "ModifierUpdate": {
+        "properties": {
           "position": {
             "type": "integer",
             "title": "Position"
@@ -3723,6 +4005,79 @@
         "required": ["position", "effect"],
         "title": "ModifierUpdate"
       },
+      "PlotData": {
+        "properties": {
+          "valueInChaos": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Valueinchaos"
+          },
+          "timeStamp": {
+            "items": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "type": "array",
+            "title": "Timestamp"
+          },
+          "mostCommonCurrencyUsed": {
+            "type": "string",
+            "title": "Mostcommoncurrencyused"
+          },
+          "conversionValue": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Conversionvalue"
+          }
+        },
+        "type": "object",
+        "required": [
+          "valueInChaos",
+          "timeStamp",
+          "mostCommonCurrencyUsed",
+          "conversionValue"
+        ],
+        "title": "PlotData"
+      },
+      "PlotQuery": {
+        "properties": {
+          "league": {
+            "type": "string",
+            "title": "League"
+          },
+          "itemSpecifications": {
+            "$ref": "#/components/schemas/ItemSpecs"
+          },
+          "baseSpecifications": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BaseSpecs"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "wantedModifiers": {
+            "items": {
+              "$ref": "#/components/schemas/WantedModifier"
+            },
+            "type": "array",
+            "title": "Wantedmodifiers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "league",
+          "itemSpecifications",
+          "wantedModifiers"
+        ],
+        "title": "PlotQuery"
+      },
       "Stash": {
         "properties": {
           "accountName": {
@@ -3747,8 +4102,15 @@
             "title": "Createdat"
           },
           "updatedAt": {
-            "type": "string",
-            "format": "date-time",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Updatedat"
           }
         },
@@ -3758,8 +4120,7 @@
           "public",
           "league",
           "stashId",
-          "createdAt",
-          "updatedAt"
+          "createdAt"
         ],
         "title": "Stash"
       },
@@ -3833,6 +4194,34 @@
         "type": "object",
         "required": ["loc", "msg", "type"],
         "title": "ValidationError"
+      },
+      "WantedModifier": {
+        "properties": {
+          "modifierId": {
+            "type": "integer",
+            "title": "Modifierid"
+          },
+          "position": {
+            "type": "integer",
+            "title": "Position"
+          },
+          "modifierLimitations": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModifierLimitations"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "modifierId",
+          "position"
+        ],
+        "title": "WantedModifier"
       }
     }
   }

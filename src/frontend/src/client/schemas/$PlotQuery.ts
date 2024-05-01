@@ -2,33 +2,30 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export const $Account = {
+export const $PlotQuery = {
     properties: {
-        accountName: {
+        league: {
             type: 'string',
             isRequired: true,
         },
-        isBanned: {
+        itemSpecifications: {
+            type: 'ItemSpecs',
+            isRequired: true,
+        },
+        baseSpecifications: {
             type: 'any-of',
             contains: [{
-                type: 'boolean',
+                type: 'BaseSpecs',
             }, {
                 type: 'null',
             }],
         },
-        createdAt: {
-            type: 'string',
+        wantedModifiers: {
+            type: 'array',
+            contains: {
+                type: 'WantedModifier',
+            },
             isRequired: true,
-            format: 'date-time',
-        },
-        updatedAt: {
-            type: 'any-of',
-            contains: [{
-                type: 'string',
-                format: 'date-time',
-            }, {
-                type: 'null',
-            }],
         },
     },
 } as const;
