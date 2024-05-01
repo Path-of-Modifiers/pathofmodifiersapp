@@ -6,8 +6,10 @@ import { TanStackRouterVite } from "@tanstack/router-vite-plugin";
 export default defineConfig({
   server: {
     proxy: {
-      "/": {
-        target: "http://localhost/",
+      "/api": {
+        target: "http://localhost/api",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""), // It removes the /api from the request address, so it will truly be used only for differentiation
       },
     },
   },
