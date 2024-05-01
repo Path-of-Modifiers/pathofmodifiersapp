@@ -7,13 +7,13 @@ const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
   // console.log(useGraphInputStore.getState().itemSpecState);
 };
 
-const handleSubCategoryChange = (
-  event: React.ChangeEvent<HTMLSelectElement>
-) => {
-  const itemSubCategory = event.target.value;
-  useGraphInputStore.setState({ baseSpec: { subCategory: itemSubCategory } });
-  // console.log(useGraphInputStore.getState().itemSpecState);
-};
+// const handleSubCategoryChange = (
+//   event: React.ChangeEvent<HTMLSelectElement>
+// ) => {
+//   const itemSubCategory = event.target.value;
+//   useGraphInputStore.setState({ baseSpec: { subCategory: itemSubCategory } });
+//   // console.log(useGraphInputStore.getState().itemSpecState);
+// };
 
 export const CategoryInput = () => {
   return (
