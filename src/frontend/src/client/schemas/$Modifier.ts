@@ -4,14 +4,6 @@
 /* eslint-disable */
 export const $Modifier = {
     properties: {
-        modifierId: {
-            type: 'any-of',
-            contains: [{
-                type: 'number',
-            }, {
-                type: 'null',
-            }],
-        },
         position: {
             type: 'number',
             isRequired: true,
@@ -132,15 +124,23 @@ export const $Modifier = {
                 type: 'null',
             }],
         },
+        modifierId: {
+            type: 'number',
+            isRequired: true,
+        },
         createdAt: {
             type: 'string',
             isRequired: true,
             format: 'date-time',
         },
         updatedAt: {
-            type: 'string',
-            isRequired: true,
-            format: 'date-time',
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+                format: 'date-time',
+            }, {
+                type: 'null',
+            }],
         },
     },
 } as const;

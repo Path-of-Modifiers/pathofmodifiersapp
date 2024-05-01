@@ -2,29 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export const $ModifierUpdate = {
+export const $ItemSpecs = {
     properties: {
-        position: {
-            type: 'number',
-            isRequired: true,
-        },
-        minRoll: {
-            type: 'any-of',
-            contains: [{
-                type: 'number',
-            }, {
-                type: 'null',
-            }],
-        },
-        maxRoll: {
-            type: 'any-of',
-            contains: [{
-                type: 'number',
-            }, {
-                type: 'null',
-            }],
-        },
-        textRolls: {
+        name: {
             type: 'any-of',
             contains: [{
                 type: 'string',
@@ -32,7 +12,7 @@ export const $ModifierUpdate = {
                 type: 'null',
             }],
         },
-        static: {
+        identified: {
             type: 'any-of',
             contains: [{
                 type: 'boolean',
@@ -40,11 +20,15 @@ export const $ModifierUpdate = {
                 type: 'null',
             }],
         },
-        effect: {
-            type: 'string',
-            isRequired: true,
+        ilvl: {
+            type: 'any-of',
+            contains: [{
+                type: 'number',
+            }, {
+                type: 'null',
+            }],
         },
-        regex: {
+        rarity: {
             type: 'any-of',
             contains: [{
                 type: 'string',
@@ -52,15 +36,7 @@ export const $ModifierUpdate = {
                 type: 'null',
             }],
         },
-        implicit: {
-            type: 'any-of',
-            contains: [{
-                type: 'boolean',
-            }, {
-                type: 'null',
-            }],
-        },
-        explicit: {
+        corrupted: {
             type: 'any-of',
             contains: [{
                 type: 'boolean',
@@ -92,7 +68,7 @@ export const $ModifierUpdate = {
                 type: 'null',
             }],
         },
-        unique: {
+        replica: {
             type: 'any-of',
             contains: [{
                 type: 'boolean',
@@ -100,7 +76,15 @@ export const $ModifierUpdate = {
                 type: 'null',
             }],
         },
-        corrupted: {
+        influences: {
+            type: 'any-of',
+            contains: [{
+                type: 'Influences',
+            }, {
+                type: 'null',
+            }],
+        },
+        searing: {
             type: 'any-of',
             contains: [{
                 type: 'boolean',
@@ -108,7 +92,7 @@ export const $ModifierUpdate = {
                 type: 'null',
             }],
         },
-        enchanted: {
+        tangled: {
             type: 'any-of',
             contains: [{
                 type: 'boolean',
@@ -116,10 +100,18 @@ export const $ModifierUpdate = {
                 type: 'null',
             }],
         },
-        veiled: {
+        isRelic: {
             type: 'any-of',
             contains: [{
                 type: 'boolean',
+            }, {
+                type: 'null',
+            }],
+        },
+        foilVariation: {
+            type: 'any-of',
+            contains: [{
+                type: 'number',
             }, {
                 type: 'null',
             }],
