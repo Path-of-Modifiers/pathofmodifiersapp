@@ -2,30 +2,28 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export const $Account = {
+export const $BaseSpecs = {
     properties: {
-        accountName: {
-            type: 'string',
-            isRequired: true,
-        },
-        isBanned: {
+        baseType: {
             type: 'any-of',
             contains: [{
-                type: 'boolean',
+                type: 'string',
             }, {
                 type: 'null',
             }],
         },
-        createdAt: {
-            type: 'string',
-            isRequired: true,
-            format: 'date-time',
-        },
-        updatedAt: {
+        category: {
             type: 'any-of',
             contains: [{
                 type: 'string',
-                format: 'date-time',
+            }, {
+                type: 'null',
+            }],
+        },
+        subCategory: {
+            type: 'any-of',
+            contains: [{
+                type: 'string',
             }, {
                 type: 'null',
             }],

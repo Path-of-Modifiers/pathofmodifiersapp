@@ -6,6 +6,6 @@ export type Account = {
     accountName: string;
     isBanned?: (boolean | null);
     createdAt: string;
-    updatedAt: string;
+    updatedAt?: (string | null);
 };
 

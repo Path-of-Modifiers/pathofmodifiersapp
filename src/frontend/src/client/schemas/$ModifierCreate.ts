@@ -4,14 +4,6 @@
 /* eslint-disable */
 export const $ModifierCreate = {
     properties: {
-        modifierId: {
-            type: 'any-of',
-            contains: [{
-                type: 'number',
-            }, {
-                type: 'null',
-            }],
-        },
         position: {
             type: 'number',
             isRequired: true,
@@ -128,6 +120,14 @@ export const $ModifierCreate = {
             type: 'any-of',
             contains: [{
                 type: 'boolean',
+            }, {
+                type: 'null',
+            }],
+        },
+        modifierId: {
+            type: 'any-of',
+            contains: [{
+                type: 'number',
             }, {
                 type: 'null',
             }],
