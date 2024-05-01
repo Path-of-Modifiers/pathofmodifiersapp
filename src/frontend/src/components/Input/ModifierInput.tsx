@@ -18,10 +18,8 @@ import { TextRollInput } from "./ModifierInputComp/TextRollInput";
 import { MinRollInput } from "./ModifierInputComp/MinInput";
 import { MaxRollInput } from "./ModifierInputComp/MaxInput";
 import { isArrayNullOrContainsOnlyNull } from "../../hooks/utils";
-// import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
-import { modifiers } from "../../test_data/modifier_data";
 import { useGraphInputStore } from "../../store/GraphInputStore";
-// import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
+import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
 
 export interface ModifierInput extends GroupedModifierByEffect {
   isSelected?: boolean;
@@ -72,10 +70,7 @@ export const ModifierInput = () => {
 
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // API call to get modifiers
-  // const getModifiers = GetGroupedModifiersByEffect();
-
-  // const modifiers: ModifierInput[] | undefined = GetGroupedModifiersByEffect();
+  const modifiers: ModifierInput[] | undefined = GetGroupedModifiersByEffect();
 
   useEffect(() => {
     if (modifiers) {
@@ -107,7 +102,7 @@ export const ModifierInput = () => {
         },
       ]);
     }
-  }, [searchModifierText, selectedModifiers]);
+  }, [searchModifierText, selectedModifiers, modifiers]);
 
   const ref = useOutsideClick(() => {
     setIsExpanded(false);
