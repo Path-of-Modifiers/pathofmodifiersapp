@@ -1,5 +1,5 @@
 services:
-  
+
   db:
     image: postgres:16.1
     restart: always
@@ -18,6 +18,12 @@ services:
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
 
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
     restart: always
@@ -27,7 +33,8 @@ services:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - default
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     env_file:
       - .env
     environment:
@@ -37,7 +44,7 @@ services:
       # Allow explicit env var override for tests
       - SMTP_HOST=${SMTP_HOST}
     build:
-      context: ./backend
+      context: ./backend_api
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
     labels:
@@ -58,7 +65,22 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.middlewares=${STACK_NAME?Variable not set}-www-redirect
 
-
+  backend-data-retrieval:
+    image: backend_data_retrieval:1.0.0
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      # Use the public network created to be shared between Traefik and
+      # any other service that needs to be publicly available with HTTPS
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - default
+    env_file:
+      - .env
+    build:
+      context: ./backend/data_retrieval
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
 
   pgadmin:
     image: dpage/pgadmin4
@@ -124,7 +146,7 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect
 
 volumes:
-  pom-db-data: 
+  pom-db-data:
     name: "pom-db-data"
   pgadmin-data:
     name: "pgadmin-data"
