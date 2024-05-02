@@ -16,3 +16,14 @@ export const isArrayNullOrContainsOnlyNull = (
 export const capitalizeFirstLetter = (string: string): string => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
+
+
+export const convertToBoolean = (value: string) => {
+  if (value === "true") {
+    return true;
+  } else if (value === "false") {
+    return false;
+  } else {
+    return undefined;
+  }
+};

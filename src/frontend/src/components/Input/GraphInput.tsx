@@ -5,10 +5,12 @@ import { BaseInput } from "./BaseInput";
 import { IsItemInput } from "./ItemInputComp/IsItemProp";
 import { ItemNameInput } from "./ItemInputComp/ItemNameInput";
 import { ItemRarityInput } from "./ItemInputComp/ItemRarityInput";
+import { LeagueInput } from "./LeagueInput";
 
 export const GraphInput = () => {
   return (
     <Box p={5}>
+      <LeagueInput />
       <ItemNameInput />
       <ItemRarityInput />
       <IsItemInput itemSpecKey={"identified"} text={"Identified"} />
