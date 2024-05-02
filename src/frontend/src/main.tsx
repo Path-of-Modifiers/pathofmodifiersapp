@@ -6,17 +6,10 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import { ChakraProvider } from "@chakra-ui/react";
 
-import { OpenAPI } from "./client";
-
 import theme from "./theme";
 
 // Create a new router instance
 const router = createRouter({ routeTree });
-
-OpenAPI.BASE = import.meta.env.VITE_API_URL;
-OpenAPI.TOKEN = async () => {
-  return localStorage.getItem("access_token") || "";
-};
 
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {
