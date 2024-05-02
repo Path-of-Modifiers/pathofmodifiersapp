@@ -4,7 +4,9 @@ import { GetItemBaseTypeSubCategories } from "../../../hooks/getBaseTypeCategori
 import { ItemBaseTypeSubCategory } from "../../../client";
 import { capitalizeFirstLetter } from "../../../hooks/utils";
 
-const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+const handleSubCategoryChange = (
+  event: React.ChangeEvent<HTMLSelectElement>
+) => {
   const itemSubCategory = event.target.value;
   useGraphInputStore.setState({ baseSpec: { subCategory: itemSubCategory } });
 };
@@ -42,7 +44,7 @@ export const SubCategoryInput = () => {
         bgColor={"ui.input"}
         color={"ui.white"}
         defaultValue={"Unique"}
-        onChange={(e) => handleCategoryChange(e)}
+        onChange={(e) => handleSubCategoryChange(e)}
         width={150}
         focusBorderColor={"ui.white"}
         borderColor={"ui.grey"}

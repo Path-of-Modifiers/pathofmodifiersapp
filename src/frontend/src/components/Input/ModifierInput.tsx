@@ -111,8 +111,17 @@ export const ModifierInput = () => {
     console.log("Filtered modifiers: \n");
     console.log(filteredModifiers);
 
+    console.log("STORE BASESPEC SELECTED: \n");
+    console.log(useGraphInputStore.getState().baseSpec);
+
     console.log("STORE MODIFIERS SELECTED: \n");
     console.log(useGraphInputStore.getState().modifierSpecs);
+
+    console.log("STORE ITEMS SELECTED: \n");
+    console.log(useGraphInputStore.getState().itemSpecState);
+
+    console.log("STORE LEAGUE SELECTED: \n");
+    console.log(useGraphInputStore.getState().league);
   });
 
   // Define the function to handle input changes

@@ -7,7 +7,7 @@ import {
 } from "./StateInterface";
 
 export const useGraphInputStore = create<GraphInputState>((set) => ({
-  league: "Necropolis",
+  league: "",
   itemSpecState: {},
   baseSpec: { baseType: "", category: "", subCategory: "" },
   modifierSpecs: [],
