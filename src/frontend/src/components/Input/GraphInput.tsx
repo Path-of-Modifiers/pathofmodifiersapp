@@ -1,11 +1,19 @@
 import { Box } from "@chakra-ui/react";
 import { ModifierInput } from "./ModifierInput";
-import { ItemInput } from "./ItemInput";
+import { MiscItemInput } from "./MiscItemInput";
+import { BaseInput } from "./BaseInput";
+import { IsItemInput } from "./ItemInputComp/IsItemProp";
+import { ItemNameInput } from "./ItemInputComp/ItemNameInput";
+import { ItemRarityInput } from "./ItemInputComp/ItemRarityInput";
 
 export const GraphInput = () => {
   return (
     <Box p={5}>
-      <ItemInput />
+      <ItemNameInput />
+      <ItemRarityInput />
+      <IsItemInput itemSpecKey={"identified"} text={"Identified"} />
+      <BaseInput />
+      <MiscItemInput />
       <ModifierInput />
     </Box>
   );
