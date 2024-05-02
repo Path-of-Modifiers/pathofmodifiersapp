@@ -1,12 +1,10 @@
 import { Flex } from "@chakra-ui/layout";
-import { ItemNameInput } from "./ItemInputComp/ItemNameInput";
-import { ItemRarityInput } from "./ItemInputComp/ItemRarityInput";
 import { IsItemInput } from "./ItemInputComp/IsItemProp";
 import { MinMaxInput } from "./ItemInputComp/MinMaxProp";
 import { useState } from "react";
 import { Checkbox, CheckboxIcon, Text } from "@chakra-ui/react";
 
-export const ItemInput = () => {
+export const MiscItemInput = () => {
   const [influenceExpanded, setInfluenceExpanded] = useState(false);
 
   const handleExpanded = () => {
@@ -16,10 +14,6 @@ export const ItemInput = () => {
 
   return (
     <Flex direction={"column"}>
-      <ItemNameInput />
-      <ItemRarityInput />
-      <IsItemInput itemSpecKey={"identified"} text={"Identified"} />
-
       <Flex>
         <Checkbox onChange={handleExpanded}>
           <CheckboxIcon />
