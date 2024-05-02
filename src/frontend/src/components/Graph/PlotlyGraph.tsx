@@ -8,23 +8,18 @@ const plotQuery: PlotQuery = {
         identified: true
     },
     baseSpecifications: {
-        category: "jewel"
+        baseType: "Timeless Jewel"
     },
     wantedModifiers: [
         {
-            modifierId: 0,
+            modifierId: 60,
             position: 0
         }
     ]
-
-}
+};
 
 export const Plot = () => {
     const response = PostPlottingData(plotQuery)
-    // console.log("hey")
-    // console.log("hey")
-    // console.log("hey")
-    // console.log("hey")
     console.log("hey")
     console.log(plotQuery)
     console.log(response)
