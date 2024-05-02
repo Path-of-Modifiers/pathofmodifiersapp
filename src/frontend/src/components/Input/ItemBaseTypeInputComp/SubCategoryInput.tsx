@@ -5,14 +5,13 @@ import { ItemBaseTypeSubCategory } from "../../../client";
 import { capitalizeFirstLetter } from "../../../hooks/utils";
 
 const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  const itemCategory = event.target.value;
-  useGraphInputStore.setState({ baseSpec: { category: itemCategory } });
+  const itemSubCategory = event.target.value;
+  useGraphInputStore.setState({ baseSpec: { subCategory: itemSubCategory } });
 };
 
 export const SubCategoryInput = () => {
-
   const subCategories: ItemBaseTypeSubCategory[] | undefined =
-  GetItemBaseTypeSubCategories();
+    GetItemBaseTypeSubCategories();
 
   let subCategoryOptions: JSX.Element[] = [];
   if (subCategories !== undefined) {
