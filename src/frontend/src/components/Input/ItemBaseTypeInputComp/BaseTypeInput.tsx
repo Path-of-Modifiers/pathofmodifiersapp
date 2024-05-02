@@ -34,7 +34,7 @@ export const BaseTypeInput = () => {
       m={1}
     >
       <Text ml={1} width={150}>
-        Item Basetype
+        Item Base Type
       </Text>
       <Select
         bgColor={"ui.input"}
