@@ -9,41 +9,27 @@ import {
 } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 
-const handleMaxChange = (eventValue: string, itemSpecKey: string) => {
-  const eventValueInt = parseInt(eventValue);
-
-  switch (itemSpecKey) {
-    case "maxIlvl":
-      useGraphInputStore.setState({
-        itemSpecState: { maxIlvl: eventValueInt },
-      });
-      break;
-  }
-};
-
-const handleMinChange = (eventValue: string, itemSpecKey: string) => {
-  const eventValueInt = parseInt(eventValue);
-
-  switch (itemSpecKey) {
-    case "minIlvl":
-      useGraphInputStore.setState({
-        itemSpecState: { minIlvl: eventValueInt },
-      });
-      break;
-  }
-};
-
 interface MinMaxInputProps {
   itemMinSpecKey: string;
   itemMaxSpecKey: string;
   text: string;
 }
 
-export const MinMaxInput = ({
-  itemMinSpecKey,
-  itemMaxSpecKey,
-  text,
-}: MinMaxInputProps) => {
+export const MinMaxInput = ({ text }: MinMaxInputProps) => {
+  const { setItemSpecMinIlvl, setItemSpecMaxIlvl } = useGraphInputStore();
+
+  const handleMinChange = (eventValue: string) => {
+    const eventValueInt = parseInt(eventValue);
+
+    setItemSpecMinIlvl(eventValueInt);
+  };
+
+  const handleMaxChange = (eventValue: string) => {
+    const eventValueInt = parseInt(eventValue);
+
+    setItemSpecMaxIlvl(eventValueInt);
+  };
+
   return (
     <Flex
       color={"ui.white"}
@@ -62,7 +48,7 @@ export const MinMaxInput = ({
         bgColor={"ui.input"}
         focusBorderColor={"ui.white"}
         borderColor={"ui.grey"}
-        onChange={(e) => handleMinChange(e, itemMinSpecKey)}
+        onChange={(e) => handleMinChange(e)}
         width={150}
         mr={1}
         ml={1}
@@ -83,7 +69,7 @@ export const MinMaxInput = ({
         bgColor={"ui.input"}
         focusBorderColor={"ui.white"}
         borderColor={"ui.grey"}
-        onChange={(e) => handleMaxChange(e, itemMaxSpecKey)}
+        onChange={(e) => handleMaxChange(e)}
         width={150}
         mr={1}
         ml={1}
