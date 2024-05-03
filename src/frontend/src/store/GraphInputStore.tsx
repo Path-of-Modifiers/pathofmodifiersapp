@@ -10,7 +10,6 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
   itemSpecState: {},
   baseSpec: { baseType: "", category: "", subCategory: "" },
   modifierSpecs: [],
-  queryClient: undefined,
 
   setLeague: (league: string) => set(() => ({ league: league })),
 

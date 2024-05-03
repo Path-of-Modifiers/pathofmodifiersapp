@@ -1,16 +1,16 @@
 import { Flex } from "@chakra-ui/layout";
 import { useState } from "react";
 import { Checkbox, CheckboxIcon, Text } from "@chakra-ui/react";
-import { BaseTypeInput } from "./ItemBaseTypeInputComp/BaseTypeInput";
+import { BaseTypeInput } from "./BaseTypeInput";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   BaseType,
   ItemBaseTypeCategory,
   ItemBaseTypeSubCategory,
   ItemBaseTypesService,
-} from "../../client";
-import { CategoryInput } from "./ItemBaseTypeInputComp/CategoryInput";
-import { SubCategoryInput } from "./ItemBaseTypeInputComp/SubCategoryInput";
+} from "../../../client";
+import { CategoryInput } from "./CategoryInput";
+import { SubCategoryInput } from "./SubCategoryInput";
 import React from "react";
 
 export const BaseInput = () => {

@@ -1,6 +1,6 @@
 import { Flex } from "@chakra-ui/layout";
-import { IsItemInput } from "./ItemInputComp/IsItemProp";
-import { MinMaxInput } from "./ItemInputComp/MinMaxProp";
+import { IsItemInput } from "./IsItemProp";
+import { MinMaxInput } from "./MinMaxProp";
 import { useState } from "react";
 import { Checkbox, CheckboxIcon, Text } from "@chakra-ui/react";
 
@@ -8,7 +8,6 @@ export const MiscItemInput = () => {
   const [influenceExpanded, setInfluenceExpanded] = useState(false);
 
   const handleExpanded = () => {
-    console.log("EXPANDED");
     setInfluenceExpanded(!influenceExpanded);
   };
 
