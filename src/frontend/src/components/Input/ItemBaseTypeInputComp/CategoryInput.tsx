@@ -2,6 +2,7 @@ import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { capitalizeFirstLetter } from "../../../hooks/utils";
 import { ItemBaseTypeCategory } from "../../../client";
+import { useEffect } from "react";
 
 interface CategoryInputProps {
   categories: ItemBaseTypeCategory | ItemBaseTypeCategory[];
@@ -21,12 +22,16 @@ export const CategoryInput = ({ categories }: CategoryInputProps) => {
     setItemCategory(itemCategory);
   };
 
+  useEffect(() => {
+    setItemCategory(categories[0].category);
+  }, [categories, setItemCategory]);
+
   let categoryOptions: JSX.Element[] = [];
   if (categories !== undefined) {
     categoryOptions = categories.map((baseCategory) => {
       return (
         <option
-          value={capitalizeFirstLetter(baseCategory.category)}
+          value={baseCategory.category}
           key={"ItemCategoryInput" + "_option_" + baseCategory.category}
           style={{ color: "white", backgroundColor: "#2d3333" }}
         >

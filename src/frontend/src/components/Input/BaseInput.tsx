@@ -11,21 +11,22 @@ import {
 } from "../../client";
 import { CategoryInput } from "./ItemBaseTypeInputComp/CategoryInput";
 import { SubCategoryInput } from "./ItemBaseTypeInputComp/SubCategoryInput";
+import React from "react";
 
 export const BaseInput = () => {
   const [baseExpanded, setBaseExpanded] = useState(false);
-  const [baseTypes, setBaseTypes] = useState<BaseType | BaseType[]>([]);
+  const [baseTypes, setBaseTypes] = useState<BaseType[]>([]);
   const [itemBaseTypeCategory, setItemBaseTypeCategory] = useState<
-    ItemBaseTypeCategory | ItemBaseTypeCategory[]
+    ItemBaseTypeCategory[]
   >([]);
   const [itemBaseTypeSubCategory, setItemBaseTypeSubCategory] = useState<
-    ItemBaseTypeSubCategory | ItemBaseTypeSubCategory[]
+    ItemBaseTypeSubCategory[]
   >([]);
+  const rerender = React.useState(0)[1];
 
   const queryClient = useQueryClient();
 
   const handleExpanded = () => {
-    console.log("EXPANDED");
     setBaseExpanded(!baseExpanded);
   };
 
@@ -33,9 +34,13 @@ export const BaseInput = () => {
     await queryClient.prefetchQuery({
       queryKey: ["baseTypes"],
       queryFn: async () => {
-        setBaseTypes(
-          await ItemBaseTypesService.getBaseTypesApiApiV1ItemBaseTypeBaseTypesGet()
-        );
+        const data =
+          await ItemBaseTypesService.getBaseTypesApiApiV1ItemBaseTypeBaseTypesGet();
+        if (Array.isArray(data)) {
+          setBaseTypes(data);
+        } else {
+          setBaseTypes([data]);
+        }
       },
       staleTime: 10 * 1000, // only prefetch if older than 10 seconds
     });
@@ -43,9 +48,13 @@ export const BaseInput = () => {
     await queryClient.prefetchQuery({
       queryKey: ["itemBaseTypeCategory"],
       queryFn: async () => {
-        setItemBaseTypeCategory(
-          await ItemBaseTypesService.getUniqueCategoriesApiApiV1ItemBaseTypeUniqueCategoriesGet()
-        );
+        const data =
+          await ItemBaseTypesService.getUniqueCategoriesApiApiV1ItemBaseTypeUniqueCategoriesGet();
+        if (Array.isArray(data)) {
+          setItemBaseTypeCategory(data);
+        } else {
+          setItemBaseTypeCategory([data]);
+        }
       },
       staleTime: 10 * 1000, // only prefetch if older than 10 seconds
     });
@@ -53,34 +62,44 @@ export const BaseInput = () => {
     await queryClient.prefetchQuery({
       queryKey: ["itemBaseTypeSubCategory"],
       queryFn: async () => {
-        setItemBaseTypeSubCategory(
-          await ItemBaseTypesService.getUniqueSubCategoriesApiApiV1ItemBaseTypeUniqueSubCategoriesGet()
-        );
+        const data =
+          await ItemBaseTypesService.getUniqueSubCategoriesApiApiV1ItemBaseTypeUniqueSubCategoriesGet();
+        if (Array.isArray(data)) {
+          setItemBaseTypeSubCategory(data);
+        } else {
+          setItemBaseTypeSubCategory([data]);
+        }
       },
       staleTime: 10 * 1000, // only prefetch if older than 10 seconds
     });
-  };
 
+    setTimeout(() => {
+      rerender(0);
+    }, 1);
+  };
   return (
     <Flex direction={"column"}>
       <Flex>
         <Checkbox
           onChange={handleExpanded}
           onMouseEnter={async () => {
-            prefetchAllBaseTypeData()
+            prefetchAllBaseTypeData();
           }}
         >
           <CheckboxIcon />
         </Checkbox>
         <Text color={"ui.white"}>Base type</Text>
       </Flex>
-      {baseExpanded && (
-        <Flex flexWrap={"wrap"} width={650}>
-          <BaseTypeInput baseTypes={baseTypes} />
-          <CategoryInput categories={itemBaseTypeCategory} />
-          <SubCategoryInput subCategories={itemBaseTypeSubCategory} />
-        </Flex>
-      )}
+      {baseExpanded &&
+        baseTypes.length !== 0 &&
+        itemBaseTypeCategory.length !== 0 &&
+        itemBaseTypeSubCategory.length !== 0 && (
+          <Flex flexWrap={"wrap"} width={650}>
+            <BaseTypeInput baseTypes={baseTypes} />
+            <CategoryInput categories={itemBaseTypeCategory} />
+            <SubCategoryInput subCategories={itemBaseTypeSubCategory} />
+          </Flex>
+        )}
     </Flex>
   );
 };
