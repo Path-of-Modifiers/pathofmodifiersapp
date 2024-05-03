@@ -13,7 +13,6 @@ export const ItemRarityInput = () => {
       setItemRarity(undefined);
     } else {
       setItemRarity(itemRarityInput);
-      // console.log(useGraphInputStore.getState().itemSpecState);
     }
   };
 

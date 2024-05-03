@@ -1,4 +1,4 @@
-import { ModifierInput } from "../components/Input/ModifierInput";
+import { ModifierInput } from "../components/Input/ModifierInputComp/ModifierInput";
 
 export const isArrayNullOrContainsOnlyNull = (
   arr:
