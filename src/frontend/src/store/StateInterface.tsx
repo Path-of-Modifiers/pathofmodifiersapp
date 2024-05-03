@@ -1,3 +1,9 @@
+import {
+  BaseType,
+  ItemBaseTypeCategory,
+  ItemBaseTypeSubCategory,
+} from "../client";
+
 export interface InfluenceSpecState {
   elder?: boolean | null;
   shaper?: boolean | null;
@@ -52,6 +58,7 @@ export interface GraphInputState {
   setItemSpecIdentified: (identified: boolean) => void;
   setItemSpecMinIlvl: (minIlvl: number) => void;
   setItemSpecMaxIlvl: (maxIlvl: number) => void;
+  setItemRarity: (rarity: string | undefined) => void;
   setItemSpecCorrupted: (corrupted: boolean) => void;
   setItemSpecDelve: (delve: boolean) => void;
   setItemSpecFractured: (fractured: boolean) => void;
@@ -67,8 +74,23 @@ export interface GraphInputState {
   setItemSpecTangled: (tangled: boolean) => void;
   setItemSpecIsRelic: (isRelic: boolean) => void;
   setItemSpecFoilVariation: (foilVariation: number) => void;
-  setBaseSpec: (baseSpec: BaseSpecState) => void;
+  setBaseType: (baseType: string) => void;
+  setItemCategory: (category: string) => void;
+  setItemSubCategory: (subCategory: string | undefined) => void;
   addModifierSpec: (modifierSpec: ModifierSpecState) => void;
   removeModifierSpec: (modifierId: number) => void;
   updateModifierSpec: (modifierSpec: ModifierSpecState) => void;
+}
+
+export interface GraphDataState {
+  baseTypes: BaseType[];
+  itemBaseTypeCategories: ItemBaseTypeCategory[];
+  itemBaseTypeSubCategories: ItemBaseTypeSubCategory[];
+  setBaseTypes: (baseTypes: BaseType[]) => void;
+  setItemBaseTypeCategories: (
+    itemBaseTypeCategories: ItemBaseTypeCategory[]
+  ) => void;
+  setItemBaseTypeSubCategories: (
+    itemBaseTypeSubCategories: ItemBaseTypeSubCategory[]
+  ) => void;
 }
