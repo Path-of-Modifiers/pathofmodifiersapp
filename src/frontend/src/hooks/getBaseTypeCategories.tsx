@@ -55,21 +55,25 @@ export const GetItemBaseTypeSubCategories = () => {
   const [itemBaseTypeSubCategory, setItemBaseTypeSubCategory] = useState<
     ItemBaseTypeSubCategory | ItemBaseTypeSubCategory[]
   >([]);
-  try {
-    useQuery({
-      queryKey: ["itemBaseTypeSubCategory"],
-      queryFn: async () => {
-        setItemBaseTypeSubCategory(
-          await ItemBaseTypesService.getUniqueSubCategoriesApiApiV1ItemBaseTypeUniqueSubCategoriesGet()
-        );
-      },
-    });
+  const { isLoading, isSuccess } = useQuery({
+    queryKey: ["itemBaseTypeSubCategory"],
+
+    queryFn: async () => {
+      const data =
+        await ItemBaseTypesService.getUniqueSubCategoriesApiApiV1ItemBaseTypeUniqueSubCategoriesGet();
+      setItemBaseTypeSubCategory(data);
+    },
+  });
+  if (isLoading) {
+    return [] as ItemBaseTypeSubCategory[];
+  }
+  if (isSuccess) {
     if (Array.isArray(itemBaseTypeSubCategory)) {
       return itemBaseTypeSubCategory; // If modifiers is already an array, return it directly
     } else {
       return [itemBaseTypeSubCategory]; // If modifiers is not an array, wrap it in an array
     }
-  } catch (error) {
-    console.log(error);
+  } else {
+    return [] as ItemBaseTypeSubCategory[];
   }
 };

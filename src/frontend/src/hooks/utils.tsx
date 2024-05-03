@@ -17,7 +17,6 @@ export const capitalizeFirstLetter = (string: string): string => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
-
 export const convertToBoolean = (value: string) => {
   if (value === "true") {
     return true;
@@ -26,4 +25,8 @@ export const convertToBoolean = (value: string) => {
   } else {
     return undefined;
   }
+};
+
+export const delay = (time: number) => {
+  return new Promise((resolve) => setTimeout(resolve, time));
 };

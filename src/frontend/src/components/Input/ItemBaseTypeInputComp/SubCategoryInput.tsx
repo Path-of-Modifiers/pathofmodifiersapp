@@ -1,30 +1,36 @@
 import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-import { GetItemBaseTypeSubCategories } from "../../../hooks/getBaseTypeCategories";
-import { ItemBaseTypeSubCategory } from "../../../client";
 import { capitalizeFirstLetter } from "../../../hooks/utils";
+import { ItemBaseTypeSubCategory } from "../../../client";
 
-const handleSubCategoryChange = (
-  event: React.ChangeEvent<HTMLSelectElement>
-) => {
-  const itemSubCategory = event.target.value;
-  useGraphInputStore.setState({ baseSpec: { subCategory: itemSubCategory } });
-};
+interface SubCategoryInputProps {
+  subCategories: ItemBaseTypeSubCategory | ItemBaseTypeSubCategory[];
+}
 
-export const SubCategoryInput = () => {
-  const subCategories: ItemBaseTypeSubCategory[] | undefined =
-    GetItemBaseTypeSubCategories();
+export const SubCategoryInput = ({ subCategories }: SubCategoryInputProps) => {
+  if (!Array.isArray(subCategories)) {
+    subCategories = [subCategories];
+  }
 
-  let subCategoryOptions: JSX.Element[] = [];
+  const { setItemSubCategory } = useGraphInputStore();
+
+  const handleSubCategoryChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const itemSubCategory = event.target.value;
+    setItemSubCategory(itemSubCategory);
+  };
+
+  let categoryOptions: JSX.Element[] = [];
   if (subCategories !== undefined) {
-    subCategoryOptions = subCategories.map((subCategoryOption) => {
+    categoryOptions = subCategories.map((baseCategory) => {
       return (
         <option
-          value={capitalizeFirstLetter(subCategoryOption.subCategory)}
-          key={"ItemCategoryInput" + "_option_" + subCategoryOption.subCategory}
+          value={capitalizeFirstLetter(baseCategory.subCategory)}
+          key={"ItemSubCategoryInput" + "_option_" + baseCategory.subCategory}
           style={{ color: "white", backgroundColor: "#2d3333" }}
         >
-          {capitalizeFirstLetter(subCategoryOption.subCategory)}
+          {capitalizeFirstLetter(baseCategory.subCategory)}
         </option>
       );
     });
@@ -38,7 +44,7 @@ export const SubCategoryInput = () => {
       m={1}
     >
       <Text ml={1} width={150}>
-        Item Sub Category
+        Item Category
       </Text>
       <Select
         bgColor={"ui.input"}
@@ -50,9 +56,9 @@ export const SubCategoryInput = () => {
         borderColor={"ui.grey"}
         mr={1}
         ml={1}
-        key={"ItemRarityInput"}
+        key={"itemSubCategoryInput"}
       >
-        {subCategoryOptions}
+        {categoryOptions}
       </Select>
     </Flex>
   );

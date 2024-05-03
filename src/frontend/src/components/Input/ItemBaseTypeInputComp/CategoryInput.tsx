@@ -1,17 +1,25 @@
 import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-import { GetItemBaseTypeCategories } from "../../../hooks/getBaseTypeCategories";
-import { ItemBaseTypeCategory } from "../../../client";
 import { capitalizeFirstLetter } from "../../../hooks/utils";
+import { ItemBaseTypeCategory } from "../../../client";
 
-const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  const itemCategory = event.target.value;
-  useGraphInputStore.setState({ baseSpec: { category: itemCategory } });
-};
+interface CategoryInputProps {
+  categories: ItemBaseTypeCategory | ItemBaseTypeCategory[];
+}
 
-export const CategoryInput = () => {
-  const categories: ItemBaseTypeCategory[] | undefined =
-    GetItemBaseTypeCategories();
+export const CategoryInput = ({ categories }: CategoryInputProps) => {
+  if (!Array.isArray(categories)) {
+    categories = [categories];
+  }
+
+  const { setItemCategory } = useGraphInputStore();
+
+  const handleCategoryChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const itemCategory = event.target.value;
+    setItemCategory(itemCategory);
+  };
 
   let categoryOptions: JSX.Element[] = [];
   if (categories !== undefined) {
@@ -48,7 +56,7 @@ export const CategoryInput = () => {
         borderColor={"ui.grey"}
         mr={1}
         ml={1}
-        key={"ItemRarityInput"}
+        key={"itemCategoryInput"}
       >
         {categoryOptions}
       </Select>
