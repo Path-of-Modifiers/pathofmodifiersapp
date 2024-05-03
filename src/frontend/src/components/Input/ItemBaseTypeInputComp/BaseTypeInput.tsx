@@ -1,15 +1,24 @@
 import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-import { GetBaseTypes } from "../../../hooks/getBaseTypeCategories";
 import { BaseType } from "../../../client";
 
-const handleBaseTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  const baseType = event.target.value;
-  useGraphInputStore.setState({ baseSpec: { baseType: baseType } });
-};
+interface BaseTypeInputProps {
+  baseTypes: BaseType | BaseType[];
+}
 
-export const BaseTypeInput = () => {
-  const baseTypes: BaseType[] | undefined = GetBaseTypes();
+export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
+  if (!Array.isArray(baseTypes)) {
+    baseTypes = [baseTypes];
+  }
+
+  const { setBaseType } = useGraphInputStore();
+
+  const handleBaseTypeChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const baseType = event.target.value;
+    setBaseType(baseType);
+  };
 
   let baseTypeOptions: JSX.Element[] = [];
   if (baseTypes !== undefined) {
@@ -46,7 +55,7 @@ export const BaseTypeInput = () => {
         borderColor={"ui.grey"}
         mr={1}
         ml={1}
-        key={"ItemRarityInput"}
+        key={"baseTypeInput"}
       >
         {baseTypeOptions}
       </Select>

@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import {
-  BaseSpecState,
   GraphInputState,
   ItemSpecState,
   ModifierSpecState,
@@ -11,6 +10,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
   itemSpecState: {},
   baseSpec: { baseType: "", category: "", subCategory: "" },
   modifierSpecs: [],
+  queryClient: undefined,
 
   setLeague: (league: string) => set(() => ({ league: league })),
 
@@ -150,10 +150,28 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       itemSpecState: { ...state.itemSpecState, maxIlvl: maxIlvl },
     })),
 
+  setItemRarity: (rarity: string | undefined) =>
+    set((state) => ({
+      itemSpecState: { ...state.itemSpecState, rarity: rarity },
+    })),
+
   setItemSpec: (itemSpec: ItemSpecState) =>
     set(() => ({ itemSpecState: itemSpec })),
 
-  setBaseSpec: (baseSpec: BaseSpecState) => set(() => ({ baseSpec: baseSpec })),
+  setBaseType: (baseType: string) =>
+    set((state) => ({
+      baseSpec: { ...state.baseSpec, baseType: baseType },
+    })),
+
+  setItemCategory: (category: string) =>
+    set((state) => ({
+      baseSpec: { ...state.baseSpec, category: category },
+    })),
+
+  setItemSubCategory: (subCategory: string | undefined) =>
+    set((state) => ({
+      baseSpec: { ...state.baseSpec, subCategory: subCategory },
+    })),
 
   addModifierSpec: (modifierSpec: ModifierSpecState) =>
     set((state) => ({ modifierSpecs: [...state.modifierSpecs, modifierSpec] })),

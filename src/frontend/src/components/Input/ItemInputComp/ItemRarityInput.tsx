@@ -2,22 +2,24 @@ import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { useEffect } from "react";
 
-const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  const itemRarityInput = event.target.value;
-  if (itemRarityInput === "Any") {
-    useGraphInputStore.setState({ itemSpecState: { rarity: undefined } });
-  } else {
-    useGraphInputStore.setState({ itemSpecState: { rarity: itemRarityInput } });
-  }
-  // console.log(useGraphInputStore.getState().itemSpecState);
-};
-
 export const ItemRarityInput = () => {
   const defaultRarity = undefined;
 
+  const { setItemRarity } = useGraphInputStore();
+
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const itemRarityInput = event.target.value;
+    if (itemRarityInput === "Any") {
+      setItemRarity(undefined);
+    } else {
+      setItemRarity(itemRarityInput);
+      // console.log(useGraphInputStore.getState().itemSpecState);
+    }
+  };
+
   useEffect(() => {
-    useGraphInputStore.setState({ itemSpecState: { rarity: defaultRarity } });
-  }, [defaultRarity]);
+    setItemRarity(defaultRarity);
+  }, [defaultRarity, setItemRarity]);
 
   return (
     <Flex
