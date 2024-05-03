@@ -8,18 +8,18 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import AddIconCheckbox from "../Icon/AddIconCheckbox";
+import AddIconCheckbox from "../../Icon/AddIconCheckbox";
 
 import { useEffect, useState } from "react";
-import { GroupedModifierByEffect } from "../../client";
-import { useOutsideClick } from "../../hooks/useOutsideClick";
+import { GroupedModifierByEffect } from "../../../client";
+import { useOutsideClick } from "../../../hooks/useOutsideClick";
 import React from "react";
-import { TextRollInput } from "./ModifierInputComp/TextRollInput";
-import { MinRollInput } from "./ModifierInputComp/MinInput";
-import { MaxRollInput } from "./ModifierInputComp/MaxInput";
-import { isArrayNullOrContainsOnlyNull } from "../../hooks/utils";
-import { useGraphInputStore } from "../../store/GraphInputStore";
-import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
+import { TextRollInput } from "./TextRollInput";
+import { MinRollInput } from "./MinInput";
+import { MaxRollInput } from "./MaxInput";
+import { isArrayNullOrContainsOnlyNull } from "../../../hooks/utils";
+import { useGraphInputStore } from "../../../store/GraphInputStore";
+import { GetGroupedModifiersByEffect } from "../../../hooks/getGroupedModifiers";
 
 export interface ModifierInput extends GroupedModifierByEffect {
   isSelected?: boolean;
@@ -106,28 +106,10 @@ export const ModifierInput = () => {
 
   const ref = useOutsideClick(() => {
     setIsExpanded(false);
-    console.log("Selected modifiers: \n");
-    console.log(selectedModifiers);
-    console.log("Filtered modifiers: \n");
-    console.log(filteredModifiers);
-
-    console.log("STORE BASESPEC SELECTED: \n");
-    console.log(useGraphInputStore.getState().baseSpec);
-
-    console.log("STORE MODIFIERS SELECTED: \n");
-    console.log(useGraphInputStore.getState().modifierSpecs);
-
-    console.log("STORE ITEMS SELECTED: \n");
-    console.log(useGraphInputStore.getState().itemSpecState);
-
-    console.log("STORE LEAGUE SELECTED: \n");
-    console.log(useGraphInputStore.getState().league);
   });
 
   // Define the function to handle input changes
   const handleInputChange = (value: string) => {
-    // Regular expression to allow numbers and scientific notation
-    // const scientificPattern = /^-?\d*\.?\d*(e-?\d+)?$/i;
     setSearchModifierText(value);
   };
 
@@ -182,9 +164,6 @@ export const ModifierInput = () => {
       });
     }
 
-    console.log("STORE MODIFIERS SELECTED: \n");
-    console.log(useGraphInputStore.getState().modifierSpecs);
-
     setSearchModifierText("");
     toggleExpand();
   };
@@ -206,9 +185,6 @@ export const ModifierInput = () => {
     for (let i = 0; i < modifierSelected.position.length; i++) {
       removeModifierSpec(modifierSelected.modifierId[i]);
     }
-
-    console.log("STORE MODIFIERS REMOVE: \n");
-    console.log(useGraphInputStore.getState().modifierSpecs);
   };
 
   const handleCheckboxChange = (
@@ -241,9 +217,6 @@ export const ModifierInput = () => {
         });
       }
     }
-
-    console.log("STORE MODIFIERS SELECTED: \n");
-    console.log(useGraphInputStore.getState().modifierSpecs);
   };
 
   const toggleExpand = () => {
@@ -297,9 +270,6 @@ export const ModifierInput = () => {
         },
       });
     }
-
-    console.log("STORE MODIFIERS SELECTED UPDATED: \n");
-    console.log(useGraphInputStore.getState().modifierSpecs);
   };
 
   // Render selected modifiers list

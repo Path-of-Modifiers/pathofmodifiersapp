@@ -9,7 +9,7 @@ import {
   ModifierInput,
   RenderInputMaxMinRollProps,
   UpdateModifierInputFunction,
-} from "../ModifierInput";
+} from "./ModifierInput";
 
 const handleInputMaxRollChange = (
   value: string,
@@ -25,7 +25,7 @@ const handleInputMaxRollChange = (
   updateModifierInputFunction(
     modifier.modifierId[position],
     undefined,
-    modifier.maxRollInputs.map((input) => (input)),
+    modifier.maxRollInputs.map((input) => input),
     undefined
   );
 };

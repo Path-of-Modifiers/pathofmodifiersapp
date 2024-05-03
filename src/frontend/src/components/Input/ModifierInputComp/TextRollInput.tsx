@@ -3,7 +3,7 @@ import {
   ModifierInput,
   RenderInputProps,
   UpdateModifierInputFunction,
-} from "../ModifierInput";
+} from "./ModifierInput";
 
 const handleInputTextRollChange = (
   value: number,
@@ -11,9 +11,6 @@ const handleInputTextRollChange = (
   modifier: ModifierInput,
   updateModifierInputFunction: UpdateModifierInputFunction
 ) => {
-  // Regular expression to allow numbers and scientific notation
-  // const scientificPattern = /^-?\d*\.?\d*(e-?\d+)?$/i;
-
   if (modifier.textRollInputs) {
     modifier.textRollInputs[position] = value;
   } else {
