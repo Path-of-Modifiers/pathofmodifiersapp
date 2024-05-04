@@ -1,6 +1,5 @@
 import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-import { useEffect } from "react";
 
 export const ItemRarityInput = () => {
   const defaultRarity = undefined;
@@ -15,10 +14,6 @@ export const ItemRarityInput = () => {
       setItemRarity(itemRarityInput);
     }
   };
-
-  useEffect(() => {
-    setItemRarity(defaultRarity);
-  }, [defaultRarity, setItemRarity]);
 
   return (
     <Flex
