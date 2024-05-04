@@ -5,13 +5,6 @@ import {
   UpdateModifierInputFunction,
 } from "./ModifierInput";
 
-const handleInputTextRollChange = (
-  value: number,
-  position: number,
-  modifier: ModifierInput,
-  updateModifierInputFunction: UpdateModifierInputFunction
-) => {};
-
 const handleChange = (
   event: React.ChangeEvent<HTMLSelectElement>,
   inputPosition: number,
@@ -30,14 +23,6 @@ const handleChange = (
     undefined,
     undefined,
     modifierSelected.textRollInputs
-  );
-
-  // Call function to handle the change
-  handleInputTextRollChange(
-    selectedValue,
-    inputPosition,
-    modifierSelected,
-    updateModifierInputFunction
   );
 };
 
