@@ -56,6 +56,7 @@ export interface GraphInputState {
   modifierSpecs: ModifierSpecState[];
   setLeague: (league: string) => void;
   setItemSpecIdentified: (identified: boolean) => void;
+  setItemName: (name: string) => void;
   setItemSpecMinIlvl: (minIlvl: number) => void;
   setItemSpecMaxIlvl: (maxIlvl: number) => void;
   setItemRarity: (rarity: string | undefined) => void;
