@@ -157,12 +157,12 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
   setItemSpec: (itemSpec: ItemSpecState) =>
     set(() => ({ itemSpecState: itemSpec })),
 
-  setBaseType: (baseType: string) =>
+  setBaseType: (baseType: string | undefined) =>
     set((state) => ({
       baseSpec: { ...state.baseSpec, baseType: baseType },
     })),
 
-  setItemCategory: (category: string) =>
+  setItemCategory: (category: string | undefined) =>
     set((state) => ({
       baseSpec: { ...state.baseSpec, category: category },
     })),

@@ -74,8 +74,8 @@ export interface GraphInputState {
   setItemSpecTangled: (tangled: boolean) => void;
   setItemSpecIsRelic: (isRelic: boolean) => void;
   setItemSpecFoilVariation: (foilVariation: number) => void;
-  setBaseType: (baseType: string) => void;
-  setItemCategory: (category: string) => void;
+  setBaseType: (baseType: string | undefined) => void;
+  setItemCategory: (category: string | undefined) => void;
   setItemSubCategory: (subCategory: string | undefined) => void;
   addModifierSpec: (modifierSpec: ModifierSpecState) => void;
   removeModifierSpec: (modifierId: number) => void;

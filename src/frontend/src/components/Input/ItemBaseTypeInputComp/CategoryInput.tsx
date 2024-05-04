@@ -18,6 +18,9 @@ export const CategoryInput = ({ categories }: CategoryInputProps) => {
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const itemCategory = event.target.value;
+    if (itemCategory === "Any") {
+      setItemCategory(undefined);
+    }
     setItemCategory(itemCategory);
   };
 
