@@ -5,10 +5,10 @@ import { useState } from "react";
 import { Checkbox, CheckboxIcon, Text } from "@chakra-ui/react";
 
 export const MiscItemInput = () => {
-  const [misExpanded, setMiscExpanded] = useState(false);
+  const [miscExpanded, setMiscExpanded] = useState(false);
 
   const handleExpanded = () => {
-    setMiscExpanded(!misExpanded);
+    setMiscExpanded(!miscExpanded);
   };
 
   return (
@@ -19,7 +19,7 @@ export const MiscItemInput = () => {
         </Checkbox>
         <Text color={"ui.white"}>Miscellaneous</Text>
       </Flex>
-      {misExpanded && (
+      {miscExpanded && (
         <Flex flexWrap={"wrap"} width={650}>
           <IsItemInput itemSpecKey={"corrupted"} text={"Corrupted"} />
           <MinMaxInput
