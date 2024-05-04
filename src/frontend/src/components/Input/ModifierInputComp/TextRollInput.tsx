@@ -10,19 +10,7 @@ const handleInputTextRollChange = (
   position: number,
   modifier: ModifierInput,
   updateModifierInputFunction: UpdateModifierInputFunction
-) => {
-  if (modifier.textRollInputs) {
-    modifier.textRollInputs[position] = value;
-  } else {
-    modifier.textRollInputs = [value];
-  }
-  updateModifierInputFunction(
-    modifier.modifierId[position],
-    undefined,
-    undefined,
-    modifier.textRollInputs
-  );
-};
+) => {};
 
 const handleChange = (
   event: React.ChangeEvent<HTMLSelectElement>,
@@ -31,6 +19,19 @@ const handleChange = (
   updateModifierInputFunction: UpdateModifierInputFunction
 ) => {
   const selectedValue = parseInt(event.target.value);
+
+  if (modifierSelected.textRollInputs) {
+    modifierSelected.textRollInputs[inputPosition] = selectedValue;
+  } else {
+    modifierSelected.textRollInputs = [selectedValue];
+  }
+  updateModifierInputFunction(
+    modifierSelected.modifierId[inputPosition],
+    undefined,
+    undefined,
+    modifierSelected.textRollInputs
+  );
+
   // Call function to handle the change
   handleInputTextRollChange(
     selectedValue,
