@@ -36,7 +36,6 @@ export interface RenderInputProps {
 
 export interface RenderInputMaxMinRollProps extends RenderInputProps {
   input: string | number | undefined | null;
-  inputPosition: number;
 }
 
 export type UpdateModifierInputFunction = (
