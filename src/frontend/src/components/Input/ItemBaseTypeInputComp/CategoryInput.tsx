@@ -2,7 +2,6 @@ import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { capitalizeFirstLetter } from "../../../hooks/utils";
 import { ItemBaseTypeCategory } from "../../../client";
-import { useEffect } from "react";
 
 interface CategoryInputProps {
   categories: ItemBaseTypeCategory | ItemBaseTypeCategory[];
@@ -21,10 +20,6 @@ export const CategoryInput = ({ categories }: CategoryInputProps) => {
     const itemCategory = event.target.value;
     setItemCategory(itemCategory);
   };
-
-  useEffect(() => {
-    setItemCategory(categories[0].category);
-  }, [categories, setItemCategory]);
 
   let categoryOptions: JSX.Element[] = [];
   if (categories !== undefined) {
@@ -63,6 +58,13 @@ export const CategoryInput = ({ categories }: CategoryInputProps) => {
         ml={1}
         key={"itemCategoryInput"}
       >
+        <option
+          value={undefined}
+          key={"ItemCategoryInput" + "_option_" + "any"}
+          style={{ color: "white", backgroundColor: "#2d3333" }}
+        >
+          Any
+        </option>
         {categoryOptions}
       </Select>
     </Flex>

@@ -2,7 +2,6 @@ import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { capitalizeFirstLetter } from "../../../hooks/utils";
 import { ItemBaseTypeSubCategory } from "../../../client";
-import { useEffect } from "react";
 
 interface SubCategoryInputProps {
   subCategories: ItemBaseTypeSubCategory | ItemBaseTypeSubCategory[];
@@ -21,10 +20,6 @@ export const SubCategoryInput = ({ subCategories }: SubCategoryInputProps) => {
     const itemSubCategory = event.target.value;
     setItemSubCategory(itemSubCategory);
   };
-
-  useEffect(() => {
-    setItemSubCategory(subCategories[0].subCategory);
-  }, [subCategories, setItemSubCategory]);
 
   let categoryOptions: JSX.Element[] = [];
   if (subCategories !== undefined) {
@@ -49,7 +44,7 @@ export const SubCategoryInput = ({ subCategories }: SubCategoryInputProps) => {
       m={1}
     >
       <Text ml={1} width={150}>
-        Item Category
+        Item Sub Category
       </Text>
       <Select
         bgColor={"ui.input"}
@@ -63,6 +58,13 @@ export const SubCategoryInput = ({ subCategories }: SubCategoryInputProps) => {
         ml={1}
         key={"itemSubCategoryInput"}
       >
+        <option
+          value={undefined}
+          key={"ItemSubCategoryInput" + "_option_" + "any"}
+          style={{ color: "white", backgroundColor: "#2d3333" }}
+        >
+          Any
+        </option>
         {categoryOptions}
       </Select>
     </Flex>
