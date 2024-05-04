@@ -1,12 +1,14 @@
 import { Input, Flex, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 
-const handleNameChange = (value: string) => {
-  const itemNameInput = value;
-  useGraphInputStore.setState({ itemSpecState: { name: itemNameInput } });
-};
-
 export const ItemNameInput = () => {
+  const { setItemName } = useGraphInputStore();
+
+  const handleNameChange = (value: string) => {
+    const itemNameInput = value;
+    setItemName(itemNameInput);
+  };
+
   return (
     <Flex
       color={"ui.white"}

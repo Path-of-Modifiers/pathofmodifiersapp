@@ -18,6 +18,9 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       itemSpecState: { ...state.itemSpecState, identified: identified },
     })),
 
+  setItemName: (name: string) =>
+    set((state) => ({ itemSpecState: { ...state.itemSpecState, name: name } })),
+
   setItemSpecElderInfluence: (elder: boolean) =>
     set((state) => ({
       itemSpecState: {
