@@ -7,11 +7,11 @@ import {
   BaseType,
   ItemBaseTypeCategory,
   ItemBaseTypeSubCategory,
-  ItemBaseTypesService,
 } from "../../../client";
 import { CategoryInput } from "./CategoryInput";
 import { SubCategoryInput } from "./SubCategoryInput";
 import React from "react";
+import { prefetchAllBaseTypeData } from "../../../hooks/getBaseTypeCategories";
 
 export const BaseInput = () => {
   const [baseExpanded, setBaseExpanded] = useState(false);
@@ -30,60 +30,24 @@ export const BaseInput = () => {
     setBaseExpanded(!baseExpanded);
   };
 
-  const prefetchAllBaseTypeData = async () => {
-    await queryClient.prefetchQuery({
-      queryKey: ["baseTypes"],
-      queryFn: async () => {
-        const data =
-          await ItemBaseTypesService.getBaseTypesApiApiV1ItemBaseTypeBaseTypesGet();
-        if (Array.isArray(data)) {
-          setBaseTypes(data);
-        } else {
-          setBaseTypes([data]);
-        }
-      },
-      staleTime: 10 * 1000, // only prefetch if older than 10 seconds
-    });
-
-    await queryClient.prefetchQuery({
-      queryKey: ["itemBaseTypeCategory"],
-      queryFn: async () => {
-        const data =
-          await ItemBaseTypesService.getUniqueCategoriesApiApiV1ItemBaseTypeUniqueCategoriesGet();
-        if (Array.isArray(data)) {
-          setItemBaseTypeCategory(data);
-        } else {
-          setItemBaseTypeCategory([data]);
-        }
-      },
-      staleTime: 10 * 1000, // only prefetch if older than 10 seconds
-    });
-
-    await queryClient.prefetchQuery({
-      queryKey: ["itemBaseTypeSubCategory"],
-      queryFn: async () => {
-        const data =
-          await ItemBaseTypesService.getUniqueSubCategoriesApiApiV1ItemBaseTypeUniqueSubCategoriesGet();
-        if (Array.isArray(data)) {
-          setItemBaseTypeSubCategory(data);
-        } else {
-          setItemBaseTypeSubCategory([data]);
-        }
-      },
-      staleTime: 10 * 1000, // only prefetch if older than 10 seconds
-    });
-
-    setTimeout(() => {
-      rerender(0);
-    }, 1);
-  };
   return (
     <Flex direction={"column"}>
       <Flex>
         <Checkbox
           onChange={handleExpanded}
           onMouseEnter={async () => {
-            prefetchAllBaseTypeData();
+            prefetchAllBaseTypeData(queryClient).then(
+              (data) => {
+                setBaseTypes(data.baseTypes);
+                setItemBaseTypeCategory(data.itemBaseTypeCategory);
+                setItemBaseTypeSubCategory(data.itemBaseTypeSubCategory);
+                rerender((prev) => prev + 1);
+                console.log("prefetched base types");
+              },
+              (error) => {
+                console.error(error);
+              }
+            );
           }}
         >
           <CheckboxIcon />
