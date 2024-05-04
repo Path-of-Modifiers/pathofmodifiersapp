@@ -18,9 +18,9 @@ const handleInputMaxRollChange = (
   updateModifierInputFunction: UpdateModifierInputFunction
 ) => {
   if (modifier.maxRollInputs) {
-    modifier.maxRollInputs[position] = parseInt(value);
+    modifier.maxRollInputs[position] = parseFloat(value);
   } else {
-    modifier.maxRollInputs = [parseInt(value)];
+    modifier.maxRollInputs = [parseFloat(value)];
   }
   updateModifierInputFunction(
     modifier.modifierId[position],
@@ -48,7 +48,6 @@ const handleChange = (
 
 export const MaxRollInput = ({
   modifierSelected,
-  input,
   inputPosition,
   updateModifierInputFunction,
 }: RenderInputMaxMinRollProps) => {
@@ -58,11 +57,11 @@ export const MaxRollInput = ({
 
   return (
     <NumberInput
-      value={input ? input : undefined}
       step={1}
       key={modifierSelected.modifierId[0] + inputPosition}
       bgColor={"ui.input"}
       focusBorderColor={"ui.white"}
+      precision={2}
       borderColor={"ui.grey"}
       onChange={(e) =>
         handleChange(

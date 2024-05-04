@@ -18,9 +18,9 @@ const handleInputMinRollChange = (
   updateModifierInputFunction: UpdateModifierInputFunction
 ) => {
   if (modifier.minRollInputs) {
-    modifier.minRollInputs[position] = parseInt(value);
+    modifier.minRollInputs[position] = parseFloat(value);
   } else {
-    modifier.minRollInputs = [parseInt(value)];
+    modifier.minRollInputs = [parseFloat(value)];
   }
   updateModifierInputFunction(
     modifier.modifierId[position],
@@ -48,7 +48,6 @@ const handleChange = (
 
 export const MinRollInput = ({
   modifierSelected,
-  input,
   inputPosition,
   updateModifierInputFunction,
 }: RenderInputMaxMinRollProps) => {
@@ -58,7 +57,6 @@ export const MinRollInput = ({
 
   return (
     <NumberInput
-      value={input ? input : undefined}
       step={1}
       key={modifierSelected.modifierId[0] + inputPosition}
       bgColor={"ui.input"}
