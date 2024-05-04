@@ -179,10 +179,10 @@ export const ModifierInput = () => {
       setSelectedModifiers((prevModifiers) =>
         prevModifiers.filter((modifier) => modifier.effect !== effectToRemove)
       );
-    }
 
-    for (let i = 0; i < modifierSelected.position.length; i++) {
-      removeModifierSpec(modifierSelected.modifierId[i]);
+      for (let i = 0; i < modifierSelected.position.length; i++) {
+        removeModifierSpec(modifierSelected.modifierId[i]);
+      }
     }
   };
 
