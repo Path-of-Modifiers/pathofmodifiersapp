@@ -12,6 +12,8 @@ export const CategoryInput = ({ categories }: CategoryInputProps) => {
     categories = [categories];
   }
 
+  const defaultValue = undefined;
+
   const { setItemCategory } = useGraphInputStore();
 
   const handleCategoryChange = (
@@ -62,7 +64,7 @@ export const CategoryInput = ({ categories }: CategoryInputProps) => {
         key={"itemCategoryInput"}
       >
         <option
-          value={undefined}
+          value={defaultValue}
           key={"ItemCategoryInput" + "_option_" + "any"}
           style={{ color: "white", backgroundColor: "#2d3333" }}
         >
