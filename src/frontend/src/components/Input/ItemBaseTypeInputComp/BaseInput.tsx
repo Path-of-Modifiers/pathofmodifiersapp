@@ -42,7 +42,6 @@ export const BaseInput = () => {
                 setItemBaseTypeCategory(data.itemBaseTypeCategory);
                 setItemBaseTypeSubCategory(data.itemBaseTypeSubCategory);
                 rerender((prev) => prev + 1);
-                console.log("prefetched base types");
               },
               (error) => {
                 console.error(error);
