@@ -187,15 +187,15 @@ export const ModifierInput = () => {
   };
 
   const handleCheckboxChange = (
-    id: number,
+    modifierId: number,
     modifierSelected: ModifierInput,
     modifierIsSelected: boolean | undefined
   ) => {
-    setSelectedModifiers((modifiers) =>
-      modifiers.map((modifier) =>
-        modifier.modifierId[0] === id
-          ? { ...modifier, isSelected: !modifier.isSelected }
-          : modifier
+    setSelectedModifiers((selectedModifiers) =>
+      selectedModifiers.map((selectedModifier) =>
+        selectedModifier.modifierId[0] === modifierId
+          ? { ...selectedModifier, isSelected: !selectedModifier.isSelected }
+          : selectedModifier
       )
     );
 
@@ -206,7 +206,7 @@ export const ModifierInput = () => {
     } else {
       for (let i = 0; i < modifierSelected.position.length; i++) {
         addModifierSpec({
-          modifierId: id,
+          modifierId: modifierId,
           position: modifierSelected.position[i],
           limitations: {
             minRoll: modifierSelected.minRollInputs?.[i] ?? null,
