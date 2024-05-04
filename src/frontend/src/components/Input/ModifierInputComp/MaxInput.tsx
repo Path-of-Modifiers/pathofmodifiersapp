@@ -45,7 +45,6 @@ export const MaxRollInput = ({
       key={modifierSelected.modifierId[0] + inputPosition}
       bgColor={"ui.input"}
       focusBorderColor={"ui.white"}
-      precision={2}
       borderColor={"ui.grey"}
       onChange={(e) =>
         handleChange(
