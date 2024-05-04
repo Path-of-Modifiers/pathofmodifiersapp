@@ -1,79 +1,57 @@
-import { useState } from "react";
+import { QueryClient } from "@tanstack/react-query";
 import {
   BaseType,
   ItemBaseTypeCategory,
   ItemBaseTypeSubCategory,
   ItemBaseTypesService,
 } from "../client";
-import { useQuery } from "@tanstack/react-query";
 
-export const GetBaseTypes = () => {
-  const [baseTypes, setBaseTypes] = useState<BaseType | BaseType[]>([]);
-  try {
-    useQuery({
-      queryKey: ["baseTypes"],
-      queryFn: async () => {
-        setBaseTypes(
-          await ItemBaseTypesService.getBaseTypesApiApiV1ItemBaseTypeBaseTypesGet()
-        );
-      },
-    });
-    if (Array.isArray(baseTypes)) {
-      return baseTypes; // If modifiers is already an array, return it directly
-    } else {
-      return [baseTypes]; // If modifiers is not an array, wrap it in an array
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
+export const prefetchAllBaseTypeData = async (queryClient: QueryClient) => {
+  let baseTypes = [] as BaseType[];
+  let itemBaseTypeCategory = [] as ItemBaseTypeCategory[];
+  let itemBaseTypeSubCategory = [] as ItemBaseTypeSubCategory[];
 
-export const GetItemBaseTypeCategories = () => {
-  const [itemBaseTypeCategory, setItemBaseTypeCategory] = useState<
-    ItemBaseTypeCategory | ItemBaseTypeCategory[]
-  >([]);
-  try {
-    useQuery({
-      queryKey: ["itemBaseTypeCategory"],
-      queryFn: async () => {
-        setItemBaseTypeCategory(
-          await ItemBaseTypesService.getUniqueCategoriesApiApiV1ItemBaseTypeUniqueCategoriesGet()
-        );
-      },
-    });
-    if (Array.isArray(itemBaseTypeCategory)) {
-      return itemBaseTypeCategory; // If modifiers is already an array, return it directly
-    } else {
-      return [itemBaseTypeCategory]; // If modifiers is not an array, wrap it in an array
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
+  await queryClient.prefetchQuery({
+    queryKey: ["baseTypes"],
+    queryFn: async () => {
+      const data =
+        await ItemBaseTypesService.getBaseTypesApiApiV1ItemBaseTypeBaseTypesGet();
+      if (Array.isArray(data)) {
+        baseTypes = data;
+      } else {
+        baseTypes = [data];
+      }
+    },
+    staleTime: 10 * 1000, // only prefetch if older than 10 seconds
+  });
 
-export const GetItemBaseTypeSubCategories = () => {
-  const [itemBaseTypeSubCategory, setItemBaseTypeSubCategory] = useState<
-    ItemBaseTypeSubCategory | ItemBaseTypeSubCategory[]
-  >([]);
-  const { isLoading, isSuccess } = useQuery({
+  await queryClient.prefetchQuery({
+    queryKey: ["itemBaseTypeCategory"],
+    queryFn: async () => {
+      const data =
+        await ItemBaseTypesService.getUniqueCategoriesApiApiV1ItemBaseTypeUniqueCategoriesGet();
+      if (Array.isArray(data)) {
+        itemBaseTypeCategory = data;
+      } else {
+        itemBaseTypeCategory = [data];
+      }
+    },
+    staleTime: 10 * 1000, // only prefetch if older than 10 seconds
+  });
+
+  await queryClient.prefetchQuery({
     queryKey: ["itemBaseTypeSubCategory"],
-
     queryFn: async () => {
       const data =
         await ItemBaseTypesService.getUniqueSubCategoriesApiApiV1ItemBaseTypeUniqueSubCategoriesGet();
-      setItemBaseTypeSubCategory(data);
+      if (Array.isArray(data)) {
+        itemBaseTypeSubCategory = data;
+      } else {
+        itemBaseTypeSubCategory = [data];
+      }
     },
+    staleTime: 10 * 1000, // only prefetch if older than 10 seconds
   });
-  if (isLoading) {
-    return [] as ItemBaseTypeSubCategory[];
-  }
-  if (isSuccess) {
-    if (Array.isArray(itemBaseTypeSubCategory)) {
-      return itemBaseTypeSubCategory; // If modifiers is already an array, return it directly
-    } else {
-      return [itemBaseTypeSubCategory]; // If modifiers is not an array, wrap it in an array
-    }
-  } else {
-    return [] as ItemBaseTypeSubCategory[];
-  }
+
+  return { baseTypes, itemBaseTypeCategory, itemBaseTypeSubCategory };
 };
