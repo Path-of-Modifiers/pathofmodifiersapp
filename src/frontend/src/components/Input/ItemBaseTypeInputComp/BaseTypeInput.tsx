@@ -1,7 +1,6 @@
 import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { BaseType } from "../../../client";
-import { useEffect } from "react";
 
 interface BaseTypeInputProps {
   baseTypes: BaseType | BaseType[];
@@ -20,10 +19,6 @@ export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
     const baseType = event.target.value;
     setBaseType(baseType);
   };
-
-  useEffect(() => {
-    setBaseType(baseTypes[0].baseType);
-  }, [baseTypes, setBaseType]);
 
   let baseTypeOptions: JSX.Element[] = [];
   if (baseTypes !== undefined) {
@@ -62,6 +57,13 @@ export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
         ml={1}
         key={"baseTypeInput"}
       >
+        <option
+          value={undefined}
+          key={"baseType" + "_option_" + "any"}
+          style={{ color: "white", backgroundColor: "#2d3333" }}
+        >
+          Any
+        </option>
         {baseTypeOptions}
       </Select>
     </Flex>
