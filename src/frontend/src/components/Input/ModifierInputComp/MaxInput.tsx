@@ -11,38 +11,22 @@ import {
   UpdateModifierInputFunction,
 } from "./ModifierInput";
 
-const handleInputMaxRollChange = (
-  value: string,
-  position: number,
-  modifier: ModifierInput,
-  updateModifierInputFunction: UpdateModifierInputFunction
-) => {
-  if (modifier.maxRollInputs) {
-    modifier.maxRollInputs[position] = parseFloat(value);
-  } else {
-    modifier.maxRollInputs = [parseFloat(value)];
-  }
-  updateModifierInputFunction(
-    modifier.modifierId[position],
-    undefined,
-    modifier.maxRollInputs.map((input) => input),
-    undefined
-  );
-};
-
 const handleChange = (
   eventValue: string,
   inputPosition: number,
   modifierSelected: ModifierInput,
   updateModifierInputFunction: UpdateModifierInputFunction
 ) => {
-  const selectedValue = eventValue;
-  // Call function to handle the change
-  handleInputMaxRollChange(
-    selectedValue,
-    inputPosition,
-    modifierSelected,
-    updateModifierInputFunction
+  if (modifierSelected.maxRollInputs) {
+    modifierSelected.maxRollInputs[inputPosition] = parseFloat(eventValue);
+  } else {
+    modifierSelected.maxRollInputs = [parseFloat(eventValue)];
+  }
+  updateModifierInputFunction(
+    modifierSelected.modifierId[inputPosition],
+    undefined,
+    modifierSelected.maxRollInputs.map((input) => input),
+    undefined
   );
 };
 
