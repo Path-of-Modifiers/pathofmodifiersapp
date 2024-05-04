@@ -311,7 +311,7 @@ export const ModifierInput = () => {
                     modifierSelected.minRoll &&
                     modifierSelected.minRoll[modifierInputIndex] !== null
                   ) {
-                    const selectedModifierInput =
+                    const selectedModifierMinRollInput =
                       modifierSelected?.minRollInputs
                         ? modifierSelected.minRollInputs[modifierInputIndex]
                         : undefined;
@@ -319,7 +319,7 @@ export const ModifierInput = () => {
                     elements.push(
                       <MinRollInput
                         modifierSelected={modifierSelected}
-                        input={selectedModifierInput}
+                        input={selectedModifierMinRollInput}
                         inputPosition={modifierInputIndex}
                         updateModifierInputFunction={() =>
                           updateModifierInput(
@@ -338,7 +338,7 @@ export const ModifierInput = () => {
                     modifierSelected.maxRoll &&
                     modifierSelected.maxRoll[modifierInputIndex] !== null
                   ) {
-                    const selectedModifierInput =
+                    const selectedModifierMaxRollInput =
                       modifierSelected?.maxRollInputs
                         ? modifierSelected.maxRollInputs[modifierInputIndex]
                         : undefined;
@@ -346,7 +346,7 @@ export const ModifierInput = () => {
                     elements.push(
                       <MaxRollInput
                         modifierSelected={modifierSelected}
-                        input={selectedModifierInput}
+                        input={selectedModifierMaxRollInput}
                         inputPosition={modifierInputIndex}
                         updateModifierInputFunction={() =>
                           updateModifierInput(
