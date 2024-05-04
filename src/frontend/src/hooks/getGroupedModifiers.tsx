@@ -13,6 +13,7 @@ export const GetGroupedModifiersByEffect = () => {
         setModifiers(
           await ModifiersService.getGroupedModifierByEffectApiApiV1ModifierGroupedModifiersByEffectGet()
         );
+        return 1;
       },
     });
     if (Array.isArray(modifiers)) {
