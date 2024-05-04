@@ -105,6 +105,8 @@ export const ModifierInput = () => {
   }, [searchModifierText, selectedModifiers, modifiers]);
 
   const ref = useOutsideClick(() => {
+    console.log("outside click");
+    console.log(useGraphInputStore.getState().modifierSpecs);
     setIsExpanded(false);
   });
 
