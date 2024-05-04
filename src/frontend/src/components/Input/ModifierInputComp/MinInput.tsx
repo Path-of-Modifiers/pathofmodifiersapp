@@ -11,38 +11,23 @@ import {
   UpdateModifierInputFunction,
 } from "./ModifierInput";
 
-const handleInputMinRollChange = (
-  value: string,
-  position: number,
-  modifier: ModifierInput,
-  updateModifierInputFunction: UpdateModifierInputFunction
-) => {
-  if (modifier.minRollInputs) {
-    modifier.minRollInputs[position] = parseFloat(value);
-  } else {
-    modifier.minRollInputs = [parseFloat(value)];
-  }
-  updateModifierInputFunction(
-    modifier.modifierId[position],
-    modifier.minRollInputs.map((input) => (input ? input : null)),
-    undefined,
-    undefined
-  );
-};
-
 const handleChange = (
   eventValue: string,
   inputPosition: number,
   modifierSelected: ModifierInput,
   updateModifierInputFunction: UpdateModifierInputFunction
 ) => {
-  const selectedValue = eventValue;
-  // Call function to handle the change
-  handleInputMinRollChange(
-    selectedValue,
-    inputPosition,
-    modifierSelected,
-    updateModifierInputFunction
+  if (modifierSelected.minRollInputs) {
+    modifierSelected.minRollInputs[inputPosition] = parseFloat(eventValue);
+  } else {
+    modifierSelected.minRollInputs = [parseFloat(eventValue)];
+  }
+
+  updateModifierInputFunction(
+    modifierSelected.modifierId[inputPosition],
+    modifierSelected.minRollInputs.map((input) => (input ? input : null)),
+    undefined,
+    undefined
   );
 };
 
