@@ -297,7 +297,7 @@ export const ModifierInput = () => {
           </Text>
 
           <Flex justifyContent="flex-end">
-            {/* Check if modifierSelected static exists and is not all null */}
+            {/* Check if modifierSelected static exists and is all null */}
             {isArrayNullOrContainsOnlyNull(modifierSelected.static) &&
               (() => {
                 const elements = [];
