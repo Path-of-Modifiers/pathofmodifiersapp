@@ -168,11 +168,11 @@ export const ModifierInput = () => {
   };
 
   const handleRemoveModifier = (
-    id: number,
+    modifierId: number,
     modifierSelected: ModifierInput
   ) => {
     const effectToRemove = selectedModifiers.find(
-      (modifier) => modifier.modifierId[0] === id
+      (modifier) => modifier.modifierId[0] === modifierId
     )?.effect;
 
     if (effectToRemove) {
