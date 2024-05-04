@@ -21,6 +21,7 @@ export const prefetchAllBaseTypeData = async (queryClient: QueryClient) => {
       } else {
         baseTypes = [data];
       }
+      return 1;
     },
     staleTime: 10 * 1000, // only prefetch if older than 10 seconds
   });
@@ -35,6 +36,7 @@ export const prefetchAllBaseTypeData = async (queryClient: QueryClient) => {
       } else {
         itemBaseTypeCategory = [data];
       }
+      return 1;
     },
     staleTime: 10 * 1000, // only prefetch if older than 10 seconds
   });
@@ -49,6 +51,7 @@ export const prefetchAllBaseTypeData = async (queryClient: QueryClient) => {
       } else {
         itemBaseTypeSubCategory = [data];
       }
+      return 1;
     },
     staleTime: 10 * 1000, // only prefetch if older than 10 seconds
   });
