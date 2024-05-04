@@ -10,7 +10,6 @@ import {
 } from "../../../client";
 import { CategoryInput } from "./CategoryInput";
 import { SubCategoryInput } from "./SubCategoryInput";
-import React from "react";
 import { prefetchAllBaseTypeData } from "../../../hooks/getBaseTypeCategories";
 
 export const BaseInput = () => {
@@ -22,7 +21,6 @@ export const BaseInput = () => {
   const [itemBaseTypeSubCategory, setItemBaseTypeSubCategory] = useState<
     ItemBaseTypeSubCategory[]
   >([]);
-  const rerender = React.useState(0)[1];
 
   const queryClient = useQueryClient();
 
@@ -46,7 +44,6 @@ export const BaseInput = () => {
                   setBaseTypes(data.baseTypes);
                   setItemBaseTypeCategory(data.itemBaseTypeCategory);
                   setItemBaseTypeSubCategory(data.itemBaseTypeSubCategory);
-                  rerender((prev) => prev + 1);
                 },
                 (error) => {
                   console.error(error);
