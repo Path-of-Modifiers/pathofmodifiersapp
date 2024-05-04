@@ -7,9 +7,9 @@ import {
 } from "../client";
 
 export const prefetchAllBaseTypeData = async (queryClient: QueryClient) => {
-  let baseTypes = [] as BaseType[];
-  let itemBaseTypeCategory = [] as ItemBaseTypeCategory[];
-  let itemBaseTypeSubCategory = [] as ItemBaseTypeSubCategory[];
+  let baseTypes: BaseType[] = [];
+  let itemBaseTypeCategory: ItemBaseTypeCategory[] = [];
+  let itemBaseTypeSubCategory: ItemBaseTypeSubCategory[] = [];
 
   await queryClient.prefetchQuery({
     queryKey: ["baseTypes"],
