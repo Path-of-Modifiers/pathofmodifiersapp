@@ -18,6 +18,9 @@ export const SubCategoryInput = ({ subCategories }: SubCategoryInputProps) => {
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const itemSubCategory = event.target.value;
+    if (itemSubCategory === "Any") {
+      setItemSubCategory(undefined);
+    }
     setItemSubCategory(itemSubCategory);
   };
 
