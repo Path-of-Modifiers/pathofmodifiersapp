@@ -36,17 +36,23 @@ export const BaseInput = () => {
         <Checkbox
           onChange={handleExpanded}
           onMouseEnter={async () => {
-            prefetchAllBaseTypeData(queryClient).then(
-              (data) => {
-                setBaseTypes(data.baseTypes);
-                setItemBaseTypeCategory(data.itemBaseTypeCategory);
-                setItemBaseTypeSubCategory(data.itemBaseTypeSubCategory);
-                rerender((prev) => prev + 1);
-              },
-              (error) => {
-                console.error(error);
-              }
-            );
+            if (
+              baseTypes.length === 0 &&
+              itemBaseTypeCategory.length === 0 &&
+              itemBaseTypeSubCategory.length === 0
+            ) {
+              prefetchAllBaseTypeData(queryClient).then(
+                (data) => {
+                  setBaseTypes(data.baseTypes);
+                  setItemBaseTypeCategory(data.itemBaseTypeCategory);
+                  setItemBaseTypeSubCategory(data.itemBaseTypeSubCategory);
+                  rerender((prev) => prev + 1);
+                },
+                (error) => {
+                  console.error(error);
+                }
+              );
+            }
           }}
         >
           <CheckboxIcon />
