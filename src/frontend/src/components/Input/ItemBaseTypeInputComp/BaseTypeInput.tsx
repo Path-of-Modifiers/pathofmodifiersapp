@@ -11,6 +11,8 @@ export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
     baseTypes = [baseTypes];
   }
 
+  const defaultValue = undefined;
+
   const { setBaseType } = useGraphInputStore();
 
   const handleBaseTypeChange = (
@@ -61,7 +63,7 @@ export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
         key={"baseTypeInput"}
       >
         <option
-          value={undefined}
+          value={defaultValue}
           key={"baseType" + "_option_" + "any"}
           style={{ color: "white", backgroundColor: "#2d3333" }}
         >
