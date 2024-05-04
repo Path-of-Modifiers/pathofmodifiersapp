@@ -1,15 +1,6 @@
 import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-
-const convertToBoolean = (value: string) => {
-  if (value === "true") {
-    return true;
-  } else if (value === "false") {
-    return false;
-  } else {
-    return undefined;
-  }
-};
+import { convertToBoolean } from "../../../hooks/utils";
 
 interface IsItemInputProps {
   itemSpecKey: string;
