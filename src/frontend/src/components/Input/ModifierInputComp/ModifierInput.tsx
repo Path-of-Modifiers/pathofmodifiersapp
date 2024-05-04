@@ -108,7 +108,7 @@ export const ModifierInput = () => {
   });
 
   // Define the function to handle input changes
-  const handleInputChange = (value: string) => {
+  const handleSearchModifierInputChange = (value: string) => {
     setSearchModifierText(value);
   };
 
@@ -427,7 +427,7 @@ export const ModifierInput = () => {
       <Box bgColor={"ui.input"} color={"ui.white"} ref={ref} mr={8} ml={8}>
         <Input
           value={searchModifierText}
-          onChange={(e) => handleInputChange(e.target.value)}
+          onChange={(e) => handleSearchModifierInputChange(e.target.value)}
           placeholder="+ Add modifier"
           _placeholder={{ color: "ui.white" }}
           textAlign={"center"}
