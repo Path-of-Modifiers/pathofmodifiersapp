@@ -17,6 +17,9 @@ export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const baseType = event.target.value;
+    if (baseType === "Any") {
+      setBaseType(undefined);
+    }
     setBaseType(baseType);
   };
 
