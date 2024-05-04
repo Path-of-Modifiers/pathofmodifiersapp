@@ -12,6 +12,8 @@ export const SubCategoryInput = ({ subCategories }: SubCategoryInputProps) => {
     subCategories = [subCategories];
   }
 
+  const defaultValue = undefined;
+
   const { setItemSubCategory } = useGraphInputStore();
 
   const handleSubCategoryChange = (
@@ -62,7 +64,7 @@ export const SubCategoryInput = ({ subCategories }: SubCategoryInputProps) => {
         key={"itemSubCategoryInput"}
       >
         <option
-          value={undefined}
+          value={defaultValue}
           key={"ItemSubCategoryInput" + "_option_" + "any"}
           style={{ color: "white", backgroundColor: "#2d3333" }}
         >

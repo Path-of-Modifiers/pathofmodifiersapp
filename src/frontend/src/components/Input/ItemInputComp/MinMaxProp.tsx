@@ -18,6 +18,8 @@ interface MinMaxInputProps {
 export const MinMaxInput = ({ text }: MinMaxInputProps) => {
   const { setItemSpecMinIlvl, setItemSpecMaxIlvl } = useGraphInputStore();
 
+  const defaultValue = undefined;
+
   const handleMinChange = (eventValue: string) => {
     const eventValueInt = parseInt(eventValue);
 
@@ -42,7 +44,7 @@ export const MinMaxInput = ({ text }: MinMaxInputProps) => {
         {text}
       </Text>
       <NumberInput
-        value={undefined}
+        value={defaultValue}
         step={1}
         key={"itemSpecKey" + "min_number_input"}
         bgColor={"ui.input"}
@@ -63,7 +65,7 @@ export const MinMaxInput = ({ text }: MinMaxInputProps) => {
       </NumberInput>
 
       <NumberInput
-        value={undefined}
+        value={defaultValue}
         step={1}
         key={"MinMaxInput" + "max_number_item_input"}
         bgColor={"ui.input"}

@@ -8,6 +8,7 @@ interface IsItemInputProps {
 }
 
 export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
+  const defaultValue = undefined;
   const {
     setItemSpecIdentified,
     setItemSpecCorrupted,
@@ -100,7 +101,7 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
       >
         {
           <option
-            value={undefined}
+            value={defaultValue}
             key={text + "_IsItems_" + "undefined"}
             style={{ color: "white", backgroundColor: "#2d3333" }}
           >
