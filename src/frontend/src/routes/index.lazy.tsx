@@ -1,4 +1,5 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import SideBar from "../components/Common/Sidebar";
 import Header from "../components/Common/Header";
 import QueryButtons from "../components/Common/QueryButtons";
@@ -20,15 +21,16 @@ const queryClient = new QueryClient({
 });
 
 function Index() {
+  const [showingFilter, setShowingFilter] = useState(true);
   return (
     <Flex direction="column" minHeight="100vh">
       <Header />
-      <QueryButtons />
+      <QueryButtons showingFilter={showingFilter} setShowingFilter={setShowingFilter}/>
       <Flex flex="1" direction="row">
         <SideBar />
         <Flex flex="1" direction="row" p="1rem" bg="ui.main">
           <QueryClientProvider client={queryClient}>
-            <GraphInput />
+            <GraphInput showingFilter={showingFilter}/>
           </QueryClientProvider>
         </Flex>
       </Flex>
