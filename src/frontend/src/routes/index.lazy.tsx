@@ -1,7 +1,7 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import SideBar from "../components/Common/Sidebar";
 import Header from "../components/Common/Header";
-import { Flex, Box } from "@chakra-ui/layout";
+import { Flex, Box, Wrap } from "@chakra-ui/layout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GraphInput } from "../components/Input/GraphInput";
 // import { RenderPlot } from "../components/Graph/PlotlyGraph";
@@ -26,14 +26,16 @@ function Index() {
     <Flex direction="column" minHeight="100vh">
       <Header />
       <Flex flex="1" direction="row">
-        <SideBar />
+        {/* <SideBar /> */}
         <Flex flex="1" direction="row" p="1rem" bg="ui.main">
           <QueryClientProvider client={queryClient}>
             <GraphInput />
-            {/* <MyChart/> */}
           </QueryClientProvider>
         </Flex>
       </Flex>
+      <Box w="100%" h="1000">
+        <MyChart/>
+      </Box>
     </Flex>
   );
 }
