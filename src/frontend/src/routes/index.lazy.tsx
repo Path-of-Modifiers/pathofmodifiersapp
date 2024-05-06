@@ -4,7 +4,7 @@ import SideBar from "../components/Common/Sidebar";
 import Header from "../components/Common/Header";
 import QueryButtons from "../components/Common/QueryButtons";
 import { Flex } from "@chakra-ui/layout";
-import { Query, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GraphInput } from "../components/Input/GraphInput";
 
 export const Route = createLazyFileRoute("/")({
