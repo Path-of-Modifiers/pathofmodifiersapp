@@ -3,29 +3,7 @@ import {
   ModifierInput,
   RenderInputProps,
   UpdateModifierInputFunction,
-} from "../ModifierInput";
-
-const handleInputTextRollChange = (
-  value: number,
-  position: number,
-  modifier: ModifierInput,
-  updateModifierInputFunction: UpdateModifierInputFunction
-) => {
-  // Regular expression to allow numbers and scientific notation
-  // const scientificPattern = /^-?\d*\.?\d*(e-?\d+)?$/i;
-
-  if (modifier.textRollInputs) {
-    modifier.textRollInputs[position] = value;
-  } else {
-    modifier.textRollInputs = [value];
-  }
-  updateModifierInputFunction(
-    modifier.modifierId[position],
-    undefined,
-    undefined,
-    modifier.textRollInputs
-  );
-};
+} from "./ModifierInput";
 
 const handleChange = (
   event: React.ChangeEvent<HTMLSelectElement>,
@@ -34,12 +12,17 @@ const handleChange = (
   updateModifierInputFunction: UpdateModifierInputFunction
 ) => {
   const selectedValue = parseInt(event.target.value);
-  // Call function to handle the change
-  handleInputTextRollChange(
-    selectedValue,
-    inputPosition,
-    modifierSelected,
-    updateModifierInputFunction
+
+  if (modifierSelected.textRollInputs) {
+    modifierSelected.textRollInputs[inputPosition] = selectedValue;
+  } else {
+    modifierSelected.textRollInputs = [selectedValue];
+  }
+  updateModifierInputFunction(
+    modifierSelected.modifierId[inputPosition],
+    undefined,
+    undefined,
+    modifierSelected.textRollInputs
   );
 };
 
