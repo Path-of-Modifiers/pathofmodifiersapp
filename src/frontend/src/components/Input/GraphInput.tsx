@@ -7,8 +7,13 @@ import { ItemNameInput } from "./ItemInputComp/ItemNameInput";
 import { ItemRarityInput } from "./ItemInputComp/ItemRarityInput";
 import { LeagueInput } from "./LeagueInput";
 
-export const GraphInput = () => {
+interface GraphInputProps {
+  showingFilter: boolean;
+}
+
+export const GraphInput = ({showingFilter}: GraphInputProps) => {
   return (
+    showingFilter &&
     <Box p={5}>
       <LeagueInput />
       <ItemNameInput />
