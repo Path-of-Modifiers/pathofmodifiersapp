@@ -95,3 +95,8 @@ export interface GraphDataState {
     itemBaseTypeSubCategories: ItemBaseTypeSubCategory[]
   ) => void;
 }
+
+export interface ExpandedComponentState {
+  expandedGraphInputFilters: boolean;
+  setExpandedGraphInputFilters: (expandedGraphInputFilters: boolean) => void;
+}
