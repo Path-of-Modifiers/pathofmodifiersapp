@@ -1,3 +1,9 @@
+import {
+  BaseType,
+  ItemBaseTypeCategory,
+  ItemBaseTypeSubCategory,
+} from "../client";
+
 export interface InfluenceSpecState {
   elder?: boolean | null;
   shaper?: boolean | null;
@@ -48,7 +54,44 @@ export interface GraphInputState {
   itemSpecState: ItemSpecState;
   baseSpec?: BaseSpecState;
   modifierSpecs: ModifierSpecState[];
+  setLeague: (league: string) => void;
+  setItemSpecIdentified: (identified: boolean) => void;
+  setItemName: (name: string) => void;
+  setItemSpecMinIlvl: (minIlvl: number) => void;
+  setItemSpecMaxIlvl: (maxIlvl: number) => void;
+  setItemRarity: (rarity: string | undefined) => void;
+  setItemSpecCorrupted: (corrupted: boolean) => void;
+  setItemSpecDelve: (delve: boolean) => void;
+  setItemSpecFractured: (fractured: boolean) => void;
+  setItemSpecSynthesized: (synthesized: boolean) => void;
+  setItemSpecElderInfluence: (elder: boolean) => void;
+  setItemSpecShaperInfluence: (shaper: boolean) => void;
+  setItemSpecCrusaderInfluence: (crusader: boolean) => void;
+  setItemSpecRedeemerInfluence: (redeemer: boolean) => void;
+  setItemSpecHunterInfluence: (hunter: boolean) => void;
+  setItemSpecWarlordInfluence: (warlord: boolean) => void;
+  setItemSpecReplica: (replica: boolean) => void;
+  setItemSpecSearing: (searing: boolean) => void;
+  setItemSpecTangled: (tangled: boolean) => void;
+  setItemSpecIsRelic: (isRelic: boolean) => void;
+  setItemSpecFoilVariation: (foilVariation: number) => void;
+  setBaseType: (baseType: string | undefined) => void;
+  setItemCategory: (category: string | undefined) => void;
+  setItemSubCategory: (subCategory: string | undefined) => void;
   addModifierSpec: (modifierSpec: ModifierSpecState) => void;
   removeModifierSpec: (modifierId: number) => void;
   updateModifierSpec: (modifierSpec: ModifierSpecState) => void;
+}
+
+export interface GraphDataState {
+  baseTypes: BaseType[];
+  itemBaseTypeCategories: ItemBaseTypeCategory[];
+  itemBaseTypeSubCategories: ItemBaseTypeSubCategory[];
+  setBaseTypes: (baseTypes: BaseType[]) => void;
+  setItemBaseTypeCategories: (
+    itemBaseTypeCategories: ItemBaseTypeCategory[]
+  ) => void;
+  setItemBaseTypeSubCategories: (
+    itemBaseTypeSubCategories: ItemBaseTypeSubCategory[]
+  ) => void;
 }

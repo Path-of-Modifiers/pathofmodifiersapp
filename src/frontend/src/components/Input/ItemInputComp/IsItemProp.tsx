@@ -1,97 +1,6 @@
 import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-
-const convertToBoolean = (value: string) => {
-  if (value === "true") {
-    return true;
-  } else if (value === "false") {
-    return false;
-  } else {
-    return undefined;
-  }
-};
-
-const handleChange = (
-  event: React.ChangeEvent<HTMLSelectElement>,
-  itemSpecKey: string
-) => {
-  const selectedValue = convertToBoolean(event.target.value);
-  switch (itemSpecKey) {
-    case "identified":
-      useGraphInputStore.setState({
-        itemSpecState: { identified: selectedValue },
-      });
-      break;
-    case "corrupted":
-      useGraphInputStore.setState({
-        itemSpecState: { corrupted: selectedValue },
-      });
-      break;
-    case "delve":
-      useGraphInputStore.setState({ itemSpecState: { delve: selectedValue } });
-      break;
-    case "fractured":
-      useGraphInputStore.setState({
-        itemSpecState: { fractured: selectedValue },
-      });
-      break;
-    case "synthesised":
-      useGraphInputStore.setState({
-        itemSpecState: { synthesized: selectedValue },
-      });
-      break;
-    case "replica":
-      useGraphInputStore.setState({
-        itemSpecState: { replica: selectedValue },
-      });
-      break;
-    case "elder":
-      useGraphInputStore.setState({
-        itemSpecState: { influences: { elder: selectedValue } },
-      });
-      break;
-    case "shaper":
-      useGraphInputStore.setState({
-        itemSpecState: { influences: { shaper: selectedValue } },
-      });
-      break;
-    case "crusader":
-      useGraphInputStore.setState({
-        itemSpecState: { influences: { crusader: selectedValue } },
-      });
-      break;
-    case "redeemer":
-      useGraphInputStore.setState({
-        itemSpecState: { influences: { redeemer: selectedValue } },
-      });
-      break;
-    case "hunter":
-      useGraphInputStore.setState({
-        itemSpecState: { influences: { hunter: selectedValue } },
-      });
-      break;
-    case "warlord":
-      useGraphInputStore.setState({
-        itemSpecState: { influences: { warlord: selectedValue } },
-      });
-      break;
-    case "searing":
-      useGraphInputStore.setState({
-        itemSpecState: { searing: selectedValue },
-      });
-      break;
-    case "tangled":
-      useGraphInputStore.setState({
-        itemSpecState: { tangled: selectedValue },
-      });
-      break;
-    case "isRelic":
-      useGraphInputStore.setState({
-        itemSpecState: { isRelic: selectedValue },
-      });
-      break;
-  }
-};
+import { convertToBoolean } from "../../../hooks/utils";
 
 interface IsItemInputProps {
   itemSpecKey: string;
@@ -99,9 +8,85 @@ interface IsItemInputProps {
 }
 
 export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
+  const defaultValue = undefined;
+  const {
+    setItemSpecIdentified,
+    setItemSpecCorrupted,
+    setItemSpecDelve,
+    setItemSpecFractured,
+    setItemSpecSynthesized,
+    setItemSpecReplica,
+    setItemSpecElderInfluence,
+    setItemSpecShaperInfluence,
+    setItemSpecCrusaderInfluence,
+    setItemSpecRedeemerInfluence,
+    setItemSpecHunterInfluence,
+    setItemSpecWarlordInfluence,
+    setItemSpecSearing,
+    setItemSpecTangled,
+    setItemSpecIsRelic,
+  } = useGraphInputStore();
+
+  const handleChange = (
+    event: React.ChangeEvent<HTMLSelectElement>,
+    itemSpecKey: string
+  ) => {
+    const selectedValue = convertToBoolean(event.target.value) as boolean;
+
+    switch (itemSpecKey) {
+      case "identified":
+        setItemSpecIdentified(selectedValue);
+        break;
+      case "corrupted":
+        setItemSpecCorrupted(selectedValue);
+        break;
+      case "delve":
+        setItemSpecDelve(selectedValue);
+        break;
+      case "fractured":
+        setItemSpecFractured(selectedValue);
+        break;
+      case "synthesized":
+        setItemSpecSynthesized(selectedValue);
+        break;
+      case "replica":
+        setItemSpecReplica(selectedValue);
+        break;
+      case "elder":
+        setItemSpecElderInfluence(selectedValue);
+        break;
+      case "shaper":
+        setItemSpecShaperInfluence(selectedValue);
+        break;
+      case "crusader":
+        setItemSpecCrusaderInfluence(selectedValue);
+        break;
+      case "redeemer":
+        setItemSpecRedeemerInfluence(selectedValue);
+        break;
+      case "hunter":
+        setItemSpecHunterInfluence(selectedValue);
+        break;
+      case "warlord":
+        setItemSpecWarlordInfluence(selectedValue);
+        break;
+      case "searing":
+        setItemSpecSearing(selectedValue);
+        break;
+      case "tangled":
+        setItemSpecTangled(selectedValue);
+        break;
+      case "isRelic":
+        setItemSpecIsRelic(selectedValue);
+        break;
+    }
+  };
+
   return (
     <Flex alignItems="center" bgColor={"ui.secondary"} color={"ui.white"} m={1}>
-      <Text ml={1} width={150}>{text}</Text>
+      <Text ml={1} width={150}>
+        {text}
+      </Text>
       <Select
         bgColor={"ui.input"}
         defaultValue={"IsItems"}
@@ -116,7 +101,7 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
       >
         {
           <option
-            value={undefined}
+            value={defaultValue}
             key={text + "_IsItems_" + "undefined"}
             style={{ color: "white", backgroundColor: "#2d3333" }}
           >

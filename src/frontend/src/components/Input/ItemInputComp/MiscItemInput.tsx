@@ -1,27 +1,25 @@
 import { Flex } from "@chakra-ui/layout";
-import { IsItemInput } from "./ItemInputComp/IsItemProp";
-import { MinMaxInput } from "./ItemInputComp/MinMaxProp";
+import { IsItemInput } from "./IsItemProp";
+import { MinMaxInput } from "./MinMaxProp";
 import { useState } from "react";
 import { Checkbox, CheckboxIcon, Text } from "@chakra-ui/react";
 
-export const ItemInput = () => {
-  const [baseExpanded, setBaseExpanded] = useState(false);
+export const MiscItemInput = () => {
+  const [miscExpanded, setMiscExpanded] = useState(false);
 
   const handleExpanded = () => {
-    console.log("EXPANDED");
-    setBaseExpanded(!baseExpanded);
+    setMiscExpanded(!miscExpanded);
   };
 
   return (
     <Flex direction={"column"}>
-
       <Flex>
         <Checkbox onChange={handleExpanded}>
           <CheckboxIcon />
         </Checkbox>
         <Text color={"ui.white"}>Miscellaneous</Text>
       </Flex>
-      {baseExpanded && (
+      {miscExpanded && (
         <Flex flexWrap={"wrap"} width={650}>
           <IsItemInput itemSpecKey={"corrupted"} text={"Corrupted"} />
           <MinMaxInput
