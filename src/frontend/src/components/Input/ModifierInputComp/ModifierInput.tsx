@@ -8,20 +8,18 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import AddIconCheckbox from "../Icon/AddIconCheckbox";
+import AddIconCheckbox from "../../Icon/AddIconCheckbox";
 
 import { useEffect, useState } from "react";
-import { GroupedModifierByEffect } from "../../client";
-import { useOutsideClick } from "../../hooks/useOutsideClick";
+import { GroupedModifierByEffect } from "../../../client";
+import { useOutsideClick } from "../../../hooks/useOutsideClick";
 import React from "react";
-import { TextRollInput } from "./ModifierInputComp/TextRollInput";
-import { MinRollInput } from "./ModifierInputComp/MinInput";
-import { MaxRollInput } from "./ModifierInputComp/MaxInput";
-import { isArrayNullOrContainsOnlyNull } from "../../hooks/utils";
-// import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
-import { modifiers } from "../../test_data/modifier_data";
-import { useGraphInputStore } from "../../store/GraphInputStore";
-// import { GetGroupedModifiersByEffect } from "../../hooks/getGroupedModifiers";
+import { TextRollInput } from "./TextRollInput";
+import { MinRollInput } from "./MinInput";
+import { MaxRollInput } from "./MaxInput";
+import { isArrayNullOrContainsOnlyNull } from "../../../hooks/utils";
+import { useGraphInputStore } from "../../../store/GraphInputStore";
+import { GetGroupedModifiersByEffect } from "../../../hooks/getGroupedModifiers";
 
 export interface ModifierInput extends GroupedModifierByEffect {
   isSelected?: boolean;
@@ -38,7 +36,6 @@ export interface RenderInputProps {
 
 export interface RenderInputMaxMinRollProps extends RenderInputProps {
   input: string | number | undefined | null;
-  inputPosition: number;
 }
 
 export type UpdateModifierInputFunction = (
@@ -72,10 +69,7 @@ export const ModifierInput = () => {
 
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // API call to get modifiers
-  // const getModifiers = GetGroupedModifiersByEffect();
-
-  // const modifiers: ModifierInput[] | undefined = GetGroupedModifiersByEffect();
+  const modifiers: ModifierInput[] | undefined = GetGroupedModifiersByEffect();
 
   useEffect(() => {
     if (modifiers) {
@@ -107,23 +101,14 @@ export const ModifierInput = () => {
         },
       ]);
     }
-  }, [searchModifierText, selectedModifiers]);
+  }, [searchModifierText, selectedModifiers, modifiers]);
 
   const ref = useOutsideClick(() => {
     setIsExpanded(false);
-    console.log("Selected modifiers: \n");
-    console.log(selectedModifiers);
-    console.log("Filtered modifiers: \n");
-    console.log(filteredModifiers);
-
-    console.log("STORE MODIFIERS SELECTED: \n");
-    console.log(useGraphInputStore.getState().modifierSpecs);
   });
 
   // Define the function to handle input changes
-  const handleInputChange = (value: string) => {
-    // Regular expression to allow numbers and scientific notation
-    // const scientificPattern = /^-?\d*\.?\d*(e-?\d+)?$/i;
+  const handleSearchModifierInputChange = (value: string) => {
     setSearchModifierText(value);
   };
 
@@ -178,45 +163,39 @@ export const ModifierInput = () => {
       });
     }
 
-    console.log("STORE MODIFIERS SELECTED: \n");
-    console.log(useGraphInputStore.getState().modifierSpecs);
-
     setSearchModifierText("");
     toggleExpand();
   };
 
   const handleRemoveModifier = (
-    id: number,
+    modifierId: number,
     modifierSelected: ModifierInput
   ) => {
     const effectToRemove = selectedModifiers.find(
-      (modifier) => modifier.modifierId[0] === id
+      (modifier) => modifier.modifierId[0] === modifierId
     )?.effect;
 
     if (effectToRemove) {
       setSelectedModifiers((prevModifiers) =>
         prevModifiers.filter((modifier) => modifier.effect !== effectToRemove)
       );
-    }
 
-    for (let i = 0; i < modifierSelected.position.length; i++) {
-      removeModifierSpec(modifierSelected.modifierId[i]);
+      for (let i = 0; i < modifierSelected.position.length; i++) {
+        removeModifierSpec(modifierSelected.modifierId[i]);
+      }
     }
-
-    console.log("STORE MODIFIERS REMOVE: \n");
-    console.log(useGraphInputStore.getState().modifierSpecs);
   };
 
   const handleCheckboxChange = (
-    id: number,
+    modifierId: number,
     modifierSelected: ModifierInput,
     modifierIsSelected: boolean | undefined
   ) => {
-    setSelectedModifiers((modifiers) =>
-      modifiers.map((modifier) =>
-        modifier.modifierId[0] === id
-          ? { ...modifier, isSelected: !modifier.isSelected }
-          : modifier
+    setSelectedModifiers((selectedModifiers) =>
+      selectedModifiers.map((selectedModifier) =>
+        selectedModifier.modifierId[0] === modifierId
+          ? { ...selectedModifier, isSelected: !selectedModifier.isSelected }
+          : selectedModifier
       )
     );
 
@@ -227,7 +206,7 @@ export const ModifierInput = () => {
     } else {
       for (let i = 0; i < modifierSelected.position.length; i++) {
         addModifierSpec({
-          modifierId: id,
+          modifierId: modifierId,
           position: modifierSelected.position[i],
           limitations: {
             minRoll: modifierSelected.minRollInputs?.[i] ?? null,
@@ -237,9 +216,6 @@ export const ModifierInput = () => {
         });
       }
     }
-
-    console.log("STORE MODIFIERS SELECTED: \n");
-    console.log(useGraphInputStore.getState().modifierSpecs);
   };
 
   const toggleExpand = () => {
@@ -293,9 +269,6 @@ export const ModifierInput = () => {
         },
       });
     }
-
-    console.log("STORE MODIFIERS SELECTED UPDATED: \n");
-    console.log(useGraphInputStore.getState().modifierSpecs);
   };
 
   // Render selected modifiers list
@@ -324,7 +297,7 @@ export const ModifierInput = () => {
           </Text>
 
           <Flex justifyContent="flex-end">
-            {/* Check if modifierSelected static exists and is not all null */}
+            {/* Check if modifierSelected static exists and is all null */}
             {isArrayNullOrContainsOnlyNull(modifierSelected.static) &&
               (() => {
                 const elements = [];
@@ -338,7 +311,7 @@ export const ModifierInput = () => {
                     modifierSelected.minRoll &&
                     modifierSelected.minRoll[modifierInputIndex] !== null
                   ) {
-                    const selectedModifierInput =
+                    const selectedModifierMinRollInput =
                       modifierSelected?.minRollInputs
                         ? modifierSelected.minRollInputs[modifierInputIndex]
                         : undefined;
@@ -346,7 +319,7 @@ export const ModifierInput = () => {
                     elements.push(
                       <MinRollInput
                         modifierSelected={modifierSelected}
-                        input={selectedModifierInput}
+                        input={selectedModifierMinRollInput}
                         inputPosition={modifierInputIndex}
                         updateModifierInputFunction={() =>
                           updateModifierInput(
@@ -365,7 +338,7 @@ export const ModifierInput = () => {
                     modifierSelected.maxRoll &&
                     modifierSelected.maxRoll[modifierInputIndex] !== null
                   ) {
-                    const selectedModifierInput =
+                    const selectedModifierMaxRollInput =
                       modifierSelected?.maxRollInputs
                         ? modifierSelected.maxRollInputs[modifierInputIndex]
                         : undefined;
@@ -373,7 +346,7 @@ export const ModifierInput = () => {
                     elements.push(
                       <MaxRollInput
                         modifierSelected={modifierSelected}
-                        input={selectedModifierInput}
+                        input={selectedModifierMaxRollInput}
                         inputPosition={modifierInputIndex}
                         updateModifierInputFunction={() =>
                           updateModifierInput(
@@ -454,7 +427,7 @@ export const ModifierInput = () => {
       <Box bgColor={"ui.input"} color={"ui.white"} ref={ref} mr={8} ml={8}>
         <Input
           value={searchModifierText}
-          onChange={(e) => handleInputChange(e.target.value)}
+          onChange={(e) => handleSearchModifierInputChange(e.target.value)}
           placeholder="+ Add modifier"
           _placeholder={{ color: "ui.white" }}
           textAlign={"center"}

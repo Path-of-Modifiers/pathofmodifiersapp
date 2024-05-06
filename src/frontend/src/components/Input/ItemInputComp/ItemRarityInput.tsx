@@ -1,13 +1,20 @@
 import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 
-const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  const itemRarityInput = event.target.value;
-  useGraphInputStore.setState({ itemSpecState: { rarity: itemRarityInput } });
-  // console.log(useGraphInputStore.getState().itemSpecState);
-};
-
 export const ItemRarityInput = () => {
+  const defaultRarity = undefined;
+
+  const { setItemRarity } = useGraphInputStore();
+
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const itemRarityInput = event.target.value;
+    if (itemRarityInput === "Any") {
+      setItemRarity(undefined);
+    } else {
+      setItemRarity(itemRarityInput);
+    }
+  };
+
   return (
     <Flex
       alignItems={"center"}
@@ -15,11 +22,13 @@ export const ItemRarityInput = () => {
       bgColor={"ui.secondary"}
       m={1}
     >
-      <Text ml={1} width={150}>Item Rarity</Text>
+      <Text ml={1} width={150}>
+        Item Rarity
+      </Text>
       <Select
         bgColor={"ui.input"}
         color={"ui.white"}
-        defaultValue={"Unique"}
+        defaultValue={defaultRarity}
         onChange={(e) => handleChange(e)}
         width={150}
         focusBorderColor={"ui.white"}
@@ -30,9 +39,18 @@ export const ItemRarityInput = () => {
       >
         {
           <option
+            value={defaultRarity}
+            key={"ItemRarityInput" + "_option_" + "Any"}
+            style={{ color: "white", backgroundColor: "#2d3333" }}
+          >
+            Any
+          </option>
+        }
+        {
+          <option
             value={"Unique"}
             key={"ItemRarityInput" + "_option_" + "Unique"}
-            style={{ color: "#B3B3B3", backgroundColor: "#2d3333" }}
+            style={{ color: "white", backgroundColor: "#2d3333" }}
           >
             Unique
           </option>
