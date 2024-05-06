@@ -1,5 +1,6 @@
 import { AxisOptions, Chart } from 'react-charts';
 import {useMemo} from "react";
+import { Box } from "@chakra-ui/layout";
  
 type MyDatum = { primary: string, likes: number };
 
@@ -53,13 +54,15 @@ function MyChart() {
     )
 
     return (
+      <Box p={5}>
         <Chart
-        options={{
-            data,
-            primaryAxis,
-            secondaryAxes,
-        }}
-        />
+          options={{
+              data,
+              primaryAxis,
+              secondaryAxes,
+          }}
+          />
+      </Box>
     )
 }
 
