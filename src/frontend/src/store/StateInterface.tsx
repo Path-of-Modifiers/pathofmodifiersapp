@@ -50,10 +50,12 @@ export interface ModifierSpecState {
 }
 
 export interface GraphInputState {
+  clearClicked: boolean;
   league: string;
   itemSpecState: ItemSpecState;
   baseSpec?: BaseSpecState;
   modifierSpecs: ModifierSpecState[];
+  setClearClicked: () => void;
   setLeague: (league: string) => void;
   setItemSpecIdentified: (identified: boolean) => void;
   setItemName: (name: string) => void;
