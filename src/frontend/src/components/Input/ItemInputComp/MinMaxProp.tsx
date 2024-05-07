@@ -8,6 +8,7 @@ import {
   NumberInputStepper,
 } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
+import { useEffect } from "react";
 
 interface MinMaxInputProps {
   itemMinSpecKey: string;
@@ -17,6 +18,29 @@ interface MinMaxInputProps {
 
 export const MinMaxInput = ({ text }: MinMaxInputProps) => {
   const { setItemSpecMinIlvl, setItemSpecMaxIlvl } = useGraphInputStore();
+
+  const [minValue, maxValue] = useGraphInputStore((state) => [
+    state.itemSpecState.minIlvl,
+    state.itemSpecState.maxIlvl,
+  ]);
+
+  const getMinValue = () => {
+    console.log("minValue", minValue);
+    if (minValue) {
+      return minValue?.toString();
+    } else {
+      return "";
+    }
+  };
+
+  const getMaxValue = () => {
+    console.log("maxValue", maxValue);
+    if (maxValue) {
+      return maxValue?.toString();
+    } else {
+      return "";
+    }
+  };
 
   const handleMinChange = (eventValue: string) => {
     const eventValueInt = parseInt(eventValue);
@@ -30,6 +54,8 @@ export const MinMaxInput = ({ text }: MinMaxInputProps) => {
     setItemSpecMaxIlvl(eventValueInt);
   };
 
+  // useEffect(() => {}, [clearClicked]);
+
   return (
     <Flex
       color={"ui.white"}
@@ -42,6 +68,7 @@ export const MinMaxInput = ({ text }: MinMaxInputProps) => {
         {text}
       </Text>
       <NumberInput
+        value={getMinValue()}
         step={1}
         key={"itemSpecKey" + "min_number_input"}
         bgColor={"ui.input"}
@@ -63,6 +90,7 @@ export const MinMaxInput = ({ text }: MinMaxInputProps) => {
       </NumberInput>
 
       <NumberInput
+        value={getMaxValue()}
         step={1}
         key={"MinMaxInput" + "max_number_item_input"}
         bgColor={"ui.input"}
