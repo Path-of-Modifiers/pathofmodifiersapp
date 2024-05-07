@@ -67,6 +67,8 @@ export const ModifierInput = () => {
   const { addModifierSpec, removeModifierSpec, updateModifierSpec } =
     useGraphInputStore();
 
+  const clearClicked = useGraphInputStore((state) => state.clearClicked);
+
   const [isExpanded, setIsExpanded] = useState(false);
 
   const modifiers: ModifierInput[] | undefined = GetGroupedModifiersByEffect();
@@ -101,7 +103,16 @@ export const ModifierInput = () => {
         },
       ]);
     }
-  }, [searchModifierText, selectedModifiers, modifiers]);
+
+    const clearAllModifiers = () => {
+      setSelectedModifiers([]);
+      setSearchModifierText("");
+    };
+
+    if (clearClicked) {
+      clearAllModifiers();
+    }
+  }, [searchModifierText, selectedModifiers, modifiers, clearClicked]);
 
   const ref = useOutsideClick(() => {
     setIsExpanded(false);
