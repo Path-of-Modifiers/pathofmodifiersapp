@@ -8,7 +8,6 @@ import {
   NumberInputStepper,
 } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-import { useEffect } from "react";
 
 interface MinMaxInputProps {
   itemMinSpecKey: string;
