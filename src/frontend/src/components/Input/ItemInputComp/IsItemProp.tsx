@@ -44,7 +44,6 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
         useGraphInputStore.getState().itemSpecState as ItemSpecState
       )[itemSpecKey];
     }
-    console.log("selectValueBEAST", selectValue);
     if (selectValue) {
       return "true";
     } else if (selectValue === false) {
