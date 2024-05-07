@@ -24,7 +24,6 @@ export const MinMaxInput = ({ text }: MinMaxInputProps) => {
   ]);
 
   const getMinValue = () => {
-    console.log("minValue", minValue);
     if (minValue) {
       return minValue?.toString();
     } else {
@@ -33,7 +32,6 @@ export const MinMaxInput = ({ text }: MinMaxInputProps) => {
   };
 
   const getMaxValue = () => {
-    console.log("maxValue", maxValue);
     if (maxValue) {
       return maxValue?.toString();
     } else {
