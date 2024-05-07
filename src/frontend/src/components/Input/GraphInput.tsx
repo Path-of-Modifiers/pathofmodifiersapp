@@ -19,7 +19,10 @@ export const GraphInput = () => {
         <LeagueInput />
         <ItemNameInput />
         <ItemRarityInput />
-        <IsItemInput itemSpecKey={"identified"} text={"Identified"} />
+        <IsItemInput
+          itemSpecKey={"identified"}
+          text={"Identified"}
+        />
         <BaseInput />
         <MiscItemInput />
         <ModifierInput />

@@ -8,6 +8,7 @@ export const ItemRarityInput = () => {
 
   const getRarityValue = () => {
     const rarity = useGraphInputStore.getState().itemSpecState.rarity;
+    console.log("rarity", rarity)
     if (rarity) {
       return rarity;
     } else {

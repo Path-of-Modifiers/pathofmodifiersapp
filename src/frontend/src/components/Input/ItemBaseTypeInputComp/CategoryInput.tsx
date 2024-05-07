@@ -16,6 +16,15 @@ export const CategoryInput = ({ categories }: CategoryInputProps) => {
 
   const { setItemCategory } = useGraphInputStore();
 
+  const getCategoryValue = () => {
+    const category = useGraphInputStore.getState().baseSpec?.category;
+    if (category) {
+      return category;
+    } else {
+      return "";
+    }
+  };
+
   const handleCategoryChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
@@ -52,9 +61,9 @@ export const CategoryInput = ({ categories }: CategoryInputProps) => {
         Item Category
       </Text>
       <Select
+        value={getCategoryValue()}
         bgColor={"ui.input"}
         color={"ui.white"}
-        defaultValue={"Unique"}
         onChange={(e) => handleCategoryChange(e)}
         width={150}
         focusBorderColor={"ui.white"}
