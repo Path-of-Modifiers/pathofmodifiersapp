@@ -6,6 +6,7 @@ interface BaseTypeInputProps {
   baseTypes: BaseType | BaseType[];
 }
 
+// Base Type Input Component  -  This component is used to select the base type of an item.
 export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
   if (!Array.isArray(baseTypes)) {
     baseTypes = [baseTypes];

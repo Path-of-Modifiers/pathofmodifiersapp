@@ -23,6 +23,7 @@ interface IsItemInputProps {
   text: string;
 }
 
+// Is Item Input Component  -  This component is used to select the boolean item properties.
 export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
   const defaultValue = undefined;
 

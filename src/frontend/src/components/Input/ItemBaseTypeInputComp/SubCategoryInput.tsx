@@ -7,6 +7,7 @@ interface SubCategoryInputProps {
   subCategories: ItemBaseTypeSubCategory | ItemBaseTypeSubCategory[];
 }
 
+// Sub Category Input Component  -  This component is used to select the sub category of an item base type.
 export const SubCategoryInput = ({ subCategories }: SubCategoryInputProps) => {
   if (!Array.isArray(subCategories)) {
     subCategories = [subCategories];
