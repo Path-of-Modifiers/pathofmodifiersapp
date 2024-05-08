@@ -16,8 +16,7 @@ const QueryButtons = () => {
 
   const handleClearQuery = () => {
     useGraphInputStore.getState().setClearClicked();
-    console.log(useGraphInputStore.getState().clearClicked);
-
+    
     // This is a hack to make sure the clearClicked is set to false after the
     // state is updated.
     setTimeout(() => {
