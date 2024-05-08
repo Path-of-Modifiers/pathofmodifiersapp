@@ -1,6 +1,6 @@
 # Path of Modifiers - Frontend
 
-The frontend is built with [Vite](https://vitejs.dev/), [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [TanStack Query](https://tanstack.com/query/latest), [TanStack Router](https://tanstack.com/router/latest) and [Chakra UI](https://v2.chakra-ui.com/).
+The frontend is built with [Vite](https://vitejs.dev/), [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [TanStack Query](https://tanstack.com/query/latest), [TanStack Router](https://tanstack.com/router/latest), [Zustand](https://github.com/pmndrs/zustand) and [Chakra UI](https://v2.chakra-ui.com/).
 
 ## Frontend development
 
