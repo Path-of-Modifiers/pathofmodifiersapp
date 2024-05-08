@@ -7,6 +7,15 @@ export const ItemRarityInput = () => {
 
   const { setItemRarity } = useGraphInputStore();
 
+  const getRarityValue = () => {
+    const rarity = useGraphInputStore.getState().itemSpecState.rarity;
+    if (rarity) {
+      return rarity;
+    } else {
+      return "";
+    }
+  };
+
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const itemRarityInput = event.target.value;
     if (itemRarityInput === "Any") {
@@ -27,6 +36,7 @@ export const ItemRarityInput = () => {
         Item Rarity
       </Text>
       <Select
+        value={getRarityValue()}
         bgColor={"ui.input"}
         color={"ui.white"}
         defaultValue={defaultRarity}
