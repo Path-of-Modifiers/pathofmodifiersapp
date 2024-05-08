@@ -12,6 +12,7 @@ import { CategoryInput } from "./CategoryInput";
 import { SubCategoryInput } from "./SubCategoryInput";
 import { prefetchAllBaseTypeData } from "../../../hooks/getBaseTypeCategories";
 
+// BaseInput component that contains the base type input, category input, and sub category input
 export const BaseInput = () => {
   const [baseExpanded, setBaseExpanded] = useState(false);
   const [baseTypes, setBaseTypes] = useState<BaseType[]>([]);
@@ -39,6 +40,7 @@ export const BaseInput = () => {
               itemBaseTypeCategory.length === 0 &&
               itemBaseTypeSubCategory.length === 0
             ) {
+              // Prefetch base type data when hovering over the checkbox
               prefetchAllBaseTypeData(queryClient).then(
                 (data) => {
                   setBaseTypes(data.baseTypes);

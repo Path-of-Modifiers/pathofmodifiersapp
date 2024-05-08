@@ -11,12 +11,14 @@ import {
   UpdateModifierInputFunction,
 } from "./ModifierInput";
 
+// Function to handle the change of the max roll input value
 const handleChange = (
   eventValue: string,
   inputPosition: number,
   modifierSelected: ModifierInput,
-  updateModifierInputFunction: UpdateModifierInputFunction
+  updateModifierInputFunction: UpdateModifierInputFunction // Function to update the modifier input
 ) => {
+  // If the max roll input is defined, set the value of the input at the input position to the event value
   if (modifierSelected.maxRollInputs) {
     modifierSelected.maxRollInputs[inputPosition] = parseFloat(eventValue);
   } else {
@@ -30,6 +32,7 @@ const handleChange = (
   );
 };
 
+// Max Roll Input Component  -  This component is used to input the maximum roll of a modifier
 export const MaxRollInput = ({
   modifierSelected,
   inputPosition,

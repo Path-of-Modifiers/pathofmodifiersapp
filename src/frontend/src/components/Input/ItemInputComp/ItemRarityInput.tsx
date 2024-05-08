@@ -1,6 +1,7 @@
 import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 
+// Item Rarity Input Component  -  This component is used to select the rarity of an item.
 export const ItemRarityInput = () => {
   const defaultRarity = undefined;
 

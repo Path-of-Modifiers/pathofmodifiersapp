@@ -4,6 +4,7 @@ import { MinMaxInput } from "./MinMaxProp";
 import { useState } from "react";
 import { Checkbox, CheckboxIcon, Text } from "@chakra-ui/react";
 
+// Miscellaneous Item Input Component  -  This component is used to input miscellaneous item properties.
 export const MiscItemInput = () => {
   const [miscExpanded, setMiscExpanded] = useState(false);
 
