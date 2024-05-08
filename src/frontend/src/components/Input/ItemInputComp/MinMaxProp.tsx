@@ -15,6 +15,7 @@ interface MinMaxInputProps {
   text: string;
 }
 
+// Min Max Item Lvl Input Component  -  This component is used to input the min and max ilvl of an item.
 export const MinMaxInput = ({ text }: MinMaxInputProps) => {
   const { setItemSpecMinIlvl, setItemSpecMaxIlvl } = useGraphInputStore();
 

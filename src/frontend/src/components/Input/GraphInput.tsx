@@ -7,6 +7,7 @@ import { ItemNameInput } from "./ItemInputComp/ItemNameInput";
 import { ItemRarityInput } from "./ItemInputComp/ItemRarityInput";
 import { LeagueInput } from "./LeagueInput";
 
+// Graph Input Component  -  This component is used to input the graph data.
 export const GraphInput = () => {
   return (
     <Box p={5}>

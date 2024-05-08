@@ -11,12 +11,14 @@ import {
   UpdateModifierInputFunction,
 } from "./ModifierInput";
 
+// Function to handle the change of the min roll input value
 const handleChange = (
   eventValue: string,
   inputPosition: number,
   modifierSelected: ModifierInput,
-  updateModifierInputFunction: UpdateModifierInputFunction
+  updateModifierInputFunction: UpdateModifierInputFunction // Function to update the modifier input
 ) => {
+  // If the min roll input is defined, set the value of the input at the input position to the event value
   if (modifierSelected.minRollInputs) {
     modifierSelected.minRollInputs[inputPosition] = parseFloat(eventValue);
   } else {
@@ -31,6 +33,7 @@ const handleChange = (
   );
 };
 
+// Min Roll Input Component  -  This component is used to input the minimum roll of a modifier
 export const MinRollInput = ({
   modifierSelected,
   inputPosition,

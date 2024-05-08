@@ -7,6 +7,7 @@ interface CategoryInputProps {
   categories: ItemBaseTypeCategory | ItemBaseTypeCategory[];
 }
 
+// Category Input Component  -  This component is used to select the category of an item.
 export const CategoryInput = ({ categories }: CategoryInputProps) => {
   if (!Array.isArray(categories)) {
     categories = [categories];

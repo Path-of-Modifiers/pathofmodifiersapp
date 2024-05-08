@@ -71,6 +71,7 @@ export const ModifierInput = () => {
 
   const modifiers: ModifierInput[] | undefined = GetGroupedModifiersByEffect();
 
+  // Filter the modifiers based on the search text and selected modifiers.
   useEffect(() => {
     if (modifiers) {
       const filtered = modifiers
@@ -103,6 +104,7 @@ export const ModifierInput = () => {
     }
   }, [searchModifierText, selectedModifiers, modifiers]);
 
+  // Define the reference to the outside click hook. This is used to close the dropdown when clicking outside of it.
   const ref = useOutsideClick(() => {
     setIsExpanded(false);
   });
@@ -120,6 +122,7 @@ export const ModifierInput = () => {
       selectedModifierEffect,
     ]);
 
+    // Initialize the input arrays for the selected modifier
     if (
       !isArrayNullOrContainsOnlyNull(selectedModifierEffect.minRoll) &&
       selectedModifierEffect.minRoll
@@ -145,6 +148,7 @@ export const ModifierInput = () => {
       ).fill(undefined);
     }
 
+    // Add the selected modifier(s) to the global state store
     for (let i = 0; i < selectedModifierEffect.position.length; i++) {
       addModifierSpec({
         modifierId: selectedModifierEffect.modifierId[i],
@@ -167,6 +171,7 @@ export const ModifierInput = () => {
     toggleExpand();
   };
 
+  // Define the function to remove a selected modifier
   const handleRemoveModifier = (
     modifierId: number,
     modifierSelected: ModifierInput
@@ -175,22 +180,26 @@ export const ModifierInput = () => {
       (modifier) => modifier.modifierId[0] === modifierId
     )?.effect;
 
+    // Remove the selected modifier from the selectedModifiers list if it exists
     if (effectToRemove) {
       setSelectedModifiers((prevModifiers) =>
         prevModifiers.filter((modifier) => modifier.effect !== effectToRemove)
       );
 
+      // Remove the modifier from the global state store
       for (let i = 0; i < modifierSelected.position.length; i++) {
         removeModifierSpec(modifierSelected.modifierId[i]);
       }
     }
   };
 
+  // Define the function to handle checkbox changes for the selected modifiers
   const handleCheckboxChange = (
     modifierId: number,
     modifierSelected: ModifierInput,
     modifierIsSelected: boolean | undefined
   ) => {
+    // Update the checkbox state of the selected modifier
     setSelectedModifiers((selectedModifiers) =>
       selectedModifiers.map((selectedModifier) =>
         selectedModifier.modifierId[0] === modifierId
@@ -199,6 +208,7 @@ export const ModifierInput = () => {
       )
     );
 
+    // Add or remove the modifier from the global state store based on the checkbox state
     if (modifierIsSelected) {
       for (let i = 0; i < modifierSelected.position.length; i++) {
         removeModifierSpec(modifierSelected.modifierId[i]);
@@ -218,10 +228,12 @@ export const ModifierInput = () => {
     }
   };
 
+  // Define the function to toggle the expanded state of the dropdown
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
 
+  // Define the function to handle scrolling in the dropdown
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const bottom =
       e.currentTarget.scrollHeight - e.currentTarget.scrollTop ===
@@ -231,6 +243,7 @@ export const ModifierInput = () => {
     }
   };
 
+  // Define the function to update the modifier input
   const updateModifierInput = (
     modifierId: number,
     modifierToUpdate: ModifierInput,
@@ -238,6 +251,7 @@ export const ModifierInput = () => {
     newMaxRollInputs?: (number | null)[] | undefined,
     newTextRollInputs?: (number | null)[] | undefined
   ): void => {
+    // Update the modifier in the local state
     setSelectedModifiers((prevModifiers) => {
       const updatedModifiers = [...prevModifiers]; // Step 1: Create a copy of the array
       const index = updatedModifiers.findIndex(
@@ -258,6 +272,7 @@ export const ModifierInput = () => {
       return updatedModifiers; // Set the updated array back to state
     });
 
+    // Update the modifier in the global state store
     for (let i = 0; i < modifierToUpdate.position.length; i++) {
       updateModifierSpec({
         modifierId: modifierToUpdate.modifierId[i],
@@ -306,6 +321,7 @@ export const ModifierInput = () => {
                   modifierInputIndex < modifierSelected.position.length;
                   modifierInputIndex++
                 ) {
+                  // Check if minRoll exists and are not all null. If so, create a MinRollInput component
                   if (
                     !isArrayNullOrContainsOnlyNull(modifierSelected.minRoll) &&
                     modifierSelected.minRoll &&
@@ -333,6 +349,7 @@ export const ModifierInput = () => {
                     );
                   }
 
+                  // Check if maxRoll exists and is not all null. If so, create a MaxRollInput component
                   if (
                     !isArrayNullOrContainsOnlyNull(modifierSelected.maxRoll) &&
                     modifierSelected.maxRoll &&
@@ -360,6 +377,8 @@ export const ModifierInput = () => {
                       />
                     );
                   }
+
+                  // Check if textRolls exists and is not all null. If so, create a TextRollInput component
                   if (
                     !isArrayNullOrContainsOnlyNull(
                       modifierSelected.textRolls
@@ -407,6 +426,7 @@ export const ModifierInput = () => {
     )
   );
 
+  // Render the list of modifiers in the dropdown
   const modifiersList = filteredModifiers.map((modifier) => (
     <Box
       key={modifier.modifierId[0]}
