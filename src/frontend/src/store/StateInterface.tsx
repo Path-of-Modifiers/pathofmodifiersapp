@@ -44,10 +44,12 @@ export interface ModifierSpecState {
 }
 
 export interface GraphInputState {
+  clearClicked: boolean;
   league: string;
   itemSpecState: ItemSpecState;
   baseSpec?: BaseSpecState;
   modifierSpecs: ModifierSpecState[];
+  setClearClicked: () => void;
   setLeague: (league: string) => void;
   setItemSpecIdentified: (identified: boolean) => void;
   setItemName: (name: string) => void;
@@ -75,4 +77,9 @@ export interface GraphInputState {
   addModifierSpec: (modifierSpec: ModifierSpecState) => void;
   removeModifierSpec: (modifierId: number) => void;
   updateModifierSpec: (modifierSpec: ModifierSpecState) => void;
+}
+
+export interface ExpandedComponentState {
+  expandedGraphInputFilters: boolean;
+  setExpandedGraphInputFilters: (expandedGraphInputFilters: boolean) => void;
 }

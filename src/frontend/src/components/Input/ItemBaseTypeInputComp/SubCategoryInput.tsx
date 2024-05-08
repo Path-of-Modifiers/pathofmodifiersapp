@@ -7,12 +7,22 @@ interface SubCategoryInputProps {
   subCategories: ItemBaseTypeSubCategory | ItemBaseTypeSubCategory[];
 }
 
+// Sub Category Input Component  -  This component is used to select the sub category of an item base type.
 export const SubCategoryInput = ({ subCategories }: SubCategoryInputProps) => {
   if (!Array.isArray(subCategories)) {
     subCategories = [subCategories];
   }
 
   const defaultValue = undefined;
+
+  const getSubCategoryValue = () => {
+    const baseType = useGraphInputStore.getState().baseSpec?.subCategory;
+    if (baseType) {
+      return baseType;
+    } else {
+      return "";
+    }
+  };
 
   const { setItemSubCategory } = useGraphInputStore();
 
@@ -52,9 +62,9 @@ export const SubCategoryInput = ({ subCategories }: SubCategoryInputProps) => {
         Item Sub Category
       </Text>
       <Select
+        value={getSubCategoryValue()}
         bgColor={"ui.input"}
         color={"ui.white"}
-        defaultValue={"Unique"}
         onChange={(e) => handleSubCategoryChange(e)}
         width={150}
         focusBorderColor={"ui.white"}

@@ -1,5 +1,5 @@
 import { Flex } from "@chakra-ui/layout";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Checkbox, CheckboxIcon, Text } from "@chakra-ui/react";
 import { BaseTypeInput } from "./BaseTypeInput";
 import { useQueryClient } from "@tanstack/react-query";
@@ -11,7 +11,9 @@ import {
 import { CategoryInput } from "./CategoryInput";
 import { SubCategoryInput } from "./SubCategoryInput";
 import { prefetchAllBaseTypeData } from "../../../hooks/getBaseTypeCategories";
+import { useGraphInputStore } from "../../../store/GraphInputStore";
 
+// BaseInput component that contains the base type input, category input, and sub category input
 export const BaseInput = () => {
   const [baseExpanded, setBaseExpanded] = useState(false);
   const [baseTypes, setBaseTypes] = useState<BaseType[]>([]);
@@ -22,16 +24,25 @@ export const BaseInput = () => {
     ItemBaseTypeSubCategory[]
   >([]);
 
+  const clearClicked = useGraphInputStore((state) => state.clearClicked);
+
   const queryClient = useQueryClient();
 
   const handleExpanded = () => {
     setBaseExpanded(!baseExpanded);
   };
 
+  useEffect(() => {
+    if (clearClicked) {
+      setBaseExpanded(false);
+    }
+  }, [clearClicked]);
+
   return (
     <Flex direction={"column"}>
       <Flex>
         <Checkbox
+          isChecked={baseExpanded}
           onChange={handleExpanded}
           onMouseEnter={async () => {
             if (
@@ -39,6 +50,7 @@ export const BaseInput = () => {
               itemBaseTypeCategory.length === 0 &&
               itemBaseTypeSubCategory.length === 0
             ) {
+              // Prefetch base type data when hovering over the checkbox
               prefetchAllBaseTypeData(queryClient).then(
                 (data) => {
                   setBaseTypes(data.baseTypes);
