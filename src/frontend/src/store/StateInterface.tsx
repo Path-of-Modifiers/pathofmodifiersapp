@@ -1,9 +1,3 @@
-import {
-  BaseType,
-  ItemBaseTypeCategory,
-  ItemBaseTypeSubCategory,
-} from "../client";
-
 export interface InfluenceSpecState {
   elder?: boolean | null;
   shaper?: boolean | null;
@@ -81,17 +75,4 @@ export interface GraphInputState {
   addModifierSpec: (modifierSpec: ModifierSpecState) => void;
   removeModifierSpec: (modifierId: number) => void;
   updateModifierSpec: (modifierSpec: ModifierSpecState) => void;
-}
-
-export interface GraphDataState {
-  baseTypes: BaseType[];
-  itemBaseTypeCategories: ItemBaseTypeCategory[];
-  itemBaseTypeSubCategories: ItemBaseTypeSubCategory[];
-  setBaseTypes: (baseTypes: BaseType[]) => void;
-  setItemBaseTypeCategories: (
-    itemBaseTypeCategories: ItemBaseTypeCategory[]
-  ) => void;
-  setItemBaseTypeSubCategories: (
-    itemBaseTypeSubCategories: ItemBaseTypeSubCategory[]
-  ) => void;
 }
