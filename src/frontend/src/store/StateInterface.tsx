@@ -1,3 +1,5 @@
+// Type definitions for the global state of the application
+
 import {
   BaseType,
   ItemBaseTypeCategory,
