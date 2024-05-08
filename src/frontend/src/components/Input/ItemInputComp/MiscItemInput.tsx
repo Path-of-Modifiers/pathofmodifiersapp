@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Checkbox, CheckboxIcon, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 
+// Miscellaneous Item Input Component  -  This component is used to input miscellaneous item properties.
 export const MiscItemInput = () => {
   const [miscExpanded, setMiscExpanded] = useState(false);
 

@@ -2,6 +2,7 @@ import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 import { useEffect } from "react";
 
+// League Input Component  -  This component is used to select the league of the game.
 export const LeagueInput = () => {
   // Needs to be updated to reflect the defualt leagues available in the game
   const defaultLeague = "Necropolis";

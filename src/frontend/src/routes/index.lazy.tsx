@@ -19,6 +19,7 @@ const queryClient = new QueryClient({
   },
 });
 
+// Index Component  -  This component is the main component for the index route.
 function Index() {
   return (
     <Flex direction="column" minHeight="100vh">

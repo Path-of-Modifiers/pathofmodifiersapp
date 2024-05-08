@@ -6,6 +6,7 @@ import {
   ItemBaseTypeSubCategory,
 } from "../client";
 
+// Graph Data Store  -  This store is used to store graph data.
 export const useGraphDataStore = create<GraphDataState>((set) => ({
   baseTypes: [],
   itemBaseTypeCategories: [],
