@@ -4,6 +4,15 @@ import { useGraphInputStore } from "../../../store/GraphInputStore";
 export const ItemNameInput = () => {
   const { setItemName } = useGraphInputStore();
 
+  const getItemNameValue = () => {
+    const itemName = useGraphInputStore.getState().itemSpecState.name;
+    if (itemName) {
+      return itemName;
+    } else {
+      return "";
+    }
+  };
+
   const handleNameChange = (value: string) => {
     const itemNameInput = value;
     setItemName(itemNameInput);
@@ -20,9 +29,9 @@ export const ItemNameInput = () => {
         Item name
       </Text>
       <Input
+        value={getItemNameValue()}
         bgColor={"ui.input"}
         color={"ui.white"}
-        defaultValue={""}
         onChange={(e) => handleNameChange(e.target.value)}
         width={250}
         focusBorderColor={"ui.white"}
