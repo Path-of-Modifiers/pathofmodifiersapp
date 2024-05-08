@@ -5,6 +5,7 @@ import {
   ModifierSpecState,
 } from "./StateInterface";
 
+// Graph Input Store  -  This store is used to store graph input data.
 export const useGraphInputStore = create<GraphInputState>((set) => ({
   clearClicked: false,
   league: "",

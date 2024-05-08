@@ -8,6 +8,7 @@ import { ItemRarityInput } from "./ItemInputComp/ItemRarityInput";
 import { LeagueInput } from "./LeagueInput";
 import { useExpandedComponentStore } from "../../store/ExpandedComponentStore";
 
+// Graph Input Component  -  This component is used to input the query data.
 export const GraphInput = () => {
   const expandedGraphInputFilters = useExpandedComponentStore(
     (state) => state.expandedGraphInputFilters
