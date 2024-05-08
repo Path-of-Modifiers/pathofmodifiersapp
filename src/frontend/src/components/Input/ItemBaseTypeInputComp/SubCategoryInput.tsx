@@ -14,6 +14,15 @@ export const SubCategoryInput = ({ subCategories }: SubCategoryInputProps) => {
 
   const defaultValue = undefined;
 
+  const getSubCategoryValue = () => {
+    const baseType = useGraphInputStore.getState().baseSpec?.subCategory;
+    if (baseType) {
+      return baseType;
+    } else {
+      return "";
+    }
+  };
+
   const { setItemSubCategory } = useGraphInputStore();
 
   const handleSubCategoryChange = (
@@ -52,9 +61,9 @@ export const SubCategoryInput = ({ subCategories }: SubCategoryInputProps) => {
         Item Sub Category
       </Text>
       <Select
+        value={getSubCategoryValue()}
         bgColor={"ui.input"}
         color={"ui.white"}
-        defaultValue={"Unique"}
         onChange={(e) => handleSubCategoryChange(e)}
         width={150}
         focusBorderColor={"ui.white"}
