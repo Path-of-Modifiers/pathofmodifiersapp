@@ -31,15 +31,13 @@ function Index() {
       <QueryButtons showingFilter={showingFilter} setShowingFilter={setShowingFilter}/>
       <Flex flex="1" direction="row">
         {/* <SideBar /> */}
-        <Flex flex="1" direction="row" p="1rem" bg="ui.main">
+        <Flex flex="1" direction="column" p="1rem" bg="ui.main">
           <QueryClientProvider client={queryClient}>
             <GraphInput showingFilter={showingFilter}/>
+            <MyChart/>
           </QueryClientProvider>
         </Flex>
       </Flex>
-      <Box w="100%" h="1000">
-        <MyChart/>
-      </Box>
     </Flex>
   );
 }
