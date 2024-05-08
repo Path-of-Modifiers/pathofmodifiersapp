@@ -19,6 +19,27 @@ interface MinMaxInputProps {
 export const MinMaxInput = ({ text }: MinMaxInputProps) => {
   const { setItemSpecMinIlvl, setItemSpecMaxIlvl } = useGraphInputStore();
 
+  const [minValue, maxValue] = useGraphInputStore((state) => [
+    state.itemSpecState.minIlvl,
+    state.itemSpecState.maxIlvl,
+  ]);
+
+  const getMinValue = () => {
+    if (minValue) {
+      return minValue?.toString();
+    } else {
+      return "";
+    }
+  };
+
+  const getMaxValue = () => {
+    if (maxValue) {
+      return maxValue?.toString();
+    } else {
+      return "";
+    }
+  };
+
   const handleMinChange = (eventValue: string) => {
     const eventValueInt = parseInt(eventValue);
 
@@ -30,6 +51,8 @@ export const MinMaxInput = ({ text }: MinMaxInputProps) => {
 
     setItemSpecMaxIlvl(eventValueInt);
   };
+
+  // useEffect(() => {}, [clearClicked]);
 
   return (
     <Flex
@@ -43,6 +66,7 @@ export const MinMaxInput = ({ text }: MinMaxInputProps) => {
         {text}
       </Text>
       <NumberInput
+        value={getMinValue()}
         step={1}
         key={"itemSpecKey" + "min_number_input"}
         bgColor={"ui.input"}
@@ -64,6 +88,7 @@ export const MinMaxInput = ({ text }: MinMaxInputProps) => {
       </NumberInput>
 
       <NumberInput
+        value={getMaxValue()}
         step={1}
         key={"MinMaxInput" + "max_number_item_input"}
         bgColor={"ui.input"}

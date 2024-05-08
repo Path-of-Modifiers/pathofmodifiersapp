@@ -67,6 +67,8 @@ export const ModifierInput = () => {
   const { addModifierSpec, removeModifierSpec, updateModifierSpec } =
     useGraphInputStore();
 
+  const clearClicked = useGraphInputStore((state) => state.clearClicked);
+
   const [isExpanded, setIsExpanded] = useState(false);
 
   const modifiers: ModifierInput[] | undefined = GetGroupedModifiersByEffect();
@@ -102,7 +104,16 @@ export const ModifierInput = () => {
         },
       ]);
     }
-  }, [searchModifierText, selectedModifiers, modifiers]);
+
+    const clearAllModifiers = () => {
+      setSelectedModifiers([]);
+      setSearchModifierText("");
+    };
+
+    if (clearClicked) {
+      clearAllModifiers();
+    }
+  }, [searchModifierText, selectedModifiers, modifiers, clearClicked]);
 
   // Define the reference to the outside click hook. This is used to close the dropdown when clicking outside of it.
   const ref = useOutsideClick(() => {
