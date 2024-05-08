@@ -16,6 +16,15 @@ export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
 
   const { setBaseType } = useGraphInputStore();
 
+  const getBaseTypeValue = () => {
+    const baseType = useGraphInputStore.getState().baseSpec?.baseType;
+    if (baseType) {
+      return baseType;
+    } else {
+      return "";
+    }
+  };
+
   const handleBaseTypeChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
@@ -52,9 +61,9 @@ export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
         Item Base Type
       </Text>
       <Select
+        value={getBaseTypeValue()}
         bgColor={"ui.input"}
         color={"ui.white"}
-        defaultValue={"Unique"}
         onChange={(e) => handleBaseTypeChange(e)}
         width={150}
         focusBorderColor={"ui.white"}
