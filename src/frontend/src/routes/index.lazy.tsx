@@ -1,6 +1,7 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import SideBar from "../components/Common/Sidebar";
 import Header from "../components/Common/Header";
+import QueryButtons from "../components/Common/QueryButtons";
 import { Flex } from "@chakra-ui/layout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GraphInput } from "../components/Input/GraphInput";
@@ -22,6 +23,7 @@ function Index() {
   return (
     <Flex direction="column" minHeight="100vh">
       <Header />
+      <QueryButtons />
       <Flex flex="1" direction="row">
         <SideBar />
         <Flex flex="1" direction="row" p="1rem" bg="ui.main">
