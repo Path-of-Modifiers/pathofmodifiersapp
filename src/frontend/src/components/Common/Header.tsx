@@ -1,6 +1,6 @@
 import { Flex, Text } from "@chakra-ui/react";
 
-
+// Header component for the application
  const Header = () => {
   return (
     <Flex

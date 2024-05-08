@@ -7,6 +7,7 @@ const handleLeagueChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
   useGraphInputStore.setState({ league: league });
 };
 
+// League Input Component  -  This component is used to select the league of the game.
 export const LeagueInput = () => {
   // Needs to be updated to reflect the defualt leagues available in the game
   const defaultLeague = "Necropolis";

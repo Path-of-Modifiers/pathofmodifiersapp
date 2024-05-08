@@ -1,6 +1,7 @@
 import { Box, Button, Container, Text } from "@chakra-ui/react";
 import { Link } from "@tanstack/react-router";
 
+// 404 page for the application
 const NotFound = () => {
   return (
     <Box bg="ui.main">
