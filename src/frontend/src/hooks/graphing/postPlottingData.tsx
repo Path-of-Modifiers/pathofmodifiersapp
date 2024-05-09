@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {PlottingService, PlotQuery, PlotData } from "../client";
+import {PlottingService, PlotQuery, PlotData } from "../../client";
 import { useQuery } from "@tanstack/react-query";
 
 export const PostPlottingData = (requestBody: PlotQuery) => {
@@ -8,8 +8,10 @@ export const PostPlottingData = (requestBody: PlotQuery) => {
     useQuery({
       queryKey: ["allPlotData"],
       queryFn: async () => {
+        const returnBody = await PlottingService.getPlotDataApiApiV1PlotPost({requestBody});
+
         setPlotData(
-          await PlottingService.getPlotDataApiApiV1PlotPost({requestBody})
+          returnBody
         );
         return 1;
       },
