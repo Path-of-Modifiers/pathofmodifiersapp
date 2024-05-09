@@ -1,3 +1,4 @@
+import requests
 import logging
 import os
 import pandas as pd
@@ -30,12 +31,15 @@ BASEURL = os.getenv("DOMAIN")
 class ContiniousDataRetrieval:
     auth_token = "750d4f685cfa83d024d86508e7ede4ab55b5acc7"
     url = "https://api.pathofexile.com/public-stash-tabs"
-    
+
     if "localhost" not in BASEURL:
-        modifier_url = f"https://{BASEURL}"
+        base_pom_api_url = f"https://{BASEURL}"
     else:
-        modifier_url = "http://src-backend-1"
-    modifier_url += "/api/api_v1/modifier/"
+        base_pom_api_url = "http://src-backend-1"
+    modifier_url = base_pom_api_url + "/api/api_v1/modifier/"
+    latest_item_change_id_url = (
+        base_pom_api_url + "/api/api_v1/item/latest_item_change_id/"
+    )
 
     def __init__(
         self, items_per_batch: int, data_transformers: Dict[str, PoeAPIDataTransformer]
@@ -116,6 +120,10 @@ class ContiniousDataRetrieval:
         currency_df = self.poe_ninja_transformer.transform_into_tables(currency_df)
         return currency_df
 
+    def _get_latest_change_id(self) -> str:
+        latest_item_id = requests.get(self.latest_item_change_id_url).json()
+        return latest_item_id
+
     def retrieve_data(self, initial_next_change_id: str):
         self.logger.info("Program starting up.")
         self.logger.info("Retrieving modifiers from db.")
@@ -146,7 +154,8 @@ def main():
     data_retriever = ContiniousDataRetrieval(
         items_per_batch=items_per_batch, data_transformers=data_transformers
     )
-    initial_next_change_id = "2304883465-2293076633-2219109349-2460729612-2390966652"
+    initial_next_change_id = data_retriever._get_latest_change_id()
+
     # initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272" #earlier
     data_retriever.retrieve_data(initial_next_change_id=initial_next_change_id)
     # n_unique_wanted_items = 15
