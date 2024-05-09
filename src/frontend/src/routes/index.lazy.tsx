@@ -8,7 +8,8 @@ import { Query, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GraphInput } from "../components/Input/GraphInput";
 // import { RenderPlot } from "../components/Graph/PlotlyGraph";
 // import LineChart from "../components/Graph/PlotlyGraph";
-import MyChart from "../components/Graph/test";
+import GraphComponent from "../components/Graph/GraphComponent";
+import testAPI from "../hooks/graphing/processPlottingData";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
@@ -23,6 +24,7 @@ const queryClient = new QueryClient({
   },
 });
 
+
 function Index() {
   const [showingFilter, setShowingFilter] = useState(true);
   return (
@@ -34,7 +36,7 @@ function Index() {
         <Flex flex="1" direction="column" p="1rem" bg="ui.main">
           <QueryClientProvider client={queryClient}>
             <GraphInput showingFilter={showingFilter}/>
-            <MyChart/>
+            <GraphComponent/>
           </QueryClientProvider>
         </Flex>
       </Flex>
