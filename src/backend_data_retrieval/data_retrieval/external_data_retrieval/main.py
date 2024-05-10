@@ -155,9 +155,10 @@ def main():
         items_per_batch=items_per_batch, data_transformers=data_transformers
     )
     initial_next_change_id = data_retriever._get_latest_change_id()
-
-    # initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272" #earlier
+    # initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272" # local test if backend is down
+    
     data_retriever.retrieve_data(initial_next_change_id=initial_next_change_id)
+    
     # n_unique_wanted_items = 15
 
     # api_handler = APIHandler(
