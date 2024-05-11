@@ -17,6 +17,7 @@ from external_data_retrieval.transforming_data.transform_poe_api_data import (
     UniquePoeAPIDataTransformer,
 )
 
+logger = logging.getLogger(__name__)
 logging.basicConfig(
     filename="external_data_retrieval.log",
     level=logging.INFO,
@@ -41,11 +42,11 @@ class ContiniousDataRetrieval:
         self, items_per_batch: int, data_transformers: Dict[str, PoeAPIDataTransformer]
     ):
 
-        self.logger = logging.getLogger(__name__)
         self.data_transformers = {
-            key: data_transformers[key](main_logger=self.logger)
+            key: data_transformers[key](main_logger=logger)
             for key in data_transformers
         }
+        print(self.data_transformers)
 
         self.poe_api_handler = APIHandler(
             url=self.url,
@@ -58,7 +59,7 @@ class ContiniousDataRetrieval:
             url="https://poe.ninja/api/data/currencyoverview?league=Necropolis&type=Currency"
         )
         self.poe_ninja_transformer = TransformPoeNinjaCurrencyAPIData(
-            main_logger=self.logger
+            main_logger=logger
         )
 
     def _get_modifiers(self) -> Dict[str, pd.DataFrame]:
@@ -117,10 +118,10 @@ class ContiniousDataRetrieval:
         return currency_df
 
     def retrieve_data(self, initial_next_change_id: str):
-        self.logger.info("Program starting up.")
-        self.logger.info("Retrieving modifiers from db.")
+        logger.info("Program starting up.")
+        logger.info("Retrieving modifiers from db.")
         modifier_dfs = self._get_modifiers()
-        self.logger.info("Initiating data stream.")
+        logger.info("Initiating data stream.")
         get_df = self.poe_api_handler.dump_stream(
             initial_next_change_id=initial_next_change_id
         )
