@@ -12,8 +12,9 @@ from modifier_data_deposit.modifier_processing_modules import (
 )
 from modifier_data_deposit.utils import df_to_JSON
 
+logger = logging.getLogger(__name__)
 logging.basicConfig(
-    filename="history.log",
+    filename="modifier_data_deposit.log",
     level=logging.INFO,
     format="%(asctime)s:%(levelname)-8s:%(name)s: %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
