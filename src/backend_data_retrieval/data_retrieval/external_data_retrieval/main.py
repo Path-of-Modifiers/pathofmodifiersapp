@@ -25,12 +25,13 @@ logging.basicConfig(
 )
 
 BASEURL = os.getenv("DOMAIN")
+POE_PUBLIC_STASHES_AUTH_TOKEN = os.getenv("POE_PUBLIC_STASHES_AUTH_TOKEN")
 
 
 class ContiniousDataRetrieval:
-    auth_token = "***REMOVED***"
+    auth_token = POE_PUBLIC_STASHES_AUTH_TOKEN
     url = "https://api.pathofexile.com/public-stash-tabs"
-    
+
     if "localhost" not in BASEURL:
         modifier_url = f"https://{BASEURL}"
     else:
