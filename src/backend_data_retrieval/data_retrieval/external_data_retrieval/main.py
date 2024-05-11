@@ -18,7 +18,7 @@ from external_data_retrieval.transforming_data.transform_poe_api_data import (
 )
 
 logging.basicConfig(
-    filename="history.log",
+    filename="external_data_retrieval.log",
     level=logging.INFO,
     format="%(asctime)s:%(levelname)-8s:%(name)s: %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
