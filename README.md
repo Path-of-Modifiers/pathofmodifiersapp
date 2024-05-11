@@ -27,7 +27,7 @@ Website application for checking prices on explicit and affixes specific items i
 1. Go to `http://localhost:8888/`
 2. Enter credentials
    - email: `user@pgadmin.com`
-   - password: `password`
+   - password: ${PGAdmin}
 3. Add server
    - General &#8594; `Name = pom_oltp_db`
    - Connection &#8594; `Host name/address = db`

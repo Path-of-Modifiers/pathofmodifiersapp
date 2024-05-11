@@ -138,7 +138,7 @@ class ContiniousDataRetrieval:
 
 
 def main():
-    auth_token = "750d4f685cfa83d024d86508e7ede4ab55b5acc7"
+    auth_token = POE_PUBLIC_STASHES_AUTH_TOKEN
     url = "https://api.pathofexile.com/public-stash-tabs"
 
     items_per_batch = 300
