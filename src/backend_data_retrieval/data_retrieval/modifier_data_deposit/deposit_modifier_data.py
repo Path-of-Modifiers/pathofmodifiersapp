@@ -12,7 +12,6 @@ from modifier_data_deposit.modifier_processing_modules import (
 )
 from modifier_data_deposit.utils import df_to_JSON
 
-logger = logging.getLogger(__name__)
 logging.basicConfig(
     filename="modifier_data_deposit.log",
     level=logging.INFO,
