@@ -33,7 +33,7 @@ Website application for checking prices on explicit and affixes specific items i
    - Connection &#8594; `Host name/address = db`
       - Use `Host name/address = localhost` if connecting with pgAdmin on own computer
    - Connection &#8594; `username = pom_oltp_superuser`
-   - Connection &#8594; `password = sjukebarna123`
+   - Connection &#8594; `password = ${POSTGRES_PASSWORD}`
    - Leave everything else unchanged
 4. Save
 5. Tables can be found under:
