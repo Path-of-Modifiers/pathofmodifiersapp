@@ -4,14 +4,6 @@
 /* eslint-disable */
 export const $ModifierUpdate = {
     properties: {
-        modifierId: {
-            type: 'any-of',
-            contains: [{
-                type: 'number',
-            }, {
-                type: 'null',
-            }],
-        },
         position: {
             type: 'number',
             isRequired: true,

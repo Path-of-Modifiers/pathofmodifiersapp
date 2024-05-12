@@ -6,3 +6,5 @@
 *\poetry.lock
 
 *\node_modules
+
+src/.env
