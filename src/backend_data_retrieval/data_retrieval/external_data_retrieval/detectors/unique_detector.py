@@ -5,6 +5,8 @@ from external_data_retrieval.detectors.base import DetectorBase
 
 class UniqueDetector(DetectorBase):
     def _specialized_filter(self, df: pd.DataFrame) -> pd.DataFrame:
+        if "rarity" not in df.columns:
+            return df
 
         df = df.loc[df["rarity"] == "Unique"]
 
