@@ -23,9 +23,7 @@
     },
     "/api/api_v1/account/{accountName}": {
       "get": {
-        "tags": [
-          "accounts"
-        ],
+        "tags": ["accounts"],
         "summary": "Get Account",
         "description": "Get the account by mapping with key and value for \"accountName\" . \n\nAlways returns one account.",
         "operationId": "get_account_api_api_v1_account__accountName__get",
@@ -75,9 +73,7 @@
         }
       },
       "put": {
-        "tags": [
-          "accounts"
-        ],
+        "tags": ["accounts"],
         "summary": "Update Account",
         "description": "Update an account by key and value for \"accountName\".\n\nReturns the updated account.",
         "operationId": "update_account_api_api_v1_account__accountName__put",
@@ -126,9 +122,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "accounts"
-        ],
+        "tags": ["accounts"],
         "summary": "Delete Account",
         "description": "Delete an account by key and value \"accountName\".\n\nReturns a message indicating the account was deleted.\nAlways deletes one account.",
         "operationId": "delete_account_api_api_v1_account__accountName__delete",
@@ -170,9 +164,7 @@
     },
     "/api/api_v1/account/": {
       "get": {
-        "tags": [
-          "accounts"
-        ],
+        "tags": ["accounts"],
         "summary": "Get All Accounts",
         "description": "Get all accounts.\n\nReturns a list of all accounts.",
         "operationId": "get_all_accounts_api_api_v1_account__get",
@@ -201,9 +193,7 @@
         }
       },
       "post": {
-        "tags": [
-          "accounts"
-        ],
+        "tags": ["accounts"],
         "summary": "Create Account",
         "description": "Create one or a list of accounts.\n\nReturns the created account or list of accounts.",
         "operationId": "create_account_api_api_v1_account__post",
@@ -265,9 +255,7 @@
     },
     "/api/api_v1/currency/{currencyId}": {
       "get": {
-        "tags": [
-          "currencies"
-        ],
+        "tags": ["currencies"],
         "summary": "Get Currency",
         "description": "Get currency by key and value for \"currencyId\".\n\nAlways returns one currency.",
         "operationId": "get_currency_api_api_v1_currency__currencyId__get",
@@ -317,9 +305,7 @@
         }
       },
       "put": {
-        "tags": [
-          "currencies"
-        ],
+        "tags": ["currencies"],
         "summary": "Update Currency",
         "description": "Update a currency by key and value for \"currencyId\".\n\nReturns the updated currency.",
         "operationId": "update_currency_api_api_v1_currency__currencyId__put",
@@ -368,9 +354,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "currencies"
-        ],
+        "tags": ["currencies"],
         "summary": "Delete Currency",
         "description": "Delete a currency by key and value for \"currencyId\".\n\nReturns a message indicating the currency was deleted.\nAlways deletes one currency.",
         "operationId": "delete_currency_api_api_v1_currency__currencyId__delete",
@@ -412,9 +396,7 @@
     },
     "/api/api_v1/currency/": {
       "get": {
-        "tags": [
-          "currencies"
-        ],
+        "tags": ["currencies"],
         "summary": "Get All Currencies",
         "description": "Get all currencies.\n\nReturns a list of all currencies.",
         "operationId": "get_all_currencies_api_api_v1_currency__get",
@@ -443,9 +425,7 @@
         }
       },
       "post": {
-        "tags": [
-          "currencies"
-        ],
+        "tags": ["currencies"],
         "summary": "Create Currency",
         "description": "Create one or a list of currencies.\n\nReturns the created currency or list of currencies.",
         "operationId": "create_currency_api_api_v1_currency__post",
@@ -507,10 +487,7 @@
     },
     "/api/api_v1/currency/latest_currency_id/": {
       "get": {
-        "tags": [
-          "currencies",
-          "latest_currency_id"
-        ],
+        "tags": ["currencies", "latest_currency_id"],
         "summary": "Get Latest Currency Id",
         "description": "Get the latest currencyId\n\nCan only be used safely on an empty table or directly after an insertion.",
         "operationId": "get_latest_currency_id_api_api_v1_currency_latest_currency_id__get",
@@ -531,9 +508,7 @@
     },
     "/api/api_v1/itemBaseType/{baseType}": {
       "get": {
-        "tags": [
-          "itemBaseTypes"
-        ],
+        "tags": ["itemBaseTypes"],
         "summary": "Get Item Base Type",
         "description": "Get item base type by key and value for \"baseType\".\n\nAlways returns one item base type.",
         "operationId": "get_item_base_type_api_api_v1_itemBaseType__baseType__get",
@@ -583,9 +558,7 @@
         }
       },
       "put": {
-        "tags": [
-          "itemBaseTypes"
-        ],
+        "tags": ["itemBaseTypes"],
         "summary": "Update Item Base Type",
         "description": "Update an item base type by key and value for \"baseType\".\n\nReturns the updated item base type.",
         "operationId": "update_item_base_type_api_api_v1_itemBaseType__baseType__put",
@@ -634,9 +607,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "itemBaseTypes"
-        ],
+        "tags": ["itemBaseTypes"],
         "summary": "Delete Item Base Type",
         "description": "Delete an item base type by key and value for \"baseType\".\n\nReturns a message that the item base type was deleted successfully.\nAlways deletes one item base type.",
         "operationId": "delete_item_base_type_api_api_v1_itemBaseType__baseType__delete",
@@ -678,9 +649,7 @@
     },
     "/api/api_v1/itemBaseType/": {
       "get": {
-        "tags": [
-          "itemBaseTypes"
-        ],
+        "tags": ["itemBaseTypes"],
         "summary": "Get All Item Base Types",
         "description": "Get all item base types.\n\nReturns a list of all item base types.",
         "operationId": "get_all_item_base_types_api_api_v1_itemBaseType__get",
@@ -709,9 +678,7 @@
         }
       },
       "post": {
-        "tags": [
-          "itemBaseTypes"
-        ],
+        "tags": ["itemBaseTypes"],
         "summary": "Create Item Base Type",
         "description": "Create one or a list of new item base types.\n\nReturns the created item base type or list of item base types.",
         "operationId": "create_item_base_type_api_api_v1_itemBaseType__post",
@@ -771,11 +738,108 @@
         }
       }
     },
-    "/api/api_v1/itemModifier/{itemId}": {
+    "/api/api_v1/itemBaseType/baseTypes/": {
       "get": {
         "tags": [
-          "itemModifiers"
+          "itemBaseTypes"
         ],
+        "summary": "Get Base Types",
+        "description": "Get all base types.\n\nReturns a list of all base types.",
+        "operationId": "get_base_types_api_api_v1_itemBaseType_baseTypes__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseType"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/BaseType"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Get Base Types Api Api V1 Itembasetype Basetypes  Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/itemBaseType/uniqueCategories/": {
+      "get": {
+        "tags": [
+          "itemBaseTypes"
+        ],
+        "summary": "Get Unique Categories",
+        "description": "Get all unique categories.\n\nReturns a list of all categories.",
+        "operationId": "get_unique_categories_api_api_v1_itemBaseType_uniqueCategories__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ItemBaseTypeCategory"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemBaseTypeCategory"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Get Unique Categories Api Api V1 Itembasetype Uniquecategories  Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/itemBaseType/uniqueSubCategories/": {
+      "get": {
+        "tags": [
+          "itemBaseTypes"
+        ],
+        "summary": "Get Unique Sub Categories",
+        "description": "Get all unique sub categories.\n\nReturns a list of all sub categories.",
+        "operationId": "get_unique_sub_categories_api_api_v1_itemBaseType_uniqueSubCategories__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ItemBaseTypeSubCategory"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemBaseTypeSubCategory"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Get Unique Sub Categories Api Api V1 Itembasetype Uniquesubcategories  Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/itemModifier/{itemId}": {
+      "get": {
+        "tags": ["itemModifiers"],
         "summary": "Get Item Modifier",
         "description": "Get item modifier or list of item modifiers by key and \nvalue for \"itemId\", optional \"modifierId\" and optional \"position\".    \n\nDominant key is \"itemId\".\n\nReturns one or a list of item modifiers.",
         "operationId": "get_item_modifier_api_api_v1_itemModifier__itemId__get",
@@ -859,9 +923,7 @@
     },
     "/api/api_v1/itemModifier/": {
       "get": {
-        "tags": [
-          "itemModifiers"
-        ],
+        "tags": ["itemModifiers"],
         "summary": "Get All Item Modifiers",
         "description": "Get all item modifiers.\n\nReturns a list of all item modifiers.",
         "operationId": "get_all_item_modifiers_api_api_v1_itemModifier__get",
@@ -890,9 +952,7 @@
         }
       },
       "post": {
-        "tags": [
-          "itemModifiers"
-        ],
+        "tags": ["itemModifiers"],
         "summary": "Create Item Modifier",
         "description": "Create one or a list item modifiers.\n\nReturns the created item modifier or list of item modifiers.",
         "operationId": "create_item_modifier_api_api_v1_itemModifier__post",
@@ -954,9 +1014,7 @@
     },
     "/api/api_v1/itemModifier/item={itemId}": {
       "put": {
-        "tags": [
-          "itemModifiers"
-        ],
+        "tags": ["itemModifiers"],
         "summary": "Update Item Modifier",
         "description": "Update an item modifier by key and value for \n\"itemId\", optional \"modifierId\" and optional \"position\".\n    \nDominant key is \"itemId\".\n\nReturns the updated item modifier.",
         "operationId": "update_item_modifier_api_api_v1_itemModifier_item__itemId__put",
@@ -1023,9 +1081,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "itemModifiers"
-        ],
+        "tags": ["itemModifiers"],
         "summary": "Delete Item Modifier",
         "description": "Delete an item modifier by key and value for \n\"itemId\", optional \"modifierId\" and optional \"position\".\n    \nDominant key is \"itemId\".\n\nReturns a message that the item modifier was deleted successfully.\nAlways deletes one item modifier.",
         "operationId": "delete_item_modifier_api_api_v1_itemModifier_item__itemId__delete",
@@ -1096,9 +1152,7 @@
     },
     "/api/api_v1/item/{itemId}": {
       "get": {
-        "tags": [
-          "items"
-        ],
+        "tags": ["items"],
         "summary": "Get Item",
         "description": "Get item by key and value for \"itemId\".\n\nAlways returns one item.",
         "operationId": "get_item_api_api_v1_item__itemId__get",
@@ -1148,9 +1202,7 @@
         }
       },
       "put": {
-        "tags": [
-          "items"
-        ],
+        "tags": ["items"],
         "summary": "Update Item",
         "description": "Update an item by key and value for \"itemId\".\n\nReturns the updated item.",
         "operationId": "update_item_api_api_v1_item__itemId__put",
@@ -1199,9 +1251,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "items"
-        ],
+        "tags": ["items"],
         "summary": "Delete Item",
         "description": "Delete an item by key and value for \"itemId\".\n\nReturns a message indicating the item was deleted.\nAlways deletes one item.",
         "operationId": "delete_item_api_api_v1_item__itemId__delete",
@@ -1243,10 +1293,7 @@
     },
     "/api/api_v1/item/latest_item_id/": {
       "get": {
-        "tags": [
-          "items",
-          "latest_item_id"
-        ],
+        "tags": ["items", "latest_item_id"],
         "summary": "Get Latest Item Id",
         "description": "Get the latest itemId\n\nCan only be used safely on an empty table or directly after an insertion.",
         "operationId": "get_latest_item_id_api_api_v1_item_latest_item_id__get",
@@ -1267,9 +1314,7 @@
     },
     "/api/api_v1/item/": {
       "get": {
-        "tags": [
-          "items"
-        ],
+        "tags": ["items"],
         "summary": "Get All Items",
         "description": "Get all items.\n\nReturns a list of all items.",
         "operationId": "get_all_items_api_api_v1_item__get",
@@ -1298,9 +1343,7 @@
         }
       },
       "post": {
-        "tags": [
-          "items"
-        ],
+        "tags": ["items"],
         "summary": "Create Item",
         "description": "Create one or a list of new items.\n\nReturns the created item or list of items.",
         "operationId": "create_item_api_api_v1_item__post",
@@ -1362,11 +1405,9 @@
     },
     "/api/api_v1/modifier/{modifierId}": {
       "get": {
-        "tags": [
-          "modifiers"
-        ],
+        "tags": ["modifiers"],
         "summary": "Get Modifier",
-        "description": "Get modifier or list of modifiers by key and \nvalue for \"modifierId\" and optional \"position\" \n\nDominant key is \"modifierId\".\n\nReturns one or a list of modifiers.",
+        "description": "Get modifier or list of modifiers by key and\nvalue for \"modifierId\" and optional \"position\"\n\nDominant key is \"modifierId\".\n\nReturns one or a list of modifiers.",
         "operationId": "get_modifier_api_api_v1_modifier__modifierId__get",
         "parameters": [
           {
@@ -1430,9 +1471,7 @@
         }
       },
       "put": {
-        "tags": [
-          "modifiers"
-        ],
+        "tags": ["modifiers"],
         "summary": "Update Modifier",
         "description": "Update a modifier by key and value for \"modifierId\" and \"position\".\n\nDominant key is \"modifierId\".\n\nReturns the updated modifier.",
         "operationId": "update_modifier_api_api_v1_modifier__modifierId__put",
@@ -1490,11 +1529,9 @@
         }
       },
       "delete": {
-        "tags": [
-          "modifiers"
-        ],
+        "tags": ["modifiers"],
         "summary": "Delete Modifier",
-        "description": "Delete a modifier by key and value for \"modifierId\" \nand optional \"position\".\n\nDominant key is \"modifierId\".\n\nReturns a message that the modifier was deleted.\nAlways deletes one modifier.",
+        "description": "Delete a modifier by key and value for \"modifierId\"\nand optional \"position\".\n\nDominant key is \"modifierId\".\n\nReturns a message that the modifier was deleted.\nAlways deletes one modifier.",
         "operationId": "delete_modifier_api_api_v1_modifier__modifierId__delete",
         "parameters": [
           {
@@ -1550,9 +1587,7 @@
     },
     "/api/api_v1/modifier/": {
       "get": {
-        "tags": [
-          "modifiers"
-        ],
+        "tags": ["modifiers"],
         "summary": "Get All Modifiers",
         "description": "Get all modifiers.\n\nReturns a list of all modifiers.",
         "operationId": "get_all_modifiers_api_api_v1_modifier__get",
@@ -1581,9 +1616,7 @@
         }
       },
       "post": {
-        "tags": [
-          "modifiers"
-        ],
+        "tags": ["modifiers"],
         "summary": "Create Modifier",
         "description": "Create one or a list of new modifiers.\n\nReturns the created modifier or list of modifiers.",
         "operationId": "create_modifier_api_api_v1_modifier__post",
@@ -1643,11 +1676,42 @@
         }
       }
     },
-    "/api/api_v1/stash/{stashId}": {
+    "/api/api_v1/modifier/grouped_modifiers_by_effect/": {
       "get": {
         "tags": [
-          "stashes"
+          "modifiers"
         ],
+        "summary": "Get Grouped Modifier By Effect",
+        "description": "Get all grouped modifiers by effect.\n\nReturns a list of all grouped modifiers by effect.",
+        "operationId": "get_grouped_modifier_by_effect_api_api_v1_modifier_grouped_modifiers_by_effect__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/GroupedModifierByEffect"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/GroupedModifierByEffect"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Get Grouped Modifier By Effect Api Api V1 Modifier Grouped Modifiers By Effect  Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/stash/{stashId}": {
+      "get": {
+        "tags": ["stashes"],
         "summary": "Get Stash",
         "description": "Get stash by key and value for \"stashId\".\n\nAlways returns one stash.",
         "operationId": "get_stash_api_api_v1_stash__stashId__get",
@@ -1697,9 +1761,7 @@
         }
       },
       "put": {
-        "tags": [
-          "stashes"
-        ],
+        "tags": ["stashes"],
         "summary": "Update Stash",
         "description": "Update a stash by key and value for \"stashId\".\n\nReturns the updated stash.",
         "operationId": "update_stash_api_api_v1_stash__stashId__put",
@@ -1748,9 +1810,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "stashes"
-        ],
+        "tags": ["stashes"],
         "summary": "Delete Stash",
         "description": "Delete a stash by key and value for \"stashId\".\n\nReturns a message that the stash was deleted successfully.\nAlways deletes one stash.",
         "operationId": "delete_stash_api_api_v1_stash__stashId__delete",
@@ -1792,9 +1852,7 @@
     },
     "/api/api_v1/stash/": {
       "get": {
-        "tags": [
-          "stashes"
-        ],
+        "tags": ["stashes"],
         "summary": "Get All Stashes",
         "description": "Get all stashes.\n\nReturns a list of all stashes.",
         "operationId": "get_all_stashes_api_api_v1_stash__get",
@@ -1823,9 +1881,7 @@
         }
       },
       "post": {
-        "tags": [
-          "stashes"
-        ],
+        "tags": ["stashes"],
         "summary": "Create Stash",
         "description": "Create one or a list of new stashes.\n\nReturns the created stash or list of stashes.",
         "operationId": "create_stash_api_api_v1_stash__post",
@@ -1884,6 +1940,48 @@
           }
         }
       }
+    },
+    "/api/api_v1/plot/": {
+      "post": {
+        "tags": [
+          "plotting"
+        ],
+        "summary": "Get Plot Data",
+        "description": "Takes a query based on the 'PlotQuery' schema and retrieves data\nto be used for plotting in the format of the 'PlotData' schema.\n\nThe 'PlotQuery' schema allows for modifier restriction and item specifications.",
+        "operationId": "get_plot_data_api_api_v1_plot__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlotQuery"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlotData"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1911,16 +2009,22 @@
             "title": "Createdat"
           },
           "updatedAt": {
-            "type": "string",
-            "format": "date-time",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Updatedat"
           }
         },
         "type": "object",
         "required": [
           "accountName",
-          "createdAt",
-          "updatedAt"
+          "createdAt"
         ],
         "title": "Account"
       },
@@ -1943,9 +2047,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "accountName"
-        ],
+        "required": ["accountName"],
         "title": "AccountCreate"
       },
       "AccountUpdate": {
@@ -1967,10 +2069,60 @@
           }
         },
         "type": "object",
-        "required": [
-          "accountName"
-        ],
+        "required": ["accountName"],
         "title": "AccountUpdate"
+      },
+      "BaseSpecs": {
+        "properties": {
+          "baseType": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Basetype"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "subCategory": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subcategory"
+          }
+        },
+        "type": "object",
+        "title": "BaseSpecs"
+      },
+      "BaseType": {
+        "properties": {
+          "baseType": {
+            "type": "string",
+            "title": "Basetype"
+          }
+        },
+        "type": "object",
+        "required": [
+          "baseType"
+        ],
+        "title": "BaseType"
       },
       "Currency": {
         "properties": {
@@ -2022,11 +2174,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "tradeName",
-          "valueInChaos",
-          "iconUrl"
-        ],
+        "required": ["tradeName", "valueInChaos", "iconUrl"],
         "title": "CurrencyCreate"
       },
       "CurrencyUpdate": {
@@ -2045,12 +2193,97 @@
           }
         },
         "type": "object",
-        "required": [
-          "tradeName",
-          "valueInChaos",
-          "iconUrl"
-        ],
+        "required": ["tradeName", "valueInChaos", "iconUrl"],
         "title": "CurrencyUpdate"
+      },
+      "GroupedModifierByEffect": {
+        "properties": {
+          "modifierId": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Modifierid"
+          },
+          "position": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Position"
+          },
+          "minRoll": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Minroll"
+          },
+          "maxRoll": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Maxroll"
+          },
+          "textRolls": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Textrolls"
+          },
+          "effect": {
+            "type": "string",
+            "title": "Effect"
+          },
+          "static": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Static"
+          }
+        },
+        "type": "object",
+        "required": [
+          "modifierId",
+          "position",
+          "minRoll",
+          "maxRoll",
+          "textRolls",
+          "effect",
+          "static"
+        ],
+        "title": "GroupedModifierByEffect"
       },
       "HTTPValidationError": {
         "properties": {
@@ -2436,8 +2669,15 @@
             "title": "Createdat"
           },
           "updatedAt": {
-            "type": "string",
-            "format": "date-time",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Updatedat"
           }
         },
@@ -2445,10 +2685,22 @@
         "required": [
           "baseType",
           "category",
-          "createdAt",
-          "updatedAt"
+          "createdAt"
         ],
         "title": "ItemBaseType"
+      },
+      "ItemBaseTypeCategory": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "title": "Category"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category"
+        ],
+        "title": "ItemBaseTypeCategory"
       },
       "ItemBaseTypeCreate": {
         "properties": {
@@ -2473,11 +2725,21 @@
           }
         },
         "type": "object",
-        "required": [
-          "baseType",
-          "category"
-        ],
+        "required": ["baseType", "category"],
         "title": "ItemBaseTypeCreate"
+      },
+      "ItemBaseTypeSubCategory": {
+        "properties": {
+          "subCategory": {
+            "type": "string",
+            "title": "Subcategory"
+          }
+        },
+        "type": "object",
+        "required": [
+          "subCategory"
+        ],
+        "title": "ItemBaseTypeSubCategory"
       },
       "ItemBaseTypeUpdate": {
         "properties": {
@@ -2502,10 +2764,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "baseType",
-          "category"
-        ],
+        "required": ["baseType", "category"],
         "title": "ItemBaseTypeUpdate"
       },
       "ItemCreate": {
@@ -2800,8 +3059,15 @@
             "title": "Createdat"
           },
           "updatedAt": {
-            "type": "string",
-            "format": "date-time",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Updatedat"
           }
         },
@@ -2810,8 +3076,7 @@
           "itemId",
           "modifierId",
           "position",
-          "createdAt",
-          "updatedAt"
+          "createdAt"
         ],
         "title": "ItemModifier"
       },
@@ -2842,11 +3107,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "itemId",
-          "modifierId",
-          "position"
-        ],
+        "required": ["itemId", "modifierId", "position"],
         "title": "ItemModifierCreate"
       },
       "ItemModifierUpdate": {
@@ -2876,12 +3137,167 @@
           }
         },
         "type": "object",
-        "required": [
-          "itemId",
-          "modifierId",
-          "position"
-        ],
+        "required": ["itemId", "modifierId", "position"],
         "title": "ItemModifierUpdate"
+      },
+      "ItemSpecs": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "identified": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Identified"
+          },
+          "ilvl": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ilvl"
+          },
+          "rarity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rarity"
+          },
+          "corrupted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corrupted"
+          },
+          "delve": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delve"
+          },
+          "fractured": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fractured"
+          },
+          "synthesized": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Synthesized"
+          },
+          "replica": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replica"
+          },
+          "influences": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Influences"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "searing": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Searing"
+          },
+          "tangled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tangled"
+          },
+          "isRelic": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isrelic"
+          },
+          "foilVariation": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Foilvariation"
+          }
+        },
+        "type": "object",
+        "title": "ItemSpecs"
       },
       "ItemUpdate": {
         "properties": {
@@ -3146,17 +3562,6 @@
       },
       "Modifier": {
         "properties": {
-          "modifierId": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Modifierid"
-          },
           "position": {
             "type": "integer",
             "title": "Position"
@@ -3318,6 +3723,10 @@
               }
             ],
             "title": "Veiled"
+          },
+          "modifierId": {
+            "type": "integer",
+            "title": "Modifierid"
           },
           "createdAt": {
             "type": "string",
@@ -3325,8 +3734,15 @@
             "title": "Createdat"
           },
           "updatedAt": {
-            "type": "string",
-            "format": "date-time",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Updatedat"
           }
         },
@@ -3334,24 +3750,13 @@
         "required": [
           "position",
           "effect",
-          "createdAt",
-          "updatedAt"
+          "modifierId",
+          "createdAt"
         ],
         "title": "Modifier"
       },
       "ModifierCreate": {
         "properties": {
-          "modifierId": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Modifierid"
-          },
           "position": {
             "type": "integer",
             "title": "Position"
@@ -3513,28 +3918,64 @@
               }
             ],
             "title": "Veiled"
+          },
+          "modifierId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Modifierid"
           }
         },
         "type": "object",
-        "required": [
-          "position",
-          "effect"
-        ],
+        "required": ["position", "effect"],
         "title": "ModifierCreate"
+      },
+      "ModifierLimitations": {
+        "properties": {
+          "maxRoll": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maxroll"
+          },
+          "minRoll": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minroll"
+          },
+          "textRoll": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Textroll"
+          }
+        },
+        "type": "object",
+        "title": "ModifierLimitations"
       },
       "ModifierUpdate": {
         "properties": {
-          "modifierId": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Modifierid"
-          },
           "position": {
             "type": "integer",
             "title": "Position"
@@ -3699,11 +4140,81 @@
           }
         },
         "type": "object",
-        "required": [
-          "position",
-          "effect"
-        ],
+        "required": ["position", "effect"],
         "title": "ModifierUpdate"
+      },
+      "PlotData": {
+        "properties": {
+          "valueInChaos": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Valueinchaos"
+          },
+          "timeStamp": {
+            "items": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "type": "array",
+            "title": "Timestamp"
+          },
+          "mostCommonCurrencyUsed": {
+            "type": "string",
+            "title": "Mostcommoncurrencyused"
+          },
+          "conversionValue": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Conversionvalue"
+          }
+        },
+        "type": "object",
+        "required": [
+          "valueInChaos",
+          "timeStamp",
+          "mostCommonCurrencyUsed",
+          "conversionValue"
+        ],
+        "title": "PlotData"
+      },
+      "PlotQuery": {
+        "properties": {
+          "league": {
+            "type": "string",
+            "title": "League"
+          },
+          "itemSpecifications": {
+            "$ref": "#/components/schemas/ItemSpecs"
+          },
+          "baseSpecifications": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BaseSpecs"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "wantedModifiers": {
+            "items": {
+              "$ref": "#/components/schemas/WantedModifier"
+            },
+            "type": "array",
+            "title": "Wantedmodifiers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "league",
+          "itemSpecifications",
+          "wantedModifiers"
+        ],
+        "title": "PlotQuery"
       },
       "Stash": {
         "properties": {
@@ -3729,8 +4240,15 @@
             "title": "Createdat"
           },
           "updatedAt": {
-            "type": "string",
-            "format": "date-time",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Updatedat"
           }
         },
@@ -3740,8 +4258,7 @@
           "public",
           "league",
           "stashId",
-          "createdAt",
-          "updatedAt"
+          "createdAt"
         ],
         "title": "Stash"
       },
@@ -3765,12 +4282,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "accountName",
-          "public",
-          "league",
-          "stashId"
-        ],
+        "required": ["accountName", "public", "league", "stashId"],
         "title": "StashCreate"
       },
       "StashUpdate": {
@@ -3789,11 +4301,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "accountName",
-          "public",
-          "league"
-        ],
+        "required": ["accountName", "public", "league"],
         "title": "StashUpdate"
       },
       "ValidationError": {
@@ -3822,12 +4330,36 @@
           }
         },
         "type": "object",
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
+        "required": ["loc", "msg", "type"],
         "title": "ValidationError"
+      },
+      "WantedModifier": {
+        "properties": {
+          "modifierId": {
+            "type": "integer",
+            "title": "Modifierid"
+          },
+          "position": {
+            "type": "integer",
+            "title": "Position"
+          },
+          "modifierLimitations": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModifierLimitations"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "modifierId",
+          "position"
+        ],
+        "title": "WantedModifier"
       }
     }
   }

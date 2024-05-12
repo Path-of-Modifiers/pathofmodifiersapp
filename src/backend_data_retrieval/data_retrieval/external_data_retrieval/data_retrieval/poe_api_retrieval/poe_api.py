@@ -1,11 +1,12 @@
 import requests
 import time
-import json
+import logging
 import asyncio
 import aiohttp
+import os
 import pandas as pd
 from tqdm import tqdm
-from typing import List, Union, Tuple, Dict, Coroutine, Iterator
+from typing import List, Union, Tuple, Dict, Coroutine, Iterator, Optional
 
 from external_data_retrieval.detectors.unique_detector import (
     UniqueJewelDetector,
@@ -17,16 +18,25 @@ from external_data_retrieval.detectors.unique_detector import (
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
+BASEURL = os.getenv("DOMAIN")
+
 
 class APIHandler:
     headers = {
         "User-Agent": "OAuth pathofmodifiers/0.1.0 (contact: ***REMOVED***) StrictMode"
     }
 
+    if "localhost" not in BASEURL:
+        base_pom_api_url = f"https://{BASEURL}"
+    else:
+        base_pom_api_url = "http://src-backend-1"
+
     def __init__(
         self,
         url: str,
         auth_token: str,
+        *,
+        logger_parent: logging.Logger,
         n_wanted_items: int = 100,
         n_unique_wanted_items: int = 5,
         item_detectors: List[Union[UniqueDetector]] = [
@@ -55,6 +65,8 @@ class APIHandler:
 
         self.n_unique_items_found = 0
         self.n_unique_wanted_items = n_unique_wanted_items
+
+        self.logger = logger_parent.getChild("API_handler")
 
     def _json_to_df(self, stashes: List) -> pd.DataFrame:
         df_temp = pd.json_normalize(stashes)
@@ -97,19 +109,26 @@ class APIHandler:
         df = self._json_to_df(stashes)
 
         # The stashes are fed to all item detectors, slowly being filtered down
-        for item_detector in self.item_detectors:
-            (
-                df_filtered,
-                item_count,
-                n_unique_found_items,
-                df_leftover,
-            ) = item_detector.iterate_stashes(df)
+        try:
+            for item_detector in self.item_detectors:
+                (
+                    df_filtered,
+                    item_count,
+                    n_unique_found_items,
+                    df_leftover,
+                ) = item_detector.iterate_stashes(df)
 
-            df_wanted = pd.concat((df_wanted, df_filtered))
-            n_new_items += item_count
-            n_total_unique_items += n_unique_found_items
+                df_wanted = pd.concat((df_wanted, df_filtered))
+                n_new_items += item_count
+                n_total_unique_items += n_unique_found_items
 
-            df = df_leftover.copy(deep=True)
+                df = df_leftover.copy(deep=True)
+        except Exception as e:
+            self.logger.critical(
+                f"While checking stashes (detector: {item_detector}), the exception below occured:"
+            )
+            self.logger.critical(e)
+            raise e
 
         # Updates progress bars
         self.n_found_items += n_new_items
@@ -123,10 +142,31 @@ class APIHandler:
 
         return df_wanted
 
-    def _initialize_stream(self, next_change_id: str) -> Tuple[str, List]:
+    def _get_latest_change_id(self) -> str:
+
+        latest_item_change_id_url = (
+            self.base_pom_api_url + "/api/api_v1/item/latest_item_change_id/"
+        )
+        latest_item_id = requests.get(latest_item_change_id_url).json()
+
+        response = requests.get(
+            self.url, headers=self.headers, params={"id": latest_item_id}
+        )
+        response_json = response.json()
+
+        next_change_id = response_json["next_change_id"]
+
+        return next_change_id
+
+    def _initialize_stream(
+        self, next_change_id: Optional[str] = None
+    ) -> Tuple[str, List]:
         """
         Makes an initial, synchronous, API call.
         """
+        if next_change_id is None:
+            next_change_id = self._get_latest_change_id()
+
         response = requests.get(
             self.url, headers=self.headers, params={"id": next_change_id}
         )
@@ -169,7 +209,7 @@ class APIHandler:
             return next_change_id, stashes
 
     async def _follow_stream(
-        self, initial_next_change_id: str
+        self, initial_next_change_id: Optional[str] = None
     ) -> Tuple[pd.DataFrame, str]:
         """
         Follows the API stream until conditions are met
@@ -219,7 +259,7 @@ class APIHandler:
         return df, next_change_id
 
     def dump_stream(
-        self, initial_next_change_id: str = None, track_progress: bool = True
+        self, initial_next_change_id: Optional[str] = None, track_progress: bool = True
     ) -> Iterator[pd.DataFrame]:
         """
         The method which begins making API calls and fetching data.

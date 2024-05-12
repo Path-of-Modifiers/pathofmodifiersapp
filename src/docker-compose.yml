@@ -1,5 +1,4 @@
 services:
-
   db:
     image: postgres:16.1
     restart: always
@@ -19,13 +18,13 @@ services:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
 
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready" ]
+      test: ["CMD-SHELL", "pg_isready"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   backend:
-    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    image: "${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}"
     restart: always
     networks:
       # Use the public network created to be shared between Traefik and
@@ -43,6 +42,11 @@ services:
       - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS?Variable not set}
       # Allow explicit env var override for tests
       - SMTP_HOST=${SMTP_HOST}
+      - POSTGRES_SERVER=db
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER?Variable not set}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
     build:
       context: ./backend_api
       args:
@@ -78,7 +82,7 @@ services:
     env_file:
       - .env
     build:
-      context: ./backend/data_retrieval
+      context: ./backend_data_retrieval
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
 
@@ -87,8 +91,8 @@ services:
     container_name: pgadmin4_container
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: pomodifiers@outlook.com
-      PGADMIN_DEFAULT_PASSWORD: sjukebarna123
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL?Variable not set}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD?Variable not set}
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     networks:
@@ -108,7 +112,7 @@ services:
       - traefik.http.services.${STACK_NAME?Variable not set}-pgadmin.loadbalancer.server.port=5432
 
   frontend:
-    image: '${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}'
+    image: "${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}"
     restart: always
     networks:
       - traefik-public
