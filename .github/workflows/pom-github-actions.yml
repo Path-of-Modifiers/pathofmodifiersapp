@@ -14,6 +14,8 @@ jobs:
           compose-file: |
             src/docker-compose.yml
             src/docker-compose.override.yml
+          buildx-args: --platform linux/amd64,linux/arm64
+          up-flags: --build
         env:
           TESTING: False
 
