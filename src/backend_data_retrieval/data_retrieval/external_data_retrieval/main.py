@@ -31,7 +31,7 @@ BASEURL = os.getenv("DOMAIN")
 class ContiniousDataRetrieval:
     auth_token = "***REMOVED***"
     url = "https://api.pathofexile.com/public-stash-tabs"
-    
+
     if "localhost" not in BASEURL:
         modifier_url = f"https://{BASEURL}"
     else:
@@ -43,14 +43,13 @@ class ContiniousDataRetrieval:
     ):
 
         self.data_transformers = {
-            key: data_transformers[key](main_logger=logger)
-            for key in data_transformers
+            key: data_transformers[key](main_logger=logger) for key in data_transformers
         }
-        print(self.data_transformers)
 
         self.poe_api_handler = APIHandler(
             url=self.url,
             auth_token=self.auth_token,
+            logger_parent=logger,
             n_wanted_items=items_per_batch,
             n_unique_wanted_items=10,
         )
@@ -59,7 +58,7 @@ class ContiniousDataRetrieval:
             url="https://poe.ninja/api/data/currencyoverview?league=Necropolis&type=Currency"
         )
         self.poe_ninja_transformer = TransformPoeNinjaCurrencyAPIData(
-            main_logger=logger
+            logger_parent=logger
         )
 
     def _get_modifiers(self) -> Dict[str, pd.DataFrame]:
@@ -147,8 +146,9 @@ def main():
     data_retriever = ContiniousDataRetrieval(
         items_per_batch=items_per_batch, data_transformers=data_transformers
     )
-    initial_next_change_id = "2304883465-2293076633-2219109349-2460729612-2390966652"
+    # initial_next_change_id = "2304883465-2293076633-2219109349-2460729612-2390966652"
     # initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272" #earlier
+    initial_next_change_id = "2342190448-2327160230-2253032822-2498081795-2427336760"
     data_retriever.retrieve_data(initial_next_change_id=initial_next_change_id)
     # n_unique_wanted_items = 15
 
