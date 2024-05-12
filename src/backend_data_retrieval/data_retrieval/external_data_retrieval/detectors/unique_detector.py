@@ -92,9 +92,6 @@ class UniqueJewelleryDetector(UniqueDetector):
     def __str__(self):
         return "Unique Jewellery Detector"
 
-    def __str__(self):
-        return "Unique Jewellery Detector"
-
 
 class UniqueArmourDetector(UniqueDetector):
     wanted_items_dict = {
@@ -104,7 +101,13 @@ class UniqueArmourDetector(UniqueDetector):
     }
     wanted_items = ["Forbidden Shako", "Skin of the Lords", "Shroud of the Lightless"]
 
+    def __str__(self):
+        return "Unique Armour Detector"
+
 
 class UniqueWeaponDetector(UniqueDetector):
     wanted_items_dict = {"Vaal Rapier": ["Paradoxica"]}
     wanted_items = ["Paradoxica"]
+
+    def __str__(self):
+        return "Unique Weapon Detector"
