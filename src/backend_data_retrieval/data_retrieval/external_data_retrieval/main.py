@@ -1,7 +1,8 @@
+import requests
 import logging
 import os
 import pandas as pd
-from typing import List, Union, Dict
+from typing import Dict, Optional
 
 from external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
     APIHandler,
@@ -33,10 +34,10 @@ class ContiniousDataRetrieval:
     url = "https://api.pathofexile.com/public-stash-tabs"
 
     if "localhost" not in BASEURL:
-        modifier_url = f"https://{BASEURL}"
+        base_pom_api_url = f"https://{BASEURL}"
     else:
-        modifier_url = "http://src-backend-1"
-    modifier_url += "/api/api_v1/modifier/"
+        base_pom_api_url = "http://src-backend-1"
+    modifier_url = base_pom_api_url + "/api/api_v1/modifier/"
 
     def __init__(
         self,
@@ -121,7 +122,7 @@ class ContiniousDataRetrieval:
         currency_df = self.poe_ninja_transformer.transform_into_tables(currency_df)
         return currency_df
 
-    def retrieve_data(self, initial_next_change_id: str):
+    def retrieve_data(self, initial_next_change_id: Optional[str] = None):
         self.logger.info("Program starting up.")
         self.logger.info("Retrieving modifiers from db.")
         modifier_dfs = self._get_modifiers()
@@ -153,10 +154,10 @@ def main():
         data_transformers=data_transformers,
         logger=logger,
     )
-    # initial_next_change_id = "2304883465-2293076633-2219109349-2460729612-2390966652"
-    # initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272" #earlier
-    initial_next_change_id = "2342190448-2327160230-2253032822-2498081795-2427336760"
-    data_retriever.retrieve_data(initial_next_change_id=initial_next_change_id)
+    # initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272" # local test if backend is down
+
+    data_retriever.retrieve_data()
+
     # n_unique_wanted_items = 15
 
     # api_handler = APIHandler(
