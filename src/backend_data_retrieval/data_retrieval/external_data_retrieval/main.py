@@ -2,7 +2,7 @@ import requests
 import logging
 import os
 import pandas as pd
-from typing import List, Union, Dict
+from typing import Dict, Optional
 
 from external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
     APIHandler,
@@ -32,7 +32,6 @@ BASEURL = os.getenv("DOMAIN")
 class ContiniousDataRetrieval:
     auth_token = "***REMOVED***"
     url = "https://api.pathofexile.com/public-stash-tabs"
-
 
     if "localhost" not in BASEURL:
         base_pom_api_url = f"https://{BASEURL}"
@@ -126,11 +125,7 @@ class ContiniousDataRetrieval:
         currency_df = self.poe_ninja_transformer.transform_into_tables(currency_df)
         return currency_df
 
-    def _get_latest_change_id(self) -> str:
-        latest_item_id = requests.get(self.latest_item_change_id_url).json()
-        return latest_item_id
-
-    def retrieve_data(self, initial_next_change_id: str):
+    def retrieve_data(self, initial_next_change_id: Optional[str] = None):
         self.logger.info("Program starting up.")
         self.logger.info("Retrieving modifiers from db.")
         modifier_dfs = self._get_modifiers()
@@ -164,9 +159,9 @@ def main():
     )
     initial_next_change_id = data_retriever._get_latest_change_id()
     # initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272" # local test if backend is down
-    
+
     data_retriever.retrieve_data(initial_next_change_id=initial_next_change_id)
-    
+
     # n_unique_wanted_items = 15
 
     # api_handler = APIHandler(
