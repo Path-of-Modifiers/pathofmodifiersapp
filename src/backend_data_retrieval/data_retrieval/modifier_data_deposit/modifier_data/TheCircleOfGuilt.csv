@@ -8,6 +8,7 @@ minRoll,maxRoll,textRolls,position,effect,static,unique
 ,,"Thunder-Ash-Ice-Purity-Agony",1,"Herald of # has #% increased Mana Reservation Efficiency",,True
 40,60,,0,"#% increased # Damage while affected by Herald of #",,True
 ,,"Lightning-Fire-Cold-Physical-Chaos",1,"#% increased # Damage while affected by Herald of #",,True
+,,"Thunder-Ash-Ice-Purity-Agony",2,"#% increased # Damage while affected by Herald of #",,True
 ,,"Thunder-Ash-Ice-Purity-Agony",0,"Herald of # has #% increased Buff Effect",,True
 40,60,,1,"Herald of # has #% increased Buff Effect",,True
 ,,,0,"4% additional Physical Damage Reduction while affected by Herald of Purity",True,True
