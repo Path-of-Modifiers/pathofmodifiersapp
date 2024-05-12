@@ -18,8 +18,9 @@ from external_data_retrieval.transforming_data.transform_poe_api_data import (
     UniquePoeAPIDataTransformer,
 )
 
+logger = logging.getLogger("external_data_retrieval")
 logging.basicConfig(
-    filename="history.log",
+    filename="external_data_retrieval.log",
     level=logging.INFO,
     format="%(asctime)s:%(levelname)-8s:%(name)s: %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
@@ -32,6 +33,7 @@ class ContiniousDataRetrieval:
     auth_token = "***REMOVED***"
     url = "https://api.pathofexile.com/public-stash-tabs"
 
+
     if "localhost" not in BASEURL:
         base_pom_api_url = f"https://{BASEURL}"
     else:
@@ -42,18 +44,20 @@ class ContiniousDataRetrieval:
     )
 
     def __init__(
-        self, items_per_batch: int, data_transformers: Dict[str, PoeAPIDataTransformer]
+        self,
+        items_per_batch: int,
+        data_transformers: Dict[str, PoeAPIDataTransformer],
+        logger: logging.Logger,
     ):
 
-        self.logger = logging.getLogger(__name__)
         self.data_transformers = {
-            key: data_transformers[key](main_logger=self.logger)
-            for key in data_transformers
+            key: data_transformers[key](main_logger=logger) for key in data_transformers
         }
 
         self.poe_api_handler = APIHandler(
             url=self.url,
             auth_token=self.auth_token,
+            logger_parent=logger,
             n_wanted_items=items_per_batch,
             n_unique_wanted_items=10,
         )
@@ -62,8 +66,10 @@ class ContiniousDataRetrieval:
             url="https://poe.ninja/api/data/currencyoverview?league=Necropolis&type=Currency"
         )
         self.poe_ninja_transformer = TransformPoeNinjaCurrencyAPIData(
-            main_logger=self.logger
+            logger_parent=logger
         )
+
+        self.logger = logger
 
     def _get_modifiers(self) -> Dict[str, pd.DataFrame]:
 
@@ -152,7 +158,9 @@ def main():
     data_transformers = {"unique": UniquePoeAPIDataTransformer}
 
     data_retriever = ContiniousDataRetrieval(
-        items_per_batch=items_per_batch, data_transformers=data_transformers
+        items_per_batch=items_per_batch,
+        data_transformers=data_transformers,
+        logger=logger,
     )
     initial_next_change_id = data_retriever._get_latest_change_id()
     # initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272" # local test if backend is down
