@@ -1,6 +1,14 @@
 name: POM GitHub Actions
 run-name: ${{ github.actor }} is building ${{ github.repository }}
-on: [push]
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
