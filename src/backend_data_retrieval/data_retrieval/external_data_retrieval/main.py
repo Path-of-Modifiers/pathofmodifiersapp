@@ -38,9 +38,6 @@ class ContiniousDataRetrieval:
     else:
         base_pom_api_url = "http://src-backend-1"
     modifier_url = base_pom_api_url + "/api/api_v1/modifier/"
-    latest_item_change_id_url = (
-        base_pom_api_url + "/api/api_v1/item/latest_item_change_id/"
-    )
 
     def __init__(
         self,
