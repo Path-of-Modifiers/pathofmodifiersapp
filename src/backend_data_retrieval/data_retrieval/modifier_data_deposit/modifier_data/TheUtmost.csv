@@ -1,0 +1,6 @@
+#Source: https://poedb.tw/The_Utmost
+minRoll,maxRoll,position,effect,unique
+0,30,0,"+#% chance to Suppress Spell Damage",True
+0,5,0,"+#% to all maximum Elemental Resistances",True
+0,40,0,"#% increased Attack and Cast Speed",True
+0,20,0,"Damage Penetrates #% Elemental Resistances",True

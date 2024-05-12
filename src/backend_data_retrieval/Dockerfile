@@ -33,8 +33,5 @@ RUN poetry install --no-interaction
 ENV PYTHONPATH=/data_retrieval
 
 
-# COPY ./external_data_retrieval /data_retrieval/external_data_retrieval/
-# COPY ./modifier_data_deposit /data_retrieval/modifier_data_deposit/
 COPY ./data_retrieval /data_retrieval
-# COPY ./prestart.sh /data_retrieval/
 ENTRYPOINT [ "/data_retrieval/prestart.sh" ]
