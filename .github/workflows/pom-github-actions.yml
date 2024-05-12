@@ -16,10 +16,28 @@ jobs:
             src/docker-compose.override.yml
         env:
           TESTING: False
+
+          # Update this with your app domain
+          DOMAIN: localhost
+
+          # Environment: local, staging, production
+          ENVIRONMENT: local
+
+          TRAEFIK_PUBLIC_NETWORK: traefik-public
+          TRAEFIK_TAG: traefik
+          TRAEFIK_PUBLIC_TAG: pom_traefik
+
           CF_DNS_API_TOKEN: ${{ secrets.CF_DNS_API_TOKEN }}
+
+          # Docker registry images
+          TAG: 1.0.0
+          DOCKER_IMAGE_BACKEND: pom_backend
+          DOCKER_IMAGE_FRONTEND: pom_frontend
 
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+          STACK_NAME: pathofmodifiersapp
 
           # Backend
           BACKEND_CORS_ORIGINS: "http://localhost,http://localhost:5173,https://localhost,https://localhost:5173"
@@ -35,6 +53,8 @@ jobs:
 
           POE_PUBLIC_STASH_TABS_AUTH_TOKEN: ${{ secrets.POE_PUBLIC_STASH_TABS_AUTH_TOKEN }}
 
+          # Postgres
+          POSTGRES_SERVER: db
           POSTGRES_DB: pom_oltp_db
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
