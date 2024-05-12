@@ -17,7 +17,7 @@ from external_data_retrieval.transforming_data.transform_poe_api_data import (
     UniquePoeAPIDataTransformer,
 )
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("external_data_retrieval")
 logging.basicConfig(
     filename="external_data_retrieval.log",
     level=logging.INFO,
@@ -39,7 +39,10 @@ class ContiniousDataRetrieval:
     modifier_url += "/api/api_v1/modifier/"
 
     def __init__(
-        self, items_per_batch: int, data_transformers: Dict[str, PoeAPIDataTransformer]
+        self,
+        items_per_batch: int,
+        data_transformers: Dict[str, PoeAPIDataTransformer],
+        logger: logging.Logger,
     ):
 
         self.data_transformers = {
@@ -60,6 +63,8 @@ class ContiniousDataRetrieval:
         self.poe_ninja_transformer = TransformPoeNinjaCurrencyAPIData(
             logger_parent=logger
         )
+
+        self.logger = logger
 
     def _get_modifiers(self) -> Dict[str, pd.DataFrame]:
 
@@ -117,10 +122,10 @@ class ContiniousDataRetrieval:
         return currency_df
 
     def retrieve_data(self, initial_next_change_id: str):
-        logger.info("Program starting up.")
-        logger.info("Retrieving modifiers from db.")
+        self.logger.info("Program starting up.")
+        self.logger.info("Retrieving modifiers from db.")
         modifier_dfs = self._get_modifiers()
-        logger.info("Initiating data stream.")
+        self.logger.info("Initiating data stream.")
         get_df = self.poe_api_handler.dump_stream(
             initial_next_change_id=initial_next_change_id
         )
@@ -144,7 +149,9 @@ def main():
     data_transformers = {"unique": UniquePoeAPIDataTransformer}
 
     data_retriever = ContiniousDataRetrieval(
-        items_per_batch=items_per_batch, data_transformers=data_transformers
+        items_per_batch=items_per_batch,
+        data_transformers=data_transformers,
+        logger=logger,
     )
     # initial_next_change_id = "2304883465-2293076633-2219109349-2460729612-2390966652"
     # initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272" #earlier
