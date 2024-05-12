@@ -17,8 +17,9 @@ from external_data_retrieval.transforming_data.transform_poe_api_data import (
     UniquePoeAPIDataTransformer,
 )
 
+logger = logging.getLogger("external_data_retrieval")
 logging.basicConfig(
-    filename="history.log",
+    filename="external_data_retrieval.log",
     level=logging.INFO,
     format="%(asctime)s:%(levelname)-8s:%(name)s: %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
@@ -30,7 +31,7 @@ BASEURL = os.getenv("DOMAIN")
 class ContiniousDataRetrieval:
     auth_token = "750d4f685cfa83d024d86508e7ede4ab55b5acc7"
     url = "https://api.pathofexile.com/public-stash-tabs"
-    
+
     if "localhost" not in BASEURL:
         modifier_url = f"https://{BASEURL}"
     else:
@@ -38,18 +39,20 @@ class ContiniousDataRetrieval:
     modifier_url += "/api/api_v1/modifier/"
 
     def __init__(
-        self, items_per_batch: int, data_transformers: Dict[str, PoeAPIDataTransformer]
+        self,
+        items_per_batch: int,
+        data_transformers: Dict[str, PoeAPIDataTransformer],
+        logger: logging.Logger,
     ):
 
-        self.logger = logging.getLogger(__name__)
         self.data_transformers = {
-            key: data_transformers[key](main_logger=self.logger)
-            for key in data_transformers
+            key: data_transformers[key](main_logger=logger) for key in data_transformers
         }
 
         self.poe_api_handler = APIHandler(
             url=self.url,
             auth_token=self.auth_token,
+            logger_parent=logger,
             n_wanted_items=items_per_batch,
             n_unique_wanted_items=10,
         )
@@ -58,8 +61,10 @@ class ContiniousDataRetrieval:
             url="https://poe.ninja/api/data/currencyoverview?league=Necropolis&type=Currency"
         )
         self.poe_ninja_transformer = TransformPoeNinjaCurrencyAPIData(
-            main_logger=self.logger
+            logger_parent=logger
         )
+
+        self.logger = logger
 
     def _get_modifiers(self) -> Dict[str, pd.DataFrame]:
 
@@ -144,10 +149,13 @@ def main():
     data_transformers = {"unique": UniquePoeAPIDataTransformer}
 
     data_retriever = ContiniousDataRetrieval(
-        items_per_batch=items_per_batch, data_transformers=data_transformers
+        items_per_batch=items_per_batch,
+        data_transformers=data_transformers,
+        logger=logger,
     )
-    initial_next_change_id = "2304883465-2293076633-2219109349-2460729612-2390966652"
+    # initial_next_change_id = "2304883465-2293076633-2219109349-2460729612-2390966652"
     # initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272" #earlier
+    initial_next_change_id = "2342190448-2327160230-2253032822-2498081795-2427336760"
     data_retriever.retrieve_data(initial_next_change_id=initial_next_change_id)
     # n_unique_wanted_items = 15
 
