@@ -2,8 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { BaseType } from '../models/BaseType';
 import type { ItemBaseType } from '../models/ItemBaseType';
+import type { ItemBaseTypeCategory } from '../models/ItemBaseTypeCategory';
 import type { ItemBaseTypeCreate } from '../models/ItemBaseTypeCreate';
+import type { ItemBaseTypeSubCategory } from '../models/ItemBaseTypeSubCategory';
 import type { ItemBaseTypeUpdate } from '../models/ItemBaseTypeUpdate';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -121,6 +124,48 @@ export class ItemBaseTypesService {
             errors: {
                 422: `Validation Error`,
             },
+        });
+    }
+    /**
+     * Get Base Types
+     * Get all base types.
+     *
+     * Returns a list of all base types.
+     * @returns any Successful Response
+     * @throws ApiError
+     */
+    public static getBaseTypesApiApiV1ItemBaseTypeBaseTypesGet(): CancelablePromise<(BaseType | Array<BaseType>)> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/api_v1/itemBaseType/baseTypes/',
+        });
+    }
+    /**
+     * Get Unique Categories
+     * Get all unique categories.
+     *
+     * Returns a list of all categories.
+     * @returns any Successful Response
+     * @throws ApiError
+     */
+    public static getUniqueCategoriesApiApiV1ItemBaseTypeUniqueCategoriesGet(): CancelablePromise<(ItemBaseTypeCategory | Array<ItemBaseTypeCategory>)> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/api_v1/itemBaseType/uniqueCategories/',
+        });
+    }
+    /**
+     * Get Unique Sub Categories
+     * Get all unique sub categories.
+     *
+     * Returns a list of all sub categories.
+     * @returns any Successful Response
+     * @throws ApiError
+     */
+    public static getUniqueSubCategoriesApiApiV1ItemBaseTypeUniqueSubCategoriesGet(): CancelablePromise<(ItemBaseTypeSubCategory | Array<ItemBaseTypeSubCategory>)> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/api_v1/itemBaseType/uniqueSubCategories/',
         });
     }
 }

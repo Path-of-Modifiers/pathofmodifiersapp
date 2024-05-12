@@ -6,8 +6,8 @@ minRoll,maxRoll,textRolls,position,effect,static,unique,veiled
 21,25,,0,"#% chance to cause Bleeding on Hit",,True,True
 21,25,,0,"#% chance to Blind Enemies on hit",,True,True
 21,25,,0,"#% chance to Poison on Hit",,True,True
-14,16,,0,"Attacks with this Weapon Penetrate #% # Resistances",,True,True
-,,"Elemental-Chaos",1,"Attacks with this Weapon Penetrate #% # Resistance",,True,True
+14,16,,0,"Attacks with this Weapon Penetrate #% Elemental Resistances",,True,True
+14,16,,0,"Attacks with this Weapon Penetrate #% Chaos Resistance",,True,True
 60,79,,0,"#% increased # Damage",,True,True
 ,,"Fire-Cold-Lightning-Chaos-Spell",1,"#% increased # Damage",,True,True
 21,23,,0,"#% chance to #",,True,True
