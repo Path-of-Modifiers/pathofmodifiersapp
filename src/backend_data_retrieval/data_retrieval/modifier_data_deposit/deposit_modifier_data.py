@@ -45,7 +45,7 @@ class DataDepositer:
             "veiled",
         ]
 
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger("modifier_data_deposit")
 
     def _load_data(self) -> Iterator[pd.DataFrame]:
         for filename in os.listdir(self.new_data_location):
