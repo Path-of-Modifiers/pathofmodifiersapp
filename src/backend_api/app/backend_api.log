@@ -1,0 +1,3 @@
+INFO:backend_api.log:Initializing service
+INFO:backend_api.log:Starting call to '__main__.init', this is the 1st time calling it.
+INFO:backend_api.log:Service finished initializing
