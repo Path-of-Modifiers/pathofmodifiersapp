@@ -1,1 +1,54 @@
+name: POM GitHub Actions
+run-name: ${{ github.actor }} is building ${{ github.repository }}
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
+      - name: Set up Docker Buildx
+        uses: hoverkraft-tech/compose-action@v1.5.1
+        with:
+          compose-file: |
+            src/docker-compose.yml
+            src/docker-compose.override.yml
+        env:
+          TESTING: False
+          CF_DNS_API_TOKEN: ${{ secrets.CF_DNS_API_TOKEN }}
+
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+          # Backend
+          BACKEND_CORS_ORIGINS: "http://localhost,http://localhost:5173,https://localhost,https://localhost:5173"
+          PROJECT_NAME: "pathofmodifiers"
+          SECRET_KEY: c0mENX1KGKZ0bYtn04kRR97AlRwBU1ocRt4o3TxklUY
+          EMAILS_FROM_EMAIL: "pomodifiers@outlook.com"
+          SMTP_TLS: True
+          SMTP_PORT: 587
+          SMTP_HOST: smtp-mail.outlook.com
+          SMTP_USER: pomodifiers@outlook.com
+          FIRST_SUPERUSER: ${{ secrets.FIRST_SUPERUSER }}
+          FIRST_SUPERUSER_PASSWORD: ${{ secrets.FIRST_SUPERUSER_PASSWORD }}¨
+
+          POE_PUBLIC_STASH_TABS_AUTH_TOKEN: ${{ secrets.POE_PUBLIC_STASH_TABS_AUTH_TOKEN }}
+
+          POSTGRES_DB: pom_oltp_db
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          DATABASE_URL: postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_SERVER:5432/$POSTGRES_DB
+
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+
+          TRAEFIK_ADMIN_USERNAME: ${{ secrets.TRAEFIK_ADMIN_USERNAME }}
+          TRAEFIK_ADMIN_PASSWORD: ${{ secrets.TRAEFIK_ADMIN_PASSWORD }}
+          TRAEFIK_ADMIN_HASHED_PASSWORD: ${{ secrets.TRAEFIK_ADMIN_HASHED_PASSWORD }}
+
+          # POE public stashes
+          POE_PUBLIC_STASHES_AUTH_TOKEN: ***REMOVED***
+
+          # PGAdmin
+          PGADMIN_DEFAULT_EMAIL: pomodifiers@outlook.com
+          PGADMIN_DEFAULT_PASSWORD: uuMaToE8HLkMQduWnQp7Zc4dbH-Nd1HZoyH-M8o7fYQ
