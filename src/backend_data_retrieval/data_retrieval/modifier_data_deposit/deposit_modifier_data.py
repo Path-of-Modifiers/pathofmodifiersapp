@@ -13,7 +13,7 @@ from modifier_data_deposit.modifier_processing_modules import (
 from modifier_data_deposit.utils import df_to_JSON
 
 logging.basicConfig(
-    filename="history.log",
+    filename="modifier_data_deposit.log",
     level=logging.INFO,
     format="%(asctime)s:%(levelname)-8s:%(name)s: %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
@@ -45,7 +45,7 @@ class DataDepositer:
             "veiled",
         ]
 
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger("modifier_data_deposit")
 
     def _load_data(self) -> Iterator[pd.DataFrame]:
         for filename in os.listdir(self.new_data_location):

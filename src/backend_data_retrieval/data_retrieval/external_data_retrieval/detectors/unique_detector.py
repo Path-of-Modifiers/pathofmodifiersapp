@@ -5,6 +5,8 @@ from external_data_retrieval.detectors.base import DetectorBase
 
 class UniqueDetector(DetectorBase):
     def _specialized_filter(self, df: pd.DataFrame) -> pd.DataFrame:
+        if "rarity" not in df.columns:
+            return df
 
         df = df.loc[df["rarity"] == "Unique"]
 
@@ -58,6 +60,9 @@ class UniqueJewelDetector(UniqueDetector):
         "Voices",
     ]
 
+    def __str__(self):
+        return "Unique Jewel Detector"
+
 
 class UniqueJewelleryDetector(UniqueDetector):
     wanted_items_dict = {
@@ -70,6 +75,9 @@ class UniqueJewelleryDetector(UniqueDetector):
     }
     wanted_items = ["Aul's Uprising", "Precursor's Emblem"]
 
+    def __str__(self):
+        return "Unique Jewellery Detector"
+
 
 class UniqueArmourDetector(UniqueDetector):
     wanted_items_dict = {
@@ -78,3 +86,6 @@ class UniqueArmourDetector(UniqueDetector):
         "Carnal Armour": ["Shroud of the Lightless"],
     }
     wanted_items = ["Forbidden Shako", "Skin of the Lords", "Shroud of the Lightless"]
+
+    def __str__(self):
+        return "Unique Armour Detector"
