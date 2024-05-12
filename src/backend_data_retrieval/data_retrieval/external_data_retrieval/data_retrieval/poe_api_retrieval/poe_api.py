@@ -1,6 +1,6 @@
 import requests
 import time
-import json
+import logging
 import asyncio
 import aiohttp
 import pandas as pd
@@ -26,6 +26,8 @@ class APIHandler:
         self,
         url: str,
         auth_token: str,
+        *,
+        logger_parent: logging.Logger,
         n_wanted_items: int = 100,
         n_unique_wanted_items: int = 5,
         item_detectors: List[Union[UniqueDetector]] = [
@@ -53,6 +55,8 @@ class APIHandler:
 
         self.n_unique_items_found = 0
         self.n_unique_wanted_items = n_unique_wanted_items
+
+        self.logger = logger_parent.getChild("API_handler")
 
     def _json_to_df(self, stashes: List) -> pd.DataFrame:
         df_temp = pd.json_normalize(stashes)
@@ -95,19 +99,26 @@ class APIHandler:
         df = self._json_to_df(stashes)
 
         # The stashes are fed to all item detectors, slowly being filtered down
-        for item_detector in self.item_detectors:
-            (
-                df_filtered,
-                item_count,
-                n_unique_found_items,
-                df_leftover,
-            ) = item_detector.iterate_stashes(df)
+        try:
+            for item_detector in self.item_detectors:
+                (
+                    df_filtered,
+                    item_count,
+                    n_unique_found_items,
+                    df_leftover,
+                ) = item_detector.iterate_stashes(df)
 
-            df_wanted = pd.concat((df_wanted, df_filtered))
-            n_new_items += item_count
-            n_total_unique_items += n_unique_found_items
+                df_wanted = pd.concat((df_wanted, df_filtered))
+                n_new_items += item_count
+                n_total_unique_items += n_unique_found_items
 
-            df = df_leftover.copy(deep=True)
+                df = df_leftover.copy(deep=True)
+        except Exception as e:
+            self.logger.critical(
+                f"While checking stashes (detector: {item_detector}), the exception below occured:"
+            )
+            self.logger.critical(e)
+            raise e
 
         # Updates progress bars
         self.n_found_items += n_new_items
