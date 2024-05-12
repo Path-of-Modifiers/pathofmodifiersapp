@@ -15,3 +15,4 @@ minRoll,maxRoll,textRolls,position,effect,static,unique
 70,100,,1,"# deals #% increased Damage",,True
 31,60,,0,"+#% to # Resistance while affected by Herald of #",,True
 ,,"Lightning-Fire-Cold-Chaos",1,"+#% to # Resistance while affected by Herald of #",,True
+,,"Thunder-Ash-Ice-Agony",2,"+#% to # Resistance while affected by Herald of #",,True
