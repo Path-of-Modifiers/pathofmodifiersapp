@@ -54,6 +54,7 @@ jobs:
           POE_PUBLIC_STASH_TABS_AUTH_TOKEN: ${{ secrets.POE_PUBLIC_STASH_TABS_AUTH_TOKEN }}
 
           # Postgres
+          POSTGRES_PORT: 5432
           POSTGRES_SERVER: db
           POSTGRES_DB: pom_oltp_db
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
