@@ -5,7 +5,7 @@ import asyncio
 import aiohttp
 import pandas as pd
 from tqdm import tqdm
-from typing import List, Union, Tuple, Dict, Coroutine, Iterator
+from typing import List, Union, Tuple, Dict, Coroutine, Iterator, Optional
 
 from external_data_retrieval.detectors.unique_detector import (
     UniqueJewelDetector,
@@ -132,10 +132,27 @@ class APIHandler:
 
         return df_wanted
 
-    def _initialize_stream(self, next_change_id: str) -> Tuple[str, List]:
+    def _get_latest_change_id(self) -> str:
+        latest_item_id = requests.get(self.latest_item_change_id_url).json()
+
+        response = requests.get(
+            self.url, headers=self.headers, params={"id": latest_item_id}
+        )
+        response_json = response.json()
+
+        next_change_id = response_json["next_change_id"]
+
+        return next_change_id
+
+    def _initialize_stream(
+        self, next_change_id: Optional[str] = None
+    ) -> Tuple[str, List]:
         """
         Makes an initial, synchronous, API call.
         """
+        if next_change_id is None:
+            next_change_id = self._get_latest_change_id()
+
         response = requests.get(
             self.url, headers=self.headers, params={"id": next_change_id}
         )
@@ -178,7 +195,7 @@ class APIHandler:
             return next_change_id, stashes
 
     async def _follow_stream(
-        self, initial_next_change_id: str
+        self, initial_next_change_id: Optional[str] = None
     ) -> Tuple[pd.DataFrame, str]:
         """
         Follows the API stream until conditions are met
@@ -228,7 +245,7 @@ class APIHandler:
         return df, next_change_id
 
     def dump_stream(
-        self, initial_next_change_id: str = None, track_progress: bool = True
+        self, initial_next_change_id: Optional[str] = None, track_progress: bool = True
     ) -> Iterator[pd.DataFrame]:
         """
         The method which begins making API calls and fetching data.
