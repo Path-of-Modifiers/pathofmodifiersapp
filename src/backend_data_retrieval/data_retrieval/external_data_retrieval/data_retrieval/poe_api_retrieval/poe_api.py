@@ -3,6 +3,7 @@ import time
 import logging
 import asyncio
 import aiohttp
+import os
 import pandas as pd
 from tqdm import tqdm
 from typing import List, Union, Tuple, Dict, Coroutine, Iterator, Optional
@@ -16,11 +17,18 @@ from external_data_retrieval.detectors.unique_detector import (
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
+BASEURL = os.getenv("DOMAIN")
+
 
 class APIHandler:
     headers = {
         "User-Agent": "OAuth pathofmodifiers/0.1.0 (contact: ***REMOVED***) StrictMode"
     }
+
+    if "localhost" not in BASEURL:
+        base_pom_api_url = f"https://{BASEURL}"
+    else:
+        base_pom_api_url = "http://src-backend-1"
 
     def __init__(
         self,
@@ -133,7 +141,11 @@ class APIHandler:
         return df_wanted
 
     def _get_latest_change_id(self) -> str:
-        latest_item_id = requests.get(self.latest_item_change_id_url).json()
+
+        latest_item_change_id_url = (
+            self.base_pom_api_url + "/api/api_v1/item/latest_item_change_id/"
+        )
+        latest_item_id = requests.get(latest_item_change_id_url).json()
 
         response = requests.get(
             self.url, headers=self.headers, params={"id": latest_item_id}
