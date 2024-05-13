@@ -147,11 +147,12 @@ class APIHandler:
         latest_item_change_id_url = (
             self.base_pom_api_url + "/api/api_v1/item/latest_item_change_id/"
         )
-        latest_item_id = requests.get(latest_item_change_id_url).json()
+        latest_change_id = requests.get(latest_item_change_id_url).json()
 
         response = requests.get(
-            self.url, headers=self.headers, params={"id": latest_item_id}
+            self.url, headers=self.headers, params={"id": latest_change_id}
         )
+        response.raise_for_status()
         response_json = response.json()
 
         next_change_id = response_json["next_change_id"]
@@ -245,7 +246,7 @@ class APIHandler:
             if not new_stashes:
                 time.sleep(
                     300
-                )  # Waits 5 minutes before continuing to persue the stream
+                )  # Waits 5 minutes before continuing to pursue the stream
 
             iteration += 1
 
