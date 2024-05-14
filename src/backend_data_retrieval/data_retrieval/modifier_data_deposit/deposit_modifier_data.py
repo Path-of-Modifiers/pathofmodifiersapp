@@ -1,4 +1,5 @@
 import requests
+from requests.auth import HTTPBasicAuth
 import logging
 import os
 import pandas as pd
@@ -22,6 +23,9 @@ logging.basicConfig(
 BASEURL = os.getenv("DOMAIN")
 CASCADING_UPDATE = True
 
+FIRST_SUPERUSER = os.getenv("FIRST_SUPERUSER")
+FIRST_SUPERUSER_PASSWORD = os.getenv("FIRST_SUPERUSER_PASSWORD")
+
 
 class DataDepositer:
     def __init__(self) -> None:
@@ -32,6 +36,7 @@ class DataDepositer:
             self.url = "http://src-backend-1"
         self.url += "/api/api_v1/modifier/"
         self.update_disabled = not CASCADING_UPDATE
+        self.authentication = HTTPBasicAuth(FIRST_SUPERUSER, FIRST_SUPERUSER_PASSWORD)
 
         self.modifier_types = [
             "implicit",
@@ -125,6 +130,8 @@ class DataDepositer:
                         "accept": "application/json",
                         "Content-Type": "application/json",
                     },
+                    # add HTTP Basic Auth
+                    auth=self.authentication,
                 )
                 response.raise_for_status()
 
@@ -160,6 +167,7 @@ class DataDepositer:
             self.url,
             json=df_json,
             headers={"accept": "application/json", "Content-Type": "application/json"},
+            auth=self.authentication,
         )
         response.raise_for_status()
 
