@@ -1,5 +1,5 @@
 from __future__ import annotations
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from typing import List, Union
 
 from app.api.deps import get_db
@@ -10,8 +10,6 @@ import app.core.schemas as schemas
 
 from sqlalchemy.orm import Session
 from sqlalchemy import text
-
-from app.core.security import verification
 
 
 router = APIRouter()
@@ -66,19 +64,12 @@ async def get_latest_currency_id(db: Session = Depends(get_db)):
 async def create_currency(
     currency: Union[schemas.CurrencyCreate, List[schemas.CurrencyCreate]],
     db: Session = Depends(get_db),
-    verification: bool = Depends(verification),
 ):
     """
     Create one or a list of currencies.
 
     Returns the created currency or list of currencies.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {create_currency.__name__}",
-        )
-
     return await CRUD_currency.create(db=db, obj_in=currency)
 
 
@@ -87,19 +78,12 @@ async def update_currency(
     currencyId: str,
     currency_update: schemas.CurrencyUpdate,
     db: Session = Depends(get_db),
-    verification: bool = Depends(verification),
 ):
     """
     Update a currency by key and value for "currencyId".
 
     Returns the updated currency.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {update_currency.__name__}",
-        )
-
     currency_map = {"currencyId": currencyId}
     currency = await CRUD_currency.get(
         db=db,
@@ -110,23 +94,13 @@ async def update_currency(
 
 
 @router.delete("/{currencyId}", response_model=str)
-async def delete_currency(
-    currencyId: str,
-    db: Session = Depends(get_db),
-    verification: bool = Depends(verification),
-):
+async def delete_currency(currencyId: str, db: Session = Depends(get_db)):
     """
     Delete a currency by key and value for "currencyId".
 
     Returns a message indicating the currency was deleted.
     Always deletes one currency.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {delete_currency.__name__}",
-        )
-
     currency_map = {"currencyId": currencyId}
     await CRUD_currency.remove(db=db, filter=currency_map)
 
