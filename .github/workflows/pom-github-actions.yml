@@ -52,7 +52,7 @@ jobs:
           # Backend
           BACKEND_CORS_ORIGINS: "http://localhost,http://localhost:5173,https://localhost,https://localhost:5173"
           PROJECT_NAME: "pathofmodifiers"
-          SECRET_KEY: c0mENX1KGKZ0bYtn04kRR97AlRwBU1ocRt4o3TxklUY
+          SECRET_KEY: ${{ secrets.API_SECRET_KEY }}
           EMAILS_FROM_EMAIL: "pomodifiers@outlook.com"
           SMTP_TLS: True
           SMTP_PORT: 587
