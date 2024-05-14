@@ -43,6 +43,7 @@ def create_random_modifier_dict() -> Dict:
     delve = random_bool()
     fractured = random_bool()
     synthesized = random_bool()
+    unique = random_bool()
     corrupted = random_bool()
     enchanted = random_bool()
     veiled = random_bool()
@@ -60,6 +61,7 @@ def create_random_modifier_dict() -> Dict:
         "delve": delve,
         "fractured": fractured,
         "synthesized": synthesized,
+        "unique": unique,
         "corrupted": corrupted,
         "enchanted": enchanted,
         "veiled": veiled,
