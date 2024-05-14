@@ -163,7 +163,7 @@ class APIHandler:
         response = requests.get(
             self.url, headers=self.headers, params={"id": latest_change_id}
         )
-        if response.status_code == 429:
+        if response.status_code == 429:  # Too many requests
             headers = response.headers
             retry_after = int(headers["Retry-After"])
             time.sleep(retry_after + 1)
@@ -267,8 +267,8 @@ class APIHandler:
             next_change_id, new_stashes = task_response[0]
             if not new_stashes:
                 time.sleep(
-                    10
-                )  # Waits 10 seconds before continuing to pursue the stream
+                    120
+                )  # Waits 120 seconds before continuing to pursue the stream
 
             iteration += 1
 
