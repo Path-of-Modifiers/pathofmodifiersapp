@@ -12,8 +12,6 @@ from sqlalchemy.orm import Session
 
 from app.core.security import verification
 
-import os
-
 
 router = APIRouter()
 
