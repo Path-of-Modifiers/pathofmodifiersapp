@@ -155,26 +155,12 @@ def main():
         data_transformers=data_transformers,
         logger=logger,
     )
-    # initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272" # local test if backend is down
+    # initial_next_change_id = "2342837382-2327804061-2253681663-2498729757-2428031320"  # local test if backend is down
+    # initial_next_change_id = "2342837382-2327804061-2253681663-2498729757-2428031320" # A vast emptyness encounter
+    initial_next_change_id = "2456008078-2435987533-2361078642-2616265937-2544674695"  # Recent one from POE ninja
 
-    data_retriever.retrieve_data()
-
-    # n_unique_wanted_items = 15
-
-    # api_handler = APIHandler(
-    #     url=url,
-    #     auth_token=auth_token,
-    #     n_wanted_items=n_wanted_items,
-    #     n_unique_wanted_items=n_unique_wanted_items,
-    # )
-    # for df in api_handler.dump_stream(
-    #     initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272"
-    # ):  # From poe.ninja
-    #     # print(df)
-    #     # df.to_csv("test.csv", index=False)
-    #     quit()
-
-    # return 0
+    data_retriever.retrieve_data(initial_next_change_id)
+    # data_retriever.retrieve_data()
 
 
 if __name__ == "__main__":
