@@ -1,5 +1,5 @@
 from __future__ import annotations
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from typing import List, Optional, Union
 
 from app.api.deps import get_db
@@ -9,8 +9,6 @@ from app.crud import CRUD_modifier
 import app.core.schemas as schemas
 
 from sqlalchemy.orm import Session
-
-from app.core.security import verification
 
 
 router = APIRouter()
@@ -77,19 +75,12 @@ async def get_grouped_modifier_by_effect(db: Session = Depends(get_db)):
 async def create_modifier(
     modifier: Union[schemas.ModifierCreate, List[schemas.ModifierCreate]],
     db: Session = Depends(get_db),
-    verification: bool = Depends(verification),
 ):
     """
     Create one or a list of new modifiers.
 
     Returns the created modifier or list of modifiers.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {create_modifier.__name__}",
-        )
-
     return await CRUD_modifier.create(db=db, obj_in=modifier)
 
 
@@ -99,7 +90,6 @@ async def update_modifier(
     position: int,
     modifier_update: schemas.ModifierUpdate,
     db: Session = Depends(get_db),
-    verification: bool = Depends(verification),
 ):
     """
     Update a modifier by key and value for "modifierId" and "position".
@@ -108,12 +98,6 @@ async def update_modifier(
 
     Returns the updated modifier.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {update_modifier.__name__}",
-        )
-
     modifier_map = {"modifierId": modifierId, "position": position}
     modifier = await CRUD_modifier.get(
         db=db,
@@ -125,10 +109,7 @@ async def update_modifier(
 
 @router.delete("/{modifierId}", response_model=str)
 async def delete_modifier(
-    modifierId: int,
-    position: Optional[int] = None,
-    db: Session = Depends(get_db),
-    verification: bool = Depends(verification),
+    modifierId: int, position: Optional[int] = None, db: Session = Depends(get_db)
 ):
     """
     Delete a modifier by key and value for "modifierId"
@@ -139,12 +120,6 @@ async def delete_modifier(
     Returns a message that the modifier was deleted.
     Always deletes one modifier.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {delete_modifier.__name__}",
-        )
-
     modifier_map = {"modifierId": modifierId}
     if position is not None:
         modifier_map["position"] = position
