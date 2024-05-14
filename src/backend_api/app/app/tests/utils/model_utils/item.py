@@ -3,7 +3,7 @@ from typing import Dict, Tuple, Optional, List, Union
 from sqlalchemy.orm import Session
 
 from app import crud
-from app.core.models.models import Item, Currency, ItemBaseType, Stash, Account
+from app.core.models.models import Stash, Account, Item, Currency, ItemBaseType
 from app.core.schemas.item import ItemCreate
 from app.tests.utils.utils import (
     random_lower_string,
@@ -22,7 +22,19 @@ from app.tests.utils.model_utils.stash import generate_random_stash
 async def create_random_item_dict(
     db: Session, retrieve_dependencies: Optional[bool] = False
 ) -> Union[
-    Dict, Tuple[Dict, List[Union[Dict, Stash, ItemBaseType, Currency, Account]]]
+    Dict,
+    Tuple[
+        Dict,
+        List[
+            Union[
+                Dict,
+                Account,
+                Stash,
+                ItemBaseType,
+                Currency,
+            ]
+        ],
+    ],
 ]:
     gameItemId = random_lower_string()
     changeId = random_lower_string()
@@ -57,15 +69,14 @@ async def create_random_item_dict(
     prefixes = random_int(small_int=True)
     suffixes = random_int(small_int=True)
     foilVariation = random_int(small_int=True)
-    
+
     if not retrieve_dependencies:
         stash_dict, stash = await generate_random_stash(db)
     else:
         stash_dict, stash, deps = await generate_random_stash(
             db, retrieve_dependencies=retrieve_dependencies
         )
-    
-    
+
     stashId = stash.stashId
     item_base_type_dict, item_base_type = await generate_random_item_base_type(db)
     baseType = item_base_type.baseType
@@ -115,7 +126,19 @@ async def create_random_item_dict(
 async def generate_random_item(
     db: Session, retrieve_dependencies: Optional[bool] = False
 ) -> Tuple[
-    Dict, Item, Optional[List[Union[Dict, Stash, ItemBaseType, Currency, Account]]]
+    Dict,
+    Item,
+    Optional[
+        List[
+            Union[
+                Dict,
+                Account,
+                Stash,
+                ItemBaseType,
+                Currency,
+            ]
+        ]
+    ],
 ]:
     output = await create_random_item_dict(db, retrieve_dependencies)
     if not retrieve_dependencies:
