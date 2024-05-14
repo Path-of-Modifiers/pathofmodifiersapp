@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app import crud
 from app.core.models.models import (
     ItemModifier,
+    Stash,
     Account,
     ItemBaseType,
     Currency,
@@ -25,7 +26,7 @@ async def create_random_item_modifier_dict(
     Tuple[
         Dict,
         Optional[
-            List[Union[Dict, Account, ItemBaseType, Currency, Item, Modifier]]
+            List[Union[Dict, Stash, Account, ItemBaseType, Currency, Item, Modifier]]
         ],
     ],
 ]:
@@ -60,7 +61,7 @@ async def generate_random_item_modifier(
 ) -> Tuple[
     Dict,
     ItemModifier,
-    Optional[List[Union[Dict, Account, ItemBaseType, Currency, Item, Modifier]]],
+    Optional[List[Union[Dict, Stash, Account, ItemBaseType, Currency, Item, Modifier]]],
 ]:
     output = await create_random_item_modifier_dict(db, retrieve_dependencies)
     if not retrieve_dependencies:
