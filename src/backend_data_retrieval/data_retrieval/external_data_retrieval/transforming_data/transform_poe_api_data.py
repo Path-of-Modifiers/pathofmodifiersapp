@@ -4,6 +4,7 @@ import logging
 import pandas as pd
 from typing import List
 
+from pom_api_authentication import get_super_authentication
 from modifier_data_deposit.utils import insert_data
 from external_data_retrieval.transforming_data.utils import (
     get_rolls,
@@ -24,6 +25,7 @@ class PoeAPIDataTransformer:
         self.url += "/api/api_v1"
 
         self.logger = main_logger.getChild("transform_poe")
+        self.pom_api_authentication = get_super_authentication()
 
     def _create_account_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -44,7 +46,12 @@ class PoeAPIDataTransformer:
         account_df.drop_duplicates("accountName", inplace=True)
 
         account_df["isBanned"] = None
-        db_account_df = pd.read_json(self.url + "/account/", dtype=str)
+        account_response = requests.get(
+            self.url + "/account/", auth=self.pom_api_authentication
+        )
+        account_json = account_response.json()
+        db_account_df = pd.json_normalize(account_json)
+
         if db_account_df.empty:
             return account_df
 
