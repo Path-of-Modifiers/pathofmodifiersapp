@@ -163,6 +163,12 @@ class APIHandler:
         response = requests.get(
             self.url, headers=self.headers, params={"id": latest_change_id}
         )
+        if response.status_code == 429:
+            headers = response.headers
+            retry_after = int(headers["Retry-After"])
+            time.sleep(retry_after + 1)
+            return self._get_latest_change_id()
+
         response.raise_for_status()
         response_json = response.json()
 
