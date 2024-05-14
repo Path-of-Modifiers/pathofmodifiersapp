@@ -16,6 +16,17 @@ security = HTTPBasic()
 def verification(
     credentials: HTTPBasicCredentials = Depends(security),
 ) -> None:
+    """Verify the username and password for the API.
+
+    Args:
+        credentials (HTTPBasicCredentials, optional): HTTP Credentials. Defaults to Depends(security).
+
+    Raises:
+        HTTPException: If the username or password is incorrect.
+
+    Returns:
+        None
+    """
     if PRIVATIZE_API:
         current_username_bytes = credentials.username.encode("utf8")
         correct_username_bytes = FIRST_SUPERUSER.encode("utf8")
