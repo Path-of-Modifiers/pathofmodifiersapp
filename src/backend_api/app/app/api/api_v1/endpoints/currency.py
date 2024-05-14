@@ -1,5 +1,5 @@
 from __future__ import annotations
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Union
 
 from app.api.deps import get_db
@@ -74,7 +74,10 @@ async def create_currency(
     Returns the created currency or list of currencies.
     """
     if not verification:
-        return f"Unauthorized to access API in {create_currency.__name__}"
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {create_currency.__name__}",
+        )
 
     return await CRUD_currency.create(db=db, obj_in=currency)
 
@@ -116,7 +119,10 @@ async def delete_currency(
     Always deletes one currency.
     """
     if not verification:
-        return f"Unauthorized to access API in {delete_currency.__name__}"
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {delete_currency.__name__}",
+        )
 
     currency_map = {"currencyId": currencyId}
     await CRUD_currency.remove(db=db, filter=currency_map)
