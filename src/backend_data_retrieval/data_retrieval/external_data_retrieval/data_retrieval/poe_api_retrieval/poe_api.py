@@ -72,6 +72,12 @@ class APIHandler:
 
     @property
     def recently_ratelimited(self) -> bool:
+        """
+        To avoid continously running into the rate limit, we want to track
+        if we have recently been rate limited. Currently "recently" refers
+        to 180 seconds. If we have been recently ratelimited, you can choose
+        to act differently, such as adding artificial delay.
+        """
         if self.time_for_last_ratelimit is None:
             return False
         elif time.perf_counter() - self.time_for_last_ratelimit > 180:
@@ -250,6 +256,7 @@ class APIHandler:
             or self.n_unique_items_found < self.n_unique_wanted_items
         ):
             if self.recently_ratelimited:
+                # Adds artificial delay if we have recently been ratelimited
                 time.sleep(1)
 
             future = asyncio.ensure_future(
