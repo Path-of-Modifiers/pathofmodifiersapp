@@ -54,10 +54,10 @@ def crud_instance() -> CRUDBase:
 @pytest.fixture(scope="module")
 def crud_deps_instances() -> CRUDBase:
     return [
+        CRUD_account,
         CRUD_stash,
         CRUD_itemBaseType,
         CRUD_currency,
-        CRUD_account,
     ]
 
 
