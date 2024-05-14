@@ -1,5 +1,4 @@
 import requests
-from requests.auth import HTTPBasicAuth
 import logging
 import os
 import pandas as pd
@@ -11,7 +10,7 @@ from modifier_data_deposit.modifier_processing_modules import (
     check_for_updated_numerical_rolls,
     check_for_additional_modifier_types,
 )
-from modifier_data_deposit.utils import df_to_JSON
+from modifier_data_deposit.utils import df_to_JSON, get_pom_api_authentication
 
 logging.basicConfig(
     filename="modifier_data_deposit.log",
@@ -23,9 +22,6 @@ logging.basicConfig(
 BASEURL = os.getenv("DOMAIN")
 CASCADING_UPDATE = True
 
-FIRST_SUPERUSER = os.getenv("FIRST_SUPERUSER")
-FIRST_SUPERUSER_PASSWORD = os.getenv("FIRST_SUPERUSER_PASSWORD")
-
 
 class DataDepositer:
     def __init__(self) -> None:
@@ -36,7 +32,7 @@ class DataDepositer:
             self.url = "http://src-backend-1"
         self.url += "/api/api_v1/modifier/"
         self.update_disabled = not CASCADING_UPDATE
-        self.authentication = HTTPBasicAuth(FIRST_SUPERUSER, FIRST_SUPERUSER_PASSWORD)
+        self.authentication = get_pom_api_authentication()
 
         self.modifier_types = [
             "implicit",
