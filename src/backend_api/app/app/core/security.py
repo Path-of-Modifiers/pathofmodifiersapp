@@ -17,6 +17,8 @@ def verification(
     credentials: HTTPBasicCredentials = Depends(security),
 ) -> None:
     """Verify the username and password for the API.
+    
+    Needs to raise HTTPException if return False.
 
     Args:
         credentials (HTTPBasicCredentials, optional): HTTP Credentials. Defaults to Depends(security).
@@ -41,10 +43,6 @@ def verification(
         if is_correct_password and is_correct_username:
             return True
         else:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect username or password",
-                headers={"WWW-Authenticate": "Basic"},
-            )
+            return False
     else:
         return True
