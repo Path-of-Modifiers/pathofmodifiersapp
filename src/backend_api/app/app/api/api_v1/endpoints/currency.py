@@ -95,7 +95,10 @@ async def update_currency(
     Returns the updated currency.
     """
     if not verification:
-        return f"Unauthorized to access API in {update_currency.__name__}"
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {update_currency.__name__}",
+        )
 
     currency_map = {"currencyId": currencyId}
     currency = await CRUD_currency.get(
