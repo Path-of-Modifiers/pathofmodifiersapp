@@ -17,8 +17,6 @@ import os
 
 router = APIRouter()
 
-PRIVATIZE_API = os.getenv("PRIVATIZE_API", False)
-
 
 @router.get(
     "/{accountName}",
