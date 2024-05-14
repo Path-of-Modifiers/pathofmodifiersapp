@@ -68,6 +68,23 @@ class APIHandler:
 
         self.logger = logger_parent.getChild("API_handler")
 
+        self.time_for_last_ratelimit = None
+
+    @property
+    def recently_ratelimited(self) -> bool:
+        """
+        To avoid continously running into the rate limit, we want to track
+        if we have recently been rate limited. Currently "recently" refers
+        to 180 seconds. If we have been recently ratelimited, you can choose
+        to act differently, such as adding artificial delay.
+        """
+        if self.time_for_last_ratelimit is None:
+            return False
+        elif time.perf_counter() - self.time_for_last_ratelimit > 180:
+            return False
+        else:
+            return True
+
     def _json_to_df(self, stashes: List) -> pd.DataFrame:
         df_temp = pd.json_normalize(stashes)
         df_temp = df_temp.explode(["items"])
@@ -152,6 +169,12 @@ class APIHandler:
         response = requests.get(
             self.url, headers=self.headers, params={"id": latest_change_id}
         )
+        if response.status_code == 429:  # Too many requests
+            headers = response.headers
+            retry_after = int(headers["Retry-After"])
+            time.sleep(retry_after + 1)
+            return self._get_latest_change_id()
+
         response.raise_for_status()
         response_json = response.json()
 
@@ -192,6 +215,7 @@ class APIHandler:
     async def _start_next_request(
         self, session: aiohttp.ClientSession, next_change_id: str
     ) -> Coroutine:
+
         async with session.get(self.url, params={"id": next_change_id}) as response:
             if response.status >= 300:
                 if response.status == 429:
@@ -199,6 +223,7 @@ class APIHandler:
                     # Rate limits are dynamic
                     headers = response.headers
                     retry_after = int(headers["Retry-After"])
+                    self.time_for_last_ratelimit = time.perf_counter()
                     await asyncio.sleep(retry_after + 1)
                     return await self._start_next_request(session, next_change_id)
 
@@ -230,6 +255,10 @@ class APIHandler:
             self.n_found_items < self.n_wanted_items
             or self.n_unique_items_found < self.n_unique_wanted_items
         ):
+            if self.recently_ratelimited:
+                # Adds artificial delay if we have recently been ratelimited
+                time.sleep(1)
+
             future = asyncio.ensure_future(
                 self._start_next_request(session, next_change_id=next_change_id)
             )
@@ -245,8 +274,8 @@ class APIHandler:
             next_change_id, new_stashes = task_response[0]
             if not new_stashes:
                 time.sleep(
-                    300
-                )  # Waits 5 minutes before continuing to pursue the stream
+                    120
+                )  # Waits 120 seconds before continuing to pursue the stream
 
             iteration += 1
 
