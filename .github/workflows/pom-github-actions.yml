@@ -80,4 +80,4 @@ jobs:
 
           # PGAdmin
           PGADMIN_DEFAULT_EMAIL: pomodifiers@outlook.com
-          PGADMIN_DEFAULT_PASSWORD: uuMaToE8HLkMQduWnQp7Zc4dbH-Nd1HZoyH-M8o7fYQ
+          PGADMIN_DEFAULT_PASSWORD: ${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
