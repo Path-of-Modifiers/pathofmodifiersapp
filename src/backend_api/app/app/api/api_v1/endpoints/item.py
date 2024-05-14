@@ -11,6 +11,8 @@ import app.core.schemas as schemas
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 
+from app.core.security import verification
+
 
 router = APIRouter()
 
@@ -87,12 +89,16 @@ async def get_all_items(db: Session = Depends(get_db)):
 async def create_item(
     item: Union[schemas.ItemCreate, List[schemas.ItemCreate]],
     db: Session = Depends(get_db),
+    verification: bool = Depends(verification),
 ):
     """
     Create one or a list of new items.
 
     Returns the created item or list of items.
     """
+    if not verification:
+        return f"Unauthorized to access API in {create_item.__name__}"
+
     return await CRUD_item.create(db=db, obj_in=item)
 
 
@@ -101,12 +107,16 @@ async def update_item(
     itemId: str,
     item_update: schemas.ItemUpdate,
     db: Session = Depends(get_db),
+    verification: bool = Depends(verification),
 ):
     """
     Update an item by key and value for "itemId".
 
     Returns the updated item.
     """
+    if not verification:
+        return f"Unauthorized to access API in {update_item.__name__}"
+
     item_map = {"itemId": itemId}
     item = await CRUD_item.get(
         db=db,
@@ -117,13 +127,20 @@ async def update_item(
 
 
 @router.delete("/{itemId}", response_model=str)
-async def delete_item(itemId: str, db: Session = Depends(get_db)):
+async def delete_item(
+    itemId: str,
+    db: Session = Depends(get_db),
+    verification: bool = Depends(verification),
+):
     """
     Delete an item by key and value for "itemId".
 
     Returns a message indicating the item was deleted.
     Always deletes one item.
     """
+    if not verification:
+        return f"Unauthorized to access API in {delete_item.__name__}"
+
     item_map = {"itemId": itemId}
     await CRUD_item.remove(db=db, filter=item_map)
 

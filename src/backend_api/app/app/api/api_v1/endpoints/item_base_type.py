@@ -10,6 +10,8 @@ import app.core.schemas as schemas
 
 from sqlalchemy.orm import Session
 
+from app.core.security import verification
+
 
 router = APIRouter()
 
@@ -58,7 +60,9 @@ async def get_base_types(db: Session = Depends(get_db)):
 
 @router.get(
     "/uniqueCategories/",
-    response_model=Union[schemas.ItemBaseTypeCategory, List[schemas.ItemBaseTypeCategory]],
+    response_model=Union[
+        schemas.ItemBaseTypeCategory, List[schemas.ItemBaseTypeCategory]
+    ],
 )
 async def get_unique_categories(db: Session = Depends(get_db)):
     """
@@ -73,7 +77,9 @@ async def get_unique_categories(db: Session = Depends(get_db)):
 
 @router.get(
     "/uniqueSubCategories/",
-    response_model=Union[schemas.ItemBaseTypeSubCategory, List[schemas.ItemBaseTypeSubCategory]],
+    response_model=Union[
+        schemas.ItemBaseTypeSubCategory, List[schemas.ItemBaseTypeSubCategory]
+    ],
 )
 async def get_unique_sub_categories(db: Session = Depends(get_db)):
     """
@@ -93,12 +99,16 @@ async def get_unique_sub_categories(db: Session = Depends(get_db)):
 async def create_item_base_type(
     itemBaseType: Union[schemas.ItemBaseTypeCreate, List[schemas.ItemBaseTypeCreate]],
     db: Session = Depends(get_db),
+    verification: bool = Depends(verification),
 ):
     """
     Create one or a list of new item base types.
 
     Returns the created item base type or list of item base types.
     """
+    if not verification:
+        return f"Unauthorized to access API in {create_item_base_type.__name__}"
+
     return await CRUD_itemBaseType.create(db=db, obj_in=itemBaseType)
 
 
@@ -107,12 +117,16 @@ async def update_item_base_type(
     baseType: str,
     item_base_type_update: schemas.ItemBaseTypeUpdate,
     db: Session = Depends(get_db),
+    verification: bool = Depends(verification),
 ):
     """
     Update an item base type by key and value for "baseType".
 
     Returns the updated item base type.
     """
+    if not verification:
+        return f"Unauthorized to access API in {update_item_base_type.__name__}"
+
     item_base_type_map = {"baseType": baseType}
     itemBaseType = await CRUD_itemBaseType.get(
         db=db,
@@ -125,13 +139,20 @@ async def update_item_base_type(
 
 
 @router.delete("/{baseType}", response_model=str)
-async def delete_item_base_type(baseType: str, db: Session = Depends(get_db)):
+async def delete_item_base_type(
+    baseType: str,
+    db: Session = Depends(get_db),
+    verification: bool = Depends(verification),
+):
     """
     Delete an item base type by key and value for "baseType".
 
     Returns a message that the item base type was deleted successfully.
     Always deletes one item base type.
     """
+    if not verification:
+        return f"Unauthorized to access API in {delete_item_base_type.__name__}"
+
     item_base_type_map = {"baseType": baseType}
     await CRUD_itemBaseType.remove(db=db, filter=item_base_type_map)
 
