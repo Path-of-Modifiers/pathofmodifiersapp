@@ -34,13 +34,12 @@ async def get_account(
 
     Always returns one account.
     """
-    if verification:
-        account_map = {"accountName": accountName}
-        account = await CRUD_account.get(db=db, filter=account_map)
-
-        return account
-    else:
+    if not verification:
         return f"Unauthorized to access API in {get_account.__name__}"
+
+    account_map = {"accountName": accountName}
+    account = await CRUD_account.get(db=db, filter=account_map)
+    return account
 
 
 @router.get("/", response_model=Union[schemas.Account, List[schemas.Account]])
@@ -53,11 +52,11 @@ async def get_all_accounts(
 
     Returns a list of all accounts.
     """
-    if verification:
-        all_accounts = await CRUD_account.get(db=db)
-        return all_accounts
-    else:
+    if not verification:
         return f"Unauthorized to access API in {get_all_accounts.__name__}"
+
+    all_accounts = await CRUD_account.get(db=db)
+    return all_accounts
 
 
 @router.post(
@@ -74,10 +73,10 @@ async def create_account(
 
     Returns the created account or list of accounts.
     """
-    if verification:
-        return await CRUD_account.create(db=db, obj_in=account)
-    else:
+    if not verification:
         return f"Unauthorized to access API in {create_account.__name__}"
+
+    return await CRUD_account.create(db=db, obj_in=account)
 
 
 @router.put("/{accountName}", response_model=schemas.Account)
@@ -92,15 +91,15 @@ async def update_account(
 
     Returns the updated account.
     """
-    if verification:
-        account_map = {"accountName": accountName}
-        account = await CRUD_account.get(
-            db=db,
-            filter=account_map,
-        )
-        return await CRUD_account.update(db_obj=account, obj_in=account_update, db=db)
-    else:
+    if not verification:
         return f"Unauthorized to access API in {update_account.__name__}"
+
+    account_map = {"accountName": accountName}
+    account = await CRUD_account.get(
+        db=db,
+        filter=account_map,
+    )
+    return await CRUD_account.update(db_obj=account, obj_in=account_update, db=db)
 
 
 @router.delete("/{accountName}", response_model=str)
@@ -115,9 +114,9 @@ async def delete_account(
     Returns a message indicating the account was deleted.
     Always deletes one account.
     """
-    if verification:
-        account_map = {"accountName": accountName}
-        await CRUD_account.remove(db=db, filter=account_map)
-        return f"Account with mapping ({account_map}) deleted successfully"
-    else:
+    if not verification:
         return f"Unauthorized to access API in {delete_account.__name__}"
+
+    account_map = {"accountName": accountName}
+    await CRUD_account.remove(db=db, filter=account_map)
+    return f"Account with mapping ({account_map}) deleted successfully"
