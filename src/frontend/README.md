@@ -46,7 +46,7 @@ Notice that this live server is not running inside Docker, it's for local develo
 
 - Start the Docker Compose stack.
 
-- Download the OpenAPI JSON file from [http://localhost/api/v1/openapi.json](http://localhost/api/api_v1/openapi.json) and copy it to a new file `openapi.json` at the root of the `frontend` directory.
+- Download the OpenAPI JSON file from [http://localhost/api/api_v1/openapi.json](http://localhost/api/api_v1/openapi.json) and copy it to a new file `openapi.json` at the root of the `frontend` directory.
 
 - To simplify the names in the generated frontend client code, modify the `openapi.json` file by running the following script:
 
