@@ -1,5 +1,5 @@
 from __future__ import annotations
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Union
 
 from app.api.deps import get_db
@@ -59,7 +59,10 @@ async def create_stash(
     Returns the created stash or list of stashes.
     """
     if not verification:
-        return f"Unauthorized to access API in {create_stash.__name__}"
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {create_stash.__name__}",
+        )
 
     return await CRUD_stash.create(db=db, obj_in=stash)
 
@@ -77,7 +80,10 @@ async def update_stash(
     Returns the updated stash.
     """
     if not verification:
-        return f"Unauthorized to access API in {update_stash.__name__}"
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {update_stash.__name__}",
+        )
 
     stash_map = {"stashId": stashId}
     stash = await CRUD_stash.get(
@@ -101,7 +107,10 @@ async def delete_stash(
     Always deletes one stash.
     """
     if not verification:
-        return f"Unauthorized to access API in {delete_stash.__name__}"
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {delete_stash.__name__}",
+        )
 
     stash_map = {"stashId": stashId}
     await CRUD_stash.remove(db=db, filter=stash_map)
