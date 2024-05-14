@@ -61,7 +61,8 @@ jobs:
           FIRST_SUPERUSER: ${{ secrets.FIRST_SUPERUSER }}
           FIRST_SUPERUSER_PASSWORD: ${{ secrets.FIRST_SUPERUSER_PASSWORD }}¨
 
-          POE_PUBLIC_STASH_TABS_AUTH_TOKEN: ${{ secrets.POE_PUBLIC_STASH_TABS_AUTH_TOKEN }}
+          # POE Public Stash Tabs Token
+          POE_PUBLIC_STASHES_AUTH_TOKEN: ${{ secrets.POE_PUBLIC_STASH_TABS_AUTH_TOKEN }}
 
           # Postgres
           POSTGRES_PORT: 5432
@@ -76,9 +77,6 @@ jobs:
           TRAEFIK_ADMIN_USERNAME: ${{ secrets.TRAEFIK_ADMIN_USERNAME }}
           TRAEFIK_ADMIN_PASSWORD: ${{ secrets.TRAEFIK_ADMIN_PASSWORD }}
           TRAEFIK_ADMIN_HASHED_PASSWORD: ${{ secrets.TRAEFIK_ADMIN_HASHED_PASSWORD }}
-
-          # POE public stashes
-          POE_PUBLIC_STASHES_AUTH_TOKEN: ***REMOVED***
 
           # PGAdmin
           PGADMIN_DEFAULT_EMAIL: pomodifiers@outlook.com
