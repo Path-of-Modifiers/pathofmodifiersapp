@@ -4,7 +4,7 @@ import logging
 import pandas as pd
 from typing import List, Dict, Any, Union, Optional
 
-from pom_api_authentication import get_authentication
+from pom_api_authentication import get_super_authentication
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -59,7 +59,7 @@ def insert_data(
     *,
     url: str,
     table_name: str,
-    authentication: Optional[HTTPBasicAuth] = get_authentication(),
+    authentication: Optional[HTTPBasicAuth] = get_super_authentication(),
     logger: Optional[logging.Logger] = None,
 ) -> None:
     if df.empty:
