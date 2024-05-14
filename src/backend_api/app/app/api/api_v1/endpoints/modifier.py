@@ -1,5 +1,5 @@
 from __future__ import annotations
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Optional, Union
 
 from app.api.deps import get_db
@@ -85,7 +85,10 @@ async def create_modifier(
     Returns the created modifier or list of modifiers.
     """
     if not verification:
-        return f"Unauthorized to access API in {create_modifier.__name__}"
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {create_modifier.__name__}",
+        )
 
     return await CRUD_modifier.create(db=db, obj_in=modifier)
 
@@ -106,7 +109,10 @@ async def update_modifier(
     Returns the updated modifier.
     """
     if not verification:
-        return f"Unauthorized to access API in {update_modifier.__name__}"
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {update_modifier.__name__}",
+        )
 
     modifier_map = {"modifierId": modifierId, "position": position}
     modifier = await CRUD_modifier.get(
@@ -134,7 +140,10 @@ async def delete_modifier(
     Always deletes one modifier.
     """
     if not verification:
-        return f"Unauthorized to access API in {delete_modifier.__name__}"
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {delete_modifier.__name__}",
+        )
 
     modifier_map = {"modifierId": modifierId}
     if position is not None:

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Union
 
 from app.api.deps import get_db
@@ -33,7 +33,10 @@ async def get_account(
     Always returns one account.
     """
     if not verification:
-        return f"Unauthorized to access API in {get_account.__name__}"
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorize API access for {get_account.__name__}",
+        )
 
     account_map = {"accountName": accountName}
     account = await CRUD_account.get(db=db, filter=account_map)
@@ -52,7 +55,10 @@ async def get_all_accounts(
     Returns a list of all accounts.
     """
     if not verification:
-        return f"Unauthorized to access API in {get_all_accounts.__name__}"
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {get_all_accounts.__name__}",
+        )
 
     all_accounts = await CRUD_account.get(db=db)
 
@@ -74,7 +80,10 @@ async def create_account(
     Returns the created account or list of accounts.
     """
     if not verification:
-        return f"Unauthorized to access API in {create_account.__name__}"
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {create_account.__name__}",
+        )
 
     return await CRUD_account.create(db=db, obj_in=account)
 
@@ -92,7 +101,10 @@ async def update_account(
     Returns the updated account.
     """
     if not verification:
-        return f"Unauthorized to access API in {update_account.__name__}"
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {update_account.__name__}",
+        )
 
     account_map = {"accountName": accountName}
     account = await CRUD_account.get(
@@ -116,7 +128,10 @@ async def delete_account(
     Always deletes one account.
     """
     if not verification:
-        return f"Unauthorized to access API in {delete_account.__name__}"
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {delete_account.__name__}",
+        )
 
     account_map = {"accountName": accountName}
     await CRUD_account.remove(db=db, filter=account_map)

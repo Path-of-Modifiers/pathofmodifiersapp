@@ -1,5 +1,5 @@
 from __future__ import annotations
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Union
 
 from app.api.deps import get_db
@@ -97,7 +97,10 @@ async def create_item(
     Returns the created item or list of items.
     """
     if not verification:
-        return f"Unauthorized to access API in {create_item.__name__}"
+        return HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {create_item.__name__}",
+        )
 
     return await CRUD_item.create(db=db, obj_in=item)
 
@@ -115,7 +118,10 @@ async def update_item(
     Returns the updated item.
     """
     if not verification:
-        return f"Unauthorized to access API in {update_item.__name__}"
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {update_item.__name__}",
+        )
 
     item_map = {"itemId": itemId}
     item = await CRUD_item.get(
@@ -139,7 +145,10 @@ async def delete_item(
     Always deletes one item.
     """
     if not verification:
-        return f"Unauthorized to access API in {delete_item.__name__}"
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {delete_item.__name__}",
+        )
 
     item_map = {"itemId": itemId}
     await CRUD_item.remove(db=db, filter=item_map)

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Union
 
 from app.api.deps import get_db
@@ -107,7 +107,10 @@ async def create_item_base_type(
     Returns the created item base type or list of item base types.
     """
     if not verification:
-        return f"Unauthorized to access API in {create_item_base_type.__name__}"
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {create_item_base_type.__name__}",
+        )
 
     return await CRUD_itemBaseType.create(db=db, obj_in=itemBaseType)
 
@@ -125,7 +128,10 @@ async def update_item_base_type(
     Returns the updated item base type.
     """
     if not verification:
-        return f"Unauthorized to access API in {update_item_base_type.__name__}"
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {update_item_base_type.__name__}",
+        )
 
     item_base_type_map = {"baseType": baseType}
     itemBaseType = await CRUD_itemBaseType.get(
@@ -151,7 +157,10 @@ async def delete_item_base_type(
     Always deletes one item base type.
     """
     if not verification:
-        return f"Unauthorized to access API in {delete_item_base_type.__name__}"
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {delete_item_base_type.__name__}",
+        )
 
     item_base_type_map = {"baseType": baseType}
     await CRUD_itemBaseType.remove(db=db, filter=item_base_type_map)
