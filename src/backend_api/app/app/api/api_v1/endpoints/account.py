@@ -39,6 +39,7 @@ async def get_account(
 
     account_map = {"accountName": accountName}
     account = await CRUD_account.get(db=db, filter=account_map)
+
     return account
 
 
@@ -56,6 +57,7 @@ async def get_all_accounts(
         return f"Unauthorized to access API in {get_all_accounts.__name__}"
 
     all_accounts = await CRUD_account.get(db=db)
+
     return all_accounts
 
 
@@ -99,6 +101,7 @@ async def update_account(
         db=db,
         filter=account_map,
     )
+
     return await CRUD_account.update(db_obj=account, obj_in=account_update, db=db)
 
 
@@ -119,4 +122,5 @@ async def delete_account(
 
     account_map = {"accountName": accountName}
     await CRUD_account.remove(db=db, filter=account_map)
+
     return f"Account with mapping ({account_map}) deleted successfully"
