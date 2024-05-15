@@ -1,16 +1,10 @@
-import asyncio
-from sqlalchemy.orm import Session
-from typing import Callable, Dict, Tuple, Optional
+from typing import Callable, Dict, Tuple
 import pytest
 
 from app.crud import CRUD_modifier
-from app.core.models.database import engine
 from app.core.models.models import Modifier
-from app.crud.base import CRUDBase, ModelType
-import app.tests.crud.crud_test_base as test_crud
+from app.crud.base import CRUDBase
 from app.tests.utils.model_utils.modifier import generate_random_modifier
-from app.tests.utils.utils import random_int
-from app.utils.sort_algorithms import sort_with_refrence
 
 
 @pytest.fixture(scope="module")
@@ -20,13 +14,13 @@ def object_generator_func():
 
 @pytest.fixture(scope="function")
 def object_generator_func_w_main_key() -> Callable[[], Tuple[Dict, Modifier]]:
+    pass
+    # modifier_id = random_int(big_int=True)
 
-    modifier_id = random_int(big_int=True)
+    # def generate_random_modifier_w_main_key(db) -> Callable[[], Tuple[Dict, Modifier]]:
+    #     return generate_random_modifier(db, modifier_id)
 
-    def generate_random_modifier_w_main_key(db) -> Callable[[], Tuple[Dict, Modifier]]:
-        return generate_random_modifier(db, modifier_id)
-
-    return generate_random_modifier_w_main_key
+    # return generate_random_modifier_w_main_key
 
 
 @pytest.fixture(scope="module")

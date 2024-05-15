@@ -1,4 +1,3 @@
-import asyncio
 from sqlalchemy.orm import Session
 from typing import Callable, Dict, Generator
 import pytest
