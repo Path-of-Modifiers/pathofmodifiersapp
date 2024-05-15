@@ -96,6 +96,7 @@ class Plotter:
         return intersection_statement
 
     def _create_plot_data(self, df: pd.DataFrame) -> tuple:
+        df.sort_values(by="createdAt", inplace=True)
         most_common_currency_used = df.tradeName.mode()[0]
         value_in_chaos = df["currencyAmount"] * df["valueInChaos"]
         conversionValue = value_in_chaos.copy(deep=True)
