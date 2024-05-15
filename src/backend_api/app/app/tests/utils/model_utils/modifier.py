@@ -14,6 +14,11 @@ from app.tests.utils.utils import (
 
 
 def create_random_modifier_dict() -> Dict:
+    """Create a random modifier dictionary.
+
+    Returns:
+        Dict: Modifier dictionary with random values.
+    """
     position = random_int(small_int=True)
     static = random_bool()
     if not static:
@@ -71,11 +76,20 @@ def create_random_modifier_dict() -> Dict:
 
 
 async def generate_random_modifier(
-    db: Session, main_key: Optional[int] = None
+    db: Session,
+    # main_key: Optional[int] = None
 ) -> Tuple[Dict, Modifier]:
+    """Create a random modifier.
+
+    Args:
+        db (Session): DB session.
+
+    Returns:
+        Tuple[Dict, Modifier]: Random modifier dictionary and Modifier db object.
+    """
     modifier_dict = create_random_modifier_dict()
-    if main_key is not None:
-        modifier_dict["modifierId"] = main_key
+    # if main_key is not None:
+    #     modifier_dict["modifierId"] = main_key
     modifier_create = ModifierCreate(**modifier_dict)
     modifier = await crud.CRUD_modifier.create(db, obj_in=modifier_create)
     return modifier_dict, modifier

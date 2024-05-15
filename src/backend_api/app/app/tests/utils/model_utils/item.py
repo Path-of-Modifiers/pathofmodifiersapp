@@ -36,6 +36,16 @@ async def create_random_item_dict(
         ],
     ],
 ]:
+    """Create a random item dictionary.
+
+    Args:
+        db (Session): DB session.
+        retrieve_dependencies (Optional[bool], optional): Whether to retrieve dependencies. Defaults to False.
+
+    Returns:
+        Union[ Dict, Tuple[ Dict, List[ Union[ Dict, Account, Stash, ItemBaseType, Currency, ] ], ], ]: \n
+        Random item dictionary or tuple with random item dictionary and dependencies.
+    """
     gameItemId = random_lower_string()
     changeId = random_lower_string()
     name = random_lower_string()
@@ -70,13 +80,13 @@ async def create_random_item_dict(
     suffixes = random_int(small_int=True)
     foilVariation = random_int(small_int=True)
 
+    # Set the dependencies
     if not retrieve_dependencies:
         stash_dict, stash = await generate_random_stash(db)
     else:
         stash_dict, stash, deps = await generate_random_stash(
             db, retrieve_dependencies=retrieve_dependencies
         )
-
     stashId = stash.stashId
     item_base_type_dict, item_base_type = await generate_random_item_base_type(db)
     baseType = item_base_type.baseType
@@ -116,8 +126,8 @@ async def create_random_item_dict(
 
     if not retrieve_dependencies:
         return item
-    else:
-        deps += [stash_dict, stash]
+    else: # Gather dependencies and return
+        deps += [stash_dict, stash] 
         deps += [item_base_type_dict, item_base_type]
         deps += [currency_dict, currency]
         return item, deps
@@ -140,6 +150,16 @@ async def generate_random_item(
         ]
     ],
 ]:
+    """Generate a random item.
+
+    Args:
+        db (Session): DB session.
+        retrieve_dependencies (Optional[bool], optional): Whether to retrieve dependencies. Defaults to False.
+
+    Returns:
+        Tuple[ Dict, Item, Optional[ List[ Union[ Dict, Account, Stash, ItemBaseType, Currency, ] ] ], ]: \n
+        Random item dict and Item db object and optional dependencies.
+    """
     output = await create_random_item_dict(db, retrieve_dependencies)
     if not retrieve_dependencies:
         item_dict = output
