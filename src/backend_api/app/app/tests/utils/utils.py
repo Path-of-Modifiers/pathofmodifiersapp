@@ -24,7 +24,7 @@ def random_int(
     small_int: Optional[bool] = None,
     big_int: Optional[bool] = None,
     negative: Optional[bool] = None,
-    example: Optional[int] = None,
+    max_value: Optional[int] = None,
 ) -> int:
     """Generate a random integer.
 
@@ -37,8 +37,8 @@ def random_int(
     Returns:
         int: Random integer.
     """
-    if example is not None:
-        random_int = random.randint(1, example)
+    if max_value is not None:
+        random_int = random.randint(1, max_value)
     elif small_int:
         random_int = random.randint(1, 32767)
     elif big_int:
@@ -55,7 +55,7 @@ def random_float(
     *,
     small_float: Optional[bool] = None,
     negative: Optional[bool] = None,
-    example: Optional[int] = None,
+    max_value: Optional[int] = None,
 ) -> float:
     """Generate a random float.
 
@@ -67,8 +67,8 @@ def random_float(
     Returns:
         float: Random float.
     """
-    if example is not None:
-        random_float = random.uniform(1, example)
+    if max_value is not None:
+        random_float = random.uniform(1, max_value)
     elif small_float:
         random_float = random.uniform(1, 32767)
     else:
