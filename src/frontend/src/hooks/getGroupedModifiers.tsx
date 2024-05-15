@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ModifiersService, GroupedModifierByEffect } from "../client";
 import { useQuery } from "@tanstack/react-query";
 
+// Get all grouped modifiers by effect
 export const GetGroupedModifiersByEffect = () => {
   const [modifiers, setModifiers] = useState<
     GroupedModifierByEffect | GroupedModifierByEffect[]

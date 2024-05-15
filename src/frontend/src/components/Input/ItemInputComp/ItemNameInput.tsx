@@ -1,8 +1,18 @@
 import { Input, Flex, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 
+// Item Name Input Component  -  This component is used to input the name of an item.
 export const ItemNameInput = () => {
   const { setItemName } = useGraphInputStore();
+
+  const getItemNameValue = () => {
+    const itemName = useGraphInputStore.getState().itemSpecState.name;
+    if (itemName) {
+      return itemName;
+    } else {
+      return "";
+    }
+  };
 
   const handleNameChange = (value: string) => {
     const itemNameInput = value;
@@ -20,9 +30,9 @@ export const ItemNameInput = () => {
         Item name
       </Text>
       <Input
+        value={getItemNameValue()}
         bgColor={"ui.input"}
         color={"ui.white"}
-        defaultValue={""}
         onChange={(e) => handleNameChange(e.target.value)}
         width={250}
         focusBorderColor={"ui.white"}

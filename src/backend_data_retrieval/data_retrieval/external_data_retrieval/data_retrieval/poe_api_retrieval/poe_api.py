@@ -1,20 +1,24 @@
 import requests
 import time
-import json
+import logging
 import asyncio
 import aiohttp
+import os
 import pandas as pd
 from tqdm import tqdm
-from typing import List, Union, Tuple, Dict, Coroutine, Iterator
+from typing import List, Union, Tuple, Dict, Coroutine, Iterator, Optional
 
 from external_data_retrieval.detectors.unique_detector import (
     UniqueJewelDetector,
     UniqueJewelleryDetector,
     UniqueArmourDetector,
+    UniqueWeaponDetector,
     UniqueDetector,
 )
 
 pd.options.mode.chained_assignment = None  # default='warn'
+
+BASEURL = os.getenv("DOMAIN")
 
 
 class APIHandler:
@@ -22,16 +26,24 @@ class APIHandler:
         "User-Agent": "OAuth pathofmodifiers/0.1.0 (contact: ***REMOVED***) StrictMode"
     }
 
+    if "localhost" not in BASEURL:
+        base_pom_api_url = f"https://{BASEURL}"
+    else:
+        base_pom_api_url = "http://src-backend-1"
+
     def __init__(
         self,
         url: str,
         auth_token: str,
+        *,
+        logger_parent: logging.Logger,
         n_wanted_items: int = 100,
         n_unique_wanted_items: int = 5,
         item_detectors: List[Union[UniqueDetector]] = [
             UniqueJewelDetector(),
             UniqueJewelleryDetector(),
             UniqueArmourDetector(),
+            UniqueWeaponDetector(),
         ],
     ) -> None:
         """
@@ -53,6 +65,25 @@ class APIHandler:
 
         self.n_unique_items_found = 0
         self.n_unique_wanted_items = n_unique_wanted_items
+
+        self.logger = logger_parent.getChild("API_handler")
+
+        self.time_for_last_ratelimit = None
+
+    @property
+    def recently_ratelimited(self) -> bool:
+        """
+        To avoid continously running into the rate limit, we want to track
+        if we have recently been rate limited. Currently "recently" refers
+        to 180 seconds. If we have been recently ratelimited, you can choose
+        to act differently, such as adding artificial delay.
+        """
+        if self.time_for_last_ratelimit is None:
+            return False
+        elif time.perf_counter() - self.time_for_last_ratelimit > 180:
+            return False
+        else:
+            return True
 
     def _json_to_df(self, stashes: List) -> pd.DataFrame:
         df_temp = pd.json_normalize(stashes)
@@ -95,19 +126,26 @@ class APIHandler:
         df = self._json_to_df(stashes)
 
         # The stashes are fed to all item detectors, slowly being filtered down
-        for item_detector in self.item_detectors:
-            (
-                df_filtered,
-                item_count,
-                n_unique_found_items,
-                df_leftover,
-            ) = item_detector.iterate_stashes(df)
+        try:
+            for item_detector in self.item_detectors:
+                (
+                    df_filtered,
+                    item_count,
+                    n_unique_found_items,
+                    df_leftover,
+                ) = item_detector.iterate_stashes(df)
 
-            df_wanted = pd.concat((df_wanted, df_filtered))
-            n_new_items += item_count
-            n_total_unique_items += n_unique_found_items
+                df_wanted = pd.concat((df_wanted, df_filtered))
+                n_new_items += item_count
+                n_total_unique_items += n_unique_found_items
 
-            df = df_leftover.copy(deep=True)
+                df = df_leftover.copy(deep=True)
+        except Exception as e:
+            self.logger.critical(
+                f"While checking stashes (detector: {item_detector}), the exception below occured:"
+            )
+            self.logger.critical(e)
+            raise e
 
         # Updates progress bars
         self.n_found_items += n_new_items
@@ -121,10 +159,38 @@ class APIHandler:
 
         return df_wanted
 
-    def _initialize_stream(self, next_change_id: str) -> Tuple[str, List]:
+    def _get_latest_change_id(self) -> str:
+
+        latest_item_change_id_url = (
+            self.base_pom_api_url + "/api/api_v1/item/latest_item_change_id/"
+        )
+        latest_change_id = requests.get(latest_item_change_id_url).json()
+
+        response = requests.get(
+            self.url, headers=self.headers, params={"id": latest_change_id}
+        )
+        if response.status_code == 429:  # Too many requests
+            headers = response.headers
+            retry_after = int(headers["Retry-After"])
+            time.sleep(retry_after + 1)
+            return self._get_latest_change_id()
+
+        response.raise_for_status()
+        response_json = response.json()
+
+        next_change_id = response_json["next_change_id"]
+
+        return next_change_id
+
+    def _initialize_stream(
+        self, next_change_id: Optional[str] = None
+    ) -> Tuple[str, List]:
         """
         Makes an initial, synchronous, API call.
         """
+        if next_change_id is None:
+            next_change_id = self._get_latest_change_id()
+
         response = requests.get(
             self.url, headers=self.headers, params={"id": next_change_id}
         )
@@ -149,6 +215,7 @@ class APIHandler:
     async def _start_next_request(
         self, session: aiohttp.ClientSession, next_change_id: str
     ) -> Coroutine:
+
         async with session.get(self.url, params={"id": next_change_id}) as response:
             if response.status >= 300:
                 if response.status == 429:
@@ -156,6 +223,7 @@ class APIHandler:
                     # Rate limits are dynamic
                     headers = response.headers
                     retry_after = int(headers["Retry-After"])
+                    self.time_for_last_ratelimit = time.perf_counter()
                     await asyncio.sleep(retry_after + 1)
                     return await self._start_next_request(session, next_change_id)
 
@@ -167,7 +235,7 @@ class APIHandler:
             return next_change_id, stashes
 
     async def _follow_stream(
-        self, initial_next_change_id: str
+        self, initial_next_change_id: Optional[str] = None
     ) -> Tuple[pd.DataFrame, str]:
         """
         Follows the API stream until conditions are met
@@ -187,6 +255,10 @@ class APIHandler:
             self.n_found_items < self.n_wanted_items
             or self.n_unique_items_found < self.n_unique_wanted_items
         ):
+            if self.recently_ratelimited:
+                # Adds artificial delay if we have recently been ratelimited
+                time.sleep(1)
+
             future = asyncio.ensure_future(
                 self._start_next_request(session, next_change_id=next_change_id)
             )
@@ -202,8 +274,8 @@ class APIHandler:
             next_change_id, new_stashes = task_response[0]
             if not new_stashes:
                 time.sleep(
-                    300
-                )  # Waits 5 minutes before continuing to persue the stream
+                    120
+                )  # Waits 120 seconds before continuing to pursue the stream
 
             iteration += 1
 
@@ -217,7 +289,7 @@ class APIHandler:
         return df, next_change_id
 
     def dump_stream(
-        self, initial_next_change_id: str = None, track_progress: bool = True
+        self, initial_next_change_id: Optional[str] = None, track_progress: bool = True
     ) -> Iterator[pd.DataFrame]:
         """
         The method which begins making API calls and fetching data.

@@ -1,0 +1,16 @@
+# Source: https://www.poewiki.net/wiki/Synthesis_league#Unique_items
+minRoll,maxRoll,textRolls,position,effect,static,unique
+10,20,,0,"+# to all Attributes",,True
+8,10,,0,"Adds # to # Physical Damage",,True
+13,15,,1,"Adds # to # Physical Damage",,True
+450,500,,0,"+# to Armour",,True
+30,40,,0,"Herald of # has #% increased Mana Reservation Efficiency",,True
+,,"Thunder-Ash-Ice-Purity-Agony",1,"Herald of # has #% increased Mana Reservation Efficiency",,True
+40,60,,0,"#% increased # Damage while affected by Herald of #",,True
+,,"Lightning-Fire-Cold-Physical-Chaos",1,"#% increased # Damage while affected by Herald of #",,True
+,,"Thunder-Ash-Ice-Purity-Agony",2,"#% increased # Damage while affected by Herald of #",,True
+,,"Thunder-Ash-Ice-Purity-Agony",0,"Herald of # has #% increased Buff Effect",,True
+40,60,,1,"Herald of # has #% increased Buff Effect",,True
+,,,0,"4% additional Physical Damage Reduction while affected by Herald of Purity",True,True
+,,"Sentinels of Purity-Agony Crawler",0,"# deal #% increased Damage",,True
+70,100,,1,"# deals #% increased Damage",,True

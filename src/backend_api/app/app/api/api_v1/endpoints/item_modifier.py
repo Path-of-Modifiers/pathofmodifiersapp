@@ -1,5 +1,5 @@
 from __future__ import annotations
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Optional, Union
 
 from app.api.deps import get_db
@@ -9,6 +9,8 @@ from app.crud import CRUD_itemModifier
 import app.core.schemas as schemas
 
 from sqlalchemy.orm import Session
+
+from app.core.security import verification
 
 
 router = APIRouter()
@@ -25,9 +27,9 @@ async def get_item_modifier(
     db: Session = Depends(get_db),
 ):
     """
-    Get item modifier or list of item modifiers by key and 
-    value for "itemId", optional "modifierId" and optional "position".    
-    
+    Get item modifier or list of item modifiers by key and
+    value for "itemId", optional "modifierId" and optional "position".
+
     Dominant key is "itemId".
 
     Returns one or a list of item modifiers.
@@ -46,7 +48,7 @@ async def get_item_modifier(
 async def get_all_item_modifiers(db: Session = Depends(get_db)):
     """
     Get all item modifiers.
-    
+
     Returns a list of all item modifiers.
     """
     all_itemModifiers = await CRUD_itemModifier.get(db=db)
@@ -61,12 +63,19 @@ async def get_all_item_modifiers(db: Session = Depends(get_db)):
 async def create_item_modifier(
     itemModifier: Union[schemas.ItemModifierCreate, List[schemas.ItemModifierCreate]],
     db: Session = Depends(get_db),
+    verification: bool = Depends(verification),
 ):
     """
     Create one or a list item modifiers.
-    
+
     Returns the created item modifier or list of item modifiers.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {create_item_modifier.__name__}",
+        )
+
     return await CRUD_itemModifier.create(db=db, obj_in=itemModifier)
 
 
@@ -77,15 +86,22 @@ async def update_item_modifier(
     position: int,
     itemModifier_update: schemas.ItemModifierUpdate,
     db: Session = Depends(get_db),
+    verification: bool = Depends(verification),
 ):
     """
-    Update an item modifier by key and value for 
+    Update an item modifier by key and value for
     "itemId", optional "modifierId" and optional "position".
-        
+
     Dominant key is "itemId".
 
     Returns the updated item modifier.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {update_item_modifier.__name__}",
+        )
+
     itemModifier_map = {
         "itemId": itemId,
         "modifierId": modifierId,
@@ -107,16 +123,23 @@ async def delete_item_modifier(
     modifierId: Optional[int] = None,
     position: Optional[int] = None,
     db: Session = Depends(get_db),
+    verification: bool = Depends(verification),
 ):
     """
-    Delete an item modifier by key and value for 
+    Delete an item modifier by key and value for
     "itemId", optional "modifierId" and optional "position".
-        
+
     Dominant key is "itemId".
-    
+
     Returns a message that the item modifier was deleted successfully.
     Always deletes one item modifier.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {delete_item_modifier.__name__}",
+        )
+
     itemModifier_map = {"itemId": itemId}
     if modifierId is not None:
         itemModifier_map["modifierId"] = modifierId

@@ -6,11 +6,13 @@ import {
   ItemBaseTypesService,
 } from "../client";
 
+// Prefetches all item base type data
 export const prefetchAllBaseTypeData = async (queryClient: QueryClient) => {
   let baseTypes: BaseType[] = [];
   let itemBaseTypeCategory: ItemBaseTypeCategory[] = [];
   let itemBaseTypeSubCategory: ItemBaseTypeSubCategory[] = [];
 
+  // Prefetch all base type data
   await queryClient.prefetchQuery({
     queryKey: ["baseTypes"],
     queryFn: async () => {
@@ -26,6 +28,7 @@ export const prefetchAllBaseTypeData = async (queryClient: QueryClient) => {
     staleTime: 10 * 1000, // only prefetch if older than 10 seconds
   });
 
+  // Prefetch all unique categories
   await queryClient.prefetchQuery({
     queryKey: ["itemBaseTypeCategory"],
     queryFn: async () => {
@@ -41,6 +44,7 @@ export const prefetchAllBaseTypeData = async (queryClient: QueryClient) => {
     staleTime: 10 * 1000, // only prefetch if older than 10 seconds
   });
 
+  // Prefetch all unique sub categories
   await queryClient.prefetchQuery({
     queryKey: ["itemBaseTypeSubCategory"],
     queryFn: async () => {
