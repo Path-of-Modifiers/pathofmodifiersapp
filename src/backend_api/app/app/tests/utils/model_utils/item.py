@@ -80,13 +80,13 @@ async def create_random_item_dict(
     suffixes = random_int(small_int=True)
     foilVariation = random_int(small_int=True)
 
+    # Set the dependencies
     if not retrieve_dependencies:
         stash_dict, stash = await generate_random_stash(db)
     else:
         stash_dict, stash, deps = await generate_random_stash(
             db, retrieve_dependencies=retrieve_dependencies
         )
-
     stashId = stash.stashId
     item_base_type_dict, item_base_type = await generate_random_item_base_type(db)
     baseType = item_base_type.baseType
@@ -126,8 +126,8 @@ async def create_random_item_dict(
 
     if not retrieve_dependencies:
         return item
-    else:
-        deps += [stash_dict, stash]
+    else: # Gather dependencies and return
+        deps += [stash_dict, stash] 
         deps += [item_base_type_dict, item_base_type]
         deps += [currency_dict, currency]
         return item, deps

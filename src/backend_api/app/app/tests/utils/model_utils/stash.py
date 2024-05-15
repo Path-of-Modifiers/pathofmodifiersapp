@@ -24,7 +24,8 @@ async def create_random_stash_dict(
     stashId = random_lower_string()
     public: bool = random_bool()
     league = random_lower_string()
-
+    
+    # Set the dependencies
     account_dict, account = await generate_random_account(db)
     accountName = account.accountName
 
@@ -37,7 +38,7 @@ async def create_random_stash_dict(
 
     if not retrieve_dependencies:
         return stash
-    else:
+    else: # Gather dependencies and return them
         deps = []
         deps += [account_dict, account]
         return stash, deps
