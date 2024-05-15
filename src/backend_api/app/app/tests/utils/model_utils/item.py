@@ -36,6 +36,16 @@ async def create_random_item_dict(
         ],
     ],
 ]:
+    """Create a random item dictionary.
+
+    Args:
+        db (Session): DB session.
+        retrieve_dependencies (Optional[bool], optional): Whether to retrieve dependencies. Defaults to False.
+
+    Returns:
+        Union[ Dict, Tuple[ Dict, List[ Union[ Dict, Account, Stash, ItemBaseType, Currency, ] ], ], ]: \n
+        Random item dictionary or tuple with random item dictionary and dependencies.
+    """
     gameItemId = random_lower_string()
     changeId = random_lower_string()
     name = random_lower_string()
@@ -140,6 +150,16 @@ async def generate_random_item(
         ]
     ],
 ]:
+    """Generate a random item.
+
+    Args:
+        db (Session): DB session.
+        retrieve_dependencies (Optional[bool], optional): Whether to retrieve dependencies. Defaults to False.
+
+    Returns:
+        Tuple[ Dict, Item, Optional[ List[ Union[ Dict, Account, Stash, ItemBaseType, Currency, ] ] ], ]: \n
+        Random item dict and Item db object and optional dependencies.
+    """
     output = await create_random_item_dict(db, retrieve_dependencies)
     if not retrieve_dependencies:
         item_dict = output
