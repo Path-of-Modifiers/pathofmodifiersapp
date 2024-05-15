@@ -1,5 +1,6 @@
 import { ModifierInput } from "../components/Input/ModifierInputComp/ModifierInput";
 
+// Check if an array is null or contains only null values
 export const isArrayNullOrContainsOnlyNull = (
   arr:
     | Array<ModifierInput | string | number | null | boolean>
@@ -13,10 +14,12 @@ export const isArrayNullOrContainsOnlyNull = (
   return arr.every((value) => value === null);
 };
 
+// Capitalize the first letter of a string
 export const capitalizeFirstLetter = (string: string): string => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
+// Convert a string to a boolean
 export const convertToBoolean = (value: string) => {
   if (value === "true") {
     return true;
@@ -27,6 +30,7 @@ export const convertToBoolean = (value: string) => {
   }
 };
 
+// Convert a boolean to a string
 export const delay = (time: number) => {
   return new Promise((resolve) => setTimeout(resolve, time));
 };

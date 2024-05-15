@@ -1,10 +1,14 @@
 import requests
+from requests.auth import HTTPBasicAuth
 import logging
 import pandas as pd
 from typing import List, Dict, Any, Union, Optional
 
+from pom_api_authentication import get_super_authentication
+
+logger = logging.getLogger(__name__)
 logging.basicConfig(
-    filename="history.log",
+    filename="modifier_data_deposit.log",
     level=logging.INFO,
     format="%(asctime)s:%(levelname)-8s:%(name)s: %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
@@ -55,25 +59,32 @@ def insert_data(
     *,
     url: str,
     table_name: str,
+    authentication: Optional[HTTPBasicAuth] = get_super_authentication(),
     logger: Optional[logging.Logger] = None,
 ) -> None:
     if df.empty:
         return None
     data = df_to_JSON(df, request_method="post")
-    response = requests.post(url + f"/{table_name}/", json=data)
+    response = requests.post(url + f"/{table_name}/", json=data, auth=authentication)
     if response.status_code == 422:
         logger.warning(
             f"Recieved a 422 response, indicating an unprocessable entity was submitted, while posting a {table_name} table.\nSending smaller batches, trying to locate specific error."
         )
         for data_chunk in _chunks(data, n=15):
-            response = requests.post(url + f"/{table_name}/", json=data_chunk)
+            response = requests.post(
+                url + f"/{table_name}/",
+                json=data_chunk,
+                auth=authentication,
+            )
             if response.status_code == 422:
                 logger.warning(
                     "Located chunk of data that contains the unprocessable entity."
                 )
                 for individual_data in data_chunk:
                     response = requests.post(
-                        url + f"/{table_name}/", json=individual_data
+                        url + f"/{table_name}/",
+                        json=individual_data,
+                        auth=authentication,
                     )
                     if response.status_code == 422:
                         logger.warning(

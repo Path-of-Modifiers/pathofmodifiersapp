@@ -2,20 +2,27 @@ import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 import { useEffect } from "react";
 
-const handleLeagueChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  const league = event.target.value;
-  useGraphInputStore.setState({ league: league });
-};
-
+// League Input Component  -  This component is used to select the league of the game.
 export const LeagueInput = () => {
   // Needs to be updated to reflect the defualt leagues available in the game
   const defaultLeague = "Necropolis";
   // FUTURE IMPLEMENTATION: Add default hardcore league
   //   const defaultHardcoreLeague = process.env.CURRENT_HARDCORE_LEAGUE;
 
+  const clearClicked = useGraphInputStore((state) => state.clearClicked);
+
+  const handleLeagueChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const league = event.target.value;
+    useGraphInputStore.setState({ league: league });
+  };
+
   useEffect(() => {
     useGraphInputStore.setState({ league: defaultLeague });
-  }, [defaultLeague]);
+
+    if (clearClicked) {
+      useGraphInputStore.setState({ league: defaultLeague });
+    }
+  }, [defaultLeague, clearClicked]);
 
   return (
     <Flex

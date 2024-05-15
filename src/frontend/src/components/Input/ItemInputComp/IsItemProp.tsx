@@ -1,14 +1,58 @@
 import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { convertToBoolean } from "../../../hooks/utils";
+import { ItemSpecState } from "../../../store/StateInterface";
 
 interface IsItemInputProps {
-  itemSpecKey: string;
+  itemSpecKey:
+    | "identified"
+    | "corrupted"
+    | "delve"
+    | "fractured"
+    | "synthesized"
+    | "replica"
+    | "elder"
+    | "shaper"
+    | "crusader"
+    | "redeemer"
+    | "hunter"
+    | "warlord"
+    | "searing"
+    | "tangled"
+    | "isRelic";
   text: string;
 }
 
+// Is Item Input Component  -  This component is used to select the boolean item properties.
 export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
   const defaultValue = undefined;
+
+  const getSelectValue = () => {
+    let selectValue = undefined;
+    if (
+      itemSpecKey === "elder" ||
+      itemSpecKey === "shaper" ||
+      itemSpecKey === "crusader" ||
+      itemSpecKey === "redeemer" ||
+      itemSpecKey === "hunter" ||
+      itemSpecKey === "warlord"
+    ) {
+      selectValue =
+        (useGraphInputStore.getState().itemSpecState as ItemSpecState)
+          .influences?.[itemSpecKey] ?? undefined;
+    } else {
+      selectValue = (
+        useGraphInputStore.getState().itemSpecState as ItemSpecState
+      )[itemSpecKey];
+    }
+    if (selectValue) {
+      return "true";
+    } else if (selectValue === false) {
+      return "false";
+    }
+    return "";
+  };
+
   const {
     setItemSpecIdentified,
     setItemSpecCorrupted,
@@ -88,8 +132,8 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
         {text}
       </Text>
       <Select
+        value={getSelectValue()}
         bgColor={"ui.input"}
-        defaultValue={"IsItems"}
         onChange={(e) => handleChange(e, itemSpecKey)}
         width={150}
         color={"ui.white"}

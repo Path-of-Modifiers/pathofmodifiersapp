@@ -1,9 +1,3 @@
-import {
-  BaseType,
-  ItemBaseTypeCategory,
-  ItemBaseTypeSubCategory,
-} from "../client";
-
 export interface InfluenceSpecState {
   elder?: boolean | null;
   shaper?: boolean | null;
@@ -50,10 +44,12 @@ export interface ModifierSpecState {
 }
 
 export interface GraphInputState {
+  clearClicked: boolean;
   league: string;
   itemSpecState: ItemSpecState;
   baseSpec?: BaseSpecState;
   modifierSpecs: ModifierSpecState[];
+  setClearClicked: () => void;
   setLeague: (league: string) => void;
   setItemSpecIdentified: (identified: boolean) => void;
   setItemName: (name: string) => void;
@@ -83,15 +79,7 @@ export interface GraphInputState {
   updateModifierSpec: (modifierSpec: ModifierSpecState) => void;
 }
 
-export interface GraphDataState {
-  baseTypes: BaseType[];
-  itemBaseTypeCategories: ItemBaseTypeCategory[];
-  itemBaseTypeSubCategories: ItemBaseTypeSubCategory[];
-  setBaseTypes: (baseTypes: BaseType[]) => void;
-  setItemBaseTypeCategories: (
-    itemBaseTypeCategories: ItemBaseTypeCategory[]
-  ) => void;
-  setItemBaseTypeSubCategories: (
-    itemBaseTypeSubCategories: ItemBaseTypeSubCategory[]
-  ) => void;
+export interface ExpandedComponentState {
+  expandedGraphInputFilters: boolean;
+  setExpandedGraphInputFilters: (expandedGraphInputFilters: boolean) => void;
 }

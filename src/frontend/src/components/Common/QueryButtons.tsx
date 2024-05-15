@@ -1,31 +1,47 @@
-import { Box, Button, ButtonGroup} from "@chakra-ui/react";
-import { Dispatch } from "react";
-import { MdExpandMore, MdExpandLess } from "react-icons/md"
+import { Box, Button, ButtonGroup } from "@chakra-ui/react";
+import { MdExpandMore, MdExpandLess } from "react-icons/md";
+import { useExpandedComponentStore } from "../../store/ExpandedComponentStore";
+import { useGraphInputStore } from "../../store/GraphInputStore";
 
-interface QueryButtonProps {
-    showingFilter: boolean;
-    setShowingFilter: Dispatch<React.SetStateAction<boolean>>
-  }
+const QueryButtons = () => {
+  const { setExpandedGraphInputFilters } = useExpandedComponentStore();
 
+  const filterExpanded = useExpandedComponentStore(
+    (state) => state.expandedGraphInputFilters
+  );
 
-const QueryButtons = ({showingFilter, setShowingFilter}: QueryButtonProps) => {
-    const handleShowingFilter = () => {
-        setShowingFilter(!showingFilter);
-    }
-    return <Box bg="ui.main">
-        <ButtonGroup variant="solid" colorScheme="red">
-            <Button>
-                Clear Query
-            </Button>
-            <Button variant="solid" colorScheme="green">
-                Query and Plot
-            </Button>
-            <Button variant="solid" colorScheme="gray" rightIcon={showingFilter?<MdExpandLess />:<MdExpandMore />} onClick={handleShowingFilter}> 
-                {showingFilter?"Hide Filters":"Show Filters"}
-            </Button>
-        </ButtonGroup>
+  const handleShowingFilter = () => {
+    setExpandedGraphInputFilters(!filterExpanded);
+  };
+
+  const handleClearQuery = () => {
+    useGraphInputStore.getState().setClearClicked();
+    
+    // This is a hack to make sure the clearClicked is set to false after the
+    // state is updated.
+    setTimeout(() => {
+      useGraphInputStore.getState().clearClicked = false;
+    }, 10);
+  };
+
+  return (
+    <Box bg="ui.main">
+      <ButtonGroup variant="solid" colorScheme="red">
+        <Button onClick={handleClearQuery}>Clear Query</Button>
+        <Button variant="solid" colorScheme="green">
+          Query and Plot
+        </Button>
+        <Button
+          variant="solid"
+          colorScheme="gray"
+          rightIcon={filterExpanded ? <MdExpandLess /> : <MdExpandMore />}
+          onClick={handleShowingFilter}
+        >
+          {filterExpanded ? "Hide Filters" : "Show Filters"}
+        </Button>
+      </ButtonGroup>
     </Box>
-}
+  );
+};
 
-
-export default QueryButtons
+export default QueryButtons;

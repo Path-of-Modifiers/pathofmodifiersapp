@@ -6,6 +6,7 @@ interface BaseTypeInputProps {
   baseTypes: BaseType | BaseType[];
 }
 
+// Base Type Input Component  -  This component is used to select the base type of an item.
 export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
   if (!Array.isArray(baseTypes)) {
     baseTypes = [baseTypes];
@@ -14,6 +15,15 @@ export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
   const defaultValue = undefined;
 
   const { setBaseType } = useGraphInputStore();
+
+  const getBaseTypeValue = () => {
+    const baseType = useGraphInputStore.getState().baseSpec?.baseType;
+    if (baseType) {
+      return baseType;
+    } else {
+      return "";
+    }
+  };
 
   const handleBaseTypeChange = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -51,9 +61,9 @@ export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
         Item Base Type
       </Text>
       <Select
+        value={getBaseTypeValue()}
         bgColor={"ui.input"}
         color={"ui.white"}
-        defaultValue={"Unique"}
         onChange={(e) => handleBaseTypeChange(e)}
         width={150}
         focusBorderColor={"ui.white"}
