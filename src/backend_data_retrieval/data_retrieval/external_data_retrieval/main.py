@@ -1,7 +1,8 @@
+import requests
 import logging
 import os
 import pandas as pd
-from typing import List, Union, Dict
+from typing import Dict, Optional
 
 from external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
     APIHandler,
@@ -17,39 +18,43 @@ from external_data_retrieval.transforming_data.transform_poe_api_data import (
     UniquePoeAPIDataTransformer,
 )
 
+logger = logging.getLogger("external_data_retrieval")
 logging.basicConfig(
-    filename="history.log",
+    filename="external_data_retrieval.log",
     level=logging.INFO,
     format="%(asctime)s:%(levelname)-8s:%(name)s: %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
 BASEURL = os.getenv("DOMAIN")
+POE_PUBLIC_STASHES_AUTH_TOKEN = os.getenv("POE_PUBLIC_STASHES_AUTH_TOKEN")
 
 
 class ContiniousDataRetrieval:
-    auth_token = "750d4f685cfa83d024d86508e7ede4ab55b5acc7"
+    auth_token = POE_PUBLIC_STASHES_AUTH_TOKEN
     url = "https://api.pathofexile.com/public-stash-tabs"
-    
+
     if "localhost" not in BASEURL:
-        modifier_url = f"https://{BASEURL}"
+        base_pom_api_url = f"https://{BASEURL}"
     else:
-        modifier_url = "http://src-backend-1"
-    modifier_url += "/api/api_v1/modifier/"
+        base_pom_api_url = "http://src-backend-1"
+    modifier_url = base_pom_api_url + "/api/api_v1/modifier/"
 
     def __init__(
-        self, items_per_batch: int, data_transformers: Dict[str, PoeAPIDataTransformer]
+        self,
+        items_per_batch: int,
+        data_transformers: Dict[str, PoeAPIDataTransformer],
+        logger: logging.Logger,
     ):
 
-        self.logger = logging.getLogger(__name__)
         self.data_transformers = {
-            key: data_transformers[key](main_logger=self.logger)
-            for key in data_transformers
+            key: data_transformers[key](main_logger=logger) for key in data_transformers
         }
 
         self.poe_api_handler = APIHandler(
             url=self.url,
             auth_token=self.auth_token,
+            logger_parent=logger,
             n_wanted_items=items_per_batch,
             n_unique_wanted_items=10,
         )
@@ -58,8 +63,10 @@ class ContiniousDataRetrieval:
             url="https://poe.ninja/api/data/currencyoverview?league=Necropolis&type=Currency"
         )
         self.poe_ninja_transformer = TransformPoeNinjaCurrencyAPIData(
-            main_logger=self.logger
+            logger_parent=logger
         )
+
+        self.logger = logger
 
     def _get_modifiers(self) -> Dict[str, pd.DataFrame]:
 
@@ -116,7 +123,7 @@ class ContiniousDataRetrieval:
         currency_df = self.poe_ninja_transformer.transform_into_tables(currency_df)
         return currency_df
 
-    def retrieve_data(self, initial_next_change_id: str):
+    def retrieve_data(self, initial_next_change_id: Optional[str] = None):
         self.logger.info("Program starting up.")
         self.logger.info("Retrieving modifiers from db.")
         modifier_dfs = self._get_modifiers()
@@ -137,34 +144,23 @@ class ContiniousDataRetrieval:
 
 
 def main():
-    auth_token = "750d4f685cfa83d024d86508e7ede4ab55b5acc7"
+    auth_token = POE_PUBLIC_STASHES_AUTH_TOKEN
     url = "https://api.pathofexile.com/public-stash-tabs"
 
     items_per_batch = 300
     data_transformers = {"unique": UniquePoeAPIDataTransformer}
 
     data_retriever = ContiniousDataRetrieval(
-        items_per_batch=items_per_batch, data_transformers=data_transformers
+        items_per_batch=items_per_batch,
+        data_transformers=data_transformers,
+        logger=logger,
     )
-    initial_next_change_id = "2304883465-2293076633-2219109349-2460729612-2390966652"
-    # initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272" #earlier
-    data_retriever.retrieve_data(initial_next_change_id=initial_next_change_id)
-    # n_unique_wanted_items = 15
+    # initial_next_change_id = "2342837382-2327804061-2253681663-2498729757-2428031320"  # local test if backend is down
+    # initial_next_change_id = "2342837382-2327804061-2253681663-2498729757-2428031320" # A vast emptyness encounter
+    initial_next_change_id = "2456008078-2435987533-2361078642-2616265937-2544674695"  # Recent one from POE ninja
 
-    # api_handler = APIHandler(
-    #     url=url,
-    #     auth_token=auth_token,
-    #     n_wanted_items=n_wanted_items,
-    #     n_unique_wanted_items=n_unique_wanted_items,
-    # )
-    # for df in api_handler.dump_stream(
-    #     initial_next_change_id="2304265269-2292493816-2218568823-2460180973-2390424272"
-    # ):  # From poe.ninja
-    #     # print(df)
-    #     # df.to_csv("test.csv", index=False)
-    #     quit()
-
-    # return 0
+    data_retriever.retrieve_data(initial_next_change_id)
+    # data_retriever.retrieve_data()
 
 
 if __name__ == "__main__":

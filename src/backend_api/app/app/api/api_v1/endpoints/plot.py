@@ -10,16 +10,22 @@ import app.plotting.schemas as schemas
 
 from sqlalchemy.orm import Session
 
+from app.core.security import verification
+
 
 router = APIRouter()
 
 
 @router.post("/", response_model=schemas.PlotData)
-async def get_plot_data(query: schemas.PlotQuery, db: Session = Depends(get_db)):
+async def get_plot_data(
+    query: schemas.PlotQuery,
+    db: Session = Depends(get_db),
+):
     """
     Takes a query based on the 'PlotQuery' schema and retrieves data
     to be used for plotting in the format of the 'PlotData' schema.
 
     The 'PlotQuery' schema allows for modifier restriction and item specifications.
     """
+
     return await plotter_tool.plot(db, query=query)
