@@ -68,7 +68,7 @@ def random_float(
         float: Random float.
     """
     if example is not None:
-        random_int = random.uniform(1, example)
+        random_float = random.uniform(1, example)
     elif small_float:
         random_float = random.uniform(1, 32767)
     else:
