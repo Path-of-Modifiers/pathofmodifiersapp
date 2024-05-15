@@ -34,7 +34,5 @@ jobs:
         poetry install --directory=./src/backend_api/app
     - name: Test with pytest
       run: |
-        pip install pytest pytest-cov
-        
         # Test backend_api pytests
-        pytest --pyargs src/backend_api/
+        poetry run pytest --directory=./src/backend_api/app
