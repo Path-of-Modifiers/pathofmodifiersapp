@@ -11,6 +11,7 @@ from modifier_data_deposit.modifier_processing_modules import (
     check_for_additional_modifier_types,
 )
 from modifier_data_deposit.utils import df_to_JSON
+from pom_api_authentication import get_super_authentication
 
 logging.basicConfig(
     filename="modifier_data_deposit.log",
@@ -32,6 +33,7 @@ class DataDepositer:
             self.url = "http://src-backend-1"
         self.url += "/api/api_v1/modifier/"
         self.update_disabled = not CASCADING_UPDATE
+        self.pom_api_authentication = get_super_authentication()
 
         self.modifier_types = [
             "implicit",
@@ -125,6 +127,8 @@ class DataDepositer:
                         "accept": "application/json",
                         "Content-Type": "application/json",
                     },
+                    # add HTTP Basic Auth
+                    auth=self.pom_api_authentication,
                 )
                 response.raise_for_status()
 
@@ -160,6 +164,7 @@ class DataDepositer:
             self.url,
             json=df_json,
             headers={"accept": "application/json", "Content-Type": "application/json"},
+            auth=self.pom_api_authentication,
         )
         response.raise_for_status()
 
