@@ -32,7 +32,7 @@ def random_int(
         small_int (Optional[bool], optional): Optional whether to have small integer. Defaults to None.
         big_int (Optional[bool], optional): Optional whether to have big integer. Defaults to None.
         negative (Optional[bool], optional): Optional whether to have negative integer. Defaults to None.
-        example (Optional[int], optional): Optional to have example integer. Defaults to None.
+        max_value (Optional[int], optional): Optional to have max_value integer. Defaults to None.
 
     Returns:
         int: Random integer.
@@ -62,7 +62,7 @@ def random_float(
     Args:
         small_float (Optional[bool], optional): Optional whether to have small float. Defaults to None.
         negative (Optional[bool], optional): Optional whether to have negative float. Defaults to None.
-        example (Optional[int], optional): Optional to have example float. Defaults to None.
+        max_value (Optional[int], optional): Optional to have max_value float. Defaults to None.
 
     Returns:
         float: Random float.
