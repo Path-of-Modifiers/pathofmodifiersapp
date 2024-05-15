@@ -24,6 +24,7 @@ jobs:
       with:
         python-version: '3.11'
     - name: Install dependencies
+      working-directory: ./src/backend_api/app
       run: |
         python -m pip install --upgrade pip
         python -m pip install --user pipx
@@ -31,8 +32,9 @@ jobs:
 
         pipx install poetry
 
-        poetry install --directory=./src/backend_api/app
+        poetry install 
     - name: Test with pytest
+      working-directory: ./src/backend_api/app
       run: |
         # Test backend_api pytests
-        poetry run pytest --directory=./src/backend_api/app
+        poetry run pytest 
