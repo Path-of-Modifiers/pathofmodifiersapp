@@ -1,10 +1,7 @@
-import asyncio
-from sqlalchemy.orm import Session
-from typing import Callable, Dict, Generator
+from typing import Callable, Dict
 import pytest
 
 from app.crud import CRUD_itemBaseType
-from app.core.models.database import engine
 from app.crud.base import CRUDBase
 import app.tests.crud.crud_test_base as test_crud
 from app.tests.utils.model_utils.item_base_type import generate_random_item_base_type
