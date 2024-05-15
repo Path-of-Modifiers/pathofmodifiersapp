@@ -39,7 +39,7 @@ def crud_deps_instances() -> CRUDBase:
 
     Dependencies in return list needs to be in correct order.
     If a dependency is dependent on another, the dependency needs to occur later than
-    the one its dependent on.
+    the one its dependent on. The order is defined by 'generate_random_stash'.
 
     Returns:
         CRUDBase: CRUD dependencies instances.
