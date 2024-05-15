@@ -1,0 +1,37 @@
+# Source: https://poedb.tw/Circle_of_Ambition#CircleofAmbitionModifiers
+minRoll,maxRoll,textRolls,position,effect,static,unique
+8,10,,0,"Adds # to # Physical Damage",,True
+13,15,,1,"Adds # to # Physical Damage",,True
+1,1,,0,"Adds # to # Lightning Damage",,True
+48,60,,1,"Adds # to # Lightning Damage",,True
+20,25,,0,"Adds # to # Fire Damage",,True
+26,35,,1,"Adds # to # Fire Damage",,True
+20,25,,0,"Adds # to # Cold Damage",,True
+26,35,,1,"Adds # to # Cold Damage",,True
+15,20,,0,"Adds # to # Chaos Damage",,True
+21,30,,1,"Adds # to # Chaos Damage",,True
+450,500,,0,"+# to Armour",,True
+10,20,,0,"+#% to all Elemental Resistances",,True
+20,30,,0,"+#% to Cold Resistance",,True
+20,30,,0,"+#% to Fire Resistance",,True
+20,30,,0,"+#% to Lightning Resistance",,True
+17,23,,0,"+#% to Chaos Resistance",,True
+20,30,,0,"+# to Intelligence",,True
+20,30,,0,"+# to Strength",,True
+20,30,,0,"+# to Dexterity",,True
+10,20,,0,"+# to all Attributes",,True
+30,40,,0,"Herald of # has #% increased Mana Reservation Efficiency",,True
+,,"Thunder-Ash-Ice-Purity-Agony",1,"Herald of # has #% increased Mana Reservation Efficiency",,True
+40,60,,0,"#% increased # Damage while affected by Herald of #",,True
+,,"Lightning-Fire-Cold-Physical-Chaos",1,"#% increased # Damage while affected by Herald of #",,True
+,,"Thunder-Ash-Ice-Purity-Agony",2,"#% increased # Damage while affected by Herald of #",,True
+,,"Sentinels of Purity-Agony Crawler",0,"# deal #% increased Damage",,True
+70,100,,1,"# deals #% increased Damage",,True
+,,"Thunder-Ash-Ice-Purity-Agony",0,"Herald of # has #% increased Buff Effect",,True
+40,60,,1,"Herald of # has #% increased Buff Effect",,True
+,,"Lightning-Fire-Cold",0,"+1% to maximum # Resistance while affected by Herald of #",,True
+,,"Thunder-Ash-Ice",1,"+1% to maximum # Resistance while affected by Herald of #",,True
+31,60,,0,"+#% to # Resistance while affected by Herald of #",,True
+,,"Lightning-Fire-Cold-Chaos",1,"+#% to # Resistance while affected by Herald of #",,True
+,,"Thunder-Ash-Ice-Agony",2,"+#% to # Resistance while affected by Herald of #",,True
+,,,0,"4% additional Physical Damage Reduction while affected by Herald of Purity",True,True

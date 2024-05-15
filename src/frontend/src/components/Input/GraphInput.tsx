@@ -6,22 +6,28 @@ import { IsItemInput } from "./ItemInputComp/IsItemProp";
 import { ItemNameInput } from "./ItemInputComp/ItemNameInput";
 import { ItemRarityInput } from "./ItemInputComp/ItemRarityInput";
 import { LeagueInput } from "./LeagueInput";
+import { useExpandedComponentStore } from "../../store/ExpandedComponentStore";
 
-interface GraphInputProps {
-  showingFilter: boolean;
-}
+// Graph Input Component  -  This component is used to input the query data.
+export const GraphInput = () => {
+  const expandedGraphInputFilters = useExpandedComponentStore(
+    (state) => state.expandedGraphInputFilters
+  );
 
-export const GraphInput = ({showingFilter}: GraphInputProps) => {
   return (
-    showingFilter &&
-    <Box p={5}>
-      <LeagueInput />
-      <ItemNameInput />
-      <ItemRarityInput />
-      <IsItemInput itemSpecKey={"identified"} text={"Identified"} />
-      <BaseInput />
-      <MiscItemInput />
-      <ModifierInput />
-    </Box>
+    expandedGraphInputFilters && (
+      <Box p={5}>
+        <LeagueInput />
+        <ItemNameInput />
+        <ItemRarityInput />
+        <IsItemInput
+          itemSpecKey={"identified"}
+          text={"Identified"}
+        />
+        <BaseInput />
+        <MiscItemInput />
+        <ModifierInput />
+      </Box>
+    )
   );
 };
