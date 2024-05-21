@@ -1,6 +1,7 @@
 import { PostPlottingData } from "./postPlottingData";
 import { PlotQuery } from "../../client";
 import { groupByAndMeanTopN } from './utils';
+import { useGraphInputStore } from "../../store/GraphInputStore";
 
 interface Datum {
     date: string,
@@ -24,7 +25,7 @@ const plotQuery: PlotQuery = {
     ]
 };
 
-const testAPI = () => {
+const getPlotData = () => {
     const plotData = PostPlottingData(plotQuery)
 
     const data: Datum[] = []
@@ -40,4 +41,4 @@ const testAPI = () => {
     return result
 };
 
-export default testAPI;
+export default getPlotData;

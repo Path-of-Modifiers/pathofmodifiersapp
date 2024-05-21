@@ -1,5 +1,5 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import testAPI from '../../hooks/graphing/processPlottingData';
+import getPlotData from '../../hooks/graphing/processPlottingData';
 
 interface Datum {
     date: Date | string,
@@ -7,12 +7,8 @@ interface Datum {
     yaxis2?: number
 }
 
-interface GraphProps {
-    data: Datum[]
-}
-
 function GraphComponent () {
-  const data: Datum[] = testAPI()
+  const data: Datum[] = getPlotData()
   return (
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
