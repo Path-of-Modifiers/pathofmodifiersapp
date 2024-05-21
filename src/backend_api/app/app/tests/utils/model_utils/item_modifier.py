@@ -30,8 +30,19 @@ async def create_random_item_modifier_dict(
         ],
     ],
 ]:
+    """Create a random item modifier dictionary.
+
+    Args:
+        db (Session): DB session.
+        retrieve_dependencies (bool): Whether to retrieve dependencies.
+
+    Returns:
+        Union[ Dict, Tuple[ Dict, Optional[ List[Union[Dict, Stash, Account, ItemBaseType, Currency, Item, Modifier]] ], ], ]: \n
+        Random item modifier dictionary or tuple with random item modifier dictionary and dependencies.
+    """
     roll_value = random_float()
 
+    # Set the dependencies
     if not retrieve_dependencies:
         item_dict, item = await generate_random_item(db)
     else:
@@ -51,7 +62,7 @@ async def create_random_item_modifier_dict(
     }
     if not retrieve_dependencies:
         return item_modifier_dict
-    else:
+    else: # Gather dependencies and return
         deps += [item_dict, item, modifier_dict, modifier]
         return item_modifier_dict, deps
 
@@ -63,6 +74,16 @@ async def generate_random_item_modifier(
     ItemModifier,
     Optional[List[Union[Dict, Stash, Account, ItemBaseType, Currency, Item, Modifier]]],
 ]:
+    """Generate a random item modifier.
+
+    Args:
+        db (Session): DB session.
+        retrieve_dependencies (Optional[bool], optional): Whether to retrieve dependencies. Defaults to False.
+
+    Returns:
+        Tuple[ Dict, ItemModifier, Optional[List[Union[Dict, Stash, Account, ItemBaseType, Currency, Item, Modifier]]], ]: \n
+        Random item modifier dictionary, ItemModifier db object and optional dependencies.
+    """
     output = await create_random_item_modifier_dict(db, retrieve_dependencies)
     if not retrieve_dependencies:
         item_modifier_dict = output

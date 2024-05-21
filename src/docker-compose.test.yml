@@ -1,0 +1,29 @@
+services:
+  test-db:
+    image: postgres:16.1  
+    ports:
+      - 5433:5432
+    restart: no
+    volumes:
+      - "pom-db-test-data:/var/lib/postgresql/data"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: test-pom-oltp-db
+      POSTGRES_USER: test-pom-oltp-user
+      POSTGRES_PASSWORD: test-pom-oltp-password
+    deploy:
+      placement:
+        constraints:
+          - node.labels.${STACK_NAME?Variable not set}.pom-db-data == true
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+volumes:
+  pom-db-test-data:
+    name: "pom-db-test-data"
