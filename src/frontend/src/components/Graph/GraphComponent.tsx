@@ -2,8 +2,8 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import testAPI from '../../hooks/graphing/processPlottingData';
 
 interface Datum {
-    xaxis: Date | string,
-    yaxis1: number,
+    date: Date | string,
+    valueInChaos: number,
     yaxis2?: number
 }
 
@@ -25,13 +25,13 @@ function GraphComponent () {
             left: 20,
             bottom: 5,
           }}
-        >
+        > 
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="xaxis" />
+          <XAxis dataKey="date" />
           <YAxis />
           <Tooltip />
-          <Legend />
-          <Line type="monotone" dataKey="yaxis1" stroke="#8884d8" />
+          <Legend verticalAlign="top" height={36}/>
+          <Line type="monotone" dataKey="valueInChaos" stroke="#8884d8" />
           {/* {data[0].yaxis2 !== undefined && <Line type="monotone" dataKey="yaxis2" stroke="#82ca9d" />} */}
         </LineChart>
       </ResponsiveContainer>
