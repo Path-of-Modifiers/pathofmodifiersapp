@@ -139,8 +139,8 @@ def random_based_on_type(reference: Union[str, float, int]) -> Union[str, int, f
     if type_reference == str:
         return random_lower_string()
     elif type_reference == float:
-        return random_float(example=reference)
+        return random_float(max_value=reference)
     elif type_reference == int:
-        return random_int(example=reference)
+        return random_int(max_value=reference)
     else:
         raise NotImplementedError(f"Objects of type {type_reference} is not supported")
