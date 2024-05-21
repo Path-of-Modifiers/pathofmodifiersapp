@@ -10,7 +10,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
   clearClicked: false,
   league: "",
   itemSpecState: {},
-  baseSpec: { baseType: "", category: "", subCategory: "" },
+  baseSpec: {},
   modifierSpecs: [],
 
   setLeague: (league: string) => set(() => ({ league: league })),
@@ -20,7 +20,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       clearClicked: true,
       itemSpecState: {},
       modifierSpecs: [],
-      baseSpec: { baseType: "", category: "", subCategory: "" },
+      baseSpec: {},
     })),
 
   setItemSpecIdentified: (identified: boolean) =>
