@@ -77,7 +77,6 @@ jobs:
       #     TRAEFIK_ADMIN_USERNAME: ${{ secrets.TRAEFIK_ADMIN_USERNAME }}
       #     TRAEFIK_ADMIN_PASSWORD: ${{ secrets.TRAEFIK_ADMIN_PASSWORD }}
       #     TRAEFIK_ADMIN_HASHED_PASSWORD: ${{ secrets.TRAEFIK_ADMIN_HASHED_PASSWORD }}
-
       #     # PGAdmin
       #     PGADMIN_DEFAULT_EMAIL: pomodifiers@outlook.com
       #     PGADMIN_DEFAULT_PASSWORD: ${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
