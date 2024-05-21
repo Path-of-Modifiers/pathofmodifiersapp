@@ -16,85 +16,73 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # - name: Set up Docker Buildx
-      #   uses: hoverkraft-tech/compose-action@v1.5.1
-      #   with:
-      #     compose-file: |
-      #       src/docker-compose.yml
-      #       src/docker-compose.override.yml
-      #     buildx-args: --platform linux/amd64,linux/arm64
-      #     up-flags: --build
-      #   env:
-      #     TESTING: True
-
-      #     # Update this with your app domain
-      #     DOMAIN: localhost
-
-      #     # Environment: local, staging, production
-      #     ENVIRONMENT: local
-
-      #     TRAEFIK_PUBLIC_NETWORK: traefik-public
-      #     TRAEFIK_TAG: traefik
-      #     TRAEFIK_PUBLIC_TAG: pom_traefik
-
-      #     CF_DNS_API_TOKEN: ${{ secrets.CF_DNS_API_TOKEN }}
-
-      #     # Docker registry images
-      #     TAG: 1.0.0
-      #     DOCKER_IMAGE_BACKEND: pom_backend
-      #     DOCKER_IMAGE_FRONTEND: pom_frontend
-
-      #     DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      #     DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
-      #     STACK_NAME: pathofmodifiersapp
-
-      #     # Backend
-      #     BACKEND_CORS_ORIGINS: "http://localhost,http://localhost:5173,https://localhost,https://localhost:5173"
-      #     PROJECT_NAME: "pathofmodifiers"
-      #     SECRET_KEY: ${{ secrets.API_SECRET_KEY }}
-      #     EMAILS_FROM_EMAIL: "pomodifiers@outlook.com"
-      #     SMTP_TLS: True
-      #     SMTP_PORT: 587
-      #     SMTP_HOST: smtp-mail.outlook.com
-      #     SMTP_USER: pomodifiers@outlook.com
-      #     FIRST_SUPERUSER: ${{ secrets.FIRST_SUPERUSER }}
-      #     FIRST_SUPERUSER_PASSWORD: ${{ secrets.FIRST_SUPERUSER_PASSWORD }}¨
-
-      #     # POE Public Stash Tabs Token
-      #     POE_PUBLIC_STASHES_AUTH_TOKEN: ${{ secrets.POE_PUBLIC_STASH_TABS_AUTH_TOKEN }}
-
-      #     # Postgres
-      #     POSTGRES_PORT: 5432
-      #     POSTGRES_SERVER: db
-      #     POSTGRES_DB: pom_oltp_db
-      #     POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-      #     POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      #     DATABASE_URL: postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_SERVER:5432/$POSTGRES_DB
-
-      #     SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-
-      #     TRAEFIK_ADMIN_USERNAME: ${{ secrets.TRAEFIK_ADMIN_USERNAME }}
-      #     TRAEFIK_ADMIN_PASSWORD: ${{ secrets.TRAEFIK_ADMIN_PASSWORD }}
-      #     TRAEFIK_ADMIN_HASHED_PASSWORD: ${{ secrets.TRAEFIK_ADMIN_HASHED_PASSWORD }}
-      #     # PGAdmin
-      #     PGADMIN_DEFAULT_EMAIL: pomodifiers@outlook.com
-      #     PGADMIN_DEFAULT_PASSWORD: ${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Docker Buildx
+        uses: hoverkraft-tech/compose-action@v1.5.1
         with:
-          python-version: "3.11"
-          architecture: "x64"
+          compose-file: |
+            src/docker-compose.yml
+            src/docker-compose.override.yml
+            src/docker-compose.test.yml
+          buildx-args: --platform linux/amd64,linux/arm64
+          up-flags: --build
+        env:
+          TESTING: True
 
-      - name: Install python dependencies
-        working-directory: ./src/backend_api/app
-        run: |
-          python -m pip install --upgrade pip
-          curl -sSL https://install.python-poetry.org | python3 -
-          poetry install
+          # Update this with your app domain
+          DOMAIN: localhost
 
-      - name: Test with pytest
+          # Environment: local, staging, production
+          ENVIRONMENT: local
+
+          TRAEFIK_PUBLIC_NETWORK: traefik-public
+          TRAEFIK_TAG: traefik
+          TRAEFIK_PUBLIC_TAG: pom_traefik
+
+          CF_DNS_API_TOKEN: ${{ secrets.CF_DNS_API_TOKEN }}
+
+          # Docker registry images
+          TAG: 1.0.0
+          DOCKER_IMAGE_BACKEND: pom_backend
+          DOCKER_IMAGE_FRONTEND: pom_frontend
+
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+          STACK_NAME: pathofmodifiersapp
+
+          # Backend
+          BACKEND_CORS_ORIGINS: "http://localhost,http://localhost:5173,https://localhost,https://localhost:5173"
+          PROJECT_NAME: "pathofmodifiers"
+          SECRET_KEY: ${{ secrets.API_SECRET_KEY }}
+          EMAILS_FROM_EMAIL: "pomodifiers@outlook.com"
+          SMTP_TLS: True
+          SMTP_PORT: 587
+          SMTP_HOST: smtp-mail.outlook.com
+          SMTP_USER: pomodifiers@outlook.com
+          FIRST_SUPERUSER: ${{ secrets.FIRST_SUPERUSER }}
+          FIRST_SUPERUSER_PASSWORD: ${{ secrets.FIRST_SUPERUSER_PASSWORD }}¨
+
+          # POE Public Stash Tabs Token
+          POE_PUBLIC_STASHES_AUTH_TOKEN: ${{ secrets.POE_PUBLIC_STASH_TABS_AUTH_TOKEN }}
+
+          # Postgres
+          POSTGRES_PORT: 5432
+          POSTGRES_SERVER: db
+          POSTGRES_DB: pom_oltp_db
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          DATABASE_URL: postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_SERVER:5432/$POSTGRES_DB
+
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+
+          TRAEFIK_ADMIN_USERNAME: ${{ secrets.TRAEFIK_ADMIN_USERNAME }}
+          TRAEFIK_ADMIN_PASSWORD: ${{ secrets.TRAEFIK_ADMIN_PASSWORD }}
+          TRAEFIK_ADMIN_HASHED_PASSWORD: ${{ secrets.TRAEFIK_ADMIN_HASHED_PASSWORD }}
+          # PGAdmin
+          PGADMIN_DEFAULT_EMAIL: pomodifiers@outlook.com
+          PGADMIN_DEFAULT_PASSWORD: ${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
+
+        
+      - name: Test backend api with pytest
         run: |
-          pip install pytest 
-          pytest
+          docker-compose exec -T backend pytest
