@@ -1,16 +1,15 @@
-import { QueryClient } from '@tanstack/query-core';
 import { PostPlottingData } from "./postPlottingData";
 import { PlotQuery } from "../../client";
 import { groupByAndMeanTopN } from './utils';
 
 interface Datum {
-    xaxis: Date,
-    yaxis1: number,
+    date: string,
+    valueInChaos: number,
     yaxis2?: number
 }
 
 const plotQuery: PlotQuery = {
-    league: "Standard",
+    league: "Necropolis",
     itemSpecifications: {
         identified: true
     },
@@ -32,8 +31,8 @@ const testAPI = () => {
     if (plotData?.timeStamp !== undefined) {
         for (let i = 0; i <plotData?.timeStamp.length; i++) {
             data.push({
-                xaxis: new Date(plotData.timeStamp[i]),
-                yaxis1: plotData.valueInChaos[i]
+                date: plotData.timeStamp[i],
+                valueInChaos: plotData.valueInChaos[i]
             })
         }
     }
