@@ -1,15 +1,21 @@
 import _ from "lodash";
 
 interface meanOfValuesKWARGS {
+    topN: number,
     normalValuesOnly: boolean,
     nStandardDeviations: number
 }
 
+// Takes in values and optional kwargs
+// If kwargs are given, it returns the mean of the topN values that are within nStandardDeviations
+// Else it returns the mean of values
 function meanOfValues(values: number[], kwargs?: meanOfValuesKWARGS): number {
     if (values.length === 0) {
         return NaN
     }
     if (kwargs !== undefined) {
+        const topN = values.length>kwargs.topN?kwargs.topN:values.length;
+        values = values.sort(((a, b) => (a - b))).slice(0, topN);
         const normalValues = valuesWithinNStandardDeviations(values, kwargs.nStandardDeviations);
         return normalValues.reduce((acc, val) => acc + val, 0) / normalValues.length;
     } else {
@@ -17,6 +23,7 @@ function meanOfValues(values: number[], kwargs?: meanOfValuesKWARGS): number {
     }
 };
 
+// Calculates the standard deviation of values
 export const standardDeviation = (values: number[]) => {
     const N = values.length;
     const mean = meanOfValues(values);
@@ -29,9 +36,8 @@ export const standardDeviation = (values: number[]) => {
     return std;
 };
 
+// Returns values that are within N standard deviations
 const valuesWithinNStandardDeviations = (values: number[], N: number) => {
-    const topN = values.length>20?20:values.length;
-    values = values.sort(((a, b) => (a - b))).slice(0, topN);
 
     const mean = meanOfValues(values);
     const std = standardDeviation(values);
@@ -43,15 +49,7 @@ const valuesWithinNStandardDeviations = (values: number[], N: number) => {
     // console.log("normal values: ", normalValues);
 
     return normalValues;
-}
-
-const meanOfTopN = (values: number[], topN: number) => {
-    const valuesTopN = values.sort(((a, b) => (a - b))).slice(0, topN);
-    const meanTopN = meanOfValues(valuesTopN)
-
-    return meanTopN;
 };
-
 
 interface Datum {
     date: string,
@@ -59,15 +57,16 @@ interface Datum {
     yaxis2?: number
 }
 
+// Groups by hour and returns mean of topN values that are within 2 standard deviations
+// The returned grouped values have the type of an array of Datums
 export const groupByAndMeanTopN = (values: Datum[], topN: number) => {
-    const grouped_values = _(values)
+    const grouped_values: Datum[] = _(values)
         .groupBy(datum => datum.date.toLocaleString().split(":")[0])
         .map(
             (value, key) => (
                 {
                     date: key.toLocaleString().split(":")[0], 
-                    // valueInChaos: meanOfTopN(_.map(value, "valueInChaos"), topN)
-                    valueInChaos: meanOfValues(_.map(value, "valueInChaos"), {normalValuesOnly: true, nStandardDeviations: 2})
+                    valueInChaos: meanOfValues(_.map(value, "valueInChaos"), {topN: topN, normalValuesOnly: true, nStandardDeviations: 2})
                 }
             )
         )
