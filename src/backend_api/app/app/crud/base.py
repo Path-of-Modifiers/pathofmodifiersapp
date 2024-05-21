@@ -6,7 +6,7 @@ from pydantic import BaseModel, TypeAdapter
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.utils.sort_algorithms import sort_with_refrence
+from app.utils.sort_algorithms import sort_with_reference
 
 
 ModelType = TypeVar("ModelType", bound=Any)
@@ -54,7 +54,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             for obj in objs:
                 unsorted_extracted_column.append(getattr(obj, key))
 
-            sorted_objs = sort_with_refrence(objs, unsorted_extracted_column)
+            sorted_objs = sort_with_reference(objs, unsorted_extracted_column)
 
             if sort == "asc":
                 return sorted_objs
