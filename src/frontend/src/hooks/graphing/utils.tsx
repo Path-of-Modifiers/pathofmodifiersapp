@@ -29,7 +29,7 @@ export const standardDeviation = (values: number[]) => {
     const mean = meanOfValues(values);
     const std = Math.sqrt(
         values
-            .reduce((acc, val) => acc.concat((val - mean) ** 2), [])
+            .reduce((acc, val) => acc.concat((val - mean) ** 2), [] as number[])
             .reduce((acc, val) => acc + val, 0) /
             N
     );
