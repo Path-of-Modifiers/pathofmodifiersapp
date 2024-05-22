@@ -71,7 +71,7 @@ class PoeAPIDataTransformer:
         Creates the basis of the `stash` table.
         It is not immediately processed in order to save compute power later.
         """
-        self.stash_columns = ["stashId", "accountName", "public", "league", "changeId"]
+        self.stash_columns = ["stashId", "accountName", "public", "league"]
         stash_df = df.loc[:, self.stash_columns]
 
         return stash_df
@@ -160,7 +160,6 @@ class PoeAPIDataTransformer:
             "itemId",
             "gameItemId",
             "stashId",
-            "changeId",
             "name",
             "icon",
             "league",
@@ -375,9 +374,9 @@ class PoeAPIDataTransformer:
             )
         except requests.exceptions.HTTPError as e:
             self.logger.exception(f"Something went wrong:\n{repr(e)}")
-            self.logger.info(
-                f"These changeId's were present in data:\n{df['changeId'].unique().tolist()}"
-            )
+            # self.logger.info(
+            #     f"These changeId's were present in data:\n{df['changeId'].unique().tolist()}"
+            # )
             raise e
 
 
