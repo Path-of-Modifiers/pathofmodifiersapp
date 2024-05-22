@@ -91,7 +91,6 @@ jobs:
           echo "Waiting for test-db to be healthy..."
           until docker-compose exec -T test-db pg_isready; do
             echo "Postgres is not ready yet. Retrying..."
-            docker-compose exec -T test-db pg_isready
             sleep 1
           done
 
