@@ -82,6 +82,20 @@ jobs:
           # PGAdmin
           PGADMIN_DEFAULT_EMAIL: pomodifiers@outlook.com
           PGADMIN_DEFAULT_PASSWORD: ${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
+      
+      - name: Wait for test-db service
+        run: |
+          echo "Waiting for test-db to be healthy..."
+          while ! docker-compose exec -T test-db pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h ${POSTGRES_SERVER} -p ${POSTGRES_PORT}; do
+            sleep 1
+          done
+
+      - name: Wait for backend service
+        run: |
+          echo "Waiting for backend service to be ready on port 8000..."
+          while ! nc -z backend 8000; do
+            sleep 1
+          done
 
         
       - name: Test backend api with pytest
@@ -90,5 +104,4 @@ jobs:
         continue-on-error: true
 
       - name: Show pytest logs
-        if: failure()
         run: docker-compose logs backend
