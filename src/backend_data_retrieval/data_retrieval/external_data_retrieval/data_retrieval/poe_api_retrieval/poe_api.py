@@ -160,36 +160,22 @@ class APIHandler:
         return df_wanted
 
     def _get_latest_change_id(self) -> str:
-
-        latest_item_change_id_url = (
-            self.base_pom_api_url + "/api/api_v1/item/latest_item_change_id/"
-        )
-        latest_change_id = requests.get(latest_item_change_id_url).json()
-
         response = requests.get(
-            self.url, headers=self.headers, params={"id": latest_change_id}
+            "https://www.pathofexile.com/api/trade/data/change-ids",
+            headers={"User-Agent": self.headers["User-Agent"]},
         )
-        if response.status_code == 429:  # Too many requests
-            headers = response.headers
-            retry_after = int(headers["Retry-After"])
-            time.sleep(retry_after + 1)
-            return self._get_latest_change_id()
-
         response.raise_for_status()
         response_json = response.json()
-
-        next_change_id = response_json["next_change_id"]
+        next_change_id = response_json["psapi"]
 
         return next_change_id
 
-    def _initialize_stream(
-        self, next_change_id: Optional[str] = None
-    ) -> Tuple[str, List]:
+    def _initialize_stream(self) -> Tuple[str, List]:
         """
         Makes an initial, synchronous, API call.
         """
-        if next_change_id is None:
-            next_change_id = self._get_latest_change_id()
+        next_change_id = self._get_latest_change_id()
+        next_change_id = "2464293076-2443587902-2368433646-2624156651-2552811860"
 
         response = requests.get(
             self.url, headers=self.headers, params={"id": next_change_id}
@@ -207,9 +193,10 @@ class APIHandler:
         response_json = response.json()
 
         stashes = response_json["stashes"]
-        next_change_id = response_json["next_change_id"]
+        if stashes:
+            next_change_id = response_json["next_change_id"]
+            self.iteration_pbar.update()
 
-        self.iteration_pbar.update()
         return next_change_id, stashes
 
     async def _start_next_request(
@@ -234,20 +221,12 @@ class APIHandler:
             stashes = response_json["stashes"]
             return next_change_id, stashes
 
-    async def _follow_stream(
-        self, initial_next_change_id: Optional[str] = None
-    ) -> Tuple[pd.DataFrame, str]:
+    async def _follow_stream(self) -> pd.DataFrame:
         """
         Follows the API stream until conditions are met
-
-        Parameters:
-            :param initial_next_change_id: (str) A previously found `next_change_id`.
-            :param first_stashes: (list) A list of stash objects which have already been found.
         """
-        next_change_id, new_stashes = self._initialize_stream(initial_next_change_id)
+        next_change_id, new_stashes = self._initialize_stream()
         df = pd.DataFrame()
-
-        old_next_change_id = initial_next_change_id
 
         iteration = 2
         session = aiohttp.ClientSession(headers=self.headers)
@@ -255,6 +234,7 @@ class APIHandler:
             self.n_found_items < self.n_wanted_items
             or self.n_unique_items_found < self.n_unique_wanted_items
         ):
+            # print("\n\n\n\n", next_change_id)
             if self.recently_ratelimited:
                 # Adds artificial delay if we have recently been ratelimited
                 time.sleep(1)
@@ -263,39 +243,39 @@ class APIHandler:
                 self._start_next_request(session, next_change_id=next_change_id)
             )
 
-            df_wanted = self._check_stashes(stashes=new_stashes)
-            df_wanted["changeId"] = old_next_change_id
-            df = pd.concat((df, df_wanted))
-
-            self.iteration_pbar.update()
-
-            task_response = await asyncio.gather(future)
-            old_next_change_id = next_change_id
-            next_change_id, new_stashes = task_response[0]
             if not new_stashes:
                 time.sleep(
                     120
                 )  # Waits 120 seconds before continuing to pursue the stream
 
-            iteration += 1
+                # task_response = await asyncio.gather(future)
+                # _, new_stashes = task_response[0]
+                # print(_)
+                # continue
+            else:
+                df_wanted = self._check_stashes(stashes=new_stashes)
+                df = pd.concat((df, df_wanted))
+
+                self.iteration_pbar.update()
+                iteration += 1
+
+            task_response = await asyncio.gather(future)
+            next_change_id, new_stashes = task_response[0]
 
         df_wanted = self._check_stashes(stashes=new_stashes)
-        df_wanted["changeId"] = old_next_change_id
         df = pd.concat((df, df_wanted))
 
         self.iteration_pbar.update()
         await session.close()
 
-        return df, next_change_id
+        return df
 
-    def dump_stream(
-        self, initial_next_change_id: Optional[str] = None, track_progress: bool = True
-    ) -> Iterator[pd.DataFrame]:
+    def dump_stream(self, track_progress: bool = True) -> Iterator[pd.DataFrame]:
         """
         The method which begins making API calls and fetching data.
 
         Parameters:
-            :param initial_next_change_id: (str) A previously found `next_change_id`.
+            :track_progress: (bool) Defaults to True. Currently has no function
         """
         # Intializes progressbar context managers
         with (
@@ -315,18 +295,15 @@ class APIHandler:
         ):
             try:
                 while True:
-                    df, next_change_id = asyncio.run(
-                        self._follow_stream(initial_next_change_id)
-                    )
+                    df = asyncio.run(self._follow_stream())
 
                     # Ready for next iteration
-                    initial_next_change_id = next_change_id
                     self.n_found_items = 0
                     self.n_unique_items_found = 0
                     yield df.reset_index()
                     self.item_count_pbar.reset()
             except Exception as e:
-                print(e)
+                raise e
             finally:
                 self.iteration_pbar.close()
                 self.item_count_pbar.close()
