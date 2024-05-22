@@ -89,15 +89,16 @@ jobs:
       - name: Wait for test-db service
         run: |
           echo "Waiting for test-db to be healthy..."
-          while ! docker-compose exec -T test-db pg_isready; do
-            echo LOL
+          until docker-compose exec -T test-db pg_isready; do
+            echo "Postgres is not ready yet. Retrying..."
+            docker-compose exec -T test-db pg_isready
             sleep 1
           done
 
       - name: Wait for backend service
         run: |
-          echo "Waiting for backend service to be ready on port 8000..."
-          while ! nc -z backend 8000; do
+          echo "Waiting for backend service to be ready on port 8888..."
+          while ! nc -z backend 8888; do
             sleep 1
           done
 
