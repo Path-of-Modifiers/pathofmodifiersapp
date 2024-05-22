@@ -83,6 +83,9 @@ jobs:
           PGADMIN_DEFAULT_EMAIL: pomodifiers@outlook.com
           PGADMIN_DEFAULT_PASSWORD: ${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
       
+      - name: Check running containers
+        run: docker ps -a
+
       - name: Wait for test-db service
         run: |
           echo "Waiting for test-db to be healthy..."
