@@ -9,7 +9,6 @@ on:
     branches:
       - 240-add-pytests-backend-to-github-actions
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -82,27 +81,25 @@ jobs:
           # PGAdmin
           PGADMIN_DEFAULT_EMAIL: pomodifiers@outlook.com
           PGADMIN_DEFAULT_PASSWORD: ${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
-      
+
+      - name: Install docker-compose
+        run: |
+          curl -SL https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+
       - name: Check running containers
         run: docker ps -a
 
       - name: Wait for test-db service
+        working-directory: ./src
         run: |
           echo "Waiting for test-db to be healthy..."
-          until docker-compose exec -T test-db pg_isready; do
-            echo "Postgres is not ready yet. Retrying..."
+          while ! docker-compose exec -T test-db pg_isready; do
             sleep 1
           done
 
-      - name: Wait for backend service
-        run: |
-          echo "Waiting for backend service to be ready on port 8888..."
-          while ! nc -z backend 8888; do
-            sleep 1
-          done
-
-        
       - name: Test backend api with pytest
+        working-directory: ./src
         run: |
           docker-compose exec -T backend pytest
         continue-on-error: true
