@@ -1,0 +1,55 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build containers
+        working-directory: ./src
+        run: |
+          docker compose build
+          docker compose down -v --remove-orphans
+          docker compose up -d
+
+      - name: Run tests
+        working-directory: ./src
+        run: docker compose exec -T backend pytest "Coverage for ${{ github.sha }}"
+
+      - name: Stop containers
+        working-directory: ./src
+        run: docker compose down -v --remove-orphans
+
+      - name: Store coverage files
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: backend/htmlcov
+
+  # https://github.com/marketplace/actions/alls-green#why
+  alls-green: # This job does nothing and is only used for the branch protection
+    if: always()
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Decide whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
