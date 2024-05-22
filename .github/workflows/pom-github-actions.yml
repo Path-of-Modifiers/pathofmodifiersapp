@@ -87,6 +87,7 @@ jobs:
         run: |
           echo "Waiting for test-db to be healthy..."
           while ! docker-compose exec -T test-db pg_isready; do
+            echo LOL
             sleep 1
           done
 
