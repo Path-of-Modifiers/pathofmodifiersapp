@@ -86,7 +86,7 @@ jobs:
       - name: Wait for test-db service
         run: |
           echo "Waiting for test-db to be healthy..."
-          while ! docker-compose exec -T test-db pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h ${POSTGRES_SERVER} -p ${POSTGRES_PORT}; do
+          while ! docker-compose exec -T test-db pg_isready; do
             sleep 1
           done
 
