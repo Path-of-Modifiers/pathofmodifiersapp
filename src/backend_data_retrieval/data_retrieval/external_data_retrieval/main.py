@@ -123,14 +123,12 @@ class ContiniousDataRetrieval:
         currency_df = self.poe_ninja_transformer.transform_into_tables(currency_df)
         return currency_df
 
-    def retrieve_data(self, initial_next_change_id: Optional[str] = None):
+    def retrieve_data(self):
         self.logger.info("Program starting up.")
         self.logger.info("Retrieving modifiers from db.")
         modifier_dfs = self._get_modifiers()
         self.logger.info("Initiating data stream.")
-        get_df = self.poe_api_handler.dump_stream(
-            initial_next_change_id=initial_next_change_id
-        )
+        get_df = self.poe_api_handler.dump_stream()
         for i, df in enumerate(get_df):
             split_dfs = self._categorize_new_items(df)
             if i % 10 == 0:
@@ -155,11 +153,8 @@ def main():
         data_transformers=data_transformers,
         logger=logger,
     )
-    # initial_next_change_id = "2342837382-2327804061-2253681663-2498729757-2428031320"  # local test if backend is down
-    # initial_next_change_id = "2342837382-2327804061-2253681663-2498729757-2428031320" # A vast emptyness encounter
-    initial_next_change_id = "2456008078-2435987533-2361078642-2616265937-2544674695"  # Recent one from POE ninja
 
-    data_retriever.retrieve_data(initial_next_change_id)
+    data_retriever.retrieve_data()
     # data_retriever.retrieve_data()
 
 
