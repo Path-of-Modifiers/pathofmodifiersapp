@@ -175,7 +175,6 @@ class APIHandler:
         Makes an initial, synchronous, API call.
         """
         next_change_id = self._get_latest_change_id()
-        next_change_id = "2464293076-2443587902-2368433646-2624156651-2552811860"
 
         response = requests.get(
             self.url, headers=self.headers, params={"id": next_change_id}
@@ -234,7 +233,6 @@ class APIHandler:
             self.n_found_items < self.n_wanted_items
             or self.n_unique_items_found < self.n_unique_wanted_items
         ):
-            # print("\n\n\n\n", next_change_id)
             if self.recently_ratelimited:
                 # Adds artificial delay if we have recently been ratelimited
                 time.sleep(1)
@@ -247,11 +245,6 @@ class APIHandler:
                 time.sleep(
                     120
                 )  # Waits 120 seconds before continuing to pursue the stream
-
-                # task_response = await asyncio.gather(future)
-                # _, new_stashes = task_response[0]
-                # print(_)
-                # continue
             else:
                 df_wanted = self._check_stashes(stashes=new_stashes)
                 df = pd.concat((df, df_wanted))
