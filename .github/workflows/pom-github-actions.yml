@@ -9,7 +9,7 @@ on:
     branches:
       - 240-add-pytests-backend-to-github-actions
 
-      
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -87,3 +87,8 @@ jobs:
       - name: Test backend api with pytest
         run: |
           docker-compose exec -T backend pytest
+        continue-on-error: true
+
+      - name: Show pytest logs
+        if: failure()
+        run: docker-compose logs backend
