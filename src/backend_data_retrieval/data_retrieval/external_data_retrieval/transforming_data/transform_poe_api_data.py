@@ -374,9 +374,6 @@ class PoeAPIDataTransformer:
             )
         except requests.exceptions.HTTPError as e:
             self.logger.exception(f"Something went wrong:\n{repr(e)}")
-            # self.logger.info(
-            #     f"These changeId's were present in data:\n{df['changeId'].unique().tolist()}"
-            # )
             raise e
 
 
