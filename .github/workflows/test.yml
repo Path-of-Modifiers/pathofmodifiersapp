@@ -28,7 +28,8 @@ jobs:
         working-directory: ./src
 
       - name: Run tests
-        run: docker-compose exec -T backend pytest
+        run: docker compose exec -T backend pytest
+        working-directory: ./src
 
       - run: docker compose down -v --remove-orphans
         working-directory: ./src
