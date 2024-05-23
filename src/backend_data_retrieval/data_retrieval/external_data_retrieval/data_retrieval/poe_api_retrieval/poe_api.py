@@ -19,7 +19,7 @@ from external_data_retrieval.detectors.unique_detector import (
 pd.options.mode.chained_assignment = None  # default='warn'
 
 BASEURL = os.getenv("DOMAIN")
-WHETHER_MANUAL_NEXT_CHANGE_ID = os.getenv("WHETHER_MANUAL_NEXT_CHANGE_ID")
+MANUAL_NEXT_CHANGE_ID = os.getenv("MANUAL_NEXT_CHANGE_ID")
 NEXT_CHANGE_ID = os.getenv("NEXT_CHANGE_ID")
 
 
@@ -171,7 +171,7 @@ class APIHandler:
         next_change_id = response_json["psapi"]
 
         if (
-            WHETHER_MANUAL_NEXT_CHANGE_ID
+            MANUAL_NEXT_CHANGE_ID
         ):  # For testing purposes, set manual next_change_id
             next_change_id = NEXT_CHANGE_ID
 
