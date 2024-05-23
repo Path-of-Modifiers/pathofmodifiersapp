@@ -1,8 +1,7 @@
-import requests
 import logging
 import os
 import pandas as pd
-from typing import Dict, Optional
+from typing import Dict
 
 from external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
     APIHandler,
@@ -123,14 +122,12 @@ class ContiniousDataRetrieval:
         currency_df = self.poe_ninja_transformer.transform_into_tables(currency_df)
         return currency_df
 
-    def retrieve_data(self, initial_next_change_id: Optional[str] = None):
+    def retrieve_data(self):
         self.logger.info("Program starting up.")
         self.logger.info("Retrieving modifiers from db.")
         modifier_dfs = self._get_modifiers()
         self.logger.info("Initiating data stream.")
-        get_df = self.poe_api_handler.dump_stream(
-            initial_next_change_id=initial_next_change_id
-        )
+        get_df = self.poe_api_handler.dump_stream()
         for i, df in enumerate(get_df):
             split_dfs = self._categorize_new_items(df)
             if i % 10 == 0:
@@ -144,9 +141,6 @@ class ContiniousDataRetrieval:
 
 
 def main():
-    auth_token = POE_PUBLIC_STASHES_AUTH_TOKEN
-    url = "https://api.pathofexile.com/public-stash-tabs"
-
     items_per_batch = 300
     data_transformers = {"unique": UniquePoeAPIDataTransformer}
 
@@ -155,12 +149,8 @@ def main():
         data_transformers=data_transformers,
         logger=logger,
     )
-    # initial_next_change_id = "2342837382-2327804061-2253681663-2498729757-2428031320"  # local test if backend is down
-    # initial_next_change_id = "2342837382-2327804061-2253681663-2498729757-2428031320" # A vast emptyness encounter
-    initial_next_change_id = "2456008078-2435987533-2361078642-2616265937-2544674695"  # Recent one from POE ninja
 
-    data_retriever.retrieve_data(initial_next_change_id)
-    # data_retriever.retrieve_data()
+    data_retriever.retrieve_data()
 
 
 if __name__ == "__main__":
