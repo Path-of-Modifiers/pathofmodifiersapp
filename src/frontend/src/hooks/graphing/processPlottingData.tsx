@@ -1,13 +1,8 @@
 import { PostPlottingData } from "./postPlottingData";
 import { PlotQuery } from "../../client";
 import { groupByAndMeanTopN } from "./utils";
+import Datum from "../../schemas/Datum";
 // import { useGraphInputStore } from "../../store/GraphInputStore";
-
-interface Datum {
-  date: string;
-  valueInChaos: number;
-  yaxis2?: number;
-}
 
 const plotQuery: PlotQuery = {
   league: "Necropolis",

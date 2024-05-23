@@ -9,12 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import getPlotData from "../../hooks/graphing/processPlottingData";
-
-interface Datum {
-  date: Date | string;
-  valueInChaos: number;
-  yaxis2?: number;
-}
+import Datum from "../../schemas/Datum";
 
 function GraphComponent() {
   const data: Datum[] = getPlotData();
@@ -37,7 +32,10 @@ function GraphComponent() {
         <Tooltip />
         <Legend verticalAlign="top" height={36} />
         <Line type="monotone" dataKey="valueInChaos" stroke="#8884d8" />
-        {/* {data[0].yaxis2 !== undefined && <Line type="monotone" dataKey="yaxis2" stroke="#82ca9d" />} */}
+        {/**
+         * Example for adding more graphs
+         * data[0].yaxis2 !== undefined && <Line type="monotone" dataKey="yaxis2" stroke="#82ca9d" />}
+         */}
       </LineChart>
     </ResponsiveContainer>
   );
