@@ -24,7 +24,9 @@ jobs:
         working-directory: ./src
       - run: docker compose down -v --remove-orphans
         working-directory: ./src
-      - run: docker compose up -d
+      - run: |
+          docker compose up -d
+          docker compose -f docker-compose.test.yml up -d
         working-directory: ./src
 
       - name: Run tests
