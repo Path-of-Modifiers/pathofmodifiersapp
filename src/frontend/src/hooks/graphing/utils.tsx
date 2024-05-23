@@ -1,4 +1,5 @@
 import _ from "lodash";
+import Datum from "../../schemas/Datum";
 
 interface meanOfValuesKWARGS {
   topN: number;
@@ -55,12 +56,6 @@ const valuesWithinNStandardDeviations = (values: number[], N: number) => {
 
   return normalValues;
 };
-
-interface Datum {
-  date: string;
-  valueInChaos: number;
-  yaxis2?: number;
-}
 
 // Groups by hour and returns mean of topN values that are within 2 standard deviations
 // The returned grouped values have the type of an array of Datums
