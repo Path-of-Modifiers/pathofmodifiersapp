@@ -20,21 +20,18 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Build containers
+      - run: docker compose build
         working-directory: ./src
-        run: |
-          docker compose build
-          docker compose down -v --remove-orphans
-          docker compose up -d
-          docker compose -f docker-compose.test.yml up -d
+      - run: docker compose down -v --remove-orphans
+        working-directory: ./src
+      - run: docker compose up -d
+        working-directory: ./src
 
       - name: Run tests
+        run: docker compose exec -T backend pytest --cov=backend --cov-report=html
+        
+      - run: docker compose down -v --remove-orphans
         working-directory: ./src
-        run: docker-compose exec -T backend pytest
-
-      - name: Stop containers
-        working-directory: ./src
-        run: docker compose down -v --remove-orphans
 
       - name: Store coverage files
         uses: actions/upload-artifact@v4

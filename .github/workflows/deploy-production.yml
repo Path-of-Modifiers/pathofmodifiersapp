@@ -15,21 +15,20 @@ jobs:
       - production
     env:
       ENVIRONMENT: production
-      DOMAIN: ${{ secrets.DOMAIN_PRODUCTION }}
+      DOMAIN: pathofmodifiers.com
       STACK_NAME: ${{ secrets.STACK_NAME_PRODUCTION }}
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      API_SECRET_KEY: ${{ secrets.API_SECRET_KEY }}
+      POE_PUBLIC_STASH_TABS_AUTH_TOKEN: ${{ secrets.POE_PUBLIC_STASH_TABS_AUTH_TOKEN }}
       FIRST_SUPERUSER: ${{ secrets.FIRST_SUPERUSER }}
       FIRST_SUPERUSER_PASSWORD: ${{ secrets.FIRST_SUPERUSER_PASSWORD }}
       SMTP_HOST: ${{ secrets.SMTP_HOST }}
       SMTP_USER: ${{ secrets.SMTP_USER }}
       SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-      EMAILS_FROM_EMAIL: ${{ secrets.EMAILS_FROM_EMAIL }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - run: docker compose -f docker-compose.yml --project-name ${{ secrets.STACK_NAME_PRODUCTION }} build
+      - run: docker compose -f docker-compose.yml --project-name pathofmodifiers build
         working-directory: ./src
-      - run: docker compose -f docker-compose.yml --project-name ${{ secrets.STACK_NAME_PRODUCTION }} up -d
+      - run: docker compose -f docker-compose.yml --project-name pathofmodifiers up -d
         working-directory: ./src
