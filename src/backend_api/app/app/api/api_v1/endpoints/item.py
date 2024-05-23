@@ -47,29 +47,6 @@ async def get_latest_item_id(db: Session = Depends(get_db)):
         return 1
 
 
-@router.get(
-    "/latest_item_change_id/",
-    response_model=str,
-    tags=["latest_item_change_id"],
-)
-async def get_latest_item_change_id(db: Session = Depends(get_db)):
-    """
-    Get the latest item's "changeId"
-
-    Can only be used safely on an empty table or directly after an insertion.
-    """
-    result = db.execute(
-        text(
-            """SELECT "changeId" FROM item 
-                WHERE "itemId" = (SELECT MAX("itemId") FROM item)"""
-        )
-    ).fetchone()
-    if result:
-        return str(result[0])
-    else:
-        return ""
-
-
 @router.get("/", response_model=Union[schemas.Item, List[schemas.Item]])
 async def get_all_items(db: Session = Depends(get_db)):
     """

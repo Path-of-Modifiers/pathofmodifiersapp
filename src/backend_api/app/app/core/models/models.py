@@ -61,7 +61,6 @@ class Item(Base):
         _sql.ForeignKey("stash.stashId", ondelete="CASCADE"),
         nullable=False,
     )
-    changeId = _sql.Column(_sql.String(), nullable=False)
     name = _sql.Column(_sql.String())
     iconUrl = _sql.Column(_sql.String())
     league = _sql.Column(_sql.String(), nullable=False)
