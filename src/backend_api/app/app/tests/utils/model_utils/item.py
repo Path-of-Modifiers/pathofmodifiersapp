@@ -47,7 +47,6 @@ async def create_random_item_dict(
         Random item dictionary or tuple with random item dictionary and dependencies.
     """
     gameItemId = random_lower_string()
-    changeId = random_lower_string()
     name = random_lower_string()
     iconUrl = random_url()
     league = random_lower_string()
@@ -96,7 +95,6 @@ async def create_random_item_dict(
     item = {
         "stashId": stashId,
         "gameItemId": gameItemId,
-        "changeId": changeId,
         "name": name,
         "iconUrl": iconUrl,
         "league": league,
@@ -126,8 +124,8 @@ async def create_random_item_dict(
 
     if not retrieve_dependencies:
         return item
-    else: # Gather dependencies and return
-        deps += [stash_dict, stash] 
+    else:  # Gather dependencies and return
+        deps += [stash_dict, stash]
         deps += [item_base_type_dict, item_base_type]
         deps += [currency_dict, currency]
         return item, deps
