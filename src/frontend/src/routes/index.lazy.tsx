@@ -5,6 +5,7 @@ import QueryButtons from "../components/Common/QueryButtons";
 import { Flex } from "@chakra-ui/layout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GraphInput } from "../components/Input/GraphInput";
+import GraphComponent from "../components/Graph/GraphComponent";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
@@ -19,6 +20,7 @@ const queryClient = new QueryClient({
   },
 });
 
+
 // Index Component  -  This component is the main component for the index route.
 function Index() {
   return (
@@ -27,9 +29,10 @@ function Index() {
       <QueryButtons />
       <Flex flex="1" direction="row">
         <SideBar />
-        <Flex flex="1" direction="row" p="1rem" bg="ui.main">
+        <Flex flex="1" direction="column" p="1rem" bg="ui.main">
           <QueryClientProvider client={queryClient}>
             <GraphInput />
+            <GraphComponent/>
           </QueryClientProvider>
         </Flex>
       </Flex>
