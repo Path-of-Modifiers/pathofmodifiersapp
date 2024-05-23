@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { PlottingService, PlotQuery, PlotData } from "../../client";
 import { useQuery } from "@tanstack/react-query";
-
+/**
+ * Posts the request body (a plot query) and returns the
+ * corresponding plot data from the data base.
+ * @param requestBody
+ * @returns
+ */
 export const PostPlottingData = (requestBody: PlotQuery) => {
   const [responseBody, setPlotData] = useState<PlotData>();
   try {
