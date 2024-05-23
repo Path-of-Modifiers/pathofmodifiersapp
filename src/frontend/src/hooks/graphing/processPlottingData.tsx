@@ -4,6 +4,7 @@ import { groupByAndMeanTopN } from "./utils";
 import Datum from "../../schemas/Datum";
 // import { useGraphInputStore } from "../../store/GraphInputStore";
 
+// Will remove when the we hook up the user input
 const plotQuery: PlotQuery = {
   league: "Necropolis",
   itemSpecifications: {
@@ -19,7 +20,14 @@ const plotQuery: PlotQuery = {
     },
   ],
 };
-
+/**
+ * A function that takes the current plot query and returns
+ * data that is ready to be plotted.
+ *
+ * The data retrieved from the database is grouped by the hour
+ * and only the cheapest 100 items that hour are considered.
+ * @returns result
+ */
 const getPlotData = () => {
   const plotData = PostPlottingData(plotQuery);
 
