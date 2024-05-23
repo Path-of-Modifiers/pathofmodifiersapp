@@ -1,8 +1,7 @@
-import requests
 import logging
 import os
 import pandas as pd
-from typing import Dict, Optional
+from typing import Dict
 
 from external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
     APIHandler,
@@ -142,9 +141,6 @@ class ContiniousDataRetrieval:
 
 
 def main():
-    auth_token = POE_PUBLIC_STASHES_AUTH_TOKEN
-    url = "https://api.pathofexile.com/public-stash-tabs"
-
     items_per_batch = 300
     data_transformers = {"unique": UniquePoeAPIDataTransformer}
 
@@ -155,7 +151,6 @@ def main():
     )
 
     data_retriever.retrieve_data()
-    # data_retriever.retrieve_data()
 
 
 if __name__ == "__main__":
