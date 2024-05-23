@@ -11,6 +11,11 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      working-directory: ./src
+    defaults:
+      run:
+        working-directory: ${{ env.working-directory }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,20 +26,15 @@ jobs:
           python-version: "3.11"
 
       - run: docker compose build
-        working-directory: ./src
       - run: docker compose down -v --remove-orphans
-        working-directory: ./src
       - run: |
           docker compose up -d
           docker compose -f docker-compose.test.yml up -d
-        working-directory: ./src
 
       - name: Run tests
         run: docker compose exec -T backend pytest
-        working-directory: ./src
 
       - run: docker compose down -v --remove-orphans
-        working-directory: ./src
 
       - name: Store coverage files
         uses: actions/upload-artifact@v4
