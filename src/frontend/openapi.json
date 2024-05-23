@@ -23,7 +23,9 @@
     },
     "/api/api_v1/account/{accountName}": {
       "get": {
-        "tags": ["accounts"],
+        "tags": [
+          "accounts"
+        ],
         "summary": "Get Account",
         "description": "Get the account by mapping with key and value for \"accountName\" . \n\nAlways returns one account.",
         "operationId": "get_account_api_api_v1_account__accountName__get",
@@ -73,7 +75,9 @@
         }
       },
       "put": {
-        "tags": ["accounts"],
+        "tags": [
+          "accounts"
+        ],
         "summary": "Update Account",
         "description": "Update an account by key and value for \"accountName\".\n\nReturns the updated account.",
         "operationId": "update_account_api_api_v1_account__accountName__put",
@@ -122,7 +126,9 @@
         }
       },
       "delete": {
-        "tags": ["accounts"],
+        "tags": [
+          "accounts"
+        ],
         "summary": "Delete Account",
         "description": "Delete an account by key and value \"accountName\".\n\nReturns a message indicating the account was deleted.\nAlways deletes one account.",
         "operationId": "delete_account_api_api_v1_account__accountName__delete",
@@ -164,7 +170,9 @@
     },
     "/api/api_v1/account/": {
       "get": {
-        "tags": ["accounts"],
+        "tags": [
+          "accounts"
+        ],
         "summary": "Get All Accounts",
         "description": "Get all accounts.\n\nReturns a list of all accounts.",
         "operationId": "get_all_accounts_api_api_v1_account__get",
@@ -193,7 +201,9 @@
         }
       },
       "post": {
-        "tags": ["accounts"],
+        "tags": [
+          "accounts"
+        ],
         "summary": "Create Account",
         "description": "Create one or a list of accounts.\n\nReturns the created account or list of accounts.",
         "operationId": "create_account_api_api_v1_account__post",
@@ -255,7 +265,9 @@
     },
     "/api/api_v1/currency/{currencyId}": {
       "get": {
-        "tags": ["currencies"],
+        "tags": [
+          "currencies"
+        ],
         "summary": "Get Currency",
         "description": "Get currency by key and value for \"currencyId\".\n\nAlways returns one currency.",
         "operationId": "get_currency_api_api_v1_currency__currencyId__get",
@@ -305,7 +317,9 @@
         }
       },
       "put": {
-        "tags": ["currencies"],
+        "tags": [
+          "currencies"
+        ],
         "summary": "Update Currency",
         "description": "Update a currency by key and value for \"currencyId\".\n\nReturns the updated currency.",
         "operationId": "update_currency_api_api_v1_currency__currencyId__put",
@@ -354,7 +368,9 @@
         }
       },
       "delete": {
-        "tags": ["currencies"],
+        "tags": [
+          "currencies"
+        ],
         "summary": "Delete Currency",
         "description": "Delete a currency by key and value for \"currencyId\".\n\nReturns a message indicating the currency was deleted.\nAlways deletes one currency.",
         "operationId": "delete_currency_api_api_v1_currency__currencyId__delete",
@@ -396,7 +412,9 @@
     },
     "/api/api_v1/currency/": {
       "get": {
-        "tags": ["currencies"],
+        "tags": [
+          "currencies"
+        ],
         "summary": "Get All Currencies",
         "description": "Get all currencies.\n\nReturns a list of all currencies.",
         "operationId": "get_all_currencies_api_api_v1_currency__get",
@@ -425,7 +443,9 @@
         }
       },
       "post": {
-        "tags": ["currencies"],
+        "tags": [
+          "currencies"
+        ],
         "summary": "Create Currency",
         "description": "Create one or a list of currencies.\n\nReturns the created currency or list of currencies.",
         "operationId": "create_currency_api_api_v1_currency__post",
@@ -487,7 +507,10 @@
     },
     "/api/api_v1/currency/latest_currency_id/": {
       "get": {
-        "tags": ["currencies", "latest_currency_id"],
+        "tags": [
+          "currencies",
+          "latest_currency_id"
+        ],
         "summary": "Get Latest Currency Id",
         "description": "Get the latest currencyId\n\nCan only be used safely on an empty table or directly after an insertion.",
         "operationId": "get_latest_currency_id_api_api_v1_currency_latest_currency_id__get",
@@ -508,7 +531,9 @@
     },
     "/api/api_v1/itemBaseType/{baseType}": {
       "get": {
-        "tags": ["itemBaseTypes"],
+        "tags": [
+          "itemBaseTypes"
+        ],
         "summary": "Get Item Base Type",
         "description": "Get item base type by key and value for \"baseType\".\n\nAlways returns one item base type.",
         "operationId": "get_item_base_type_api_api_v1_itemBaseType__baseType__get",
@@ -558,7 +583,9 @@
         }
       },
       "put": {
-        "tags": ["itemBaseTypes"],
+        "tags": [
+          "itemBaseTypes"
+        ],
         "summary": "Update Item Base Type",
         "description": "Update an item base type by key and value for \"baseType\".\n\nReturns the updated item base type.",
         "operationId": "update_item_base_type_api_api_v1_itemBaseType__baseType__put",
@@ -607,7 +634,9 @@
         }
       },
       "delete": {
-        "tags": ["itemBaseTypes"],
+        "tags": [
+          "itemBaseTypes"
+        ],
         "summary": "Delete Item Base Type",
         "description": "Delete an item base type by key and value for \"baseType\".\n\nReturns a message that the item base type was deleted successfully.\nAlways deletes one item base type.",
         "operationId": "delete_item_base_type_api_api_v1_itemBaseType__baseType__delete",
@@ -649,7 +678,9 @@
     },
     "/api/api_v1/itemBaseType/": {
       "get": {
-        "tags": ["itemBaseTypes"],
+        "tags": [
+          "itemBaseTypes"
+        ],
         "summary": "Get All Item Base Types",
         "description": "Get all item base types.\n\nReturns a list of all item base types.",
         "operationId": "get_all_item_base_types_api_api_v1_itemBaseType__get",
@@ -678,7 +709,9 @@
         }
       },
       "post": {
-        "tags": ["itemBaseTypes"],
+        "tags": [
+          "itemBaseTypes"
+        ],
         "summary": "Create Item Base Type",
         "description": "Create one or a list of new item base types.\n\nReturns the created item base type or list of item base types.",
         "operationId": "create_item_base_type_api_api_v1_itemBaseType__post",
@@ -839,7 +872,9 @@
     },
     "/api/api_v1/itemModifier/{itemId}": {
       "get": {
-        "tags": ["itemModifiers"],
+        "tags": [
+          "itemModifiers"
+        ],
         "summary": "Get Item Modifier",
         "description": "Get item modifier or list of item modifiers by key and \nvalue for \"itemId\", optional \"modifierId\" and optional \"position\".    \n\nDominant key is \"itemId\".\n\nReturns one or a list of item modifiers.",
         "operationId": "get_item_modifier_api_api_v1_itemModifier__itemId__get",
@@ -923,7 +958,9 @@
     },
     "/api/api_v1/itemModifier/": {
       "get": {
-        "tags": ["itemModifiers"],
+        "tags": [
+          "itemModifiers"
+        ],
         "summary": "Get All Item Modifiers",
         "description": "Get all item modifiers.\n\nReturns a list of all item modifiers.",
         "operationId": "get_all_item_modifiers_api_api_v1_itemModifier__get",
@@ -952,7 +989,9 @@
         }
       },
       "post": {
-        "tags": ["itemModifiers"],
+        "tags": [
+          "itemModifiers"
+        ],
         "summary": "Create Item Modifier",
         "description": "Create one or a list item modifiers.\n\nReturns the created item modifier or list of item modifiers.",
         "operationId": "create_item_modifier_api_api_v1_itemModifier__post",
@@ -1014,7 +1053,9 @@
     },
     "/api/api_v1/itemModifier/item={itemId}": {
       "put": {
-        "tags": ["itemModifiers"],
+        "tags": [
+          "itemModifiers"
+        ],
         "summary": "Update Item Modifier",
         "description": "Update an item modifier by key and value for \n\"itemId\", optional \"modifierId\" and optional \"position\".\n    \nDominant key is \"itemId\".\n\nReturns the updated item modifier.",
         "operationId": "update_item_modifier_api_api_v1_itemModifier_item__itemId__put",
@@ -1081,7 +1122,9 @@
         }
       },
       "delete": {
-        "tags": ["itemModifiers"],
+        "tags": [
+          "itemModifiers"
+        ],
         "summary": "Delete Item Modifier",
         "description": "Delete an item modifier by key and value for \n\"itemId\", optional \"modifierId\" and optional \"position\".\n    \nDominant key is \"itemId\".\n\nReturns a message that the item modifier was deleted successfully.\nAlways deletes one item modifier.",
         "operationId": "delete_item_modifier_api_api_v1_itemModifier_item__itemId__delete",
@@ -1152,7 +1195,9 @@
     },
     "/api/api_v1/item/{itemId}": {
       "get": {
-        "tags": ["items"],
+        "tags": [
+          "items"
+        ],
         "summary": "Get Item",
         "description": "Get item by key and value for \"itemId\".\n\nAlways returns one item.",
         "operationId": "get_item_api_api_v1_item__itemId__get",
@@ -1202,7 +1247,9 @@
         }
       },
       "put": {
-        "tags": ["items"],
+        "tags": [
+          "items"
+        ],
         "summary": "Update Item",
         "description": "Update an item by key and value for \"itemId\".\n\nReturns the updated item.",
         "operationId": "update_item_api_api_v1_item__itemId__put",
@@ -1251,7 +1298,9 @@
         }
       },
       "delete": {
-        "tags": ["items"],
+        "tags": [
+          "items"
+        ],
         "summary": "Delete Item",
         "description": "Delete an item by key and value for \"itemId\".\n\nReturns a message indicating the item was deleted.\nAlways deletes one item.",
         "operationId": "delete_item_api_api_v1_item__itemId__delete",
@@ -1293,7 +1342,10 @@
     },
     "/api/api_v1/item/latest_item_id/": {
       "get": {
-        "tags": ["items", "latest_item_id"],
+        "tags": [
+          "items",
+          "latest_item_id"
+        ],
         "summary": "Get Latest Item Id",
         "description": "Get the latest itemId\n\nCan only be used safely on an empty table or directly after an insertion.",
         "operationId": "get_latest_item_id_api_api_v1_item_latest_item_id__get",
@@ -1314,7 +1366,9 @@
     },
     "/api/api_v1/item/": {
       "get": {
-        "tags": ["items"],
+        "tags": [
+          "items"
+        ],
         "summary": "Get All Items",
         "description": "Get all items.\n\nReturns a list of all items.",
         "operationId": "get_all_items_api_api_v1_item__get",
@@ -1343,7 +1397,9 @@
         }
       },
       "post": {
-        "tags": ["items"],
+        "tags": [
+          "items"
+        ],
         "summary": "Create Item",
         "description": "Create one or a list of new items.\n\nReturns the created item or list of items.",
         "operationId": "create_item_api_api_v1_item__post",
@@ -1405,9 +1461,11 @@
     },
     "/api/api_v1/modifier/{modifierId}": {
       "get": {
-        "tags": ["modifiers"],
+        "tags": [
+          "modifiers"
+        ],
         "summary": "Get Modifier",
-        "description": "Get modifier or list of modifiers by key and\nvalue for \"modifierId\" and optional \"position\"\n\nDominant key is \"modifierId\".\n\nReturns one or a list of modifiers.",
+        "description": "Get modifier or list of modifiers by key and \nvalue for \"modifierId\" and optional \"position\" \n\nDominant key is \"modifierId\".\n\nReturns one or a list of modifiers.",
         "operationId": "get_modifier_api_api_v1_modifier__modifierId__get",
         "parameters": [
           {
@@ -1471,7 +1529,9 @@
         }
       },
       "put": {
-        "tags": ["modifiers"],
+        "tags": [
+          "modifiers"
+        ],
         "summary": "Update Modifier",
         "description": "Update a modifier by key and value for \"modifierId\" and \"position\".\n\nDominant key is \"modifierId\".\n\nReturns the updated modifier.",
         "operationId": "update_modifier_api_api_v1_modifier__modifierId__put",
@@ -1529,7 +1589,9 @@
         }
       },
       "delete": {
-        "tags": ["modifiers"],
+        "tags": [
+          "modifiers"
+        ],
         "summary": "Delete Modifier",
         "description": "Delete a modifier by key and value for \"modifierId\"\nand optional \"position\".\n\nDominant key is \"modifierId\".\n\nReturns a message that the modifier was deleted.\nAlways deletes one modifier.",
         "operationId": "delete_modifier_api_api_v1_modifier__modifierId__delete",
@@ -1587,7 +1649,9 @@
     },
     "/api/api_v1/modifier/": {
       "get": {
-        "tags": ["modifiers"],
+        "tags": [
+          "modifiers"
+        ],
         "summary": "Get All Modifiers",
         "description": "Get all modifiers.\n\nReturns a list of all modifiers.",
         "operationId": "get_all_modifiers_api_api_v1_modifier__get",
@@ -1616,7 +1680,9 @@
         }
       },
       "post": {
-        "tags": ["modifiers"],
+        "tags": [
+          "modifiers"
+        ],
         "summary": "Create Modifier",
         "description": "Create one or a list of new modifiers.\n\nReturns the created modifier or list of modifiers.",
         "operationId": "create_modifier_api_api_v1_modifier__post",
@@ -1711,7 +1777,9 @@
     },
     "/api/api_v1/stash/{stashId}": {
       "get": {
-        "tags": ["stashes"],
+        "tags": [
+          "stashes"
+        ],
         "summary": "Get Stash",
         "description": "Get stash by key and value for \"stashId\".\n\nAlways returns one stash.",
         "operationId": "get_stash_api_api_v1_stash__stashId__get",
@@ -1761,7 +1829,9 @@
         }
       },
       "put": {
-        "tags": ["stashes"],
+        "tags": [
+          "stashes"
+        ],
         "summary": "Update Stash",
         "description": "Update a stash by key and value for \"stashId\".\n\nReturns the updated stash.",
         "operationId": "update_stash_api_api_v1_stash__stashId__put",
@@ -1810,7 +1880,9 @@
         }
       },
       "delete": {
-        "tags": ["stashes"],
+        "tags": [
+          "stashes"
+        ],
         "summary": "Delete Stash",
         "description": "Delete a stash by key and value for \"stashId\".\n\nReturns a message that the stash was deleted successfully.\nAlways deletes one stash.",
         "operationId": "delete_stash_api_api_v1_stash__stashId__delete",
@@ -1852,7 +1924,9 @@
     },
     "/api/api_v1/stash/": {
       "get": {
-        "tags": ["stashes"],
+        "tags": [
+          "stashes"
+        ],
         "summary": "Get All Stashes",
         "description": "Get all stashes.\n\nReturns a list of all stashes.",
         "operationId": "get_all_stashes_api_api_v1_stash__get",
@@ -1881,7 +1955,9 @@
         }
       },
       "post": {
-        "tags": ["stashes"],
+        "tags": [
+          "stashes"
+        ],
         "summary": "Create Stash",
         "description": "Create one or a list of new stashes.\n\nReturns the created stash or list of stashes.",
         "operationId": "create_stash_api_api_v1_stash__post",
@@ -2047,7 +2123,9 @@
           }
         },
         "type": "object",
-        "required": ["accountName"],
+        "required": [
+          "accountName"
+        ],
         "title": "AccountCreate"
       },
       "AccountUpdate": {
@@ -2069,7 +2147,9 @@
           }
         },
         "type": "object",
-        "required": ["accountName"],
+        "required": [
+          "accountName"
+        ],
         "title": "AccountUpdate"
       },
       "BaseSpecs": {
@@ -2174,7 +2254,11 @@
           }
         },
         "type": "object",
-        "required": ["tradeName", "valueInChaos", "iconUrl"],
+        "required": [
+          "tradeName",
+          "valueInChaos",
+          "iconUrl"
+        ],
         "title": "CurrencyCreate"
       },
       "CurrencyUpdate": {
@@ -2193,7 +2277,11 @@
           }
         },
         "type": "object",
-        "required": ["tradeName", "valueInChaos", "iconUrl"],
+        "required": [
+          "tradeName",
+          "valueInChaos",
+          "iconUrl"
+        ],
         "title": "CurrencyUpdate"
       },
       "GroupedModifierByEffect": {
@@ -2725,7 +2813,10 @@
           }
         },
         "type": "object",
-        "required": ["baseType", "category"],
+        "required": [
+          "baseType",
+          "category"
+        ],
         "title": "ItemBaseTypeCreate"
       },
       "ItemBaseTypeSubCategory": {
@@ -2764,7 +2855,10 @@
           }
         },
         "type": "object",
-        "required": ["baseType", "category"],
+        "required": [
+          "baseType",
+          "category"
+        ],
         "title": "ItemBaseTypeUpdate"
       },
       "ItemCreate": {
@@ -3107,7 +3201,11 @@
           }
         },
         "type": "object",
-        "required": ["itemId", "modifierId", "position"],
+        "required": [
+          "itemId",
+          "modifierId",
+          "position"
+        ],
         "title": "ItemModifierCreate"
       },
       "ItemModifierUpdate": {
@@ -3137,7 +3235,11 @@
           }
         },
         "type": "object",
-        "required": ["itemId", "modifierId", "position"],
+        "required": [
+          "itemId",
+          "modifierId",
+          "position"
+        ],
         "title": "ItemModifierUpdate"
       },
       "ItemSpecs": {
@@ -3932,7 +4034,10 @@
           }
         },
         "type": "object",
-        "required": ["position", "effect"],
+        "required": [
+          "position",
+          "effect"
+        ],
         "title": "ModifierCreate"
       },
       "ModifierLimitations": {
@@ -4140,7 +4245,10 @@
           }
         },
         "type": "object",
-        "required": ["position", "effect"],
+        "required": [
+          "position",
+          "effect"
+        ],
         "title": "ModifierUpdate"
       },
       "PlotData": {
@@ -4282,7 +4390,12 @@
           }
         },
         "type": "object",
-        "required": ["accountName", "public", "league", "stashId"],
+        "required": [
+          "accountName",
+          "public",
+          "league",
+          "stashId"
+        ],
         "title": "StashCreate"
       },
       "StashUpdate": {
@@ -4301,7 +4414,11 @@
           }
         },
         "type": "object",
-        "required": ["accountName", "public", "league"],
+        "required": [
+          "accountName",
+          "public",
+          "league"
+        ],
         "title": "StashUpdate"
       },
       "ValidationError": {
@@ -4330,7 +4447,11 @@
           }
         },
         "type": "object",
-        "required": ["loc", "msg", "type"],
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
         "title": "ValidationError"
       },
       "WantedModifier": {
