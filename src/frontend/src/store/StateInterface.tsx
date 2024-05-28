@@ -1,3 +1,5 @@
+import { PlotQuery } from "../client";
+
 export interface InfluenceSpecState {
   elder?: boolean | null;
   shaper?: boolean | null;
@@ -45,10 +47,14 @@ export interface ModifierSpecState {
 
 export interface GraphInputState {
   clearClicked: boolean;
+  queryClicked: boolean;
   league: string;
-  itemSpecState: ItemSpecState;
+  itemSpec: ItemSpecState;
   baseSpec?: BaseSpecState;
   modifierSpecs: ModifierSpecState[];
+  plotQuery: PlotQuery;
+  setQueryClicked: () => void;
+  setPlotQuery: () => void;
   setClearClicked: () => void;
   setLeague: (league: string) => void;
   setItemSpecIdentified: (identified: boolean) => void;
