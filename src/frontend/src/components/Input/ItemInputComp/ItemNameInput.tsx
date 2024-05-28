@@ -6,7 +6,7 @@ export const ItemNameInput = () => {
   const { setItemName } = useGraphInputStore();
 
   const getItemNameValue = () => {
-    const itemName = useGraphInputStore.getState().itemSpecState.name;
+    const itemName = useGraphInputStore.getState().itemSpec.name;
     if (itemName) {
       return itemName;
     } else {

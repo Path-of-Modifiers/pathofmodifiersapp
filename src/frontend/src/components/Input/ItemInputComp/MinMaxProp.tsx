@@ -20,8 +20,8 @@ export const MinMaxInput = ({ text }: MinMaxInputProps) => {
   const { setItemSpecMinIlvl, setItemSpecMaxIlvl } = useGraphInputStore();
 
   const [minValue, maxValue] = useGraphInputStore((state) => [
-    state.itemSpecState.minIlvl,
-    state.itemSpecState.maxIlvl,
+    state.itemSpec.minIlvl,
+    state.itemSpec.maxIlvl,
   ]);
 
   const getMinValue = () => {

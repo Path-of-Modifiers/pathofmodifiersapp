@@ -9,35 +9,52 @@ import { defaultLeague } from "../env-vars";
 // Graph Input Store  -  This store is used to store graph input data.
 export const useGraphInputStore = create<GraphInputState>((set) => ({
   clearClicked: false,
+  queryClicked: false,
   league: defaultLeague,
-  itemSpecState: {},
+  itemSpec: {},
   baseSpec: {},
   modifierSpecs: [],
+  plotQuery: { league: "", itemSpecifications: {}, wantedModifiers: [] },
+
+  setQueryClicked: () =>
+    set(() => ({
+      queryClicked: true,
+    })),
+
+  setPlotQuery: () =>
+    set((state) => ({
+      plotQuery: {
+        league: state.league,
+        itemSpecifications: state.itemSpec,
+        baseSpec: state.baseSpec,
+        wantedModifiers: state.modifierSpecs,
+      },
+    })),
 
   setLeague: (league: string) => set(() => ({ league: league })),
 
   setClearClicked: () =>
     set(() => ({
       clearClicked: true,
-      itemSpecState: {},
+      itemSpec: {},
       modifierSpecs: [],
       baseSpec: {},
     })),
 
   setItemSpecIdentified: (identified: boolean) =>
     set((state) => ({
-      itemSpecState: { ...state.itemSpecState, identified: identified },
+      itemSpec: { ...state.itemSpec, identified: identified },
     })),
 
   setItemName: (name: string) =>
-    set((state) => ({ itemSpecState: { ...state.itemSpecState, name: name } })),
+    set((state) => ({ itemSpec: { ...state.itemSpec, name: name } })),
 
   setItemSpecElderInfluence: (elder: boolean) =>
     set((state) => ({
-      itemSpecState: {
-        ...state.itemSpecState,
+      itemSpec: {
+        ...state.itemSpec,
         influences: {
-          ...state.itemSpecState.influences,
+          ...state.itemSpec.influences,
           elder: elder,
         },
       },
@@ -45,10 +62,10 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
 
   setItemSpecShaperInfluence: (shaper: boolean) =>
     set((state) => ({
-      itemSpecState: {
-        ...state.itemSpecState,
+      itemSpec: {
+        ...state.itemSpec,
         influences: {
-          ...state.itemSpecState.influences,
+          ...state.itemSpec.influences,
           shaper: shaper,
         },
       },
@@ -56,10 +73,10 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
 
   setItemSpecCrusaderInfluence: (crusader: boolean) =>
     set((state) => ({
-      itemSpecState: {
-        ...state.itemSpecState,
+      itemSpec: {
+        ...state.itemSpec,
         influences: {
-          ...state.itemSpecState.influences,
+          ...state.itemSpec.influences,
           crusader: crusader,
         },
       },
@@ -67,10 +84,10 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
 
   setItemSpecRedeemerInfluence: (redeemer: boolean) =>
     set((state) => ({
-      itemSpecState: {
-        ...state.itemSpecState,
+      itemSpec: {
+        ...state.itemSpec,
         influences: {
-          ...state.itemSpecState.influences,
+          ...state.itemSpec.influences,
           redeemer: redeemer,
         },
       },
@@ -78,10 +95,10 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
 
   setItemSpecHunterInfluence: (hunter: boolean) =>
     set((state) => ({
-      itemSpecState: {
-        ...state.itemSpecState,
+      itemSpec: {
+        ...state.itemSpec,
         influences: {
-          ...state.itemSpecState.influences,
+          ...state.itemSpec.influences,
           hunter: hunter,
         },
       },
@@ -89,10 +106,10 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
 
   setItemSpecWarlordInfluence: (warlord: boolean) =>
     set((state) => ({
-      itemSpecState: {
-        ...state.itemSpecState,
+      itemSpec: {
+        ...state.itemSpec,
         influences: {
-          ...state.itemSpecState.influences,
+          ...state.itemSpec.influences,
           warlord: warlord,
         },
       },
@@ -100,76 +117,75 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
 
   setItemSpecReplica: (replica: boolean) =>
     set((state) => ({
-      itemSpecState: { ...state.itemSpecState, replica: replica },
+      itemSpec: { ...state.itemSpec, replica: replica },
     })),
 
   setItemSpecSearingInfluence: (searing: boolean) =>
     set((state) => ({
-      itemSpecState: { ...state.itemSpecState, searing: searing },
+      itemSpec: { ...state.itemSpec, searing: searing },
     })),
 
   setItemSpecTangledInfluence: (tangled: boolean) =>
     set((state) => ({
-      itemSpecState: { ...state.itemSpecState, tangled: tangled },
+      itemSpec: { ...state.itemSpec, tangled: tangled },
     })),
 
   setItemSpecIsRelic: (isRelic: boolean) =>
     set((state) => ({
-      itemSpecState: { ...state.itemSpecState, isRelic: isRelic },
+      itemSpec: { ...state.itemSpec, isRelic: isRelic },
     })),
 
   setItemSpecCorrupted: (corrupted: boolean) =>
     set((state) => ({
-      itemSpecState: { ...state.itemSpecState, corrupted: corrupted },
+      itemSpec: { ...state.itemSpec, corrupted: corrupted },
     })),
 
   setItemSpecDelve: (delve: boolean) =>
     set((state) => ({
-      itemSpecState: { ...state.itemSpecState, delve: delve },
+      itemSpec: { ...state.itemSpec, delve: delve },
     })),
 
   setItemSpecFractured: (fractured: boolean) =>
     set((state) => ({
-      itemSpecState: { ...state.itemSpecState, fractured: fractured },
+      itemSpec: { ...state.itemSpec, fractured: fractured },
     })),
 
   setItemSpecSynthesized: (synthesized: boolean) =>
     set((state) => ({
-      itemSpecState: { ...state.itemSpecState, synthesized: synthesized },
+      itemSpec: { ...state.itemSpec, synthesized: synthesized },
     })),
 
   setItemSpecSearing: (searing: boolean) =>
     set((state) => ({
-      itemSpecState: { ...state.itemSpecState, searing: searing },
+      itemSpec: { ...state.itemSpec, searing: searing },
     })),
 
   setItemSpecTangled: (tangled: boolean) =>
     set((state) => ({
-      itemSpecState: { ...state.itemSpecState, tangled: tangled },
+      itemSpec: { ...state.itemSpec, tangled: tangled },
     })),
 
   setItemSpecFoilVariation: (foilVariation: number) =>
     set((state) => ({
-      itemSpecState: { ...state.itemSpecState, foilVariation: foilVariation },
+      itemSpec: { ...state.itemSpec, foilVariation: foilVariation },
     })),
 
   setItemSpecMinIlvl: (minIlvl: number) =>
     set((state) => ({
-      itemSpecState: { ...state.itemSpecState, minIlvl: minIlvl },
+      itemSpec: { ...state.itemSpec, minIlvl: minIlvl },
     })),
 
   setItemSpecMaxIlvl: (maxIlvl: number) =>
     set((state) => ({
-      itemSpecState: { ...state.itemSpecState, maxIlvl: maxIlvl },
+      itemSpec: { ...state.itemSpec, maxIlvl: maxIlvl },
     })),
 
   setItemRarity: (rarity: string | undefined) =>
     set((state) => ({
-      itemSpecState: { ...state.itemSpecState, rarity: rarity },
+      itemSpec: { ...state.itemSpec, rarity: rarity },
     })),
 
-  setItemSpec: (itemSpec: ItemSpecState) =>
-    set(() => ({ itemSpecState: itemSpec })),
+  setItemSpec: (itemSpec: ItemSpecState) => set(() => ({ itemSpec: itemSpec })),
 
   setBaseType: (baseType: string | undefined) =>
     set((state) => ({
