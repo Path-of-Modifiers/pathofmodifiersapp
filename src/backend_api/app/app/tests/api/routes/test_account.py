@@ -112,7 +112,7 @@ def test_update_account_not_found(
     )
     assert response.status_code == 404
     content = response.json()
-    assert content["detail"] == "Account not found"
+    assert content["detail"] == f"No object matching the query ({model.accountName.__str__} : {content["accountName"]}) in the table {model.__tablename__} was found."
 
 
 def test_update_account_not_enough_permissions(
@@ -127,7 +127,7 @@ def test_update_account_not_enough_permissions(
     )
     assert response.status_code == 400
     content = response.json()
-    assert content["detail"] == "Not enough permissions"
+    assert content["detail"] == f"Unauthorized API access for {account_api.update_account.__name__}"
 
 
 def test_delete_account(
@@ -140,7 +140,7 @@ def test_delete_account(
     )
     assert response.status_code == 200
     content = response.json()
-    assert content["message"] == "Account deleted successfully"
+    assert content["message"] == f"Account with mapping ({model.accountName.__str__}: {content["accountName"]}) deleted successfully"
 
 
 def test_delete_account_not_found(
@@ -152,7 +152,7 @@ def test_delete_account_not_found(
     )
     assert response.status_code == 404
     content = response.json()
-    assert content["detail"] == "Account not found"
+    assert content["detail"] == f"No object matching the query ({model.accountName.__str__}: {content["accountName"]}) in the table {model.__tablename__} was found."
 
 
 def test_delete_account_not_enough_permissions(
@@ -165,4 +165,4 @@ def test_delete_account_not_enough_permissions(
     )
     assert response.status_code == 400
     content = response.json()
-    assert content["detail"] == "Not enough permissions"
+    assert content["detail"] == f"Unauthorized API access for {account_api.delete_account.__name__}"
