@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     )
 
     model_config = SettingsConfigDict(env_prefix="POM_MODEL_")
+    
+    FIRST_SUPERUSER: str = os.getenv("FIRST_SUPERUSER")
+    FIRST_SUPERUSER_PASSWORD: str = os.getenv("FIRST_SUPERUSER_PASSWORD")
 
 
 settings = Settings()
