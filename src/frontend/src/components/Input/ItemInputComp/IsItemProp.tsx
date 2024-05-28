@@ -38,12 +38,13 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
       itemSpecKey === "warlord"
     ) {
       selectValue =
-        (useGraphInputStore.getState().itemSpecState as ItemSpecState)
-          .influences?.[itemSpecKey] ?? undefined;
+        (useGraphInputStore.getState().itemSpec as ItemSpecState).influences?.[
+          itemSpecKey
+        ] ?? undefined;
     } else {
-      selectValue = (
-        useGraphInputStore.getState().itemSpecState as ItemSpecState
-      )[itemSpecKey];
+      selectValue = (useGraphInputStore.getState().itemSpec as ItemSpecState)[
+        itemSpecKey
+      ];
     }
     if (selectValue) {
       return "true";
