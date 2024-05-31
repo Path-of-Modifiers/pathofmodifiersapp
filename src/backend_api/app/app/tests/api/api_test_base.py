@@ -30,7 +30,7 @@ class TestAPI:
 
         return d
 
-    async def _generate_object(
+    async def _create_object(
         self,
         db: Session,
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]], Any],
@@ -45,10 +45,40 @@ class TestAPI:
         Returns:
             Tuple[Dict, ModelType]: Object dictionary, the object itself and the db object dictionary
         """
-        object_dict, object_out = await object_generator_func(db)
+        crud_test = TestCRUD()
+
+        object_dict, object_out = await crud_test._create_object(
+            db, object_generator_func
+        )
+
         object_out_dict = self._db_obj_to_dict(object_out)
 
         return object_dict, object_out, object_out_dict
+
+    async def _create_multiple_objects(
+        self,
+        db: Session,
+        object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]], Any],
+        count: int,
+    ) -> Tuple[Tuple[Dict], Tuple[ModelType]]:
+        """Create multiple objects
+
+        Args:
+            db (Session): DB session
+            object_generator_func (Union[Callable[[], Tuple[Dict, ModelType]], Any]): Function
+            to generate the object
+            count (int): Number of objects to create
+
+        Returns:
+            Tuple[Tuple[Dict], Tuple[ModelType]]: Tuple of object dictionaries and objects
+        """
+        crud_test = TestCRUD()
+
+        multiple_object_dict, multiple_object_out = (
+            await crud_test._create_multiple_objects(db, object_generator_func, count)
+        )
+
+        return multiple_object_dict, multiple_object_out
 
     def _test_object(
         self,
@@ -114,7 +144,7 @@ class TestAPI:
         route_name: str,
         unique_identifier: str,
     ) -> None:
-        _, object_out, object_out_dict = await self._generate_object(
+        _, object_out, object_out_dict = await self._create_object(
             db, object_generator_func
         )
         response = client.get(
@@ -156,7 +186,7 @@ class TestAPI:
         route_name: str,
         unique_identifier: str,
     ) -> None:
-        _, _, object_out_dict = await self._generate_object(db, object_generator_func)
+        _, _, object_out_dict = await self._create_object(db, object_generator_func)
         response = client.get(
             f"{settings.API_V1_STR}/{route_name}/{object_out_dict[unique_identifier]}",
         )
@@ -177,15 +207,14 @@ class TestAPI:
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
         route_name: str,
     ) -> None:
-        await self._generate_object(db, object_generator_func)
-        await self._generate_object(db, object_generator_func)
+        await self._create_multiple_objects(db, object_generator_func, 5)
         response = client.get(
             f"{settings.API_V1_STR}/{route_name}/",
             auth=superuser_headers,
         )
         assert response.status_code == 200
         content = response.json()
-        assert len(content[0]) >= 2
+        assert len(content) >= 5
 
     @pytest.mark.asyncio
     async def test_update_instance(
@@ -198,7 +227,7 @@ class TestAPI:
         create_random_object_func: Callable[[], Dict],
         unique_identifier: str,
     ) -> None:
-        _, _, object_out_dict = await self._generate_object(db, object_generator_func)
+        _, _, object_out_dict = await self._create_object(db, object_generator_func)
         updated_db_obj = create_random_object_func()
         response = client.put(
             f"{settings.API_V1_STR}/{route_name}/{object_out_dict[unique_identifier]}",
@@ -242,7 +271,7 @@ class TestAPI:
         create_random_object_func: Callable[[], Dict],
         unique_identifier: str,
     ) -> None:
-        _, _, object_out_dict = await self._generate_object(db, object_generator_func)
+        _, _, object_out_dict = await self._create_object(db, object_generator_func)
         updated_instance = create_random_object_func()
         response = client.put(
             f"{settings.API_V1_STR}/{route_name}/{object_out_dict[unique_identifier]}",
@@ -263,7 +292,7 @@ class TestAPI:
         route_name: str,
         unique_identifier: str,
     ) -> None:
-        _, _, object_out_dict = await self._generate_object(db, object_generator_func)
+        _, _, object_out_dict = await self._create_object(db, object_generator_func)
         response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{object_out_dict[unique_identifier]}",
             auth=superuser_headers,
@@ -305,7 +334,7 @@ class TestAPI:
         route_name: str,
         unique_identifier: str,
     ) -> None:
-        _, _, object_out_dict = await self._generate_object(db, object_generator_func)
+        _, _, object_out_dict = await self._create_object(db, object_generator_func)
         response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{object_out_dict[unique_identifier]}",
         )
