@@ -1,7 +1,13 @@
+import os
 import random
 import string
 from typing import Optional, Dict, Any, Union
 from datetime import datetime, timedelta
+from requests.auth import HTTPBasicAuth
+
+
+FIRST_SUPERUSER = os.getenv("FIRST_SUPERUSER")
+FIRST_SUPERUSER_PASSWORD = os.getenv("FIRST_SUPERUSER_PASSWORD")
 
 
 def random_lower_string(*, small_string: Optional[bool] = None) -> str:
@@ -144,3 +150,14 @@ def random_based_on_type(reference: Union[str, float, int]) -> Union[str, int, f
         return random_int(max_value=reference)
     else:
         raise NotImplementedError(f"Objects of type {type_reference} is not supported")
+
+
+def get_super_authentication() -> HTTPBasicAuth:
+    """
+    Get the super authentication for the Path of Modifiers API.
+
+    Returns:
+        HTTPBasicAuth: POM user and password authentication.
+    """
+    authentication = HTTPBasicAuth(FIRST_SUPERUSER, FIRST_SUPERUSER_PASSWORD)
+    return authentication
