@@ -12,6 +12,7 @@ from app.crud.base import (
 )
 
 
+@pytest.mark.usefixtures("clear_db", autouse=True)
 class TestCRUD:
     async def _create_object(
         self,
