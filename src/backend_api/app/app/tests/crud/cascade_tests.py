@@ -16,6 +16,7 @@ from app.core.models.database import insp
 from app.tests.utils.utils import random_based_on_type
 
 
+@pytest.mark.usefixtures("clear_db", autouse=True)
 class TestCascade(TestCRUD):
     async def _create_object(
         self,
