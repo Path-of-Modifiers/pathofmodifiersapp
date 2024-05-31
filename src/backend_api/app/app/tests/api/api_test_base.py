@@ -8,10 +8,11 @@ from app.crud.base import ModelType
 from app.core.config import settings
 from app.tests.crud.crud_test_base import TestCRUD
 
+crud_test = TestCRUD()
+
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
 class TestAPI:
-
     def _db_obj_to_dict(self, db_obj: ModelType) -> Dict:
         """Convert a SQLAlchemy model to a dictionary.
         This is done since often only the db object has the primary key set.
@@ -45,7 +46,6 @@ class TestAPI:
         Returns:
             Tuple[Dict, ModelType]: Object dictionary, the object itself and the db object dictionary
         """
-        crud_test = TestCRUD()
 
         object_dict, object_out = await crud_test._create_object(
             db, object_generator_func
@@ -72,7 +72,6 @@ class TestAPI:
         Returns:
             Tuple[Tuple[Dict], Tuple[ModelType]]: Tuple of object dictionaries and objects
         """
-        crud_test = TestCRUD()
 
         multiple_object_dict, multiple_object_out = (
             await crud_test._create_multiple_objects(db, object_generator_func, count)
@@ -95,8 +94,6 @@ class TestAPI:
             compare_obj (Optional[ Union[Dict, List[Dict], ModelType, List[ModelType]] ], optional): Comparing object. Defaults to None.
             ignore (Optional[List[str]], optional): List of ignored attributes. Defaults to [].
         """
-        crud_test = TestCRUD()
-
         crud_test._test_object(obj, compare_obj, ignore)
 
     def _compare_dicts(
