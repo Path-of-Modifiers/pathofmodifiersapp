@@ -27,7 +27,7 @@ class TestAPI:
         d = {}
         for column in db_obj.__table__.columns:
             d[column.name] = getattr(db_obj, column.name)
- 
+
         return d
 
     async def _generate_object(
@@ -198,9 +198,7 @@ class TestAPI:
         create_random_object_func: Callable[[], Dict],
         unique_identifier: str,
     ) -> None:
-        _, object_out, object_out_dict = await self._generate_object(
-            db, object_generator_func
-        )
+        _, _, object_out_dict = await self._generate_object(db, object_generator_func)
         updated_db_obj = create_random_object_func()
         response = client.put(
             f"{settings.API_V1_STR}/{route_name}/{object_out_dict[unique_identifier]}",
@@ -282,7 +280,6 @@ class TestAPI:
         self,
         client: TestClient,
         superuser_headers: dict[str, str],
-        create_random_object_func: Callable[[], Dict],
         route_name: str,
         model_name: str,
         unique_identifier: str,
