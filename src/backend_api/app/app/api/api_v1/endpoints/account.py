@@ -133,5 +133,7 @@ async def delete_account(
 
     account_map = {"accountName": accountName}
     await CRUD_account.remove(db=db, filter=account_map)
-
-    return f"Account with mapping ({account_map}) deleted successfully"
+    
+    account_key = list(account_map.keys())[0]
+    account_value = list(account_map.values())[0]
+    return f"Account with mapping ({account_key} : {account_value}) deleted successfully"
