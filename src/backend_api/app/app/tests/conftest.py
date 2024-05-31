@@ -33,7 +33,9 @@ def superuser_headers() -> HTTPBasicAuth:
 @pytest.fixture(scope="module")
 def client() -> Generator[TestClient, None, None]:
     app.dependency_overrides[get_db] = override_get_db
-    with TestClient(app) as c:
+    with TestClient(
+        app  # For the warning DeprecationWarning: The 'app' ..., check https://github.com/tiangolo/fastapi/discussions/6211.
+    ) as c:
         yield c
 
 
