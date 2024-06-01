@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
 from fastapi.testclient import TestClient
 import pytest
 from sqlalchemy.orm import Session
@@ -6,9 +6,10 @@ from sqlalchemy.orm import Session
 from app.crud.base import ModelType
 
 from app.core.config import settings
-from app.tests.crud.crud_test_base import TestCRUD
+from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
+from app.tests.utils.utils import get_ignore_keys, is_courotine_function
 
-crud_test = TestCRUD()
+get_crud_test_model = UtilTestCRUD()
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
@@ -31,10 +32,24 @@ class TestAPI:
 
         return d
 
+    def _create_primary_key_map(
+        self, db_obj: ModelType, get_crud_test_model: UtilTestCRUD
+    ) -> Dict:
+        """Create a primary key map for a db object
+
+        Args:
+            db_obj (ModelType): SQLAlchemy model
+
+        Returns:
+            Dict: Primary key map
+        """
+        return get_crud_test_model._create_primary_key_map(db_obj)
+
     async def _create_object(
         self,
         db: Session,
-        object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]], Any],
+        object_generator_func: Union[Callable[[], Tuple[Dict, ModelType, Dict]], Any],
+        get_crud_test_model: UtilTestCRUD,
     ) -> Tuple[Dict, ModelType]:
         """Generate an object and return the object dictionary and the object itself
 
@@ -42,12 +57,14 @@ class TestAPI:
             db (Session): DB session
             object_generator_func (Union[Callable[[], Tuple[Dict, ModelType]], Any]): Function
             to generate the object
+            get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
+
 
         Returns:
             Tuple[Dict, ModelType]: Object dictionary, the object itself and the db object dictionary
         """
 
-        object_dict, object_out = await crud_test._create_object(
+        object_dict, object_out = await get_crud_test_model._create_object(
             db, object_generator_func
         )
 
@@ -60,6 +77,7 @@ class TestAPI:
         db: Session,
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]], Any],
         count: int,
+        get_crud_test_model: UtilTestCRUD,
     ) -> Tuple[Tuple[Dict], Tuple[ModelType]]:
         """Create multiple objects
 
@@ -68,19 +86,23 @@ class TestAPI:
             object_generator_func (Union[Callable[[], Tuple[Dict, ModelType]], Any]): Function
             to generate the object
             count (int): Number of objects to create
+            get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
 
         Returns:
             Tuple[Tuple[Dict], Tuple[ModelType]]: Tuple of object dictionaries and objects
         """
 
         multiple_object_dict, multiple_object_out = (
-            await crud_test._create_multiple_objects(db, object_generator_func, count)
+            await get_crud_test_model._create_multiple_objects(
+                db, object_generator_func, count
+            )
         )
 
         return multiple_object_dict, multiple_object_out
 
     def _test_object(
         self,
+        get_crud_test_model: UtilTestCRUD,
         obj: Union[ModelType, List[ModelType]],
         compare_obj: Optional[
             Union[Dict, List[Dict], ModelType, List[ModelType]]
@@ -93,8 +115,9 @@ class TestAPI:
             obj (Union[ModelType, List[ModelType]]): Object to test
             compare_obj (Optional[ Union[Dict, List[Dict], ModelType, List[ModelType]] ], optional): Comparing object. Defaults to None.
             ignore (Optional[List[str]], optional): List of ignored attributes. Defaults to [].
+            get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
         """
-        crud_test._test_object(obj, compare_obj, ignore)
+        get_crud_test_model._test_object(obj, compare_obj, ignore)
 
     def _compare_dicts(
         self,
@@ -109,24 +132,35 @@ class TestAPI:
             dict2 (Dict): Dictionary 2
             ignore (Optional[List[str]], optional): Keys to ignore. Defaults to [].
         """
+        print("IGNORINGBEAST", ignore)
         for key in dict1:
+            print("IGNORINGBEAST2", key)
             if key in ignore:
                 continue
             assert dict1[key] == dict2[key]
 
-    def test_create_instance(
+    @pytest.mark.asyncio
+    async def test_create_instance(
         self,
         client: TestClient,
-        superuser_headers: dict[str, str],
+        superuser_headers: Dict[str, str],
         route_name: str,
-        create_random_object_func: Callable[[], Dict],
+        db: Session,
+        create_random_object_func: Union[
+            Callable[[Session], Awaitable[Dict]], Callable[[], Dict]
+        ],
     ) -> None:
-        create_obj = create_random_object_func()
+        if is_courotine_function(create_random_object_func):
+            awaitable_create_obj = await create_random_object_func(db)
+            create_obj = await awaitable_create_obj
+        else:
+            create_obj = create_random_object_func()
         response = client.post(
             f"{settings.API_V1_STR}/{route_name}/",
             auth=superuser_headers,
             json=create_obj,
         )
+        print("RESPONSETESTCREATE", response.json())
         assert response.status_code == 200
         content = response.json()
         self._compare_dicts(create_obj, content)
@@ -135,14 +169,15 @@ class TestAPI:
     async def test_get_instance(
         self,
         client: TestClient,
-        superuser_headers: dict[str, str],
+        superuser_headers: Dict[str, str],
         db: Session,
-        object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
-        route_name: str,
         unique_identifier: str,
+        object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
+        get_crud_test_model: UtilTestCRUD,
+        route_name: str,
     ) -> None:
         _, object_out, object_out_dict = await self._create_object(
-            db, object_generator_func
+            db, object_generator_func, get_crud_test_model
         )
         response = client.get(
             f"{settings.API_V1_STR}/{route_name}/{object_out_dict[unique_identifier]}",
@@ -151,12 +186,17 @@ class TestAPI:
         assert response.status_code == 200
         content = response.json()
         print("BROWHAT", content, "ISEQUAL? \n", object_out_dict)
-        self._test_object(object_out, content, ignore=["updatedAt", "createdAt"])
+        self._test_object(
+            get_crud_test_model=get_crud_test_model,
+            obj=object_out,
+            compare_obj=content,
+            ignore=["updatedAt", "createdAt"],
+        )
 
     def test_get_instance_not_found(
         self,
         client: TestClient,
-        superuser_headers: dict[str, str],
+        superuser_headers: Dict[str, str],
         model_name: str,
         route_name: str,
         unique_identifier: str,
@@ -181,9 +221,12 @@ class TestAPI:
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
         get_high_permissions: bool,
         route_name: str,
+        get_crud_test_model: UtilTestCRUD,
         unique_identifier: str,
     ) -> None:
-        _, _, object_out_dict = await self._create_object(db, object_generator_func)
+        _, _, object_out_dict = await self._create_object(
+            db, object_generator_func, get_crud_test_model
+        )
         response = client.get(
             f"{settings.API_V1_STR}/{route_name}/{object_out_dict[unique_identifier]}",
         )
@@ -199,12 +242,15 @@ class TestAPI:
     async def test_get_instances(
         self,
         client: TestClient,
-        superuser_headers: dict[str, str],
+        superuser_headers: Dict[str, str],
         db: Session,
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
+        get_crud_test_model: UtilTestCRUD,
         route_name: str,
     ) -> None:
-        await self._create_multiple_objects(db, object_generator_func, 5)
+        await self._create_multiple_objects(
+            db, object_generator_func, 5, get_crud_test_model
+        )
         response = client.get(
             f"{settings.API_V1_STR}/{route_name}/",
             auth=superuser_headers,
@@ -217,15 +263,23 @@ class TestAPI:
     async def test_update_instance(
         self,
         client: TestClient,
-        superuser_headers: dict[str, str],
+        superuser_headers: Dict[str, str],
         db: Session,
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
         route_name: str,
         create_random_object_func: Callable[[], Dict],
+        get_crud_test_model: UtilTestCRUD,
         unique_identifier: str,
     ) -> None:
-        _, _, object_out_dict = await self._create_object(db, object_generator_func)
-        updated_db_obj = create_random_object_func()
+        _, object_out, object_out_dict = await self._create_object(
+            db, object_generator_func, get_crud_test_model
+        )
+        print("DARKVADER", object_out_dict, "-----", object_out)
+        if is_courotine_function(create_random_object_func):
+            awaitable_updated_db_obj = await create_random_object_func(db)
+            updated_db_obj = await awaitable_updated_db_obj
+        else:
+            updated_db_obj = create_random_object_func()
         response = client.put(
             f"{settings.API_V1_STR}/{route_name}/{object_out_dict[unique_identifier]}",
             auth=superuser_headers,
@@ -233,23 +287,36 @@ class TestAPI:
         )
         assert response.status_code == 200
         content = response.json()
-        self._compare_dicts(updated_db_obj, content)
+        print(
+            "TESTUPDATEINSTANCE\ncontent:  ",
+            content,
+            "\nupdated_db_obj:  ",
+            updated_db_obj,
+        )
+        print("IGNORINGBESAT", content)
+        self._compare_dicts(updated_db_obj, content, ignore=["updatedAt", "createdAt"])
 
-    def test_update_instance_not_found(
+    @pytest.mark.asyncio
+    async def test_update_instance_not_found(
         self,
         client: TestClient,
-        superuser_headers: dict[str, str],
+        db: Session,
+        superuser_headers: Dict[str, str],
         route_name: str,
         model_name: str,
         create_random_object_func: Callable[[], Dict],
         unique_identifier: str,
     ) -> None:
-        updated_instance = create_random_object_func()
+        if is_courotine_function(create_random_object_func):
+            awaitable_updated_db_obj = await create_random_object_func(db)
+            updated_db_obj = await awaitable_updated_db_obj
+        else:
+            updated_db_obj = create_random_object_func()
         not_found_object = 999
         response = client.put(
             f"{settings.API_V1_STR}/{route_name}/{not_found_object}",
             auth=superuser_headers,
-            json=updated_instance,
+            json=updated_db_obj,
         )
         assert response.status_code == 404
         content = response.json()
@@ -266,13 +333,20 @@ class TestAPI:
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
         route_name: str,
         create_random_object_func: Callable[[], Dict],
+        get_crud_test_model: UtilTestCRUD,
         unique_identifier: str,
     ) -> None:
-        _, _, object_out_dict = await self._create_object(db, object_generator_func)
-        updated_instance = create_random_object_func()
+        _, _, object_out_dict = await self._create_object(
+            db, object_generator_func, get_crud_test_model
+        )
+        if is_courotine_function(create_random_object_func):
+            awaitable_updated_db_obj = await create_random_object_func(db)
+            updated_db_obj = await awaitable_updated_db_obj
+        else:
+            updated_db_obj = create_random_object_func()
         response = client.put(
             f"{settings.API_V1_STR}/{route_name}/{object_out_dict[unique_identifier]}",
-            json=updated_instance,
+            json=updated_db_obj,
         )
         assert response.status_code == 401
         content = response.json()
@@ -282,14 +356,17 @@ class TestAPI:
     async def test_delete_instance(
         self,
         client: TestClient,
-        superuser_headers: dict[str, str],
+        superuser_headers: Dict[str, str],
         db: Session,
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
         model_name: str,
         route_name: str,
+        get_crud_test_model: UtilTestCRUD,
         unique_identifier: str,
     ) -> None:
-        _, _, object_out_dict = await self._create_object(db, object_generator_func)
+        _, _, object_out_dict = await self._create_object(
+            db, object_generator_func, get_crud_test_model
+        )
         response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{object_out_dict[unique_identifier]}",
             auth=superuser_headers,
@@ -305,7 +382,7 @@ class TestAPI:
     async def test_delete_instance_not_found(
         self,
         client: TestClient,
-        superuser_headers: dict[str, str],
+        superuser_headers: Dict[str, str],
         route_name: str,
         model_name: str,
         unique_identifier: str,
@@ -329,9 +406,12 @@ class TestAPI:
         db: Session,
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
         route_name: str,
+        get_crud_test_model,
         unique_identifier: str,
     ) -> None:
-        _, _, object_out_dict = await self._create_object(db, object_generator_func)
+        _, _, object_out_dict = await self._create_object(
+            db, object_generator_func, get_crud_test_model
+        )
         response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{object_out_dict[unique_identifier]}",
         )
