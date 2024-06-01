@@ -7,6 +7,7 @@ from app.tests.utils.model_utils.item_base_type import (
     generate_random_item_base_type,
 )
 from app.crud.base import ModelType
+from app.tests.crud.cascade_tests import TestCRUD as UtilTestCRUD
 
 
 @pytest.fixture(scope="module")
@@ -17,6 +18,13 @@ def model_name() -> str:
 @pytest.fixture(scope="module")
 def route_name() -> str:
     return "itemBaseType"
+
+
+@pytest.fixture(scope="module")
+def get_crud_test_model() -> UtilTestCRUD:
+    model = UtilTestCRUD()
+    return model
+
 
 
 @pytest.fixture(scope="module")
