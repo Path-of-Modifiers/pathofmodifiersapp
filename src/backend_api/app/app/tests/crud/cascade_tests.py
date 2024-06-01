@@ -18,7 +18,7 @@ from app.tests.utils.utils import random_based_on_type
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
 class TestCascade(TestCRUD):
-    async def _create_object(
+    async def _create_object_cascade(
         self,
         db: Session,
         object_generator_func: Tuple[
@@ -118,7 +118,7 @@ class TestCascade(TestCRUD):
         5. Deletes a dependency
         6. Checks if a query for the dependent results in a specified HTTPException
         """
-        _, obj, deps = await self._create_object(
+        _, obj, deps = await self._create_object_cascade(
             db, object_generator_func_w_deps, retrieve_dependencies=True
         )
 
@@ -129,7 +129,7 @@ class TestCascade(TestCRUD):
 
         n_deps = len(deps) // 2
         for i in range(n_deps):
-            object_dict, object_out, deps = await self._create_object(
+            object_dict, object_out, deps = await self._create_object_cascade(
                 db, object_generator_func_w_deps, retrieve_dependencies=True
             )  # New objects have to be created for every test, since they are constantly being deleted
             self._test_object(object_out, object_dict)
@@ -173,14 +173,14 @@ class TestCascade(TestCRUD):
         5. Updates a dependency
         6. Checks if the update affects the dependent
         """
-        obj_dict, obj, deps = await self._create_object(
+        obj_dict, obj, deps = await self._create_object_cascade(
             db, object_generator_func_w_deps, retrieve_dependencies=True
         )
 
         cascading_tables = self._find_cascading_update(obj, deps)
         n_deps = len(deps) // 2
         for i in range(n_deps):
-            object_dict, object_out, deps = await self._create_object(
+            object_dict, object_out, deps = await self._create_object_cascade(
                 db, object_generator_func_w_deps, retrieve_dependencies=True
             )
             self._test_object(object_out, object_dict)
