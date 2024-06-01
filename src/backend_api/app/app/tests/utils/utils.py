@@ -1,9 +1,12 @@
+from inspect import iscoroutinefunction
 import os
 import random
 import string
-from typing import Optional, Dict, Any, Union
+from typing import Callable, List, Optional, Dict, Any, Union
 from datetime import datetime, timedelta
 from requests.auth import HTTPBasicAuth
+
+from app.crud.base import ModelType
 
 
 FIRST_SUPERUSER = os.getenv("FIRST_SUPERUSER")
@@ -150,6 +153,24 @@ def random_based_on_type(reference: Union[str, float, int]) -> Union[str, int, f
         return random_int(max_value=reference)
     else:
         raise NotImplementedError(f"Objects of type {type_reference} is not supported")
+
+
+def get_ignore_keys(model: ModelType, dict: Dict) -> List[str]:
+    """Compare a model with a dictionary, and return the model's keys that are not in the dictionary
+
+    Args:
+        model (ModelType): Model
+        dict (Dict): Dictionary
+    """
+    return [key for key in model.__table__.columns.keys() if key not in dict]
+
+
+def is_courotine_function(func: Callable) -> bool:
+    """Check if func is a coroutine function."""
+    if iscoroutinefunction(func) and callable(func):
+        return True
+    else:
+        return False
 
 
 def get_super_authentication() -> HTTPBasicAuth:
