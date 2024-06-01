@@ -165,4 +165,4 @@ async def delete_item_base_type(
     item_base_type_map = {"baseType": baseType}
     await CRUD_itemBaseType.remove(db=db, filter=item_base_type_map)
 
-    return f"Ttem base type with mapping ({item_base_type_map}) deleted successfully"
+    return f"Item_base_type with mapping ({item_base_type_map}) deleted successfully"
