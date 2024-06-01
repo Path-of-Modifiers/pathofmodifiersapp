@@ -244,7 +244,7 @@ class TestCRUD:
         assert deleted_object
         self._test_object(deleted_object, temp_object_out)
 
-        ignore = get_ignore_keys(object_dict, updated_object_dict)
+        ignore = get_ignore_keys(object_out, updated_object_dict)
 
         updated_object = await crud_instance.update(
             db, db_obj=object_out, obj_in=updated_object_dict
