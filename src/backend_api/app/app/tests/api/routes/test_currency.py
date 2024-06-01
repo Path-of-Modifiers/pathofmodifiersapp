@@ -8,11 +8,12 @@ from app.tests.utils.model_utils.currency import (
 )
 from app.crud.base import ModelType
 from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
+from app.core.models.models import Currency
 
 
 @pytest.fixture(scope="module")
 def model_name() -> str:
-    return "currency"
+    return Currency.__table__.name
 
 
 @pytest.fixture(scope="module")

@@ -8,11 +8,12 @@ from app.tests.utils.model_utils.account import (
 )
 from app.crud.base import ModelType
 from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
+from app.core.models.models import Account
 
 
 @pytest.fixture(scope="module")
 def model_name() -> str:
-    return "account"
+    return Account.__table__.name
 
 
 @pytest.fixture(scope="module")
@@ -29,6 +30,7 @@ def unique_identifier() -> str:
 def get_crud_test_model() -> UtilTestCRUD:
     model = UtilTestCRUD()
     return model
+
 
 @pytest.fixture(scope="module")
 def get_high_permissions() -> bool:

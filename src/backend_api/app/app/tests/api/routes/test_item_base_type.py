@@ -8,11 +8,12 @@ from app.tests.utils.model_utils.item_base_type import (
 )
 from app.crud.base import ModelType
 from app.tests.crud.cascade_tests import TestCRUD as UtilTestCRUD
+from app.core.models.models import ItemBaseType
 
 
 @pytest.fixture(scope="module")
 def model_name() -> str:
-    return "item_base_type"
+    return ItemBaseType.__table__.name
 
 
 @pytest.fixture(scope="module")
@@ -24,7 +25,6 @@ def route_name() -> str:
 def get_crud_test_model() -> UtilTestCRUD:
     model = UtilTestCRUD()
     return model
-
 
 
 @pytest.fixture(scope="module")
