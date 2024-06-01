@@ -7,6 +7,7 @@ from app.tests.utils.model_utils.account import (
     generate_random_account,
 )
 from app.crud.base import ModelType
+from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
 
 
 @pytest.fixture(scope="module")
@@ -23,6 +24,11 @@ def route_name() -> str:
 def unique_identifier() -> str:
     return "accountName"
 
+
+@pytest.fixture(scope="module")
+def get_crud_test_model() -> UtilTestCRUD:
+    model = UtilTestCRUD()
+    return model
 
 @pytest.fixture(scope="module")
 def get_high_permissions() -> bool:
