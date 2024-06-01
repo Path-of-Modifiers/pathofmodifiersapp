@@ -1,5 +1,6 @@
 from typing import Callable, Dict, Tuple
 import pytest
+import app.tests.crud.crud_test_base as test_crud
 
 from app.crud import CRUD_modifier
 from app.core.models.models import Modifier
@@ -30,7 +31,10 @@ def crud_instance() -> CRUDBase:
 
 # Modifier has only one key, which is 'modifierId'. Therefore, the following tests are not needed.
 
-# class TestModifierCRUD(test_crud.TestCRUD):
+class TestModifierCRUD(test_crud.TestCRUD):
+    pass
+
+
 #     @pytest.mark.asyncio
 #     async def test_main_key_get(
 #         self,
