@@ -151,8 +151,7 @@ class TestAPI:
         ],
     ) -> None:
         if is_courotine_function(create_random_object_func):
-            awaitable_create_obj = await create_random_object_func(db)
-            create_obj = await awaitable_create_obj
+            create_obj = await create_random_object_func(db)
         else:
             create_obj = create_random_object_func()
         response = client.post(
@@ -274,12 +273,13 @@ class TestAPI:
         _, object_out, object_out_dict = await self._create_object(
             db, object_generator_func, get_crud_test_model
         )
-        print("DARKVADER", object_out_dict, "-----", object_out)
+        
         if is_courotine_function(create_random_object_func):
-            awaitable_updated_db_obj = await create_random_object_func(db)
-            updated_db_obj = await awaitable_updated_db_obj
+            updated_db_obj = await create_random_object_func(db)
         else:
             updated_db_obj = create_random_object_func()
+        updated_db_obj[unique_identifier] = object_out_dict[unique_identifier]
+        print("DARKVADER", object_out_dict, "-----", object_out)
         response = client.put(
             f"{settings.API_V1_STR}/{route_name}/{object_out_dict[unique_identifier]}",
             auth=superuser_headers,
@@ -308,8 +308,7 @@ class TestAPI:
         unique_identifier: str,
     ) -> None:
         if is_courotine_function(create_random_object_func):
-            awaitable_updated_db_obj = await create_random_object_func(db)
-            updated_db_obj = await awaitable_updated_db_obj
+            updated_db_obj = await create_random_object_func(db)
         else:
             updated_db_obj = create_random_object_func()
         not_found_object = 999
@@ -340,8 +339,7 @@ class TestAPI:
             db, object_generator_func, get_crud_test_model
         )
         if is_courotine_function(create_random_object_func):
-            awaitable_updated_db_obj = await create_random_object_func(db)
-            updated_db_obj = await awaitable_updated_db_obj
+            updated_db_obj = await create_random_object_func(db)
         else:
             updated_db_obj = create_random_object_func()
         response = client.put(
