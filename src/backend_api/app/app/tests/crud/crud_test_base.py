@@ -10,6 +10,7 @@ from app.crud.base import (
     CRUDBase,
     ModelType,
 )
+from app.tests.utils.utils import get_ignore_keys
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
@@ -243,11 +244,7 @@ class TestCRUD:
         assert deleted_object
         self._test_object(deleted_object, temp_object_out)
 
-        ignore = [
-            key
-            for key in object_out.__table__.columns.keys()
-            if key not in updated_object_dict
-        ]
+        ignore = get_ignore_keys(object_dict, updated_object_dict)
 
         updated_object = await crud_instance.update(
             db, db_obj=object_out, obj_in=updated_object_dict
