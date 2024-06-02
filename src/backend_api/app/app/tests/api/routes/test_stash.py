@@ -7,26 +7,29 @@ from app.tests.utils.model_utils.stash import (
     create_random_stash_dict,
     generate_random_stash,
 )
-from app.crud.base import CRUDBase, ModelType
+from app.crud.base import ModelType
+from app.api.api_v1.api import stash_prefix, account_prefix
 from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
 from app.tests.crud.cascade_tests import TestCascade as UtilTestCascadeCRUD
-from app.crud import CRUD_account
 from app.core.models.models import Account, Stash
+from app.tests.utils.utils import get_model_table_name, get_model_unique_identifier
 
 
 @pytest.fixture(scope="module")
 def model_name() -> str:
-    return Stash.__table__.name
+    table_name = get_model_table_name(Stash)
+    return table_name
 
 
 @pytest.fixture(scope="module")
 def route_name() -> str:
-    return "stash"
+    return stash_prefix
 
 
 @pytest.fixture(scope="module")
 def unique_identifier() -> str:
-    return "stashId"
+    unique_identifier = get_model_unique_identifier(Stash)
+    return unique_identifier
 
 
 @pytest.fixture(scope="module")
@@ -77,7 +80,7 @@ def object_generator_func_w_deps() -> (
 
 
 @pytest.fixture(scope="module")
-def api_deps_instances() -> List[str]:
+def api_deps_instances() -> List[List[str]]:
     """Fixture for API dependencies instances.
 
     Dependencies in return list needs to be in correct order.
@@ -85,11 +88,11 @@ def api_deps_instances() -> List[str]:
     the one its dependent on. The order is defined by 'generate_random_stash'.
 
     Returns:
-        List[str]: API dependencies instances.
+        List[Dict]: API dependencies instances. Format: [dep_route_name: dep_unique_identifier]
 
 
     """
-    return [{"account": "accountName"}]
+    return [[account_prefix, get_model_unique_identifier(Account)]]
 
 
 class TestStash(test_cascade_api.TestCascadeAPI):
