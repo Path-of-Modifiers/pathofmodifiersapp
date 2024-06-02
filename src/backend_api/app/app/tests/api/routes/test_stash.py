@@ -8,7 +8,7 @@ from app.tests.utils.model_utils.stash import (
     generate_random_stash,
 )
 from app.crud.base import ModelType
-from app.api.api_v1.api import stash_prefix, account_prefix
+from app.api.api_v1.endpoints import stash_prefix, account_prefix
 from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
 from app.tests.crud.cascade_tests import TestCascade as UtilTestCascadeCRUD
 from app.core.models.models import Account, Stash
