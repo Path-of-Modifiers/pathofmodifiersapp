@@ -17,6 +17,9 @@ from app.core.security import verification
 router = APIRouter()
 
 
+currency_prefix = "currency"
+
+
 @router.get(
     "/{currencyId}",
     response_model=Union[schemas.Currency, List[schemas.Currency]],
@@ -130,4 +133,4 @@ async def delete_currency(
     currency_map = {"currencyId": currencyId}
     await CRUD_currency.remove(db=db, filter=currency_map)
 
-    return f"Currency with mapping ({currency_map}) deleted successfully"
+    return f"{currency_prefix} with mapping ({currency_map}) deleted successfully"

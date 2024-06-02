@@ -16,6 +16,9 @@ from app.core.security import verification
 router = APIRouter()
 
 
+modifier_prefix = "modifier"
+
+
 @router.get(
     "/{modifierId}",
     response_model=Union[schemas.Modifier, List[schemas.Modifier]],
@@ -150,4 +153,4 @@ async def delete_modifier(
         modifier_map["position"] = position
     await CRUD_modifier.remove(db=db, filter=modifier_map)
 
-    return f"Modifier with mapping ({modifier_map}) deleted successfully"
+    return f"{modifier_prefix} with mapping ({modifier_map}) deleted successfully"

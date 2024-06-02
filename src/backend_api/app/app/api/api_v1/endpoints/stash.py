@@ -16,6 +16,9 @@ from app.core.security import verification
 router = APIRouter()
 
 
+stash_prefix = "stash"
+
+
 @router.get(
     "/{stashId}",
     response_model=Union[schemas.Stash, List[schemas.Stash]],

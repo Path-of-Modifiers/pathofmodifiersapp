@@ -16,6 +16,9 @@ from app.core.security import verification
 router = APIRouter()
 
 
+plot_prefix = "plot"
+
+
 @router.post("/", response_model=schemas.PlotData)
 async def get_plot_data(
     query: schemas.PlotQuery,

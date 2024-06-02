@@ -17,6 +17,9 @@ from app.core.security import verification
 router = APIRouter()
 
 
+item_prefix = "item"
+
+
 @router.get(
     "/{itemId}",
     response_model=Union[schemas.Item, List[schemas.Item]],
@@ -130,4 +133,4 @@ async def delete_item(
     item_map = {"itemId": itemId}
     await CRUD_item.remove(db=db, filter=item_map)
 
-    return f"Item with mapping ({item_map}) deleted successfully"
+    return f"{item_prefix} with mapping ({item_map}) deleted successfully"
