@@ -7,7 +7,7 @@ from app.tests.utils.model_utils.currency import (
     generate_random_currency,
 )
 from app.crud.base import ModelType
-from app.api.api_v1.api import currency_prefix
+from app.api.api_v1.endpoints import currency_prefix
 from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
 from app.core.models.models import Currency
 from app.tests.utils.utils import get_model_table_name, get_model_unique_identifier
