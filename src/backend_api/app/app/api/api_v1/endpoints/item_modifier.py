@@ -16,6 +16,9 @@ from app.core.security import verification
 router = APIRouter()
 
 
+item_modifier_prefix = "itemModifier"
+
+
 @router.get(
     "/{itemId}",
     response_model=Union[schemas.ItemModifier, List[schemas.ItemModifier]],
@@ -79,7 +82,7 @@ async def create_item_modifier(
     return await CRUD_itemModifier.create(db=db, obj_in=itemModifier)
 
 
-@router.put("/item={itemId}", response_model=schemas.ItemModifier)
+@router.put("/{itemId}", response_model=schemas.ItemModifier)
 async def update_item_modifier(
     itemId: int,
     modifierId: int,
@@ -117,7 +120,7 @@ async def update_item_modifier(
     )
 
 
-@router.delete("/item={itemId}")
+@router.delete("/{itemId}")
 async def delete_item_modifier(
     itemId: int,
     modifierId: Optional[int] = None,
@@ -148,4 +151,4 @@ async def delete_item_modifier(
 
     await CRUD_itemModifier.remove(db=db, filter=itemModifier_map)
 
-    return f"ItemModifier with mapping ({itemModifier_map}) was deleted successfully"
+    return f"{item_modifier_prefix} with mapping ({itemModifier_map}) was deleted successfully"
