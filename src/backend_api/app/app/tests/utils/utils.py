@@ -5,6 +5,7 @@ import string
 from typing import Callable, List, Optional, Dict, Any, Union
 from datetime import datetime, timedelta
 from requests.auth import HTTPBasicAuth
+from sqlalchemy import inspect
 
 from app.crud.base import ModelType
 
@@ -171,6 +172,32 @@ def is_courotine_function(func: Callable) -> bool:
         return True
     else:
         return False
+
+
+def get_model_unique_identifier(model: ModelType) -> str:
+    """Get the unique identifier of a model.
+
+    Important: Assumes the unique identifier is the first primary key of the model.
+
+    Args:
+        model (ModelType): Model
+
+    Returns:
+        str: Unique identifier of the model.
+    """
+    return inspect(model).primary_key[0].name
+
+
+def get_model_table_name(model: ModelType) -> str:
+    """Get the table name of a model.
+
+    Args:
+        model (ModelType): Model
+
+    Returns:
+        str: Table name of the model.
+    """
+    return model.__table__.name
 
 
 def get_super_authentication() -> HTTPBasicAuth:
