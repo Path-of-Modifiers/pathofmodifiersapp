@@ -9,7 +9,7 @@ from app.tests.utils.model_utils.account import (
 from app.crud.base import ModelType
 from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
 from app.core.models.models import Account
-from app.api.api_v1.api import account_prefix
+from app.api.api_v1.endpoints import account_prefix
 from app.tests.utils.utils import get_model_table_name, get_model_unique_identifier
 
 

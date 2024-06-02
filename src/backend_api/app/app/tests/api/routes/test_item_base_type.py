@@ -7,7 +7,7 @@ from app.tests.utils.model_utils.item_base_type import (
     generate_random_item_base_type,
 )
 from app.crud.base import ModelType
-from app.api.api_v1.api import item_base_type_prefix
+from app.api.api_v1.endpoints import item_base_type_prefix
 from app.tests.crud.cascade_tests import TestCRUD as UtilTestCRUD
 from app.core.models.models import ItemBaseType
 from app.tests.utils.utils import get_model_table_name, get_model_unique_identifier
