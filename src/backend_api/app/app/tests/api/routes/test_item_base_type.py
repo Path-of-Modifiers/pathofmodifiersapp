@@ -7,18 +7,21 @@ from app.tests.utils.model_utils.item_base_type import (
     generate_random_item_base_type,
 )
 from app.crud.base import ModelType
+from app.api.api_v1.api import item_base_type_prefix
 from app.tests.crud.cascade_tests import TestCRUD as UtilTestCRUD
 from app.core.models.models import ItemBaseType
+from app.tests.utils.utils import get_model_table_name, get_model_unique_identifier
 
 
 @pytest.fixture(scope="module")
 def model_name() -> str:
-    return ItemBaseType.__table__.name
+    table_name = get_model_table_name(ItemBaseType)
+    return table_name
 
 
 @pytest.fixture(scope="module")
 def route_name() -> str:
-    return "itemBaseType"
+    return item_base_type_prefix
 
 
 @pytest.fixture(scope="module")
@@ -29,7 +32,8 @@ def get_crud_test_model() -> UtilTestCRUD:
 
 @pytest.fixture(scope="module")
 def unique_identifier() -> str:
-    return "baseType"
+    unique_identifier = get_model_unique_identifier(ItemBaseType)
+    return unique_identifier
 
 
 @pytest.fixture(scope="module")

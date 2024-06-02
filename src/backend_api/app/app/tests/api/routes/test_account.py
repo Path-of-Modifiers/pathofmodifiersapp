@@ -9,21 +9,25 @@ from app.tests.utils.model_utils.account import (
 from app.crud.base import ModelType
 from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
 from app.core.models.models import Account
+from app.api.api_v1.api import account_prefix
+from app.tests.utils.utils import get_model_table_name, get_model_unique_identifier
 
 
 @pytest.fixture(scope="module")
 def model_name() -> str:
-    return Account.__table__.name
+    table_name = get_model_table_name(Account)
+    return table_name
 
 
 @pytest.fixture(scope="module")
 def route_name() -> str:
-    return "account"
+    return account_prefix
 
 
 @pytest.fixture(scope="module")
 def unique_identifier() -> str:
-    return "accountName"
+    unique_identifier = get_model_unique_identifier(Account)
+    return unique_identifier
 
 
 @pytest.fixture(scope="module")
