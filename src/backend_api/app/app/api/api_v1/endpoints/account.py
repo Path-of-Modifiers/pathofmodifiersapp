@@ -16,6 +16,9 @@ from app.core.security import verification
 router = APIRouter()
 
 
+account_prefix = "account"
+
+
 @router.get(
     "/{accountName}",
     response_model=Union[schemas.Account, List[schemas.Account]],
@@ -134,4 +137,4 @@ async def delete_account(
     account_map = {"accountName": accountName}
     await CRUD_account.remove(db=db, filter=account_map)
 
-    return f"Account with mapping ({account_map}) deleted successfully"
+    return f"{account_prefix} with mapping ({account_map}) deleted successfully"

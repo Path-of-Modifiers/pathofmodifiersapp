@@ -9,18 +9,18 @@ from app.api.api_v1.endpoints import (
     modifier,
     stash,
     plot,
+    account_prefix,
+    currency_prefix,
+    item_base_type_prefix,
+    item_modifier_prefix,
+    item_prefix,
+    modifier_prefix,
+    stash_prefix,
+    plot_prefix,
 )
 
 api_router = APIRouter()
 
-account_prefix = "account"
-currency_prefix = "currency"
-item_base_type_prefix = "itemBaseType"
-item_modifier_prefix = "itemModifier"
-item_prefix = "item"
-modifier_prefix = "modifier"
-stash_prefix = "stash"
-plot_prefix = "plot"
 
 api_router.include_router(
     account.router, prefix=f"/{account_prefix}", tags=[f"{account_prefix}s"]
