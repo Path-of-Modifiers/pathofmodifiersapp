@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 
 from app.core.security import verification
+from app.api.api_v1.utils import get_delete_return_message
 
 
 router = APIRouter()
@@ -133,4 +134,4 @@ async def delete_item(
     item_map = {"itemId": itemId}
     await CRUD_item.remove(db=db, filter=item_map)
 
-    return f"{item_prefix} with mapping ('itemId' : {item_map['itemId']}) deleted successfully"
+    return get_delete_return_message(item_prefix, "itemId", itemId)

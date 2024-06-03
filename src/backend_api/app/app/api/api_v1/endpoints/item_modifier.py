@@ -11,6 +11,7 @@ import app.core.schemas as schemas
 from sqlalchemy.orm import Session
 
 from app.core.security import verification
+from app.api.api_v1.utils import get_delete_return_message
 
 
 router = APIRouter()
@@ -152,5 +153,5 @@ async def delete_item_modifier(
     await CRUD_itemModifier.remove(db=db, filter=itemModifier_map)
 
     return (
-        f"{item_modifier_prefix} with mapping ('itemId' : {itemModifier_map['itemId']}) deleted successfully"
+        get_delete_return_message(item_modifier_prefix, "itemId", itemId)
     )
