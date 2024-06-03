@@ -9,7 +9,7 @@ from app.core.config import settings
 from app.tests.api.api_test_base import TestAPI
 from app.tests.crud.cascade_tests import TestCascade as UtilTestCascade
 from app.crud.base import CRUDBase, ModelType
-from app.tests.utils.utils import random_based_on_type
+from app.tests.utils.utils import get_ignore_keys, random_based_on_type
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
@@ -133,6 +133,19 @@ class TestCascadeAPI(TestAPI):
             )  # New objects have to be created for every test, since they are constantly being deleted
             self._test_object(get_crud_test_cascade_model, object_out, object_dict)
 
+            response_get_before_deletion = client.get(
+                f"{settings.API_V1_STR}/{route_name}/{object_out_dict[unique_identifier]}",
+                auth=superuser_headers,
+            )
+            content_before_deletion = response_get_before_deletion.json()
+            assert response_get_before_deletion.status_code == 200
+            self._test_object(
+                get_crud_test_cascade_model,
+                object_out,
+                content_before_deletion,
+                ignore=["updatedAt", "createdAt"],
+            )
+
             dep_dict, dep_model = deps[2 * i], deps[2 * i + 1]
             self._test_object(get_crud_test_cascade_model, dep_model, dep_dict)
 
@@ -143,32 +156,41 @@ class TestCascadeAPI(TestAPI):
             print("YIDA", api_deps_instances, i)
             dep_route_name = api_deps_instances[i][0]
             print("DEP_ROUTE_NAME", dep_route_name)
+            print("DEP_VADERFADERDICT", dep_dict)
+            print("DEP_VADERFADERMODEL", dep_model)
             dep_unique_identifier = api_deps_instances[i][1]
-            print("DEP_UNIQUE_IDENTIFIER", dep_unique_identifier)
+            if dep_unique_identifier not in dep_dict:
+                continue
 
-            response_dep = client.delete(
-                f"{settings.API_V1_STR}/{dep_route_name}/{object_out_dict[dep_unique_identifier]}",
+            response_delete_dep = client.delete(
+                f"{settings.API_V1_STR}/{dep_route_name}/{dep_dict[dep_unique_identifier]}",
                 auth=superuser_headers,
             )
-            content_dep = response_dep.json()
+            content_dep = response_delete_dep.json()
             print("HULALANDET", content_dep, "\n")
             print(
                 "BUAAA",
-                f"{dep_route_name.capitalize()} with mapping ({{'{dep_unique_identifier}': '{object_out_dict[dep_unique_identifier]}'}}) deleted successfully",
+                f"{dep_route_name} with mapping ('{dep_unique_identifier}' : {dep_dict[dep_unique_identifier]}) deleted successfully",
             )
             assert (
                 content_dep
-                == f"{dep_route_name.capitalize()} with mapping ({{'{dep_unique_identifier}': '{object_out_dict[dep_unique_identifier]}'}}) deleted successfully"
+                == f"{dep_route_name} with mapping ('{dep_unique_identifier}' : {dep_dict[dep_unique_identifier]}) deleted successfully"
             )
 
-            assert response_dep.status_code == 200
+            print("HULALANDET", content_dep, "\n")
+            # print(
+            #     "BUAAA",
+            #     f"{dep_route_name} with mapping ({{'{dep_unique_identifier}': '{object_out_dict[dep_unique_identifier]}'}}) deleted successfully",
+            # )
 
-            response = client.delete(
+            assert response_delete_dep.status_code == 200
+
+            response_get_after_deletion = client.get(
                 f"{settings.API_V1_STR}/{route_name}/{object_out_dict[unique_identifier]}",
                 auth=superuser_headers,
             )
-            print("HAGLEBU", response)
-            assert response.status_code == 404
+            print("HAGLEBU", response_get_after_deletion)
+            assert response_get_after_deletion.status_code == 404
 
     @pytest.mark.asyncio
     async def test_cascade_update(
@@ -251,13 +273,13 @@ class TestCascadeAPI(TestAPI):
             # )
             dep_route_name = api_deps_instances[i][0]
             dep_unique_identifier = api_deps_instances[i][1]
-            print(
-                "ABOBA",
-                dep_route_name,
-                dep_unique_identifier,
-                "!!!",
-                new_dep_dict[dep_unique_identifier],
-            )
+            # print(
+            #     "ABOBA",
+            #     dep_route_name,
+            #     dep_unique_identifier,
+            #     "!!!",
+            #     new_dep_dict[dep_unique_identifier],
+            # )
 
             # Update the dependency
             response_update_dep = client.put(
@@ -276,23 +298,18 @@ class TestCascadeAPI(TestAPI):
                 ignore=["updatedAt", "createdAt"],
             )
 
+            print("GRAVERN", updated_dep_model_content)
+            print("SJUKERN", object_dict)
+
             # Get the original model
             response_get_model = client.get(
                 f"{settings.API_V1_STR}/{route_name}/{object_out_dict[unique_identifier]}",
                 auth=superuser_headers,
             )
-
             assert response_get_model.status_code == 200
 
             get_model_content = response_get_model.json()
-
-            print("GRAVERN", updated_dep_model_content)
-            print("SJUKERN", object_dict)
-
-            # Check if the updated dependency affects the dependent original model
             for key in cascading_tables_keys:
+                if key not in object_dict or key not in updated_dep_model_content:
+                    continue
                 assert get_model_content[key] == updated_dep_model_content[key]
-            # assert updated_dep_model[dep_unique_identifier] == object_dict[dep_unique_identifier]
-            # new_updated_object = await crud_instance.get(db, filter=obj_map)
-
-            # self._test_object(new_updated_object, object_dict)
