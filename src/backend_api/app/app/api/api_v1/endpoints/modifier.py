@@ -153,4 +153,4 @@ async def delete_modifier(
         modifier_map["position"] = position
     await CRUD_modifier.remove(db=db, filter=modifier_map)
 
-    return f"{modifier_prefix} with mapping ({modifier_map}) deleted successfully"
+    return f"{modifier_prefix} with mapping ('modifierId' : {modifier_map['modifierId']}) deleted successfully"
