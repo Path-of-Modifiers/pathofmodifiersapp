@@ -20,7 +20,7 @@ from app.tests.utils.model_utils.modifier import generate_random_modifier
 
 
 async def create_random_item_modifier_dict(
-    db: Session, retrieve_dependencies: bool
+    db: Session, retrieve_dependencies: Optional[bool] = False
 ) -> Union[
     Dict,
     Tuple[
@@ -34,7 +34,7 @@ async def create_random_item_modifier_dict(
 
     Args:
         db (Session): DB session.
-        retrieve_dependencies (bool): Whether to retrieve dependencies.
+        retrieve_dependencies (Optional[bool]): Whether to retrieve dependencies. Defaults to False.
 
     Returns:
         Union[ Dict, Tuple[ Dict, Optional[ List[Union[Dict, Stash, Account, ItemBaseType, Currency, Item, Modifier]] ], ], ]: \n
