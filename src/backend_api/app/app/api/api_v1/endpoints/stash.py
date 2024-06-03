@@ -118,4 +118,4 @@ async def delete_stash(
     stash_map = {"stashId": stashId}
     await CRUD_stash.remove(db=db, filter=stash_map)
 
-    return f"Stash with mapping ({stash_map}) deleted successfully"
+    return f"{stash_prefix} with mapping ('stashId' : {stash_map['stashId']}) deleted successfully"
