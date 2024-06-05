@@ -33,6 +33,16 @@ def route_name() -> str:
 
 
 @pytest.fixture(scope="module")
+def special_update_params() -> bool:
+    return False
+
+
+@pytest.fixture(scope="module")
+def ignore_test_columns() -> List[str]:
+    return ["itemId", "updatedAt", "createdAt"]
+
+
+@pytest.fixture(scope="module")
 def unique_identifier() -> str:
     unique_identifier = get_model_unique_identifier(Item)
     return unique_identifier
@@ -113,6 +123,11 @@ def api_deps_instances() -> List[List[str]]:
         [item_base_type_prefix, get_model_unique_identifier(ItemBaseType)],
         [currency_prefix, get_model_unique_identifier(Currency)],
     ]
+
+
+@pytest.fixture(scope="module")
+def special_update_params_deps() -> List[str]:
+    return []
 
 
 class TestItem(test_cascade_api.TestCascadeAPI):

@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Tuple
+from typing import Callable, Dict, List, Tuple
 
 import pytest
 import app.tests.api.api_test_base as test_api
@@ -34,6 +34,16 @@ def get_crud_test_model() -> UtilTestCRUD:
 def unique_identifier() -> str:
     unique_identifier = get_model_unique_identifier(Modifier)
     return unique_identifier
+
+
+@pytest.fixture(scope="module")
+def special_update_params() -> bool:
+    return True
+
+
+@pytest.fixture(scope="module")
+def ignore_test_columns() -> List[str]:
+    return ["modifierId", "updatedAt", "createdAt"]
 
 
 @pytest.fixture(scope="module")
