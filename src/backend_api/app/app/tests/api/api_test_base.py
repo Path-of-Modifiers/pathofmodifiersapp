@@ -178,6 +178,7 @@ class TestAPI:
         superuser_headers: Dict[str, str],
         db: Session,
         unique_identifier: str,
+        ignore_test_columns: List[str],
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
         get_crud_test_model: UtilTestCRUD,
         route_name: str,
@@ -196,7 +197,7 @@ class TestAPI:
             get_crud_test_model=get_crud_test_model,
             obj=object_out,
             compare_obj=content,
-            ignore=["updatedAt", "createdAt"],
+            ignore=ignore_test_columns,
         )
 
     def test_get_instance_not_found(
@@ -276,7 +277,7 @@ class TestAPI:
         get_crud_test_model: UtilTestCRUD,
         unique_identifier: str,
         special_update_params: bool,
-        ignore_update_test_columns: List[str],
+        ignore_test_columns: List[str],
     ) -> None:
         _, object_out, object_out_dict = await self._create_object(
             db, object_generator_func, get_crud_test_model
@@ -356,12 +357,12 @@ class TestAPI:
         # )
         print("IGNORINGBESAT", content)
         print("IGNORINGBESATONE", object_out.__dict__)
-        print("POKEMONBM :::: ", ignore_update_test_columns)
+        print("POKEMONBM :::: ", ignore_test_columns)
         self._test_object(
             get_crud_test_model,
             update_object_out,
             content,
-            ignore=ignore_update_test_columns + ["updatedAt", "createdAt"],
+            ignore=ignore_test_columns,
         )
 
     @pytest.mark.asyncio
