@@ -97,10 +97,9 @@ async def create_modifier(
     return await CRUD_modifier.create(db=db, obj_in=modifier)
 
 
-@router.put("/{modifierId}", response_model=schemas.Modifier)
+@router.put("/", response_model=schemas.Modifier)
 async def update_modifier(
     modifierId: int,
-    position: int,
     modifier_update: schemas.ModifierUpdate,
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
@@ -118,7 +117,7 @@ async def update_modifier(
             detail=f"Unauthorized API access for {update_modifier.__name__}",
         )
 
-    modifier_map = {"modifierId": modifierId, "position": position}
+    modifier_map = {"modifierId": modifierId}
     modifier = await CRUD_modifier.get(
         db=db,
         filter=modifier_map,
@@ -154,4 +153,4 @@ async def delete_modifier(
         modifier_map["position"] = position
     await CRUD_modifier.remove(db=db, filter=modifier_map)
 
-    return get_delete_return_message(modifier_prefix, "modifierId", modifierId)
+    return get_delete_return_message(modifier_prefix, modifier_map)

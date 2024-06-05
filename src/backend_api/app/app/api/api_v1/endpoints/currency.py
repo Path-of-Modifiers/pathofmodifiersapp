@@ -134,4 +134,4 @@ async def delete_currency(
     currency_map = {"currencyId": currencyId}
     await CRUD_currency.remove(db=db, filter=currency_map)
 
-    return get_delete_return_message(currency_prefix, "currencyId", currencyId)
+    return get_delete_return_message(currency_prefix, currency_map)
