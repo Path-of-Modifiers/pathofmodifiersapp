@@ -167,14 +167,17 @@ class TestCascadeAPI(TestAPI):
                 auth=superuser_headers,
             )
             content_dep = response_delete_dep.json()
+            primary_keys_map = self._create_primary_key_map(
+                dep_model, get_crud_test_cascade_model
+            )
             print("HULALANDET", content_dep, "\n")
             print(
                 "BUAAA",
-                f"{dep_route_name} with mapping ('{dep_unique_identifier}' : {dep_dict[dep_unique_identifier]}) deleted successfully",
+                f"{dep_route_name} with mapping ({dep_unique_identifier}: {primary_keys_map[dep_unique_identifier]}) deleted successfully",
             )
             assert (
                 content_dep
-                == f"{dep_route_name} with mapping ('{dep_unique_identifier}' : {dep_dict[dep_unique_identifier]}) deleted successfully"
+                == f"{dep_route_name} with mapping ({dep_unique_identifier}: {primary_keys_map[dep_unique_identifier]}) deleted successfully"
             )
 
             print("HULALANDET", content_dep, "\n")
@@ -203,6 +206,8 @@ class TestCascadeAPI(TestAPI):
         route_name: str,
         unique_identifier: str,
         get_crud_test_cascade_model: UtilTestCascade,
+        special_update_params_deps: List[str],
+        ignore_update_test_columns: List[str],
         superuser_headers: Dict,
         api_deps_instances: List[List[str]],
     ) -> None:
@@ -282,11 +287,39 @@ class TestCascadeAPI(TestAPI):
             # )
 
             # Update the dependency
-            response_update_dep = client.put(
-                f"{settings.API_V1_STR}/{dep_route_name}/{dep_dict[dep_unique_identifier]}",
-                auth=superuser_headers,
-                json=new_dep_dict,
+
+            # response_update_dep = client.put(
+            #     f"{settings.API_V1_STR}/{dep_route_name}/{dep_dict[dep_unique_identifier]}",
+            #     auth=superuser_headers,
+            #     json=new_dep_dict,
+            # )
+            primary_keys_map_object_out = self._create_primary_key_map(
+                dep_model, get_crud_test_cascade_model
             )
+            print(
+                "HAGGLEBU",
+                dep_route_name,
+                dep_unique_identifier,
+                new_dep_dict,
+                dep_dict,
+            )
+
+            print("HULAHULA", primary_keys_map_object_out)
+            if dep_route_name in special_update_params_deps:
+                print("KRAQQEDUPDATEINSTANCE")
+
+                response_update_dep = client.put(
+                    f"{settings.API_V1_STR}/{dep_route_name}/",
+                    auth=superuser_headers,
+                    json=new_dep_dict,
+                    params=primary_keys_map_object_out,
+                )
+            else:
+                response_update_dep = client.put(
+                    f"{settings.API_V1_STR}/{dep_route_name}/{primary_keys_map_object_out[dep_unique_identifier]}",
+                    auth=superuser_headers,
+                    json=new_dep_dict,
+                )
 
             updated_dep_model_content = response_update_dep.json()
             print("UPDATED_DEP_MODEL_DARK_VADER", updated_dep_model_content)
@@ -295,7 +328,7 @@ class TestCascadeAPI(TestAPI):
             self._compare_dicts(
                 updated_dep_model_content,
                 new_dep_dict,
-                ignore=["updatedAt", "createdAt"],
+                ignore=ignore_update_test_columns,
             )
 
             print("GRAVERN", updated_dep_model_content)
