@@ -134,4 +134,4 @@ async def delete_item(
     item_map = {"itemId": itemId}
     await CRUD_item.remove(db=db, filter=item_map)
 
-    return get_delete_return_message(item_prefix, "itemId", itemId)
+    return get_delete_return_message(item_prefix, item_map)

@@ -1,5 +1,9 @@
+from typing import Dict
+
+
 def get_delete_return_message(
-    prefix: str, unique_identifier: str, unique_identifier_value: str
+    prefix: str,
+    mapping: Dict[str, str],
 ) -> str:
     """Returns a message indicating the object was deleted successfully.
 
@@ -12,4 +16,4 @@ def get_delete_return_message(
         str: Message indicating the object was deleted successfully.
     """
 
-    return f"{prefix} with mapping ('{unique_identifier}' : {unique_identifier_value}) deleted successfully"
+    return f"{prefix} with mapping ({', '.join([key + ': ' + str(item) for key, item in mapping.items()])}) deleted successfully"

@@ -83,11 +83,10 @@ async def create_item_modifier(
     return await CRUD_itemModifier.create(db=db, obj_in=itemModifier)
 
 
-@router.put("/{itemId}", response_model=schemas.ItemModifier)
+@router.put("/", response_model=schemas.ItemModifier)
 async def update_item_modifier(
     itemId: int,
     modifierId: int,
-    position: int,
     itemModifier_update: schemas.ItemModifierUpdate,
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
@@ -109,7 +108,6 @@ async def update_item_modifier(
     itemModifier_map = {
         "itemId": itemId,
         "modifierId": modifierId,
-        "position": position,
     }
     itemModifier = await CRUD_itemModifier.get(
         db=db,
@@ -125,7 +123,6 @@ async def update_item_modifier(
 async def delete_item_modifier(
     itemId: int,
     modifierId: Optional[int] = None,
-    position: Optional[int] = None,
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
 ):
@@ -147,11 +144,7 @@ async def delete_item_modifier(
     itemModifier_map = {"itemId": itemId}
     if modifierId is not None:
         itemModifier_map["modifierId"] = modifierId
-    if position is not None:
-        itemModifier_map["position"] = position
 
     await CRUD_itemModifier.remove(db=db, filter=itemModifier_map)
 
-    return (
-        get_delete_return_message(item_modifier_prefix, "itemId", itemId)
-    )
+    return get_delete_return_message(item_modifier_prefix, itemModifier_map)
