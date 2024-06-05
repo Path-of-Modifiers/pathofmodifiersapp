@@ -33,6 +33,16 @@ def unique_identifier() -> str:
 
 
 @pytest.fixture(scope="module")
+def special_update_params() -> bool:
+    return False
+
+
+@pytest.fixture(scope="module")
+def ignore_test_columns() -> List[str]:
+    return ["stashId", "updatedAt", "createdAt"]
+
+
+@pytest.fixture(scope="module")
 def get_crud_test_model() -> UtilTestCRUD:
     model = UtilTestCRUD()
     return model
@@ -93,6 +103,11 @@ def api_deps_instances() -> List[List[str]]:
 
     """
     return [[account_prefix, get_model_unique_identifier(Account)]]
+
+
+@pytest.fixture(scope="module")
+def special_update_params_deps() -> List[str]:
+    return []
 
 
 class TestStash(test_cascade_api.TestCascadeAPI):
