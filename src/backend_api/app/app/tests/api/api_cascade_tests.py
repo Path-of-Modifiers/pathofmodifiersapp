@@ -98,6 +98,7 @@ class TestCascadeAPI(TestAPI):
         route_name: str,
         unique_identifier: str,
         get_crud_test_cascade_model: UtilTestCascade,
+        ignore_test_columns: List[str],
         superuser_headers: Dict,
         api_deps_instances: List[List[str]],
     ) -> None:
@@ -143,7 +144,7 @@ class TestCascadeAPI(TestAPI):
                 get_crud_test_cascade_model,
                 object_out,
                 content_before_deletion,
-                ignore=["updatedAt", "createdAt"],
+                ignore=ignore_test_columns,
             )
 
             dep_dict, dep_model = deps[2 * i], deps[2 * i + 1]
@@ -207,7 +208,7 @@ class TestCascadeAPI(TestAPI):
         unique_identifier: str,
         get_crud_test_cascade_model: UtilTestCascade,
         special_update_params_deps: List[str],
-        ignore_update_test_columns: List[str],
+        ignore_test_columns: List[str],
         superuser_headers: Dict,
         api_deps_instances: List[List[str]],
     ) -> None:
@@ -328,7 +329,7 @@ class TestCascadeAPI(TestAPI):
             self._compare_dicts(
                 updated_dep_model_content,
                 new_dep_dict,
-                ignore=ignore_update_test_columns,
+                ignore=ignore_test_columns,
             )
 
             print("GRAVERN", updated_dep_model_content)
