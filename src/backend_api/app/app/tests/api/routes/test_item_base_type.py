@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Tuple
+from typing import Callable, Dict, List, Tuple
 
 import pytest
 import app.tests.api.api_test_base as test_api
@@ -22,6 +22,16 @@ def model_name() -> str:
 @pytest.fixture(scope="module")
 def route_name() -> str:
     return item_base_type_prefix
+
+
+@pytest.fixture(scope="module")
+def special_update_params() -> bool:
+    return False
+
+
+@pytest.fixture(scope="module")
+def ignore_test_columns() -> List[str]:
+    return ["updatedAt", "createdAt"]
 
 
 @pytest.fixture(scope="module")

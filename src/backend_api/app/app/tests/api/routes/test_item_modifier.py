@@ -55,6 +55,16 @@ def get_crud_test_model() -> UtilTestCRUD:
 
 
 @pytest.fixture(scope="module")
+def special_update_params() -> bool:
+    return True
+
+
+@pytest.fixture(scope="module")
+def ignore_test_columns() -> List[str]:
+    return ["itemId", "modifierId", "updatedAt", "createdAt"]
+
+
+@pytest.fixture(scope="module")
 def get_crud_test_cascade_model() -> UtilTestCascadeCRUD:
     model = UtilTestCascadeCRUD()
     return model
@@ -128,6 +138,11 @@ def api_deps_instances() -> List[List[str]]:
         [item_prefix, get_model_unique_identifier(Item)],
         [modifier_prefix, get_model_unique_identifier(Modifier)],
     ]
+
+
+@pytest.fixture(scope="module")
+def special_update_params_deps() -> List[str]:
+    return [item_modifier_prefix, modifier_prefix]
 
 
 class TestItemModifier(test_cascade_api.TestCascadeAPI):
