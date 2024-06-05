@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Tuple
+from typing import Callable, Dict, List, Tuple
 
 import pytest
 import app.tests.api.api_test_base as test_api
@@ -39,6 +39,16 @@ def get_crud_test_model() -> UtilTestCRUD:
 @pytest.fixture(scope="module")
 def get_high_permissions() -> bool:
     return True
+
+
+@pytest.fixture(scope="module")
+def special_update_params() -> bool:
+    return False
+
+
+@pytest.fixture(scope="module")
+def ignore_test_columns() -> List[str]:
+    return ["updatedAt", "createdAt"]
 
 
 @pytest.fixture(scope="module")
