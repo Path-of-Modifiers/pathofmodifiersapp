@@ -234,6 +234,8 @@ class TestAPI:
     ) -> None:
         """Test get instance not enough permissions
 
+        Currently it tests all the routes, but it should be refactored to only test the routes that require high permissions
+
         Args:
             client (TestClient): FastAPI test client
             db (Session): DB session
@@ -361,7 +363,7 @@ class TestAPI:
 
         assert response.status_code == 200
         content = response.json()
-        
+
         self._test_object(
             get_crud_test_model,
             update_object_out,
@@ -436,9 +438,9 @@ class TestAPI:
             )
 
         assert response.status_code == 404
-        
+
         content = response.json()
-        
+
         assert (
             content["detail"]
             == f"No object matching the query ({', '.join([key + ': ' + str(item) for key, item in update_obj_out_pk_map.items()])}) in the table {model_name} was found."
@@ -491,7 +493,7 @@ class TestAPI:
         assert delete_response.status_code == 200
 
         content_delete = delete_response.json()
-        
+
         assert (
             content_delete
             == f"{route_name} with mapping ({unique_identifier}: {update_obj_pk_map[unique_identifier]}) deleted successfully"
@@ -508,7 +510,7 @@ class TestAPI:
                 f"{settings.API_V1_STR}/{route_name}/{obj_pk_map[unique_identifier]}",
                 json=update_object_dict,
             )
-            
+
         assert response.status_code == 401
         content = response.json()
         assert content["detail"] == "Not authenticated"
