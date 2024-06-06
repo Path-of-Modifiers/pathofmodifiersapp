@@ -55,10 +55,18 @@ class TestCascadeAPI(TestAPI):
     def _get_foreign_keys(
         self, model: ModelType, get_crud_test_cascade_model: UtilTestCascade
     ) -> List[Dict]:
-        """
+        """A method to retrieve all foreign keys of a model
+
         Uses a database inspector to learn more about the foreign keys related to the given model.
         The returned object is a list of dictionaries, where each element represents a relation to
         another table. One related table may have multiple foreign keys.
+
+        Args:
+            model (ModelType): The model to retrieve foreign keys from
+            get_crud_test_cascade_model (UtilTestCascade): Test cascade model from CRUD
+
+        Returns:
+            List[Dict]: List of foreign keys
         """
         return get_crud_test_cascade_model._get_foreign_keys(model)
 
@@ -68,8 +76,15 @@ class TestCascadeAPI(TestAPI):
         deps: List[Union[Dict, ModelType]],
         get_crud_test_cascade_model: UtilTestCascade,
     ) -> List[str]:
-        """
-        Retrieves all tables related to model, which are not allowed to be deleted
+        """Retrieves all tables related to model, which are not allowed to be deleted
+
+        Args:
+            model (ModelType): The model to retrieve restricted deletes from
+            deps (List[Union[Dict, ModelType]]): List of dependencies
+            get_crud_test_cascade_model (UtilTestCascade): Test cascade model from CRUD
+
+        Returns:
+            List[str]: List of tables that are not allowed to be deleted
         """
         return get_crud_test_cascade_model._find_restricted_delete(model, deps)
 
@@ -79,8 +94,15 @@ class TestCascadeAPI(TestAPI):
         deps: List[Union[Dict, ModelType]],
         get_crud_test_cascade_model: UtilTestCascade,
     ) -> Dict[str, str]:
-        """
-        Retrieves all tables related to model, which delete all dependent entries
+        """Retrieves all tables related to model, which delete all dependent entries
+
+        Args:
+            model (ModelType): The model to retrieve cascading updates from
+            deps (List[Union[Dict, ModelType]]): List of dependencies
+            get_crud_test_cascade_model (UtilTestCascade): Test cascade model from CRUD
+
+        Returns:
+            Dict[str, str]: Dictionary of tables that delete all dependent entries
         """
         return get_crud_test_cascade_model._find_cascading_update(model, deps)
 
@@ -100,6 +122,13 @@ class TestCascadeAPI(TestAPI):
         api_deps_instances: List[List[str]],
     ) -> None:
         """Test cascade delete function for the API.
+
+        1. Creates the object
+        2. Uses the object to determine which tables are restricted
+        3. Counts how many dependencies there are
+        4. Loops through all dependencies, ignoring restricted tables
+        5. Deletes a dependency
+        6. Checks if a query for the dependent results in a specified HTTPException
 
         Args:
             db (pytest.Session): DB session
@@ -173,6 +202,7 @@ class TestCascadeAPI(TestAPI):
             print("DEP_VADERFADERDICT", dep_dict)
             print("DEP_VADERFADERMODEL", dep_model)
             dep_unique_identifier = api_deps_instances[i][1]
+
             if dep_unique_identifier not in dep_dict:
                 continue
 
@@ -220,13 +250,12 @@ class TestCascadeAPI(TestAPI):
         route_name: str,
         unique_identifier: str,
         get_crud_test_cascade_model: UtilTestCascade,
-        special_update_params_deps: List[str],
+        update_request_params_deps: List[str],
         ignore_test_columns: List[str],
         superuser_headers: Dict,
         api_deps_instances: List[List[str]],
     ) -> None:
-        """
-        A test function.
+        """Test cascade update function for the API.
 
         1. Creates the object
         2. Uses the object to determine which tables cascade
@@ -234,6 +263,25 @@ class TestCascadeAPI(TestAPI):
         4. Loops through all dependencies, ignoring non cascading tables
         5. Updates a dependency
         6. Checks if the update affects the dependent
+
+        Args:
+            db (pytest.Session): DB session
+
+            object_generator_func_w_deps
+            (Tuple[ Dict, ModelType, Optional[List[Union[Dict, ModelType]]] ]):
+            Object generator function with dependencies
+
+            client (TestClient): FastAPI test client
+            route_name (str): Route name
+            unique_identifier (str): Unique identifier for the object
+            get_crud_test_cascade_model (UtilTestCascade): Test cascade model from CRUD
+
+            update_request_params_deps (List[str]): List of dependencies that require
+            parameters for PUT
+
+            ignore_test_columns (List[str]): Columns to ignore
+            superuser_headers (Dict): Superuser headers
+            api_deps_instances (List[List[str]]): API dependencies instances
         """
         _, object_out, deps = await self._create_object_cascade(
             db,
@@ -317,7 +365,7 @@ class TestCascadeAPI(TestAPI):
             )
 
             print("HULAHULA", dep_obj_out_pk_map)
-            if dep_route_name in special_update_params_deps:
+            if dep_route_name in update_request_params_deps:
                 print("KRAQQEDUPDATEINSTANCE")
 
                 response_update_dep = client.put(

@@ -55,12 +55,25 @@ def get_crud_test_model() -> UtilTestCRUD:
 
 
 @pytest.fixture(scope="module")
-def special_update_params() -> bool:
+def update_request_params() -> bool:
+    """Some models require params to PUT request in the url
+
+    Returns:
+        bool: True if the model requires params in the PUT request
+    """
     return True
 
 
 @pytest.fixture(scope="module")
 def ignore_test_columns() -> List[str]:
+    """Ignore these columns when testing the model
+
+    updatedAt and createdAt are ignored because currently, the API returns
+    time in a different format than the one stored in the database
+
+    Returns:
+        List[str]: List of columns to ignore
+    """
     return ["itemId", "modifierId", "updatedAt", "createdAt"]
 
 
@@ -141,7 +154,7 @@ def api_deps_instances() -> List[List[str]]:
 
 
 @pytest.fixture(scope="module")
-def special_update_params_deps() -> List[str]:
+def update_request_params_deps() -> List[str]:
     return [item_modifier_prefix, modifier_prefix]
 
 
