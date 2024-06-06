@@ -1,5 +1,6 @@
 import math
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
+from fastapi import HTTPException, Response
 from fastapi.testclient import TestClient
 import pytest
 from sqlalchemy.orm import Session
@@ -14,7 +15,7 @@ get_crud_test_model = UtilTestCRUD()
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
 class TestAPI:
-    async def _create_object(
+    async def _create_object_crud(
         self,
         db: Session,
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType, Dict]], Any],
@@ -39,7 +40,60 @@ class TestAPI:
 
         return object_dict, object_out
 
-    async def _create_multiple_objects(
+    async def _create_object_api(
+        self,
+        db: Session,
+        create_random_object_func: Union[
+            Callable[[], Tuple[Dict, ModelType, Dict]], Any
+        ],
+        client: TestClient,
+        route_name: str,
+        superuser_headers: Dict[str, str],
+    ) -> Tuple[Dict, Response]:
+        """Create an object using the API
+
+        Also tests correct response codes and if the object created is
+        the same as the object returned by the API
+
+        Args:
+            db (Session): DB session
+
+            create_random_object_func
+            (Union[Callable[[], Tuple[Dict, ModelType, Dict]], Any]):
+            Create random object function
+
+            client (TestClient): FastAPI test client
+            route_name (str): Route name
+            superuser_headers (Dict[str, str]): Superuser headers
+
+        Returns:
+            Dict: Object dictionary created
+            Response: Response from the API
+        """
+
+        if is_courotine_function(create_random_object_func):
+            create_obj = await create_random_object_func(db)
+        else:
+            create_obj = create_random_object_func()
+        response = client.post(
+            f"{settings.API_V1_STR}/{route_name}/",
+            auth=superuser_headers,
+            json=create_obj,
+        )
+
+        if response.status_code != 200:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Failed to create object using API: {response.json()}",
+            )
+
+        content = response.json()
+
+        self._compare_dicts(create_obj, content)
+
+        return create_obj, response
+
+    async def _create_multiple_objects_crud(
         self,
         db: Session,
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]], Any],
@@ -134,18 +188,9 @@ class TestAPI:
             (Union[ Callable[[Session], Awaitable[Dict]], Callable[[], Dict] ]):
             Function to create a random object
         """
-        if is_courotine_function(create_random_object_func):
-            create_obj = await create_random_object_func(db)
-        else:
-            create_obj = create_random_object_func()
-        response = client.post(
-            f"{settings.API_V1_STR}/{route_name}/",
-            auth=superuser_headers,
-            json=create_obj,
+        self._create_object_api(
+            db, create_random_object_func, client, route_name, superuser_headers
         )
-        assert response.status_code == 200
-        content = response.json()
-        self._compare_dicts(create_obj, content)
 
     @pytest.mark.asyncio
     async def test_get_instance(
@@ -175,7 +220,7 @@ class TestAPI:
             get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
             route_name (str): Route name
         """
-        _, object_out = await self._create_object(
+        _, object_out = await self._create_object_crud(
             db, object_generator_func, get_crud_test_model
         )
         obj_out_pk_map = create_primary_key_map(object_out)
@@ -248,7 +293,7 @@ class TestAPI:
             get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
             unique_identifier (str): Unique identifier for the model
         """
-        _, object_out = await self._create_object(
+        _, object_out = await self._create_object_crud(
             db, object_generator_func, get_crud_test_model
         )
         obj_out_pk_map = create_primary_key_map(object_out)
@@ -285,7 +330,7 @@ class TestAPI:
             get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
             route_name (str): Route name
         """
-        await self._create_multiple_objects(
+        await self._create_multiple_objects_crud(
             db, object_generator_func, 5, get_crud_test_model
         )
         response = client.get(
@@ -322,12 +367,12 @@ class TestAPI:
             update_request_params (bool): Whether the update request requires params
             ignore_test_columns (List[str]): Columns to ignore
         """
-        _, object_out = await self._create_object(
+        _, object_out = await self._create_object_crud(
             db, object_generator_func, get_crud_test_model
         )
         obj_out_pk_map = create_primary_key_map(object_out)
 
-        update_object_dict, update_object_out = await self._create_object(
+        update_object_dict, update_object_out = await self._create_object_crud(
             db, object_generator_func, get_crud_test_model
         )
         self._test_object(get_crud_test_model, update_object_out, update_object_dict)
@@ -399,7 +444,7 @@ class TestAPI:
             unique_identifier (str): Unique identifier
         """
         # We need to c
-        update_object_dict, update_object_out = await self._create_object(
+        update_object_dict, update_object_out = await self._create_object_crud(
             db, object_generator_func, get_crud_test_model
         )  # create the object to update and add to the db
         self._test_object(get_crud_test_model, update_object_out, update_object_dict)
@@ -473,13 +518,13 @@ class TestAPI:
             unique_identifier (str): Unique identifier
             update_request_params (bool): Whether the update request requires params
         """
-        _, object_out = await self._create_object(
+        _, object_out = await self._create_object_crud(
             db, object_generator_func, get_crud_test_model
         )
 
         obj_pk_map = create_primary_key_map(object_out)
 
-        update_object_dict, update_object_out = await self._create_object(
+        update_object_dict, update_object_out = await self._create_object_crud(
             db, object_generator_func, get_crud_test_model
         )
         self._test_object(get_crud_test_model, update_object_out, update_object_dict)
@@ -540,7 +585,7 @@ class TestAPI:
             get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
             unique_identifier (str): Unique identifier
         """
-        _, update_object_out = await self._create_object(
+        _, update_object_out = await self._create_object_crud(
             db, object_generator_func, get_crud_test_model
         )
         update_obj_pk_map = create_primary_key_map(update_object_out)
@@ -610,7 +655,7 @@ class TestAPI:
             get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
             unique_identifier (str): Unique identifier
         """
-        _, object_out = await self._create_object(
+        _, object_out = await self._create_object_crud(
             db, object_generator_func, get_crud_test_model
         )
         obj_out_pk_map = create_primary_key_map(object_out)
