@@ -192,3 +192,12 @@ class BaseTest:
                         ]
 
         return cascading_tables
+    
+    
+    def _create_primary_key_map(self, obj: ModelType) -> Dict[str, Any]:
+        """
+        The CRUD get method uses filters. We can send in a map of primary keys to
+        get the object we are looking for
+        """
+        object_map = {key.name: getattr(obj, key.name) for key in obj.__table__.primary_key}
+        return object_map
