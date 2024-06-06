@@ -164,7 +164,7 @@ export const ModifierInput = () => {
       addModifierSpec({
         modifierId: selectedModifierEffect.modifierId[i],
         position: i,
-        limitations: {
+        modifierLimitations: {
           minRoll: selectedModifierEffect.minRollInputs
             ? selectedModifierEffect.minRollInputs[i]
             : null,
@@ -229,7 +229,7 @@ export const ModifierInput = () => {
         addModifierSpec({
           modifierId: modifierId,
           position: modifierSelected.position[i],
-          limitations: {
+          modifierLimitations: {
             minRoll: modifierSelected.minRollInputs?.[i] ?? null,
             maxRoll: modifierSelected.maxRollInputs?.[i] ?? null,
             textRoll: modifierSelected.textRollInputs?.[i] ?? null,
@@ -288,7 +288,7 @@ export const ModifierInput = () => {
       updateModifierSpec({
         modifierId: modifierToUpdate.modifierId[i],
         position: modifierToUpdate.position[i],
-        limitations: {
+        modifierLimitations: {
           minRoll: modifierToUpdate.minRollInputs?.[i] ?? null,
           maxRoll: modifierToUpdate.maxRollInputs?.[i] ?? null,
           textRoll: modifierToUpdate.textRollInputs?.[i] ?? null,
