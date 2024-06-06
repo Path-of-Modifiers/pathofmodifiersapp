@@ -2,7 +2,7 @@ from typing import Awaitable, Callable, Dict, List, Tuple, Union
 import pytest
 from sqlalchemy.orm import Session
 
-import app.tests.api.api_cascade_tests as test_cascade_api
+import backend_api.app.app.tests.api.api_routes_cascade_tests as test_cascade_api
 from app.crud.base import ModelType
 from app.api.api_v1.endpoints import (
     item_prefix,

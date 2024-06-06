@@ -5,7 +5,7 @@ import pytest
 from typing import Dict, List, Optional, Tuple, Union
 
 from app.core.config import settings
-from app.tests.api.api_test_base import TestAPI
+from backend_api.app.app.tests.api.api_routes_test_base import TestAPI
 from app.tests.crud.cascade_tests import TestCascade as UtilTestCascade
 from app.crud.base import ModelType
 from app.tests.utils.utils import get_ignore_keys, random_based_on_type
