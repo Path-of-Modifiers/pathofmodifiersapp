@@ -42,7 +42,7 @@ export interface ModifierLimitationState {
 export interface ModifierSpecState {
   modifierId: number;
   position: number;
-  limitations?: ModifierLimitationState | null;
+  modifierLimitations?: ModifierLimitationState | null;
 }
 
 export interface GraphInputState {
