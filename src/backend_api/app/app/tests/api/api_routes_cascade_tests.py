@@ -3,19 +3,20 @@ from typing import Dict, List, Optional, Tuple, Union
 from fastapi.testclient import TestClient
 import pytest
 from typing import Dict, List, Optional, Tuple, Union
+from sqlalchemy.orm import Session
 
 from app.core.config import settings
-from backend_api.app.app.tests.api.api_routes_test_base import TestAPI
+from app.tests.api.api_routes_test_base import TestAPI
 from app.tests.crud.cascade_tests import TestCascade as UtilTestCascade
 from app.crud.base import ModelType
-from app.tests.utils.utils import get_ignore_keys, random_based_on_type
+from app.tests.utils.utils import random_based_on_type
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
 class TestCascadeAPI(TestAPI):
     async def _create_object_cascade(
         self,
-        db: pytest.Session,
+        db: Session,
         object_generator_func: Tuple[
             Dict, ModelType, Optional[List[Union[Dict, ModelType]]]
         ],
@@ -25,7 +26,7 @@ class TestCascadeAPI(TestAPI):
         """A private method used to create objects, with the option to retrieve dependencies.
 
         Args:
-            db (pytest.Session): DB session
+            db (Session): DB session
             object_generator_func (Tuple[ Dict, ModelType, Optional[List[Union[Dict, ModelType]]] ]):
             Object generator function
 
@@ -109,7 +110,7 @@ class TestCascadeAPI(TestAPI):
     @pytest.mark.asyncio
     async def test_cascade_delete(
         self,
-        db: pytest.Session,
+        db: Session,
         object_generator_func_w_deps: Tuple[
             Dict, ModelType, Optional[List[Union[Dict, ModelType]]]
         ],
@@ -131,7 +132,7 @@ class TestCascadeAPI(TestAPI):
         6. Checks if a query for the dependent results in a specified HTTPException
 
         Args:
-            db (pytest.Session): DB session
+            db (Session): DB session
 
             object_generator_func_w_deps
             (Tuple[ Dict, ModelType, Optional[List[Union[Dict, ModelType]]] ]):
@@ -242,7 +243,7 @@ class TestCascadeAPI(TestAPI):
     @pytest.mark.asyncio
     async def test_cascade_update(
         self,
-        db: pytest.Session,
+        db: Session,
         object_generator_func_w_deps: Tuple[
             Dict, ModelType, Optional[List[Union[Dict, ModelType]]]
         ],
@@ -265,7 +266,7 @@ class TestCascadeAPI(TestAPI):
         6. Checks if the update affects the dependent
 
         Args:
-            db (pytest.Session): DB session
+            db (Session): DB session
 
             object_generator_func_w_deps
             (Tuple[ Dict, ModelType, Optional[List[Union[Dict, ModelType]]] ]):

@@ -1,7 +1,7 @@
 from typing import Callable, Dict, List, Tuple
-
 import pytest
-import backend_api.app.app.tests.api.api_routes_test_base as test_api
+
+import app.tests.api.api_routes_test_base as test_api
 from app.crud.base import ModelType
 from app.api.api_v1.endpoints import modifier_prefix
 from app.tests.crud.cascade_tests import TestCRUD as UtilTestCRUD
