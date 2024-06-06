@@ -1,45 +1,18 @@
 import math
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
-from fastapi import HTTPException, Response
+from fastapi import Response
 from fastapi.testclient import TestClient
 import pytest
 from sqlalchemy.orm import Session
 
 from app.crud.base import ModelType
 from app.core.config import settings
-from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
-from app.tests.utils.utils import create_primary_key_map, is_courotine_function
-
-get_crud_test_model = UtilTestCRUD()
+from app.tests.utils.utils import is_courotine_function
+from app.tests.base_test import BaseTest
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
-class TestAPI:
-    async def _create_object_crud(
-        self,
-        db: Session,
-        object_generator_func: Union[Callable[[], Tuple[Dict, ModelType, Dict]], Any],
-        get_crud_test_model: UtilTestCRUD,
-    ) -> Tuple[Dict, ModelType]:
-        """Generate an object and return the object dictionary and the object itself
-
-        Args:
-            db (Session): DB session
-            object_generator_func (Union[Callable[[], Tuple[Dict, ModelType]], Any]): Function
-            to generate the object
-            get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
-
-
-        Returns:
-            Tuple[Dict, ModelType]: Object dictionary, the object itself and the db object dictionary
-        """
-
-        object_dict, object_out = await get_crud_test_model._create_object(
-            db, object_generator_func
-        )
-
-        return object_dict, object_out
-
+class TestAPI(BaseTest):
     async def _create_object_api(
         self,
         db: Session,
@@ -81,64 +54,13 @@ class TestAPI:
             json=create_obj,
         )
 
-        if response.status_code != 200:
-            raise HTTPException(
-                status_code=response.status_code,
-                detail=f"Failed to create object using API: {response.json()}",
-            )
+        assert response.status_code == 200
 
         content = response.json()
 
         self._compare_dicts(create_obj, content)
 
         return create_obj, response
-
-    async def _create_multiple_objects_crud(
-        self,
-        db: Session,
-        object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]], Any],
-        count: int,
-        get_crud_test_model: UtilTestCRUD,
-    ) -> Tuple[Tuple[Dict], Tuple[ModelType]]:
-        """Create multiple objects
-
-        Args:
-            db (Session): DB session
-            object_generator_func (Union[Callable[[], Tuple[Dict, ModelType]], Any]): Function
-            to generate the object
-            count (int): Number of objects to create
-            get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
-
-        Returns:
-            Tuple[Tuple[Dict], Tuple[ModelType]]: Tuple of object dictionaries and objects
-        """
-
-        multiple_object_dict, multiple_object_out = (
-            await get_crud_test_model._create_multiple_objects(
-                db, object_generator_func, count
-            )
-        )
-
-        return multiple_object_dict, multiple_object_out
-
-    def _test_object(
-        self,
-        get_crud_test_model: UtilTestCRUD,
-        obj: Union[ModelType, List[ModelType]],
-        compare_obj: Optional[
-            Union[Dict, List[Dict], ModelType, List[ModelType]]
-        ] = None,
-        ignore: Optional[List[str]] = [],
-    ):
-        """Test if two objects are the same
-
-        Args:
-            obj (Union[ModelType, List[ModelType]]): Object to test
-            compare_obj (Optional[ Union[Dict, List[Dict], ModelType, List[ModelType]] ], optional): Comparing object. Defaults to None.
-            ignore (Optional[List[str]], optional): List of ignored attributes. Defaults to [].
-            get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
-        """
-        get_crud_test_model._test_object(obj, compare_obj, ignore)
 
     def _compare_dicts(
         self,
@@ -188,7 +110,7 @@ class TestAPI:
             (Union[ Callable[[Session], Awaitable[Dict]], Callable[[], Dict] ]):
             Function to create a random object
         """
-        self._create_object_api(
+        await self._create_object_api(
             db, create_random_object_func, client, route_name, superuser_headers
         )
 
@@ -201,7 +123,6 @@ class TestAPI:
         unique_identifier: str,
         ignore_test_columns: List[str],
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
-        get_crud_test_model: UtilTestCRUD,
         route_name: str,
     ) -> None:
         """Test get instance
@@ -217,13 +138,10 @@ class TestAPI:
             (Union[Callable[[], Tuple[Dict, ModelType]]]):
             Object generator function
 
-            get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
             route_name (str): Route name
         """
-        _, object_out = await self._create_object_crud(
-            db, object_generator_func, get_crud_test_model
-        )
-        obj_out_pk_map = create_primary_key_map(object_out)
+        _, object_out = await self._create_object_crud(db, object_generator_func)
+        obj_out_pk_map = self._create_primary_key_map(object_out)
         response = client.get(
             f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
             auth=superuser_headers,
@@ -231,7 +149,6 @@ class TestAPI:
         assert response.status_code == 200
         content = response.json()
         self._test_object(
-            get_crud_test_model=get_crud_test_model,
             obj=object_out,
             compare_obj=content,
             ignore=ignore_test_columns,
@@ -274,7 +191,6 @@ class TestAPI:
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
         get_high_permissions: bool,
         route_name: str,
-        get_crud_test_model: UtilTestCRUD,
         unique_identifier: str,
     ) -> None:
         """Test get instance not enough permissions
@@ -290,22 +206,19 @@ class TestAPI:
 
             get_high_permissions (bool): Whether to get high permissions for GET
             route_name (str): Route name
-            get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
             unique_identifier (str): Unique identifier for the model
         """
-        _, object_out = await self._create_object_crud(
-            db, object_generator_func, get_crud_test_model
-        )
-        obj_out_pk_map = create_primary_key_map(object_out)
+        if not get_high_permissions:
+            return 0
+
+        _, object_out = await self._create_object_crud(db, object_generator_func)
+        obj_out_pk_map = self._create_primary_key_map(object_out)
         response = client.get(
             f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
         )
-        if get_high_permissions:
-            content = response.json()
-            assert response.status_code == 401
-            assert content["detail"] == "Not authenticated"
-        else:
-            assert response.status_code == 200
+        content = response.json()
+        assert response.status_code == 401
+        assert content["detail"] == "Not authenticated"
 
     @pytest.mark.asyncio
     async def test_get_instances(
@@ -314,7 +227,6 @@ class TestAPI:
         superuser_headers: Dict[str, str],
         db: Session,
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
-        get_crud_test_model: UtilTestCRUD,
         route_name: str,
     ) -> None:
         """Test get instances
@@ -327,19 +239,17 @@ class TestAPI:
             object_generator_func
             (Union[Callable[[], Tuple[Dict, ModelType]]]): Object generator function
 
-            get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
             route_name (str): Route name
         """
-        await self._create_multiple_objects_crud(
-            db, object_generator_func, 5, get_crud_test_model
-        )
+        object_count = 5
+        await self._create_multiple_objects_crud(db, object_generator_func, object_count)
         response = client.get(
             f"{settings.API_V1_STR}/{route_name}/",
             auth=superuser_headers,
         )
         assert response.status_code == 200
         content = response.json()
-        assert len(content) >= 5
+        assert len(content) >= object_count
 
     @pytest.mark.asyncio
     async def test_update_instance(
@@ -349,7 +259,6 @@ class TestAPI:
         db: Session,
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
         route_name: str,
-        get_crud_test_model: UtilTestCRUD,
         unique_identifier: str,
         update_request_params: bool,
         ignore_test_columns: List[str],
@@ -362,22 +271,19 @@ class TestAPI:
             db (Session): DB session
             object_generator_func (Union[Callable[[], Tuple[Dict, ModelType]]]): Object generator function
             route_name (str): Route name
-            get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
             unique_identifier (str): Unique identifier
             update_request_params (bool): Whether the update request requires params
             ignore_test_columns (List[str]): Columns to ignore
         """
-        _, object_out = await self._create_object_crud(
-            db, object_generator_func, get_crud_test_model
-        )
-        obj_out_pk_map = create_primary_key_map(object_out)
+        _, object_out = await self._create_object_crud(db, object_generator_func)
+        obj_out_pk_map = self._create_primary_key_map(object_out)
 
         update_object_dict, update_object_out = await self._create_object_crud(
-            db, object_generator_func, get_crud_test_model
+            db, object_generator_func
         )
-        self._test_object(get_crud_test_model, update_object_out, update_object_dict)
+        self._test_object(update_object_out, update_object_dict)
 
-        update_obj_pk_map = create_primary_key_map(update_object_out)
+        update_obj_pk_map = self._create_primary_key_map(update_object_out)
 
         delete_response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{update_obj_pk_map[unique_identifier]}",
@@ -392,7 +298,7 @@ class TestAPI:
         )
 
         if update_request_params:
-            obj_out_pk_map = create_primary_key_map(object_out)
+            obj_out_pk_map = self._create_primary_key_map(object_out)
             response = client.put(
                 f"{settings.API_V1_STR}/{route_name}/",
                 auth=superuser_headers,
@@ -410,7 +316,6 @@ class TestAPI:
         content = response.json()
 
         self._test_object(
-            get_crud_test_model,
             update_object_out,
             content,
             ignore=ignore_test_columns,
@@ -443,13 +348,12 @@ class TestAPI:
             update_request_params (bool): Whether the update request requires params
             unique_identifier (str): Unique identifier
         """
-        # We need to c
         update_object_dict, update_object_out = await self._create_object_crud(
-            db, object_generator_func, get_crud_test_model
+            db, object_generator_func
         )  # create the object to update and add to the db
-        self._test_object(get_crud_test_model, update_object_out, update_object_dict)
+        self._test_object(update_object_out, update_object_dict)
 
-        update_obj_out_pk_map = create_primary_key_map(update_object_out)
+        update_obj_out_pk_map = self._create_primary_key_map(update_object_out)
 
         delete_response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{update_obj_out_pk_map[unique_identifier]}",
@@ -499,7 +403,6 @@ class TestAPI:
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
         route_name: str,
         superuser_headers: Dict[str, str],
-        get_crud_test_model: UtilTestCRUD,
         unique_identifier: str,
         update_request_params: bool,
     ) -> None:
@@ -514,22 +417,19 @@ class TestAPI:
 
             route_name (str): Route name
             superuser_headers (Dict[str, str]): Superuser headers
-            get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
             unique_identifier (str): Unique identifier
             update_request_params (bool): Whether the update request requires params
         """
-        _, object_out = await self._create_object_crud(
-            db, object_generator_func, get_crud_test_model
-        )
+        _, object_out = await self._create_object_crud(db, object_generator_func)
 
-        obj_pk_map = create_primary_key_map(object_out)
+        obj_pk_map = self._create_primary_key_map(object_out)
 
         update_object_dict, update_object_out = await self._create_object_crud(
-            db, object_generator_func, get_crud_test_model
+            db, object_generator_func
         )
-        self._test_object(get_crud_test_model, update_object_out, update_object_dict)
+        self._test_object(update_object_out, update_object_dict)
 
-        update_obj_pk_map = create_primary_key_map(update_object_out)
+        update_obj_pk_map = self._create_primary_key_map(update_object_out)
 
         delete_response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{update_obj_pk_map[unique_identifier]}",
@@ -568,7 +468,6 @@ class TestAPI:
         db: Session,
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
         route_name: str,
-        get_crud_test_model: UtilTestCRUD,
         unique_identifier: str,
     ) -> None:
         """Test delete instance
@@ -582,13 +481,10 @@ class TestAPI:
             (Union[Callable[[], Tuple[Dict, ModelType]]]): Object generator function
 
             route_name (str): Route name
-            get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
             unique_identifier (str): Unique identifier
         """
-        _, update_object_out = await self._create_object_crud(
-            db, object_generator_func, get_crud_test_model
-        )
-        update_obj_pk_map = create_primary_key_map(update_object_out)
+        _, update_object_out = await self._create_object_crud(db, object_generator_func)
+        update_obj_pk_map = self._create_primary_key_map(update_object_out)
 
         response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{update_obj_pk_map[unique_identifier]}",
@@ -596,7 +492,7 @@ class TestAPI:
         )
         assert response.status_code == 200
         content = response.json()
-        update_obj_pk_map = create_primary_key_map(update_object_out)
+        update_obj_pk_map = self._create_primary_key_map(update_object_out)
         assert (
             content
             == f"{route_name} with mapping ({unique_identifier}: {update_obj_pk_map[unique_identifier]}) deleted successfully"
@@ -639,7 +535,6 @@ class TestAPI:
         db: Session,
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
         route_name: str,
-        get_crud_test_model: UtilTestCRUD,
         unique_identifier: str,
     ) -> None:
         """Test delete instance not enough permissions
@@ -652,13 +547,10 @@ class TestAPI:
             (Union[Callable[[], Tuple[Dict, ModelType]]]): Object generator function
 
             route_name (str): Route name
-            get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
             unique_identifier (str): Unique identifier
         """
-        _, object_out = await self._create_object_crud(
-            db, object_generator_func, get_crud_test_model
-        )
-        obj_out_pk_map = create_primary_key_map(object_out)
+        _, object_out = await self._create_object_crud(db, object_generator_func)
+        obj_out_pk_map = self._create_primary_key_map(object_out)
         response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
         )
