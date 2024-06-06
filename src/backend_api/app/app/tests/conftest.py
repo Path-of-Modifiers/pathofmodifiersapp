@@ -6,7 +6,7 @@ from requests.auth import HTTPBasicAuth
 from sqlalchemy.orm import Session
 
 from app.main import app
-from app.tests.test_database import override_get_db, test_db_engine
+from app.tests.setup_test_database import override_get_db, test_db_engine
 from app.tests.utils.database_utils import (
     clear_all_tables,
     mock_src_database_for_test_db,
