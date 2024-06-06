@@ -31,7 +31,7 @@ class TestAPI:
 
 
         Returns:
-            Tuple[Dict, ModelType]: Object dictionary, the object itself and the db object dictionary
+            Tuple[Dict, ModelType]: Object dictionary, the object itself
         """
 
         object_dict, object_out = await get_crud_test_model._create_object(
@@ -81,11 +81,7 @@ class TestAPI:
             json=create_obj,
         )
 
-        if response.status_code != 200:
-            raise HTTPException(
-                status_code=response.status_code,
-                detail=f"Failed to create object using API: {response.json()}",
-            )
+        assert response.status_code == 200
 
         content = response.json()
 
