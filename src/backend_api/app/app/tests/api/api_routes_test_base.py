@@ -145,8 +145,6 @@ class TestAPI:
         )
         assert response.status_code == 200
         content = response.json()
-        print("BRAGE:::::   ", content)
-        print("DRAGE:::::   ", create_obj)
         self._compare_dicts(create_obj, content)
 
     @pytest.mark.asyncio
@@ -187,7 +185,6 @@ class TestAPI:
         )
         assert response.status_code == 200
         content = response.json()
-        print("BROWHAT", content, "ISEQUAL? \n", obj_out_pk_map)
         self._test_object(
             get_crud_test_model=get_crud_test_model,
             obj=object_out,
@@ -256,7 +253,6 @@ class TestAPI:
         response = client.get(
             f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
         )
-        print("JAKSEN", response.status_code)
         if get_high_permissions:
             content = response.json()
             assert response.status_code == 401
@@ -329,7 +325,6 @@ class TestAPI:
         )
         obj_out_pk_map = create_primary_key_map(object_out)
 
-        print("HAGGLEBU", update_request_params)
         update_object_dict, update_object_out = await self._create_object(
             db, object_generator_func, get_crud_test_model
         )
@@ -344,30 +339,12 @@ class TestAPI:
         assert delete_response.status_code == 200
         content_delete = delete_response.json()
 
-        print(
-            "GREEENVADER",
-            content_delete,
-            "-----",
-            f"{route_name} with mapping ({unique_identifier}: {update_obj_pk_map[unique_identifier]}) deleted successfully",
-        )
         assert (
             content_delete
             == f"{route_name} with mapping ({unique_identifier}: {update_obj_pk_map[unique_identifier]}) deleted successfully"
         )
-        # if is_courotine_function(create_random_object_func):
-        #     updated_db_obj = await create_random_object_func(db)
-        # else:
-        #     updated_db_obj = create_random_object_func()
-
-        print("DARKVADER", obj_out_pk_map[unique_identifier])
-        print("BEASTVADER", update_object_dict, "----")
-        print(
-            "GREENVADER",
-            f"{settings.API_V1_STR}/{route_name}/{update_obj_pk_map[unique_identifier]}",
-        )
 
         if update_request_params:
-            print("KRAQQEDUPDATEINSTANCE")
             obj_out_pk_map = create_primary_key_map(object_out)
             response = client.put(
                 f"{settings.API_V1_STR}/{route_name}/",
@@ -381,27 +358,10 @@ class TestAPI:
                 auth=superuser_headers,
                 json=update_object_dict,
             )
-        print("RESPURL", response.url)
 
-        print(
-            "DARKVADERUNIQUE",
-            route_name,
-            "-----",
-            unique_identifier,
-            "-----",
-            response.status_code,
-        )
         assert response.status_code == 200
         content = response.json()
-        # print(
-        #     "TESTUPDATEINSTANCE\ncontent:  ",
-        #     content,
-        #     "\nupdated_db_obj:  ",
-        #     updated_db_obj,
-        # )
-        print("IGNORINGBESAT", content)
-        print("IGNORINGBESATONE", object_out.__dict__)
-        print("POKEMONBM :::: ", ignore_test_columns)
+        
         self._test_object(
             get_crud_test_model,
             update_object_out,
@@ -461,11 +421,7 @@ class TestAPI:
         for key in update_obj_out_pk_map:
             update_obj_out_pk_map[key] = not_found_object
 
-        print("KRAKKENTALEN", update_object_dict)
-        print(f"{settings.API_V1_STR}/{route_name}/{not_found_object}", "ROLLUP")
-
         if update_request_params:
-            print("KRAQQEDNOTFOUND")
             response = client.put(
                 f"{settings.API_V1_STR}/{route_name}/",
                 auth=superuser_headers,
@@ -473,23 +429,16 @@ class TestAPI:
                 params=update_obj_out_pk_map,
             )
         else:
-            print(
-                "YODAPÅTURE", f"{settings.API_V1_STR}/{route_name}/{not_found_object}"
-            )
             response = client.put(
                 f"{settings.API_V1_STR}/{route_name}/{not_found_object}",
                 auth=superuser_headers,
                 json=update_object_dict,
             )
 
-        print("KRAKKEN", response.status_code)
         assert response.status_code == 404
+        
         content = response.json()
-        print("YOUTUBERN :::::", content["detail"])
-        print(
-            "YOUTUBERNXXXXXX :::  ",
-            f"No object matching the query ({', '.join([key + ': ' + str(item) for key, item in update_obj_out_pk_map.items()])}) in the table {model_name} was found.",
-        )
+        
         assert (
             content["detail"]
             == f"No object matching the query ({', '.join([key + ': ' + str(item) for key, item in update_obj_out_pk_map.items()])}) in the table {model_name} was found."
@@ -542,18 +491,13 @@ class TestAPI:
         assert delete_response.status_code == 200
 
         content_delete = delete_response.json()
-
-        print(
-            "KRAKKEDNOPERMISSIONS :::: ",
-            f"{route_name} with mapping ({', '.join([key + ': ' + str(item) for key, item in update_obj_pk_map.items()])}) deleted successfully",
-        )
+        
         assert (
             content_delete
             == f"{route_name} with mapping ({unique_identifier}: {update_obj_pk_map[unique_identifier]}) deleted successfully"
         )
 
         if update_request_params:
-            print("KRAQQEDNOPERMISSIONS")
             response = client.put(
                 f"{settings.API_V1_STR}/{route_name}/",
                 json=update_object_dict,
@@ -564,8 +508,7 @@ class TestAPI:
                 f"{settings.API_V1_STR}/{route_name}/{obj_pk_map[unique_identifier]}",
                 json=update_object_dict,
             )
-        beast_status_code = response.status_code
-        print("UGLAKRAKKEDNOPERMISSIONS ::: ", beast_status_code)
+            
         assert response.status_code == 401
         content = response.json()
         assert content["detail"] == "Not authenticated"
