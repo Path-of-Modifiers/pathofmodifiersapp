@@ -101,11 +101,12 @@ async def create_modifier(
 async def update_modifier(
     modifierId: int,
     modifier_update: schemas.ModifierUpdate,
+    position: Optional[int] = None,
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
 ):
     """
-    Update a modifier by key and value for "modifierId" and "position".
+    Update a modifier by key and value for "modifierId" and optional "position".
 
     Dominant key is "modifierId".
 
@@ -118,6 +119,9 @@ async def update_modifier(
         )
 
     modifier_map = {"modifierId": modifierId}
+    if position is not None:
+        modifier_map["position"] = position
+
     modifier = await CRUD_modifier.get(
         db=db,
         filter=modifier_map,
