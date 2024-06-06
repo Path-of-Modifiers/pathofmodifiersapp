@@ -111,7 +111,7 @@ class TestAPI(BaseTest):
             (Union[ Callable[[Session], Awaitable[Dict]], Callable[[], Dict] ]):
             Function to create a random object
         """
-        self._create_object_api(
+        await self._create_object_api(
             db, create_random_object_func, client, route_name, superuser_headers
         )
 
