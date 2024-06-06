@@ -7,106 +7,12 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.tests.api.api_routes_test_base import TestAPI
-from app.tests.crud.cascade_tests import TestCascade as UtilTestCascade
 from app.crud.base import ModelType
-from app.tests.utils.utils import create_primary_key_map, random_based_on_type
+from app.tests.utils.utils import random_based_on_type
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
 class TestCascadeAPI(TestAPI):
-    async def _create_object_crud_cascade(
-        self,
-        db: Session,
-        object_generator_func: Tuple[
-            Dict, ModelType, Optional[List[Union[Dict, ModelType]]]
-        ],
-        get_crud_test_cascade_model: UtilTestCascade,
-        retrieve_dependencies: Optional[bool] = False,
-    ) -> Tuple[Dict, ModelType, Optional[List[Union[Dict, ModelType]]]]:
-        """A private method used to create objects, with the option to retrieve dependencies.
-
-        Args:
-            db (Session): DB session
-            object_generator_func (Tuple[ Dict, ModelType, Optional[List[Union[Dict, ModelType]]] ]):
-            Object generator function
-
-            retrieve_dependencies (Optional[bool], optional): Whether to retrieve dependencies.
-            Defaults to False.
-
-        Returns:
-            Tuple[Dict, ModelType, Optional[List[Union[Dict, ModelType]]]]:
-
-            Object dictionary, object instance and dependencies
-        """
-        if retrieve_dependencies:
-            object_dict, object_out, deps = (
-                await get_crud_test_cascade_model._create_object_cascade(
-                    db, object_generator_func, retrieve_dependencies=True
-                )
-            )
-            return object_dict, object_out, deps
-        else:
-            object_dict, object_out = (
-                await get_crud_test_cascade_model._create_object_cascade(
-                    db, object_generator_func
-                )
-            )
-            return object_dict, object_out
-
-    def _get_foreign_keys(
-        self, model: ModelType, get_crud_test_cascade_model: UtilTestCascade
-    ) -> List[Dict]:
-        """A method to retrieve all foreign keys of a model
-
-        Uses a database inspector to learn more about the foreign keys related to the given model.
-        The returned object is a list of dictionaries, where each element represents a relation to
-        another table. One related table may have multiple foreign keys.
-
-        Args:
-            model (ModelType): The model to retrieve foreign keys from
-            get_crud_test_cascade_model (UtilTestCascade): Test cascade model from CRUD
-
-        Returns:
-            List[Dict]: List of foreign keys
-        """
-        return get_crud_test_cascade_model._get_foreign_keys(model)
-
-    def _find_restricted_delete(
-        self,
-        model: ModelType,
-        deps: List[Union[Dict, ModelType]],
-        get_crud_test_cascade_model: UtilTestCascade,
-    ) -> List[str]:
-        """Retrieves all tables related to model, which are not allowed to be deleted
-
-        Args:
-            model (ModelType): The model to retrieve restricted deletes from
-            deps (List[Union[Dict, ModelType]]): List of dependencies
-            get_crud_test_cascade_model (UtilTestCascade): Test cascade model from CRUD
-
-        Returns:
-            List[str]: List of tables that are not allowed to be deleted
-        """
-        return get_crud_test_cascade_model._find_restricted_delete(model, deps)
-
-    def _find_cascading_update(
-        self,
-        model: ModelType,
-        deps: List[Union[Dict, ModelType]],
-        get_crud_test_cascade_model: UtilTestCascade,
-    ) -> Dict[str, str]:
-        """Retrieves all tables related to model, which delete all dependent entries
-
-        Args:
-            model (ModelType): The model to retrieve cascading updates from
-            deps (List[Union[Dict, ModelType]]): List of dependencies
-            get_crud_test_cascade_model (UtilTestCascade): Test cascade model from CRUD
-
-        Returns:
-            Dict[str, str]: Dictionary of tables that delete all dependent entries
-        """
-        return get_crud_test_cascade_model._find_cascading_update(model, deps)
-
     @pytest.mark.asyncio
     async def test_cascade_delete(
         self,
@@ -117,7 +23,6 @@ class TestCascadeAPI(TestAPI):
         client: TestClient,
         route_name: str,
         unique_identifier: str,
-        get_crud_test_cascade_model: UtilTestCascade,
         ignore_test_columns: List[str],
         superuser_headers: Dict,
         api_deps_instances: List[List[str]],
@@ -141,15 +46,13 @@ class TestCascadeAPI(TestAPI):
             client (TestClient): FastAPI test client
             route_name (str): Route name
             unique_identifier (str): Unique identifier for the object
-            get_crud_test_cascade_model (UtilTestCascade): Test cascade model from CRUD
             ignore_test_columns (List[str]): Columns to ignore
             superuser_headers (Dict): Superuser headers
             api_deps_instances (List[List[str]]): API dependencies instances
         """
-        _, object_out, deps = await self._create_object_crud_cascade(
+        _, object_out, deps = await self._create_object_cascade_crud(
             db,
             object_generator_func_w_deps,
-            get_crud_test_cascade_model,
             retrieve_dependencies=True,
         )
 
@@ -157,21 +60,20 @@ class TestCascadeAPI(TestAPI):
         # this is because the item is already deleted by the time we are notified
         # that it was not allowed.
         restricted_tables = self._find_restricted_delete(
-            object_out, deps, get_crud_test_cascade_model
+            object_out, deps
         )
 
         # Number of dependencies is half the length of deps list (since it is a list of pairs)
         n_deps = len(deps) // 2
         for i in range(n_deps):
-            object_dict, object_out, deps = await self._create_object_crud_cascade(
+            object_dict, object_out, deps = await self._create_object_cascade_crud(
                 db,
                 object_generator_func_w_deps,
-                get_crud_test_cascade_model,
                 retrieve_dependencies=True,
             )  # New objects have to be created for every test, since they are constantly being deleted
-            self._test_object(get_crud_test_cascade_model, object_out, object_dict)
+            self._test_object(object_out, object_dict)
 
-            obj_out_pk_map = create_primary_key_map(object_out)
+            obj_out_pk_map = self._create_primary_key_map(object_out)
 
             response_get_before_deletion = client.get(
                 f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
@@ -180,14 +82,13 @@ class TestCascadeAPI(TestAPI):
             content_before_deletion = response_get_before_deletion.json()
             assert response_get_before_deletion.status_code == 200
             self._test_object(
-                get_crud_test_cascade_model,
                 object_out,
                 content_before_deletion,
                 ignore=ignore_test_columns,
             )
 
             dep_dict, dep_model = deps[2 * i], deps[2 * i + 1]
-            self._test_object(get_crud_test_cascade_model, dep_model, dep_dict)
+            self._test_object(dep_model, dep_dict)
 
             if dep_model.__tablename__ in restricted_tables:
                 continue
@@ -204,7 +105,7 @@ class TestCascadeAPI(TestAPI):
                 auth=superuser_headers,
             )
             content_dep = response_delete_dep.json()
-            primary_keys_map = create_primary_key_map(dep_model)
+            primary_keys_map = self._create_primary_key_map(dep_model)
             assert (
                 content_dep
                 == f"{dep_route_name} with mapping ({dep_unique_identifier}: {primary_keys_map[dep_unique_identifier]}) deleted successfully"
@@ -228,7 +129,6 @@ class TestCascadeAPI(TestAPI):
         client: TestClient,
         route_name: str,
         unique_identifier: str,
-        get_crud_test_cascade_model: UtilTestCascade,
         update_request_params_deps: List[str],
         ignore_test_columns: List[str],
         superuser_headers: Dict,
@@ -253,7 +153,6 @@ class TestCascadeAPI(TestAPI):
             client (TestClient): FastAPI test client
             route_name (str): Route name
             unique_identifier (str): Unique identifier for the object
-            get_crud_test_cascade_model (UtilTestCascade): Test cascade model from CRUD
 
             update_request_params_deps (List[str]): List of dependencies that require
             parameters for PUT
@@ -262,33 +161,31 @@ class TestCascadeAPI(TestAPI):
             superuser_headers (Dict): Superuser headers
             api_deps_instances (List[List[str]]): API dependencies instances
         """
-        _, object_out, deps = await self._create_object_crud_cascade(
+        _, object_out, deps = await self._create_object_cascade_crud(
             db,
             object_generator_func_w_deps,
-            get_crud_test_cascade_model,
             retrieve_dependencies=True,
         )
 
         cascading_tables = self._find_cascading_update(
-            object_out, deps, get_crud_test_cascade_model
+            object_out, deps
         )
 
         n_deps = len(deps) // 2
         for i in range(n_deps):
-            object_dict, object_out, deps = await self._create_object_crud_cascade(
+            object_dict, object_out, deps = await self._create_object_cascade_crud(
                 db,
                 object_generator_func_w_deps,
-                get_crud_test_cascade_model,
                 retrieve_dependencies=True,
             )  # New objects have to be created for every test, since they are constantly being deleted
-            self._test_object(get_crud_test_cascade_model, object_out, object_dict)
-            obj_out_pk_map = create_primary_key_map(
+            self._test_object(object_out, object_dict)
+            obj_out_pk_map = self._create_primary_key_map(
                 object_out
             )  # Needs to be a global utility function
 
             dep_dict, dep_model = deps[2 * i], deps[2 * i + 1]
 
-            self._test_object(get_crud_test_cascade_model, dep_model, dep_dict)
+            self._test_object(dep_model, dep_dict)
             if dep_model.__tablename__ not in cascading_tables:
                 continue
 
@@ -306,11 +203,10 @@ class TestCascadeAPI(TestAPI):
 
                 assert object_dict[key] != new_dep_dict[key]
 
-
             dep_route_name = api_deps_instances[i][0]
             dep_unique_identifier = api_deps_instances[i][1]
-            
-            dep_obj_out_pk_map = create_primary_key_map(dep_model)
+
+            dep_obj_out_pk_map = self._create_primary_key_map(dep_model)
 
             if dep_route_name in update_request_params_deps:
                 response_update_dep = client.put(
@@ -327,7 +223,7 @@ class TestCascadeAPI(TestAPI):
                 )
 
             updated_dep_model_content = response_update_dep.json()
-            
+
             assert response_update_dep.status_code == 200
             self._compare_dicts(
                 updated_dep_model_content,
