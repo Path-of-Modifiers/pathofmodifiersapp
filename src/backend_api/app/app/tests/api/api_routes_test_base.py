@@ -1,14 +1,13 @@
 import math
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
-from fastapi import HTTPException, Response
+from fastapi import Response
 from fastapi.testclient import TestClient
 import pytest
 from sqlalchemy.orm import Session
 
 from app.crud.base import ModelType
 from app.core.config import settings
-from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
-from app.tests.utils.utils import create_primary_key_map, is_courotine_function
+from app.tests.utils.utils import is_courotine_function
 from app.tests.base_test import BaseTest
 
 
@@ -142,7 +141,7 @@ class TestAPI(BaseTest):
             route_name (str): Route name
         """
         _, object_out = await self._create_object_crud(db, object_generator_func)
-        obj_out_pk_map = create_primary_key_map(object_out)
+        obj_out_pk_map = self._create_primary_key_map(object_out)
         response = client.get(
             f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
             auth=superuser_headers,
@@ -213,7 +212,7 @@ class TestAPI(BaseTest):
             return 0
 
         _, object_out = await self._create_object_crud(db, object_generator_func)
-        obj_out_pk_map = create_primary_key_map(object_out)
+        obj_out_pk_map = self._create_primary_key_map(object_out)
         response = client.get(
             f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
         )
@@ -242,14 +241,15 @@ class TestAPI(BaseTest):
 
             route_name (str): Route name
         """
-        await self._create_multiple_objects_crud(db, object_generator_func, 5)
+        object_count = 5
+        await self._create_multiple_objects_crud(db, object_generator_func, object_count)
         response = client.get(
             f"{settings.API_V1_STR}/{route_name}/",
             auth=superuser_headers,
         )
         assert response.status_code == 200
         content = response.json()
-        assert len(content) >= 5
+        assert len(content) >= object_count
 
     @pytest.mark.asyncio
     async def test_update_instance(
@@ -276,14 +276,14 @@ class TestAPI(BaseTest):
             ignore_test_columns (List[str]): Columns to ignore
         """
         _, object_out = await self._create_object_crud(db, object_generator_func)
-        obj_out_pk_map = create_primary_key_map(object_out)
+        obj_out_pk_map = self._create_primary_key_map(object_out)
 
         update_object_dict, update_object_out = await self._create_object_crud(
             db, object_generator_func
         )
         self._test_object(update_object_out, update_object_dict)
 
-        update_obj_pk_map = create_primary_key_map(update_object_out)
+        update_obj_pk_map = self._create_primary_key_map(update_object_out)
 
         delete_response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{update_obj_pk_map[unique_identifier]}",
@@ -298,7 +298,7 @@ class TestAPI(BaseTest):
         )
 
         if update_request_params:
-            obj_out_pk_map = create_primary_key_map(object_out)
+            obj_out_pk_map = self._create_primary_key_map(object_out)
             response = client.put(
                 f"{settings.API_V1_STR}/{route_name}/",
                 auth=superuser_headers,
@@ -348,13 +348,12 @@ class TestAPI(BaseTest):
             update_request_params (bool): Whether the update request requires params
             unique_identifier (str): Unique identifier
         """
-        # We need to c
         update_object_dict, update_object_out = await self._create_object_crud(
             db, object_generator_func
         )  # create the object to update and add to the db
         self._test_object(update_object_out, update_object_dict)
 
-        update_obj_out_pk_map = create_primary_key_map(update_object_out)
+        update_obj_out_pk_map = self._create_primary_key_map(update_object_out)
 
         delete_response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{update_obj_out_pk_map[unique_identifier]}",
@@ -423,14 +422,14 @@ class TestAPI(BaseTest):
         """
         _, object_out = await self._create_object_crud(db, object_generator_func)
 
-        obj_pk_map = create_primary_key_map(object_out)
+        obj_pk_map = self._create_primary_key_map(object_out)
 
         update_object_dict, update_object_out = await self._create_object_crud(
             db, object_generator_func
         )
         self._test_object(update_object_out, update_object_dict)
 
-        update_obj_pk_map = create_primary_key_map(update_object_out)
+        update_obj_pk_map = self._create_primary_key_map(update_object_out)
 
         delete_response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{update_obj_pk_map[unique_identifier]}",
@@ -485,7 +484,7 @@ class TestAPI(BaseTest):
             unique_identifier (str): Unique identifier
         """
         _, update_object_out = await self._create_object_crud(db, object_generator_func)
-        update_obj_pk_map = create_primary_key_map(update_object_out)
+        update_obj_pk_map = self._create_primary_key_map(update_object_out)
 
         response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{update_obj_pk_map[unique_identifier]}",
@@ -493,7 +492,7 @@ class TestAPI(BaseTest):
         )
         assert response.status_code == 200
         content = response.json()
-        update_obj_pk_map = create_primary_key_map(update_object_out)
+        update_obj_pk_map = self._create_primary_key_map(update_object_out)
         assert (
             content
             == f"{route_name} with mapping ({unique_identifier}: {update_obj_pk_map[unique_identifier]}) deleted successfully"
@@ -551,7 +550,7 @@ class TestAPI(BaseTest):
             unique_identifier (str): Unique identifier
         """
         _, object_out = await self._create_object_crud(db, object_generator_func)
-        obj_out_pk_map = create_primary_key_map(object_out)
+        obj_out_pk_map = self._create_primary_key_map(object_out)
         response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
         )
