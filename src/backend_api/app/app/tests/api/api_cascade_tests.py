@@ -22,7 +22,7 @@ class TestCascadeAPI(TestAPI):
         ],
         get_crud_test_cascade_model: UtilTestCascade,
         retrieve_dependencies: Optional[bool] = False,
-    ) -> Tuple[Dict, ModelType, Dict, Optional[List[Union[Dict, ModelType]]]]:
+    ) -> Tuple[Dict, ModelType, Optional[List[Union[Dict, ModelType]]]]:
         """A private method used to create objects, with the option to retrieve dependencies.
 
         Args:
@@ -36,7 +36,7 @@ class TestCascadeAPI(TestAPI):
         Returns:
             Tuple[Dict, ModelType, Optional[List[Union[Dict, ModelType]]]]:
 
-            Object dictionary, object instance, object_out_dict and dependencies
+            Object dictionary, object instance and dependencies
         """
         if retrieve_dependencies:
             object_dict, object_out, deps = (
@@ -44,16 +44,14 @@ class TestCascadeAPI(TestAPI):
                     db, object_generator_func, retrieve_dependencies=True
                 )
             )
-            object_out_dict = self._db_obj_to_dict(object_out)
-            return object_dict, object_out, object_out_dict, deps
+            return object_dict, object_out, deps
         else:
             object_dict, object_out = (
                 await get_crud_test_cascade_model._create_object_cascade(
                     db, object_generator_func
                 )
             )
-            object_out_dict = self._db_obj_to_dict(object_out)
-            return object_dict, object_out, object_out_dict
+            return object_dict, object_out
 
     def _get_foreign_keys(
         self, model: ModelType, get_crud_test_cascade_model: UtilTestCascade
@@ -102,11 +100,24 @@ class TestCascadeAPI(TestAPI):
         superuser_headers: Dict,
         api_deps_instances: List[List[str]],
     ) -> None:
-        """
-        A method for testing cascade delete
-        """
+        """Test cascade delete function for the API.
 
-        _, obj, _, deps = await self._create_object_cascade(
+        Args:
+            db (pytest.Session): DB session
+
+            object_generator_func_w_deps
+            (Tuple[ Dict, ModelType, Optional[List[Union[Dict, ModelType]]] ]):
+            Object generator function with dependencies
+
+            client (TestClient): FastAPI test client
+            route_name (str): Route name
+            unique_identifier (str): Unique identifier for the object
+            get_crud_test_cascade_model (UtilTestCascade): Test cascade model from CRUD
+            ignore_test_columns (List[str]): Columns to ignore
+            superuser_headers (Dict): Superuser headers
+            api_deps_instances (List[List[str]]): API dependencies instances
+        """
+        _, object_out, deps = await self._create_object_cascade(
             db,
             object_generator_func_w_deps,
             get_crud_test_cascade_model,
@@ -117,25 +128,28 @@ class TestCascadeAPI(TestAPI):
         # this is because the item is already deleted by the time we are notified
         # that it was not allowed.
         restricted_tables = self._find_restricted_delete(
-            obj, deps, get_crud_test_cascade_model
+            object_out, deps, get_crud_test_cascade_model
         )
 
         print("TOYOTA", deps)
 
+        # Number of dependencies is half the length of deps list (since it is a list of pairs)
         n_deps = len(deps) // 2
         for i in range(n_deps):
-            object_dict, object_out, object_out_dict, deps = (
-                await self._create_object_cascade(
-                    db,
-                    object_generator_func_w_deps,
-                    get_crud_test_cascade_model,
-                    retrieve_dependencies=True,
-                )
+            object_dict, object_out, deps = await self._create_object_cascade(
+                db,
+                object_generator_func_w_deps,
+                get_crud_test_cascade_model,
+                retrieve_dependencies=True,
             )  # New objects have to be created for every test, since they are constantly being deleted
             self._test_object(get_crud_test_cascade_model, object_out, object_dict)
 
+            obj_out_pk_map = self._create_primary_key_map(
+                object_out, get_crud_test_cascade_model
+            )
+
             response_get_before_deletion = client.get(
-                f"{settings.API_V1_STR}/{route_name}/{object_out_dict[unique_identifier]}",
+                f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
                 auth=superuser_headers,
             )
             content_before_deletion = response_get_before_deletion.json()
@@ -184,13 +198,13 @@ class TestCascadeAPI(TestAPI):
             print("HULALANDET", content_dep, "\n")
             # print(
             #     "BUAAA",
-            #     f"{dep_route_name} with mapping ({{'{dep_unique_identifier}': '{object_out_dict[dep_unique_identifier]}'}}) deleted successfully",
+            #     f"{dep_route_name} with mapping ({{'{dep_unique_identifier}': '{obj_out_pk_map[dep_unique_identifier]}'}}) deleted successfully",
             # )
 
             assert response_delete_dep.status_code == 200
 
             response_get_after_deletion = client.get(
-                f"{settings.API_V1_STR}/{route_name}/{object_out_dict[unique_identifier]}",
+                f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
                 auth=superuser_headers,
             )
             print("HAGLEBU", response_get_after_deletion)
@@ -222,7 +236,7 @@ class TestCascadeAPI(TestAPI):
         5. Updates a dependency
         6. Checks if the update affects the dependent
         """
-        _, obj, _, deps = await self._create_object_cascade(
+        _, object_out, deps = await self._create_object_cascade(
             db,
             object_generator_func_w_deps,
             get_crud_test_cascade_model,
@@ -230,7 +244,7 @@ class TestCascadeAPI(TestAPI):
         )
 
         cascading_tables = self._find_cascading_update(
-            obj, deps, get_crud_test_cascade_model
+            object_out, deps, get_crud_test_cascade_model
         )
 
         n_deps = len(deps) // 2
@@ -241,16 +255,14 @@ class TestCascadeAPI(TestAPI):
             #     get_crud_test_cascade_model,
             #     retrieve_dependencies=True,
             # )
-            object_dict, object_out, object_out_dict, deps = (
-                await self._create_object_cascade(
-                    db,
-                    object_generator_func_w_deps,
-                    get_crud_test_cascade_model,
-                    retrieve_dependencies=True,
-                )
+            object_dict, object_out, deps = await self._create_object_cascade(
+                db,
+                object_generator_func_w_deps,
+                get_crud_test_cascade_model,
+                retrieve_dependencies=True,
             )  # New objects have to be created for every test, since they are constantly being deleted
             self._test_object(get_crud_test_cascade_model, object_out, object_dict)
-            obj_map = self._create_primary_key_map(
+            obj_out_pk_map = self._create_primary_key_map(
                 object_out, get_crud_test_cascade_model
             )  # Needs to be a global utility function
 
@@ -269,8 +281,8 @@ class TestCascadeAPI(TestAPI):
                 new_key_value = random_based_on_type(dep_dict[key])
                 new_dep_dict[key] = new_key_value
 
-                if key in obj_map:
-                    obj_map[key] = new_key_value
+                if key in obj_out_pk_map:
+                    obj_out_pk_map[key] = new_key_value
 
                 assert object_dict[key] != new_dep_dict[key]
 
@@ -294,7 +306,7 @@ class TestCascadeAPI(TestAPI):
             #     auth=superuser_headers,
             #     json=new_dep_dict,
             # )
-            primary_keys_map_object_out = self._create_primary_key_map(
+            dep_obj_out_pk_map = self._create_primary_key_map(
                 dep_model, get_crud_test_cascade_model
             )
             print(
@@ -305,7 +317,7 @@ class TestCascadeAPI(TestAPI):
                 dep_dict,
             )
 
-            print("HULAHULA", primary_keys_map_object_out)
+            print("HULAHULA", dep_obj_out_pk_map)
             if dep_route_name in special_update_params_deps:
                 print("KRAQQEDUPDATEINSTANCE")
 
@@ -313,11 +325,11 @@ class TestCascadeAPI(TestAPI):
                     f"{settings.API_V1_STR}/{dep_route_name}/",
                     auth=superuser_headers,
                     json=new_dep_dict,
-                    params=primary_keys_map_object_out,
+                    params=dep_obj_out_pk_map,
                 )
             else:
                 response_update_dep = client.put(
-                    f"{settings.API_V1_STR}/{dep_route_name}/{primary_keys_map_object_out[dep_unique_identifier]}",
+                    f"{settings.API_V1_STR}/{dep_route_name}/{dep_obj_out_pk_map[dep_unique_identifier]}",
                     auth=superuser_headers,
                     json=new_dep_dict,
                 )
@@ -337,7 +349,7 @@ class TestCascadeAPI(TestAPI):
 
             # Get the original model
             response_get_model = client.get(
-                f"{settings.API_V1_STR}/{route_name}/{object_out_dict[unique_identifier]}",
+                f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
                 auth=superuser_headers,
             )
             assert response_get_model.status_code == 200
