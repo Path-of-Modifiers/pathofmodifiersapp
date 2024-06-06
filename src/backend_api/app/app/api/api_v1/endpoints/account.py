@@ -11,9 +11,13 @@ import app.core.schemas as schemas
 from sqlalchemy.orm import Session
 
 from app.core.security import verification
+from app.api.api_v1.utils import get_delete_return_message
 
 
 router = APIRouter()
+
+
+account_prefix = "account"
 
 
 @router.get(
@@ -134,4 +138,4 @@ async def delete_account(
     account_map = {"accountName": accountName}
     await CRUD_account.remove(db=db, filter=account_map)
 
-    return f"Account with mapping ({account_map}) deleted successfully"
+    return get_delete_return_message(account_prefix, account_map)

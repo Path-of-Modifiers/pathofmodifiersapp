@@ -11,9 +11,13 @@ import app.core.schemas as schemas
 from sqlalchemy.orm import Session
 
 from app.core.security import verification
+from app.api.api_v1.utils import get_delete_return_message
 
 
 router = APIRouter()
+
+
+modifier_prefix = "modifier"
 
 
 @router.get(
@@ -21,19 +25,17 @@ router = APIRouter()
     response_model=Union[schemas.Modifier, List[schemas.Modifier]],
 )
 async def get_modifier(
-    modifierId: str, position: Optional[int] = None, db: Session = Depends(get_db)
+    modifierId: str, db: Session = Depends(get_db)
 ):
     """
     Get modifier or list of modifiers by key and
-    value for "modifierId" and optional "position"
+    value for "modifierId"
 
     Dominant key is "modifierId".
 
     Returns one or a list of modifiers.
     """
     modifier_map = {"modifierId": modifierId}
-    if position is not None:
-        modifier_map["position"] = position
     modifier = await CRUD_modifier.get(db=db, filter=modifier_map)
 
     return modifier
@@ -93,16 +95,15 @@ async def create_modifier(
     return await CRUD_modifier.create(db=db, obj_in=modifier)
 
 
-@router.put("/{modifierId}", response_model=schemas.Modifier)
+@router.put("/", response_model=schemas.Modifier)
 async def update_modifier(
     modifierId: int,
-    position: int,
     modifier_update: schemas.ModifierUpdate,
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
 ):
     """
-    Update a modifier by key and value for "modifierId" and "position".
+    Update a modifier by key and value for "modifierId"
 
     Dominant key is "modifierId".
 
@@ -114,7 +115,8 @@ async def update_modifier(
             detail=f"Unauthorized API access for {update_modifier.__name__}",
         )
 
-    modifier_map = {"modifierId": modifierId, "position": position}
+    modifier_map = {"modifierId": modifierId}
+
     modifier = await CRUD_modifier.get(
         db=db,
         filter=modifier_map,
@@ -126,15 +128,11 @@ async def update_modifier(
 @router.delete("/{modifierId}", response_model=str)
 async def delete_modifier(
     modifierId: int,
-    position: Optional[int] = None,
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
 ):
     """
     Delete a modifier by key and value for "modifierId"
-    and optional "position".
-
-    Dominant key is "modifierId".
 
     Returns a message that the modifier was deleted.
     Always deletes one modifier.
@@ -146,8 +144,6 @@ async def delete_modifier(
         )
 
     modifier_map = {"modifierId": modifierId}
-    if position is not None:
-        modifier_map["position"] = position
     await CRUD_modifier.remove(db=db, filter=modifier_map)
 
-    return f"Modifier with mapping ({modifier_map}) deleted successfully"
+    return get_delete_return_message(modifier_prefix, modifier_map)
