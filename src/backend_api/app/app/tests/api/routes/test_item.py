@@ -74,8 +74,8 @@ def get_crud_test_cascade_model() -> UtilTestCascadeCRUD:
 
 
 @pytest.fixture(scope="module")
-def get_high_permissions() -> bool:    
-    """ Some models require high permissions to test GET requests
+def get_high_permissions() -> bool:
+    """Some models require high permissions to test GET requests
 
     Returns:
         bool: True if the model requires high permissions to test GET requests
@@ -89,8 +89,11 @@ def object_generator_func() -> Callable[[], Tuple[Dict, ModelType]]:
 
 
 @pytest.fixture(scope="module")
-def create_random_object_func() -> Callable[[], Dict]:
-    return create_random_item_dict
+def create_random_object_func() -> Callable[[Session], Awaitable[Dict]]:
+    async def create_object(db: Session) -> Dict:
+        return await create_random_item_dict(db)
+
+    return create_object
 
 
 @pytest.fixture(scope="module")
