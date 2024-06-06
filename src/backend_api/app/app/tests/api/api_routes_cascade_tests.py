@@ -160,8 +160,6 @@ class TestCascadeAPI(TestAPI):
             object_out, deps, get_crud_test_cascade_model
         )
 
-        print("TOYOTA", deps)
-
         # Number of dependencies is half the length of deps list (since it is a list of pairs)
         n_deps = len(deps) // 2
         for i in range(n_deps):
@@ -195,11 +193,7 @@ class TestCascadeAPI(TestAPI):
                 continue
 
             # Get key name of dict api_deps_instances[i]
-            print("YIDA", api_deps_instances, i)
             dep_route_name = api_deps_instances[i][0]
-            print("DEP_ROUTE_NAME", dep_route_name)
-            print("DEP_VADERFADERDICT", dep_dict)
-            print("DEP_VADERFADERMODEL", dep_model)
             dep_unique_identifier = api_deps_instances[i][1]
 
             if dep_unique_identifier not in dep_dict:
@@ -211,21 +205,10 @@ class TestCascadeAPI(TestAPI):
             )
             content_dep = response_delete_dep.json()
             primary_keys_map = create_primary_key_map(dep_model)
-            print("HULALANDET", content_dep, "\n")
-            print(
-                "BUAAA",
-                f"{dep_route_name} with mapping ({dep_unique_identifier}: {primary_keys_map[dep_unique_identifier]}) deleted successfully",
-            )
             assert (
                 content_dep
                 == f"{dep_route_name} with mapping ({dep_unique_identifier}: {primary_keys_map[dep_unique_identifier]}) deleted successfully"
             )
-
-            print("HULALANDET", content_dep, "\n")
-            # print(
-            #     "BUAAA",
-            #     f"{dep_route_name} with mapping ({{'{dep_unique_identifier}': '{obj_out_pk_map[dep_unique_identifier]}'}}) deleted successfully",
-            # )
 
             assert response_delete_dep.status_code == 200
 
@@ -233,7 +216,6 @@ class TestCascadeAPI(TestAPI):
                 f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
                 auth=superuser_headers,
             )
-            print("HAGLEBU", response_get_after_deletion)
             assert response_get_after_deletion.status_code == 404
 
     @pytest.mark.asyncio
@@ -330,39 +312,13 @@ class TestCascadeAPI(TestAPI):
 
                 assert object_dict[key] != new_dep_dict[key]
 
-            # updated_dep_model = await crud_deps_instances[i].update(
-            #     db, db_obj=dep_model, obj_in=new_dep_dict
-            # )
+
             dep_route_name = api_deps_instances[i][0]
             dep_unique_identifier = api_deps_instances[i][1]
-            # print(
-            #     "ABOBA",
-            #     dep_route_name,
-            #     dep_unique_identifier,
-            #     "!!!",
-            #     new_dep_dict[dep_unique_identifier],
-            # )
-
-            # Update the dependency
-
-            # response_update_dep = client.put(
-            #     f"{settings.API_V1_STR}/{dep_route_name}/{dep_dict[dep_unique_identifier]}",
-            #     auth=superuser_headers,
-            #     json=new_dep_dict,
-            # )
+            
             dep_obj_out_pk_map = create_primary_key_map(dep_model)
-            print(
-                "HAGGLEBU",
-                dep_route_name,
-                dep_unique_identifier,
-                new_dep_dict,
-                dep_dict,
-            )
 
-            print("HULAHULA", dep_obj_out_pk_map)
             if dep_route_name in update_request_params_deps:
-                print("KRAQQEDUPDATEINSTANCE")
-
                 response_update_dep = client.put(
                     f"{settings.API_V1_STR}/{dep_route_name}/",
                     auth=superuser_headers,
@@ -377,17 +333,13 @@ class TestCascadeAPI(TestAPI):
                 )
 
             updated_dep_model_content = response_update_dep.json()
-            print("UPDATED_DEP_MODEL_DARK_VADER", updated_dep_model_content)
-            print("RESPONSEVADER_STATUS", response_update_dep.status_code)
+            
             assert response_update_dep.status_code == 200
             self._compare_dicts(
                 updated_dep_model_content,
                 new_dep_dict,
                 ignore=ignore_test_columns,
             )
-
-            print("GRAVERN", updated_dep_model_content)
-            print("SJUKERN", object_dict)
 
             # Get the original model
             response_get_model = client.get(
