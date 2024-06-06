@@ -98,7 +98,7 @@ def random_bool() -> bool:
 
 
 def random_json(key_type: Dict[str, bool]) -> Dict[str, Any]:
-    """ Generate a random JSON object based on the key_type dictionary.
+    """Generate a random JSON object based on the key_type dictionary.
 
     Args:
         key_type (Dict[str, bool]): Dictionary with the key and the type of the key.
@@ -217,3 +217,12 @@ def get_super_authentication() -> HTTPBasicAuth:
     """
     authentication = HTTPBasicAuth(FIRST_SUPERUSER, FIRST_SUPERUSER_PASSWORD)
     return authentication
+
+
+def create_primary_key_map(obj: ModelType) -> Dict[str, Any]:
+    """
+    The CRUD get method uses filters. We can send in a map of primary keys to
+    get the object we are looking for
+    """
+    object_map = {key.name: getattr(obj, key.name) for key in obj.__table__.primary_key}
+    return object_map
