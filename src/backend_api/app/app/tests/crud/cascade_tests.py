@@ -13,7 +13,7 @@ from app.crud.base import (
 
 from app.tests.crud.crud_test_base import TestCRUD
 from app.core.models.database import insp
-from app.tests.utils.utils import random_based_on_type
+from app.tests.utils.utils import create_primary_key_map, random_based_on_type
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
@@ -140,7 +140,7 @@ class TestCascade(TestCRUD):
                 db, object_generator_func_w_deps, retrieve_dependencies=True
             )  # New objects have to be created for every test, since they are constantly being deleted
             self._test_object(object_out, object_dict)
-            obj_map = self._create_primary_key_map(object_out)
+            obj_map = create_primary_key_map(object_out)
 
             dep_dict, dep_model = deps[2 * i], deps[2 * i + 1]
             self._test_object(dep_model, dep_dict)
@@ -148,7 +148,7 @@ class TestCascade(TestCRUD):
             if dep_model.__tablename__ in restricted_tables:
                 continue
 
-            dep_map = self._create_primary_key_map(dep_model)
+            dep_map = create_primary_key_map(dep_model)
             deleted_dep_model = await crud_deps_instances[i].remove(
                 db=db, filter=dep_map
             )
@@ -191,7 +191,7 @@ class TestCascade(TestCRUD):
                 db, object_generator_func_w_deps, retrieve_dependencies=True
             )
             self._test_object(object_out, object_dict)
-            obj_map = self._create_primary_key_map(object_out)
+            obj_map = create_primary_key_map(object_out)
 
             dep_dict, dep_model = deps[2 * i], deps[2 * i + 1]
             self._test_object(dep_model, dep_dict)

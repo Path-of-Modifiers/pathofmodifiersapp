@@ -7,26 +7,13 @@ from sqlalchemy.orm import Session
 from app.crud.base import ModelType
 from app.core.config import settings
 from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
-from app.tests.utils.utils import is_courotine_function
+from app.tests.utils.utils import create_primary_key_map, is_courotine_function
 
 get_crud_test_model = UtilTestCRUD()
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
 class TestAPI:
-    def _create_primary_key_map(
-        self, db_obj: ModelType, get_crud_test_model: UtilTestCRUD
-    ) -> Dict:
-        """Create a primary key map for a db object
-
-        Args:
-            db_obj (ModelType): SQLAlchemy model
-
-        Returns:
-            Dict: Primary key map
-        """
-        return get_crud_test_model._create_primary_key_map(db_obj)
-
     async def _create_object(
         self,
         db: Session,
@@ -193,7 +180,7 @@ class TestAPI:
         _, object_out = await self._create_object(
             db, object_generator_func, get_crud_test_model
         )
-        obj_out_pk_map = self._create_primary_key_map(object_out, get_crud_test_model)
+        obj_out_pk_map = create_primary_key_map(object_out)
         response = client.get(
             f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
             auth=superuser_headers,
@@ -265,7 +252,7 @@ class TestAPI:
         _, object_out = await self._create_object(
             db, object_generator_func, get_crud_test_model
         )
-        obj_out_pk_map = self._create_primary_key_map(object_out, get_crud_test_model)
+        obj_out_pk_map = create_primary_key_map(object_out)
         response = client.get(
             f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
         )
@@ -340,7 +327,7 @@ class TestAPI:
         _, object_out = await self._create_object(
             db, object_generator_func, get_crud_test_model
         )
-        obj_out_pk_map = self._create_primary_key_map(object_out, get_crud_test_model)
+        obj_out_pk_map = create_primary_key_map(object_out)
 
         print("HAGGLEBU", update_request_params)
         update_object_dict, update_object_out = await self._create_object(
@@ -348,9 +335,7 @@ class TestAPI:
         )
         self._test_object(get_crud_test_model, update_object_out, update_object_dict)
 
-        update_obj_pk_map = self._create_primary_key_map(
-            update_object_out, get_crud_test_model
-        )
+        update_obj_pk_map = create_primary_key_map(update_object_out)
 
         delete_response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{update_obj_pk_map[unique_identifier]}",
@@ -383,9 +368,7 @@ class TestAPI:
 
         if update_request_params:
             print("KRAQQEDUPDATEINSTANCE")
-            obj_out_pk_map = self._create_primary_key_map(
-                object_out, get_crud_test_model
-            )
+            obj_out_pk_map = create_primary_key_map(object_out)
             response = client.put(
                 f"{settings.API_V1_STR}/{route_name}/",
                 auth=superuser_headers,
@@ -459,9 +442,7 @@ class TestAPI:
         )  # create the object to update and add to the db
         self._test_object(get_crud_test_model, update_object_out, update_object_dict)
 
-        update_obj_out_pk_map = self._create_primary_key_map(
-            update_object_out, get_crud_test_model
-        )
+        update_obj_out_pk_map = create_primary_key_map(update_object_out)
 
         delete_response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{update_obj_out_pk_map[unique_identifier]}",
@@ -545,16 +526,14 @@ class TestAPI:
             db, object_generator_func, get_crud_test_model
         )
 
-        obj_pk_map = self._create_primary_key_map(object_out, get_crud_test_model)
+        obj_pk_map = create_primary_key_map(object_out)
 
         update_object_dict, update_object_out = await self._create_object(
             db, object_generator_func, get_crud_test_model
         )
         self._test_object(get_crud_test_model, update_object_out, update_object_dict)
 
-        update_obj_pk_map = self._create_primary_key_map(
-            update_object_out, get_crud_test_model
-        )
+        update_obj_pk_map = create_primary_key_map(update_object_out)
 
         delete_response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{update_obj_pk_map[unique_identifier]}",
@@ -619,9 +598,7 @@ class TestAPI:
         _, update_object_out = await self._create_object(
             db, object_generator_func, get_crud_test_model
         )
-        update_obj_pk_map = self._create_primary_key_map(
-            update_object_out, get_crud_test_model
-        )
+        update_obj_pk_map = create_primary_key_map(update_object_out)
 
         response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{update_obj_pk_map[unique_identifier]}",
@@ -629,9 +606,7 @@ class TestAPI:
         )
         assert response.status_code == 200
         content = response.json()
-        update_obj_pk_map = self._create_primary_key_map(
-            update_object_out, get_crud_test_model
-        )
+        update_obj_pk_map = create_primary_key_map(update_object_out)
         assert (
             content
             == f"{route_name} with mapping ({unique_identifier}: {update_obj_pk_map[unique_identifier]}) deleted successfully"
@@ -693,7 +668,7 @@ class TestAPI:
         _, object_out = await self._create_object(
             db, object_generator_func, get_crud_test_model
         )
-        obj_out_pk_map = self._create_primary_key_map(object_out, get_crud_test_model)
+        obj_out_pk_map = create_primary_key_map(object_out)
         response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
         )

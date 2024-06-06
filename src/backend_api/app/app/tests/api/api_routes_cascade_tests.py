@@ -9,7 +9,7 @@ from app.core.config import settings
 from app.tests.api.api_routes_test_base import TestAPI
 from app.tests.crud.cascade_tests import TestCascade as UtilTestCascade
 from app.crud.base import ModelType
-from app.tests.utils.utils import random_based_on_type
+from app.tests.utils.utils import create_primary_key_map, random_based_on_type
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
@@ -173,9 +173,7 @@ class TestCascadeAPI(TestAPI):
             )  # New objects have to be created for every test, since they are constantly being deleted
             self._test_object(get_crud_test_cascade_model, object_out, object_dict)
 
-            obj_out_pk_map = self._create_primary_key_map(
-                object_out, get_crud_test_cascade_model
-            )
+            obj_out_pk_map = create_primary_key_map(object_out)
 
             response_get_before_deletion = client.get(
                 f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
@@ -212,9 +210,7 @@ class TestCascadeAPI(TestAPI):
                 auth=superuser_headers,
             )
             content_dep = response_delete_dep.json()
-            primary_keys_map = self._create_primary_key_map(
-                dep_model, get_crud_test_cascade_model
-            )
+            primary_keys_map = create_primary_key_map(dep_model)
             print("HULALANDET", content_dep, "\n")
             print(
                 "BUAAA",
@@ -310,8 +306,8 @@ class TestCascadeAPI(TestAPI):
                 retrieve_dependencies=True,
             )  # New objects have to be created for every test, since they are constantly being deleted
             self._test_object(get_crud_test_cascade_model, object_out, object_dict)
-            obj_out_pk_map = self._create_primary_key_map(
-                object_out, get_crud_test_cascade_model
+            obj_out_pk_map = create_primary_key_map(
+                object_out
             )  # Needs to be a global utility function
 
             dep_dict, dep_model = deps[2 * i], deps[2 * i + 1]
@@ -354,9 +350,7 @@ class TestCascadeAPI(TestAPI):
             #     auth=superuser_headers,
             #     json=new_dep_dict,
             # )
-            dep_obj_out_pk_map = self._create_primary_key_map(
-                dep_model, get_crud_test_cascade_model
-            )
+            dep_obj_out_pk_map = create_primary_key_map(dep_model)
             print(
                 "HAGGLEBU",
                 dep_route_name,
