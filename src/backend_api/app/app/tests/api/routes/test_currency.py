@@ -66,6 +66,11 @@ def object_generator_func() -> Callable[[], Tuple[Dict, ModelType]]:
 
 @pytest.fixture(scope="module")
 def get_high_permissions() -> bool:
+    """Some models require high permissions to test GET requests
+
+    Returns:
+        bool: True if the model requires high permissions to test GET requests
+    """
     return False
 
 
