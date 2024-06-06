@@ -11,9 +11,13 @@ import app.core.schemas as schemas
 from sqlalchemy.orm import Session
 
 from app.core.security import verification
+from app.api.api_v1.utils import get_delete_return_message
 
 
 router = APIRouter()
+
+
+stash_prefix = "stash"
 
 
 @router.get(
@@ -115,4 +119,4 @@ async def delete_stash(
     stash_map = {"stashId": stashId}
     await CRUD_stash.remove(db=db, filter=stash_map)
 
-    return f"Stash with mapping ({stash_map}) deleted successfully"
+    return get_delete_return_message(stash_prefix, stash_map)

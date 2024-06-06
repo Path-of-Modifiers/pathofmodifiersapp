@@ -12,9 +12,13 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 
 from app.core.security import verification
+from app.api.api_v1.utils import get_delete_return_message
 
 
 router = APIRouter()
+
+
+currency_prefix = "currency"
 
 
 @router.get(
@@ -130,4 +134,4 @@ async def delete_currency(
     currency_map = {"currencyId": currencyId}
     await CRUD_currency.remove(db=db, filter=currency_map)
 
-    return f"Currency with mapping ({currency_map}) deleted successfully"
+    return get_delete_return_message(currency_prefix, currency_map)

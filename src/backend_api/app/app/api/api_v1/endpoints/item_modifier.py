@@ -11,9 +11,13 @@ import app.core.schemas as schemas
 from sqlalchemy.orm import Session
 
 from app.core.security import verification
+from app.api.api_v1.utils import get_delete_return_message
 
 
 router = APIRouter()
+
+
+item_modifier_prefix = "itemModifier"
 
 
 @router.get(
@@ -79,11 +83,10 @@ async def create_item_modifier(
     return await CRUD_itemModifier.create(db=db, obj_in=itemModifier)
 
 
-@router.put("/item={itemId}", response_model=schemas.ItemModifier)
+@router.put("/", response_model=schemas.ItemModifier)
 async def update_item_modifier(
     itemId: int,
     modifierId: int,
-    position: int,
     itemModifier_update: schemas.ItemModifierUpdate,
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
@@ -105,7 +108,6 @@ async def update_item_modifier(
     itemModifier_map = {
         "itemId": itemId,
         "modifierId": modifierId,
-        "position": position,
     }
     itemModifier = await CRUD_itemModifier.get(
         db=db,
@@ -117,11 +119,10 @@ async def update_item_modifier(
     )
 
 
-@router.delete("/item={itemId}")
+@router.delete("/{itemId}")
 async def delete_item_modifier(
     itemId: int,
     modifierId: Optional[int] = None,
-    position: Optional[int] = None,
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
 ):
@@ -143,9 +144,7 @@ async def delete_item_modifier(
     itemModifier_map = {"itemId": itemId}
     if modifierId is not None:
         itemModifier_map["modifierId"] = modifierId
-    if position is not None:
-        itemModifier_map["position"] = position
 
     await CRUD_itemModifier.remove(db=db, filter=itemModifier_map)
 
-    return f"ItemModifier with mapping ({itemModifier_map}) was deleted successfully"
+    return get_delete_return_message(item_modifier_prefix, itemModifier_map)
