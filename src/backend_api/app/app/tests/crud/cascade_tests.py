@@ -1,8 +1,6 @@
-import asyncio
 import pytest
-from typing import Any, Dict, List, Optional, Union, Callable, Tuple
+from typing import Dict, List,  Union, Callable, Tuple
 from copy import deepcopy
-
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
@@ -10,92 +8,14 @@ from app.crud.base import (
     CRUDBase,
     ModelType,
 )
-
 from app.tests.crud.crud_test_base import TestCRUD
 from app.core.models.database import insp
 from app.tests.utils.utils import random_based_on_type
 
 
+@pytest.mark.usefixtures("clear_db", autouse=True)
 class TestCascade(TestCRUD):
-    async def _create_object(
-        self,
-        db: Session,
-        object_generator_func: Tuple[
-            Dict, ModelType, Optional[List[Union[Dict, ModelType]]]
-        ],
-        retrieve_dependencies: Optional[bool] = False,
-    ) -> Tuple[Dict, ModelType, Optional[List[Union[Dict, ModelType]]]]:
-        """
-        A private method used to create objects, with the option to retrieve dependencies.
-        """
-        if retrieve_dependencies:
-            object_dict, object_out, deps = await object_generator_func(db)
-
-            return object_dict, object_out, deps
-
-        else:
-            object_dict, object_out = await object_generator_func(db)
-
-            return object_dict, object_out
-
-    def _get_foreign_keys(self, model: ModelType) -> List[Dict]:
-        """
-        Uses a database inspector to learn more about the foreign keys related to the given model.
-        The returned object is a list of dictionaries, where each element represents a relation to
-        another table. One related table may have multiple foreign keys.
-        """
-        foreign_keys = insp.get_foreign_keys(model.__tablename__)
-        return foreign_keys
-
-    def _find_restricted_delete(
-        self, model: ModelType, deps: List[Union[Dict, ModelType]]
-    ) -> List[str]:
-        """
-        Retrieves all tables related to model, which are not allowed to be deleted
-        """
-        foreign_keys = self._get_foreign_keys(model)
-        restricted_tables = []
-        for key in foreign_keys:
-            if key["options"]["ondelete"] == "RESTRICT":
-                restricted_tables.append(key["referred_table"])
-
-        # Does the same for every dependency
-        for dep in deps[
-            1::2
-        ]:  # every other element is a model, starting from the 2nd element
-            foreign_keys = self._get_foreign_keys(dep)
-            for key in foreign_keys:
-                if key["options"]["ondelete"] == "RESTRICT":
-                    restricted_tables.append(key["referred_table"])
-
-        return restricted_tables
-
-    def _find_cascading_update(
-        self, model: ModelType, deps: List[Union[Dict, ModelType]]
-    ) -> Dict[str, str]:
-        """
-        Retrieves all tables related to model, which delete all dependent entries
-        """
-        foreign_keys = self._get_foreign_keys(model)
-        cascading_tables = {}
-        for key in foreign_keys:
-            if "onupdate" in key["options"]:
-                if key["options"]["onupdate"] == "CASCADE":
-                    cascading_tables[key["referred_table"]] = key["referred_columns"]
-
-        # Does the same for every dependency
-        for dep in deps[
-            1::2
-        ]:  # every other element is a model, starting from the 2nd element
-            foreign_keys = self._get_foreign_keys(dep)
-            for key in foreign_keys:
-                if "onupdate" in key["options"]:
-                    if key["options"]["onupdate"] == "CASCADE":
-                        cascading_tables[key["referred_table"]] = key[
-                            "referred_columns"
-                        ]
-
-        return cascading_tables
+   
 
     @pytest.mark.asyncio
     async def test_cascade_delete(
@@ -117,7 +37,7 @@ class TestCascade(TestCRUD):
         5. Deletes a dependency
         6. Checks if a query for the dependent results in a specified HTTPException
         """
-        _, obj, deps = await self._create_object(
+        _, obj, deps = await self._create_object_cascade_crud(
             db, object_generator_func_w_deps, retrieve_dependencies=True
         )
 
@@ -128,7 +48,7 @@ class TestCascade(TestCRUD):
 
         n_deps = len(deps) // 2
         for i in range(n_deps):
-            object_dict, object_out, deps = await self._create_object(
+            object_dict, object_out, deps = await self._create_object_cascade_crud(
                 db, object_generator_func_w_deps, retrieve_dependencies=True
             )  # New objects have to be created for every test, since they are constantly being deleted
             self._test_object(object_out, object_dict)
@@ -172,14 +92,14 @@ class TestCascade(TestCRUD):
         5. Updates a dependency
         6. Checks if the update affects the dependent
         """
-        obj_dict, obj, deps = await self._create_object(
+        _, obj, deps = await self._create_object_cascade_crud(
             db, object_generator_func_w_deps, retrieve_dependencies=True
         )
 
         cascading_tables = self._find_cascading_update(obj, deps)
         n_deps = len(deps) // 2
         for i in range(n_deps):
-            object_dict, object_out, deps = await self._create_object(
+            object_dict, object_out, deps = await self._create_object_cascade_crud(
                 db, object_generator_func_w_deps, retrieve_dependencies=True
             )
             self._test_object(object_out, object_dict)

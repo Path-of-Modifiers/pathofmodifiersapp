@@ -1,7 +1,17 @@
+from inspect import iscoroutinefunction
+import os
 import random
 import string
-from typing import Optional, Dict, Any, Union
+from typing import Callable, List, Optional, Dict, Any, Union
 from datetime import datetime, timedelta
+from requests.auth import HTTPBasicAuth
+from sqlalchemy import inspect
+
+from app.crud.base import ModelType
+
+
+FIRST_SUPERUSER = os.getenv("FIRST_SUPERUSER")
+FIRST_SUPERUSER_PASSWORD = os.getenv("FIRST_SUPERUSER_PASSWORD")
 
 
 def random_lower_string(*, small_string: Optional[bool] = None) -> str:
@@ -88,6 +98,14 @@ def random_bool() -> bool:
 
 
 def random_json(key_type: Dict[str, bool]) -> Dict[str, Any]:
+    """Generate a random JSON object based on the key_type dictionary.
+
+    Args:
+        key_type (Dict[str, bool]): Dictionary with the key and the type of the key.
+
+    Returns:
+        Dict[str, Any]: Random JSON object.
+    """
     random_dict = {}
     for key in key_type:
         match key_type[key]:
@@ -144,3 +162,61 @@ def random_based_on_type(reference: Union[str, float, int]) -> Union[str, int, f
         return random_int(max_value=reference)
     else:
         raise NotImplementedError(f"Objects of type {type_reference} is not supported")
+
+
+def get_ignore_keys(model: ModelType, dict: Dict) -> List[str]:
+    """Compare a model with a dictionary, and return the model's keys that are not in the dictionary
+
+    Args:
+        model (ModelType): Model
+        dict (Dict): Dictionary
+    """
+    return [key for key in model.__table__.columns.keys() if key not in dict]
+
+
+def is_courotine_function(func: Callable) -> bool:
+    """Check if func is a coroutine function."""
+    if iscoroutinefunction(func) and callable(func):
+        return True
+    else:
+        return False
+
+
+def get_model_unique_identifier(model: ModelType) -> str:
+    """Get the unique identifier of a model.
+
+    Important: Assumes the unique identifier is the first primary key of the model.
+
+    Args:
+        model (ModelType): Model
+
+    Returns:
+        str: Unique identifier of the model.
+    """
+    return inspect(model).primary_key[0].name
+
+
+def get_model_table_name(model: ModelType) -> str:
+    """Get the table name of a model.
+
+    Args:
+        model (ModelType): Model
+
+    Returns:
+        str: Table name of the model.
+    """
+    return model.__table__.name
+
+
+def get_super_authentication() -> HTTPBasicAuth:
+    """
+    Get the super authentication for the Path of Modifiers API.
+
+    Returns:
+        HTTPBasicAuth: POM user and password authentication.
+    """
+    authentication = HTTPBasicAuth(FIRST_SUPERUSER, FIRST_SUPERUSER_PASSWORD)
+    return authentication
+
+
+

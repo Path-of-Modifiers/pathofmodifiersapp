@@ -11,9 +11,13 @@ import app.core.schemas as schemas
 from sqlalchemy.orm import Session
 
 from app.core.security import verification
+from app.api.api_v1.utils import get_delete_return_message
 
 
 router = APIRouter()
+
+
+item_base_type_prefix = "itemBaseType"
 
 
 @router.get(
@@ -165,4 +169,4 @@ async def delete_item_base_type(
     item_base_type_map = {"baseType": baseType}
     await CRUD_itemBaseType.remove(db=db, filter=item_base_type_map)
 
-    return f"Ttem base type with mapping ({item_base_type_map}) deleted successfully"
+    return get_delete_return_message(item_base_type_prefix, item_base_type_map)
