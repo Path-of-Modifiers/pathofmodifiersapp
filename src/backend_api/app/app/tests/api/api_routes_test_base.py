@@ -5,7 +5,6 @@ import pytest
 from sqlalchemy.orm import Session
 
 from app.crud.base import ModelType
-
 from app.core.config import settings
 from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
 from app.tests.utils.utils import is_courotine_function
