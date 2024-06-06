@@ -98,6 +98,14 @@ def random_bool() -> bool:
 
 
 def random_json(key_type: Dict[str, bool]) -> Dict[str, Any]:
+    """ Generate a random JSON object based on the key_type dictionary.
+
+    Args:
+        key_type (Dict[str, bool]): Dictionary with the key and the type of the key.
+
+    Returns:
+        Dict[str, Any]: Random JSON object.
+    """
     random_dict = {}
     for key in key_type:
         match key_type[key]:
