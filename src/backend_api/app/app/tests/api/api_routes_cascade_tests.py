@@ -14,7 +14,7 @@ from app.tests.utils.utils import create_primary_key_map, random_based_on_type
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
 class TestCascadeAPI(TestAPI):
-    async def _create_object_cascade(
+    async def _create_object_crud_cascade(
         self,
         db: Session,
         object_generator_func: Tuple[
@@ -146,7 +146,7 @@ class TestCascadeAPI(TestAPI):
             superuser_headers (Dict): Superuser headers
             api_deps_instances (List[List[str]]): API dependencies instances
         """
-        _, object_out, deps = await self._create_object_cascade(
+        _, object_out, deps = await self._create_object_crud_cascade(
             db,
             object_generator_func_w_deps,
             get_crud_test_cascade_model,
@@ -163,7 +163,7 @@ class TestCascadeAPI(TestAPI):
         # Number of dependencies is half the length of deps list (since it is a list of pairs)
         n_deps = len(deps) // 2
         for i in range(n_deps):
-            object_dict, object_out, deps = await self._create_object_cascade(
+            object_dict, object_out, deps = await self._create_object_crud_cascade(
                 db,
                 object_generator_func_w_deps,
                 get_crud_test_cascade_model,
@@ -262,7 +262,7 @@ class TestCascadeAPI(TestAPI):
             superuser_headers (Dict): Superuser headers
             api_deps_instances (List[List[str]]): API dependencies instances
         """
-        _, object_out, deps = await self._create_object_cascade(
+        _, object_out, deps = await self._create_object_crud_cascade(
             db,
             object_generator_func_w_deps,
             get_crud_test_cascade_model,
@@ -275,13 +275,7 @@ class TestCascadeAPI(TestAPI):
 
         n_deps = len(deps) // 2
         for i in range(n_deps):
-            # object_dict, object_out, _, deps = await self._create_object_cascade(
-            #     db,
-            #     object_generator_func_w_deps,
-            #     get_crud_test_cascade_model,
-            #     retrieve_dependencies=True,
-            # )
-            object_dict, object_out, deps = await self._create_object_cascade(
+            object_dict, object_out, deps = await self._create_object_crud_cascade(
                 db,
                 object_generator_func_w_deps,
                 get_crud_test_cascade_model,
