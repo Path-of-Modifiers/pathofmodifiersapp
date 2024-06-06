@@ -11,7 +11,6 @@ from app.tests.utils.database_utils import (
     clear_all_tables,
     mock_src_database_for_test_db,
 )
-from app.core.models.database import Base
 from app.api.deps import get_db
 from app.tests.utils.utils import get_super_authentication
 
