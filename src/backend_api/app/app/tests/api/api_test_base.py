@@ -136,6 +136,18 @@ class TestAPI:
             Callable[[Session], Awaitable[Dict]], Callable[[], Dict]
         ],
     ) -> None:
+        """Test create instance
+
+        Args:
+            client (TestClient): FastAPI test client
+            superuser_headers (Dict[str, str]): Superuser headers
+            route_name (str): Route name
+            db (Session): DB session
+
+            create_random_object_func
+            (Union[ Callable[[Session], Awaitable[Dict]], Callable[[], Dict] ]):
+            Function to create a random object
+        """
         if is_courotine_function(create_random_object_func):
             create_obj = await create_random_object_func(db)
         else:
@@ -163,6 +175,22 @@ class TestAPI:
         get_crud_test_model: UtilTestCRUD,
         route_name: str,
     ) -> None:
+        """Test get instance
+
+        Args:
+            client (TestClient): FastAPI test client
+            superuser_headers (Dict[str, str]): Superuser headers
+            db (Session): DB session
+            unique_identifier (str): Unique identifier
+            ignore_test_columns (List[str]): Columns to ignore
+
+            object_generator_func
+            (Union[Callable[[], Tuple[Dict, ModelType]]]):
+            Object generator function
+
+            get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
+            route_name (str): Route name
+        """
         _, object_out = await self._create_object(
             db, object_generator_func, get_crud_test_model
         )
@@ -189,6 +217,15 @@ class TestAPI:
         route_name: str,
         unique_identifier: str,
     ) -> None:
+        """Test get instance not found
+
+        Args:
+            client (TestClient): FastAPI test client
+            superuser_headers (Dict[str, str]): Superuser headers
+            model_name (str): Model name
+            route_name (str): Route name
+            unique_identifier (str): Unique identifier for the model
+        """
         not_found_object = 999
         response = client.get(
             f"{settings.API_V1_STR}/{route_name}/{not_found_object}",
@@ -212,6 +249,20 @@ class TestAPI:
         get_crud_test_model: UtilTestCRUD,
         unique_identifier: str,
     ) -> None:
+        """Test get instance not enough permissions
+
+        Args:
+            client (TestClient): FastAPI test client
+            db (Session): DB session
+
+            object_generator_func (Union[Callable[[], Tuple[Dict, ModelType]]]):
+            Object generator function
+
+            get_high_permissions (bool): Whether to get high permissions for GET
+            route_name (str): Route name
+            get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
+            unique_identifier (str): Unique identifier for the model
+        """
         _, object_out = await self._create_object(
             db, object_generator_func, get_crud_test_model
         )
@@ -237,6 +288,19 @@ class TestAPI:
         get_crud_test_model: UtilTestCRUD,
         route_name: str,
     ) -> None:
+        """Test get instances
+
+        Args:
+            client (TestClient): FastAPI test client
+            superuser_headers (Dict[str, str]): Superuser headers
+            db (Session): DB session
+
+            object_generator_func
+            (Union[Callable[[], Tuple[Dict, ModelType]]]): Object generator function
+
+            get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
+            route_name (str): Route name
+        """
         await self._create_multiple_objects(
             db, object_generator_func, 5, get_crud_test_model
         )
@@ -258,15 +322,28 @@ class TestAPI:
         route_name: str,
         get_crud_test_model: UtilTestCRUD,
         unique_identifier: str,
-        special_update_params: bool,
+        update_request_params: bool,
         ignore_test_columns: List[str],
     ) -> None:
+        """Test update instance
+
+        Args:
+            client (TestClient): FastAPI test client
+            superuser_headers (Dict[str, str]): Superuser headers
+            db (Session): DB session
+            object_generator_func (Union[Callable[[], Tuple[Dict, ModelType]]]): Object generator function
+            route_name (str): Route name
+            get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
+            unique_identifier (str): Unique identifier
+            update_request_params (bool): Whether the update request requires params
+            ignore_test_columns (List[str]): Columns to ignore
+        """
         _, object_out = await self._create_object(
             db, object_generator_func, get_crud_test_model
         )
         obj_out_pk_map = self._create_primary_key_map(object_out, get_crud_test_model)
 
-        print("HAGGLEBU", special_update_params)
+        print("HAGGLEBU", update_request_params)
         update_object_dict, update_object_out = await self._create_object(
             db, object_generator_func, get_crud_test_model
         )
@@ -305,7 +382,7 @@ class TestAPI:
             f"{settings.API_V1_STR}/{route_name}/{update_obj_pk_map[unique_identifier]}",
         )
 
-        if special_update_params:
+        if update_request_params:
             print("KRAQQEDUPDATEINSTANCE")
             obj_out_pk_map = self._create_primary_key_map(
                 object_out, get_crud_test_model
@@ -359,9 +436,24 @@ class TestAPI:
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
         route_name: str,
         model_name: str,
-        special_update_params: bool,
+        update_request_params: bool,
         unique_identifier: str,
     ) -> None:
+        """Test update instance not found
+
+        Args:
+            client (TestClient): FastAPI test client
+            db (Session): DB session
+            superuser_headers (Dict[str, str]): Superuser headers
+
+            object_generator_func
+            (Union[Callable[[], Tuple[Dict, ModelType]]]): Object generator function
+
+            route_name (str): Route name
+            model_name (str): Model name
+            update_request_params (bool): Whether the update request requires params
+            unique_identifier (str): Unique identifier
+        """
         # We need to c
         update_object_dict, update_object_out = await self._create_object(
             db, object_generator_func, get_crud_test_model
@@ -379,7 +471,7 @@ class TestAPI:
         assert delete_response.status_code == 200
 
         content_delete = delete_response.json()
-        
+
         assert (
             content_delete
             == f"{route_name} with mapping ({unique_identifier}: {update_obj_out_pk_map[unique_identifier]}) deleted successfully"
@@ -392,7 +484,7 @@ class TestAPI:
         print("KRAKKENTALEN", update_object_dict)
         print(f"{settings.API_V1_STR}/{route_name}/{not_found_object}", "ROLLUP")
 
-        if special_update_params:
+        if update_request_params:
             print("KRAQQEDNOTFOUND")
             response = client.put(
                 f"{settings.API_V1_STR}/{route_name}/",
@@ -433,8 +525,23 @@ class TestAPI:
         superuser_headers: Dict[str, str],
         get_crud_test_model: UtilTestCRUD,
         unique_identifier: str,
-        special_update_params: bool,
+        update_request_params: bool,
     ) -> None:
+        """Test update instance not enough permissions
+
+        Args:
+            client (TestClient): FastAPI test client
+            db (Session): DB session
+
+            object_generator_func
+            (Union[Callable[[], Tuple[Dict, ModelType]]]): Object generator function
+
+            route_name (str): Route name
+            superuser_headers (Dict[str, str]): Superuser headers
+            get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
+            unique_identifier (str): Unique identifier
+            update_request_params (bool): Whether the update request requires params
+        """
         _, object_out = await self._create_object(
             db, object_generator_func, get_crud_test_model
         )
@@ -467,7 +574,7 @@ class TestAPI:
             == f"{route_name} with mapping ({unique_identifier}: {update_obj_pk_map[unique_identifier]}) deleted successfully"
         )
 
-        if special_update_params:
+        if update_request_params:
             print("KRAQQEDNOPERMISSIONS")
             response = client.put(
                 f"{settings.API_V1_STR}/{route_name}/",
@@ -496,6 +603,20 @@ class TestAPI:
         get_crud_test_model: UtilTestCRUD,
         unique_identifier: str,
     ) -> None:
+        """Test delete instance
+
+        Args:
+            client (TestClient): FastAPI test client
+            superuser_headers (Dict[str, str]): Superuser headers
+            db (Session): DB session
+
+            object_generator_func
+            (Union[Callable[[], Tuple[Dict, ModelType]]]): Object generator function
+
+            route_name (str): Route name
+            get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
+            unique_identifier (str): Unique identifier
+        """
         _, update_object_out = await self._create_object(
             db, object_generator_func, get_crud_test_model
         )
@@ -526,6 +647,15 @@ class TestAPI:
         model_name: str,
         unique_identifier: str,
     ) -> None:
+        """Test delete instance not found
+
+        Args:
+            client (TestClient): FastAPI test client
+            superuser_headers (Dict[str, str]): Superuser headers
+            route_name (str): Route name
+            model_name (str): Model name
+            unique_identifier (str): Unique identifier for the model
+        """
         not_found_object = 999
         response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{not_found_object}",
@@ -545,9 +675,22 @@ class TestAPI:
         db: Session,
         object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
         route_name: str,
-        get_crud_test_model,
+        get_crud_test_model: UtilTestCRUD,
         unique_identifier: str,
     ) -> None:
+        """Test delete instance not enough permissions
+
+        Args:
+            client (TestClient): FastAPI test client
+            db (Session): DB session
+
+            object_generator_func
+            (Union[Callable[[], Tuple[Dict, ModelType]]]): Object generator function
+
+            route_name (str): Route name
+            get_crud_test_model (UtilTestCRUD): UtilTestCRUD instance
+            unique_identifier (str): Unique identifier
+        """
         _, object_out = await self._create_object(
             db, object_generator_func, get_crud_test_model
         )
