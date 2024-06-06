@@ -53,6 +53,14 @@ def update_request_params() -> bool:
 
 @pytest.fixture(scope="module")
 def ignore_test_columns() -> List[str]:
+    """Ignore these columns when testing the model
+
+    updatedAt and createdAt are ignored because currently, the API returns
+    time in a different format than the one stored in the database
+
+    Returns:
+        List[str]: List of columns to ignore
+    """
     return ["updatedAt", "createdAt"]
 
 
