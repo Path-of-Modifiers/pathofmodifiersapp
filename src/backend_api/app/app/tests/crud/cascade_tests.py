@@ -26,8 +26,15 @@ class TestCascade(TestCRUD):
         ],
         retrieve_dependencies: Optional[bool] = False,
     ) -> Tuple[Dict, ModelType, Optional[List[Union[Dict, ModelType]]]]:
-        """
-        A private method used to create objects, with the option to retrieve dependencies.
+        """A private method used to create objects, with option to retrieve dependencies
+
+        Args:
+            db (Session): Database session
+            object_generator_func (Tuple[ Dict, ModelType, Optional[List[Union[Dict, ModelType]]] ]): A tuple containing the object dictionary, the object model and optionally a list of dependencies
+            retrieve_dependencies (Optional[bool], optional): Optional whether to retrieve dependencies. Defaults to False.
+
+        Returns:
+            Tuple[Dict, ModelType, Optional[List[Union[Dict, ModelType]]]]: A tuple containing the object dictionary, the object model and optionally a list of dependencies
         """
         if retrieve_dependencies:
             object_dict, object_out, deps = await object_generator_func(db)
@@ -173,7 +180,7 @@ class TestCascade(TestCRUD):
         5. Updates a dependency
         6. Checks if the update affects the dependent
         """
-        obj_dict, obj, deps = await self._create_object_cascade(
+        _, obj, deps = await self._create_object_cascade(
             db, object_generator_func_w_deps, retrieve_dependencies=True
         )
 
