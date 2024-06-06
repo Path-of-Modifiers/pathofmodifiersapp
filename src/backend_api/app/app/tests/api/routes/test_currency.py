@@ -25,12 +25,25 @@ def route_name() -> str:
 
 
 @pytest.fixture(scope="module")
-def special_update_params() -> bool:
+def update_request_params() -> bool:
+    """Some models require params to PUT request in the url
+
+    Returns:
+        bool: True if the model requires params in the PUT request
+    """
     return False
 
 
 @pytest.fixture(scope="module")
 def ignore_test_columns() -> List[str]:
+    """Ignore these columns when testing the model
+
+    updatedAt and createdAt are ignored because currently, the API returns
+    time in a different format than the one stored in the database
+
+    Returns:
+        List[str]: List of columns to ignore
+    """
     return ["currencyId", "updatedAt", "createdAt"]
 
 
