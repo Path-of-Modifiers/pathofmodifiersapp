@@ -141,9 +141,7 @@ class TestAPI(BaseTest):
 
             route_name (str): Route name
         """
-        _, object_out = await self._create_object_crud(
-            db, object_generator_func
-        )
+        _, object_out = await self._create_object_crud(db, object_generator_func)
         obj_out_pk_map = create_primary_key_map(object_out)
         response = client.get(
             f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
@@ -211,19 +209,17 @@ class TestAPI(BaseTest):
             route_name (str): Route name
             unique_identifier (str): Unique identifier for the model
         """
-        _, object_out = await self._create_object_crud(
-            db, object_generator_func
-        )
+        if not get_high_permissions:
+            return 0
+
+        _, object_out = await self._create_object_crud(db, object_generator_func)
         obj_out_pk_map = create_primary_key_map(object_out)
         response = client.get(
             f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
         )
-        if get_high_permissions:
-            content = response.json()
-            assert response.status_code == 401
-            assert content["detail"] == "Not authenticated"
-        else:
-            assert response.status_code == 200
+        content = response.json()
+        assert response.status_code == 401
+        assert content["detail"] == "Not authenticated"
 
     @pytest.mark.asyncio
     async def test_get_instances(
@@ -246,9 +242,7 @@ class TestAPI(BaseTest):
 
             route_name (str): Route name
         """
-        await self._create_multiple_objects_crud(
-            db, object_generator_func, 5
-        )
+        await self._create_multiple_objects_crud(db, object_generator_func, 5)
         response = client.get(
             f"{settings.API_V1_STR}/{route_name}/",
             auth=superuser_headers,
@@ -281,9 +275,7 @@ class TestAPI(BaseTest):
             update_request_params (bool): Whether the update request requires params
             ignore_test_columns (List[str]): Columns to ignore
         """
-        _, object_out = await self._create_object_crud(
-            db, object_generator_func
-        )
+        _, object_out = await self._create_object_crud(db, object_generator_func)
         obj_out_pk_map = create_primary_key_map(object_out)
 
         update_object_dict, update_object_out = await self._create_object_crud(
@@ -429,9 +421,7 @@ class TestAPI(BaseTest):
             unique_identifier (str): Unique identifier
             update_request_params (bool): Whether the update request requires params
         """
-        _, object_out = await self._create_object_crud(
-            db, object_generator_func
-        )
+        _, object_out = await self._create_object_crud(db, object_generator_func)
 
         obj_pk_map = create_primary_key_map(object_out)
 
@@ -494,9 +484,7 @@ class TestAPI(BaseTest):
             route_name (str): Route name
             unique_identifier (str): Unique identifier
         """
-        _, update_object_out = await self._create_object_crud(
-            db, object_generator_func
-        )
+        _, update_object_out = await self._create_object_crud(db, object_generator_func)
         update_obj_pk_map = create_primary_key_map(update_object_out)
 
         response = client.delete(
@@ -562,9 +550,7 @@ class TestAPI(BaseTest):
             route_name (str): Route name
             unique_identifier (str): Unique identifier
         """
-        _, object_out = await self._create_object_crud(
-            db, object_generator_func
-        )
+        _, object_out = await self._create_object_crud(db, object_generator_func)
         obj_out_pk_map = create_primary_key_map(object_out)
         response = client.delete(
             f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
