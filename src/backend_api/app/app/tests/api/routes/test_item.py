@@ -127,8 +127,6 @@ def api_deps_instances() -> List[List[str]]:
 
     Returns:
         List[Dict]: API dependencies instances. Format: [dep_route_name: dep_unique_identifier]
-
-
     """
     return [
         [account_prefix, get_model_unique_identifier(Account)],
