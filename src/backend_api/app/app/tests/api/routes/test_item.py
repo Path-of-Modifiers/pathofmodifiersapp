@@ -2,7 +2,7 @@ from typing import Awaitable, Callable, Dict, List, Tuple, Union
 import pytest
 from sqlalchemy.orm import Session
 
-import backend_api.app.app.tests.api.api_routes_cascade_tests as test_cascade_api
+import app.tests.api.api_routes_cascade_tests as test_cascade_api
 from app.crud.base import ModelType
 from app.api.api_v1.endpoints import (
     item_prefix,
@@ -52,7 +52,7 @@ def ignore_test_columns() -> List[str]:
     Returns:
         List[str]: List of columns to ignore
     """
-    return ["itemId", "createdAt"]
+    return ["itemId", "updatedAt", "createdAt"]
 
 
 @pytest.fixture(scope="module")
@@ -76,14 +76,6 @@ def get_crud_test_cascade_model() -> UtilTestCascadeCRUD:
 @pytest.fixture(scope="module")
 def get_high_permissions() -> bool:
     return False
-
-
-@pytest.fixture(scope="module")
-def object_create_func() -> Callable[[Session], Awaitable[Dict]]:
-    async def create_object(db: Session) -> Dict:
-        return await create_random_item_dict(db)
-
-    return create_object
 
 
 @pytest.fixture(scope="module")
