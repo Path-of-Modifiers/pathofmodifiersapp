@@ -38,7 +38,7 @@ def get_crud_test_model() -> UtilTestCRUD:
 
 @pytest.fixture(scope="module")
 def get_high_permissions() -> bool:
-    """ Some models require high permissions to test GET requests
+    """Some models require high permissions to test GET requests
 
     Returns:
         bool: True if the model requires high permissions to test GET requests
