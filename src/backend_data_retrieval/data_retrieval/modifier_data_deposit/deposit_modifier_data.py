@@ -90,7 +90,7 @@ class DataDepositer:
         current_duplicate_modifiers.sort_values(by=["effect", "position"], inplace=True)
         duplicate_df.sort_values(by=["effect", "position"], inplace=True)
 
-        update_url = self.url + "{}?position={}"
+        update_url = self.url + "?modifierId={}"
         for (_, row_cur), (_, row_new) in zip(
             current_duplicate_modifiers.iterrows(), duplicate_df.iterrows()
         ):
@@ -121,7 +121,7 @@ class DataDepositer:
             if put_update:
                 self.logger.info("Pushed updated modifier to the database.")
                 response = requests.put(
-                    update_url.format(row_cur["modifierId"], row_cur["position"]),
+                    update_url.format(row_cur["modifierId"]),
                     json=data,
                     headers={
                         "accept": "application/json",
