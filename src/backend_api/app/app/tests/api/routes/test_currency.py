@@ -1,7 +1,7 @@
 from typing import Callable, Dict, List, Tuple
 
 import pytest
-import app.tests.api.api_test_base as test_api
+import backend_api.app.app.tests.api.api_routes_test_base as test_api
 from app.tests.utils.model_utils.currency import (
     create_random_currency_dict,
     generate_random_currency,
