@@ -42,7 +42,12 @@ def get_high_permissions() -> bool:
 
 
 @pytest.fixture(scope="module")
-def special_update_params() -> bool:
+def update_request_params() -> bool:
+    """Some models require params to PUT request in the url
+
+    Returns:
+        bool: True if the model requires params in the PUT request
+    """
     return False
 
 
