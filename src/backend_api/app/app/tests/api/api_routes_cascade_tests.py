@@ -7,9 +7,8 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.tests.api.api_routes_test_base import TestAPI
-from app.tests.crud.cascade_tests import TestCascade as UtilTestCascade
 from app.crud.base import ModelType
-from app.tests.utils.utils import create_primary_key_map, random_based_on_type
+from app.tests.utils.utils import random_based_on_type
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
@@ -74,7 +73,7 @@ class TestCascadeAPI(TestAPI):
             )  # New objects have to be created for every test, since they are constantly being deleted
             self._test_object(object_out, object_dict)
 
-            obj_out_pk_map = create_primary_key_map(object_out)
+            obj_out_pk_map = self._create_primary_key_map(object_out)
 
             response_get_before_deletion = client.get(
                 f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
@@ -106,7 +105,7 @@ class TestCascadeAPI(TestAPI):
                 auth=superuser_headers,
             )
             content_dep = response_delete_dep.json()
-            primary_keys_map = create_primary_key_map(dep_model)
+            primary_keys_map = self._create_primary_key_map(dep_model)
             assert (
                 content_dep
                 == f"{dep_route_name} with mapping ({dep_unique_identifier}: {primary_keys_map[dep_unique_identifier]}) deleted successfully"
@@ -180,7 +179,7 @@ class TestCascadeAPI(TestAPI):
                 retrieve_dependencies=True,
             )  # New objects have to be created for every test, since they are constantly being deleted
             self._test_object(object_out, object_dict)
-            obj_out_pk_map = create_primary_key_map(
+            obj_out_pk_map = self._create_primary_key_map(
                 object_out
             )  # Needs to be a global utility function
 
@@ -207,7 +206,7 @@ class TestCascadeAPI(TestAPI):
             dep_route_name = api_deps_instances[i][0]
             dep_unique_identifier = api_deps_instances[i][1]
 
-            dep_obj_out_pk_map = create_primary_key_map(dep_model)
+            dep_obj_out_pk_map = self._create_primary_key_map(dep_model)
 
             if dep_route_name in update_request_params_deps:
                 response_update_dep = client.put(

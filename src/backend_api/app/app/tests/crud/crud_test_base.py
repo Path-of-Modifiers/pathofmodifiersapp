@@ -1,17 +1,13 @@
-import asyncio
-import math
 import pytest
-from typing import Any, Dict, List, Optional, Union, Callable, Tuple
-
+from typing import Callable, Tuple, Dict
 from sqlalchemy.orm import Session
-from sqlalchemy.inspection import inspect
 
 from app.tests.base_test import BaseTest
 from app.crud.base import (
     CRUDBase,
     ModelType,
 )
-from app.tests.utils.utils import create_primary_key_map, get_ignore_keys
+from app.tests.utils.utils import get_ignore_keys
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
@@ -35,7 +31,7 @@ class TestCRUD(BaseTest):
         object_dict, object_out = await self._create_object_crud(db, object_generator_func)
         self._test_object(object_out, object_dict)
 
-        object_map = create_primary_key_map(object_out)
+        object_map = self._create_primary_key_map(object_out)
         stored_get_object = await crud_instance.get(db=db, filter=object_map)
 
         self._test_object(stored_get_object, object_dict)
@@ -102,7 +98,7 @@ class TestCRUD(BaseTest):
         object_dict, object_out = await self._create_object_crud(db, object_generator_func)
         self._test_object(object_out, object_dict)
 
-        object_map = create_primary_key_map(object_out)
+        object_map = self._create_primary_key_map(object_out)
         deleted_object = await crud_instance.remove(db=db, filter=object_map)
         assert deleted_object
         self._test_object(deleted_object, object_out)
@@ -135,7 +131,7 @@ class TestCRUD(BaseTest):
         )  # Creates a second template
         self._test_object(temp_object_out, updated_object_dict)
 
-        object_map = create_primary_key_map(temp_object_out)
+        object_map = self._create_primary_key_map(temp_object_out)
         deleted_object = await crud_instance.remove(
             db=db, filter=object_map
         )  # Delete the template from the db
