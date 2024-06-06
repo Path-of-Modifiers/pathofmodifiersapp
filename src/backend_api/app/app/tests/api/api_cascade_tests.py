@@ -1,14 +1,13 @@
 from copy import deepcopy
-from typing import Callable, Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 from fastapi.testclient import TestClient
 import pytest
 from typing import Dict, List, Optional, Tuple, Union
-from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.tests.api.api_test_base import TestAPI
 from app.tests.crud.cascade_tests import TestCascade as UtilTestCascade
-from app.crud.base import CRUDBase, ModelType
+from app.crud.base import ModelType
 from app.tests.utils.utils import get_ignore_keys, random_based_on_type
 
 

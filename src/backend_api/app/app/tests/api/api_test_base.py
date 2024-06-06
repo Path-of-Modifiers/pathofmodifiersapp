@@ -8,7 +8,7 @@ from app.crud.base import ModelType
 
 from app.core.config import settings
 from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
-from app.tests.utils.utils import get_ignore_keys, is_courotine_function
+from app.tests.utils.utils import is_courotine_function
 
 get_crud_test_model = UtilTestCRUD()
 
