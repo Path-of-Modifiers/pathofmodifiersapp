@@ -4,7 +4,7 @@ import { ItemBaseTypeCategory } from "../../../client";
 import {
   SelectBox,
   SelectBoxOptionValue,
-} from "../StandardLayoutInput/SelectBox";
+} from "../StandardLayoutInput/SelectBoxInput";
 
 interface CategoryInputProps {
   categories: ItemBaseTypeCategory | ItemBaseTypeCategory[];
