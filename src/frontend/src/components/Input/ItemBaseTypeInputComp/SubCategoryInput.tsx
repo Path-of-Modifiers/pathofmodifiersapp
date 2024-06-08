@@ -1,7 +1,7 @@
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { capitalizeFirstLetter } from "../../../hooks/utils";
 import { ItemBaseTypeSubCategory } from "../../../client";
-import { SelectBox, SelectBoxOptionValue } from "../StandardLayoutInput/SelectBox";
+import { SelectBox, SelectBoxOptionValue } from "../StandardLayoutInput/SelectBoxInput";
 
 interface SubCategoryInputProps {
   subCategories: ItemBaseTypeSubCategory | ItemBaseTypeSubCategory[];

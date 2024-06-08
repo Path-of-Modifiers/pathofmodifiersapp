@@ -4,7 +4,7 @@ import { defaultLeague } from "../../env-vars";
 import {
   SelectBox,
   SelectBoxOptionValue,
-} from "./StandardLayoutInput/SelectBox";
+} from "./StandardLayoutInput/SelectBoxInput";
 
 // League Input Component  -  This component is used to select the league of the game.
 export const LeagueInput = () => {
