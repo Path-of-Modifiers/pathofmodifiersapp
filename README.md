@@ -2,8 +2,7 @@
 Website application for checking prices on explicit and affixes specific items in Path of Exile  
 
 ## Current goals we are working towards:
- - Modifiers on unique jewels such as Watcher's Eye and Sublime Vision
- - Rolls for certain unique jewels such as Timeless Jewels and Voices.
+ - Beta release before next the next expansion in the end of July
 
 ## Future goals:
  - Introduce other uniques where rolls matter
