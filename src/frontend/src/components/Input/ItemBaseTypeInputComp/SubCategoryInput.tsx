@@ -1,7 +1,7 @@
-import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { capitalizeFirstLetter } from "../../../hooks/utils";
 import { ItemBaseTypeSubCategory } from "../../../client";
+import { SelectBox, SelectBoxOptionValue } from "../StandardLayoutInput/SelectBox";
 
 interface SubCategoryInputProps {
   subCategories: ItemBaseTypeSubCategory | ItemBaseTypeSubCategory[];
@@ -36,52 +36,22 @@ export const SubCategoryInput = ({ subCategories }: SubCategoryInputProps) => {
     setItemSubCategory(itemSubCategory);
   };
 
-  let categoryOptions: JSX.Element[] = [];
-  if (subCategories !== undefined) {
-    categoryOptions = subCategories.map((baseCategory) => {
-      return (
-        <option
-          value={capitalizeFirstLetter(baseCategory.subCategory)}
-          key={"ItemSubCategoryInput" + "_option_" + baseCategory.subCategory}
-          style={{ color: "white", backgroundColor: "#2d3333" }}
-        >
-          {capitalizeFirstLetter(baseCategory.subCategory)}
-        </option>
-      );
-    });
-  }
+  const subCategoryOptions: Array<SelectBoxOptionValue> = subCategories.map((subCategory) => {
+    return {
+      value: subCategory.subCategory,
+      text: capitalizeFirstLetter(subCategory.subCategory),
+    };
+  });
 
   return (
-    <Flex
-      alignItems={"center"}
-      color={"ui.white"}
-      bgColor={"ui.secondary"}
-      m={1}
-    >
-      <Text ml={1} width={150}>
-        Item Sub Category
-      </Text>
-      <Select
-        value={getSubCategoryValue()}
-        bgColor={"ui.input"}
-        color={"ui.white"}
-        onChange={(e) => handleSubCategoryChange(e)}
-        width={150}
-        focusBorderColor={"ui.white"}
-        borderColor={"ui.grey"}
-        mr={1}
-        ml={1}
-        key={"itemSubCategoryInput"}
-      >
-        <option
-          value={defaultValue}
-          key={"ItemSubCategoryInput" + "_option_" + "any"}
-          style={{ color: "white", backgroundColor: "#2d3333" }}
-        >
-          Any
-        </option>
-        {categoryOptions}
-      </Select>
-    </Flex>
+    <SelectBox
+      descriptionText={"Item Sub Category"}
+      optionsList={subCategoryOptions}
+      itemKeyId={"ItemSubCategoryInput"}
+      defaultValue={defaultValue}
+      defaultText="Any"
+      getSelectValue={getSubCategoryValue}
+      handleChange={(e) => handleSubCategoryChange(e)}
+    />
   );
 };
