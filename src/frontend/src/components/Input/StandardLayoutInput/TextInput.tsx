@@ -21,7 +21,7 @@ export const TextInput = ({
       alignItems={"center"}
       m={1}
     >
-      <Text ml={1} width={150}>
+      <Text ml={1} width={"inputSizes.defaultDescriptionText"}>
         Item name
       </Text>
       <Input
@@ -29,7 +29,7 @@ export const TextInput = ({
         bgColor={"ui.input"}
         color={"ui.white"}
         onChange={(e) => handleTextChange(e.target.value)}
-        width={250}
+        width={"inputSizes.lgBox"}
         focusBorderColor={"ui.white"}
         placeholder="Item Name"
         borderColor={"ui.grey"}
