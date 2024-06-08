@@ -1,5 +1,5 @@
 import { Flex } from "@chakra-ui/layout";
-import { IsItemInput } from "./IsItemProp";
+import { IsItemInput } from "./IsItemInput";
 import { MinMaxInput } from "./MinMaxItemLvlInput";
 import { useEffect, useState } from "react";
 import { Checkbox, CheckboxIcon, Text } from "@chakra-ui/react";
