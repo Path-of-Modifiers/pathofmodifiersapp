@@ -64,6 +64,8 @@ const theme = extendTheme({
     inputSizes: {
       defaultBox: "11rem",
       defaultDescriptionText: "11rem",
+      mdBox: "15rem",
+      lgBox: "20rem",
     },
   },
 });
