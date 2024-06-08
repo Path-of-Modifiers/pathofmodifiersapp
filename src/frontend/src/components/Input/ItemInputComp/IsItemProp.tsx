@@ -1,7 +1,7 @@
-import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { convertToBoolean } from "../../../hooks/utils";
 import { ItemSpecState } from "../../../store/StateInterface";
+import { SelectBox, SelectBoxOptionValue } from "../StandardLayoutInput/SelectBox";
 
 interface IsItemInputProps {
   itemSpecKey:
@@ -25,8 +25,6 @@ interface IsItemInputProps {
 
 // Is Item Input Component  -  This component is used to select the boolean item properties.
 export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
-  const defaultValue = undefined;
-
   const getSelectValue = () => {
     let selectValue = undefined;
     if (
@@ -72,10 +70,7 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
     setItemSpecIsRelic,
   } = useGraphInputStore();
 
-  const handleChange = (
-    event: React.ChangeEvent<HTMLSelectElement>,
-    itemSpecKey: string
-  ) => {
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = convertToBoolean(event.target.value) as boolean;
 
     switch (itemSpecKey) {
@@ -127,53 +122,20 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
     }
   };
 
+  const optionsList: Array<SelectBoxOptionValue> = [
+    { value: "true", text: "Yes" },
+    { value: "false", text: "No" },
+  ];
+
   return (
-    <Flex alignItems="center" bgColor={"ui.secondary"} color={"ui.white"} m={1}>
-      <Text ml={1} width={150}>
-        {text}
-      </Text>
-      <Select
-        value={getSelectValue()}
-        bgColor={"ui.input"}
-        onChange={(e) => handleChange(e, itemSpecKey)}
-        width={150}
-        color={"ui.white"}
-        focusBorderColor={"ui.white"}
-        borderColor={"ui.grey"}
-        mr={1}
-        ml={1}
-        key={{ text } + "_IsItems"}
-      >
-        {
-          <option
-            value={defaultValue}
-            key={text + "_IsItems_" + "undefined"}
-            style={{ color: "white", backgroundColor: "#2d3333" }}
-          >
-            Any
-          </option>
-        }
-        ,
-        {
-          <option
-            value={"true"}
-            key={text + "_IsItems_" + "yes"}
-            style={{ color: "white", backgroundColor: "#2d3333" }}
-          >
-            Yes
-          </option>
-        }
-        ,
-        {
-          <option
-            value={"false"}
-            key={text + "_IsItems_" + "no"}
-            style={{ color: "white", backgroundColor: "#2d3333" }}
-          >
-            No
-          </option>
-        }
-      </Select>
-    </Flex>
+    <SelectBox
+      descriptionText={text}
+      optionsList={optionsList}
+      itemKeyId={itemSpecKey}
+      defaultValue={undefined}
+      defaultText="Any"
+      getSelectValue={getSelectValue}
+      handleChange={(e) => handleChange(e)}
+    ></SelectBox>
   );
 };

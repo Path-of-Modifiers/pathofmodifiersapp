@@ -1,6 +1,9 @@
-import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { BaseType } from "../../../client";
+import {
+  SelectBox,
+  SelectBoxOptionValue,
+} from "../StandardLayoutInput/SelectBox";
 
 interface BaseTypeInputProps {
   baseTypes: BaseType | BaseType[];
@@ -35,52 +38,24 @@ export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
     setBaseType(baseType);
   };
 
-  let baseTypeOptions: JSX.Element[] = [];
-  if (baseTypes !== undefined) {
-    baseTypeOptions = baseTypes.map((baseType) => {
-      return (
-        <option
-          value={baseType.baseType}
-          key={"BaseTypeInput" + "_option_" + baseType.baseType}
-          style={{ color: "white", backgroundColor: "#2d3333" }}
-        >
-          {baseType.baseType}
-        </option>
-      );
-    });
-  }
+  const baseTypeOptions: Array<SelectBoxOptionValue> = baseTypes.map(
+    (baseType) => {
+      return {
+        value: baseType.baseType,
+        text: baseType.baseType,
+      };
+    }
+  );
 
   return (
-    <Flex
-      alignItems={"center"}
-      color={"ui.white"}
-      bgColor={"ui.secondary"}
-      m={1}
-    >
-      <Text ml={1} width={150}>
-        Item Base Type
-      </Text>
-      <Select
-        value={getBaseTypeValue()}
-        bgColor={"ui.input"}
-        color={"ui.white"}
-        onChange={(e) => handleBaseTypeChange(e)}
-        width={150}
-        focusBorderColor={"ui.white"}
-        borderColor={"ui.grey"}
-        mr={1}
-        ml={1}
-        key={"baseTypeInput"}
-      >
-        <option
-          value={defaultValue}
-          key={"baseType" + "_option_" + "any"}
-          style={{ color: "white", backgroundColor: "#2d3333" }}
-        >
-          Any
-        </option>
-        {baseTypeOptions}
-      </Select>
-    </Flex>
+    <SelectBox
+      descriptionText={"Item Base Type"}
+      optionsList={baseTypeOptions}
+      itemKeyId={"BaseTypeInput"}
+      defaultValue={defaultValue}
+      defaultText="Any"
+      getSelectValue={getBaseTypeValue}
+      handleChange={(e) => handleBaseTypeChange(e)}
+    />
   );
 };
