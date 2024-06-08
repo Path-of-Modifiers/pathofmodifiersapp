@@ -62,7 +62,7 @@ const theme = extendTheme({
   },
   sizes: {
     inputSizes: {
-      defaultSelect: "11rem",
+      defaultBox: "11rem",
       defaultDescriptionText: "11rem",
     },
   },
