@@ -24,7 +24,7 @@ def get_access_token(url: str, client_id: str, client_secret: str) -> str:
         headers={
             "Content-Type": "application/x-www-form-urlencoded",
             "accept": "application/json",
-            "User-Agent": "OAuth pathofmodifiers/0.1.0 (contact: ***REMOVED***) StrictMode",
+            "User-Agent": "OAuth pathofmodifiers/0.1.0 (contact: magnus.hoddevik@gmail.com) StrictMode",
         },
     )  # Sends necessary information required to generate a new OAuth2 Access Token
     if (
@@ -37,7 +37,7 @@ def get_access_token(url: str, client_id: str, client_secret: str) -> str:
 def main():
     url = "https://www.pathofexile.com/oauth/token"
     client_id = "pathofmodifiers"
-    client_secret = "***REMOVED***"  # Generated at: https://www.pathofexile.com/my-account/applications/pathofmodifiers/manage
+    client_secret = "iF1xVCcdhFu9"  # Generated at: https://www.pathofexile.com/my-account/applications/pathofmodifiers/manage
     token = get_access_token(url=url, client_id=client_id, client_secret=client_secret)
     print(f"Generated a new token:\n {token}")
     return 0

@@ -25,7 +25,7 @@ NEXT_CHANGE_ID = os.getenv("NEXT_CHANGE_ID")
 
 class APIHandler:
     headers = {
-        "User-Agent": "OAuth pathofmodifiers/0.1.0 (contact: ***REMOVED***) StrictMode"
+        "User-Agent": "OAuth pathofmodifiers/0.1.0 (contact: magnus.hoddevik@gmail.com) StrictMode"
     }
 
     if "localhost" not in BASEURL:
