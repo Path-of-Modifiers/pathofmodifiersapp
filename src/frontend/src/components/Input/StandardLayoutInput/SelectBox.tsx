@@ -1,5 +1,7 @@
 import { Flex, Text } from "@chakra-ui/layout";
 import { Select } from "@chakra-ui/react";
+import { GetValueFunction, HandleChangeEventFunction } from "../../../schemas/function/InputFunction";
+
 
 export interface SelectBoxProps {
   descriptionText: string;
@@ -7,17 +9,11 @@ export interface SelectBoxProps {
   itemKeyId: string;
   defaultValue: string | number | undefined;
   defaultText: string;
-  getSelectValue: SelectBoxGetValue;
-  handleChange: SelectBoxHandleChange;
+  getSelectValue: GetValueFunction;
+  handleChange: HandleChangeEventFunction;
 }
 
 export type SelectBoxOptionValue = { value: string; text: string };
-
-type SelectBoxGetValue = () => string | number | undefined;
-
-type SelectBoxHandleChange = (
-  event: React.ChangeEvent<HTMLSelectElement>
-) => void;
 
 export const SelectBox = ({
   descriptionText,
@@ -30,14 +26,18 @@ export const SelectBox = ({
 }: SelectBoxProps) => {
   return (
     <Flex alignItems="center" bgColor={"ui.secondary"} color={"ui.white"} m={1}>
-      <Text ml={1} width={"inputSizes.defaultDescriptionText"} fontSize="defaultRead">
+      <Text
+        ml={1}
+        width={"inputSizes.defaultDescriptionText"}
+        fontSize="defaultRead"
+      >
         {descriptionText}
       </Text>
       <Select
         value={getSelectValue()}
         bgColor={"ui.input"}
         onChange={(e) => handleChange(e)}
-        width={"inputSizes.defaultSelect"}
+        width={"inputSizes.defaultBox"}
         color={"ui.white"}
         focusBorderColor={"ui.white"}
         borderColor={"ui.grey"}
