@@ -21,11 +21,11 @@ pd.options.mode.chained_assignment = None  # default='warn'
 BASEURL = os.getenv("DOMAIN")
 MANUAL_NEXT_CHANGE_ID = os.getenv("MANUAL_NEXT_CHANGE_ID")
 NEXT_CHANGE_ID = os.getenv("NEXT_CHANGE_ID")
-
+OATH_ACC_TOKEN_CONTACT_EMAIL = os.getenv("OATH_ACC_TOKEN_CONTACT_EMAIL")
 
 class APIHandler:
     headers = {
-        "User-Agent": "OAuth pathofmodifiers/0.1.0 (contact: ***REMOVED***) StrictMode"
+        f"User-Agent": "OAuth pathofmodifiers/0.1.0 (contact: {OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
     }
 
     if "localhost" not in BASEURL:
