@@ -1,6 +1,6 @@
 # Apply the replaceGraphing filter to all files in the graphing directory
-utils.tsx filter=replaceGraphing
-processPlottingData.tsx filter=replaceGraphing
+src/frontend/src/hooks/graphing/utils.tsx filter=replaceGraphing
+src/frontend/src/hooks/graphing/processPlottingData.tsx filter=replaceGraphing
 
 # Ensure shell scripts use LF line endings
 *.sh text eol=lf
