@@ -1,2 +1,2 @@
 # Apply the replaceGraphing filter to all files in the graphing directory
-./src/frontend/src/hooks/graphing/* text eol=lf filter=replaceGraphing
+* text eol=lf filter=replaceGraphing
