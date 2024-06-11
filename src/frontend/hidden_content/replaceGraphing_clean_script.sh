@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define relative paths or use environment variables
-source_dir="./graphing"
+source_dir="./graphing_clean"
 destination_dir="../src/hooks/graphing"
 
 # Get the absolute path of the current directory
