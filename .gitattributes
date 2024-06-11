@@ -1,2 +1,9 @@
 # Apply the replaceGraphing filter to all files in the graphing directory
-*.tsx filter=replaceGraphing
+utils.tsx filter=replaceGraphing
+processPlottingData.tsx filter=replaceGraphing
+
+# Ensure shell scripts use LF line endings
+*.sh text eol=lf
+
+# Enforce LF for all text files
+* text=auto
