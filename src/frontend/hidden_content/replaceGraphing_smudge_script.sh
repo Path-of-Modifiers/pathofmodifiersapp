@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Define relative paths or use environment variables
-source_dir="../src/hooks/graphing"
-destination_dir="./graphing"
+source_dir="./graphing_smudged"
+destination_dir="../src/hooks/graphing"
 
 # Get the absolute path of the current directory
 current_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
