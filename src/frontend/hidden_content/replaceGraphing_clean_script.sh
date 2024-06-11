@@ -13,3 +13,5 @@ destination_path="$current_dir/$destination_dir"
 
 # Copy files from source to destination
 cp -r "$source_path"/* "$destination_path"/
+
+echo "Frontend graphing hooks replaced with clean version."
