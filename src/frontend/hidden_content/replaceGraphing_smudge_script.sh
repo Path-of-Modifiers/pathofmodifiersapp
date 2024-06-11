@@ -12,4 +12,5 @@ source_path="$current_dir/$source_dir"
 destination_path="$current_dir/$destination_dir"
 
 # Copy files from source to destination
-cp -r "$source_path"/* "$destination_path"/
+cp -r "$source_path"/utils.tsx "$destination_path"/utils.tsx
+cp -r "$source_path"/processPlottingData.tsx "$destination_path"/processPlottingData.tsx
