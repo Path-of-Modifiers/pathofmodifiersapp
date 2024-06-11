@@ -2,7 +2,7 @@
 
 # Define relative paths or use environment variables
 source_dir="../src/hooks/graphing"
-destination_dir="./graphing"
+destination_dir="./graphing_clean"
 
 # Get the absolute path of the current directory
 current_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
