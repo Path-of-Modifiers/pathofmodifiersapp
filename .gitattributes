@@ -1,2 +1,2 @@
 # Apply the replaceGraphing filter to all files in the graphing directory
-* text eol=lf filter=replaceGraphing
+*.tsx text eol=lf filter=replaceGraphing
