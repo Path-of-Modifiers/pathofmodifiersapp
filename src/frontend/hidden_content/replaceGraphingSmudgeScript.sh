@@ -10,7 +10,8 @@ current_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 destination_path="$current_dir/$destination_dir"
 
 # Copy files from source to destination
-cp -r "$source_path"/* "$destination_path"/
+cp -a "$source_path"/utils.tsx "$destination_path"/util.tsx
+cp -a "$source_path"/processPlottingData.tsx "$destination_path"/processPlottingData.tsx
 
 # Gets written to the destination file
 echo "DO NOT COMMIT THIS FILE!"
