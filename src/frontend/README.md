@@ -85,6 +85,17 @@ git update-index --assume-unchanged src/frontend/src/hooks/graphing/utils.tsx
 git update-index --assume-unchanged src/frontend/src/hooks/graphing/processPlottingData.tsx
 ```
 
+- To stop syncing the hidden files, for instance to move to another branch:
+
+1. Run the command below
+```bash
+git config -e
+```
+
+2. Remove the lines for filter `replaceGraphing`
+
+
+
 ## Code structure
 
 The frontend code is structured as follows:
