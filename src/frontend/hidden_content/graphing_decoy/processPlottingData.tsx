@@ -5,7 +5,6 @@ import { allValueInChaos } from "./utils";
 /**
  * A function that takes the current plot query and returns
  * data that is ready to be plotted.
-
  * @returns The processed data or undefined and the current fetch status.
  */
 function GetPlotData(plotQuery: PlotQuery): {
