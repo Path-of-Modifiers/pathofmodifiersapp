@@ -7,53 +7,31 @@ import {
   NumberInputField,
   NumberInputStepper,
 } from "@chakra-ui/react";
-import { useGraphInputStore } from "../../../store/GraphInputStore";
+import {
+  GetValueFunction,
+  HandleChangeStringFunction,
+} from "../../../schemas/function/InputFunction";
 
-interface MinMaxInputProps {
-  itemMinSpecKey: string;
-  itemMaxSpecKey: string;
+interface MinMaxNumberInputProps {
   text: string;
+  minSpecKey: string;
+  maxSpecKey: string;
+  getMinValue: GetValueFunction;
+  getMaxValue: GetValueFunction;
+  handleMinChange: HandleChangeStringFunction;
+  handleMaxChange: HandleChangeStringFunction;
 }
 
 // Min Max Item Lvl Input Component  -  This component is used to input the min and max ilvl of an item.
-export const MinMaxInput = ({ text }: MinMaxInputProps) => {
-  const { setItemSpecMinIlvl, setItemSpecMaxIlvl } = useGraphInputStore();
-
-  const [minValue, maxValue] = useGraphInputStore((state) => [
-    state.itemSpec.minIlvl,
-    state.itemSpec.maxIlvl,
-  ]);
-
-  const getMinValue = () => {
-    if (minValue) {
-      return minValue?.toString();
-    } else {
-      return "";
-    }
-  };
-
-  const getMaxValue = () => {
-    if (maxValue) {
-      return maxValue?.toString();
-    } else {
-      return "";
-    }
-  };
-
-  const handleMinChange = (eventValue: string) => {
-    const eventValueInt = parseInt(eventValue);
-
-    setItemSpecMinIlvl(eventValueInt);
-  };
-
-  const handleMaxChange = (eventValue: string) => {
-    const eventValueInt = parseInt(eventValue);
-
-    setItemSpecMaxIlvl(eventValueInt);
-  };
-
-  // useEffect(() => {}, [clearClicked]);
-
+export const MinMaxNumberInput = ({
+  text,
+  minSpecKey,
+  maxSpecKey,
+  getMinValue,
+  getMaxValue,
+  handleMinChange,
+  handleMaxChange,
+}: MinMaxNumberInputProps) => {
   return (
     <Flex
       color={"ui.white"}
@@ -62,19 +40,19 @@ export const MinMaxInput = ({ text }: MinMaxInputProps) => {
       bgColor={"ui.secondary"}
       alignItems={"center"}
     >
-      <Text ml={1} width={150}>
+      <Text ml={1} width={"inputSizes.defaultDescriptionText"}>
         {text}
       </Text>
       <NumberInput
         value={getMinValue()}
         step={1}
-        key={"itemSpecKey" + "min_number_input"}
+        key={minSpecKey}
         bgColor={"ui.input"}
         precision={0}
         focusBorderColor={"ui.white"}
         borderColor={"ui.grey"}
         onChange={(e) => handleMinChange(e)}
-        width={150}
+        width={"inputSizes.defaultBox"}
         mr={1}
         ml={1}
         _placeholder={{ color: "ui.white" }}
@@ -90,12 +68,12 @@ export const MinMaxInput = ({ text }: MinMaxInputProps) => {
       <NumberInput
         value={getMaxValue()}
         step={1}
-        key={"MinMaxInput" + "max_number_item_input"}
+        key={maxSpecKey}
         bgColor={"ui.input"}
         focusBorderColor={"ui.white"}
         borderColor={"ui.grey"}
         onChange={(e) => handleMaxChange(e)}
-        width={150}
+        width={"inputSizes.defaultBox"}
         mr={1}
         ml={1}
         _placeholder={{ color: "ui.white" }}
