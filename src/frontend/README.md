@@ -62,10 +62,34 @@ npm run generate-client
 
 - Commit the changes.
 
+## Add hidden files
+
+The frontend contains some hidden files that we do not want to share with the public. These hidden files are located in the src/frontend/hidden_content directory. Below are the commands to import the hidden files and develop or produce with them. Our project includes decoy files in place of the hidden ones, allowing the project to run, but with different behavior.
+
+- Copy the hidden files to `src\frontend\hidden_content\` respective folders.
+
+- Run the git commands below.
+
+Add clean and smudge filters:
+
+```bash
+git config filter.replaceGraphing.clean "cp -a $PWD/src/frontend/hidden_content/graphing_hidden/* $PWD/src/frontend/src/hooks/graphing/"
+
+git config filter.replaceGraphing.smudge "cp -a $PWD/src/frontend/hidden_content/graphing_decoy/* $PWD/src/frontend/src/hooks/graphing/"
+```
+
+Ignore changes to the hidden files:
+
+```bash
+git update-index --assume-unchanged src/frontend/src/hooks/graphing/utils.tsx
+git update-index --assume-unchanged src/frontend/src/hooks/graphing/processPlottingData.tsx
+```
+
 ## Code structure
 
 The frontend code is structured as follows:
 
+- `frontend/hidden_content` - Hidden files.
 - `frontend/src` - The main frontend code.
 - `frontend/src/assets` - Static assets.
 - `frontend/src/client` - The generated OpenAPI client.
@@ -73,4 +97,5 @@ The frontend code is structured as follows:
 - `frontend/src/hooks` - Custom hooks.
 - `frontend/src/routes` - The different routes of the frontend which include the pages.
   theme.tsx - The Chakra UI custom theme.
-- `frontend/store` - Zustand Global State management functions.
+- `frontend/src/schemas` - Custom schemas for objects.
+- `frontend/src/store` - Zustand Global State management functions.
