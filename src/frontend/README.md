@@ -73,9 +73,9 @@ The frontend contains some hidden files that we do not want to share with the pu
 Add clean and smudge filters:
 
 ```bash
-git config filter.replaceGraphing.clean "cp -a $PWD/src/frontend/hidden_content/graphing_hidden/* $PWD/src/frontend/src/hooks/graphing/"
+git config filter.replaceGraphing.clean src/frontend/hidden_content/replaceGraphingCleanScript.sh
 
-git config filter.replaceGraphing.smudge "cp -a $PWD/src/frontend/hidden_content/graphing_decoy/* $PWD/src/frontend/src/hooks/graphing/"
+git config filter.replaceGraphing.smudge src/frontend/hidden_content/replaceGraphingSmudgeScript.sh
 ```
 
 Ignore changes to the hidden files:
