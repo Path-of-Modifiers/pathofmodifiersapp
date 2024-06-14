@@ -1,6 +1,7 @@
+import { getEventTextContent } from "../../../hooks/utils";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import {
-  SelectBox,
+  SelectBoxInput,
   SelectBoxOptionValue,
 } from "../StandardLayoutInput/SelectBoxInput";
 
@@ -19,16 +20,19 @@ export const ItemRarityInput = () => {
     }
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const itemRarityInput = event.target.value;
+  const handleItemRarityChange = (
+    event: React.FormEvent<HTMLElement> | React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const itemRarityInput = getEventTextContent(event);
     if (itemRarityInput === "Any") {
       setItemRarity(undefined);
     } else {
-      setItemRarity(itemRarityInput);
+      setItemRarity(itemRarityInput || undefined);
     }
   };
 
   const optionsList: Array<SelectBoxOptionValue> = [
+    { value: "", text: "Any"},
     { value: "Unique", text: "Unique" },
     /* Future implementation for non-unique items
     { value: "Non_Unique", text: "Any Non-Unique" },
@@ -36,14 +40,14 @@ export const ItemRarityInput = () => {
   ];
 
   return (
-    <SelectBox
+    <SelectBoxInput
       descriptionText={"Item Rarity"}
       optionsList={optionsList}
       itemKeyId={"ItemRarityInput"}
       defaultValue={defaultValue}
       defaultText="Any"
       getSelectValue={getRarityValue}
-      handleChange={(e) => handleChange(e)}
-    ></SelectBox>
+      handleChange={(e) => handleItemRarityChange(e)}
+    />
   );
 };

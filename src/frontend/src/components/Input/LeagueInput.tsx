@@ -2,22 +2,34 @@ import { useGraphInputStore } from "../../store/GraphInputStore";
 import { useEffect } from "react";
 import { defaultLeague } from "../../env-vars";
 import {
-  SelectBox,
+  SelectBoxInput,
   SelectBoxOptionValue,
 } from "./StandardLayoutInput/SelectBoxInput";
+import { getEventTextContent } from "../../hooks/utils";
 
+// Set the default league in the environment variables file.
 // League Input Component  -  This component is used to select the league of the game.
 export const LeagueInput = () => {
   // FUTURE IMPLEMENTATION: Add default hardcore league
   //   const defaultHardcoreLeague = process.env.CURRENT_HARDCORE_LEAGUE;
+  const { setLeague } = useGraphInputStore();
 
   const clearClicked = useGraphInputStore((state) => state.clearClicked);
 
-  const currentLeagueSelected = useGraphInputStore((state) => state.league);
+  const handleLeagueChange = (
+    event: React.FormEvent<HTMLElement> | React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const league = getEventTextContent(event);
+    setLeague(league || defaultLeague);
+  };
 
-  const handleLeagueChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const league = event.target.value;
-    useGraphInputStore.setState({ league: league });
+  const getLeagueValue = () => {
+    const league = useGraphInputStore.getState().league;
+    if (league) {
+      return league;
+    } else {
+      return "";
+    }
   };
 
   useEffect(() => {
@@ -29,6 +41,7 @@ export const LeagueInput = () => {
   }, [clearClicked]);
 
   const selectLeagueOptions: Array<SelectBoxOptionValue> = [
+    { value: defaultLeague, text: defaultLeague },
     /* FUTURE IMPLEMENTATION: Add more leagues here */
     // ,
     // { value: defaultHardcoreLeague, text: defaultHardcoreLeague },
@@ -39,14 +52,14 @@ export const LeagueInput = () => {
   ];
 
   return (
-    <SelectBox
+    <SelectBoxInput
       descriptionText={"League"}
       optionsList={selectLeagueOptions}
       itemKeyId={"LeagueInput"}
       defaultValue={defaultLeague}
       defaultText={defaultLeague}
+      getSelectValue={getLeagueValue}
       handleChange={(e) => handleLeagueChange(e)}
-      getSelectValue={() => currentLeagueSelected}
     />
   );
 };

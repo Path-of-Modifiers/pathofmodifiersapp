@@ -1,8 +1,8 @@
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-import { capitalizeFirstLetter } from "../../../hooks/utils";
+import { capitalizeFirstLetter, getEventTextContent } from "../../../hooks/utils";
 import { ItemBaseTypeCategory } from "../../../client";
 import {
-  SelectBox,
+  SelectBoxInput,
   SelectBoxOptionValue,
 } from "../StandardLayoutInput/SelectBoxInput";
 
@@ -30,26 +30,27 @@ export const CategoryInput = ({ categories }: CategoryInputProps) => {
   };
 
   const handleCategoryChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+    event: React.FormEvent<HTMLElement> | React.ChangeEvent<HTMLInputElement>
   ) => {
-    const itemCategory = event.target.value;
+    const itemCategory = getEventTextContent(event);
     if (itemCategory === "Any") {
       setItemCategory(undefined);
     }
     setItemCategory(itemCategory);
   };
 
-  const categoryOptions: Array<SelectBoxOptionValue> = categories.map(
-    (baseCategory) => {
+  const categoryOptions: Array<SelectBoxOptionValue> = [
+    ...categories.map((baseCategory) => {
       return {
         value: baseCategory.category,
         text: capitalizeFirstLetter(baseCategory.category),
       };
-    }
-  );
+    }),
+    { value: "", text: "Any" },
+  ];
 
   return (
-    <SelectBox
+    <SelectBoxInput
       descriptionText={"Item Category"}
       optionsList={categoryOptions}
       itemKeyId={"ItemCategoryInput"}

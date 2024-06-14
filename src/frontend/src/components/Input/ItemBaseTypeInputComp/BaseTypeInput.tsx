@@ -1,9 +1,10 @@
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { BaseType } from "../../../client";
 import {
-  SelectBox,
+  SelectBoxInput,
   SelectBoxOptionValue,
 } from "../StandardLayoutInput/SelectBoxInput";
+import { getEventTextContent } from "../../../hooks/utils";
 
 interface BaseTypeInputProps {
   baseTypes: BaseType | BaseType[];
@@ -29,26 +30,27 @@ export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
   };
 
   const handleBaseTypeChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+    event: React.FormEvent<HTMLElement> | React.ChangeEvent<HTMLInputElement>
   ) => {
-    const baseType = event.target.value;
+    const baseType = getEventTextContent(event);
     if (baseType === "Any") {
       setBaseType(undefined);
     }
     setBaseType(baseType);
   };
 
-  const baseTypeOptions: Array<SelectBoxOptionValue> = baseTypes.map(
-    (baseType) => {
+  const baseTypeOptions: Array<SelectBoxOptionValue> = [
+    ...baseTypes.map((baseType) => {
       return {
         value: baseType.baseType,
         text: baseType.baseType,
       };
-    }
-  );
+    }),
+    { value: "", text: "Any" },
+  ];
 
   return (
-    <SelectBox
+    <SelectBoxInput
       descriptionText={"Item Base Type"}
       optionsList={baseTypeOptions}
       itemKeyId={"BaseTypeInput"}
