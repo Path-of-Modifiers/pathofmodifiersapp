@@ -10,7 +10,8 @@ import {
   AutoCompleteList,
 } from "@choc-ui/chakra-autocomplete";
 import { FormControl, FormLabel } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useGraphInputStore } from "../../../store/GraphInputStore";
 
 export interface SelectBoxProps {
   descriptionText: string;
@@ -36,6 +37,8 @@ export const SelectBoxInput = ({
 
   const selectValue = getSelectValue();
 
+  const clearClicked = useGraphInputStore((state) => state.clearClicked);
+
   const handeSetInputText = (e: React.ChangeEvent<HTMLInputElement>) => {
     const target_value = e.currentTarget.value;
     setInputText(target_value);
@@ -49,6 +52,12 @@ export const SelectBoxInput = ({
     setInputText(e.currentTarget.textContent || "");
     handleChange(e, actual_value);
   };
+
+  useEffect(() => {
+    if (clearClicked) {
+      setInputText(defaultText);
+    }
+  }, [clearClicked, defaultText]);
 
   return (
     <Flex m={1}>
@@ -80,8 +89,6 @@ export const SelectBoxInput = ({
                   color: "white",
                   backgroundColor: "#2d3333",
                   margin: 0,
-                  // marginBottom: -25,
-                  // padding: 10,
                   borderRadius: 0,
                 }}
                 onClick={(e) => handleChangeWithText(e, option["value"])}
