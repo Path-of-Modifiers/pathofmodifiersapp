@@ -1,6 +1,6 @@
 import { Box } from "@chakra-ui/react";
 import { ModifierInput } from "./ModifierInputComp/ModifierInput";
-import { MiscItemInput } from "./ItemInputComp/MiscItemInput";
+import { MiscItemInput } from "./MiscItemInput";
 import { BaseInput } from "./ItemBaseTypeInputComp/BaseInput";
 import { IsItemInput } from "./ItemInputComp/IsItemInput";
 import { ItemNameInput } from "./ItemInputComp/ItemNameInput";
