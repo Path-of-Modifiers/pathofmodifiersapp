@@ -35,7 +35,7 @@ export const delay = (time: number) => {
   return new Promise((resolve) => setTimeout(resolve, time));
 };
 
-export const getTextContent = (
+export const getEventTextContent = (
   event: React.FormEvent<HTMLElement> | React.ChangeEvent<HTMLInputElement>
 ) => {
   if (event.currentTarget instanceof HTMLInputElement) {
