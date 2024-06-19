@@ -70,10 +70,12 @@ export const SelectBoxInput = ({
             onFocus={() => setInputText("")}
             onBlur={() => setInputText(selectValue?.toString() || defaultText)}
             placeholder={inputText}
+            bgColor={"ui.input"}
             autoComplete="off"
           />
           <AutoCompleteList
             borderColor={"ui.grey"}
+            bgColor="ui.input"
             margin={0}
             p={0}
             marginBottom={0}

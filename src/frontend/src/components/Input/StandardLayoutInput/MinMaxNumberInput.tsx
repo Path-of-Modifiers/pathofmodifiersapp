@@ -37,7 +37,6 @@ export const MinMaxNumberInput = ({
       color={"ui.white"}
       m={2}
       ml={1}
-      bgColor={"ui.secondary"}
       alignItems={"center"}
     >
       <Text ml={1} width={"inputSizes.defaultDescriptionText"}>
