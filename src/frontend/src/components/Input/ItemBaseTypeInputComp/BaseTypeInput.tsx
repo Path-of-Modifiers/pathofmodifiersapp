@@ -35,18 +35,19 @@ export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
     const baseType = getEventTextContent(event);
     if (baseType === "Any") {
       setBaseType(undefined);
+    } else {
+      setBaseType(baseType);
     }
-    setBaseType(baseType);
   };
 
   const baseTypeOptions: Array<SelectBoxOptionValue> = [
+    { value: "", text: "Any" },
     ...baseTypes.map((baseType) => {
       return {
         value: baseType.baseType,
         text: baseType.baseType,
       };
     }),
-    { value: "", text: "Any" },
   ];
 
   return (

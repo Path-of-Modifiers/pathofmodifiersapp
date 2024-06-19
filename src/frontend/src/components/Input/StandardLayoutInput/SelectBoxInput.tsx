@@ -12,6 +12,7 @@ import {
 import { FormControl, FormLabel } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
+import { getEventTextContent } from "../../../hooks/utils";
 
 export interface SelectBoxProps {
   descriptionText: string;
@@ -34,23 +35,27 @@ export const SelectBoxInput = ({
   handleChange,
 }: SelectBoxProps) => {
   const [inputText, setInputText] = useState<string>(defaultText);
+  const [inputPlaceholder, setInputPlaceholder] = useState<string>(defaultText);
 
-  const selectValue = getSelectValue();
+  const optionValues = optionsList.map((option) =>
+    option["text"].toLowerCase()
+  );
 
   const clearClicked = useGraphInputStore((state) => state.clearClicked);
 
-  const handeSetInputText = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const target_value = e.currentTarget.value;
-    setInputText(target_value);
-    handleChange(e);
-  };
-
-  const handleChangeWithText = (
-    e: React.FormEvent<HTMLElement>,
-    actual_value?: string
+  const handleChangeValue = (
+    e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLElement>,
+    actualValue?: string
   ) => {
-    setInputText(e.currentTarget.textContent || "");
-    handleChange(e, actual_value);
+    const target_value = getEventTextContent(e);
+    setInputText(target_value);
+    console.log("target_value", target_value);
+    console.log("optionsValues", optionValues);
+
+    if (optionValues.includes(target_value.toLowerCase())) {
+      setInputPlaceholder(target_value);
+      handleChange(e, actualValue);
+    }
   };
 
   useEffect(() => {
@@ -63,13 +68,13 @@ export const SelectBoxInput = ({
     <Flex m={1}>
       <FormControl width={"inputSizes.defaultBox"} color={"ui.white"}>
         <FormLabel>{descriptionText}</FormLabel>
-        <AutoComplete openOnFocus listAllValuesOnFocus>
+        <AutoComplete openOnFocus listAllValuesOnFocus value={getSelectValue()}>
           <AutoCompleteInput
             value={inputText}
-            onChange={(e) => handeSetInputText(e)}
+            onChange={(e) => handleChangeValue(e)}
             onFocus={() => setInputText("")}
-            onBlur={() => setInputText(selectValue?.toString() || defaultText)}
-            placeholder={inputText}
+            onBlur={() => setInputText(inputPlaceholder || defaultText)}
+            placeholder={inputPlaceholder}
             bgColor={"ui.input"}
             autoComplete="off"
           />
@@ -93,7 +98,7 @@ export const SelectBoxInput = ({
                   margin: 0,
                   borderRadius: 0,
                 }}
-                onClick={(e) => handleChangeWithText(e, option["value"])}
+                onClick={(e) => handleChangeValue(e, option["value"])}
               >
                 {option["text"]}
               </AutoCompleteItem>

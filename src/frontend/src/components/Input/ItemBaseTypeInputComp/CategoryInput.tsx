@@ -1,5 +1,8 @@
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-import { capitalizeFirstLetter, getEventTextContent } from "../../../hooks/utils";
+import {
+  capitalizeFirstLetter,
+  getEventTextContent,
+} from "../../../hooks/utils";
 import { ItemBaseTypeCategory } from "../../../client";
 import {
   SelectBoxInput,
@@ -35,18 +38,19 @@ export const CategoryInput = ({ categories }: CategoryInputProps) => {
     const itemCategory = getEventTextContent(event);
     if (itemCategory === "Any") {
       setItemCategory(undefined);
+    } else {
+      setItemCategory(itemCategory);
     }
-    setItemCategory(itemCategory);
   };
 
   const categoryOptions: Array<SelectBoxOptionValue> = [
+    { value: "", text: "Any" },
     ...categories.map((baseCategory) => {
       return {
         value: baseCategory.category,
         text: capitalizeFirstLetter(baseCategory.category),
       };
     }),
-    { value: "", text: "Any" },
   ];
 
   return (
