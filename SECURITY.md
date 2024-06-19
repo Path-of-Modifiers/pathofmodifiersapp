@@ -20,4 +20,4 @@ To report a vulnerability, please contact pomodifiers@outlook.com with specifica
 - Adjustment recommendations
 - Other necessary specifications
 
-You will get updates of the vulnerability asap after reporting. We appreciate all efforts for making the application more secure. 
+You will get updates of the vulnerability asap after reporting. We appreciate all efforts in making the application more secure. 
