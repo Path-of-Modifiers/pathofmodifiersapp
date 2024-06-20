@@ -55,16 +55,17 @@ export const TextRollInput = ({
   const defaultValue = undefined;
 
   // Function to handle the change of the text roll input value
-  const handleChange = (
+  const handleTextChange = (
     event: React.FormEvent<HTMLElement> | React.ChangeEvent<HTMLInputElement>
   ) => {
     const textRollInput = getEventTextContent(event);
+    const textRollIndex = textRollsList.indexOf(textRollInput);
     setGlobalStoreTextRoll(textRollInput);
 
     if (modifierSelected.textRollInputs) {
-      modifierSelected.textRollInputs[inputPosition] = inputPosition;
+      modifierSelected.textRollInputs[inputPosition] = textRollIndex;
     } else {
-      modifierSelected.textRollInputs = [inputPosition];
+      modifierSelected.textRollInputs = [textRollIndex];
     }
   };
 
@@ -86,7 +87,7 @@ export const TextRollInput = ({
       defaultValue={defaultValue}
       defaultText={"Any"}
       getSelectValue={getTextRollInput}
-      handleChange={(e) => handleChange(e)}
+      handleChange={(e) => handleTextChange(e)}
     />
   );
 };

@@ -99,8 +99,6 @@ export const ModifierInput = () => {
   // Define the reference to the outside click hook. This is used to close the dropdown when clicking outside of it.
   const ref = useOutsideClick(() => {
     setIsExpanded(false);
-    const store = useGraphInputStore.getState();
-    console.log(store);
   });
 
   // Define the function to handle input changes

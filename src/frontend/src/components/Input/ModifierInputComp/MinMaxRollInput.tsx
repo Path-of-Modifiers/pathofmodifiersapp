@@ -104,7 +104,6 @@ export const MinMaxRollInput = ({
 
   return (
     <MinMaxNumberInput
-      text={"Min Roll"}
       minSpecKey={minSpecKey}
       maxSpecKey={maxSpecKey}
       getMinValue={getMinGlobalValue}

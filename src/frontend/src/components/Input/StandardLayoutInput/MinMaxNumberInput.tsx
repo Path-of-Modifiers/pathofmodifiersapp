@@ -13,7 +13,7 @@ import {
 } from "../../../schemas/function/InputFunction";
 
 interface MinMaxNumberInputProps {
-  text: string;
+  descriptionText?: string;
   minSpecKey: string;
   maxSpecKey: string;
   getMinValue: GetValueFunction;
@@ -24,7 +24,7 @@ interface MinMaxNumberInputProps {
 
 // Min Max Item Lvl Input Component  -  This component is used to input the min and max ilvl of an item.
 export const MinMaxNumberInput = ({
-  text,
+  descriptionText,
   minSpecKey,
   maxSpecKey,
   getMinValue,
@@ -33,14 +33,9 @@ export const MinMaxNumberInput = ({
   handleMaxChange,
 }: MinMaxNumberInputProps) => {
   return (
-    <Flex
-      color={"ui.white"}
-      m={2}
-      ml={1}
-      alignItems={"center"}
-    >
+    <Flex color={"ui.white"} m={2} ml={1} alignItems={"center"}>
       <Text ml={1} width={"inputSizes.defaultDescriptionText"}>
-        {text}
+        {descriptionText}
       </Text>
       <NumberInput
         value={getMinValue()}

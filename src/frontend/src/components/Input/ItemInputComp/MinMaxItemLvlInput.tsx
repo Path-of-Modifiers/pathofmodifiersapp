@@ -50,7 +50,7 @@ export const MinMaxInput = ({
 
   return (
     <MinMaxNumberInput
-      text={text}
+      descriptionText={text}
       minSpecKey={itemMinSpecKey}
       maxSpecKey={itemMaxSpecKey}
       getMinValue={getMinValue}
