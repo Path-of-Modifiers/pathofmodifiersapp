@@ -28,23 +28,6 @@ export interface ModifierInput extends GroupedModifierByEffect {
   textRollInputs?: (number | null)[];
 }
 
-export interface RenderInputProps {
-  modifierSelected: ModifierInput;
-  inputPosition: number;
-  updateModifierInputFunction: UpdateModifierInputFunction;
-}
-
-export interface RenderInputMaxMinRollProps extends RenderInputProps {
-  input: string | number | undefined | null;
-}
-
-export type UpdateModifierInputFunction = (
-  modifierId: number,
-  newMinRollInputs?: (number | null)[] | undefined,
-  newMaxRollInputs?: (number | null)[] | undefined,
-  newTextRollInputs?: (number | null)[] | undefined
-) => void;
-
 export const ModifierInput = () => {
   const [searchModifierText, setSearchModifierText] = useState("");
 
@@ -64,8 +47,7 @@ export const ModifierInput = () => {
     []
   );
 
-  const { addModifierSpec, removeModifierSpec, updateModifierSpec } =
-    useGraphInputStore();
+  const { addModifierSpec, removeModifierSpec } = useGraphInputStore();
 
   const clearClicked = useGraphInputStore((state) => state.clearClicked);
 
@@ -118,6 +100,8 @@ export const ModifierInput = () => {
   // Define the reference to the outside click hook. This is used to close the dropdown when clicking outside of it.
   const ref = useOutsideClick(() => {
     setIsExpanded(false);
+    const store = useGraphInputStore.getState();
+    console.log(store);
   });
 
   // Define the function to handle input changes
@@ -254,49 +238,6 @@ export const ModifierInput = () => {
     }
   };
 
-  // Define the function to update the modifier input
-  const updateModifierInput = (
-    modifierId: number,
-    modifierToUpdate: ModifierInput,
-    newMinRollInputs?: (number | null)[] | undefined,
-    newMaxRollInputs?: (number | null)[] | undefined,
-    newTextRollInputs?: (number | null)[] | undefined
-  ): void => {
-    // Update the modifier in the local state
-    setSelectedModifiers((prevModifiers) => {
-      const updatedModifiers = [...prevModifiers]; // Step 1: Create a copy of the array
-      const index = updatedModifiers.findIndex(
-        (modifier) => modifier.modifierId[0] === modifierId
-      ); // Find index based on modifierId
-      if (index !== -1) {
-        // Ensure modifier with given modifierId exists
-        const modifierToUpdate = { ...updatedModifiers[index] }; // Copy the modifier object
-        if (newMinRollInputs) {
-          modifierToUpdate.minRollInputs = newMinRollInputs.map(Number); // Update minRollInputs
-        } else if (newMaxRollInputs) {
-          modifierToUpdate.maxRollInputs = newMaxRollInputs.map(Number);
-        } else if (newTextRollInputs) {
-          modifierToUpdate.textRollInputs = newTextRollInputs;
-        }
-        updatedModifiers[index] = modifierToUpdate; // Replace the old modifier with the updated one
-      }
-      return updatedModifiers; // Set the updated array back to state
-    });
-
-    // Update the modifier in the global state store
-    for (let i = 0; i < modifierToUpdate.position.length; i++) {
-      updateModifierSpec({
-        modifierId: modifierToUpdate.modifierId[i],
-        position: modifierToUpdate.position[i],
-        modifierLimitations: {
-          minRoll: modifierToUpdate.minRollInputs?.[i] ?? null,
-          maxRoll: modifierToUpdate.maxRollInputs?.[i] ?? null,
-          textRoll: modifierToUpdate.textRollInputs?.[i] ?? null,
-        },
-      });
-    }
-  };
-
   // Render selected modifiers list
   const selectedModifiersList = selectedModifiers.map(
     (modifierSelected, index) => (
@@ -317,7 +258,7 @@ export const ModifierInput = () => {
           />
         </Center>
 
-        <Center bgColor={"ui.secondary"} width={"100%"}>
+        <Center width={"100%"}>
           <Text ml={3} mr={"auto"}>
             {modifierSelected.effect}
           </Text>
@@ -338,23 +279,10 @@ export const ModifierInput = () => {
                     modifierSelected.minRoll &&
                     modifierSelected.minRoll[modifierInputIndex] !== null
                   ) {
-                    const selectedModifierMinRollInput =
-                      modifierSelected?.minRollInputs
-                        ? modifierSelected.minRollInputs[modifierInputIndex]
-                        : undefined;
-
                     elements.push(
                       <MinRollInput
                         modifierSelected={modifierSelected}
-                        input={selectedModifierMinRollInput}
                         inputPosition={modifierInputIndex}
-                        updateModifierInputFunction={() =>
-                          updateModifierInput(
-                            modifierSelected.modifierId[0],
-                            modifierSelected,
-                            modifierSelected.minRollInputs
-                          )
-                        }
                         key={"minRollPosition" + index + modifierInputIndex}
                       />
                     );
@@ -366,24 +294,10 @@ export const ModifierInput = () => {
                     modifierSelected.maxRoll &&
                     modifierSelected.maxRoll[modifierInputIndex] !== null
                   ) {
-                    const selectedModifierMaxRollInput =
-                      modifierSelected?.maxRollInputs
-                        ? modifierSelected.maxRollInputs[modifierInputIndex]
-                        : undefined;
-
                     elements.push(
                       <MaxRollInput
                         modifierSelected={modifierSelected}
-                        input={selectedModifierMaxRollInput}
                         inputPosition={modifierInputIndex}
-                        updateModifierInputFunction={() =>
-                          updateModifierInput(
-                            modifierSelected.modifierId[0],
-                            modifierSelected,
-                            undefined,
-                            modifierSelected.maxRollInputs
-                          )
-                        }
                         key={"maxRollPosition" + index + modifierInputIndex}
                       />
                     );
@@ -401,15 +315,6 @@ export const ModifierInput = () => {
                       <TextRollInput
                         modifierSelected={modifierSelected}
                         inputPosition={modifierInputIndex}
-                        updateModifierInputFunction={() =>
-                          updateModifierInput(
-                            modifierSelected.modifierId[0],
-                            modifierSelected,
-                            undefined,
-                            undefined,
-                            modifierSelected.textRollInputs
-                          )
-                        }
                         key={"textRollPosition" + index + modifierInputIndex}
                       />
                     );
