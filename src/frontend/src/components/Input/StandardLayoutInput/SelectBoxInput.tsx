@@ -15,11 +15,11 @@ import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { getEventTextContent } from "../../../hooks/utils";
 
 export interface SelectBoxProps {
-  descriptionText: string;
   optionsList: Array<SelectBoxOptionValue>;
   itemKeyId: string;
   defaultValue: string | number | undefined;
   defaultText: string;
+  descriptionText?: string;
   getSelectValue: GetValueFunction;
   handleChange: HandleChangeEventFunction;
 }
@@ -67,7 +67,9 @@ export const SelectBoxInput = ({
   return (
     <Flex m={1}>
       <FormControl width={"inputSizes.defaultBox"} color={"ui.white"}>
-        <FormLabel>{descriptionText}</FormLabel>
+        {descriptionText && (
+          <FormLabel color={"ui.white"}>{descriptionText}</FormLabel>
+        )}
         <AutoComplete openOnFocus listAllValuesOnFocus value={getSelectValue()}>
           <AutoCompleteInput
             value={inputText}
@@ -85,7 +87,7 @@ export const SelectBoxInput = ({
             p={0}
             marginBottom={0}
             borderRadius={0}
-            maxH={"150px"}
+            maxH={"200px"}
             overflowY={"auto"}
           >
             {optionsList.map((option) => (
