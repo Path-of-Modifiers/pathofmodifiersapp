@@ -218,4 +218,22 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
         spec.modifierId === modifierSpec.modifierId ? modifierSpec : spec
       ),
     })),
+
+  setTextRollModifierSpec: (modifierId: number, textRoll: number) =>
+    set((state) => {
+      console.log("Before update:", state.modifierSpecs);
+      const updatedSpecs = state.modifierSpecs.map((spec) =>
+        spec.modifierId === modifierId
+          ? {
+              ...spec,
+              modifierLimitations: {
+                ...spec.modifierLimitations,
+                textRoll: textRoll,
+              },
+            }
+          : spec
+      );
+      console.log("After update:", updatedSpecs);
+      return { modifierSpecs: updatedSpecs };
+    }),
 }));

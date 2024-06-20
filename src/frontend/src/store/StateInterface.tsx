@@ -83,6 +83,7 @@ export interface GraphInputState {
   addModifierSpec: (modifierSpec: ModifierSpecState) => void;
   removeModifierSpec: (modifierId: number) => void;
   updateModifierSpec: (modifierSpec: ModifierSpecState) => void;
+  setTextRollModifierSpec: (modifierId: number, textRoll: number) => void;
 }
 
 export interface ExpandedComponentState {
