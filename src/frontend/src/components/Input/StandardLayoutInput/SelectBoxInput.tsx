@@ -49,8 +49,6 @@ export const SelectBoxInput = ({
   ) => {
     const target_value = getEventTextContent(e);
     setInputText(target_value);
-    console.log("target_value", target_value);
-    console.log("optionsValues", optionValues);
 
     if (optionValues.includes(target_value.toLowerCase())) {
       setInputPlaceholder(target_value);
