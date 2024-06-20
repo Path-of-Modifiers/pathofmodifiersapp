@@ -15,8 +15,7 @@ import { GroupedModifierByEffect } from "../../../client";
 import { useOutsideClick } from "../../../hooks/useOutsideClick";
 import React from "react";
 import { TextRollInput } from "./TextRollInput";
-import { MinRollInput } from "./MinInput";
-import { MaxRollInput } from "./MaxInput";
+import { MinMaxRollInput } from "./MinMaxRollInput";
 import { isArrayNullOrContainsOnlyNull } from "../../../hooks/utils";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { GetGroupedModifiersByEffect } from "../../../hooks/getGroupedModifiers";
@@ -277,28 +276,15 @@ export const ModifierInput = () => {
                   if (
                     !isArrayNullOrContainsOnlyNull(modifierSelected.minRoll) &&
                     modifierSelected.minRoll &&
-                    modifierSelected.minRoll[modifierInputIndex] !== null
-                  ) {
-                    elements.push(
-                      <MinRollInput
-                        modifierSelected={modifierSelected}
-                        inputPosition={modifierInputIndex}
-                        key={"minRollPosition" + index + modifierInputIndex}
-                      />
-                    );
-                  }
-
-                  // Check if maxRoll exists and is not all null. If so, create a MaxRollInput component
-                  if (
-                    !isArrayNullOrContainsOnlyNull(modifierSelected.maxRoll) &&
+                    modifierSelected.minRoll[modifierInputIndex] !== null &&
                     modifierSelected.maxRoll &&
                     modifierSelected.maxRoll[modifierInputIndex] !== null
                   ) {
                     elements.push(
-                      <MaxRollInput
+                      <MinMaxRollInput
                         modifierSelected={modifierSelected}
                         inputPosition={modifierInputIndex}
-                        key={"maxRollPosition" + index + modifierInputIndex}
+                        key={"minRollPosition" + index + modifierInputIndex}
                       />
                     );
                   }

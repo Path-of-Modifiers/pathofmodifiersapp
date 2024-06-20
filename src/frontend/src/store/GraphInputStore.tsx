@@ -219,9 +219,45 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       ),
     })),
 
+  setMinRollModifierSpec: (modifierId: number, minRoll: number) =>
+    set((state) => {
+      console.log("Before update minroll:", state.modifierSpecs);
+      const updatedSpecs = state.modifierSpecs.map((spec) =>
+        spec.modifierId === modifierId
+          ? {
+              ...spec,
+              modifierLimitations: {
+                ...spec.modifierLimitations,
+                minRoll: minRoll,
+              },
+            }
+          : spec
+      );
+      console.log("After update minroll:", updatedSpecs);
+      return { modifierSpecs: updatedSpecs };
+    }),
+
+  setMaxRollModifierSpec: (modifierId: number, maxRoll: number) =>
+    set((state) => {
+      console.log("Before update maxroll:", state.modifierSpecs);
+      const updatedSpecs = state.modifierSpecs.map((spec) =>
+        spec.modifierId === modifierId
+          ? {
+              ...spec,
+              modifierLimitations: {
+                ...spec.modifierLimitations,
+                maxRoll: maxRoll,
+              },
+            }
+          : spec
+      );
+      console.log("After update maxroll:", updatedSpecs);
+      return { modifierSpecs: updatedSpecs };
+    }),
+
   setTextRollModifierSpec: (modifierId: number, textRoll: number) =>
     set((state) => {
-      console.log("Before update:", state.modifierSpecs);
+      console.log("Before update textroll:", state.modifierSpecs);
       const updatedSpecs = state.modifierSpecs.map((spec) =>
         spec.modifierId === modifierId
           ? {
@@ -233,7 +269,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             }
           : spec
       );
-      console.log("After update:", updatedSpecs);
+      console.log("After update textroll:", updatedSpecs);
       return { modifierSpecs: updatedSpecs };
     }),
 }));

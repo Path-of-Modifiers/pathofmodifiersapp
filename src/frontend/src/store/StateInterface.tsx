@@ -83,6 +83,8 @@ export interface GraphInputState {
   addModifierSpec: (modifierSpec: ModifierSpecState) => void;
   removeModifierSpec: (modifierId: number) => void;
   updateModifierSpec: (modifierSpec: ModifierSpecState) => void;
+  setMinRollModifierSpec: (modifierId: number, minRoll: number) => void;
+  setMaxRollModifierSpec: (modifierId: number, maxRoll: number) => void;
   setTextRollModifierSpec: (modifierId: number, textRoll: number) => void;
 }
 
