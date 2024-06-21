@@ -1,17 +1,18 @@
 import { Flex } from "@chakra-ui/layout";
 import { useEffect, useState } from "react";
 import { Checkbox, CheckboxIcon, Text } from "@chakra-ui/react";
-import { BaseTypeInput } from "./BaseTypeInput";
+import { BaseTypeInput } from "./ItemBaseTypeInputComp/BaseTypeInput";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   BaseType,
   ItemBaseTypeCategory,
   ItemBaseTypeSubCategory,
-} from "../../../client";
-import { CategoryInput } from "./CategoryInput";
-import { SubCategoryInput } from "./SubCategoryInput";
-import { prefetchAllBaseTypeData } from "../../../hooks/getBaseTypeCategories";
-import { useGraphInputStore } from "../../../store/GraphInputStore";
+} from "../../client";
+import { CategoryInput } from "./ItemBaseTypeInputComp/CategoryInput";
+import { SubCategoryInput } from "./ItemBaseTypeInputComp/SubCategoryInput";
+import { prefetchAllBaseTypeData } from "../../hooks/getBaseTypeCategories";
+import { useGraphInputStore } from "../../store/GraphInputStore";
+import AddIconCheckbox from "../Icon/AddIconCheckbox";
 
 // BaseInput component that contains the base type input, category input, and sub category input
 export const BaseInput = () => {
@@ -41,7 +42,7 @@ export const BaseInput = () => {
   return (
     <Flex direction={"column"}>
       <Flex>
-        <Checkbox
+        <AddIconCheckbox
           isChecked={baseExpanded}
           onChange={handleExpanded}
           onMouseEnter={async () => {
@@ -63,9 +64,7 @@ export const BaseInput = () => {
               );
             }
           }}
-        >
-          <CheckboxIcon />
-        </Checkbox>
+        ></AddIconCheckbox>
         <Text color={"ui.white"}>Base type</Text>
       </Flex>
       {baseExpanded &&

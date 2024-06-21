@@ -1,9 +1,9 @@
-import { Flex } from "@chakra-ui/layout";
+import { Flex, Text } from "@chakra-ui/layout";
 import { IsItemInput } from "./ItemInputComp/IsItemInput";
 import { MinMaxInput } from "./ItemInputComp/MinMaxItemLvlInput";
 import { useEffect, useState } from "react";
-import { Checkbox, CheckboxIcon, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../store/GraphInputStore";
+import { AddIconCheckbox } from "../Icon/AddIconCheckbox";
 
 // Miscellaneous Item Input Component  -  This component is used to input miscellaneous item properties.
 export const MiscItemInput = () => {
@@ -24,13 +24,12 @@ export const MiscItemInput = () => {
   return (
     <Flex direction={"column"}>
       <Flex>
-        <Checkbox isChecked={miscExpanded} onChange={handleExpanded}>
-          <CheckboxIcon />
-        </Checkbox>
+        <AddIconCheckbox isChecked={miscExpanded} onChange={handleExpanded} />
         <Text color={"ui.white"}>Miscellaneous</Text>
       </Flex>
       {miscExpanded && (
         <Flex flexWrap={"wrap"} width={650}>
+          <IsItemInput itemSpecKey={"identified"} text={"Identified"} />
           <IsItemInput itemSpecKey={"corrupted"} text={"Corrupted"} />
           <MinMaxInput
             itemMinSpecKey="minIlvl"

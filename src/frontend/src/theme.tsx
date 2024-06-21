@@ -11,6 +11,7 @@ const theme = extendTheme({
       grey: "#B3B3B3",
       dark: "#1A202C",
       input: "#2d3333",
+      lightInput: "#565b5b",
       darkSlate: "#252D3D",
     },
   },

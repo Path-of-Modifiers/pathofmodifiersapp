@@ -16,7 +16,7 @@ import {
   SelectBoxInput,
   SelectBoxOptionValue,
 } from "../StandardLayoutInput/SelectBoxInput";
-// import { useOutsideClick } from "../../../hooks/useOutsideClick";
+import { useOutsideClick } from "../../../hooks/useOutsideClick";
 
 export interface ModifierInput extends GroupedModifierByEffect {
   isSelected?: boolean;
@@ -84,9 +84,10 @@ export const ModifierInput = () => {
   }, [selectedModifiers, modifiers, clearClicked]);
 
   // Define the reference to the outside click hook. This is used to close the dropdown when clicking outside of it.
-  // const ref = useOutsideClick(() => {
-  //   const store = useGraphInputStore.getState();
-  // });
+  const ref = useOutsideClick(() => {
+    const store = useGraphInputStore.getState();
+    console.log("STORE", store);
+  });
 
   const handleModifierSelect = (
     e: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>
@@ -313,7 +314,7 @@ export const ModifierInput = () => {
       <Stack
         color={"ui.white"}
         mb={2}
-        // ref={ref}
+        ref={ref}
       >
         {selectedModifiersList}
       </Stack>
