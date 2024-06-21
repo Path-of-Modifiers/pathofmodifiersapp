@@ -42,10 +42,10 @@ export const MinMaxNumberInput = ({
         {descriptionText}
       </Text>
       <NumberInput
-        value={getMinValue()}
+        value={getMinValue() ?? ""}
         step={1}
         key={minSpecKey}
-        borderWidth={getMinValue() !== initialMinValue.current ? 2 : 0}
+        borderWidth={getMinValue() !== initialMinValue.current ? 1 : 0}
         borderRadius={getMinValue() !== initialMinValue.current ? 9 : 0}
         borderColor={
           getMinValue() !== initialMinValue.current
@@ -61,12 +61,7 @@ export const MinMaxNumberInput = ({
         _placeholder={{ color: "ui.white" }}
         textAlign={"center"}
       >
-        <NumberInputField
-          placeholder={"Min"}
-          bgColor="ui.input"
-          borderColor={"ui.grey"}
-          borderWidth={1}
-        />
+        <NumberInputField placeholder={"Min"} bgColor="ui.input" />
         <NumberInputStepper>
           <NumberIncrementStepper />
           <NumberDecrementStepper />
@@ -74,10 +69,10 @@ export const MinMaxNumberInput = ({
       </NumberInput>
 
       <NumberInput
-        value={getMaxValue()}
+        value={getMaxValue() ?? ""}
         step={1}
         key={maxSpecKey}
-        borderWidth={getMaxValue() !== initialMaxValue.current ? 2 : 0}
+        borderWidth={getMaxValue() !== initialMaxValue.current ? 1 : 0}
         borderRadius={getMaxValue() !== initialMaxValue.current ? 9 : 0}
         focusBorderColor={"ui.white"}
         borderColor={
@@ -92,12 +87,7 @@ export const MinMaxNumberInput = ({
         _placeholder={{ color: "ui.white" }}
         textAlign={"center"}
       >
-        <NumberInputField
-          placeholder={"Max"}
-          borderColor={"ui.grey"}
-          bgColor="ui.input"
-          borderWidth={1}
-        />
+        <NumberInputField placeholder={"Max"} bgColor="ui.input" />
         <NumberInputStepper>
           <NumberIncrementStepper />
           <NumberDecrementStepper />

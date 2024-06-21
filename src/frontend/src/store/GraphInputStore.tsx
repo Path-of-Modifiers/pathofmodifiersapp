@@ -172,7 +172,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
 
   setItemSpecMinIlvl: (minIlvl: number | undefined) =>
     set((state) => {
-      if (minIlvl === 0) {
+      if (!minIlvl || minIlvl === 0) {
         minIlvl = undefined;
       }
       const itemSpec = { ...state.itemSpec, minIlvl: minIlvl };
@@ -181,7 +181,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
 
   setItemSpecMaxIlvl: (maxIlvl: number | undefined) =>
     set((state) => {
-      if (maxIlvl === 0) {
+      if (!maxIlvl || maxIlvl === 0) {
         maxIlvl = undefined;
       }
       const itemSpec = { ...state.itemSpec, maxIlvl: maxIlvl };
@@ -229,7 +229,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
 
   setMinRollModifierSpec: (modifierId: number, minRoll: number | undefined) =>
     set((state) => {
-      if (minRoll === 0) {
+      if (!minRoll || minRoll === 0) {
         minRoll = undefined;
       }
       const updatedSpecs = state.modifierSpecs.map((spec) =>
@@ -248,7 +248,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
 
   setMaxRollModifierSpec: (modifierId: number, maxRoll: number | undefined) =>
     set((state) => {
-      if (maxRoll === 0) {
+      if (!maxRoll || maxRoll === 0) {
         maxRoll = undefined;
       }
       const updatedSpecs = state.modifierSpecs.map((spec) =>
