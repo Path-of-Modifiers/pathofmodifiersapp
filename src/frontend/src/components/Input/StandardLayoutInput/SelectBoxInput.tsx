@@ -17,25 +17,32 @@ import { getEventTextContent } from "../../../hooks/utils";
 export interface SelectBoxProps {
   optionsList: Array<SelectBoxOptionValue>;
   itemKeyId: string;
-  defaultValue: string | number | undefined;
-  defaultText: string;
+  defaultValue?: string;
+  defaultText?: string;
   descriptionText?: string;
-  getSelectValue: GetValueFunction;
+  getSelectValue?: GetValueFunction;
   handleChange: HandleChangeEventFunction;
+  width?: string;
+  noPlaceholder?: boolean;
 }
 
-export type SelectBoxOptionValue = { value: string; text: string };
+export type SelectBoxOptionValue = { value: string | undefined; text: string };
 
 export const SelectBoxInput = ({
   descriptionText,
   optionsList,
   itemKeyId,
+  defaultValue,
   defaultText,
-  getSelectValue,
   handleChange,
+  width,
+  noPlaceholder,
 }: SelectBoxProps) => {
+  defaultText = defaultText || "";
   const [inputText, setInputText] = useState<string>(defaultText);
-  const [inputPlaceholder, setInputPlaceholder] = useState<string>(defaultText);
+  const [inputPlaceholder, setInputPlaceholder] = useState<string>(
+    noPlaceholder ? "" : defaultText
+  );
 
   const optionValues = optionsList.map((option) =>
     option["text"].toLowerCase()
@@ -44,41 +51,49 @@ export const SelectBoxInput = ({
   const clearClicked = useGraphInputStore((state) => state.clearClicked);
 
   const handleChangeValue = (
-    e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLElement>,
-    actualValue?: string
+    e: React.ChangeEvent<HTMLInputElement> | React.MouseEvent<HTMLElement>,
+    actualValue?: string | undefined
   ) => {
     const target_value = getEventTextContent(e);
     setInputText(target_value);
 
-    if (optionValues.includes(target_value.toLowerCase())) {
-      setInputPlaceholder(target_value);
+    if (optionValues.includes(target_value.toLowerCase()) || !target_value) {
+      if (!noPlaceholder) {
+        setInputPlaceholder(target_value);
+      } else {
+        setInputText("");
+      }
       handleChange(e, actualValue);
     }
   };
 
   useEffect(() => {
     if (clearClicked) {
-      setInputText(defaultText);
+      setInputText(defaultText || "");
     }
   }, [clearClicked, defaultText]);
 
   return (
     <Flex m={1}>
-      <FormControl width={"inputSizes.defaultBox"} color={"ui.white"}>
+      <FormControl width={width || "inputSizes.defaultBox"} color={"ui.white"}>
         {descriptionText && (
           <FormLabel color={"ui.white"}>{descriptionText}</FormLabel>
         )}
-        <AutoComplete openOnFocus listAllValuesOnFocus value={getSelectValue()}>
+        <AutoComplete
+          openOnFocus
+          listAllValuesOnFocus
+          defaultValue={defaultValue}
+          >
           <AutoCompleteInput
             value={inputText}
             onChange={(e) => handleChangeValue(e)}
             onFocus={() => setInputText("")}
-            onBlur={() => setInputText(inputPlaceholder || defaultText)}
             placeholder={inputPlaceholder}
             bgColor={"ui.input"}
             autoComplete="off"
-          />
+            />
           <AutoCompleteList
+            onBlur={() => setInputText(noPlaceholder ? "" : inputPlaceholder)}
             borderColor={"ui.grey"}
             bgColor="ui.input"
             margin={0}

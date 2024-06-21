@@ -21,18 +21,17 @@ export const ItemRarityInput = () => {
   };
 
   const handleItemRarityChange = (
-    event: React.FormEvent<HTMLElement> | React.ChangeEvent<HTMLInputElement>
+    event: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>,
+    value?: string
   ) => {
     const itemRarityInput = getEventTextContent(event);
-    if (itemRarityInput === "Any") {
-      setItemRarity(undefined);
-    } else {
-      setItemRarity(itemRarityInput || undefined);
+    if (itemRarityInput === value) {
+      setItemRarity(itemRarityInput);
     }
   };
 
   const optionsList: Array<SelectBoxOptionValue> = [
-    { value: "", text: "Any"},
+    { value: undefined, text: "Any" },
     { value: "Unique", text: "Unique" },
     /* Future implementation for non-unique items
     { value: "Non_Unique", text: "Any Non-Unique" },

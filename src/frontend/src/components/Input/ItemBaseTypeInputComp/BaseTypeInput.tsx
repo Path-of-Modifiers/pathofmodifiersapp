@@ -30,7 +30,7 @@ export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
   };
 
   const handleBaseTypeChange = (
-    event: React.FormEvent<HTMLElement> | React.ChangeEvent<HTMLInputElement>
+    event: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>
   ) => {
     const baseType = getEventTextContent(event);
     if (baseType === "Any") {

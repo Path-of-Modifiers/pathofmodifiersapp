@@ -56,7 +56,7 @@ export const TextRollInput = ({
 
   // Function to handle the change of the text roll input value
   const handleTextChange = (
-    event: React.FormEvent<HTMLElement> | React.ChangeEvent<HTMLInputElement>
+    event: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>
   ) => {
     const textRollInput = getEventTextContent(event);
     const textRollIndex = textRollsList.indexOf(textRollInput);

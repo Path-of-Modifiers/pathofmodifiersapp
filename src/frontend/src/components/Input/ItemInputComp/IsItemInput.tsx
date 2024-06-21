@@ -74,7 +74,7 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
   } = useGraphInputStore();
 
   const handleIsItemChange = (
-    event: React.FormEvent<HTMLElement> | React.ChangeEvent<HTMLInputElement>,
+    event: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>,
     value: string
   ) => {
     const textContent = getEventTextContent(event);
@@ -130,7 +130,7 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
   };
 
   const optionsList: Array<SelectBoxOptionValue> = [
-    { value: "", text: "Any" },
+    { value: undefined, text: "Any" },
     { value: "true", text: "Yes" },
     { value: "false", text: "No" },
   ];

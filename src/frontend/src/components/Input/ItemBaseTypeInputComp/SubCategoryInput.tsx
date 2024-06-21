@@ -33,7 +33,7 @@ export const SubCategoryInput = ({ subCategories }: SubCategoryInputProps) => {
   const { setItemSubCategory } = useGraphInputStore();
 
   const handleSubCategoryChange = (
-    event: React.FormEvent<HTMLElement> | React.ChangeEvent<HTMLInputElement>
+    event: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>
   ) => {
     const itemSubCategory = getEventTextContent(event);
     if (itemSubCategory === "Any") {

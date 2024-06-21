@@ -1,6 +1,9 @@
 import { getEventTextContent } from "../../../hooks/utils";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-import { SelectBoxInput, SelectBoxOptionValue } from "../StandardLayoutInput/SelectBoxInput";
+import {
+  SelectBoxInput,
+  SelectBoxOptionValue,
+} from "../StandardLayoutInput/SelectBoxInput";
 
 // Item Name Input Component  -  This component is used to input the name of an item.
 export const ItemNameInput = () => {
@@ -15,7 +18,9 @@ export const ItemNameInput = () => {
     }
   };
 
-  const handleNameChange = (event: React.FormEvent<HTMLElement> | React.ChangeEvent<HTMLInputElement>) => {
+  const handleNameChange = (
+    event: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>
+  ) => {
     const itemNameText = getEventTextContent(event);
     setItemName(itemNameText);
   };
@@ -49,6 +54,6 @@ export const ItemNameInput = () => {
       defaultValue={undefined}
       getSelectValue={getItemNameValue}
       handleChange={(e) => handleNameChange(e)}
-  />
+    />
   );
 };

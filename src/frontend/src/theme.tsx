@@ -66,6 +66,7 @@ const theme = extendTheme({
       defaultDescriptionText: "11rem",
       mdBox: "15rem",
       lgBox: "20rem",
+      gigaBox: "50rem",
     },
   },
 });

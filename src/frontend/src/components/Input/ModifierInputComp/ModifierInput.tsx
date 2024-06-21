@@ -1,24 +1,22 @@
-import {
-  Box,
-  Center,
-  CloseButton,
-  Flex,
-  Input,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Center, CloseButton, Flex, Stack, Text } from "@chakra-ui/react";
 
 import AddIconCheckbox from "../../Icon/AddIconCheckbox";
 
 import { useEffect, useState } from "react";
 import { GroupedModifierByEffect } from "../../../client";
-import { useOutsideClick } from "../../../hooks/useOutsideClick";
-import React from "react";
 import { TextRollInput } from "./TextRollInput";
 import { MinMaxRollInput } from "./MinMaxRollInput";
-import { isArrayNullOrContainsOnlyNull } from "../../../hooks/utils";
+import {
+  getEventTextContent,
+  isArrayNullOrContainsOnlyNull,
+} from "../../../hooks/utils";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { GetGroupedModifiersByEffect } from "../../../hooks/getGroupedModifiers";
+import {
+  SelectBoxInput,
+  SelectBoxOptionValue,
+} from "../StandardLayoutInput/SelectBoxInput";
+// import { useOutsideClick } from "../../../hooks/useOutsideClick";
 
 export interface ModifierInput extends GroupedModifierByEffect {
   isSelected?: boolean;
@@ -28,8 +26,6 @@ export interface ModifierInput extends GroupedModifierByEffect {
 }
 
 export const ModifierInput = () => {
-  const [searchModifierText, setSearchModifierText] = useState("");
-
   const [filteredModifiers, setFilteredModifiers] = useState<ModifierInput[]>([
     {
       modifierId: [0],
@@ -50,26 +46,18 @@ export const ModifierInput = () => {
 
   const clearClicked = useGraphInputStore((state) => state.clearClicked);
 
-  const [isExpanded, setIsExpanded] = useState(false);
-
   const modifiers: ModifierInput[] | undefined = GetGroupedModifiersByEffect();
 
   // Filter the modifiers based on the search text and selected modifiers.
   useEffect(() => {
     if (modifiers) {
-      const filtered = modifiers
-        .filter((modifier) =>
-          modifier.effect
-            .toLowerCase()
-            .includes(searchModifierText.toLowerCase())
-        )
-        .filter(
-          (modifier) =>
-            !selectedModifiers.some(
-              (selectedModifier) =>
-                selectedModifier.modifierId[0] === modifier.modifierId[0]
-            )
-        );
+      const filtered = modifiers.filter(
+        (modifier) =>
+          !selectedModifiers.some(
+            (selectedModifier) =>
+              selectedModifier.modifierId[0] === modifier.modifierId[0]
+          )
+      );
 
       setFilteredModifiers(filtered);
     } else {
@@ -88,25 +76,29 @@ export const ModifierInput = () => {
 
     const clearAllModifiers = () => {
       setSelectedModifiers([]);
-      setSearchModifierText("");
     };
 
     if (clearClicked) {
       clearAllModifiers();
     }
-  }, [searchModifierText, selectedModifiers, modifiers, clearClicked]);
+  }, [selectedModifiers, modifiers, clearClicked]);
 
   // Define the reference to the outside click hook. This is used to close the dropdown when clicking outside of it.
-  const ref = useOutsideClick(() => {
-    setIsExpanded(false);
-  });
+  // const ref = useOutsideClick(() => {
+  //   const store = useGraphInputStore.getState();
+  // });
 
-  // Define the function to handle input changes
-  const handleSearchModifierInputChange = (value: string) => {
-    setSearchModifierText(value);
-  };
+  const handleModifierSelect = (
+    e: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>
+  ) => {
+    const selectedModifierEffect = modifiers?.find(
+      (modifier) => modifier.effect === getEventTextContent(e)
+    );
 
-  const handleModifierSelect = (selectedModifierEffect: ModifierInput) => {
+    if (!selectedModifierEffect) {
+      return;
+    }
+
     // Set the clicked modifier as selected
     selectedModifierEffect.isSelected = true;
     setSelectedModifiers((prevModifiers) => [
@@ -158,9 +150,6 @@ export const ModifierInput = () => {
         },
       });
     }
-
-    setSearchModifierText("");
-    toggleExpand();
   };
 
   // Define the function to remove a selected modifier
@@ -217,21 +206,6 @@ export const ModifierInput = () => {
           },
         });
       }
-    }
-  };
-
-  // Define the function to toggle the expanded state of the dropdown
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
-
-  // Define the function to handle scrolling in the dropdown
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const bottom =
-      e.currentTarget.scrollHeight - e.currentTarget.scrollTop ===
-      e.currentTarget.clientHeight;
-    if (bottom && !isExpanded) {
-      setIsExpanded(true);
     }
   };
 
@@ -326,51 +300,32 @@ export const ModifierInput = () => {
     )
   );
 
-  // Render the list of modifiers in the dropdown
-  const modifiersList = filteredModifiers.map((modifier) => (
-    <Box
-      key={modifier.modifierId[0]}
-      p={2}
-      _hover={{ background: "gray.100", cursor: "pointer" }}
-      onClick={() => handleModifierSelect(modifier)}
-    >
-      {modifier.effect}
-    </Box>
-  ));
+  const mappedFilteredOptionsList: Array<SelectBoxOptionValue> =
+    filteredModifiers.map((modifier) => {
+      return {
+        value: modifier.effect,
+        text: modifier.effect,
+      };
+    });
 
   return (
     <Flex direction="column" color="ui.dark" width={1200}>
-      <Stack color={"ui.white"} mb={2}>
+      <Stack
+        color={"ui.white"}
+        mb={2}
+        // ref={ref}
+      >
         {selectedModifiersList}
       </Stack>
 
-      <Box bgColor={"ui.input"} color={"ui.white"} ref={ref} mr={8} ml={8}>
-        <Input
-          value={searchModifierText}
-          onChange={(e) => handleSearchModifierInputChange(e.target.value)}
-          placeholder="+ Add modifier"
-          _placeholder={{ color: "ui.white" }}
-          textAlign={"center"}
-          focusBorderColor={"ui.white"}
-          borderColor={"ui.grey"}
-          onFocus={() => {
-            if (!isExpanded) {
-              toggleExpand();
-            }
-          }}
-        />
-
-        {isExpanded && (
-          <Stack
-            maxHeight={400}
-            overflowY="auto"
-            bgColor={"ui.input"}
-            onScroll={handleScroll}
-          >
-            {modifiersList}
-          </Stack>
-        )}
-      </Box>
+      <SelectBoxInput
+        handleChange={(e) => handleModifierSelect(e)}
+        descriptionText="+ Add modifier"
+        optionsList={mappedFilteredOptionsList}
+        itemKeyId="ModifierInput"
+        width="inputSizes.gigaBox"
+        noPlaceholder={true}
+      />
     </Flex>
   );
 };

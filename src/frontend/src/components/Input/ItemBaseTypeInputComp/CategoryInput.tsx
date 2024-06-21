@@ -33,7 +33,7 @@ export const CategoryInput = ({ categories }: CategoryInputProps) => {
   };
 
   const handleCategoryChange = (
-    event: React.FormEvent<HTMLElement> | React.ChangeEvent<HTMLInputElement>
+    event: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>
   ) => {
     const itemCategory = getEventTextContent(event);
     if (itemCategory === "Any") {
