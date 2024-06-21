@@ -48,6 +48,8 @@ export const ModifierInput = () => {
 
   const modifiers: ModifierInput[] | undefined = GetGroupedModifiersByEffect();
 
+  const defaultValue = undefined;
+
   // Filter the modifiers based on the search text and selected modifiers.
   useEffect(() => {
     if (modifiers) {
@@ -323,6 +325,8 @@ export const ModifierInput = () => {
         handleChange={(e) => handleModifierSelect(e)}
         descriptionText="+ Add modifier"
         optionsList={mappedFilteredOptionsList}
+        defaultText=""
+        defaultValue={defaultValue}
         itemKeyId="ModifierInput"
         width="inputSizes.gigaBox"
         noPlaceholder={true}

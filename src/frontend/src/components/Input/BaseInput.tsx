@@ -1,6 +1,6 @@
 import { Flex } from "@chakra-ui/layout";
 import { useEffect, useState } from "react";
-import { Checkbox, CheckboxIcon, Text } from "@chakra-ui/react";
+import { Text } from "@chakra-ui/react";
 import { BaseTypeInput } from "./ItemBaseTypeInputComp/BaseTypeInput";
 import { useQueryClient } from "@tanstack/react-query";
 import {

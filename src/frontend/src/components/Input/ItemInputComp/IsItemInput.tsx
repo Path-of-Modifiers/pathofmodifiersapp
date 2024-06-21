@@ -28,6 +28,8 @@ interface IsItemInputProps {
 
 // Is Item Input Component  -  This component is used to select the boolean item properties.
 export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
+  const defaultValue = undefined;
+
   const getIsItemSelectValue = () => {
     let selectValue = undefined;
     if (
@@ -140,7 +142,7 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
       descriptionText={text}
       optionsList={optionsList}
       itemKeyId={itemSpecKey}
-      defaultValue={undefined}
+      defaultValue={defaultValue}
       defaultText="Any"
       getSelectValue={getIsItemSelectValue}
       handleChange={(e) => handleIsItemChange(e, itemSpecKey)}

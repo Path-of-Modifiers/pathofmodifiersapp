@@ -47,13 +47,13 @@ export const MinMaxNumberInput = ({
         key={minSpecKey}
         borderWidth={getMinValue() !== initialMinValue.current ? 2 : 0}
         borderRadius={getMinValue() !== initialMinValue.current ? 9 : 0}
-        precision={0}
-        focusBorderColor={"ui.white"}
         borderColor={
           getMinValue() !== initialMinValue.current
             ? "ui.inputChanged"
             : "ui.grey"
         }
+        precision={0}
+        focusBorderColor={"ui.white"}
         onChange={(e) => handleMinChange(e)}
         width={"inputSizes.defaultBox"}
         mr={1}

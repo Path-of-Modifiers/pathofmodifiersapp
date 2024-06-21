@@ -9,6 +9,8 @@ import {
 export const ItemNameInput = () => {
   const { setItemName } = useGraphInputStore();
 
+  const defaultValue = undefined;
+
   const getItemNameValue = () => {
     const itemName = useGraphInputStore.getState().itemSpec.name;
     if (itemName) {
@@ -51,7 +53,7 @@ export const ItemNameInput = () => {
       optionsList={optionsList}
       itemKeyId="itemName"
       defaultText="Any"
-      defaultValue={undefined}
+      defaultValue={defaultValue}
       getSelectValue={getItemNameValue}
       handleChange={(e) => handleNameChange(e)}
     />

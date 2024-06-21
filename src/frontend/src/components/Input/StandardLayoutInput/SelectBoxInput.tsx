@@ -17,8 +17,8 @@ import { getEventTextContent } from "../../../hooks/utils";
 export interface SelectBoxProps {
   optionsList: Array<SelectBoxOptionValue>;
   itemKeyId: string;
-  defaultValue?: string;
-  defaultText?: string;
+  defaultValue: string | undefined;
+  defaultText: string | undefined;
   descriptionText?: string;
   getSelectValue?: GetValueFunction;
   handleChange: HandleChangeEventFunction;
@@ -83,16 +83,21 @@ export const SelectBoxInput = ({
           openOnFocus
           listAllValuesOnFocus
           defaultValue={defaultValue}
-          >
+        >
           <AutoCompleteInput
             value={inputText}
             onChange={(e) => handleChangeValue(e)}
             onFocus={() => setInputText("")}
             placeholder={inputPlaceholder}
             focusBorderColor="ui.white"
+            borderRadius={inputPlaceholder !== defaultText ? 9 : 6}
+            borderWidth={inputPlaceholder !== defaultText ? 2 : 1}
+            borderColor={
+              inputPlaceholder !== defaultText ? "ui.inputChanged" : "ui.grey"
+            }
             bgColor={"ui.input"}
             autoComplete="off"
-            />
+          />
           <AutoCompleteList
             onBlur={() => setInputText(noPlaceholder ? "" : inputPlaceholder)}
             borderColor={"ui.grey"}
@@ -100,7 +105,6 @@ export const SelectBoxInput = ({
             margin={0}
             p={0}
             marginBottom={0}
-            borderRadius={0}
             maxH={"200px"}
             overflowY={"auto"}
           >
