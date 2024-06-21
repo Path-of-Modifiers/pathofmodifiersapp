@@ -30,7 +30,7 @@ export const MinMaxRollInput = ({
     return null;
   }
 
-  const getMinGlobalValue = () => {
+  const getGlobalMinValue = () => {
     const globalModifierSelectedMinRoll =
       useGraphInputStore
         .getState()
@@ -39,14 +39,10 @@ export const MinMaxRollInput = ({
             modifier.modifierId === modifierSelected.modifierId[inputPosition]
         )?.modifierLimitations?.minRoll ?? undefined;
 
-    if (globalModifierSelectedMinRoll) {
-      return globalModifierSelectedMinRoll.toString();
-    } else {
-      return undefined;
-    }
+    return globalModifierSelectedMinRoll ?? "";
   };
 
-  const getMaxGlobalValue = () => {
+  const getGlobalMaxValue = () => {
     const globalModifierSelectedMaxRoll =
       useGraphInputStore
         .getState()
@@ -55,11 +51,7 @@ export const MinMaxRollInput = ({
             modifier.modifierId === modifierSelected.modifierId[inputPosition]
         )?.modifierLimitations?.maxRoll ?? undefined;
 
-    if (globalModifierSelectedMaxRoll) {
-      return globalModifierSelectedMaxRoll.toString();
-    } else {
-      return undefined;
-    }
+    return globalModifierSelectedMaxRoll ?? "";
   };
 
   const setGlobalStoreMinRoll = (minRoll: number) => {
@@ -106,8 +98,8 @@ export const MinMaxRollInput = ({
     <MinMaxNumberInput
       minSpecKey={minSpecKey}
       maxSpecKey={maxSpecKey}
-      getMinValue={getMinGlobalValue}
-      getMaxValue={getMaxGlobalValue}
+      getMinValue={getGlobalMinValue}
+      getMaxValue={getGlobalMaxValue}
       handleMinChange={handleMinChange}
       handleMaxChange={handleMaxChange}
     />

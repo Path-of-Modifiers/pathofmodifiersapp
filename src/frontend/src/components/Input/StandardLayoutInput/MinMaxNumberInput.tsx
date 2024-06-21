@@ -11,6 +11,7 @@ import {
   GetValueFunction,
   HandleChangeStringFunction,
 } from "../../../schemas/function/InputFunction";
+import { useRef } from "react";
 
 interface MinMaxNumberInputProps {
   descriptionText?: string;
@@ -32,6 +33,9 @@ export const MinMaxNumberInput = ({
   handleMinChange,
   handleMaxChange,
 }: MinMaxNumberInputProps) => {
+  const initialMinValue = useRef(getMinValue());
+  const initialMaxValue = useRef(getMaxValue());
+
   return (
     <Flex color={"ui.white"} m={2} ml={1} alignItems={"center"}>
       <Text ml={1} width={"inputSizes.defaultDescriptionText"}>
@@ -41,10 +45,15 @@ export const MinMaxNumberInput = ({
         value={getMinValue()}
         step={1}
         key={minSpecKey}
-        bgColor={"ui.input"}
+        borderWidth={getMinValue() !== initialMinValue.current ? 2 : 0}
+        borderRadius={getMinValue() !== initialMinValue.current ? 9 : 0}
         precision={0}
         focusBorderColor={"ui.white"}
-        borderColor={"ui.grey"}
+        borderColor={
+          getMinValue() !== initialMinValue.current
+            ? "ui.inputChanged"
+            : "ui.grey"
+        }
         onChange={(e) => handleMinChange(e)}
         width={"inputSizes.defaultBox"}
         mr={1}
@@ -52,7 +61,12 @@ export const MinMaxNumberInput = ({
         _placeholder={{ color: "ui.white" }}
         textAlign={"center"}
       >
-        <NumberInputField placeholder={"Min"} />
+        <NumberInputField
+          placeholder={"Min"}
+          bgColor="ui.input"
+          borderColor={"ui.grey"}
+          borderWidth={1}
+        />
         <NumberInputStepper>
           <NumberIncrementStepper />
           <NumberDecrementStepper />
@@ -63,9 +77,14 @@ export const MinMaxNumberInput = ({
         value={getMaxValue()}
         step={1}
         key={maxSpecKey}
-        bgColor={"ui.input"}
+        borderWidth={getMaxValue() !== initialMaxValue.current ? 2 : 0}
+        borderRadius={getMaxValue() !== initialMaxValue.current ? 9 : 0}
         focusBorderColor={"ui.white"}
-        borderColor={"ui.grey"}
+        borderColor={
+          getMaxValue() !== initialMaxValue.current
+            ? "ui.inputChanged"
+            : "ui.grey"
+        }
         onChange={(e) => handleMaxChange(e)}
         width={"inputSizes.defaultBox"}
         mr={1}
@@ -73,7 +92,12 @@ export const MinMaxNumberInput = ({
         _placeholder={{ color: "ui.white" }}
         textAlign={"center"}
       >
-        <NumberInputField placeholder={"Max"} />
+        <NumberInputField
+          placeholder={"Max"}
+          borderColor={"ui.grey"}
+          bgColor="ui.input"
+          borderWidth={1}
+        />
         <NumberInputStepper>
           <NumberIncrementStepper />
           <NumberDecrementStepper />

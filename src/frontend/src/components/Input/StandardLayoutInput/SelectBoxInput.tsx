@@ -89,6 +89,7 @@ export const SelectBoxInput = ({
             onChange={(e) => handleChangeValue(e)}
             onFocus={() => setInputText("")}
             placeholder={inputPlaceholder}
+            focusBorderColor="ui.white"
             bgColor={"ui.input"}
             autoComplete="off"
             />
