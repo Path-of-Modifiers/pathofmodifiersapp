@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup } from "@chakra-ui/react";
+import { Box, Button, Flex } from "@chakra-ui/react";
 import { MdExpandMore, MdExpandLess } from "react-icons/md";
 import { useExpandedComponentStore } from "../../store/ExpandedComponentStore";
 import { useGraphInputStore } from "../../store/GraphInputStore";
@@ -36,24 +36,27 @@ const QueryButtons = () => {
   };
 
   return (
-    <Box bg="ui.main">
-      <ButtonGroup>
-        <Button variant="solid" colorScheme="red" onClick={handleClearQuery}>
+    <Flex bg="ui.main" p={2} justifyContent="center">
+      <Button variant="solid" colorScheme="green" onClick={handlePlotQuery} mr="auto" ml="auto">
+        Query and Plot
+      </Button>
+
+      <Box>
+        <Button variant="solid" colorScheme="red" onClick={handleClearQuery} mr={4}>
           Clear Query
         </Button>
-        <Button variant="solid" colorScheme="green" onClick={handlePlotQuery}>
-          Query and Plot
-        </Button>
+
         <Button
           variant="solid"
           colorScheme="gray"
           rightIcon={filterExpanded ? <MdExpandLess /> : <MdExpandMore />}
           onClick={handleShowingFilter}
+          alignSelf={"right"}
         >
           {filterExpanded ? "Hide Filters" : "Show Filters"}
         </Button>
-      </ButtonGroup>
-    </Box>
+      </Box>
+    </Flex>
   );
 };
 

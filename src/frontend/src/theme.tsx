@@ -14,6 +14,7 @@ const theme = extendTheme({
       inputChanged: "#bea06a",
       lightInput: "#565b5b",
       darkSlate: "#252D3D",
+      darkBrown: "#572214",
     },
   },
   fonts: {
@@ -69,6 +70,13 @@ const theme = extendTheme({
       mdBox: "15rem",
       lgBox: "20rem",
       gigaBox: "50rem",
+    },
+    bgBoxes: {
+      smallBox: "50rem",
+      mediumBox: "70rem",
+      defaultBox: "90rem",
+      largeBox: "110rem",
+      gigaBox: "130rem",
     },
   },
 });

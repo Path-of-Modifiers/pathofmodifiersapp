@@ -3,7 +3,7 @@ import { ExpandedComponentState } from "./StateInterface";
 
 export const useExpandedComponentStore = create<ExpandedComponentState>(
   (set) => ({
-    expandedGraphInputFilters: false,
+    expandedGraphInputFilters: true,
 
     setExpandedGraphInputFilters: (expandedGraphInputFilters: boolean) =>
       set(() => ({ expandedGraphInputFilters: expandedGraphInputFilters })),

@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import { ModifierInput } from "./ModifierInputComp/ModifierInput";
 import { MiscItemInput } from "./MiscItemInput";
 import { BaseInput } from "./BaseInput";
@@ -14,13 +14,13 @@ export const GraphInput = () => {
 
   return (
     expandedGraphInputFilters && (
-      <Box p={5}>
+      <Flex flexWrap="wrap" direction="row" alignItems="center" width={300}>
         <LeagueInput />
         <ItemInput />
         <BaseInput />
         <MiscItemInput />
         <ModifierInput />
-      </Box>
+      </Flex>
     )
   );
 };
