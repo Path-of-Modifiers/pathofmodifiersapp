@@ -56,6 +56,7 @@ export const ItemNameInput = () => {
       defaultValue={defaultValue}
       getSelectValue={getItemNameValue}
       handleChange={(e) => handleNameChange(e)}
+      width="81.7%"
     />
   );
 };

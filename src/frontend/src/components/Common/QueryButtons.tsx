@@ -36,26 +36,49 @@ const QueryButtons = () => {
   };
 
   return (
-    <Flex bg="ui.main" p={2} justifyContent="center">
-      <Button variant="solid" colorScheme="green" onClick={handlePlotQuery} mr="auto" ml="auto">
-        Query and Plot
-      </Button>
-
+    <Flex borderWidth={2} borderColor={"red"} justifyContent={"end"}>
       <Box>
-        <Button variant="solid" colorScheme="red" onClick={handleClearQuery} mr={4}>
-          Clear Query
-        </Button>
-
+        {" "}
         <Button
           variant="solid"
-          colorScheme="gray"
+          bg="ui.queryBaseInput"
+          color="ui.white"
+          _hover={{ bg: "ui.queryMainInput" }}
+          _focus={{ bg: "ui.queryMainInput" }}
+          borderWidth={1}
+          width={"inputSizes.lgBox"}
+          onClick={handlePlotQuery}
+        >
+          Query and Plot
+        </Button>
+      </Box>
+
+      <Flex width="33rem" justifyContent={"end"}>
+        <Button
+          variant="solid"
+          bg="ui.input"
+          color="ui.white"
+          _hover={{ bg: "ui.lightInput" }}
+          _focus={{ bg: "ui.lightInput" }}
+          onClick={handleClearQuery}
+          borderWidth={1}
+          mr={2}
+        >
+          Clear Query
+        </Button>
+        <Button
+          variant="solid"
+          bg="ui.queryBaseInput"
+          color="ui.white"
+          _hover={{ bg: "ui.queryMainInput" }}
+          _focus={{ bg: "ui.queryMainInput" }}
+          borderWidth={1}
           rightIcon={filterExpanded ? <MdExpandLess /> : <MdExpandMore />}
           onClick={handleShowingFilter}
-          alignSelf={"right"}
         >
           {filterExpanded ? "Hide Filters" : "Show Filters"}
         </Button>
-      </Box>
+      </Flex>
     </Flex>
   );
 };

@@ -29,30 +29,25 @@ function Index() {
       </Box>
 
       <Flex
-        flex="1"
         direction="row"
-        width="bgBoxes.defaultBox"
-        mr="auto"
-        ml="auto"
+        bg="ui.main"
+        opacity={0.98}
+        justifyContent="center"
+        width={"bgBoxes.defaultBox"}
+        p={2}
+        borderRadius={10}
+        borderTopColor={"ui.darkBrown"}
+        borderTopWidth={1}
+        alignSelf="center"
+        borderWidth={2}
       >
-        <Flex
-          flex="1"
-          direction="column"
-          p="3rem"
-          bg="ui.main"
-          opacity={0.98}
-          borderRadius={10}
-          borderTopColor={"ui.darkBrown"}
-          borderTopWidth={1}
-        >
-          <QueryClientProvider client={queryClient}>
-            <Box>
-              <GraphInput />
-              <QueryButtons />
-              <GraphComponent />
-            </Box>
-          </QueryClientProvider>
-        </Flex>
+        <QueryClientProvider client={queryClient}>
+          <Box width="100%">
+            <GraphInput />
+            <QueryButtons />
+            <GraphComponent />
+          </Box>
+        </QueryClientProvider>
       </Flex>
     </Flex>
   );

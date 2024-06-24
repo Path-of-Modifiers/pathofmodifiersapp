@@ -1,4 +1,4 @@
-import { Center, CloseButton, Flex, Stack, Text } from "@chakra-ui/react";
+import { Box, Center, CloseButton, Flex, Stack } from "@chakra-ui/react";
 
 import AddIconCheckbox from "../../Icon/AddIconCheckbox";
 
@@ -50,6 +50,14 @@ export const ModifierInput = () => {
 
   const defaultValue = undefined;
 
+  const mappedFilteredOptionsList: Array<SelectBoxOptionValue> =
+    filteredModifiers.map((modifier) => {
+      return {
+        value: modifier.effect,
+        text: modifier.effect,
+      };
+    });
+
   // Filter the modifiers based on the search text and selected modifiers.
   useEffect(() => {
     if (modifiers) {
@@ -91,8 +99,31 @@ export const ModifierInput = () => {
     console.log("STORE", store);
   });
 
+  // Define the function to remove a selected modifier
+  const handleRemoveModifier = (
+    modifierId: number,
+    modifierSelected: ModifierInput
+  ) => {
+    const effectToRemove = selectedModifiers.find(
+      (modifier) => modifier.modifierId[0] === modifierId
+    )?.effect;
+
+    // Remove the selected modifier from the selectedModifiers list if it exists
+    if (effectToRemove) {
+      setSelectedModifiers((prevModifiers) =>
+        prevModifiers.filter((modifier) => modifier.effect !== effectToRemove)
+      );
+
+      // Remove the modifier from the global state store
+      for (let i = 0; i < modifierSelected.position.length; i++) {
+        removeModifierSpec(modifierSelected.modifierId[i]);
+      }
+    }
+  };
+
   const handleModifierSelect = (
-    e: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>
+    e: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>,
+    replaceModifierInput?: ModifierInput
   ) => {
     const selectedModifierEffect = modifiers?.find(
       (modifier) => modifier.effect === getEventTextContent(e)
@@ -135,6 +166,14 @@ export const ModifierInput = () => {
       ).fill(undefined);
     }
 
+    // Remove the replaceModifierInput
+    if (replaceModifierInput) {
+      handleRemoveModifier(
+        replaceModifierInput.modifierId[0],
+        replaceModifierInput
+      );
+    }
+
     // Add the selected modifier(s) to the global state store
     for (let i = 0; i < selectedModifierEffect.position.length; i++) {
       addModifierSpec({
@@ -152,28 +191,6 @@ export const ModifierInput = () => {
             : null,
         },
       });
-    }
-  };
-
-  // Define the function to remove a selected modifier
-  const handleRemoveModifier = (
-    modifierId: number,
-    modifierSelected: ModifierInput
-  ) => {
-    const effectToRemove = selectedModifiers.find(
-      (modifier) => modifier.modifierId[0] === modifierId
-    )?.effect;
-
-    // Remove the selected modifier from the selectedModifiers list if it exists
-    if (effectToRemove) {
-      setSelectedModifiers((prevModifiers) =>
-        prevModifiers.filter((modifier) => modifier.effect !== effectToRemove)
-      );
-
-      // Remove the modifier from the global state store
-      for (let i = 0; i < modifierSelected.position.length; i++) {
-        removeModifierSpec(modifierSelected.modifierId[i]);
-      }
     }
   };
 
@@ -215,8 +232,16 @@ export const ModifierInput = () => {
   // Render selected modifiers list
   const selectedModifiersList = selectedModifiers.map(
     (modifierSelected, index) => (
-      <Flex key={index} bgColor={"ui.main"}>
-        <Center width={9}>
+      <Flex
+        key={index}
+        bgColor={"ui.main"}
+        flexDirection={"row"}
+        height={10}
+        maxHeight={10}
+        maxWidth="inputSizes.ultraBox"
+        alignItems={"center"}
+      >
+        <Center minWidth="inputSizes.miniBox">
           <AddIconCheckbox
             isChecked={modifierSelected.isSelected}
             key={modifierSelected.modifierId[0] + index}
@@ -232,104 +257,94 @@ export const ModifierInput = () => {
           />
         </Center>
 
-        <Center width={"100%"}>
-          <Text ml={3} mr={"auto"}>
-            {modifierSelected.effect}
-          </Text>
+        <SelectBoxInput
+          handleChange={(e) => handleModifierSelect(e, modifierSelected)}
+          optionsList={mappedFilteredOptionsList}
+          defaultText={modifierSelected.effect}
+          defaultValue={modifierSelected.effect}
+          itemKeyId="modifierInputItem"
+          onFocusNotBlankInputText={true}
+          width={"inputSizes.xlPlusBox"}
+        />
 
-          <Flex justifyContent="flex-end">
-            {/* Check if modifierSelected static exists and is all null */}
-            {isArrayNullOrContainsOnlyNull(modifierSelected.static) &&
-              (() => {
-                const elements = [];
-                for (
-                  let modifierInputIndex = 0;
-                  modifierInputIndex < modifierSelected.position.length;
-                  modifierInputIndex++
+        <Flex ml="auto">
+          {/* Check if modifierSelected static exists and is all null */}
+          {isArrayNullOrContainsOnlyNull(modifierSelected.static) &&
+            (() => {
+              const elements = [];
+              for (
+                let modifierInputIndex = 0;
+                modifierInputIndex < modifierSelected.position.length;
+                modifierInputIndex++
+              ) {
+                // Check if minRoll exists and are not all null. If so, create a MinRollInput component
+                if (
+                  !isArrayNullOrContainsOnlyNull(modifierSelected.minRoll) &&
+                  modifierSelected.minRoll &&
+                  modifierSelected.minRoll[modifierInputIndex] !== null &&
+                  modifierSelected.maxRoll &&
+                  modifierSelected.maxRoll[modifierInputIndex] !== null
                 ) {
-                  // Check if minRoll exists and are not all null. If so, create a MinRollInput component
-                  if (
-                    !isArrayNullOrContainsOnlyNull(modifierSelected.minRoll) &&
-                    modifierSelected.minRoll &&
-                    modifierSelected.minRoll[modifierInputIndex] !== null &&
-                    modifierSelected.maxRoll &&
-                    modifierSelected.maxRoll[modifierInputIndex] !== null
-                  ) {
-                    elements.push(
-                      <MinMaxRollInput
-                        modifierSelected={modifierSelected}
-                        inputPosition={modifierInputIndex}
-                        key={"minRollPosition" + index + modifierInputIndex}
-                      />
-                    );
-                  }
-
-                  // Check if textRolls exists and is not all null. If so, create a TextRollInput component
-                  if (
-                    !isArrayNullOrContainsOnlyNull(
-                      modifierSelected.textRolls
-                    ) &&
-                    modifierSelected.textRolls &&
-                    modifierSelected.textRolls[modifierInputIndex] !== null
-                  ) {
-                    elements.push(
-                      <TextRollInput
-                        modifierSelected={modifierSelected}
-                        inputPosition={modifierInputIndex}
-                        key={"textRollPosition" + index + modifierInputIndex}
-                      />
-                    );
-                  }
+                  elements.push(
+                    <MinMaxRollInput
+                      modifierSelected={modifierSelected}
+                      inputPosition={modifierInputIndex}
+                      key={"minRollPosition" + index + modifierInputIndex}
+                    />
+                  );
                 }
-                return elements;
-              })()}
-          </Flex>
-        </Center>
 
-        <Center>
-          <CloseButton
-            _hover={{ background: "gray.100", cursor: "pointer" }}
-            onClick={() => {
-              if (modifierSelected.modifierId[0] !== null) {
-                handleRemoveModifier(
-                  modifierSelected.modifierId[0],
-                  modifierSelected
-                );
+                // Check if textRolls exists and is not all null. If so, create a TextRollInput component
+                if (
+                  !isArrayNullOrContainsOnlyNull(modifierSelected.textRolls) &&
+                  modifierSelected.textRolls &&
+                  modifierSelected.textRolls[modifierInputIndex] !== null
+                ) {
+                  elements.push(
+                    <TextRollInput
+                      modifierSelected={modifierSelected}
+                      inputPosition={modifierInputIndex}
+                      key={"textRollPosition" + index + modifierInputIndex}
+                    />
+                  );
+                }
               }
-            }}
-          />
-        </Center>
+              return elements;
+            })()}
+
+          <Center minWidth="inputSizes.miniBox">
+            <CloseButton
+              _hover={{ background: "gray.100", cursor: "pointer" }}
+              onClick={() => {
+                if (modifierSelected.modifierId[0] !== null) {
+                  handleRemoveModifier(
+                    modifierSelected.modifierId[0],
+                    modifierSelected
+                  );
+                }
+              }}
+            />
+          </Center>
+        </Flex>
       </Flex>
     )
   );
 
-  const mappedFilteredOptionsList: Array<SelectBoxOptionValue> =
-    filteredModifiers.map((modifier) => {
-      return {
-        value: modifier.effect,
-        text: modifier.effect,
-      };
-    });
-
   return (
-    <Flex direction="column" color="ui.dark" width={1200}>
-      <Stack
-        color={"ui.white"}
-        mb={2}
-        ref={ref}
-      >
+    <Flex direction="column" color="ui.dark" borderWidth={2}>
+      <Stack color={"ui.white"} mb={2} ref={ref} width={"inputSizes.ultraBox"}>
         {selectedModifiersList}
       </Stack>
 
       <SelectBoxInput
         handleChange={(e) => handleModifierSelect(e)}
-        descriptionText="+ Add modifier"
         optionsList={mappedFilteredOptionsList}
         defaultText=""
         defaultValue={defaultValue}
-        itemKeyId="ModifierInput"
-        width="inputSizes.gigaBox"
-        noPlaceholder={true}
+        itemKeyId="modifierInput"
+        width="inputSizes.ultraBox"
+        staticPlaceholder="+ Add modifier"
+        centerInputText={true}
       />
     </Flex>
   );

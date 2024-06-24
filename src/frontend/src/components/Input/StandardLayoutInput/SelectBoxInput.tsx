@@ -22,8 +22,13 @@ export interface SelectBoxProps {
   descriptionText?: string;
   getSelectValue?: GetValueFunction;
   handleChange: HandleChangeEventFunction;
-  width?: string;
-  noPlaceholder?: boolean;
+  width?: string | number;
+  height?: string | number;
+  staticPlaceholder?: string;
+  centerInputText?: boolean;
+  onFocusNotBlankInputText?: boolean;
+  ml?: number | string;
+  mr?: number | string;
 }
 
 export type SelectBoxOptionValue = { value: string | undefined; text: string };
@@ -36,12 +41,17 @@ export const SelectBoxInput = ({
   defaultText,
   handleChange,
   width,
-  noPlaceholder,
+  height,
+  staticPlaceholder,
+  centerInputText,
+  onFocusNotBlankInputText,
+  ml,
+  mr,
 }: SelectBoxProps) => {
   defaultText = defaultText || "";
   const [inputText, setInputText] = useState<string>(defaultText);
   const [inputPlaceholder, setInputPlaceholder] = useState<string>(
-    noPlaceholder ? "" : defaultText
+    staticPlaceholder ? "" : defaultText
   );
 
   const optionValues = optionsList.map((option) =>
@@ -58,7 +68,7 @@ export const SelectBoxInput = ({
     setInputText(target_value);
 
     if (optionValues.includes(target_value.toLowerCase()) || !target_value) {
-      if (!noPlaceholder) {
+      if (!staticPlaceholder) {
         setInputPlaceholder(target_value);
       } else {
         setInputText("");
@@ -74,10 +84,19 @@ export const SelectBoxInput = ({
   }, [clearClicked, defaultText]);
 
   return (
-    <Flex m={1}>
-      <FormControl width={width || "inputSizes.defaultBox"} color={"ui.white"}>
+    <Flex
+      marginTop={0}
+      marginBottom={0}
+      height={height}
+      flexDirection={"row"}
+      alignItems={"center"}
+      width={width || "inputSizes.smallPPBox"}
+    >
+      <FormControl height={height || "lineHeights.tall"} color={"ui.white"}>
         {descriptionText && (
-          <FormLabel color={"ui.white"}>{descriptionText}</FormLabel>
+          <FormLabel color={"ui.white"} fontSize={15}>
+            {descriptionText}
+          </FormLabel>
         )}
         <AutoComplete
           openOnFocus
@@ -87,19 +106,30 @@ export const SelectBoxInput = ({
           <AutoCompleteInput
             value={inputText}
             onChange={(e) => handleChangeValue(e)}
-            onFocus={() => setInputText("")}
-            placeholder={inputPlaceholder}
+            onFocus={() =>
+              setInputText(onFocusNotBlankInputText ? inputPlaceholder : "")
+            }
+            pl={2}
+            ml={ml || 0}
+            mr={mr || 0}
+            placeholder={
+              staticPlaceholder ? staticPlaceholder : inputPlaceholder
+            }
             focusBorderColor="ui.white"
             borderRadius={inputPlaceholder !== defaultText ? 9 : 6}
             borderWidth={inputPlaceholder !== defaultText ? 2 : 1}
             borderColor={
               inputPlaceholder !== defaultText ? "ui.inputChanged" : "ui.grey"
             }
+            textAlign={centerInputText ? "center" : "left"}
+            fontSize={16}
             bgColor={"ui.input"}
             autoComplete="off"
           />
           <AutoCompleteList
-            onBlur={() => setInputText(noPlaceholder ? "" : inputPlaceholder)}
+            onBlur={() =>
+              setInputText(staticPlaceholder ? "" : inputPlaceholder)
+            }
             borderColor={"ui.grey"}
             bgColor="ui.input"
             margin={0}

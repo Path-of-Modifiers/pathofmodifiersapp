@@ -1,4 +1,4 @@
-import { Flex } from "@chakra-ui/react";
+import { Box, Flex, Wrap, WrapItem } from "@chakra-ui/react";
 import { ModifierInput } from "./ModifierInputComp/ModifierInput";
 import { MiscItemInput } from "./MiscItemInput";
 import { BaseInput } from "./BaseInput";
@@ -14,13 +14,31 @@ export const GraphInput = () => {
 
   return (
     expandedGraphInputFilters && (
-      <Flex flexWrap="wrap" direction="row" alignItems="center" width={300}>
-        <LeagueInput />
-        <ItemInput />
-        <BaseInput />
-        <MiscItemInput />
-        <ModifierInput />
-      </Flex>
+      <Wrap>
+        <WrapItem borderWidth={2} justifyContent={"center"} mr="auto" ml="auto">
+          <Flex
+            alignItems={"center"}
+            justifyContent={"space-between"}
+            width={"bgBoxes.mediumPPBox"}
+          >
+            <ItemInput />
+            <LeagueInput />
+          </Flex>
+        </WrapItem>
+
+        <WrapItem borderWidth={2} mr="auto" ml="auto">
+          <Flex
+            justifyContent={"space-between"}
+            width={"bgBoxes.mediumPPBox"}
+          >
+            <Box width={"inputSizes.lgBox"} borderWidth={2}>
+              <BaseInput />
+              <MiscItemInput />
+            </Box>
+            <ModifierInput />
+          </Flex>
+        </WrapItem>
+      </Wrap>
     )
   );
 };

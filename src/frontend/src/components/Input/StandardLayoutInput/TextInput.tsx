@@ -18,7 +18,7 @@ export const TextInput = ({
     <Flex color={"ui.white"} alignItems={"center"} m={1}>
       <Text
         ml={1}
-        width={"inputSizes.defaultDescriptionText"}
+        width={"inputSizes.defaultBox"}
         bgColor={"ui.input"}
       >
         Item name

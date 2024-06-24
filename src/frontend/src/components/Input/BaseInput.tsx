@@ -71,7 +71,12 @@ export const BaseInput = () => {
         baseTypes.length !== 0 &&
         itemBaseTypeCategory.length !== 0 &&
         itemBaseTypeSubCategory.length !== 0 && (
-          <Flex flexWrap={"wrap"} width={650}>
+          <Flex
+            flexWrap={"wrap"}
+            borderWidth={2}
+            justifyContent={"flex-start"}
+            gap={2}
+          >
             <BaseTypeInput baseTypes={baseTypes} />
             <CategoryInput categories={itemBaseTypeCategory} />
             <SubCategoryInput subCategories={itemBaseTypeSubCategory} />

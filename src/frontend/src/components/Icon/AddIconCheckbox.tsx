@@ -10,12 +10,12 @@ export const WhiteSquareIcon = createIcon({
 
 // Step 2: Create the AddIcon Component
 interface AddIconProps {
-  isIndeterminate?: boolean;
   isChecked?: boolean;
+  colorScheme?: string;
 }
 
 const AddIcon = (props: AddIconProps) => {
-  const { isIndeterminate, isChecked, ...rest } = props;
+  const { isChecked, colorScheme, ...rest } = props;
 
   return (
     <>
@@ -32,8 +32,8 @@ export const AddIconCheckbox = (props: CheckboxProps) => {
     <Checkbox
       {...props}
       icon={<AddIcon />}
-      colorScheme="ui.lightInput"
-      borderColor="ui.lightInput"
+      colorScheme={props.colorScheme || "ui.lightInput"}
+      borderColor={props.colorScheme || "ui.lightInput"}
       display="flex"
       alignItems="center"
       justifyContent="center"

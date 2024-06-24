@@ -28,7 +28,12 @@ export const MiscItemInput = () => {
         <Text color={"ui.white"}>Miscellaneous</Text>
       </Flex>
       {miscExpanded && (
-        <Flex flexWrap={"wrap"} width={650}>
+        <Flex
+          flexWrap={"wrap"}
+          borderWidth={2}
+          justifyContent={"flex-start"}
+          gap={2}
+        >
           <IsItemInput itemSpecKey={"identified"} text={"Identified"} />
           <IsItemInput itemSpecKey={"corrupted"} text={"Corrupted"} />
           <MinMaxInput
@@ -36,28 +41,19 @@ export const MiscItemInput = () => {
             itemMaxSpecKey="maxIlvl"
             text="Item level"
           />
-          <IsItemInput itemSpecKey={"delve"} text={"Delve item"} />
-          <IsItemInput itemSpecKey={"fractured"} text={"Fractured item"} />
-          <IsItemInput itemSpecKey={"synthesized"} text={"Synthesized item"} />
-          <IsItemInput itemSpecKey={"replica"} text={"Replica item"} />
-          <IsItemInput itemSpecKey={"searing"} text={"Exarch influence item"} />
-          <IsItemInput itemSpecKey={"tangled"} text={"Eater influence item"} />
-          <IsItemInput itemSpecKey={"elder"} text={"Elder influence item"} />
-          <IsItemInput itemSpecKey={"shaper"} text={"Shaper influence item"} />
-          <IsItemInput
-            itemSpecKey={"crusader"}
-            text={"Crusader influence item"}
-          />
-          <IsItemInput
-            itemSpecKey={"redeemer"}
-            text={"Redeemer influence item"}
-          />
-          <IsItemInput itemSpecKey={"hunter"} text={"Hunter influence item"} />
-          <IsItemInput
-            itemSpecKey={"warlord"}
-            text={"Warlord influence item"}
-          />
-          <IsItemInput itemSpecKey={"isRelic"} text={"Relic item"} />
+          <IsItemInput itemSpecKey={"delve"} text={"Delve"} />
+          <IsItemInput itemSpecKey={"fractured"} text={"Fracture"} />
+          <IsItemInput itemSpecKey={"synthesized"} text={"Synthesize"} />
+          <IsItemInput itemSpecKey={"replica"} text={"Replic"} />
+          <IsItemInput itemSpecKey={"searing"} text={"Exarch influence"} />
+          <IsItemInput itemSpecKey={"tangled"} text={"Eater influence"} />
+          <IsItemInput itemSpecKey={"elder"} text={"Elder influence"} />
+          <IsItemInput itemSpecKey={"shaper"} text={"Shaper influence"} />
+          <IsItemInput itemSpecKey={"crusader"} text={"Crusader influence"} />
+          <IsItemInput itemSpecKey={"redeemer"} text={"Redeemer influence"} />
+          <IsItemInput itemSpecKey={"hunter"} text={"Hunter influence"} />
+          <IsItemInput itemSpecKey={"warlord"} text={"Warlord influence"} />
+          <IsItemInput itemSpecKey={"isRelic"} text={"Relic"} />
         </Flex>
       )}
     </Flex>
