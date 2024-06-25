@@ -98,6 +98,7 @@ export const MinMaxRollInput = ({
     <MinMaxNumberInput
       minSpecKey={minSpecKey}
       maxSpecKey={maxSpecKey}
+      isDimmed={!modifierSelected.isSelected}
       getMinValue={getGlobalMinValue}
       getMaxValue={getGlobalMaxValue}
       handleMinChange={handleMinChange}

@@ -86,6 +86,7 @@ export const TextRollInput = ({
       itemKeyId={"TextRollInput"}
       defaultValue={defaultValue}
       defaultText={"Any"}
+      isDimmed={!modifierSelected.isSelected}
       getSelectValue={getTextRollInput}
       handleChange={(e) => handleTextChange(e)}
     />

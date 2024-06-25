@@ -1,7 +1,7 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import Header from "../components/Common/Header";
 import QueryButtons from "../components/Common/QueryButtons";
-import { Flex, Box } from "@chakra-ui/layout";
+import { Flex, Box, VStack } from "@chakra-ui/layout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GraphInput } from "../components/Input/GraphInput";
 import GraphComponent from "../components/Graph/GraphComponent";
@@ -41,11 +41,11 @@ function Index() {
         alignSelf="center"
       >
         <QueryClientProvider client={queryClient}>
-          <Box width="100%">
+          <VStack width="100%" >
             <GraphInput />
             <QueryButtons />
             <GraphComponent />
-          </Box>
+          </VStack>
         </QueryClientProvider>
       </Flex>
     </Flex>

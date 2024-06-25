@@ -1,4 +1,4 @@
-import { Flex, VStack, Wrap, WrapItem } from "@chakra-ui/react";
+import { Flex, VStack, Wrap, WrapItem, WrapProps } from "@chakra-ui/react";
 import { ModifierInput } from "./ModifierInputComp/ModifierInput";
 import { MiscItemInput } from "./MiscItemInput";
 import { BaseInput } from "./BaseInput";
@@ -7,14 +7,14 @@ import { useExpandedComponentStore } from "../../store/ExpandedComponentStore";
 import { ItemInput } from "./ItemInput";
 
 // Graph Input Component  -  This component is used to input the query data.
-export const GraphInput = () => {
+export const GraphInput = (props: WrapProps) => {
   const expandedGraphInputFilters = useExpandedComponentStore(
     (state) => state.expandedGraphInputFilters
   );
 
   return (
     expandedGraphInputFilters && (
-      <Wrap>
+      <Wrap {...props}>
         <WrapItem justifyContent={"center"} mr="auto" ml="auto">
           <Flex
             alignItems={"center"}

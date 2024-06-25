@@ -1,4 +1,4 @@
-import { Center, CloseButton, Flex, Stack } from "@chakra-ui/react";
+import { Box, Center, CloseButton, Flex, Stack } from "@chakra-ui/react";
 
 import AddIconCheckbox from "../../Icon/AddIconCheckbox";
 
@@ -17,6 +17,7 @@ import {
   SelectBoxOptionValue,
 } from "../StandardLayoutInput/SelectBoxInput";
 import { useOutsideClick } from "../../../hooks/useOutsideClick";
+import { AddICheckText } from "../../Icon/AddICheckText";
 
 export interface ModifierInput extends GroupedModifierByEffect {
   isSelected?: boolean;
@@ -41,6 +42,8 @@ export const ModifierInput = () => {
   const [selectedModifiers, setSelectedModifiers] = useState<ModifierInput[]>(
     []
   );
+
+  const [modifiersExpanded, setModifiersExpanded] = useState(true);
 
   const { addModifierSpec, removeModifierSpec } = useGraphInputStore();
 
@@ -92,6 +95,10 @@ export const ModifierInput = () => {
       clearAllModifiers();
     }
   }, [selectedModifiers, modifiers, clearClicked]);
+
+  const handleExpanded = () => {
+    setModifiersExpanded(!modifiersExpanded);
+  };
 
   // Define the reference to the outside click hook. This is used to close the dropdown when clicking outside of it.
   const ref = useOutsideClick(() => {
@@ -238,24 +245,22 @@ export const ModifierInput = () => {
         flexDirection={"row"}
         height={10}
         maxHeight={10}
-        maxWidth="inputSizes.ultraBox"
         alignItems={"center"}
+        gap={2}
       >
-        <Center minWidth="inputSizes.miniBox">
-          <AddIconCheckbox
-            isChecked={modifierSelected.isSelected}
-            key={modifierSelected.modifierId[0] + index}
-            onChange={() => {
-              if (modifierSelected.modifierId[0] !== null) {
-                handleCheckboxChange(
-                  modifierSelected.modifierId[0],
-                  modifierSelected,
-                  modifierSelected.isSelected
-                );
-              }
-            }}
-          />
-        </Center>
+        <AddIconCheckbox
+          isChecked={modifierSelected.isSelected}
+          key={modifierSelected.modifierId[0] + index}
+          onChange={() => {
+            if (modifierSelected.modifierId[0] !== null) {
+              handleCheckboxChange(
+                modifierSelected.modifierId[0],
+                modifierSelected,
+                modifierSelected.isSelected
+              );
+            }
+          }}
+        />
 
         <SelectBoxInput
           handleChange={(e) => handleModifierSelect(e, modifierSelected)}
@@ -264,10 +269,12 @@ export const ModifierInput = () => {
           defaultValue={modifierSelected.effect}
           itemKeyId="modifierInputItem"
           onFocusNotBlankInputText={true}
+          isDimmed={!modifierSelected.isSelected}
           width={"inputSizes.xlPlusBox"}
+          noInputChange={true}
         />
 
-        <Flex ml="auto">
+        <Flex ml="auto" gap={2}>
           {/* Check if modifierSelected static exists and is all null */}
           {isArrayNullOrContainsOnlyNull(modifierSelected.static) &&
             (() => {
@@ -312,40 +319,54 @@ export const ModifierInput = () => {
               return elements;
             })()}
 
-          <Center minWidth="inputSizes.miniBox">
-            <CloseButton
-              _hover={{ background: "gray.100", cursor: "pointer" }}
-              onClick={() => {
-                if (modifierSelected.modifierId[0] !== null) {
-                  handleRemoveModifier(
-                    modifierSelected.modifierId[0],
-                    modifierSelected
-                  );
-                }
-              }}
-            />
-          </Center>
+          <CloseButton
+            _hover={{ background: "gray.100", cursor: "pointer" }}
+            onClick={() => {
+              if (modifierSelected.modifierId[0] !== null) {
+                handleRemoveModifier(
+                  modifierSelected.modifierId[0],
+                  modifierSelected
+                );
+              }
+            }}
+          />
         </Flex>
       </Flex>
     )
   );
 
   return (
-    <Flex direction="column" color="ui.dark">
-      <Stack color={"ui.white"} mb={2} ref={ref} width={"inputSizes.ultraBox"}>
-        {selectedModifiersList}
-      </Stack>
+    <Flex direction="column" color="ui.dark" width={"inputSizes.ultraBox"}>
+      <Box mb={2}>
+        <AddICheckText
+          text="Modifiers"
+          isChecked={modifiersExpanded}
+          onChange={handleExpanded}
+        />
+      </Box>
 
-      <SelectBoxInput
-        handleChange={(e) => handleModifierSelect(e)}
-        optionsList={mappedFilteredOptionsList}
-        defaultText=""
-        defaultValue={defaultValue}
-        itemKeyId="modifierInput"
-        width="inputSizes.ultraBox"
-        staticPlaceholder="+ Add modifier"
-        centerInputText={true}
-      />
+      {modifiersExpanded && (
+        <Box>
+          <Stack color={"ui.white"} width="100%" mb={2} ref={ref}>
+            {selectedModifiersList}
+          </Stack>
+
+          {/* mx here needs to be same length as checkboxes in selectedModifiersList */}
+          <Box mx={"40px"} mr={"40px"}>
+            <SelectBoxInput
+              handleChange={(e) => handleModifierSelect(e)}
+              optionsList={mappedFilteredOptionsList}
+              defaultText=""
+              defaultValue={defaultValue}
+              width="100%"
+              itemKeyId="modifierInput"
+              staticPlaceholder="+ Add modifier"
+              centerInputText={true}
+              noInputChange={true}
+            />
+          </Box>
+        </Box>
+      )}
     </Flex>
   );
 };

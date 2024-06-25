@@ -36,7 +36,7 @@ const QueryButtons = () => {
   };
 
   return (
-    <Flex justifyContent={"end"}>
+    <Flex width={"100%"} justifyContent={"end"}>
       <Box>
         {" "}
         <Button
@@ -53,8 +53,7 @@ const QueryButtons = () => {
           Query and Plot
         </Button>
       </Box>
-      mr={2}
-      <Flex width="33rem" justifyContent={"end"} gap={2}>
+      <Flex width="34rem" justifyContent={"end"} gap={2} mr={2}>
         <Button
           variant="solid"
           bg="ui.input"

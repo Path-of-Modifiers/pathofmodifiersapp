@@ -23,6 +23,7 @@ interface MinMaxNumberInputProps {
   handleMaxChange: HandleChangeStringFunction;
   width?: string | number;
   height?: string | number;
+  isDimmed?: boolean;
 }
 
 // Min Max Item Lvl Input Component  -  This component is used to input the min and max ilvl of an item.
@@ -36,6 +37,7 @@ export const MinMaxNumberInput = ({
   handleMaxChange,
   width,
   height,
+  isDimmed,
 }: MinMaxNumberInputProps) => {
   const initialMinValue = useRef(getMinValue());
   const initialMaxValue = useRef(getMaxValue());
@@ -53,7 +55,7 @@ export const MinMaxNumberInput = ({
         </Text>
       )}
 
-      <Flex>
+      <Flex opacity={isDimmed ? 0.5 : 1}>
         <NumberInput
           value={getMinValue() ?? ""}
           step={1}

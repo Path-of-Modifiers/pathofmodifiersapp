@@ -26,6 +26,8 @@ export interface SelectBoxProps {
   height?: string | number;
   staticPlaceholder?: string;
   centerInputText?: boolean;
+  isDimmed?: boolean;
+  noInputChange?: boolean;
   onFocusNotBlankInputText?: boolean;
   ml?: number | string;
   mr?: number | string;
@@ -45,6 +47,8 @@ export const SelectBoxInput = ({
   staticPlaceholder,
   centerInputText,
   onFocusNotBlankInputText,
+  isDimmed,
+  noInputChange,
   ml,
   mr,
 }: SelectBoxProps) => {
@@ -102,6 +106,7 @@ export const SelectBoxInput = ({
           openOnFocus
           listAllValuesOnFocus
           defaultValue={defaultValue}
+          emptyState={false}
         >
           <AutoCompleteInput
             value={inputText}
@@ -112,6 +117,7 @@ export const SelectBoxInput = ({
             pl={2}
             ml={ml || 0}
             mr={mr || 0}
+            opacity={isDimmed ? 0.5 : 1.0}
             placeholder={
               staticPlaceholder ? staticPlaceholder : inputPlaceholder
             }
@@ -119,7 +125,9 @@ export const SelectBoxInput = ({
             borderRadius={inputPlaceholder !== defaultText ? 9 : 6}
             borderWidth={inputPlaceholder !== defaultText ? 2 : 1}
             borderColor={
-              inputPlaceholder !== defaultText ? "ui.inputChanged" : "ui.grey"
+              inputPlaceholder !== defaultText && !noInputChange
+                ? "ui.inputChanged"
+                : "ui.grey"
             }
             textAlign={centerInputText ? "center" : "left"}
             fontSize={16}
