@@ -1,4 +1,4 @@
-import { Flex } from "@chakra-ui/layout";
+import { Box, Flex } from "@chakra-ui/layout";
 import { useEffect, useState } from "react";
 import { Text } from "@chakra-ui/react";
 import { BaseTypeInput } from "./ItemBaseTypeInputComp/BaseTypeInput";
@@ -40,8 +40,8 @@ export const BaseInput = () => {
   }, [clearClicked]);
 
   return (
-    <Flex direction={"column"}>
-      <Flex>
+    <Flex direction={"column"} width={"inputSizes.lgBox"}>
+      <Flex alignItems={"center"} gap={2}>
         <AddIconCheckbox
           isChecked={baseExpanded}
           onChange={handleExpanded}
@@ -65,18 +65,24 @@ export const BaseInput = () => {
             }
           }}
         ></AddIconCheckbox>
-        <Text color={"ui.white"}>Base type</Text>
+        <Box flex="1" position="relative">
+          <Text color="ui.white">Base type</Text>
+          <Box
+            position="absolute"
+            top="2"
+            bottom="0"
+            left="0"
+            right="0"
+            borderBottom="1px solid"
+            borderColor="ui.grey"
+          />
+        </Box>
       </Flex>
       {baseExpanded &&
         baseTypes.length !== 0 &&
         itemBaseTypeCategory.length !== 0 &&
         itemBaseTypeSubCategory.length !== 0 && (
-          <Flex
-            flexWrap={"wrap"}
-            borderWidth={2}
-            justifyContent={"flex-start"}
-            gap={2}
-          >
+          <Flex flexWrap={"wrap"} justifyContent={"flex-start"} ml={6} gap={2}>
             <BaseTypeInput baseTypes={baseTypes} />
             <CategoryInput categories={itemBaseTypeCategory} />
             <SubCategoryInput subCategories={itemBaseTypeSubCategory} />

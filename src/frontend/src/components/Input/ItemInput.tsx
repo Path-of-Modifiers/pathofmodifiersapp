@@ -1,4 +1,3 @@
-import { Box } from "@chakra-ui/layout";
 import { ItemNameInput } from "./ItemInputComp/ItemNameInput";
 import { ItemRarityInput } from "./ItemInputComp/ItemRarityInput";
 

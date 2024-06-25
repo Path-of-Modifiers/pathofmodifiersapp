@@ -1,4 +1,4 @@
-import { Box, Flex, Wrap, WrapItem } from "@chakra-ui/react";
+import { Flex, VStack, Wrap, WrapItem } from "@chakra-ui/react";
 import { ModifierInput } from "./ModifierInputComp/ModifierInput";
 import { MiscItemInput } from "./MiscItemInput";
 import { BaseInput } from "./BaseInput";
@@ -15,10 +15,11 @@ export const GraphInput = () => {
   return (
     expandedGraphInputFilters && (
       <Wrap>
-        <WrapItem borderWidth={2} justifyContent={"center"} mr="auto" ml="auto">
+        <WrapItem justifyContent={"center"} mr="auto" ml="auto">
           <Flex
             alignItems={"center"}
             justifyContent={"space-between"}
+            gap={2}
             width={"bgBoxes.mediumPPBox"}
           >
             <ItemInput />
@@ -26,15 +27,12 @@ export const GraphInput = () => {
           </Flex>
         </WrapItem>
 
-        <WrapItem borderWidth={2} mr="auto" ml="auto">
-          <Flex
-            justifyContent={"space-between"}
-            width={"bgBoxes.mediumPPBox"}
-          >
-            <Box width={"inputSizes.lgBox"} borderWidth={2}>
+        <WrapItem mr="auto" ml="auto">
+          <Flex justifyContent={"space-between"} width={"bgBoxes.mediumPPBox"}>
+            <VStack spacing={2} align={"flex-start"} width={"inputSizes.lgBox"}>
               <BaseInput />
               <MiscItemInput />
-            </Box>
+            </VStack>
             <ModifierInput />
           </Flex>
         </WrapItem>

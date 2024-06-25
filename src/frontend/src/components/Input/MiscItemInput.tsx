@@ -1,4 +1,4 @@
-import { Flex, Text } from "@chakra-ui/layout";
+import { Box, Flex, Text } from "@chakra-ui/layout";
 import { IsItemInput } from "./ItemInputComp/IsItemInput";
 import { MinMaxInput } from "./ItemInputComp/MinMaxItemLvlInput";
 import { useEffect, useState } from "react";
@@ -22,18 +22,25 @@ export const MiscItemInput = () => {
   }, [clearClicked]);
 
   return (
-    <Flex direction={"column"}>
-      <Flex>
+    <Flex direction={"column"} width={"inputSizes.lgBox"}>
+      <Flex gap={2} alignItems={"center"}>
         <AddIconCheckbox isChecked={miscExpanded} onChange={handleExpanded} />
-        <Text color={"ui.white"}>Miscellaneous</Text>
+
+        <Box flex="1" position="relative">
+          <Text color={"ui.white"}>Miscellaneous</Text>
+          <Box
+            position="absolute"
+            top="1"
+            bottom="0"
+            left="0"
+            right="0"
+            borderBottom="1px solid"
+            borderColor="ui.grey"
+          />
+        </Box>
       </Flex>
       {miscExpanded && (
-        <Flex
-          flexWrap={"wrap"}
-          borderWidth={2}
-          justifyContent={"flex-start"}
-          gap={2}
-        >
+        <Flex flexWrap={"wrap"} justifyContent={"flex-start"} gap={2} ml={6}>
           <IsItemInput itemSpecKey={"identified"} text={"Identified"} />
           <IsItemInput itemSpecKey={"corrupted"} text={"Corrupted"} />
           <MinMaxInput

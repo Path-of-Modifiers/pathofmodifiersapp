@@ -39,7 +39,6 @@ function Index() {
         borderTopColor={"ui.darkBrown"}
         borderTopWidth={1}
         alignSelf="center"
-        borderWidth={2}
       >
         <QueryClientProvider client={queryClient}>
           <Box width="100%">

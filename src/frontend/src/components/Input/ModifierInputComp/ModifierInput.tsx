@@ -1,4 +1,4 @@
-import { Box, Center, CloseButton, Flex, Stack } from "@chakra-ui/react";
+import { Center, CloseButton, Flex, Stack } from "@chakra-ui/react";
 
 import AddIconCheckbox from "../../Icon/AddIconCheckbox";
 
@@ -331,7 +331,7 @@ export const ModifierInput = () => {
   );
 
   return (
-    <Flex direction="column" color="ui.dark" borderWidth={2}>
+    <Flex direction="column" color="ui.dark">
       <Stack color={"ui.white"} mb={2} ref={ref} width={"inputSizes.ultraBox"}>
         {selectedModifiersList}
       </Stack>

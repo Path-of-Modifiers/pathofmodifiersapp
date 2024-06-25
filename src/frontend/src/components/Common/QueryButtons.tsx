@@ -36,7 +36,7 @@ const QueryButtons = () => {
   };
 
   return (
-    <Flex borderWidth={2} borderColor={"red"} justifyContent={"end"}>
+    <Flex justifyContent={"end"}>
       <Box>
         {" "}
         <Button
@@ -46,14 +46,15 @@ const QueryButtons = () => {
           _hover={{ bg: "ui.queryMainInput" }}
           _focus={{ bg: "ui.queryMainInput" }}
           borderWidth={1}
+          borderColor={"ui.grey"}
           width={"inputSizes.lgBox"}
           onClick={handlePlotQuery}
         >
           Query and Plot
         </Button>
       </Box>
-
-      <Flex width="33rem" justifyContent={"end"}>
+      mr={2}
+      <Flex width="33rem" justifyContent={"end"} gap={2}>
         <Button
           variant="solid"
           bg="ui.input"
@@ -62,7 +63,7 @@ const QueryButtons = () => {
           _focus={{ bg: "ui.lightInput" }}
           onClick={handleClearQuery}
           borderWidth={1}
-          mr={2}
+          borderColor={"ui.grey"}
         >
           Clear Query
         </Button>
@@ -73,6 +74,7 @@ const QueryButtons = () => {
           _hover={{ bg: "ui.queryMainInput" }}
           _focus={{ bg: "ui.queryMainInput" }}
           borderWidth={1}
+          borderColor={"ui.grey"}
           rightIcon={filterExpanded ? <MdExpandLess /> : <MdExpandMore />}
           onClick={handleShowingFilter}
         >
