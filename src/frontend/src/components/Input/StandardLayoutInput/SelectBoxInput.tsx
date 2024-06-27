@@ -5,13 +5,14 @@ import {
   AutoCompleteInput,
   AutoCompleteItem,
   AutoCompleteList,
+  AutoCompleteInputProps,
 } from "@choc-ui/chakra-autocomplete";
 import { FormControl, FormLabel } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { getEventTextContent } from "../../../hooks/utils";
 
-export interface SelectBoxProps {
+export interface SelectBoxProps extends AutoCompleteInputProps {
   optionsList: Array<SelectBoxOptionValue>;
   itemKeyId: string;
   defaultValue: string | undefined;
@@ -19,41 +20,38 @@ export interface SelectBoxProps {
   descriptionText?: string;
   getSelectTextValue: string;
   handleChange: HandleChangeEventFunction;
-  width?: string | number;
-  height?: string | number;
   staticPlaceholder?: string;
   centerInputText?: boolean;
   isDimmed?: boolean;
   noInputChange?: boolean;
   onFocusNotBlankInputText?: boolean;
-  ml?: number | string;
-  mr?: number | string;
 }
 
 export type SelectBoxOptionValue = { value: string | undefined; text: string };
 
-export const SelectBoxInput = ({
-  descriptionText,
-  optionsList,
-  itemKeyId,
-  defaultValue,
-  defaultText,
-  getSelectTextValue,
-  handleChange,
-  width,
-  height,
-  staticPlaceholder,
-  centerInputText,
-  onFocusNotBlankInputText,
-  isDimmed,
-  noInputChange,
-  ml,
-  mr,
-}: SelectBoxProps) => {
-  defaultText = defaultText || "";
-  const [inputText, setInputText] = useState<string>(defaultText);
+export const SelectBoxInput = (props: SelectBoxProps) => {
+  const {
+    optionsList,
+    itemKeyId,
+    defaultValue,
+    defaultText,
+    descriptionText,
+    getSelectTextValue,
+    handleChange,
+    staticPlaceholder,
+    centerInputText,
+    isDimmed,
+    noInputChange,
+    onFocusNotBlankInputText,
+    height,
+    width,
+    ml,
+    mr,
+  } = props;
+
+  const [inputText, setInputText] = useState<string>(defaultText ?? "");
   const [inputPlaceholder, setInputPlaceholder] = useState<string>(
-    staticPlaceholder ? "" : defaultText
+    staticPlaceholder ? "" : defaultText ?? ""
   );
   const [inputChanged, setInputChanged] = useState<boolean>(false);
 
