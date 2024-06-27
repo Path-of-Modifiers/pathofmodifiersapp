@@ -14,9 +14,9 @@ interface SubCategoryInputProps {
 }
 
 // Sub Category Input Component  -  This component is used to select the sub category of an item base type.
-export const SubCategoryInput = ({ subCategories }: SubCategoryInputProps) => {
-  if (!Array.isArray(subCategories)) {
-    subCategories = [subCategories];
+export const SubCategoryInput = (props: SubCategoryInputProps) => {
+  if (!Array.isArray(props.subCategories)) {
+    props.subCategories = [props.subCategories];
   }
 
   const defaultValue = undefined;
@@ -45,7 +45,7 @@ export const SubCategoryInput = ({ subCategories }: SubCategoryInputProps) => {
 
   const subCategoryOptions: Array<SelectBoxOptionValue> = [
     { value: "", text: "Any" },
-    ...subCategories.map((subCategory) => {
+    ...props.subCategories.map((subCategory) => {
       return {
         value: subCategory.subCategory,
         text: capitalizeFirstLetter(subCategory.subCategory),
@@ -60,7 +60,7 @@ export const SubCategoryInput = ({ subCategories }: SubCategoryInputProps) => {
       itemKeyId={"ItemSubCategoryInput"}
       defaultValue={defaultValue}
       defaultText="Any"
-      getSelectValue={getSubCategoryValue}
+      getSelectTextValue={getSubCategoryValue()}
       handleChange={(e) => handleSubCategoryChange(e)}
     />
   );

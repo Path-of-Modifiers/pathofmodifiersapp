@@ -14,9 +14,9 @@ interface CategoryInputProps {
 }
 
 // Category Input Component  -  This component is used to select the category of an item base type.
-export const CategoryInput = ({ categories }: CategoryInputProps) => {
-  if (!Array.isArray(categories)) {
-    categories = [categories];
+export const CategoryInput = (props: CategoryInputProps) => {
+  if (!Array.isArray(props.categories)) {
+    props.categories = [props.categories];
   }
 
   const defaultValue = undefined;
@@ -45,7 +45,7 @@ export const CategoryInput = ({ categories }: CategoryInputProps) => {
 
   const categoryOptions: Array<SelectBoxOptionValue> = [
     { value: "", text: "Any" },
-    ...categories.map((baseCategory) => {
+    ...props.categories.map((baseCategory) => {
       return {
         value: baseCategory.category,
         text: capitalizeFirstLetter(baseCategory.category),
@@ -60,7 +60,7 @@ export const CategoryInput = ({ categories }: CategoryInputProps) => {
       itemKeyId={"ItemCategoryInput"}
       defaultValue={defaultValue}
       defaultText="Any"
-      getSelectValue={getCategoryValue}
+      getSelectTextValue={getCategoryValue()}
       handleChange={(e) => handleCategoryChange(e)}
     />
   );

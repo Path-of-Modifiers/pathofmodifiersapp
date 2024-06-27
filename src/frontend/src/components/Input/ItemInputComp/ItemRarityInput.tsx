@@ -11,7 +11,7 @@ export const ItemRarityInput = () => {
 
   const defaultValue = undefined;
 
-  const getRarityValue = () => {
+  const getRarityTextValue = () => {
     const rarity = useGraphInputStore.getState().itemSpec.rarity;
     if (rarity) {
       return rarity;
@@ -21,11 +21,12 @@ export const ItemRarityInput = () => {
   };
 
   const handleItemRarityChange = (
-    event: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>,
-    value?: string
+    event: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>
   ) => {
     const itemRarityInput = getEventTextContent(event);
-    if (itemRarityInput === value) {
+    if (itemRarityInput === "Any") {
+      setItemRarity(undefined);
+    } else {
       setItemRarity(itemRarityInput);
     }
   };
@@ -45,7 +46,7 @@ export const ItemRarityInput = () => {
       itemKeyId={"ItemRarityInput"}
       defaultValue={defaultValue}
       defaultText="Any"
-      getSelectValue={getRarityValue}
+      getSelectTextValue={getRarityTextValue()}
       handleChange={(e) => handleItemRarityChange(e)}
     />
   );

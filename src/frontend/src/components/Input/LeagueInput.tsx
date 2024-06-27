@@ -58,7 +58,7 @@ export const LeagueInput = () => {
       itemKeyId={"LeagueInput"}
       defaultValue={defaultLeague}
       defaultText={defaultLeague}
-      getSelectValue={getLeagueValue}
+      getSelectTextValue={getLeagueValue()}
       handleChange={(e) => handleLeagueChange(e)}
     />
   );

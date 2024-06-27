@@ -5,9 +5,22 @@ import { BaseInput } from "./BaseInput";
 import { LeagueInput } from "./LeagueInput";
 import { useExpandedComponentStore } from "../../store/ExpandedComponentStore";
 import { ItemInput } from "./ItemInput";
+import {
+  BaseType,
+  GroupedModifierByEffect,
+  ItemBaseTypeCategory,
+  ItemBaseTypeSubCategory,
+} from "../../client";
+
+interface GraphInputProps extends WrapProps {
+  prefetchedmodifiers: GroupedModifierByEffect[];
+  prefetchbasetypes: BaseType[];
+  prefetchcategories: ItemBaseTypeCategory[];
+  prefetchsubcategories: ItemBaseTypeSubCategory[];
+}
 
 // Graph Input Component  -  This component is used to input the query data.
-export const GraphInput = (props: WrapProps) => {
+export const GraphInput = (props: GraphInputProps) => {
   const expandedGraphInputFilters = useExpandedComponentStore(
     (state) => state.expandedGraphInputFilters
   );
@@ -30,10 +43,14 @@ export const GraphInput = (props: WrapProps) => {
         <WrapItem mr="auto" ml="auto">
           <Flex justifyContent={"space-between"} width={"bgBoxes.mediumPPBox"}>
             <VStack spacing={2} align={"flex-start"} width={"inputSizes.lgBox"}>
-              <BaseInput />
+              <BaseInput
+                baseTypes={props.prefetchbasetypes}
+                categories={props.prefetchcategories}
+                subCategories={props.prefetchsubcategories}
+              />
               <MiscItemInput />
             </VStack>
-            <ModifierInput />
+            <ModifierInput prefetchedmodifiers={props.prefetchedmodifiers} />
           </Flex>
         </WrapItem>
       </Wrap>

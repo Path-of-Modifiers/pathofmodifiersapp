@@ -54,7 +54,7 @@ export const ItemNameInput = () => {
       itemKeyId="itemName"
       defaultText="Any"
       defaultValue={defaultValue}
-      getSelectValue={getItemNameValue}
+      getSelectTextValue={getItemNameValue()}
       handleChange={(e) => handleNameChange(e)}
       width="100%"
     />

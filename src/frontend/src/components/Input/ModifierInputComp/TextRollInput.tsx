@@ -1,4 +1,4 @@
-import { ModifierInput } from "./ModifierInput";
+import { SelectedModifier } from "./ModifierInput";
 import {
   SelectBoxInput,
   SelectBoxOptionValue,
@@ -7,7 +7,7 @@ import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { getEventTextContent } from "../../../hooks/utils";
 
 interface TextRollInputProps {
-  modifierSelected: ModifierInput;
+  modifierSelected: SelectedModifier;
   inputPosition: number;
 }
 
@@ -25,8 +25,8 @@ export const TextRollInput = ({
   const textRolls = modifierSelected.textRolls[inputPosition] as string;
   const textRollsList = textRolls.split("-"); // Split the text rolls into a list
 
-  const getTextRollInput = () => {
-    let textRollSelected =
+  const getTextRollValue = () => {
+    const textRollSelected =
       useGraphInputStore
         .getState()
         .modifierSpecs.find(
@@ -34,13 +34,10 @@ export const TextRollInput = ({
             modifier.modifierId === modifierSelected.modifierId[inputPosition]
         )?.modifierLimitations?.textRoll ?? undefined;
 
-    if (textRollSelected) {
-      textRollSelected = textRollSelected + 1; // To account for the "Any" option
-      if (textRollSelected === 0) {
-        return undefined;
-      } else {
-        return textRollsList[textRollSelected];
-      }
+    if (textRollSelected !== undefined) {
+      return textRollsList[textRollSelected];
+    } else {
+      return "";
     }
   };
 
@@ -87,7 +84,7 @@ export const TextRollInput = ({
       defaultValue={defaultValue}
       defaultText={"Any"}
       isDimmed={!modifierSelected.isSelected}
-      getSelectValue={getTextRollInput}
+      getSelectTextValue={getTextRollValue()}
       handleChange={(e) => handleTextChange(e)}
     />
   );

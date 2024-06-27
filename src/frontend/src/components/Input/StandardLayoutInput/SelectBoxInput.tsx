@@ -1,8 +1,5 @@
 import { Flex } from "@chakra-ui/layout";
-import {
-  GetValueFunction,
-  HandleChangeEventFunction,
-} from "../../../schemas/function/InputFunction";
+import { HandleChangeEventFunction } from "../../../schemas/function/InputFunction";
 import {
   AutoComplete,
   AutoCompleteInput,
@@ -20,7 +17,7 @@ export interface SelectBoxProps {
   defaultValue: string | undefined;
   defaultText: string | undefined;
   descriptionText?: string;
-  getSelectValue?: GetValueFunction;
+  getSelectTextValue: string;
   handleChange: HandleChangeEventFunction;
   width?: string | number;
   height?: string | number;
@@ -41,6 +38,7 @@ export const SelectBoxInput = ({
   itemKeyId,
   defaultValue,
   defaultText,
+  getSelectTextValue,
   handleChange,
   width,
   height,
@@ -57,6 +55,7 @@ export const SelectBoxInput = ({
   const [inputPlaceholder, setInputPlaceholder] = useState<string>(
     staticPlaceholder ? "" : defaultText
   );
+  const [inputChanged, setInputChanged] = useState<boolean>(false);
 
   const optionValues = optionsList.map((option) =>
     option["text"].toLowerCase()
@@ -85,7 +84,19 @@ export const SelectBoxInput = ({
     if (clearClicked) {
       setInputText(defaultText || "");
     }
-  }, [clearClicked, defaultText]);
+    if (getSelectTextValue !== "") {
+      setInputText(getSelectTextValue);
+    }
+    if (
+      getSelectTextValue !== defaultText &&
+      getSelectTextValue !== "" &&
+      getSelectTextValue !== undefined
+    ) {
+      setInputChanged(true);
+    } else {
+      setInputChanged(false);
+    }
+  }, [clearClicked, defaultText, getSelectTextValue]);
 
   return (
     <Flex
@@ -105,7 +116,7 @@ export const SelectBoxInput = ({
         <AutoComplete
           openOnFocus
           listAllValuesOnFocus
-          defaultValue={defaultValue}
+          defaultValue={getSelectTextValue || defaultValue}
           emptyState={false}
         >
           <AutoCompleteInput
@@ -125,9 +136,7 @@ export const SelectBoxInput = ({
             borderRadius={inputPlaceholder !== defaultText ? 9 : 6}
             borderWidth={inputPlaceholder !== defaultText ? 2 : 1}
             borderColor={
-              inputPlaceholder !== defaultText && !noInputChange
-                ? "ui.inputChanged"
-                : "ui.grey"
+              inputChanged && !noInputChange ? "ui.inputChanged" : "ui.grey"
             }
             textAlign={centerInputText ? "center" : "left"}
             fontSize={16}

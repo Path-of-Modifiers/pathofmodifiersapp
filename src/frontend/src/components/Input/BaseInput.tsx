@@ -1,7 +1,6 @@
 import { Flex } from "@chakra-ui/layout";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { BaseTypeInput } from "./ItemBaseTypeInputComp/BaseTypeInput";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   BaseType,
   ItemBaseTypeCategory,
@@ -9,69 +8,51 @@ import {
 } from "../../client";
 import { CategoryInput } from "./ItemBaseTypeInputComp/CategoryInput";
 import { SubCategoryInput } from "./ItemBaseTypeInputComp/SubCategoryInput";
-import { prefetchAllBaseTypeData } from "../../hooks/getBaseTypeCategories";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 import { AddICheckText } from "../Icon/AddICheckText";
+import { useExpandedComponentStore } from "../../store/ExpandedComponentStore";
+
+interface BaseInputProps {
+  baseTypes: BaseType[];
+  categories: ItemBaseTypeCategory[];
+  subCategories: ItemBaseTypeSubCategory[];
+}
 
 // BaseInput component that contains the base type input, category input, and sub category input
-export const BaseInput = () => {
-  const [baseExpanded, setBaseExpanded] = useState(false);
-  const [baseTypes, setBaseTypes] = useState<BaseType[]>([]);
-  const [itemBaseTypeCategory, setItemBaseTypeCategory] = useState<
-    ItemBaseTypeCategory[]
-  >([]);
-  const [itemBaseTypeSubCategory, setItemBaseTypeSubCategory] = useState<
-    ItemBaseTypeSubCategory[]
-  >([]);
-
+export const BaseInput = (props: BaseInputProps) => {
   const clearClicked = useGraphInputStore((state) => state.clearClicked);
 
-  const queryClient = useQueryClient();
+  const baseTypeExpanded = useExpandedComponentStore(
+    (state) => state.expandedBaseType
+  );
+
+  const { setExpandedBaseType } = useExpandedComponentStore();
 
   const handleExpanded = () => {
-    setBaseExpanded(!baseExpanded);
+    setExpandedBaseType(!baseTypeExpanded);
   };
 
   useEffect(() => {
     if (clearClicked) {
-      setBaseExpanded(false);
+      setExpandedBaseType(false);
     }
-  }, [clearClicked]);
+  }, [clearClicked, setExpandedBaseType]);
 
   return (
     <Flex direction={"column"} width={"inputSizes.lgBox"}>
       <AddICheckText
-        isChecked={baseExpanded}
+        isChecked={baseTypeExpanded}
         onChange={handleExpanded}
-        onMouseEnter={async () => {
-          if (
-            baseTypes.length === 0 &&
-            itemBaseTypeCategory.length === 0 &&
-            itemBaseTypeSubCategory.length === 0
-          ) {
-            // Prefetch base type data when hovering over the checkbox
-            prefetchAllBaseTypeData(queryClient).then(
-              (data) => {
-                setBaseTypes(data.baseTypes);
-                setItemBaseTypeCategory(data.itemBaseTypeCategory);
-                setItemBaseTypeSubCategory(data.itemBaseTypeSubCategory);
-              },
-              (error) => {
-                console.error(error);
-              }
-            );
-          }
-        }}
         text="Base type"
       />
-      {baseExpanded &&
-        baseTypes.length !== 0 &&
-        itemBaseTypeCategory.length !== 0 &&
-        itemBaseTypeSubCategory.length !== 0 && (
+      {baseTypeExpanded &&
+        props.baseTypes.length !== 0 &&
+        props.categories.length !== 0 &&
+        props.subCategories.length !== 0 && (
           <Flex flexWrap={"wrap"} justifyContent={"flex-start"} ml={10} gap={2}>
-            <BaseTypeInput baseTypes={baseTypes} />
-            <CategoryInput categories={itemBaseTypeCategory} />
-            <SubCategoryInput subCategories={itemBaseTypeSubCategory} />
+            <BaseTypeInput baseTypes={props.baseTypes} />
+            <CategoryInput categories={props.categories} />
+            <SubCategoryInput subCategories={props.subCategories} />
           </Flex>
         )}
     </Flex>

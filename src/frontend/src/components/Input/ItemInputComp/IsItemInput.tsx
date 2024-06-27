@@ -144,7 +144,7 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
       itemKeyId={itemSpecKey}
       defaultValue={defaultValue}
       defaultText="Any"
-      getSelectValue={getIsItemSelectValue}
+      getSelectTextValue={getIsItemSelectValue()}
       handleChange={(e) => handleIsItemChange(e, itemSpecKey)}
     />
   );

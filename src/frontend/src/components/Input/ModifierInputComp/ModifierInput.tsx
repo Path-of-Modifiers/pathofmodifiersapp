@@ -1,4 +1,4 @@
-import { Box, Center, CloseButton, Flex, Stack } from "@chakra-ui/react";
+import { Box, CloseButton, Flex, Stack } from "@chakra-ui/react";
 
 import AddIconCheckbox from "../../Icon/AddIconCheckbox";
 
@@ -11,23 +11,29 @@ import {
   isArrayNullOrContainsOnlyNull,
 } from "../../../hooks/utils";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-import { GetGroupedModifiersByEffect } from "../../../hooks/getGroupedModifiers";
 import {
   SelectBoxInput,
   SelectBoxOptionValue,
 } from "../StandardLayoutInput/SelectBoxInput";
-import { useOutsideClick } from "../../../hooks/useOutsideClick";
 import { AddICheckText } from "../../Icon/AddICheckText";
+import { ModifierSpecState } from "../../../store/StateInterface";
+import { useExpandedComponentStore } from "../../../store/ExpandedComponentStore";
 
-export interface ModifierInput extends GroupedModifierByEffect {
+export interface SelectedModifier extends GroupedModifierByEffect {
   isSelected?: boolean;
   minRollInputs?: (number | null)[];
   maxRollInputs?: (number | null)[];
   textRollInputs?: (number | null)[];
 }
 
-export const ModifierInput = () => {
-  const [filteredModifiers, setFilteredModifiers] = useState<ModifierInput[]>([
+interface ModifierInputProps {
+  prefetchedmodifiers: GroupedModifierByEffect[];
+}
+
+export const ModifierInput = (props: ModifierInputProps) => {
+  const [filteredModifiers, setFilteredModifiers] = useState<
+    SelectedModifier[]
+  >([
     {
       modifierId: [0],
       position: [0],
@@ -39,17 +45,25 @@ export const ModifierInput = () => {
     },
   ]);
 
-  const [selectedModifiers, setSelectedModifiers] = useState<ModifierInput[]>(
-    []
-  );
-
-  const [modifiersExpanded, setModifiersExpanded] = useState(true);
+  const [selectedModifiers, setSelectedModifiers] = useState<
+    SelectedModifier[]
+  >([]);
 
   const { addModifierSpec, removeModifierSpec } = useGraphInputStore();
 
+  const { setExpandedModifiers } = useExpandedComponentStore();
+
+  const expandedModifiers = useExpandedComponentStore(
+    (state) => state.expandedModifiers
+  );
+
+  const globalModifierSpecs = useGraphInputStore(
+    (state) => state.modifierSpecs
+  );
+
   const clearClicked = useGraphInputStore((state) => state.clearClicked);
 
-  const modifiers: ModifierInput[] | undefined = GetGroupedModifiersByEffect();
+  const modifiers: SelectedModifier[] | undefined = props.prefetchedmodifiers;
 
   const defaultValue = undefined;
 
@@ -87,29 +101,102 @@ export const ModifierInput = () => {
       ]);
     }
 
+    // Define the function to find a modifier in modifiers list by its modifierId
+    const findModifierByModifierId = (
+      modifierId: number
+    ): SelectedModifier | undefined => {
+      if (modifiers && modifiers.length > 0) {
+        const modifier = modifiers.find(
+          (modifier) => modifier.modifierId[0] === modifierId
+        );
+        return modifier;
+      } else {
+        return undefined;
+      }
+    };
+
+    const getSelectedModifierFromModifierSpec = (
+      modifierSpec: ModifierSpecState
+    ) => {
+      const selectedModifier = findModifierByModifierId(
+        modifierSpec.modifierId
+      );
+      if (selectedModifier) {
+        selectedModifier.isSelected = true;
+        const minRolls = modifierSpec.modifierLimitations?.minRoll;
+        const maxRolls = modifierSpec.modifierLimitations?.maxRoll;
+        const textRolls = modifierSpec.modifierLimitations?.textRoll;
+        if (minRolls) {
+          selectedModifier.minRollInputs = new Array(
+            selectedModifier.position.length
+          ).fill(undefined);
+        }
+        if (maxRolls) {
+          selectedModifier.maxRollInputs = new Array(
+            selectedModifier.position.length
+          ).fill(undefined);
+        }
+        if (textRolls) {
+          selectedModifier.textRollInputs = new Array(
+            selectedModifier.position.length
+          ).fill(undefined);
+        }
+        for (let i = 0; i < selectedModifier.position.length; i++) {
+          if (minRolls && selectedModifier.minRollInputs !== undefined) {
+            selectedModifier.minRollInputs[i] = minRolls;
+          }
+          if (maxRolls && selectedModifier.maxRollInputs !== undefined) {
+            selectedModifier.maxRollInputs[i] = maxRolls;
+          }
+          if (textRolls && selectedModifier.textRollInputs !== undefined) {
+            selectedModifier.textRollInputs[i] = textRolls;
+          }
+        }
+        return selectedModifier;
+      } else {
+        return undefined;
+      }
+    };
+
+    if (globalModifierSpecs.length > 0 && selectedModifiers.length === 0) {
+      const selectedModifiersList = globalModifierSpecs.map((modifierSpec) =>
+        getSelectedModifierFromModifierSpec(modifierSpec)
+      ) as SelectedModifier[];
+      setSelectedModifiers(selectedModifiersList);
+    }
+
     const clearAllModifiers = () => {
       setSelectedModifiers([]);
     };
 
     if (clearClicked) {
       clearAllModifiers();
+      setExpandedModifiers(false);
     }
-  }, [selectedModifiers, modifiers, clearClicked]);
+  }, [
+    selectedModifiers,
+    modifiers,
+    clearClicked,
+    globalModifierSpecs,
+    setExpandedModifiers,
+  ]);
 
   const handleExpanded = () => {
-    setModifiersExpanded(!modifiersExpanded);
+    setExpandedModifiers(!expandedModifiers);
   };
 
-  // Define the reference to the outside click hook. This is used to close the dropdown when clicking outside of it.
-  const ref = useOutsideClick(() => {
-    const store = useGraphInputStore.getState();
-    console.log("STORE", store);
-  });
+  const getSelectModifierTextValue = (modifier: SelectedModifier) => {
+    if (modifier) {
+      return modifier.effect;
+    } else {
+      return "";
+    }
+  };
 
   // Define the function to remove a selected modifier
   const handleRemoveModifier = (
     modifierId: number,
-    modifierSelected: ModifierInput
+    modifierSelected: SelectedModifier
   ) => {
     const effectToRemove = selectedModifiers.find(
       (modifier) => modifier.modifierId[0] === modifierId
@@ -130,7 +217,7 @@ export const ModifierInput = () => {
 
   const handleModifierSelect = (
     e: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>,
-    replaceModifierInput?: ModifierInput
+    replaceSelectedModifier?: SelectedModifier
   ) => {
     const selectedModifierEffect = modifiers?.find(
       (modifier) => modifier.effect === getEventTextContent(e)
@@ -173,11 +260,11 @@ export const ModifierInput = () => {
       ).fill(undefined);
     }
 
-    // Remove the replaceModifierInput
-    if (replaceModifierInput) {
+    // Remove the replaceSelectedModifier
+    if (replaceSelectedModifier) {
       handleRemoveModifier(
-        replaceModifierInput.modifierId[0],
-        replaceModifierInput
+        replaceSelectedModifier.modifierId[0],
+        replaceSelectedModifier
       );
     }
 
@@ -204,7 +291,7 @@ export const ModifierInput = () => {
   // Define the function to handle checkbox changes for the selected modifiers
   const handleCheckboxChange = (
     modifierId: number,
-    modifierSelected: ModifierInput,
+    modifierSelected: SelectedModifier,
     modifierIsSelected: boolean | undefined
   ) => {
     // Update the checkbox state of the selected modifier
@@ -267,7 +354,8 @@ export const ModifierInput = () => {
           optionsList={mappedFilteredOptionsList}
           defaultText={modifierSelected.effect}
           defaultValue={modifierSelected.effect}
-          itemKeyId="modifierInputItem"
+          itemKeyId="selectedModifierItem"
+          getSelectTextValue={getSelectModifierTextValue(modifierSelected)}
           onFocusNotBlankInputText={true}
           isDimmed={!modifierSelected.isSelected}
           width={"inputSizes.xlPlusBox"}
@@ -280,23 +368,23 @@ export const ModifierInput = () => {
             (() => {
               const elements = [];
               for (
-                let modifierInputIndex = 0;
-                modifierInputIndex < modifierSelected.position.length;
-                modifierInputIndex++
+                let selectedModifierIndex = 0;
+                selectedModifierIndex < modifierSelected.position.length;
+                selectedModifierIndex++
               ) {
                 // Check if minRoll exists and are not all null. If so, create a MinRollInput component
                 if (
                   !isArrayNullOrContainsOnlyNull(modifierSelected.minRoll) &&
                   modifierSelected.minRoll &&
-                  modifierSelected.minRoll[modifierInputIndex] !== null &&
+                  modifierSelected.minRoll[selectedModifierIndex] !== null &&
                   modifierSelected.maxRoll &&
-                  modifierSelected.maxRoll[modifierInputIndex] !== null
+                  modifierSelected.maxRoll[selectedModifierIndex] !== null
                 ) {
                   elements.push(
                     <MinMaxRollInput
                       modifierSelected={modifierSelected}
-                      inputPosition={modifierInputIndex}
-                      key={"minRollPosition" + index + modifierInputIndex}
+                      inputPosition={selectedModifierIndex}
+                      key={"minRollPosition" + index + selectedModifierIndex}
                     />
                   );
                 }
@@ -305,13 +393,13 @@ export const ModifierInput = () => {
                 if (
                   !isArrayNullOrContainsOnlyNull(modifierSelected.textRolls) &&
                   modifierSelected.textRolls &&
-                  modifierSelected.textRolls[modifierInputIndex] !== null
+                  modifierSelected.textRolls[selectedModifierIndex] !== null
                 ) {
                   elements.push(
                     <TextRollInput
                       modifierSelected={modifierSelected}
-                      inputPosition={modifierInputIndex}
-                      key={"textRollPosition" + index + modifierInputIndex}
+                      inputPosition={selectedModifierIndex}
+                      key={"textRollPosition" + index + selectedModifierIndex}
                     />
                   );
                 }
@@ -340,14 +428,14 @@ export const ModifierInput = () => {
       <Box mb={2}>
         <AddICheckText
           text="Modifiers"
-          isChecked={modifiersExpanded}
+          isChecked={expandedModifiers}
           onChange={handleExpanded}
         />
       </Box>
 
-      {modifiersExpanded && (
+      {expandedModifiers && (
         <Box>
-          <Stack color={"ui.white"} width="100%" mb={2} ref={ref}>
+          <Stack color={"ui.white"} width="100%" mb={2}>
             {selectedModifiersList}
           </Stack>
 
@@ -358,8 +446,9 @@ export const ModifierInput = () => {
               optionsList={mappedFilteredOptionsList}
               defaultText=""
               defaultValue={defaultValue}
+              getSelectTextValue=""
               width="100%"
-              itemKeyId="modifierInput"
+              itemKeyId="selectedModifier"
               staticPlaceholder="+ Add modifier"
               centerInputText={true}
               noInputChange={true}

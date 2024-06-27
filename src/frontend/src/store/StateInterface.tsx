@@ -83,12 +83,28 @@ export interface GraphInputState {
   addModifierSpec: (modifierSpec: ModifierSpecState) => void;
   removeModifierSpec: (modifierId: number) => void;
   updateModifierSpec: (modifierSpec: ModifierSpecState) => void;
-  setMinRollModifierSpec: (modifierId: number, minRoll: number | undefined) => void;
-  setMaxRollModifierSpec: (modifierId: number, maxRoll: number | undefined) => void;
-  setTextRollModifierSpec: (modifierId: number, textRoll: number | undefined) => void;
+  setMinRollModifierSpec: (
+    modifierId: number,
+    minRoll: number | undefined
+  ) => void;
+  setMaxRollModifierSpec: (
+    modifierId: number,
+    maxRoll: number | undefined
+  ) => void;
+  setTextRollModifierSpec: (
+    modifierId: number,
+    textRoll: number | undefined
+  ) => void;
 }
 
 export interface ExpandedComponentState {
   expandedGraphInputFilters: boolean;
+  expandedModifiers: boolean;
+  expandedBaseType: boolean;
+  expandedMiscItem: boolean;
+
   setExpandedGraphInputFilters: (expandedGraphInputFilters: boolean) => void;
+  setExpandedModifiers: (expandedModifiers: boolean) => void;
+  setExpandedBaseType: (expandedBaseType: boolean) => void;
+  setExpandedMiscItem: (expandedMiscItem: boolean) => void;
 }

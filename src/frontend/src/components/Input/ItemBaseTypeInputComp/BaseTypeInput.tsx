@@ -11,9 +11,9 @@ interface BaseTypeInputProps {
 }
 
 // Base Type Input Component  -  This component is used to select the base type of an item.
-export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
-  if (!Array.isArray(baseTypes)) {
-    baseTypes = [baseTypes];
+export const BaseTypeInput = (props: BaseTypeInputProps) => {
+  if (!Array.isArray(props.baseTypes)) {
+    props.baseTypes = [props.baseTypes];
   }
 
   const defaultValue = undefined;
@@ -42,7 +42,7 @@ export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
 
   const baseTypeOptions: Array<SelectBoxOptionValue> = [
     { value: "", text: "Any" },
-    ...baseTypes.map((baseType) => {
+    ...props.baseTypes.map((baseType) => {
       return {
         value: baseType.baseType,
         text: baseType.baseType,
@@ -57,7 +57,7 @@ export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
       itemKeyId={"BaseTypeInput"}
       defaultValue={defaultValue}
       defaultText="Any"
-      getSelectValue={getBaseTypeValue}
+      getSelectTextValue={getBaseTypeValue()}
       handleChange={(e) => handleBaseTypeChange(e)}
     />
   );

@@ -1,30 +1,39 @@
 import { Flex } from "@chakra-ui/layout";
 import { IsItemInput } from "./ItemInputComp/IsItemInput";
 import { MinMaxInput } from "./ItemInputComp/MinMaxItemLvlInput";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 import { AddICheckText } from "../Icon/AddICheckText";
+import { useExpandedComponentStore } from "../../store/ExpandedComponentStore";
 
 // Miscellaneous Item Input Component  -  This component is used to input miscellaneous item properties.
 export const MiscItemInput = () => {
-  const [miscExpanded, setMiscExpanded] = useState(false);
-
   const clearClicked = useGraphInputStore((state) => state.clearClicked);
 
+  const miscItemExpanded = useExpandedComponentStore(
+    (state) => state.expandedMiscItem
+  );
+
+  const { setExpandedMiscItem } = useExpandedComponentStore();
+
   const handleExpanded = () => {
-    setMiscExpanded(!miscExpanded);
+    setExpandedMiscItem(!miscItemExpanded);
   };
 
   useEffect(() => {
     if (clearClicked) {
-      setMiscExpanded(false);
+      setExpandedMiscItem(false);
     }
-  }, [clearClicked]);
+  }, [clearClicked, setExpandedMiscItem]);
 
   return (
     <Flex direction={"column"} width={"inputSizes.lgBox"}>
-      <AddICheckText isChecked={miscExpanded} onChange={handleExpanded} text="Miscellaneous" />
-      {miscExpanded && (
+      <AddICheckText
+        isChecked={miscItemExpanded}
+        onChange={handleExpanded}
+        text="Miscellaneous"
+      />
+      {miscItemExpanded && (
         <Flex flexWrap={"wrap"} justifyContent={"flex-start"} gap={2} ml={10}>
           <IsItemInput itemSpecKey={"identified"} text={"Identified"} />
           <IsItemInput itemSpecKey={"corrupted"} text={"Corrupted"} />

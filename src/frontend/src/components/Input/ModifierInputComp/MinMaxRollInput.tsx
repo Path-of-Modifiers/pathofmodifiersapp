@@ -1,9 +1,9 @@
-import { ModifierInput } from "./ModifierInput";
+import { SelectedModifier } from "./ModifierInput";
 import { MinMaxNumberInput } from "../StandardLayoutInput/MinMaxNumberInput";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 
 interface MinRollInputProps {
-  modifierSelected: ModifierInput;
+  modifierSelected: SelectedModifier;
   inputPosition: number;
 }
 
