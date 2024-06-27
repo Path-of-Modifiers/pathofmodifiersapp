@@ -78,6 +78,13 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Escape") {
+      setInputText(inputPlaceholder);
+      e.currentTarget.blur();
+    }
+  };
+
   useEffect(() => {
     if (clearClicked) {
       setInputText(defaultText || "");
@@ -123,6 +130,7 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
             onFocus={() =>
               setInputText(onFocusNotBlankInputText ? inputPlaceholder : "")
             }
+            onKeyDown={handleKeyDown}
             pl={2}
             ml={ml || 0}
             mr={mr || 0}
