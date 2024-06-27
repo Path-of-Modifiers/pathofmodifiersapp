@@ -45,7 +45,7 @@ export const MiscItemInput = () => {
           <IsItemInput itemSpecKey={"delve"} text={"Delve"} />
           <IsItemInput itemSpecKey={"fractured"} text={"Fracture"} />
           <IsItemInput itemSpecKey={"synthesized"} text={"Synthesize"} />
-          <IsItemInput itemSpecKey={"replica"} text={"Replic"} />
+          <IsItemInput itemSpecKey={"replica"} text={"Replica"} />
           <IsItemInput itemSpecKey={"searing"} text={"Exarch influence"} />
           <IsItemInput itemSpecKey={"tangled"} text={"Eater influence"} />
           <IsItemInput itemSpecKey={"elder"} text={"Elder influence"} />

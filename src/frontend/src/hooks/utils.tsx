@@ -1,9 +1,9 @@
-import { ModifierInput } from "../components/Input/ModifierInputComp/ModifierInput";
+import { SelectedModifier } from "../components/Input/ModifierInputComp/ModifierInput";
 
 // Check if an array is null or contains only null values
 export const isArrayNullOrContainsOnlyNull = (
   arr:
-    | Array<ModifierInput | string | number | null | boolean>
+    | Array<SelectedModifier | string | number | null | boolean>
     | null
     | undefined
 ): boolean => {

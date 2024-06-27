@@ -83,7 +83,10 @@ function Index() {
               />
             )}
             <QueryButtons />
-            <GraphComponent />
+            <GraphComponent
+              width={"bgBoxes.mediumBox"}
+              height={"bgBoxes.smallBox"}
+            />
           </VStack>
         </QueryClientProvider>
       </Flex>
