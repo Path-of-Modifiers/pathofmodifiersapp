@@ -25,6 +25,7 @@ const QueryButtons = () => {
   };
 
   const handlePlotQuery = () => {
+    useExpandedComponentStore.getState().setExpandedGraphInputFilters(false);
     useGraphInputStore.getState().setPlotQuery();
     useGraphInputStore.getState().setQueryClicked();
 

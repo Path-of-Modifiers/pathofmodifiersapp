@@ -163,9 +163,9 @@ export const ModifierInput = (props: ModifierInputProps) => {
     };
 
     if (globalModifierSpecs.length > 0 && selectedModifiers.length === 0) {
-      const selectedModifiersList = globalModifierSpecs.map((modifierSpec) =>
-        getSelectedModifierFromModifierSpec(modifierSpec)
-      ) as SelectedModifier[];
+      const selectedModifiersList = globalModifierSpecs
+        .map(getSelectedModifierFromModifierSpec)
+        .filter(Boolean) as SelectedModifier[];
       setSelectedModifiers(selectedModifiersList);
     }
 
@@ -189,6 +189,7 @@ export const ModifierInput = (props: ModifierInputProps) => {
   // const ref = useOutsideClick(() => {
   //   const store = useGraphInputStore.getState();
   //   console.log("STORE", store);
+  //   console.log("LOCALSTORESELECTEDMODIFIERS", selectedModifiers);
   // });
 
   const handleExpanded = () => {
