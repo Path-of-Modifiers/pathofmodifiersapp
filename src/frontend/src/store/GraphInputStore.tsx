@@ -210,20 +210,18 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       baseSpec: { ...state.baseSpec, subCategory: subCategory },
     })),
 
-  addModifierSpec: (modifierSpec: ModifierSpecState) =>
-    set((state) => ({ modifierSpecs: [...state.modifierSpecs, modifierSpec] })),
-
-  addModifierSpecAtPosition: (
-    modifierSpec: ModifierSpecState,
-    position: number
-  ) =>
+  addModifierSpec: (modifierSpec: ModifierSpecState, position?: number) =>
     set((state) => {
-      const newModifierSpecs = [
-        ...state.modifierSpecs.slice(0, position),
-        modifierSpec,
-        ...state.modifierSpecs.slice(position),
-      ];
-      return { modifierSpecs: newModifierSpecs };
+      if (position !== undefined) {
+        return {
+          modifierSpecs: [
+            ...state.modifierSpecs.slice(0, position),
+            modifierSpec,
+            ...state.modifierSpecs.slice(position),
+          ],
+        };
+      }
+      return { modifierSpecs: [...state.modifierSpecs, modifierSpec] };
     }),
 
   removeModifierSpec: (modifierId: number) =>

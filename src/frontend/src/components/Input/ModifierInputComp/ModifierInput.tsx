@@ -3,7 +3,7 @@ import { Box, CloseButton, Flex, Stack } from "@chakra-ui/react";
 import AddIconCheckbox from "../../Icon/AddIconCheckbox";
 
 // For debugging purposes
-// import { useOutsideClick } from "../../../hooks/useOutsideClick";
+import { useOutsideClick } from "../../../hooks/useOutsideClick";
 
 import { useEffect, useState } from "react";
 import { GroupedModifierByEffect } from "../../../client";
@@ -52,8 +52,7 @@ export const ModifierInput = (props: ModifierInputProps) => {
     SelectedModifier[]
   >([]);
 
-  const { addModifierSpec, removeModifierSpec, addModifierSpecAtPosition } =
-    useGraphInputStore();
+  const { addModifierSpec, removeModifierSpec } = useGraphInputStore();
 
   const { setExpandedModifiers } = useExpandedComponentStore();
 
@@ -186,11 +185,11 @@ export const ModifierInput = (props: ModifierInputProps) => {
   ]);
 
   // For debugging purposes
-  // const ref = useOutsideClick(() => {
-  //   const store = useGraphInputStore.getState();
-  //   console.log("STORE", store);
-  //   console.log("LOCALSTORESELECTEDMODIFIERS", selectedModifiers);
-  // });
+  const ref = useOutsideClick(() => {
+    const store = useGraphInputStore.getState();
+    console.log("STORE", store);
+    console.log("LOCALSTORESELECTEDMODIFIERS", selectedModifiers);
+  });
 
   const handleExpanded = () => {
     setExpandedModifiers(!expandedModifiers);
@@ -225,8 +224,8 @@ export const ModifierInput = (props: ModifierInputProps) => {
 
   const handleModifierSelect = (
     e: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>,
-    replaceSelectedModifier?: SelectedModifier,
-    positionToReplace?: number
+    positionToSelect?: number,
+    replaceSelectedModifier?: SelectedModifier
   ) => {
     const effectSelected = getEventTextContent(e);
     const selectedModifier = modifiers?.find(
@@ -239,12 +238,12 @@ export const ModifierInput = (props: ModifierInputProps) => {
 
     // Set the clicked modifier as selected
     selectedModifier.isSelected = true;
-    // Set selected modifiers at the position if positionToReplace is defined
-    if (positionToReplace !== undefined) {
+    // Set selected modifiers at the position if positionToSelect is defined
+    if (positionToSelect !== undefined) {
       setSelectedModifiers((selectedModifiers) => [
-        ...selectedModifiers.slice(0, positionToReplace),
+        ...selectedModifiers.slice(0, positionToSelect),
         selectedModifier,
-        ...selectedModifiers.slice(positionToReplace),
+        ...selectedModifiers.slice(positionToSelect),
       ]);
     } else {
       setSelectedModifiers((selectedModifiers) => [
@@ -280,7 +279,7 @@ export const ModifierInput = (props: ModifierInputProps) => {
     }
 
     // Remove the replaceSelectedModifier
-    if (replaceSelectedModifier && positionToReplace !== undefined) {
+    if (replaceSelectedModifier) {
       handleRemoveModifier(replaceSelectedModifier);
     }
 
@@ -288,7 +287,7 @@ export const ModifierInput = (props: ModifierInputProps) => {
       modifier: typeof selectedModifier,
       position: number
     ) => {
-      addModifierSpecAtPosition(
+      addModifierSpec(
         {
           modifierId: modifier.modifierId[position],
           position: modifier.position[position],
@@ -304,9 +303,7 @@ export const ModifierInput = (props: ModifierInputProps) => {
               : null,
           },
         },
-        positionToReplace !== undefined
-          ? positionToReplace + position
-          : position
+        positionToSelect ?? undefined
       );
     };
 
@@ -378,7 +375,7 @@ export const ModifierInput = (props: ModifierInputProps) => {
         />
 
         <SelectBoxInput
-          handleChange={(e) => handleModifierSelect(e, modifierSelected, index)}
+          handleChange={(e) => handleModifierSelect(e, index, modifierSelected)}
           optionsList={mappedFilteredOptionsList}
           defaultText={modifierSelected.effect}
           defaultValue={modifierSelected.effect}
@@ -470,7 +467,7 @@ export const ModifierInput = (props: ModifierInputProps) => {
             mx={"40px"}
             mr={"40px"}
             // For debugging purposes
-            // ref={ref}
+            ref={ref}
           >
             <SelectBoxInput
               handleChange={(e) => handleModifierSelect(e)}

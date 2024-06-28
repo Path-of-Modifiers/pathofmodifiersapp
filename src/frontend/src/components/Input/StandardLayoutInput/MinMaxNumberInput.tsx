@@ -11,7 +11,6 @@ import {
   GetValueFunction,
   HandleChangeStringFunction,
 } from "../../../schemas/function/InputFunction";
-import { useRef } from "react";
 
 interface MinMaxNumberInputProps {
   descriptionText?: string;
@@ -39,9 +38,6 @@ export const MinMaxNumberInput = ({
   height,
   isDimmed,
 }: MinMaxNumberInputProps) => {
-  const initialMinValue = useRef(getMinValue());
-  const initialMaxValue = useRef(getMaxValue());
-
   return (
     <Flex
       color={"ui.white"}
@@ -60,13 +56,9 @@ export const MinMaxNumberInput = ({
           value={getMinValue() ?? ""}
           step={1}
           key={minSpecKey}
-          borderWidth={getMinValue() !== initialMinValue.current ? 1 : 0}
-          borderRadius={getMinValue() !== initialMinValue.current ? 9 : 0}
-          borderColor={
-            getMinValue() !== initialMinValue.current
-              ? "ui.inputChanged"
-              : "ui.grey"
-          }
+          borderWidth={getMinValue() !== "" ? 1 : 0}
+          borderRadius={getMinValue() !== "" ? 9 : 0}
+          borderColor={getMinValue() !== "" ? "ui.inputChanged" : "ui.grey"}
           precision={0}
           focusBorderColor={"ui.white"}
           onChange={(e) => handleMinChange(e)}
@@ -84,14 +76,10 @@ export const MinMaxNumberInput = ({
           value={getMaxValue() ?? ""}
           step={1}
           key={maxSpecKey}
-          borderWidth={getMaxValue() !== initialMaxValue.current ? 1 : 0}
-          borderRadius={getMaxValue() !== initialMaxValue.current ? 9 : 0}
+          borderWidth={getMaxValue() !== "" ? 1 : 0}
+          borderRadius={getMaxValue() !== "" ? 9 : 0}
           focusBorderColor={"ui.white"}
-          borderColor={
-            getMaxValue() !== initialMaxValue.current
-              ? "ui.inputChanged"
-              : "ui.grey"
-          }
+          borderColor={getMaxValue() !== "" ? "ui.inputChanged" : "ui.grey"}
           onChange={(e) => handleMaxChange(e)}
           _placeholder={{ color: "ui.white" }}
           textAlign={"center"}
