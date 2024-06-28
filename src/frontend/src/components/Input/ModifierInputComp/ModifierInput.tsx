@@ -284,49 +284,35 @@ export const ModifierInput = (props: ModifierInputProps) => {
       handleRemoveModifier(replaceSelectedModifier);
     }
 
-    // Add the selected modifier(s) to the global state store
-    if (positionToReplace !== undefined) {
-      console.log("positionToReplace", positionToReplace);
-      // Add the modifierSpec at the specified position in the ModifierSpecState[] list
-      for (let i = 0; i < selectedModifier.position.length; i++) {
-        addModifierSpecAtPosition(
-          {
-            modifierId: selectedModifier.modifierId[i],
-            position: selectedModifier.position[i],
-            modifierLimitations: {
-              minRoll: selectedModifier.minRollInputs
-                ? selectedModifier.minRollInputs[i]
-                : null,
-              maxRoll: selectedModifier.maxRollInputs
-                ? selectedModifier.maxRollInputs[i]
-                : null,
-              textRoll: selectedModifier.textRollInputs
-                ? selectedModifier.textRollInputs[i]
-                : null,
-            },
-          },
-          positionToReplace + i
-        );
-      }
-    } else {
-      for (let i = 0; i < selectedModifier.position.length; i++) {
-        console.log("selectedModifierAddmodSpec", selectedModifier);
-        addModifierSpec({
-          modifierId: selectedModifier.modifierId[i],
-          position: i,
+    const addModifier = (
+      modifier: typeof selectedModifier,
+      position: number
+    ) => {
+      addModifierSpecAtPosition(
+        {
+          modifierId: modifier.modifierId[position],
+          position: modifier.position[position],
           modifierLimitations: {
-            minRoll: selectedModifier.minRollInputs
-              ? selectedModifier.minRollInputs[i]
+            minRoll: modifier.minRollInputs
+              ? modifier.minRollInputs[position]
               : null,
-            maxRoll: selectedModifier.maxRollInputs
-              ? selectedModifier.maxRollInputs[i]
+            maxRoll: modifier.maxRollInputs
+              ? modifier.maxRollInputs[position]
               : null,
-            textRoll: selectedModifier.textRollInputs
-              ? selectedModifier.textRollInputs[i]
+            textRoll: modifier.textRollInputs
+              ? modifier.textRollInputs[position]
               : null,
           },
-        });
-      }
+        },
+        positionToReplace !== undefined
+          ? positionToReplace + position
+          : position
+      );
+    };
+
+    // Add the selected modifier(s) to the global state store
+    for (let i = 0; i < selectedModifier.position.length; i++) {
+      addModifier(selectedModifier, i);
     }
   };
 
