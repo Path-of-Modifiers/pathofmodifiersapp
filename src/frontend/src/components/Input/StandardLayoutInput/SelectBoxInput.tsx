@@ -123,6 +123,7 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
           listAllValuesOnFocus
           defaultValue={getSelectTextValue || defaultValue}
           emptyState={false}
+          key={"autocomplete" + itemKeyId + defaultText}
         >
           <AutoCompleteInput
             value={inputText}
@@ -148,6 +149,7 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
             fontSize={16}
             bgColor={"ui.input"}
             autoComplete="off"
+            key={"autocompleteinput" + itemKeyId + defaultText}
           />
           <AutoCompleteList
             onBlur={() =>

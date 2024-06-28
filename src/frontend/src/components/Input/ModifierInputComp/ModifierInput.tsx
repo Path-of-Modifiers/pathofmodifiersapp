@@ -2,6 +2,9 @@ import { Box, CloseButton, Flex, Stack } from "@chakra-ui/react";
 
 import AddIconCheckbox from "../../Icon/AddIconCheckbox";
 
+// For debugging purposes
+// import { useOutsideClick } from "../../../hooks/useOutsideClick";
+
 import { useEffect, useState } from "react";
 import { GroupedModifierByEffect } from "../../../client";
 import { TextRollInput } from "./TextRollInput";
@@ -49,7 +52,8 @@ export const ModifierInput = (props: ModifierInputProps) => {
     SelectedModifier[]
   >([]);
 
-  const { addModifierSpec, removeModifierSpec } = useGraphInputStore();
+  const { addModifierSpec, removeModifierSpec, addModifierSpecAtPosition } =
+    useGraphInputStore();
 
   const { setExpandedModifiers } = useExpandedComponentStore();
 
@@ -181,6 +185,12 @@ export const ModifierInput = (props: ModifierInputProps) => {
     setExpandedModifiers,
   ]);
 
+  // For debugging purposes
+  // const ref = useOutsideClick(() => {
+  //   const store = useGraphInputStore.getState();
+  //   console.log("STORE", store);
+  // });
+
   const handleExpanded = () => {
     setExpandedModifiers(!expandedModifiers);
   };
@@ -194,18 +204,15 @@ export const ModifierInput = (props: ModifierInputProps) => {
   };
 
   // Define the function to remove a selected modifier
-  const handleRemoveModifier = (
-    modifierId: number,
-    modifierSelected: SelectedModifier
-  ) => {
-    const effectToRemove = selectedModifiers.find(
-      (modifier) => modifier.modifierId[0] === modifierId
+  const handleRemoveModifier = (modifierSelected: SelectedModifier) => {
+    const modifierToRemove = selectedModifiers.find(
+      (modifier) => modifier.modifierId[0] === modifierSelected.modifierId[0]
     )?.effect;
 
     // Remove the selected modifier from the selectedModifiers list if it exists
-    if (effectToRemove) {
+    if (modifierToRemove) {
       setSelectedModifiers((prevModifiers) =>
-        prevModifiers.filter((modifier) => modifier.effect !== effectToRemove)
+        prevModifiers.filter((modifier) => modifier.effect !== modifierToRemove)
       );
 
       // Remove the modifier from the global state store
@@ -217,74 +224,108 @@ export const ModifierInput = (props: ModifierInputProps) => {
 
   const handleModifierSelect = (
     e: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>,
-    replaceSelectedModifier?: SelectedModifier
+    replaceSelectedModifier?: SelectedModifier,
+    positionToReplace?: number
   ) => {
-    const selectedModifierEffect = modifiers?.find(
-      (modifier) => modifier.effect === getEventTextContent(e)
+    const effectSelected = getEventTextContent(e);
+    const selectedModifier = modifiers?.find(
+      (modifier) => modifier.effect === effectSelected
     );
 
-    if (!selectedModifierEffect) {
+    if (!selectedModifier) {
       return;
     }
 
     // Set the clicked modifier as selected
-    selectedModifierEffect.isSelected = true;
-    setSelectedModifiers((prevModifiers) => [
-      ...prevModifiers,
-      selectedModifierEffect,
-    ]);
+    selectedModifier.isSelected = true;
+    // Set selected modifiers at the position if positionToReplace is defined
+    if (positionToReplace !== undefined) {
+      setSelectedModifiers((selectedModifiers) => [
+        ...selectedModifiers.slice(0, positionToReplace),
+        selectedModifier,
+        ...selectedModifiers.slice(positionToReplace),
+      ]);
+    } else {
+      setSelectedModifiers((selectedModifiers) => [
+        ...selectedModifiers,
+        selectedModifier,
+      ]);
+    }
 
     // Initialize the input arrays for the selected modifier
     if (
-      !isArrayNullOrContainsOnlyNull(selectedModifierEffect.minRoll) &&
-      selectedModifierEffect.minRoll
+      !isArrayNullOrContainsOnlyNull(selectedModifier.minRoll) &&
+      selectedModifier.minRoll
     ) {
-      selectedModifierEffect.minRollInputs = new Array(
-        selectedModifierEffect.minRoll.length
+      selectedModifier.minRollInputs = new Array(
+        selectedModifier.minRoll.length
       ).fill(undefined);
     }
     if (
-      !isArrayNullOrContainsOnlyNull(selectedModifierEffect.maxRoll) &&
-      selectedModifierEffect.maxRoll
+      !isArrayNullOrContainsOnlyNull(selectedModifier.maxRoll) &&
+      selectedModifier.maxRoll
     ) {
-      selectedModifierEffect.maxRollInputs = new Array(
-        selectedModifierEffect.maxRoll.length
+      selectedModifier.maxRollInputs = new Array(
+        selectedModifier.maxRoll.length
       ).fill(undefined);
     }
     if (
-      !isArrayNullOrContainsOnlyNull(selectedModifierEffect.textRolls) &&
-      selectedModifierEffect.textRolls
+      !isArrayNullOrContainsOnlyNull(selectedModifier.textRolls) &&
+      selectedModifier.textRolls
     ) {
-      selectedModifierEffect.textRollInputs = new Array(
-        selectedModifierEffect.textRolls.length
+      selectedModifier.textRollInputs = new Array(
+        selectedModifier.textRolls.length
       ).fill(undefined);
     }
 
     // Remove the replaceSelectedModifier
-    if (replaceSelectedModifier) {
-      handleRemoveModifier(
-        replaceSelectedModifier.modifierId[0],
-        replaceSelectedModifier
-      );
+    if (replaceSelectedModifier && positionToReplace !== undefined) {
+      handleRemoveModifier(replaceSelectedModifier);
     }
 
     // Add the selected modifier(s) to the global state store
-    for (let i = 0; i < selectedModifierEffect.position.length; i++) {
-      addModifierSpec({
-        modifierId: selectedModifierEffect.modifierId[i],
-        position: i,
-        modifierLimitations: {
-          minRoll: selectedModifierEffect.minRollInputs
-            ? selectedModifierEffect.minRollInputs[i]
-            : null,
-          maxRoll: selectedModifierEffect.maxRollInputs
-            ? selectedModifierEffect.maxRollInputs[i]
-            : null,
-          textRoll: selectedModifierEffect.textRollInputs
-            ? selectedModifierEffect.textRollInputs[i]
-            : null,
-        },
-      });
+    if (positionToReplace !== undefined) {
+      console.log("positionToReplace", positionToReplace);
+      // Add the modifierSpec at the specified position in the ModifierSpecState[] list
+      for (let i = 0; i < selectedModifier.position.length; i++) {
+        addModifierSpecAtPosition(
+          {
+            modifierId: selectedModifier.modifierId[i],
+            position: selectedModifier.position[i],
+            modifierLimitations: {
+              minRoll: selectedModifier.minRollInputs
+                ? selectedModifier.minRollInputs[i]
+                : null,
+              maxRoll: selectedModifier.maxRollInputs
+                ? selectedModifier.maxRollInputs[i]
+                : null,
+              textRoll: selectedModifier.textRollInputs
+                ? selectedModifier.textRollInputs[i]
+                : null,
+            },
+          },
+          positionToReplace + i
+        );
+      }
+    } else {
+      for (let i = 0; i < selectedModifier.position.length; i++) {
+        console.log("selectedModifierAddmodSpec", selectedModifier);
+        addModifierSpec({
+          modifierId: selectedModifier.modifierId[i],
+          position: i,
+          modifierLimitations: {
+            minRoll: selectedModifier.minRollInputs
+              ? selectedModifier.minRollInputs[i]
+              : null,
+            maxRoll: selectedModifier.maxRollInputs
+              ? selectedModifier.maxRollInputs[i]
+              : null,
+            textRoll: selectedModifier.textRollInputs
+              ? selectedModifier.textRollInputs[i]
+              : null,
+          },
+        });
+      }
     }
   };
 
@@ -350,7 +391,7 @@ export const ModifierInput = (props: ModifierInputProps) => {
         />
 
         <SelectBoxInput
-          handleChange={(e) => handleModifierSelect(e, modifierSelected)}
+          handleChange={(e) => handleModifierSelect(e, modifierSelected, index)}
           optionsList={mappedFilteredOptionsList}
           defaultText={modifierSelected.effect}
           defaultValue={modifierSelected.effect}
@@ -360,6 +401,7 @@ export const ModifierInput = (props: ModifierInputProps) => {
           isDimmed={!modifierSelected.isSelected}
           width={"inputSizes.xlPlusBox"}
           noInputChange={true}
+          key={"inputbox" + modifierSelected.effect + index}
         />
 
         <Flex ml="auto" gap={2}>
@@ -411,10 +453,7 @@ export const ModifierInput = (props: ModifierInputProps) => {
             _hover={{ background: "gray.100", cursor: "pointer" }}
             onClick={() => {
               if (modifierSelected.modifierId[0] !== null) {
-                handleRemoveModifier(
-                  modifierSelected.modifierId[0],
-                  modifierSelected
-                );
+                handleRemoveModifier(modifierSelected);
               }
             }}
           />
@@ -440,7 +479,12 @@ export const ModifierInput = (props: ModifierInputProps) => {
           </Stack>
 
           {/* mx here needs to be same length as checkboxes in selectedModifiersList */}
-          <Box mx={"40px"} mr={"40px"}>
+          <Box
+            mx={"40px"}
+            mr={"40px"}
+            // For debugging purposes
+            // ref={ref}
+          >
             <SelectBoxInput
               handleChange={(e) => handleModifierSelect(e)}
               optionsList={mappedFilteredOptionsList}

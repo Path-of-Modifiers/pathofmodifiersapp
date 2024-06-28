@@ -81,6 +81,10 @@ export interface GraphInputState {
   setItemCategory: (category: string | undefined) => void;
   setItemSubCategory: (subCategory: string | undefined) => void;
   addModifierSpec: (modifierSpec: ModifierSpecState) => void;
+  addModifierSpecAtPosition: (
+    modifierSpec: ModifierSpecState,
+    position: number
+  ) => void;
   removeModifierSpec: (modifierId: number) => void;
   updateModifierSpec: (modifierSpec: ModifierSpecState) => void;
   setMinRollModifierSpec: (
