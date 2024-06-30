@@ -170,9 +170,7 @@ class APIHandler:
         response_json = response.json()
         next_change_id = response_json["psapi"]
 
-        if (
-            MANUAL_NEXT_CHANGE_ID
-        ):  # For testing purposes, set manual next_change_id
+        if MANUAL_NEXT_CHANGE_ID:  # For testing purposes, set manual next_change_id
             next_change_id = NEXT_CHANGE_ID
 
         return next_change_id

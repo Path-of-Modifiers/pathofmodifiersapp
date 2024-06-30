@@ -177,6 +177,7 @@ class APIHandler:
                 headers = response.headers
                 retry_after = int(headers["Retry-After"])
                 time.sleep(retry_after + 1)
+                self.logger.info("Encountered a ratelimit.")
                 return self._initialize_stream(next_change_id=next_change_id)
 
             response.raise_for_status()
@@ -188,61 +189,63 @@ class APIHandler:
 
         return next_change_id, stashes
 
-    async def _start_next_request(
-        self, session: aiohttp.ClientSession, next_change_id: str
-    ) -> Coroutine:
+    async def _start_next_N_request(
+        self, session: aiohttp.ClientSession, next_change_id: str, N: int
+    ) -> Tuple[List, str]:
+        print(N)
+        if self.recently_ratelimited:
+            # Adds artificial delay if we have recently been ratelimited
+            time.sleep(1)
+
+        if N == 0:
+            return [], next_change_id
 
         async with session.get(self.url, params={"id": next_change_id}) as response:
+            headers = response.headers
             if response.status >= 300:
                 if response.status == 429:
                     # https://www.pathofexile.com/developer/docs/index#ratelimits
                     # Rate limits are dynamic
-                    headers = response.headers
                     retry_after = int(headers["Retry-After"])
                     self.time_for_last_ratelimit = time.perf_counter()
                     await asyncio.sleep(retry_after + 1)
-                    return await self._start_next_request(session, next_change_id)
+                    return await self._start_next_N_request(session, next_change_id, N)
 
                 else:
                     response.raise_for_status()
 
+            new_next_change_id = headers["X-Next-Change-Id"]
+            if new_next_change_id == next_change_id:
+                time.sleep(
+                    120
+                )  # Waits 120 seconds before continuing to pursue the stream
+            else:
+                next_change_id = new_next_change_id
+                N -= 1
+
+            stashes, next_change_id = await self._start_next_N_request(
+                session, next_change_id, N
+            )
+
             response_json = await response.json()
-            next_change_id = response_json["next_change_id"]
-            stashes = response_json["stashes"]
-            return next_change_id, stashes
+            stashes += response_json["stashes"]
+
+        return stashes, next_change_id
 
     def _run_async_follow_stream(self, stashes_lock: threading.Lock):
         asyncio.run(self._follow_stream(stashes_lock))
 
     @async_timing_tracker
     async def _start_new_mini_expedition(
-        self,
-        session: aiohttp.ClientSession,
-        new_stashes: list,
-        next_change_id: str,
-        expedition_depth: int,
-    ):
-        for i in range(expedition_depth):
-            if self.recently_ratelimited:
-                # Adds artificial delay if we have recently been ratelimited
-                time.sleep(1)
+        self, session: aiohttp.ClientSession, next_change_id: str, expedition_depth: int
+    ) -> str:
+        stashes, next_change_id = await self._start_next_N_request(
+            session, next_change_id=next_change_id, N=expedition_depth
+        )
 
-            future = asyncio.ensure_future(
-                self._start_next_request(session, next_change_id=next_change_id)
-            )
+        self.stashes += stashes
 
-            if not new_stashes:
-                time.sleep(
-                    120
-                )  # Waits 120 seconds before continuing to pursue the stream
-            else:
-                self.stashes += new_stashes
-
-            task_response = await asyncio.gather(future)
-            next_change_id, new_stashes = task_response[0]
-            print(i)
-
-        print(f"Finished another {expedition_depth} iterations")
+        return next_change_id
 
     async def _follow_stream(self, stashes_lock: threading.Lock):
         """
@@ -252,17 +255,18 @@ class APIHandler:
         print("Locked the stashes inside follow_stream.")
         next_change_id, new_stashes = self._initialize_stream()
 
-        self.stashes = []
+        self.stashes = new_stashes
 
         session = aiohttp.ClientSession(headers=self.headers)
         try:
             while True:
-                await self._start_new_mini_expedition(
-                    session, new_stashes, next_change_id, expedition_depth=30
+
+                next_change_id = await self._start_new_mini_expedition(
+                    session, next_change_id=next_change_id, expedition_depth=30
                 )
+
                 stashes_lock.release()
-                while self.stashes:
-                    time.sleep(1)
+                time.sleep(1)
                 stashes_lock.acquire()
         finally:
             await session.close()
@@ -272,7 +276,8 @@ class APIHandler:
         for i in range(10):
             stashes_lock.acquire()
             print("Locked the stashes inside process_stream.")
-            stashes_local = deepcopy(self.stashes)
+            stashes_local = self.stashes
+            del self.stashes
             self.stashes = []
             stashes_lock.release()
             print("Released the stashes lock inside pocess_stream.")
@@ -303,3 +308,4 @@ class APIHandler:
             df = self._process_stream(stashes_lock)
             print("Finished processing the stream, entering transformation phase")
             yield df.reset_index()
+            del df
