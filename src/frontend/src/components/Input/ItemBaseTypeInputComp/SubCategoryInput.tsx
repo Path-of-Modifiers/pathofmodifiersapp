@@ -1,16 +1,22 @@
-import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-import { capitalizeFirstLetter } from "../../../hooks/utils";
+import {
+  capitalizeFirstLetter,
+  getEventTextContent,
+} from "../../../hooks/utils";
 import { ItemBaseTypeSubCategory } from "../../../client";
+import {
+  SelectBoxInput,
+  SelectBoxOptionValue,
+} from "../StandardLayoutInput/SelectBoxInput";
 
 interface SubCategoryInputProps {
   subCategories: ItemBaseTypeSubCategory | ItemBaseTypeSubCategory[];
 }
 
 // Sub Category Input Component  -  This component is used to select the sub category of an item base type.
-export const SubCategoryInput = ({ subCategories }: SubCategoryInputProps) => {
-  if (!Array.isArray(subCategories)) {
-    subCategories = [subCategories];
+export const SubCategoryInput = (props: SubCategoryInputProps) => {
+  if (!Array.isArray(props.subCategories)) {
+    props.subCategories = [props.subCategories];
   }
 
   const defaultValue = undefined;
@@ -27,61 +33,35 @@ export const SubCategoryInput = ({ subCategories }: SubCategoryInputProps) => {
   const { setItemSubCategory } = useGraphInputStore();
 
   const handleSubCategoryChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+    event: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>
   ) => {
-    const itemSubCategory = event.target.value;
+    const itemSubCategory = getEventTextContent(event);
     if (itemSubCategory === "Any") {
       setItemSubCategory(undefined);
+    } else {
+      setItemSubCategory(itemSubCategory);
     }
-    setItemSubCategory(itemSubCategory);
   };
 
-  let categoryOptions: JSX.Element[] = [];
-  if (subCategories !== undefined) {
-    categoryOptions = subCategories.map((baseCategory) => {
-      return (
-        <option
-          value={capitalizeFirstLetter(baseCategory.subCategory)}
-          key={"ItemSubCategoryInput" + "_option_" + baseCategory.subCategory}
-          style={{ color: "white", backgroundColor: "#2d3333" }}
-        >
-          {capitalizeFirstLetter(baseCategory.subCategory)}
-        </option>
-      );
-    });
-  }
+  const subCategoryOptions: Array<SelectBoxOptionValue> = [
+    { value: "", text: "Any" },
+    ...props.subCategories.map((subCategory) => {
+      return {
+        value: subCategory.subCategory,
+        text: capitalizeFirstLetter(subCategory.subCategory),
+      };
+    }),
+  ];
 
   return (
-    <Flex
-      alignItems={"center"}
-      color={"ui.white"}
-      bgColor={"ui.secondary"}
-      m={1}
-    >
-      <Text ml={1} width={150}>
-        Item Sub Category
-      </Text>
-      <Select
-        value={getSubCategoryValue()}
-        bgColor={"ui.input"}
-        color={"ui.white"}
-        onChange={(e) => handleSubCategoryChange(e)}
-        width={150}
-        focusBorderColor={"ui.white"}
-        borderColor={"ui.grey"}
-        mr={1}
-        ml={1}
-        key={"itemSubCategoryInput"}
-      >
-        <option
-          value={defaultValue}
-          key={"ItemSubCategoryInput" + "_option_" + "any"}
-          style={{ color: "white", backgroundColor: "#2d3333" }}
-        >
-          Any
-        </option>
-        {categoryOptions}
-      </Select>
-    </Flex>
+    <SelectBoxInput
+      descriptionText={"Item Sub Category"}
+      optionsList={subCategoryOptions}
+      itemKeyId={"ItemSubCategoryInput"}
+      defaultValue={defaultValue}
+      defaultText="Any"
+      getSelectTextValue={getSubCategoryValue()}
+      handleChange={(e) => handleSubCategoryChange(e)}
+    />
   );
 };

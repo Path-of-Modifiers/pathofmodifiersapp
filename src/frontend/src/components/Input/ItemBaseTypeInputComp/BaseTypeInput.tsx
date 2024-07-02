@@ -1,15 +1,19 @@
-import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { BaseType } from "../../../client";
+import {
+  SelectBoxInput,
+  SelectBoxOptionValue,
+} from "../StandardLayoutInput/SelectBoxInput";
+import { getEventTextContent } from "../../../hooks/utils";
 
 interface BaseTypeInputProps {
   baseTypes: BaseType | BaseType[];
 }
 
 // Base Type Input Component  -  This component is used to select the base type of an item.
-export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
-  if (!Array.isArray(baseTypes)) {
-    baseTypes = [baseTypes];
+export const BaseTypeInput = (props: BaseTypeInputProps) => {
+  if (!Array.isArray(props.baseTypes)) {
+    props.baseTypes = [props.baseTypes];
   }
 
   const defaultValue = undefined;
@@ -26,61 +30,35 @@ export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
   };
 
   const handleBaseTypeChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+    event: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>
   ) => {
-    const baseType = event.target.value;
+    const baseType = getEventTextContent(event);
     if (baseType === "Any") {
       setBaseType(undefined);
+    } else {
+      setBaseType(baseType);
     }
-    setBaseType(baseType);
   };
 
-  let baseTypeOptions: JSX.Element[] = [];
-  if (baseTypes !== undefined) {
-    baseTypeOptions = baseTypes.map((baseType) => {
-      return (
-        <option
-          value={baseType.baseType}
-          key={"BaseTypeInput" + "_option_" + baseType.baseType}
-          style={{ color: "white", backgroundColor: "#2d3333" }}
-        >
-          {baseType.baseType}
-        </option>
-      );
-    });
-  }
+  const baseTypeOptions: Array<SelectBoxOptionValue> = [
+    { value: "", text: "Any" },
+    ...props.baseTypes.map((baseType) => {
+      return {
+        value: baseType.baseType,
+        text: baseType.baseType,
+      };
+    }),
+  ];
 
   return (
-    <Flex
-      alignItems={"center"}
-      color={"ui.white"}
-      bgColor={"ui.secondary"}
-      m={1}
-    >
-      <Text ml={1} width={150}>
-        Item Base Type
-      </Text>
-      <Select
-        value={getBaseTypeValue()}
-        bgColor={"ui.input"}
-        color={"ui.white"}
-        onChange={(e) => handleBaseTypeChange(e)}
-        width={150}
-        focusBorderColor={"ui.white"}
-        borderColor={"ui.grey"}
-        mr={1}
-        ml={1}
-        key={"baseTypeInput"}
-      >
-        <option
-          value={defaultValue}
-          key={"baseType" + "_option_" + "any"}
-          style={{ color: "white", backgroundColor: "#2d3333" }}
-        >
-          Any
-        </option>
-        {baseTypeOptions}
-      </Select>
-    </Flex>
+    <SelectBoxInput
+      descriptionText={"Item Base Type"}
+      optionsList={baseTypeOptions}
+      itemKeyId={"BaseTypeInput"}
+      defaultValue={defaultValue}
+      defaultText="Any"
+      getSelectTextValue={getBaseTypeValue()}
+      handleChange={(e) => handleBaseTypeChange(e)}
+    />
   );
 };

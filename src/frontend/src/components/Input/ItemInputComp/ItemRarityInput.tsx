@@ -1,13 +1,17 @@
-import { Flex, Select, Text } from "@chakra-ui/react";
+import { getEventTextContent } from "../../../hooks/utils";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
+import {
+  SelectBoxInput,
+  SelectBoxOptionValue,
+} from "../StandardLayoutInput/SelectBoxInput";
 
 // Item Rarity Input Component  -  This component is used to select the rarity of an item.
 export const ItemRarityInput = () => {
-  const defaultRarity = undefined;
-
   const { setItemRarity } = useGraphInputStore();
 
-  const getRarityValue = () => {
+  const defaultValue = undefined;
+
+  const getRarityTextValue = () => {
     const rarity = useGraphInputStore.getState().itemSpec.rarity;
     if (rarity) {
       return rarity;
@@ -16,8 +20,10 @@ export const ItemRarityInput = () => {
     }
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const itemRarityInput = event.target.value;
+  const handleItemRarityChange = (
+    event: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>
+  ) => {
+    const itemRarityInput = getEventTextContent(event);
     if (itemRarityInput === "Any") {
       setItemRarity(undefined);
     } else {
@@ -25,59 +31,23 @@ export const ItemRarityInput = () => {
     }
   };
 
+  const optionsList: Array<SelectBoxOptionValue> = [
+    { value: undefined, text: "Any" },
+    { value: "Unique", text: "Unique" },
+    /* Future implementation for non-unique items
+    { value: "Non_Unique", text: "Any Non-Unique" },
+    */
+  ];
+
   return (
-    <Flex
-      alignItems={"center"}
-      color={"ui.white"}
-      bgColor={"ui.secondary"}
-      m={1}
-    >
-      <Text ml={1} width={150}>
-        Item Rarity
-      </Text>
-      <Select
-        value={getRarityValue()}
-        bgColor={"ui.input"}
-        color={"ui.white"}
-        defaultValue={defaultRarity}
-        onChange={(e) => handleChange(e)}
-        width={150}
-        focusBorderColor={"ui.white"}
-        borderColor={"ui.grey"}
-        mr={1}
-        ml={1}
-        key={"ItemRarityInput"}
-      >
-        {
-          <option
-            value={defaultRarity}
-            key={"ItemRarityInput" + "_option_" + "Any"}
-            style={{ color: "white", backgroundColor: "#2d3333" }}
-          >
-            Any
-          </option>
-        }
-        {
-          <option
-            value={"Unique"}
-            key={"ItemRarityInput" + "_option_" + "Unique"}
-            style={{ color: "white", backgroundColor: "#2d3333" }}
-          >
-            Unique
-          </option>
-        }
-        ,
-        {
-          // Future implementation for non-unique items
-          // <option
-          //   value={"Non_Unique"}
-          //   key={"ItemRarityInput" + "_option_" + "Any Non-Unique"}
-          //   style={{ color: "#B3B3B3", backgroundColor: "#2d3333" }}
-          // >
-          //   Any Non-Unique
-          // </option>
-        }
-      </Select>
-    </Flex>
+    <SelectBoxInput
+      descriptionText={"Item Rarity"}
+      optionsList={optionsList}
+      itemKeyId={"ItemRarityInput"}
+      defaultValue={defaultValue}
+      defaultText="Any"
+      getSelectTextValue={getRarityTextValue()}
+      handleChange={(e) => handleItemRarityChange(e)}
+    />
   );
 };

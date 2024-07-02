@@ -1,39 +1,23 @@
-import { Select } from "@chakra-ui/react";
+import { SelectedModifier } from "./ModifierInput";
 import {
-  ModifierInput,
-  RenderInputProps,
-  UpdateModifierInputFunction,
-} from "./ModifierInput";
+  SelectBoxInput,
+  SelectBoxOptionValue,
+} from "../StandardLayoutInput/SelectBoxInput";
+import { useGraphInputStore } from "../../../store/GraphInputStore";
+import { getEventTextContent } from "../../../hooks/utils";
 
-// Function to handle the change of the text roll input value
-const handleChange = (
-  event: React.ChangeEvent<HTMLSelectElement>,
-  inputPosition: number,
-  modifierSelected: ModifierInput,
-  updateModifierInputFunction: UpdateModifierInputFunction // Function to update the modifier input
-) => {
-  const selectedValue = parseInt(event.target.value); // Parse the selected value to an integer
-
-  // If the text roll input is defined, set the value of the input at the input position to the event value
-  if (modifierSelected.textRollInputs) {
-    modifierSelected.textRollInputs[inputPosition] = selectedValue;
-  } else {
-    modifierSelected.textRollInputs = [selectedValue];
-  }
-  updateModifierInputFunction(
-    modifierSelected.modifierId[inputPosition],
-    undefined,
-    undefined,
-    modifierSelected.textRollInputs
-  );
-};
+interface TextRollInputProps {
+  modifierSelected: SelectedModifier;
+  inputPosition: number;
+}
 
 // Text Roll Input Component  -  This component is used to select the text roll of a modifier
 export const TextRollInput = ({
   modifierSelected,
   inputPosition,
-  updateModifierInputFunction,
-}: RenderInputProps) => {
+}: TextRollInputProps) => {
+  const { setTextRollModifierSpec } = useGraphInputStore();
+
   if (!modifierSelected.textRolls) {
     return null;
   }
@@ -41,46 +25,67 @@ export const TextRollInput = ({
   const textRolls = modifierSelected.textRolls[inputPosition] as string;
   const textRollsList = textRolls.split("-"); // Split the text rolls into a list
 
+  const getTextRollValue = () => {
+    const textRollSelected =
+      useGraphInputStore
+        .getState()
+        .modifierSpecs.find(
+          (modifier) =>
+            modifier.modifierId === modifierSelected.modifierId[inputPosition]
+        )?.modifierLimitations?.textRoll ?? undefined;
+
+    if (textRollSelected !== undefined) {
+      return textRollsList[textRollSelected];
+    } else {
+      return "";
+    }
+  };
+
+  const setGlobalStoreTextRoll = (textRoll: string) => {
+    const textRollIndex = textRollsList.indexOf(textRoll);
+    const modifierId = modifierSelected.modifierId[inputPosition];
+    if (modifierId) {
+      setTextRollModifierSpec(modifierId, textRollIndex);
+    }
+  };
+
+  const defaultValue = undefined;
+
+  // Function to handle the change of the text roll input value
+  const handleTextChange = (
+    event: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>
+  ) => {
+    const textRollInput = getEventTextContent(event);
+    const textRollIndex = textRollsList.indexOf(textRollInput);
+    setGlobalStoreTextRoll(textRollInput);
+
+    if (modifierSelected.textRollInputs) {
+      modifierSelected.textRollInputs[inputPosition] = textRollIndex;
+    } else {
+      modifierSelected.textRollInputs = [textRollIndex];
+    }
+  };
+
   // Create the text roll options
-  const textRollsOptions = textRollsList.map((textRoll, index) => (
-    <option
-      value={index}
-      key={modifierSelected.effect + textRoll + index}
-      style={{ backgroundColor: "#2d3333" }}
-    >
-      {textRoll}
-    </option>
-  ));
+  const textRollsOptions: Array<SelectBoxOptionValue> = [
+    { value: "", text: "Any" },
+    ...textRollsList.map((textRoll) => {
+      return {
+        value: textRoll,
+        text: textRoll,
+      };
+    }),
+  ];
 
   return (
-    <Select
-      bgColor={"ui.input"}
-      defaultValue={"TextRolls"}
-      onChange={(e) =>
-        handleChange(
-          e,
-          inputPosition,
-          modifierSelected,
-          updateModifierInputFunction
-        )
-      }
-      width={150}
-      focusBorderColor={"ui.white"}
-      borderColor={"ui.grey"}
-      mr={1}
-      ml={1}
-      key={modifierSelected.effect + inputPosition}
-    >
-      {
-        <option
-          value={"undefined"}
-          key={modifierSelected.effect + "undefined"}
-          style={{ color: "#B3B3B3", backgroundColor: "#2d3333" }}
-        >
-          Any
-        </option>
-      }
-      {textRollsOptions}
-    </Select>
+    <SelectBoxInput
+      optionsList={textRollsOptions}
+      itemKeyId={"TextRollInput"}
+      defaultValue={defaultValue}
+      defaultText={"Any"}
+      isDimmed={!modifierSelected.isSelected}
+      getSelectTextValue={getTextRollValue()}
+      handleChange={(e) => handleTextChange(e)}
+    />
   );
 };
