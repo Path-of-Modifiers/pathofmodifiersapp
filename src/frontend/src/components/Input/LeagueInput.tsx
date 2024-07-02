@@ -1,18 +1,35 @@
-import { Flex, Select, Text } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 import { useEffect } from "react";
 import { defaultLeague } from "../../env-vars";
+import {
+  SelectBoxInput,
+  SelectBoxOptionValue,
+} from "./StandardLayoutInput/SelectBoxInput";
+import { getEventTextContent } from "../../hooks/utils";
 
+// Set the default league in the environment variables file.
 // League Input Component  -  This component is used to select the league of the game.
 export const LeagueInput = () => {
   // FUTURE IMPLEMENTATION: Add default hardcore league
   //   const defaultHardcoreLeague = process.env.CURRENT_HARDCORE_LEAGUE;
+  const { setLeague } = useGraphInputStore();
 
   const clearClicked = useGraphInputStore((state) => state.clearClicked);
 
-  const handleLeagueChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const league = event.target.value;
-    useGraphInputStore.setState({ league: league });
+  const handleLeagueChange = (
+    event: React.FormEvent<HTMLElement> | React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const league = getEventTextContent(event);
+    setLeague(league || defaultLeague);
+  };
+
+  const getLeagueValue = () => {
+    const league = useGraphInputStore.getState().league;
+    if (league) {
+      return league;
+    } else {
+      return "";
+    }
   };
 
   useEffect(() => {
@@ -23,70 +40,26 @@ export const LeagueInput = () => {
     }
   }, [clearClicked]);
 
+  const selectLeagueOptions: Array<SelectBoxOptionValue> = [
+    { value: defaultLeague, text: defaultLeague },
+    /* FUTURE IMPLEMENTATION: Add more leagues here */
+    // ,
+    // { value: defaultHardcoreLeague, text: defaultHardcoreLeague },
+    // ,
+    // { value: "Standard", text: "Standard" },
+    // ,
+    // { value: "Hardcore", text: "Hardcore" },
+  ];
+
   return (
-    <Flex
-      alignItems={"center"}
-      color={"ui.white"}
-      bgColor={"ui.secondary"}
-      m={1}
-    >
-      <Text ml={1} width={150}>
-        League
-      </Text>
-      <Select
-        bgColor={"ui.input"}
-        color={"ui.white"}
-        onChange={(e) => handleLeagueChange(e)}
-        width={150}
-        focusBorderColor={"ui.white"}
-        borderColor={"ui.grey"}
-        mr={1}
-        ml={1}
-        key={"ItemRarityInput"}
-      >
-        {
-          <option
-            value={defaultLeague}
-            key={"league" + "_option_" + "necropolis"}
-            style={{ color: "white", backgroundColor: "#2d3333" }}
-          >
-            {defaultLeague}
-          </option>
-        }
-
-        {/* FUTURE IMPLEMENTATION: Add more leagues here */}
-
-        {/* ,
-        {
-          <option
-            value={defaultHardcoreLeague}
-            key={"league" + "_option_" + "necropolis_hardcore"}
-            style={{ color: "white", backgroundColor: "#2d3333" }}
-          >
-            {defaultHardcoreLeague}
-          </option>
-        }
-        ,
-        {
-          <option
-            value={"Standard"}
-            key={"league" + "_option_" + "standard"}
-            style={{ color: "white", backgroundColor: "#2d3333" }}
-          >
-            Standard
-          </option>
-        }
-        ,
-        {
-          <option
-            value={"Hardcore"}
-            key={"league" + "_option_" + "hardcore"}
-            style={{ color: "white", backgroundColor: "#2d3333" }}
-          >
-            Hardcore
-          </option>
-        } */}
-      </Select>
-    </Flex>
+    <SelectBoxInput
+      descriptionText={"League"}
+      optionsList={selectLeagueOptions}
+      itemKeyId={"LeagueInput"}
+      defaultValue={defaultLeague}
+      defaultText={defaultLeague}
+      getSelectTextValue={getLeagueValue()}
+      handleChange={(e) => handleLeagueChange(e)}
+    />
   );
 };
