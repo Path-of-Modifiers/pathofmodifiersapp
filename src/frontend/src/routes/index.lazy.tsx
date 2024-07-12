@@ -15,6 +15,7 @@ import {
   ItemBaseTypeSubCategory,
 } from "../client";
 import { prefetchAllBaseTypeData } from "../hooks/getData/getBaseTypeCategories";
+import Footer from "../components/Common/Footer";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
@@ -90,6 +91,7 @@ function Index() {
           </VStack>
         </QueryClientProvider>
       </Flex>
+      <Footer mt="auto" />
     </Flex>
   );
 }
