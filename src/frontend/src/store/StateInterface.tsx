@@ -112,6 +112,8 @@ export interface ExpandedComponentState {
 export interface ErrorState {
   leagueError: boolean;
   modifiersError: boolean;
+  resultError: boolean;
   setLeagueError: (leagueError: boolean) => void;
   setModifiersError: (modifiersError: boolean) => void;
+  setResultError: (resultError: boolean) => void;
 }

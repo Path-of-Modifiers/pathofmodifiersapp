@@ -12,10 +12,10 @@ export const checkGraphQueryLeageInput = () => {
   const plotLeagueQueryStore = useGraphInputStore.getState().plotQuery.league;
   if (plotLeagueQueryStore === "") {
     setLeagueError(true);
-    return true;
+    return false;
   }
   setLeagueError(false);
-  return false;
+  return true;
 };
 
 /**
@@ -28,8 +28,8 @@ export const checkGraphQueryModifierInput = () => {
   // If modifiers are empty, return false
   if (plotModifierQueryStore.length === 0) {
     setModifiersError(true);
-    return true;
+    return false;
   }
   setModifiersError(false);
-  return false;
+  return true;
 };

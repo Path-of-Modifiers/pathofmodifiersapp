@@ -43,6 +43,7 @@ function Index() {
   );
   const modifiersError = useErrorStore((state) => state.modifiersError);
   const leagueError = useErrorStore((state) => state.leagueError);
+  const resultError = useErrorStore((state) => state.resultError);
   const isFetched = useRef(false);
 
   useEffect(() => {
@@ -97,6 +98,12 @@ function Index() {
               <ErrorMessage
                 alertTitle="No League Selected"
                 alertDescription="Please select a league."
+              />
+            )}
+            {resultError && (
+              <ErrorMessage
+                alertTitle="No Results Found"
+                alertDescription="No results were found for the current query."
               />
             )}
 

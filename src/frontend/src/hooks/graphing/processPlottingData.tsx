@@ -3,6 +3,7 @@ import { PlotQuery } from "../../client";
 import Datum from "../../schemas/Datum";
 import { allValueInChaos } from "./utils";
 import { useErrorStore } from "../../store/ErrorStore";
+import { useEffect } from "react";
 
 /**
  * A hook that takes the current plot query and returns
@@ -12,20 +13,26 @@ import { useErrorStore } from "../../store/ErrorStore";
 function useGetPlotData(plotQuery: PlotQuery): {
   result: Datum[] | undefined;
   fetchStatus: string;
+  isError: boolean;
 } {
-  const { plotData, fetchStatus } = usePostPlottingData(plotQuery);
-  const leagueError = useErrorStore.getState().leagueError;
-  const modifiersError = useErrorStore.getState().modifiersError;
+  const { leagueError, modifiersError, setResultError } =
+    useErrorStore.getState();
+  const { plotData, fetchStatus, isFetched, isError } =
+    usePostPlottingData(plotQuery);
+
   let result: Datum[] | undefined = undefined;
 
-  if (
-    plotData === undefined ||
-    modifiersError === true ||
-    leagueError === true
-  ) {
-    return { result, fetchStatus };
-  }
+  useEffect(() => {
+    if (isError && isFetched) {
+      setResultError(true);
+    } else {
+      setResultError(false);
+    }
+  }, [isError, isFetched, setResultError]);
 
+  if (isError || leagueError || modifiersError) {
+    return { result, fetchStatus, isError: true };
+  }
   const data: Datum[] = [];
   if (plotData?.timeStamp !== undefined) {
     for (let i = 0; i < plotData?.timeStamp.length; i++) {
@@ -36,7 +43,7 @@ function useGetPlotData(plotQuery: PlotQuery): {
     }
   }
   result = allValueInChaos(data, 1);
-  return { result, fetchStatus };
+  return { result, fetchStatus, isError: false };
 }
 
 export default useGetPlotData;

@@ -6,9 +6,12 @@ import {
   checkGraphQueryLeageInput,
   checkGraphQueryModifierInput,
 } from "../../hooks/graphing/checkGraphQueryInput";
+import { useErrorStore } from "../../store/ErrorStore";
 
 const QueryButtons = () => {
   const { setExpandedGraphInputFilters } = useExpandedComponentStore();
+  const { setResultError } = useErrorStore();
+  const { setPlotQuery } = useGraphInputStore();
 
   const filterExpanded = useExpandedComponentStore(
     (state) => state.expandedGraphInputFilters
@@ -29,7 +32,8 @@ const QueryButtons = () => {
   };
 
   const handlePlotQuery = () => {
-    useGraphInputStore.getState().setPlotQuery();
+    setResultError(false);
+    setPlotQuery();
     const leagueValid = checkGraphQueryLeageInput();
     const modifierValid = checkGraphQueryModifierInput();
     if (leagueValid && modifierValid) {
@@ -52,7 +56,6 @@ const QueryButtons = () => {
           bg="ui.queryBaseInput"
           color="ui.white"
           _hover={{ bg: "ui.queryMainInput" }}
-          _focus={{ bg: "ui.queryMainInput" }}
           borderWidth={1}
           borderColor={"ui.grey"}
           width={"inputSizes.lgBox"}
@@ -67,7 +70,6 @@ const QueryButtons = () => {
           bg="ui.input"
           color="ui.white"
           _hover={{ bg: "ui.lightInput" }}
-          _focus={{ bg: "ui.lightInput" }}
           onClick={handleClearQuery}
           borderWidth={1}
           borderColor={"ui.grey"}
@@ -79,7 +81,6 @@ const QueryButtons = () => {
           bg="ui.queryBaseInput"
           color="ui.white"
           _hover={{ bg: "ui.queryMainInput" }}
-          _focus={{ bg: "ui.queryMainInput" }}
           borderWidth={1}
           borderColor={"ui.grey"}
           rightIcon={filterExpanded ? <MdExpandLess /> : <MdExpandMore />}
