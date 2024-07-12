@@ -108,3 +108,10 @@ export interface ExpandedComponentState {
   setExpandedBaseType: (expandedBaseType: boolean) => void;
   setExpandedMiscItem: (expandedMiscItem: boolean) => void;
 }
+
+export interface ErrorState {
+  leagueError: boolean;
+  modifiersError: boolean;
+  setLeagueError: (leagueError: boolean) => void;
+  setModifiersError: (modifiersError: boolean) => void;
+}
