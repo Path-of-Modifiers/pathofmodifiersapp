@@ -9,7 +9,7 @@ import { useGraphInputStore } from "../../store/GraphInputStore";
  * @param requestBody The Plot Query
  * @returns The Plot Data or undefined if no query yet, and the fetch status
  */
-function PostPlottingData(requestBody: PlotQuery): {
+function usePostPlottingData(requestBody: PlotQuery): {
   plotData: PlotData | undefined;
   fetchStatus: string;
 } {
@@ -36,4 +36,4 @@ function PostPlottingData(requestBody: PlotQuery): {
   return { plotData, fetchStatus };
 }
 
-export default PostPlottingData;
+export default usePostPlottingData;

@@ -1,19 +1,28 @@
-import PostPlottingData from "./postPlottingData";
+import usePostPlottingData from "./postPlottingData";
 import { PlotQuery } from "../../client";
 import Datum from "../../schemas/Datum";
 import { allValueInChaos } from "./utils";
+import { useErrorStore } from "../../store/ErrorStore";
+
 /**
- * A function that takes the current plot query and returns
+ * A hook that takes the current plot query and returns
  * data that is ready to be plotted.
  * @returns The processed data or undefined and the current fetch status.
  */
-function GetPlotData(plotQuery: PlotQuery): {
+function useGetPlotData(plotQuery: PlotQuery): {
   result: Datum[] | undefined;
   fetchStatus: string;
 } {
-  const { plotData, fetchStatus } = PostPlottingData(plotQuery);
+  const { plotData, fetchStatus } = usePostPlottingData(plotQuery);
+  const leagueError = useErrorStore.getState().leagueError;
+  const modifiersError = useErrorStore.getState().modifiersError;
   let result: Datum[] | undefined = undefined;
-  if (plotData === undefined) {
+
+  if (
+    plotData === undefined ||
+    modifiersError === true ||
+    leagueError === true
+  ) {
     return { result, fetchStatus };
   }
 
@@ -30,4 +39,4 @@ function GetPlotData(plotQuery: PlotQuery): {
   return { result, fetchStatus };
 }
 
-export default GetPlotData;
+export default useGetPlotData;
