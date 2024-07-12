@@ -2,6 +2,10 @@ import { Box, Button, Flex } from "@chakra-ui/react";
 import { MdExpandMore, MdExpandLess } from "react-icons/md";
 import { useExpandedComponentStore } from "../../store/ExpandedComponentStore";
 import { useGraphInputStore } from "../../store/GraphInputStore";
+import {
+  checkGraphQueryLeageInput,
+  checkGraphQueryModifierInput,
+} from "../../hooks/graphing/checkGraphQueryInput";
 
 const QueryButtons = () => {
   const { setExpandedGraphInputFilters } = useExpandedComponentStore();
@@ -25,15 +29,18 @@ const QueryButtons = () => {
   };
 
   const handlePlotQuery = () => {
-    useExpandedComponentStore.getState().setExpandedGraphInputFilters(false);
     useGraphInputStore.getState().setPlotQuery();
-    useGraphInputStore.getState().setQueryClicked();
+    const leagueValid = checkGraphQueryLeageInput();
+    const modifierValid = checkGraphQueryModifierInput();
+    if (leagueValid && modifierValid) {
+      useGraphInputStore.getState().setQueryClicked();
 
-    // This is a hack to make sure the clearClicked is set to false after the
-    // state is updated.
-    setTimeout(() => {
-      useGraphInputStore.getState().queryClicked = false;
-    }, 20);
+      // This is a hack to make sure the clearClicked is set to false after the
+      // state is updated.
+      setTimeout(() => {
+        useGraphInputStore.getState().queryClicked = false;
+      }, 20);
+    }
   };
 
   return (
