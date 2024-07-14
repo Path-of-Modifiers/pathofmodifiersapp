@@ -51,7 +51,7 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
 
   const [inputText, setInputText] = useState<string>(defaultText ?? "");
   const [inputPlaceholder, setInputPlaceholder] = useState<string>(
-    staticPlaceholder ? "" : defaultText ?? ""
+    defaultText ?? ""
   );
   const [inputChanged, setInputChanged] = useState<boolean>(false);
 
@@ -149,11 +149,14 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
             bgColor={"ui.input"}
             autoComplete="off"
             key={"autocompleteinput" + itemKeyId + defaultText}
+            sx={{
+              _focus: {
+                textAlign: "left",
+              },
+            }}
           />
           <AutoCompleteList
-            onBlur={() =>
-              setInputText(staticPlaceholder ? "" : inputPlaceholder)
-            }
+            onBlur={() => setInputText(inputPlaceholder)}
             borderColor={"ui.grey"}
             bgColor="ui.input"
             margin={0}

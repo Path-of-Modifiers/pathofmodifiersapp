@@ -472,14 +472,13 @@ export const ModifierInput = (props: ModifierInputProps) => {
             <SelectBoxInput
               handleChange={(e) => handleModifierSelect(e)}
               optionsList={mappedFilteredOptionsList}
-              defaultText=""
+              defaultText="+ Add Modifier"
               defaultValue={defaultValue}
               getSelectTextValue=""
               width="100%"
               itemKeyId="selectedModifier"
-              staticPlaceholder="+ Add modifier"
               centerInputText={true}
-              noInputChange={true}
+              staticPlaceholder="+ Add Modifier"
             />
           </Box>
         </Box>
