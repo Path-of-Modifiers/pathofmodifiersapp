@@ -43,7 +43,7 @@ export const BaseInput = (props: BaseInputProps) => {
       <AddICheckText
         isChecked={baseTypeExpanded}
         onChange={handleExpanded}
-        text="Base type"
+        text="Base Type"
       />
       {baseTypeExpanded &&
         props.baseTypes.length !== 0 &&
