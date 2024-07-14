@@ -1,4 +1,5 @@
 import { extendTheme } from "@chakra-ui/react";
+import '@fontsource/asap';
 
 const theme = extendTheme({
   colors: {
@@ -20,9 +21,15 @@ const theme = extendTheme({
     },
   },
   fonts: {
-    body: "Josefin-Sans, Georgia, serif",
-    heading: "Josefin-Sans, Georgia, serif",
-    sidebar: "Inter, serif",
+    body: "Asap, sans-serif",
+    heading: "Asap, serif",
+  },
+  styles: {
+    global: {
+      "html, body": {
+        fontSize: "15px",
+      },
+    },
   },
   fontWeights: {
     hairline: 100,
@@ -40,6 +47,7 @@ const theme = extendTheme({
     defaultRead: 15,
     input: 16,
     menu: 17,
+    heading: 50,
   },
   lineHeights: {
     normal: "normal",
