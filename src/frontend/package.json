@@ -17,6 +17,7 @@
         "@choc-ui/chakra-autocomplete": "^5.5.1",
         "@emotion/react": "^11.11.4",
         "@emotion/styled": "^11.11.0",
+        "@fontsource/asap": "^5.0.20",
         "@fontsource/inter": "^5.0.17",
         "@fontsource/josefin-sans": "^5.0.19",
         "@tanstack/react-query": "^5.28.9",
