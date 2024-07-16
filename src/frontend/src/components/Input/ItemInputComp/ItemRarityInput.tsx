@@ -2,7 +2,7 @@ import { useGraphInputStore } from "../../../store/GraphInputStore";
 import {
   SelectBox,
   SelectBoxOptionValue,
-} from "../StandardLayoutInput/SelectBoxInput";
+} from "../StandardLayoutInput/SelectBox";
 
 // Item Rarity Input Component  -  This component is used to select the rarity of an item.
 export const ItemRarityInput = () => {

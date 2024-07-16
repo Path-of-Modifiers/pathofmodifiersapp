@@ -3,7 +3,7 @@ import { BaseType } from "../../../client";
 import {
   SelectBox,
   SelectBoxOptionValue,
-} from "../StandardLayoutInput/SelectBoxInput";
+} from "../StandardLayoutInput/SelectBox";
 
 interface BaseTypeInputProps {
   baseTypes: BaseType | BaseType[];
