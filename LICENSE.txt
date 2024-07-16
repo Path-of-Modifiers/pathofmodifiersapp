@@ -1,0 +1,33 @@
+Path of Modifiers License Agreement
+
+This License Agreement (the "Agreement") is a legal agreement between you (either an individual or a single entity) and Path of Modifiers Team ("Licensor") for the use of Path of Modifiers (the "Software").
+
+By downloading, installing, or using the Software, you agree to be bound by the terms of this Agreement.
+
+1. Grant of License
+   1.1 The Licensor grants you a personal, non-exclusive, non-transferable, and revocable license to use the Software for private, non-commercial purposes.
+   1.2 You may not use the Software to earn income or for any commercial benefit without explicit permission from the Licensor.
+
+2. Restrictions
+   2.1 You may not copy, modify, distribute, sell, or lease any part of the Software, nor may you reverse engineer or attempt to extract the source code of the Software, unless laws prohibit those restrictions or you have the Licensor's written permission.
+   2.2 You may not sublicense or provide the Software to third parties without prior written consent from the Licensor.
+
+3. Ownership
+   3.1 The Software is licensed, not sold. This Agreement does not grant you any rights to the Licensor's trademarks, trade names, or service marks.
+   3.2 The Licensor retains all right, title, and interest in and to the Software, including all intellectual property rights.
+
+4. Termination
+   4.1 This license is effective until terminated. Your rights under this license will terminate automatically without notice from the Licensor if you fail to comply with any term(s) of this Agreement.
+   4.2 Upon termination of this license, you must cease all use of the Software and destroy all copies, full or partial, of the Software.
+
+5. Disclaimer of Warranties
+   5.1 The Software is provided "as is," without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and noninfringement.
+
+6. Limitation of Liability
+   6.1 In no event shall the Licensor be liable for any special, incidental, indirect, or consequential damages whatsoever (including, without limitation, damages for loss of profits, business interruption, loss of information) arising out of the use of or inability to use the Software, even if the Licensor has been advised of the possibility of such damages.
+
+7. Governing Law
+   7.1 This Agreement shall be governed by and construed in accordance with the laws of Norway, without regard to its conflict of law principles.
+
+8. Contact Information
+   8.1 If you have any questions about this Agreement, please contact pomodifiers@outlook.com.
