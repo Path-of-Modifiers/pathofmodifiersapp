@@ -15,14 +15,25 @@ export const MinMaxInput = ({
 }: MinMaxInputProps) => {
   const { setItemSpecMinIlvl, setItemSpecMaxIlvl } = useGraphInputStore();
 
-  const getGlobalMinValue = () => {
-    const globalMin = useGraphInputStore.getState().itemSpec.minIlvl;
-    return globalMin ?? "";
+  const [minValue, maxValue] = useGraphInputStore((state) => [
+    state.itemSpec.minIlvl,
+    state.itemSpec.maxIlvl,
+  ]);
+
+  const getMinValue = () => {
+    if (minValue) {
+      return minValue?.toString();
+    } else {
+      return "";
+    }
   };
 
-  const getGlobalMaxValue = () => {
-    const globalMax = useGraphInputStore.getState().itemSpec.maxIlvl;
-    return globalMax ?? "";
+  const getMaxValue = () => {
+    if (maxValue) {
+      return maxValue?.toString();
+    } else {
+      return "";
+    }
   };
 
   const handleMinChange = (eventValue: string) => {
@@ -39,11 +50,11 @@ export const MinMaxInput = ({
 
   return (
     <MinMaxNumberInput
-      descriptionText={text}
+      text={text}
       minSpecKey={itemMinSpecKey}
       maxSpecKey={itemMaxSpecKey}
-      getMinValue={getGlobalMinValue}
-      getMaxValue={getGlobalMaxValue}
+      getMinValue={getMinValue}
+      getMaxValue={getMaxValue}
       handleMinChange={handleMinChange}
       handleMaxChange={handleMaxChange}
     />
