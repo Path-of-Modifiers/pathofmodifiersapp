@@ -15,7 +15,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
   baseSpec: {},
   modifierSpecs: [],
   plotQuery: {
-    league: defaultLeague,
+    league: defaultSoftcoreLeague,
     itemSpecifications: {},
     wantedModifiers: [],
   },
