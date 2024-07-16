@@ -3,7 +3,7 @@ import { Box, CloseButton, Flex, Stack } from "@chakra-ui/react";
 import AddIconCheckbox from "../../Icon/AddIconCheckbox";
 
 // For debugging purposes
-import { useOutsideClick } from "../../../hooks/useOutsideClick";
+// import { useOutsideClick } from "../../../hooks/useOutsideClick";
 
 import { useEffect, useState } from "react";
 import { GroupedModifierByEffect } from "../../../client";
@@ -184,12 +184,12 @@ export const ModifierInput = (props: ModifierInputProps) => {
     setExpandedModifiers,
   ]);
 
-  // For debugging purposes
-  const ref = useOutsideClick(() => {
-    const store = useGraphInputStore.getState();
-    console.log("STORE", store);
-    console.log("LOCALSTORESELECTEDMODIFIERS", selectedModifiers);
-  });
+  // // For debugging purposes
+  // const ref = useOutsideClick(() => {
+  //   const store = useGraphInputStore.getState();
+  //   console.log("STORE", store);
+  //   console.log("LOCALSTORESELECTEDMODIFIERS", selectedModifiers);
+  // });
 
   const handleExpanded = () => {
     setExpandedModifiers(!expandedModifiers);
@@ -467,7 +467,7 @@ export const ModifierInput = (props: ModifierInputProps) => {
             mx={"40px"}
             mr={"40px"}
             // For debugging purposes
-            ref={ref}
+            // ref={ref}
           >
             <SelectBoxInput
               handleChange={(e) => handleModifierSelect(e)}

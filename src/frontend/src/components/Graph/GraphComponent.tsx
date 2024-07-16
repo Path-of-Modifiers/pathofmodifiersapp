@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Box, BoxProps, Center, Spinner } from "@chakra-ui/react";
-import GetPlotData from "../../hooks/graphing/processPlottingData";
+import useGetPlotData from "../../hooks/graphing/processPlottingData";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 
 /**
@@ -21,7 +21,8 @@ import { useGraphInputStore } from "../../store/GraphInputStore";
  */
 function GraphComponent(props: BoxProps) {
   const plotQuery = useGraphInputStore((state) => state.plotQuery);
-  const { result, fetchStatus } = GetPlotData(plotQuery);
+  const { result, fetchStatus, isError } = useGetPlotData(plotQuery);
+  const render = result && !isError;
 
   if (fetchStatus === "fetching") {
     return (
@@ -32,7 +33,7 @@ function GraphComponent(props: BoxProps) {
   }
 
   return (
-    result && (
+    render && (
       <Box {...props}>
         <ResponsiveContainer>
           <LineChart
