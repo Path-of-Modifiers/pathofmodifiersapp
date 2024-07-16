@@ -1,6 +1,6 @@
 import { useGraphInputStore } from "../../store/GraphInputStore";
 import { useEffect } from "react";
-import { defaultLeague } from "../../env-vars";
+import { defaultSoftcoreLeague } from "../../env-vars";
 import {
   SelectBoxInput,
   SelectBoxOptionValue,
@@ -20,7 +20,7 @@ export const LeagueInput = () => {
     event: React.FormEvent<HTMLElement> | React.ChangeEvent<HTMLInputElement>
   ) => {
     const league = getEventTextContent(event);
-    setLeague(league || defaultLeague);
+    setLeague(league || defaultSoftcoreLeague);
   };
 
   const getLeagueValue = () => {
@@ -33,15 +33,15 @@ export const LeagueInput = () => {
   };
 
   useEffect(() => {
-    useGraphInputStore.setState({ league: defaultLeague });
+    useGraphInputStore.setState({ league: defaultSoftcoreLeague });
 
     if (clearClicked) {
-      useGraphInputStore.setState({ league: defaultLeague });
+      useGraphInputStore.setState({ league: defaultSoftcoreLeague });
     }
   }, [clearClicked]);
 
   const selectLeagueOptions: Array<SelectBoxOptionValue> = [
-    { value: defaultLeague, text: defaultLeague },
+    { value: defaultSoftcoreLeague, text: defaultSoftcoreLeague },
     /* FUTURE IMPLEMENTATION: Add more leagues here */
     // ,
     // { value: defaultHardcoreLeague, text: defaultHardcoreLeague },
@@ -56,8 +56,8 @@ export const LeagueInput = () => {
       descriptionText={"League"}
       optionsList={selectLeagueOptions}
       itemKeyId={"LeagueInput"}
-      defaultValue={defaultLeague}
-      defaultText={defaultLeague}
+      defaultValue={defaultSoftcoreLeague}
+      defaultText={defaultSoftcoreLeague}
       getSelectTextValue={getLeagueValue()}
       handleChange={(e) => handleLeagueChange(e)}
     />
