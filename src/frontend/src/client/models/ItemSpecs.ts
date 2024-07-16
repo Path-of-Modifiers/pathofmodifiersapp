@@ -6,7 +6,8 @@ import type { Influences } from './Influences';
 export type ItemSpecs = {
     name?: (string | null);
     identified?: (boolean | null);
-    ilvl?: (number | null);
+    minIlvl?: (number | null);
+    maxIlvl?: (number | null);
     rarity?: (string | null);
     corrupted?: (boolean | null);
     delve?: (boolean | null);

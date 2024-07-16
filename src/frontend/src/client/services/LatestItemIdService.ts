@@ -8,7 +8,7 @@ import { request as __request } from '../core/request';
 export class LatestItemIdService {
     /**
      * Get Latest Item Id
-     * Get the latest itemId
+     * Get the latest "itemId"
      *
      * Can only be used safely on an empty table or directly after an insertion.
      * @returns number Successful Response

@@ -45,6 +45,39 @@ export class ItemModifiersService {
         });
     }
     /**
+     * Delete Item Modifier
+     * Delete an item modifier by key and value for
+     * "itemId", optional "modifierId" and optional "position".
+     *
+     * Dominant key is "itemId".
+     *
+     * Returns a message that the item modifier was deleted successfully.
+     * Always deletes one item modifier.
+     * @returns any Successful Response
+     * @throws ApiError
+     */
+    public static deleteItemModifierApiApiV1ItemModifierItemIdDelete({
+        itemId,
+        modifierId,
+    }: {
+        itemId: number,
+        modifierId?: (number | null),
+    }): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/api_v1/itemModifier/{itemId}',
+            path: {
+                'itemId': itemId,
+            },
+            query: {
+                'modifierId': modifierId,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+    /**
      * Get All Item Modifiers
      * Get all item modifiers.
      *
@@ -92,65 +125,24 @@ export class ItemModifiersService {
      * @returns ItemModifier Successful Response
      * @throws ApiError
      */
-    public static updateItemModifierApiApiV1ItemModifierItemItemIdPut({
+    public static updateItemModifierApiApiV1ItemModifierPut({
         itemId,
         modifierId,
-        position,
         requestBody,
     }: {
         itemId: number,
         modifierId: number,
-        position: number,
         requestBody: ItemModifierUpdate,
     }): CancelablePromise<ItemModifier> {
         return __request(OpenAPI, {
             method: 'PUT',
-            url: '/api/api_v1/itemModifier/item={itemId}',
-            path: {
-                'itemId': itemId,
-            },
+            url: '/api/api_v1/itemModifier/',
             query: {
+                'itemId': itemId,
                 'modifierId': modifierId,
-                'position': position,
             },
             body: requestBody,
             mediaType: 'application/json',
-            errors: {
-                422: `Validation Error`,
-            },
-        });
-    }
-    /**
-     * Delete Item Modifier
-     * Delete an item modifier by key and value for
-     * "itemId", optional "modifierId" and optional "position".
-     *
-     * Dominant key is "itemId".
-     *
-     * Returns a message that the item modifier was deleted successfully.
-     * Always deletes one item modifier.
-     * @returns any Successful Response
-     * @throws ApiError
-     */
-    public static deleteItemModifierApiApiV1ItemModifierItemItemIdDelete({
-        itemId,
-        modifierId,
-        position,
-    }: {
-        itemId: number,
-        modifierId?: (number | null),
-        position?: (number | null),
-    }): CancelablePromise<any> {
-        return __request(OpenAPI, {
-            method: 'DELETE',
-            url: '/api/api_v1/itemModifier/item={itemId}',
-            path: {
-                'itemId': itemId,
-            },
-            query: {
-                'modifierId': modifierId,
-                'position': position,
-            },
             errors: {
                 422: `Validation Error`,
             },

@@ -8,7 +8,7 @@ import type { CurrencyUpdate } from '../models/CurrencyUpdate';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class CurrenciesService {
+export class CurrencysService {
     /**
      * Get Currency
      * Get currency by key and value for "currencyId".

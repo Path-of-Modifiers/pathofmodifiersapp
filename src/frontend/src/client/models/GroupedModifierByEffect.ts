@@ -11,3 +11,4 @@ export type GroupedModifierByEffect = {
     effect: string;
     static: Array<(boolean | null)>;
 };
+
