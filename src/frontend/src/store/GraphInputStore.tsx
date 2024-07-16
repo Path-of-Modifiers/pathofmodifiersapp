@@ -4,13 +4,13 @@ import {
   ItemSpecState,
   ModifierSpecState,
 } from "./StateInterface";
-import { defaultLeague } from "../env-vars";
+import { defaultSoftcoreLeague } from "../env-vars";
 
 // Graph Input Store  -  This store is used to store graph input data.
 export const useGraphInputStore = create<GraphInputState>((set) => ({
   clearClicked: false,
   queryClicked: false,
-  league: defaultLeague,
+  league: defaultSoftcoreLeague,
   itemSpec: {},
   baseSpec: {},
   modifierSpecs: [],
