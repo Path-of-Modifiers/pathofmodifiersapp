@@ -1,11 +1,8 @@
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-import {
-  capitalizeFirstLetter,
-  getEventTextContent,
-} from "../../../hooks/utils";
+import { capitalizeFirstLetter } from "../../../hooks/utils";
 import { ItemBaseTypeCategory } from "../../../client";
 import {
-  SelectBoxInput,
+  SelectBox,
   SelectBoxOptionValue,
 } from "../StandardLayoutInput/SelectBoxInput";
 
@@ -14,9 +11,9 @@ interface CategoryInputProps {
 }
 
 // Category Input Component  -  This component is used to select the category of an item base type.
-export const CategoryInput = (props: CategoryInputProps) => {
-  if (!Array.isArray(props.categories)) {
-    props.categories = [props.categories];
+export const CategoryInput = ({ categories }: CategoryInputProps) => {
+  if (!Array.isArray(categories)) {
+    categories = [categories];
   }
 
   const defaultValue = undefined;
@@ -33,34 +30,32 @@ export const CategoryInput = (props: CategoryInputProps) => {
   };
 
   const handleCategoryChange = (
-    event: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>
+    event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    const itemCategory = getEventTextContent(event);
+    const itemCategory = event.target.value;
     if (itemCategory === "Any") {
       setItemCategory(undefined);
-    } else {
-      setItemCategory(itemCategory);
     }
+    setItemCategory(itemCategory);
   };
 
-  const categoryOptions: Array<SelectBoxOptionValue> = [
-    { value: "", text: "Any" },
-    ...props.categories.map((baseCategory) => {
+  const categoryOptions: Array<SelectBoxOptionValue> = categories.map(
+    (baseCategory) => {
       return {
         value: baseCategory.category,
         text: capitalizeFirstLetter(baseCategory.category),
       };
-    }),
-  ];
+    }
+  );
 
   return (
-    <SelectBoxInput
+    <SelectBox
       descriptionText={"Item Category"}
       optionsList={categoryOptions}
       itemKeyId={"ItemCategoryInput"}
       defaultValue={defaultValue}
       defaultText="Any"
-      getSelectTextValue={getCategoryValue()}
+      getSelectValue={getCategoryValue}
       handleChange={(e) => handleCategoryChange(e)}
     />
   );
