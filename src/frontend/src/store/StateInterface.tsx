@@ -57,35 +57,54 @@ export interface GraphInputState {
   setPlotQuery: () => void;
   setClearClicked: () => void;
   setLeague: (league: string) => void;
-  setItemSpecIdentified: (identified: boolean) => void;
-  setItemName: (name: string) => void;
-  setItemSpecMinIlvl: (minIlvl: number) => void;
-  setItemSpecMaxIlvl: (maxIlvl: number) => void;
+  setItemSpecIdentified: (identified: boolean | undefined) => void;
+  setItemName: (name: string | undefined) => void;
+  setItemSpecMinIlvl: (minIlvl: number | undefined) => void;
+  setItemSpecMaxIlvl: (maxIlvl: number | undefined) => void;
   setItemRarity: (rarity: string | undefined) => void;
-  setItemSpecCorrupted: (corrupted: boolean) => void;
-  setItemSpecDelve: (delve: boolean) => void;
-  setItemSpecFractured: (fractured: boolean) => void;
-  setItemSpecSynthesized: (synthesized: boolean) => void;
-  setItemSpecElderInfluence: (elder: boolean) => void;
-  setItemSpecShaperInfluence: (shaper: boolean) => void;
-  setItemSpecCrusaderInfluence: (crusader: boolean) => void;
-  setItemSpecRedeemerInfluence: (redeemer: boolean) => void;
-  setItemSpecHunterInfluence: (hunter: boolean) => void;
-  setItemSpecWarlordInfluence: (warlord: boolean) => void;
-  setItemSpecReplica: (replica: boolean) => void;
-  setItemSpecSearing: (searing: boolean) => void;
-  setItemSpecTangled: (tangled: boolean) => void;
-  setItemSpecIsRelic: (isRelic: boolean) => void;
-  setItemSpecFoilVariation: (foilVariation: number) => void;
+  setItemSpecCorrupted: (corrupted: boolean | undefined) => void;
+  setItemSpecDelve: (delve: boolean | undefined) => void;
+  setItemSpecFractured: (fractured: boolean | undefined) => void;
+  setItemSpecSynthesized: (synthesized: boolean | undefined) => void;
+  setItemSpecElderInfluence: (elder: boolean | undefined) => void;
+  setItemSpecShaperInfluence: (shaper: boolean | undefined) => void;
+  setItemSpecCrusaderInfluence: (crusader: boolean | undefined) => void;
+  setItemSpecRedeemerInfluence: (redeemer: boolean | undefined) => void;
+  setItemSpecHunterInfluence: (hunter: boolean | undefined) => void;
+  setItemSpecWarlordInfluence: (warlord: boolean | undefined) => void;
+  setItemSpecReplica: (replica: boolean | undefined) => void;
+  setItemSpecSearing: (searing: boolean | undefined) => void;
+  setItemSpecTangled: (tangled: boolean | undefined) => void;
+  setItemSpecIsRelic: (isRelic: boolean | undefined) => void;
+  setItemSpecFoilVariation: (foilVariation: number | undefined) => void;
   setBaseType: (baseType: string | undefined) => void;
   setItemCategory: (category: string | undefined) => void;
   setItemSubCategory: (subCategory: string | undefined) => void;
-  addModifierSpec: (modifierSpec: ModifierSpecState) => void;
+  addModifierSpec: (modifierSpec: ModifierSpecState, position?: number) => void;
   removeModifierSpec: (modifierId: number) => void;
   updateModifierSpec: (modifierSpec: ModifierSpecState) => void;
+  setMinRollModifierSpec: (
+    modifierId: number,
+    minRoll: number | undefined
+  ) => void;
+  setMaxRollModifierSpec: (
+    modifierId: number,
+    maxRoll: number | undefined
+  ) => void;
+  setTextRollModifierSpec: (
+    modifierId: number,
+    textRoll: number | undefined
+  ) => void;
 }
 
 export interface ExpandedComponentState {
   expandedGraphInputFilters: boolean;
+  expandedModifiers: boolean;
+  expandedBaseType: boolean;
+  expandedMiscItem: boolean;
+
   setExpandedGraphInputFilters: (expandedGraphInputFilters: boolean) => void;
+  setExpandedModifiers: (expandedModifiers: boolean) => void;
+  setExpandedBaseType: (expandedBaseType: boolean) => void;
+  setExpandedMiscItem: (expandedMiscItem: boolean) => void;
 }
