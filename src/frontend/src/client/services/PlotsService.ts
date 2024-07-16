@@ -7,7 +7,7 @@ import type { PlotQuery } from '../models/PlotQuery';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class PlottingService {
+export class PlotsService {
     /**
      * Get Plot Data
      * Takes a query based on the 'PlotQuery' schema and retrieves data

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PlottingService, PlotQuery, PlotData } from "../../client";
+import { PlotsService, PlotQuery, PlotData } from "../../client";
 import { useQuery } from "@tanstack/react-query";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 
@@ -20,7 +20,7 @@ function usePostPlottingData(requestBody: PlotQuery): {
   const { fetchStatus, refetch, isFetched, isError } = useQuery({
     queryKey: ["allPlotData"],
     queryFn: async () => {
-      const returnBody = await PlottingService.getPlotDataApiApiV1PlotPost({
+      const returnBody = await PlotsService.getPlotDataApiApiV1PlotPost({
         requestBody,
       });
 
