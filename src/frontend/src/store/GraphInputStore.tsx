@@ -41,15 +41,15 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       baseSpec: {},
     })),
 
-  setItemSpecIdentified: (identified: boolean | undefined) =>
+  setItemSpecIdentified: (identified: boolean) =>
     set((state) => ({
       itemSpec: { ...state.itemSpec, identified: identified },
     })),
 
-  setItemName: (name: string | undefined) =>
+  setItemName: (name: string) =>
     set((state) => ({ itemSpec: { ...state.itemSpec, name: name } })),
 
-  setItemSpecElderInfluence: (elder: boolean | undefined) =>
+  setItemSpecElderInfluence: (elder: boolean) =>
     set((state) => ({
       itemSpec: {
         ...state.itemSpec,
@@ -60,7 +60,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       },
     })),
 
-  setItemSpecShaperInfluence: (shaper: boolean | undefined) =>
+  setItemSpecShaperInfluence: (shaper: boolean) =>
     set((state) => ({
       itemSpec: {
         ...state.itemSpec,
@@ -71,7 +71,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       },
     })),
 
-  setItemSpecCrusaderInfluence: (crusader: boolean | undefined) =>
+  setItemSpecCrusaderInfluence: (crusader: boolean) =>
     set((state) => ({
       itemSpec: {
         ...state.itemSpec,
@@ -82,7 +82,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       },
     })),
 
-  setItemSpecRedeemerInfluence: (redeemer: boolean | undefined) =>
+  setItemSpecRedeemerInfluence: (redeemer: boolean) =>
     set((state) => ({
       itemSpec: {
         ...state.itemSpec,
@@ -93,7 +93,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       },
     })),
 
-  setItemSpecHunterInfluence: (hunter: boolean | undefined) =>
+  setItemSpecHunterInfluence: (hunter: boolean) =>
     set((state) => ({
       itemSpec: {
         ...state.itemSpec,
@@ -104,7 +104,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       },
     })),
 
-  setItemSpecWarlordInfluence: (warlord: boolean | undefined) =>
+  setItemSpecWarlordInfluence: (warlord: boolean) =>
     set((state) => ({
       itemSpec: {
         ...state.itemSpec,
@@ -115,78 +115,70 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       },
     })),
 
-  setItemSpecReplica: (replica: boolean | undefined) =>
+  setItemSpecReplica: (replica: boolean) =>
     set((state) => ({
       itemSpec: { ...state.itemSpec, replica: replica },
     })),
 
-  setItemSpecSearingInfluence: (searing: boolean | undefined) =>
+  setItemSpecSearingInfluence: (searing: boolean) =>
     set((state) => ({
       itemSpec: { ...state.itemSpec, searing: searing },
     })),
 
-  setItemSpecTangledInfluence: (tangled: boolean | undefined) =>
+  setItemSpecTangledInfluence: (tangled: boolean) =>
     set((state) => ({
       itemSpec: { ...state.itemSpec, tangled: tangled },
     })),
 
-  setItemSpecIsRelic: (isRelic: boolean | undefined) =>
+  setItemSpecIsRelic: (isRelic: boolean) =>
     set((state) => ({
       itemSpec: { ...state.itemSpec, isRelic: isRelic },
     })),
 
-  setItemSpecCorrupted: (corrupted: boolean | undefined) =>
+  setItemSpecCorrupted: (corrupted: boolean) =>
     set((state) => ({
       itemSpec: { ...state.itemSpec, corrupted: corrupted },
     })),
 
-  setItemSpecDelve: (delve: boolean | undefined) =>
+  setItemSpecDelve: (delve: boolean) =>
     set((state) => ({
       itemSpec: { ...state.itemSpec, delve: delve },
     })),
 
-  setItemSpecFractured: (fractured: boolean | undefined) =>
+  setItemSpecFractured: (fractured: boolean) =>
     set((state) => ({
       itemSpec: { ...state.itemSpec, fractured: fractured },
     })),
 
-  setItemSpecSynthesized: (synthesized: boolean | undefined) =>
+  setItemSpecSynthesized: (synthesized: boolean) =>
     set((state) => ({
       itemSpec: { ...state.itemSpec, synthesized: synthesized },
     })),
 
-  setItemSpecSearing: (searing: boolean | undefined) =>
+  setItemSpecSearing: (searing: boolean) =>
     set((state) => ({
       itemSpec: { ...state.itemSpec, searing: searing },
     })),
 
-  setItemSpecTangled: (tangled: boolean | undefined) =>
+  setItemSpecTangled: (tangled: boolean) =>
     set((state) => ({
       itemSpec: { ...state.itemSpec, tangled: tangled },
     })),
 
-  setItemSpecFoilVariation: (foilVariation: number | undefined) =>
+  setItemSpecFoilVariation: (foilVariation: number) =>
     set((state) => ({
       itemSpec: { ...state.itemSpec, foilVariation: foilVariation },
     })),
 
-  setItemSpecMinIlvl: (minIlvl: number | undefined) =>
-    set((state) => {
-      if (!minIlvl || minIlvl === 0) {
-        minIlvl = undefined;
-      }
-      const itemSpec = { ...state.itemSpec, minIlvl: minIlvl };
-      return { itemSpec: itemSpec };
-    }),
+  setItemSpecMinIlvl: (minIlvl: number) =>
+    set((state) => ({
+      itemSpec: { ...state.itemSpec, minIlvl: minIlvl },
+    })),
 
-  setItemSpecMaxIlvl: (maxIlvl: number | undefined) =>
-    set((state) => {
-      if (!maxIlvl || maxIlvl === 0) {
-        maxIlvl = undefined;
-      }
-      const itemSpec = { ...state.itemSpec, maxIlvl: maxIlvl };
-      return { itemSpec: itemSpec };
-    }),
+  setItemSpecMaxIlvl: (maxIlvl: number) =>
+    set((state) => ({
+      itemSpec: { ...state.itemSpec, maxIlvl: maxIlvl },
+    })),
 
   setItemRarity: (rarity: string | undefined) =>
     set((state) => ({
@@ -210,19 +202,8 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       baseSpec: { ...state.baseSpec, subCategory: subCategory },
     })),
 
-  addModifierSpec: (modifierSpec: ModifierSpecState, position?: number) =>
-    set((state) => {
-      if (position !== undefined) {
-        return {
-          modifierSpecs: [
-            ...state.modifierSpecs.slice(0, position),
-            modifierSpec,
-            ...state.modifierSpecs.slice(position),
-          ],
-        };
-      }
-      return { modifierSpecs: [...state.modifierSpecs, modifierSpec] };
-    }),
+  addModifierSpec: (modifierSpec: ModifierSpecState) =>
+    set((state) => ({ modifierSpecs: [...state.modifierSpecs, modifierSpec] })),
 
   removeModifierSpec: (modifierId: number) =>
     set((state) => ({
@@ -237,58 +218,4 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
         spec.modifierId === modifierSpec.modifierId ? modifierSpec : spec
       ),
     })),
-
-  setMinRollModifierSpec: (modifierId: number, minRoll: number | undefined) =>
-    set((state) => {
-      if (!minRoll || minRoll === 0) {
-        minRoll = undefined;
-      }
-      const updatedSpecs = state.modifierSpecs.map((spec) =>
-        spec.modifierId === modifierId
-          ? {
-              ...spec,
-              modifierLimitations: {
-                ...spec.modifierLimitations,
-                minRoll: minRoll,
-              },
-            }
-          : spec
-      );
-      return { modifierSpecs: updatedSpecs };
-    }),
-
-  setMaxRollModifierSpec: (modifierId: number, maxRoll: number | undefined) =>
-    set((state) => {
-      if (!maxRoll || maxRoll === 0) {
-        maxRoll = undefined;
-      }
-      const updatedSpecs = state.modifierSpecs.map((spec) =>
-        spec.modifierId === modifierId
-          ? {
-              ...spec,
-              modifierLimitations: {
-                ...spec.modifierLimitations,
-                maxRoll: maxRoll,
-              },
-            }
-          : spec
-      );
-      return { modifierSpecs: updatedSpecs };
-    }),
-
-  setTextRollModifierSpec: (modifierId: number, textRoll: number | undefined) =>
-    set((state) => {
-      const updatedSpecs = state.modifierSpecs.map((spec) =>
-        spec.modifierId === modifierId
-          ? {
-              ...spec,
-              modifierLimitations: {
-                ...spec.modifierLimitations,
-                textRoll: textRoll,
-              },
-            }
-          : spec
-      );
-      return { modifierSpecs: updatedSpecs };
-    }),
 }));
