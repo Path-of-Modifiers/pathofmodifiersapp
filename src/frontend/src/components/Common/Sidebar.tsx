@@ -50,7 +50,7 @@ const LinkItems = [
 const VerticalNavBar = () => {
   return (
     <VStack p="1rem" bg="ui.secondary" opacity={1} align="stretch">
-      <Text opacity={0.7} fontSize="xl" color="ui.white">
+      <Text opacity={0.7} fontSize="menu" color="ui.white">
         Jewels
       </Text>
       {LinkItems.map((item, index) => (
@@ -59,7 +59,7 @@ const VerticalNavBar = () => {
           bg="ui.secondary"
           justifyContent="flex-start"
           p={0}
-          fontSize="lg"
+          fontSize="menu"
           fontWeight="fontWeights.normal"
           fontFamily="fonts.sidebar"
           color="ui.white"
