@@ -1,7 +1,7 @@
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { convertToBoolean } from "../../../hooks/utils";
 import { ItemSpecState } from "../../../store/StateInterface";
-import { SelectBox, SelectBoxOptionValue } from "../StandardLayoutInput/SelectBoxInput";
+import { SelectBox, SelectBoxOptionValue } from "../StandardLayoutInput/SelectBox";
 
 interface IsItemInputProps {
   itemSpecKey:
