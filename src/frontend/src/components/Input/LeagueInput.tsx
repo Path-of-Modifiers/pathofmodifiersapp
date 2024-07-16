@@ -1,6 +1,6 @@
 import { useGraphInputStore } from "../../store/GraphInputStore";
 import { useEffect } from "react";
-import { defaultLeague } from "../../env-vars";
+import { defaultSoftcoreLeague } from "../../env-vars";
 import {
   SelectBox,
   SelectBoxOptionValue,
@@ -21,10 +21,10 @@ export const LeagueInput = () => {
   };
 
   useEffect(() => {
-    useGraphInputStore.setState({ league: defaultLeague });
+    useGraphInputStore.setState({ league: defaultSoftcoreLeague });
 
     if (clearClicked) {
-      useGraphInputStore.setState({ league: defaultLeague });
+      useGraphInputStore.setState({ league: defaultSoftcoreLeague });
     }
   }, [clearClicked]);
 
@@ -43,8 +43,8 @@ export const LeagueInput = () => {
       descriptionText={"League"}
       optionsList={selectLeagueOptions}
       itemKeyId={"LeagueInput"}
-      defaultValue={defaultLeague}
-      defaultText={defaultLeague}
+      defaultValue={defaultSoftcoreLeague}
+      defaultText={defaultSoftcoreLeague}
       handleChange={(e) => handleLeagueChange(e)}
       getSelectValue={() => currentLeagueSelected}
     />
