@@ -1,6 +1,5 @@
 export type HandleChangeEventFunction = (
-  event: React.FormEvent<HTMLElement> | React.ChangeEvent<HTMLInputElement>,
-  value?: string | number | undefined
+  event: React.ChangeEvent<HTMLSelectElement>
 ) => void;
 
 export type HandleChangeStringFunction = (s: string) => void;
