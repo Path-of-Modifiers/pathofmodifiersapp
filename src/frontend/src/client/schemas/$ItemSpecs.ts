@@ -20,7 +20,15 @@ export const $ItemSpecs = {
                 type: 'null',
             }],
         },
-        ilvl: {
+        minIlvl: {
+            type: 'any-of',
+            contains: [{
+                type: 'number',
+            }, {
+                type: 'null',
+            }],
+        },
+        maxIlvl: {
             type: 'any-of',
             contains: [{
                 type: 'number',

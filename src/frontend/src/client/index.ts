@@ -78,7 +78,7 @@ export { $ValidationError } from './schemas/$ValidationError';
 export { $WantedModifier } from './schemas/$WantedModifier';
 
 export { AccountsService } from './services/AccountsService';
-export { CurrenciesService } from './services/CurrenciesService';
+export { CurrencysService } from './services/CurrencysService';
 export { DefaultService } from './services/DefaultService';
 export { ItemBaseTypesService } from './services/ItemBaseTypesService';
 export { ItemModifiersService } from './services/ItemModifiersService';
@@ -86,5 +86,5 @@ export { ItemsService } from './services/ItemsService';
 export { LatestCurrencyIdService } from './services/LatestCurrencyIdService';
 export { LatestItemIdService } from './services/LatestItemIdService';
 export { ModifiersService } from './services/ModifiersService';
-export { PlottingService } from './services/PlottingService';
-export { StashesService } from './services/StashesService';
+export { PlotsService } from './services/PlotsService';
+export { StashsService } from './services/StashsService';
