@@ -15,19 +15,13 @@ export const TextInput = ({
   handleTextChange,
 }: TextInputProps) => {
   return (
-    <Flex
-      color={"ui.white"}
-      bgColor={"ui.secondary"}
-      alignItems={"center"}
-      m={1}
-    >
-      <Text ml={1} width={"inputSizes.defaultDescriptionText"}>
+    <Flex color={"ui.white"} alignItems={"center"} m={1}>
+      <Text ml={1} width={"inputSizes.defaultBox"} bgColor={"ui.input"}>
         Item name
       </Text>
       <Input
         value={getTextValue()}
         bgColor={"ui.input"}
-        color={"ui.white"}
         onChange={(e) => handleTextChange(e.target.value)}
         width={"inputSizes.lgBox"}
         focusBorderColor={"ui.white"}

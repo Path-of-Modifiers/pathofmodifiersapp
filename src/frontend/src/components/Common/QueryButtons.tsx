@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup } from "@chakra-ui/react";
+import { Box, Button, Flex } from "@chakra-ui/react";
 import { MdExpandMore, MdExpandLess } from "react-icons/md";
 import { useExpandedComponentStore } from "../../store/ExpandedComponentStore";
 import { useGraphInputStore } from "../../store/GraphInputStore";
@@ -25,6 +25,7 @@ const QueryButtons = () => {
   };
 
   const handlePlotQuery = () => {
+    useExpandedComponentStore.getState().setExpandedGraphInputFilters(false);
     useGraphInputStore.getState().setPlotQuery();
     useGraphInputStore.getState().setQueryClicked();
 
@@ -36,24 +37,51 @@ const QueryButtons = () => {
   };
 
   return (
-    <Box bg="ui.main">
-      <ButtonGroup>
-        <Button variant="solid" colorScheme="red" onClick={handleClearQuery}>
-          Clear Query
-        </Button>
-        <Button variant="solid" colorScheme="green" onClick={handlePlotQuery}>
+    <Flex width={"100%"} justifyContent={"end"}>
+      <Box>
+        {" "}
+        <Button
+          variant="solid"
+          bg="ui.queryBaseInput"
+          color="ui.white"
+          _hover={{ bg: "ui.queryMainInput" }}
+          _focus={{ bg: "ui.queryMainInput" }}
+          borderWidth={1}
+          borderColor={"ui.grey"}
+          width={"inputSizes.lgBox"}
+          onClick={handlePlotQuery}
+        >
           Query and Plot
+        </Button>
+      </Box>
+      <Flex width="585px" justifyContent={"end"} gap={2} mr={2}>
+        <Button
+          variant="solid"
+          bg="ui.input"
+          color="ui.white"
+          _hover={{ bg: "ui.lightInput" }}
+          _focus={{ bg: "ui.lightInput" }}
+          onClick={handleClearQuery}
+          borderWidth={1}
+          borderColor={"ui.grey"}
+        >
+          Clear Query
         </Button>
         <Button
           variant="solid"
-          colorScheme="gray"
+          bg="ui.queryBaseInput"
+          color="ui.white"
+          _hover={{ bg: "ui.queryMainInput" }}
+          _focus={{ bg: "ui.queryMainInput" }}
+          borderWidth={1}
+          borderColor={"ui.grey"}
           rightIcon={filterExpanded ? <MdExpandLess /> : <MdExpandMore />}
           onClick={handleShowingFilter}
         >
           {filterExpanded ? "Hide Filters" : "Show Filters"}
         </Button>
-      </ButtonGroup>
-    </Box>
+      </Flex>
+    </Flex>
   );
 };
 

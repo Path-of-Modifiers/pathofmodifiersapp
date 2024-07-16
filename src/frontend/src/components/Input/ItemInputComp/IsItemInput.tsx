@@ -1,7 +1,10 @@
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-import { convertToBoolean } from "../../../hooks/utils";
+import { convertToBoolean, getEventTextContent } from "../../../hooks/utils";
 import { ItemSpecState } from "../../../store/StateInterface";
-import { SelectBox, SelectBoxOptionValue } from "../StandardLayoutInput/SelectBoxInput";
+import {
+  SelectBoxInput,
+  SelectBoxOptionValue,
+} from "../StandardLayoutInput/SelectBoxInput";
 
 interface IsItemInputProps {
   itemSpecKey:
@@ -25,7 +28,9 @@ interface IsItemInputProps {
 
 // Is Item Input Component  -  This component is used to select the boolean item properties.
 export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
-  const getSelectValue = () => {
+  const defaultValue = undefined;
+
+  const getIsItemSelectValue = () => {
     let selectValue = undefined;
     if (
       itemSpecKey === "elder" ||
@@ -45,9 +50,9 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
       ];
     }
     if (selectValue) {
-      return "true";
+      return "Yes";
     } else if (selectValue === false) {
-      return "false";
+      return "No";
     }
     return "";
   };
@@ -70,10 +75,14 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
     setItemSpecIsRelic,
   } = useGraphInputStore();
 
-  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedValue = convertToBoolean(event.target.value) as boolean;
+  const handleIsItemChange = (
+    event: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>,
+    value: string
+  ) => {
+    const textContent = getEventTextContent(event);
+    const selectedValue = convertToBoolean(textContent) as boolean;
 
-    switch (itemSpecKey) {
+    switch (value) {
       case "identified":
         setItemSpecIdentified(selectedValue);
         break;
@@ -123,19 +132,20 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
   };
 
   const optionsList: Array<SelectBoxOptionValue> = [
+    { value: undefined, text: "Any" },
     { value: "true", text: "Yes" },
     { value: "false", text: "No" },
   ];
 
   return (
-    <SelectBox
+    <SelectBoxInput
       descriptionText={text}
       optionsList={optionsList}
       itemKeyId={itemSpecKey}
-      defaultValue={undefined}
+      defaultValue={defaultValue}
       defaultText="Any"
-      getSelectValue={getSelectValue}
-      handleChange={(e) => handleChange(e)}
-    ></SelectBox>
+      getSelectTextValue={getIsItemSelectValue()}
+      handleChange={(e) => handleIsItemChange(e, itemSpecKey)}
+    />
   );
 };
