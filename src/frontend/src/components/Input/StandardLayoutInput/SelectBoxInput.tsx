@@ -51,7 +51,7 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
 
   const [inputText, setInputText] = useState<string>(defaultText ?? "");
   const [inputPlaceholder, setInputPlaceholder] = useState<string>(
-    staticPlaceholder ? "" : defaultText ?? ""
+    defaultText ?? ""
   );
   const [inputChanged, setInputChanged] = useState<boolean>(false);
 
@@ -114,7 +114,7 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
     >
       <FormControl height={height || "lineHeights.tall"} color={"ui.white"}>
         {descriptionText && (
-          <FormLabel color={"ui.white"} fontSize={15}>
+          <FormLabel color={"ui.white"} fontSize="14px">
             {descriptionText}
           </FormLabel>
         )}
@@ -146,15 +146,17 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
               inputChanged && !noInputChange ? "ui.inputChanged" : "ui.grey"
             }
             textAlign={centerInputText ? "center" : "left"}
-            fontSize={16}
             bgColor={"ui.input"}
             autoComplete="off"
             key={"autocompleteinput" + itemKeyId + defaultText}
+            sx={{
+              _focus: {
+                textAlign: "left",
+              },
+            }}
           />
           <AutoCompleteList
-            onBlur={() =>
-              setInputText(staticPlaceholder ? "" : inputPlaceholder)
-            }
+            onBlur={() => setInputText(inputPlaceholder)}
             borderColor={"ui.grey"}
             bgColor="ui.input"
             margin={0}

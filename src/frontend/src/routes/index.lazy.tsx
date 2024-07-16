@@ -15,6 +15,8 @@ import {
 } from "../client";
 import { prefetchAllBaseTypeData } from "../hooks/getData/getBaseTypeCategories";
 import Footer from "../components/Common/Footer";
+import { ErrorMessage } from "../components/Input/StandardLayoutInput/ErrorMessage";
+import { useErrorStore } from "../store/ErrorStore";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
@@ -39,6 +41,9 @@ function Index() {
   const [subCategories, setSubCategories] = useState<ItemBaseTypeSubCategory[]>(
     []
   );
+  const modifiersError = useErrorStore((state) => state.modifiersError);
+  const leagueError = useErrorStore((state) => state.leagueError);
+  const resultError = useErrorStore((state) => state.resultError);
   const isFetched = useRef(false);
 
   useEffect(() => {
@@ -84,6 +89,25 @@ function Index() {
               />
             )}
             <QueryButtons />
+            {modifiersError && (
+              <ErrorMessage
+                alertTitle="No Modifiers Selected"
+                alertDescription="Please select at least one modifier."
+              />
+            )}
+            {leagueError && (
+              <ErrorMessage
+                alertTitle="No League Selected"
+                alertDescription="Please select a league."
+              />
+            )}
+            {resultError && (
+              <ErrorMessage
+                alertTitle="No Results Found"
+                alertDescription="No results were found for the current query."
+              />
+            )}
+
             <GraphComponent
               width={"bgBoxes.mediumBox"}
               height={"bgBoxes.smallBox"}
