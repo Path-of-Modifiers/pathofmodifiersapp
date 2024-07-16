@@ -2,9 +2,16 @@ import { Box, Button, Flex } from "@chakra-ui/react";
 import { MdExpandMore, MdExpandLess } from "react-icons/md";
 import { useExpandedComponentStore } from "../../store/ExpandedComponentStore";
 import { useGraphInputStore } from "../../store/GraphInputStore";
+import {
+  checkGraphQueryLeageInput,
+  checkGraphQueryModifierInput,
+} from "../../hooks/graphing/checkGraphQueryInput";
+import { useErrorStore } from "../../store/ErrorStore";
 
 const QueryButtons = () => {
   const { setExpandedGraphInputFilters } = useExpandedComponentStore();
+  const { setResultError } = useErrorStore();
+  const { setPlotQuery } = useGraphInputStore();
 
   const filterExpanded = useExpandedComponentStore(
     (state) => state.expandedGraphInputFilters
@@ -25,15 +32,19 @@ const QueryButtons = () => {
   };
 
   const handlePlotQuery = () => {
-    useExpandedComponentStore.getState().setExpandedGraphInputFilters(false);
-    useGraphInputStore.getState().setPlotQuery();
-    useGraphInputStore.getState().setQueryClicked();
+    setResultError(false);
+    setPlotQuery();
+    const leagueValid = checkGraphQueryLeageInput();
+    const modifierValid = checkGraphQueryModifierInput();
+    if (leagueValid && modifierValid) {
+      useGraphInputStore.getState().setQueryClicked();
 
-    // This is a hack to make sure the clearClicked is set to false after the
-    // state is updated.
-    setTimeout(() => {
-      useGraphInputStore.getState().queryClicked = false;
-    }, 20);
+      // This is a hack to make sure the clearClicked is set to false after the
+      // state is updated.
+      setTimeout(() => {
+        useGraphInputStore.getState().queryClicked = false;
+      }, 20);
+    }
   };
 
   return (
@@ -45,7 +56,6 @@ const QueryButtons = () => {
           bg="ui.queryBaseInput"
           color="ui.white"
           _hover={{ bg: "ui.queryMainInput" }}
-          _focus={{ bg: "ui.queryMainInput" }}
           borderWidth={1}
           borderColor={"ui.grey"}
           width={"inputSizes.lgBox"}
@@ -60,7 +70,6 @@ const QueryButtons = () => {
           bg="ui.input"
           color="ui.white"
           _hover={{ bg: "ui.lightInput" }}
-          _focus={{ bg: "ui.lightInput" }}
           onClick={handleClearQuery}
           borderWidth={1}
           borderColor={"ui.grey"}
@@ -72,7 +81,6 @@ const QueryButtons = () => {
           bg="ui.queryBaseInput"
           color="ui.white"
           _hover={{ bg: "ui.queryMainInput" }}
-          _focus={{ bg: "ui.queryMainInput" }}
           borderWidth={1}
           borderColor={"ui.grey"}
           rightIcon={filterExpanded ? <MdExpandLess /> : <MdExpandMore />}
