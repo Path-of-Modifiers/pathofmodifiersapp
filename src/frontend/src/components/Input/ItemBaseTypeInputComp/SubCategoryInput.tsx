@@ -1,22 +1,16 @@
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-import {
-  capitalizeFirstLetter,
-  getEventTextContent,
-} from "../../../hooks/utils";
+import { capitalizeFirstLetter } from "../../../hooks/utils";
 import { ItemBaseTypeSubCategory } from "../../../client";
-import {
-  SelectBoxInput,
-  SelectBoxOptionValue,
-} from "../StandardLayoutInput/SelectBoxInput";
+import { SelectBox, SelectBoxOptionValue } from "../StandardLayoutInput/SelectBoxInput";
 
 interface SubCategoryInputProps {
   subCategories: ItemBaseTypeSubCategory | ItemBaseTypeSubCategory[];
 }
 
 // Sub Category Input Component  -  This component is used to select the sub category of an item base type.
-export const SubCategoryInput = (props: SubCategoryInputProps) => {
-  if (!Array.isArray(props.subCategories)) {
-    props.subCategories = [props.subCategories];
+export const SubCategoryInput = ({ subCategories }: SubCategoryInputProps) => {
+  if (!Array.isArray(subCategories)) {
+    subCategories = [subCategories];
   }
 
   const defaultValue = undefined;
@@ -33,34 +27,30 @@ export const SubCategoryInput = (props: SubCategoryInputProps) => {
   const { setItemSubCategory } = useGraphInputStore();
 
   const handleSubCategoryChange = (
-    event: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>
+    event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    const itemSubCategory = getEventTextContent(event);
+    const itemSubCategory = event.target.value;
     if (itemSubCategory === "Any") {
       setItemSubCategory(undefined);
-    } else {
-      setItemSubCategory(itemSubCategory);
     }
+    setItemSubCategory(itemSubCategory);
   };
 
-  const subCategoryOptions: Array<SelectBoxOptionValue> = [
-    { value: "", text: "Any" },
-    ...props.subCategories.map((subCategory) => {
-      return {
-        value: subCategory.subCategory,
-        text: capitalizeFirstLetter(subCategory.subCategory),
-      };
-    }),
-  ];
+  const subCategoryOptions: Array<SelectBoxOptionValue> = subCategories.map((subCategory) => {
+    return {
+      value: subCategory.subCategory,
+      text: capitalizeFirstLetter(subCategory.subCategory),
+    };
+  });
 
   return (
-    <SelectBoxInput
+    <SelectBox
       descriptionText={"Item Sub Category"}
       optionsList={subCategoryOptions}
       itemKeyId={"ItemSubCategoryInput"}
       defaultValue={defaultValue}
       defaultText="Any"
-      getSelectTextValue={getSubCategoryValue()}
+      getSelectValue={getSubCategoryValue}
       handleChange={(e) => handleSubCategoryChange(e)}
     />
   );
