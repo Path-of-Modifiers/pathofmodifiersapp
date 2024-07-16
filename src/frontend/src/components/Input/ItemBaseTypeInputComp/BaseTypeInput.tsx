@@ -1,18 +1,19 @@
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { BaseType } from "../../../client";
 import {
-  SelectBox,
+  SelectBoxInput,
   SelectBoxOptionValue,
 } from "../StandardLayoutInput/SelectBoxInput";
+import { getEventTextContent } from "../../../hooks/utils";
 
 interface BaseTypeInputProps {
   baseTypes: BaseType | BaseType[];
 }
 
 // Base Type Input Component  -  This component is used to select the base type of an item.
-export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
-  if (!Array.isArray(baseTypes)) {
-    baseTypes = [baseTypes];
+export const BaseTypeInput = (props: BaseTypeInputProps) => {
+  if (!Array.isArray(props.baseTypes)) {
+    props.baseTypes = [props.baseTypes];
   }
 
   const defaultValue = undefined;
@@ -29,32 +30,34 @@ export const BaseTypeInput = ({ baseTypes }: BaseTypeInputProps) => {
   };
 
   const handleBaseTypeChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+    event: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>
   ) => {
-    const baseType = event.target.value;
+    const baseType = getEventTextContent(event);
     if (baseType === "Any") {
       setBaseType(undefined);
+    } else {
+      setBaseType(baseType);
     }
-    setBaseType(baseType);
   };
 
-  const baseTypeOptions: Array<SelectBoxOptionValue> = baseTypes.map(
-    (baseType) => {
+  const baseTypeOptions: Array<SelectBoxOptionValue> = [
+    { value: "", text: "Any" },
+    ...props.baseTypes.map((baseType) => {
       return {
         value: baseType.baseType,
         text: baseType.baseType,
       };
-    }
-  );
+    }),
+  ];
 
   return (
-    <SelectBox
+    <SelectBoxInput
       descriptionText={"Item Base Type"}
       optionsList={baseTypeOptions}
       itemKeyId={"BaseTypeInput"}
       defaultValue={defaultValue}
       defaultText="Any"
-      getSelectValue={getBaseTypeValue}
+      getSelectTextValue={getBaseTypeValue()}
       handleChange={(e) => handleBaseTypeChange(e)}
     />
   );

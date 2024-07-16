@@ -8,9 +8,6 @@ import { Flex, Text } from "@chakra-ui/react";
       align="center"
       justify="space-between"
       padding="1rem"
-      boxShadow="md"
-      bg="ui.main"
-      borderColor="gray.200"
     >
       <Text color="ui.white" fontSize="2xl" fontFamily="fonts.heading" fontWeight="fontWeights.bold">
         Path Of Modifiers

@@ -1,0 +1,22 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080">
+	<title>New Project</title>
+	<defs>
+		<image  width="1080" height="1080" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABDgAAAQ4AQMAAADW3v7MAAAAAXNSR0IB2cksfwAAAANQTFRF////p8QbyAAAA0hJREFUeJztzjEBACAMwDDm3zTPniiAo1GQOX+Y14HVQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQz3UQxfkswQ5pU9WdQAAAABJRU5ErkJggg=="/>
+	</defs>
+	<style>
+		tspan { white-space:pre } 
+		.t0 { font-size: 350px;fill: #000000;font-weight: 700;font-family: "FamiliarPro-Bold", "Familiar Pro" } 
+		.s1 { fill: #000000 } 
+		.t2 { font-size: 350px;fill: #ffffff;font-weight: 700;font-family: "FamiliarPro-Bold", "Familiar Pro" } 
+	</style>
+	<use id="Background" href="#img1" x="0" y="0"/>
+	<text id="POM" style="transform: matrix(1,0,0,1,140,458)" >
+		<tspan x="0" y="0" class="t0">P</tspan><tspan  y="0" class="t0">O</tspan><tspan  y="0" class="t0">M</tspan><tspan  y="0" class="t0">
+</tspan>
+	</text>
+	<path id="Shape 1" class="s1" d="m0 0h1080v1080h-1080z"/>
+	<text id="POM" style="transform: matrix(1,0,0,1,140,665)" >
+		<tspan x="0" y="0" class="t2">POM
+</tspan>
+	</text>
+</svg>
