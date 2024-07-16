@@ -22,7 +22,7 @@ interface MinMaxNumberInputProps {
   handleMaxChange: HandleChangeStringFunction;
 }
 
-// This component is used to input the min and max number values.
+// Min Max Item Lvl Input Component  -  This component is used to input the min and max ilvl of an item.
 export const MinMaxNumberInput = ({
   text,
   minSpecKey,
