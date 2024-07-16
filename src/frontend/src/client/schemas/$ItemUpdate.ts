@@ -20,10 +20,6 @@ export const $ItemUpdate = {
                 type: 'null',
             }],
         },
-        changeId: {
-            type: 'string',
-            isRequired: true,
-        },
         iconUrl: {
             type: 'any-of',
             contains: [{

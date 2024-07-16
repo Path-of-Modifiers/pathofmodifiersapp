@@ -7,7 +7,6 @@ export type ItemUpdate = {
     stashId: string;
     gameItemId: string;
     name?: (string | null);
-    changeId: string;
     iconUrl?: (string | null);
     league: string;
     typeLine: string;
