@@ -15,6 +15,7 @@ import {
   ItemBaseTypeSubCategory,
 } from "../client";
 import { prefetchAllBaseTypeData } from "../hooks/getData/getBaseTypeCategories";
+import Footer from "../components/Common/Footer";
 import { ErrorMessage } from "../components/Input/StandardLayoutInput/ErrorMessage";
 import { useErrorStore } from "../store/ErrorStore";
 
@@ -114,6 +115,7 @@ function Index() {
           </VStack>
         </QueryClientProvider>
       </Flex>
+      <Footer mt="auto" />
     </Flex>
   );
 }
