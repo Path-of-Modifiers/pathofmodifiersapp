@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PlottingService, PlotQuery, PlotData } from "../../client";
+import { PlotsService, PlotQuery, PlotData } from "../../client";
 import { useQuery } from "@tanstack/react-query";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 
@@ -9,16 +9,18 @@ import { useGraphInputStore } from "../../store/GraphInputStore";
  * @param requestBody The Plot Query
  * @returns The Plot Data or undefined if no query yet, and the fetch status
  */
-function PostPlottingData(requestBody: PlotQuery): {
+function usePostPlottingData(requestBody: PlotQuery): {
   plotData: PlotData | undefined;
   fetchStatus: string;
+  isError: boolean;
+  isFetched: boolean;
 } {
   const [plotData, setPlotData] = useState<PlotData>();
   const queryClicked = useGraphInputStore((state) => state.queryClicked);
-  const { fetchStatus, refetch } = useQuery({
+  const { fetchStatus, refetch, isFetched, isError } = useQuery({
     queryKey: ["allPlotData"],
     queryFn: async () => {
-      const returnBody = await PlottingService.getPlotDataApiApiV1PlotPost({
+      const returnBody = await PlotsService.getPlotDataApiApiV1PlotPost({
         requestBody,
       });
 
@@ -33,7 +35,7 @@ function PostPlottingData(requestBody: PlotQuery): {
       refetch();
     }
   }, [queryClicked, refetch]);
-  return { plotData, fetchStatus };
+  return { plotData, fetchStatus, isFetched, isError };
 }
 
-export default PostPlottingData;
+export default usePostPlottingData;

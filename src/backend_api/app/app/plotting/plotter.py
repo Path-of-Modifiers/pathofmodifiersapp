@@ -44,10 +44,24 @@ class Plotter:
         item_specifications = [
             model_Item.__dict__[key] == query.itemSpecifications.__dict__[key]
             for key in query.itemSpecifications.model_fields
-            if query.itemSpecifications.__dict__[key] is not None
+            if (
+                query.itemSpecifications.__dict__[key] is not None and "Ilvl" not in key
+            )
         ]
+        if query.itemSpecifications.minIlvl is not None:
+            item_specifications.append(
+                model_Item.ilvl >= query.itemSpecifications.minIlvl
+            )
 
-        return statement.where(*item_specifications)
+        if query.itemSpecifications.maxIlvl is not None:
+            item_specifications.append(
+                model_Item.ilvl <= query.itemSpecifications.maxIlvl
+            )
+
+        if item_specifications:
+            return statement.where(*item_specifications)
+        else:
+            return statement
 
     def _base_spec_query(self, statement: Select, *, query: PlotQuery) -> Select:
         if query.baseSpecifications is not None:
@@ -129,6 +143,7 @@ class Plotter:
 
         result = db.execute(statement).mappings().all()
         df = pd.DataFrame(result)
+
         if df.empty:
             raise HTTPException(
                 status_code=404, detail="No data matching criteria found."

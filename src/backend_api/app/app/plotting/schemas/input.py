@@ -7,7 +7,8 @@ from app.core.schemas.item import Influences
 class ItemSpecs(_pydantic.BaseModel):
     name: Optional[str] = None
     identified: Optional[bool] = None
-    ilvl: Optional[int] = None
+    minIlvl: Optional[int] = None
+    maxIlvl: Optional[int] = None
     rarity: Optional[str] = None
     corrupted: Optional[bool] = None
     delve: Optional[bool] = None
