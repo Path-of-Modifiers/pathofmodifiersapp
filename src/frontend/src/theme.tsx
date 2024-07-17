@@ -78,6 +78,7 @@ const theme = extendTheme({
     inputSizes: {
       tinyBox: "1rem",
       miniBox: "2.5rem",
+      miniPBox: "4rem",
       smallBox: "6rem",
       smallPBox: "7rem",
       smallPPBox: "10rem",
@@ -89,6 +90,7 @@ const theme = extendTheme({
       gigaBox: "50rem",
       gigaPlusBox: "63rem",
       ultraBox: "65rem",
+      ultraPBox: "72rem",
       ultraPlusBox: "80rem",
     },
     bgBoxes: {

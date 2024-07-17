@@ -6,6 +6,7 @@ import {
   LinkProps,
   Flex,
   Text,
+  StackProps,
   Box,
 } from "@chakra-ui/react";
 // Here we have used react-icons package for the icons
@@ -31,11 +32,12 @@ const accounts = [
   },
 ];
 
-const Footer = () => {
+const Footer = (props: StackProps) => {
   return (
     <Stack
+      {...props}
       width="100%"
-      minHeight="15rem"
+      minHeight="10rem"
       mt="auto"
       direction="column"
       bg="ui.secondary"
@@ -48,7 +50,6 @@ const Footer = () => {
         width="100%"
         direction={{ base: "column", md: "row" }}
         justifyContent="space-between"
-        spacing={{ base: 8, md: 0 }}
         mt="auto"
       >
         <Stack
@@ -86,7 +87,8 @@ const Footer = () => {
           </Text>
         </Flex>
       </Stack>
-      <Box color="white" mt={7}>
+
+      <Box color="white" mt="auto">
         <Text color="ui.grey">
           pathofmodifiers.com is not affiliated with or endorsed by Grinding
           Gear Games.
