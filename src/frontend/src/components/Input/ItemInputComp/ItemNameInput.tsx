@@ -56,7 +56,7 @@ export const ItemNameInput = () => {
       defaultValue={defaultValue}
       getSelectTextValue={getItemNameValue()}
       handleChange={(e) => handleNameChange(e)}
-      width="100%"
+      width="inputSizes.ultraPBox"
     />
   );
 };
