@@ -27,7 +27,6 @@ function TermsOfUse() {
       <Flex
         direction="row"
         bg="ui.secondary"
-        opacity={0.98}
         height="100vh"
         width={"bgBoxes.defaultBox"}
         maxWidth={"98vw"}
