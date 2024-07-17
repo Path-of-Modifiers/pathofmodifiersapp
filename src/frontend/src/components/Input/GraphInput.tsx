@@ -28,21 +28,27 @@ export const GraphInput = (props: GraphInputProps) => {
   return (
     expandedGraphInputFilters && (
       <Wrap {...props}>
-        <WrapItem justifyContent={"center"} mr="auto" ml="auto">
+        <WrapItem>
           <Flex
-            alignItems={"center"}
             justifyContent={"space-between"}
+            flexWrap="wrap"
             gap={2}
             width={"bgBoxes.mediumPPBox"}
+            maxWidth="98vw"
           >
             <ItemInput />
             <LeagueInput />
           </Flex>
         </WrapItem>
 
-        <WrapItem mr="auto" ml="auto">
-          <Flex justifyContent={"space-between"} width={"bgBoxes.mediumPPBox"}>
-            <VStack spacing={2} align={"flex-start"} width={"inputSizes.lgBox"}>
+        <WrapItem bg="ui.secondary">
+          <Flex
+            justifyContent={"space-between"}
+            width={"bgBoxes.mediumPPBox"}
+            maxWidth="98vw"
+            flexWrap="wrap"
+          >
+            <VStack spacing={2} mb={2}>
               <BaseInput
                 baseTypes={props.prefetchbasetypes}
                 categories={props.prefetchcategories}

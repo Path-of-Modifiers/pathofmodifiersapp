@@ -28,7 +28,6 @@ function PrivacyPolicy() {
       <Flex
         direction="row"
         bg="ui.secondary"
-        opacity={0.98}
         width={"bgBoxes.defaultBox"}
         maxWidth={"98vw"}
         p={2}
@@ -39,7 +38,7 @@ function PrivacyPolicy() {
         color="ui.white"
       >
         <VStack width="100%" align="left">
-          <Box width="100%">
+          <Box width="100%" mb="3rem">
             <TextWithUnderline
               text="Privacy Policy"
               textProps={{ fontSize: "2xl", marginBottom: "1rem" }}

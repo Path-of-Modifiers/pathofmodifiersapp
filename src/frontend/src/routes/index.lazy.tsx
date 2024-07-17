@@ -60,7 +60,13 @@ function Index() {
     }
   }, []);
   return (
-    <Flex direction="column" minHeight="100vh" bg="ui.main">
+    <Flex
+      direction="column"
+      minHeight="100rem"
+      bg="ui.main"
+      width="99vw"
+      minWidth="bgBoxes.miniPBox"
+    >
       <Box mb={"7rem"}>
         <Header />
       </Box>
@@ -68,10 +74,11 @@ function Index() {
       <Flex
         direction="row"
         bg="ui.secondary"
-        opacity={0.98}
         justifyContent="center"
-        width={"bgBoxes.defaultBox"}
-        height="100vh"
+        maxWidth={"100%"}
+        width="bgBoxes.defaultBox"
+        flexWrap="wrap"
+        minHeight="100rem"
         p={2}
         borderTopRadius={10}
         borderTopColor={"ui.darkBrown"}
@@ -79,7 +86,7 @@ function Index() {
         alignSelf="center"
       >
         <QueryClientProvider client={queryClient}>
-          <VStack width="100%">
+          <VStack>
             {modifiersData.length > 0 && baseTypes.length > 0 && (
               <GraphInput
                 prefetchedmodifiers={modifiersData}
@@ -111,6 +118,8 @@ function Index() {
             <GraphComponent
               width={"bgBoxes.mediumBox"}
               height={"bgBoxes.smallBox"}
+              maxW="98vw"
+              maxH="98vh"
             />
             <Footer />
           </VStack>

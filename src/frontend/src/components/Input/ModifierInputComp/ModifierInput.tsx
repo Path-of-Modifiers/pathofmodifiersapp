@@ -1,4 +1,4 @@
-import { Box, CloseButton, Flex, Stack } from "@chakra-ui/react";
+import { Box, Center, CloseButton, Flex, Stack } from "@chakra-ui/react";
 
 import AddIconCheckbox from "../../Icon/AddIconCheckbox";
 
@@ -353,10 +353,11 @@ export const ModifierInput = (props: ModifierInputProps) => {
     (modifierSelected, index) => (
       <Flex
         key={index}
-        bgColor={"ui.main"}
+        bgColor={"ui.secondary"}
         flexDirection={"row"}
         height={10}
         maxHeight={10}
+        maxWidth="95vw"
         alignItems={"center"}
         gap={2}
       >
@@ -384,6 +385,7 @@ export const ModifierInput = (props: ModifierInputProps) => {
           onFocusNotBlankInputText={true}
           isDimmed={!modifierSelected.isSelected}
           width={"inputSizes.xlPlusBox"}
+          maxWidth="80vw"
           noInputChange={true}
           key={"inputbox" + modifierSelected.effect + index}
         />
@@ -433,14 +435,16 @@ export const ModifierInput = (props: ModifierInputProps) => {
               return elements;
             })()}
 
-          <CloseButton
-            _hover={{ background: "gray.100", cursor: "pointer" }}
-            onClick={() => {
-              if (modifierSelected.modifierId[0] !== null) {
-                handleRemoveModifier(modifierSelected);
-              }
-            }}
-          />
+          <Center>
+            <CloseButton
+              _hover={{ background: "gray.100", cursor: "pointer" }}
+              onClick={() => {
+                if (modifierSelected.modifierId[0] !== null) {
+                  handleRemoveModifier(modifierSelected);
+                }
+              }}
+            />
+          </Center>
         </Flex>
       </Flex>
     )
