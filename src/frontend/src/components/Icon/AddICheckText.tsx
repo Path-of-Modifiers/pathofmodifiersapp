@@ -1,5 +1,6 @@
-import { Box, Flex, Text } from "@chakra-ui/layout";
+import { Flex } from "@chakra-ui/layout";
 import AddIconCheckbox from "./AddIconCheckbox";
+import { TextWithUnderline } from "../Text/TextWithUnderline";
 
 interface IconTextProps {
   text: string;
@@ -14,18 +15,7 @@ export const AddICheckText = (props: IconTextProps) => {
   return (
     <Flex alignItems={"center"} gap={2}>
       <AddIconCheckbox {...props}></AddIconCheckbox>
-      <Box flex="1" position="relative">
-        <Text color="ui.white">{props.text}</Text>
-        <Box
-          position="absolute"
-          top="2"
-          bottom="0"
-          left="0"
-          right="0"
-          borderBottom="1px solid"
-          borderColor="ui.grey"
-        />
-      </Box>
+      <TextWithUnderline text={props.text} textProps={{ color: "ui.white" }} />
     </Flex>
   );
 };

@@ -1,20 +1,115 @@
-import { Flex, FlexProps, Text } from "@chakra-ui/react";
+import {
+  Stack,
+  HStack,
+  Link,
+  IconButton,
+  LinkProps,
+  Flex,
+  Text,
+  Box,
+} from "@chakra-ui/react";
+// Here we have used react-icons package for the icons
+import { FaGithub, FaTwitter } from "react-icons/fa";
 
-const Footer = (props: FlexProps) => {
+const links = [
+  { label: "About", url: "about" },
+  { label: "Terms of use", url: "terms-of-use" },
+  { label: "Privacy Policy", url: "privacy-policy" },
+];
+const accounts = [
+  {
+    url: "https://github.com/Ivareh/pathofmodifiersapp",
+    label: "Github Repository",
+    type: "gray",
+    icon: <FaGithub />,
+  },
+  {
+    url: "https://twitter.com/PModifiers85473",
+    label: "POM twitter Account",
+    type: "twitter",
+    icon: <FaTwitter />,
+  },
+];
+
+const Footer = () => {
   return (
-    <Flex
-      {...props}
-      as="footer"
-      py={4}
-      padding="1rem"
-      textAlign="center"
-      color="white"
+    <Stack
+      width="100%"
+      minHeight="15rem"
+      mt="auto"
+      direction="column"
+      bg="ui.secondary"
+      color="ui.white"
+      justifyContent="space-between"
+      marginInline="auto"
+      p={15}
     >
-      <Text>
-        pathofmodifiers.com is not affiliated with or endorsed by Grinding Gear
-        Games.
-      </Text>
-    </Flex>
+      <Stack
+        width="100%"
+        direction={{ base: "column", md: "row" }}
+        justifyContent="space-between"
+        spacing={{ base: 8, md: 0 }}
+        mt="auto"
+      >
+        <Stack
+          direction="row"
+          spacing={5}
+          pt={{ base: 4, md: 0 }}
+          alignItems="center"
+        >
+          {accounts.map((sc, index) => (
+            <IconButton
+              key={index}
+              as={Link}
+              isExternal
+              href={sc.url}
+              aria-label={sc.label}
+              colorScheme={sc.type}
+              icon={sc.icon}
+              rounded="md"
+            />
+          ))}
+        </Stack>
+
+        {/* Desktop Screen */}
+        <HStack spacing={4} alignItems="center">
+          {links.map((sc, index) => (
+            <CustomLink key={index} hrefRoute={sc.url}>
+              {sc.label}
+            </CustomLink>
+          ))}
+        </HStack>
+
+        <Flex alignItems="center">
+          <Text fontSize="0.875rem" pl="0.5rem">
+            &copy; 2024 Path of Modifiers, All rights reserved.
+          </Text>
+        </Flex>
+      </Stack>
+      <Box color="white" mt={7}>
+        <Text color="ui.grey">
+          pathofmodifiers.com is not affiliated with or endorsed by Grinding
+          Gear Games.
+        </Text>
+      </Box>
+    </Stack>
+  );
+};
+
+interface CustomLinkProps extends LinkProps {
+  hrefRoute: string;
+}
+
+const CustomLink = ({ children, hrefRoute, ...props }: CustomLinkProps) => {
+  return (
+    <Link
+      href={hrefRoute}
+      fontSize="sm"
+      _hover={{ textDecoration: "underline" }}
+      {...props}
+    >
+      {children}
+    </Link>
   );
 };
 
