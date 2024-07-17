@@ -1,4 +1,4 @@
-import { Flex, Link, Text, textDecoration } from "@chakra-ui/react";
+import { Flex, Link, Text } from "@chakra-ui/react";
 
 // Header component for the application
 const Header = () => {
