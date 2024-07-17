@@ -5,7 +5,6 @@ import { Flex, Box, VStack } from "@chakra-ui/layout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GraphInput } from "../components/Input/GraphInput";
 import GraphComponent from "../components/Graph/GraphComponent";
-import img from "../assets/wallpap_castle_high_res.jpeg";
 import { useEffect, useRef, useState } from "react";
 import { prefetchedGroupedModifiers } from "../hooks/getData/prefetchGroupedModifiers";
 import {
@@ -61,19 +60,20 @@ function Index() {
     }
   }, []);
   return (
-    <Flex direction="column" minHeight="100vh" bgImage={img} bgSize="cover">
+    <Flex direction="column" minHeight="100vh" bg="ui.main">
       <Box mb={"7rem"}>
         <Header />
       </Box>
 
       <Flex
         direction="row"
-        bg="ui.main"
+        bg="ui.secondary"
         opacity={0.98}
         justifyContent="center"
         width={"bgBoxes.defaultBox"}
+        height="100vh"
         p={2}
-        borderRadius={10}
+        borderTopRadius={10}
         borderTopColor={"ui.darkBrown"}
         borderTopWidth={1}
         alignSelf="center"
@@ -112,10 +112,10 @@ function Index() {
               width={"bgBoxes.mediumBox"}
               height={"bgBoxes.smallBox"}
             />
+            <Footer />
           </VStack>
         </QueryClientProvider>
       </Flex>
-      <Footer mt="auto" />
     </Flex>
   );
 }
