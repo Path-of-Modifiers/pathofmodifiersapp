@@ -27,10 +27,12 @@ logging.basicConfig(
 
 BASEURL = os.getenv("DOMAIN")
 POE_PUBLIC_STASHES_AUTH_TOKEN = os.getenv("POE_PUBLIC_STASHES_AUTH_TOKEN")
+CURRENT_SOFTCORE_LEAGUE = os.getenv("CURRENT_SOFTCORE_LEAGUE")
 
 
 class ContiniousDataRetrieval:
     auth_token = POE_PUBLIC_STASHES_AUTH_TOKEN
+    current_league = CURRENT_SOFTCORE_LEAGUE
     url = "https://api.pathofexile.com/public-stash-tabs"
 
     if "localhost" not in BASEURL:
@@ -59,7 +61,7 @@ class ContiniousDataRetrieval:
         )
 
         self.poe_ninja_currency_api_handler = PoeNinjaCurrencyAPIHandler(
-            url="https://poe.ninja/api/data/currencyoverview?league=Necropolis&type=Currency"
+            url=f"https://poe.ninja/api/data/currencyoverview?league={self.current_league}&type=Currency"
         )
         self.poe_ninja_transformer = TransformPoeNinjaCurrencyAPIData(
             logger_parent=logger

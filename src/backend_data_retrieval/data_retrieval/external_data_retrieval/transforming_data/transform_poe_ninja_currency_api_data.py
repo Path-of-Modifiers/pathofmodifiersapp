@@ -10,6 +10,7 @@ from external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_nin
 from modifier_data_deposit.utils import insert_data, retrieve_data
 
 BASEURL = os.getenv("DOMAIN")
+CURRENT_SOFTCORE_LEAGUE = os.getenv("CURRENT_SOFTCORE_LEAGUE")
 
 
 def load_currency_data():
@@ -17,7 +18,7 @@ def load_currency_data():
     Loads data from the poe.ninja currency API.
     """
     poe_ninja_currency_api_handler = PoeNinjaCurrencyAPIHandler(
-        url="https://poe.ninja/api/data/currencyoverview?league=Necropolis&type=Currency"
+        url=f"https://poe.ninja/api/data/currencyoverview?league={CURRENT_SOFTCORE_LEAGUE}&type=Currency"
     )
 
     currencies_df = poe_ninja_currency_api_handler.make_request()
