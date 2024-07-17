@@ -34,9 +34,10 @@ const accounts = [
 const Footer = () => {
   return (
     <Stack
-      width="bgBoxes.defaultBox"
+      width="100%"
       mt="auto"
       direction="column"
+      bg="ui.secondary"
       color="ui.white"
       justifyContent="space-between"
       marginInline="auto"
@@ -79,7 +80,7 @@ const Footer = () => {
 
         <Flex alignItems="center">
           <Text fontSize="0.875rem" pl="0.5rem">
-            &copy; 2024 company, Inc. All rights reserved.
+            &copy; 2024 Path of Modifiers, All rights reserved.
           </Text>
         </Flex>
       </Stack>
