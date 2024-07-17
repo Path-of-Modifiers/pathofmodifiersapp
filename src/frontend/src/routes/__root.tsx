@@ -23,3 +23,4 @@ export const Route = createRootRoute({
   ),
   notFoundComponent: () => <NotFound />,
 });
+

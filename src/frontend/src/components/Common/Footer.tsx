@@ -35,6 +35,7 @@ const Footer = () => {
   return (
     <Stack
       width="100%"
+      minHeight="15rem"
       mt="auto"
       direction="column"
       bg="ui.secondary"
@@ -48,6 +49,7 @@ const Footer = () => {
         direction={{ base: "column", md: "row" }}
         justifyContent="space-between"
         spacing={{ base: 8, md: 0 }}
+        mt="auto"
       >
         <Stack
           direction="row"
