@@ -16,10 +16,24 @@ import { Route as rootRoute } from './routes/__root'
 
 // Create Virtual Routes
 
+const TermsOfUseLazyImport = createFileRoute('/terms-of-use')()
+const PrivacyPolicyLazyImport = createFileRoute('/privacy-policy')()
 const AboutLazyImport = createFileRoute('/about')()
 const IndexLazyImport = createFileRoute('/')()
 
 // Create/Update Routes
+
+const TermsOfUseLazyRoute = TermsOfUseLazyImport.update({
+  path: '/terms-of-use',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/terms-of-use.lazy').then((d) => d.Route))
+
+const PrivacyPolicyLazyRoute = PrivacyPolicyLazyImport.update({
+  path: '/privacy-policy',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/privacy-policy.lazy').then((d) => d.Route),
+)
 
 const AboutLazyRoute = AboutLazyImport.update({
   path: '/about',
@@ -43,11 +57,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutLazyImport
       parentRoute: typeof rootRoute
     }
+    '/privacy-policy': {
+      preLoaderRoute: typeof PrivacyPolicyLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/terms-of-use': {
+      preLoaderRoute: typeof TermsOfUseLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren([IndexLazyRoute, AboutLazyRoute])
+export const routeTree = rootRoute.addChildren([
+  IndexLazyRoute,
+  AboutLazyRoute,
+  PrivacyPolicyLazyRoute,
+  TermsOfUseLazyRoute,
+])
 
 /* prettier-ignore-end */
