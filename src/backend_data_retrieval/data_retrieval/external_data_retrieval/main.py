@@ -3,7 +3,7 @@ import os
 import pandas as pd
 from typing import Dict
 
-from external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api_v3 import (
+from external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api_v4 import (
     APIHandler,
 )
 from external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_ninja_currency_api import (
