@@ -16,16 +16,41 @@ def plot(filename):
     hand_off_time = abs(end_time - start_time)
     max_hand_off_time = max(hand_off_time)
 
-    plt.plot(time_diff / max_time_diff)
-    # plt.ylim((0, max_time_diff))
-    plt.plot(hand_off_time / max_hand_off_time)
+    # time_diff_divisible_by_10 = time_diff[: 10 * (len(time_diff) // 10)]
+    # time_diff_wo_transformation = np.array(
+    #     [
+    #         time_diff_wo_transformation[10 * i : 10 * (i + 1) + 1]
+    #         for i in range(len(time_diff_wo_transformation) // 10)
+    #     ]
+    # )
+    # time_diff_wo_transformation = np.zeros(len(time_diff_divisible_by_10) - 9)
+    # for i in range(len(time_diff_divisible_by_10) // 10):
+    #     time_diff_wo_transformation += time_diff_divisible_by_10[10 * i : 10 * (i + 1)]
+
+    # time_diff_wo_transformation = np.array(time_diff_wo_transformation)
+
+    time_diff_wo_transformation = time_diff[np.where(time_diff >= 20)]
+
+    n_requests_per_batch = 30
+    time_per_request = time_diff_wo_transformation / n_requests_per_batch
+
+    # plt.plot(time_diff / max_time_diff)
+    plt.plot(time_per_request)
+    plt.ylim((0, max(time_per_request) * 1.1))
+    plt.xlim((0, len(time_per_request)))
+    plt.title("Average time spent per request in a mini batch")
+    plt.xlabel("Batch number [*]")
+    plt.ylabel("Average time per request [s]")
+    # plt.plot(hand_off_time / max_hand_off_time)
     # plt.ylim((0, max_hand_off_time))
-    plt.ylim((0, 1.1))
-    plt.show()
+    # plt.ylim((0, 1.1))
+    # plt.show()
 
 
 def main():
-    plot("_start_new_mini_expedition/0.csv")
+    plot("_process_stream/10.csv")
+    # plot("_start_new_mini_expedition/loading_headers_first_1.csv")
+    plt.show()
     return 0
 
 
