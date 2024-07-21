@@ -25,12 +25,22 @@ currency_prefix = "currency"
     "/{currencyId}",
     response_model=Union[schemas.Currency, List[schemas.Currency]],
 )
-async def get_currency(currencyId: str, db: Session = Depends(get_db)):
+async def get_currency(
+    currencyId: str,
+    db: Session = Depends(get_db),
+    verification: bool = Depends(verification),
+):
     """
     Get currency by key and value for "currencyId".
 
     Always returns one currency.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {get_currency.__name__}",
+        )
+
     currency_map = {"currencyId": currencyId}
     currency = await CRUD_currency.get(db=db, filter=currency_map)
 
@@ -38,24 +48,40 @@ async def get_currency(currencyId: str, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=Union[schemas.Currency, List[schemas.Currency]])
-async def get_all_currencies(db: Session = Depends(get_db)):
+async def get_all_currencies(
+    db: Session = Depends(get_db), verification: bool = Depends(verification)
+):
     """
     Get all currencies.
 
     Returns a list of all currencies.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {get_all_currencies.__name__}",
+        )
+
     all_currencies = await CRUD_currency.get(db=db)
 
     return all_currencies
 
 
 @router.get("/latest_currency_id/", response_model=int, tags=["latest_currency_id"])
-async def get_latest_currency_id(db: Session = Depends(get_db)):
+async def get_latest_currency_id(
+    db: Session = Depends(get_db), verification: bool = Depends(verification)
+):
     """
     Get the latest currencyId
 
     Can only be used safely on an empty table or directly after an insertion.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {get_latest_currency_id.__name__}",
+        )
+
     result = db.execute(text("""SELECT MAX("currencyId") FROM currency""")).fetchone()
     if result:
         return int(result[0])
