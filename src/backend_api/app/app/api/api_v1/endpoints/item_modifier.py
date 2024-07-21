@@ -29,6 +29,7 @@ async def get_item_modifier(
     modifierId: Optional[int] = None,
     position: Optional[int] = None,
     db: Session = Depends(get_db),
+    verification: bool = Depends(verification),
 ):
     """
     Get item modifier or list of item modifiers by key and
@@ -38,6 +39,12 @@ async def get_item_modifier(
 
     Returns one or a list of item modifiers.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {get_item_modifier.__name__}",
+        )
+
     itemModifier_map = {"itemId": itemId}
     if modifierId is not None:
         itemModifier_map["modifierId"] = modifierId
@@ -49,12 +56,20 @@ async def get_item_modifier(
 
 
 @router.get("/", response_model=Union[schemas.ItemModifier, List[schemas.ItemModifier]])
-async def get_all_item_modifiers(db: Session = Depends(get_db)):
+async def get_all_item_modifiers(
+    db: Session = Depends(get_db), verification: bool = Depends(verification)
+):
     """
     Get all item modifiers.
 
     Returns a list of all item modifiers.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {get_all_item_modifiers.__name__}",
+        )
+
     all_itemModifiers = await CRUD_itemModifier.get(db=db)
 
     return all_itemModifiers

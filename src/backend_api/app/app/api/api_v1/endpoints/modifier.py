@@ -25,7 +25,9 @@ modifier_prefix = "modifier"
     response_model=Union[schemas.Modifier, List[schemas.Modifier]],
 )
 async def get_modifier(
-    modifierId: str, db: Session = Depends(get_db)
+    modifierId: str,
+    db: Session = Depends(get_db),
+    verification: bool = Depends(verification),
 ):
     """
     Get modifier or list of modifiers by key and
@@ -35,6 +37,12 @@ async def get_modifier(
 
     Returns one or a list of modifiers.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {get_modifier.__name__}",
+        )
+
     modifier_map = {"modifierId": modifierId}
     modifier = await CRUD_modifier.get(db=db, filter=modifier_map)
 
@@ -42,12 +50,20 @@ async def get_modifier(
 
 
 @router.get("/", response_model=Union[schemas.Modifier, List[schemas.Modifier]])
-async def get_all_modifiers(db: Session = Depends(get_db)):
+async def get_all_modifiers(
+    db: Session = Depends(get_db), verification: bool = Depends(verification)
+):
     """
     Get all modifiers.
 
     Returns a list of all modifiers.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {get_all_modifiers.__name__}",
+        )
+
     all_modifiers = await CRUD_modifier.get(db=db)
 
     return all_modifiers
@@ -59,12 +75,20 @@ async def get_all_modifiers(db: Session = Depends(get_db)):
         schemas.GroupedModifierByEffect, List[schemas.GroupedModifierByEffect]
     ],
 )
-async def get_grouped_modifier_by_effect(db: Session = Depends(get_db)):
+async def get_grouped_modifier_by_effect(
+    db: Session = Depends(get_db), verification: bool = Depends(verification)
+):
     """
     Get all grouped modifiers by effect.
 
     Returns a list of all grouped modifiers by effect.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {get_grouped_modifier_by_effect.__name__}",
+        )
+
     all_grouped_modifiers_by_effect = (
         await CRUD_modifier.get_grouped_modifier_by_effect(db=db)
     )

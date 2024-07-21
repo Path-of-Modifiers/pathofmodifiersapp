@@ -24,12 +24,22 @@ stash_prefix = "stash"
     "/{stashId}",
     response_model=Union[schemas.Stash, List[schemas.Stash]],
 )
-async def get_stash(stashId: str, db: Session = Depends(get_db)):
+async def get_stash(
+    stashId: str,
+    db: Session = Depends(get_db),
+    verification: bool = Depends(verification),
+):
     """
     Get stash by key and value for "stashId".
 
     Always returns one stash.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {get_stash.__name__}",
+        )
+
     stash_map = {"stashId": stashId}
     stash = await CRUD_stash.get(db=db, filter=stash_map)
 
@@ -37,12 +47,20 @@ async def get_stash(stashId: str, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=Union[schemas.Stash, List[schemas.Stash]])
-async def get_all_stashes(db: Session = Depends(get_db)):
+async def get_all_stashes(
+    db: Session = Depends(get_db), verification: bool = Depends(verification)
+):
     """
     Get all stashes.
 
     Returns a list of all stashes.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {get_all_stashes.__name__}",
+        )
+
     all_stashes = await CRUD_stash.get(db=db)
 
     return all_stashes

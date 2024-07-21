@@ -24,12 +24,22 @@ item_base_type_prefix = "itemBaseType"
     "/{baseType}",
     response_model=Union[schemas.ItemBaseType, List[schemas.ItemBaseType]],
 )
-async def get_item_base_type(baseType: str, db: Session = Depends(get_db)):
+async def get_item_base_type(
+    baseType: str,
+    db: Session = Depends(get_db),
+    verification: bool = Depends(verification),
+):
     """
     Get item base type by key and value for "baseType".
 
     Always returns one item base type.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {get_item_base_type.__name__}",
+        )
+
     item_base_type_map = {"baseType": baseType}
     itemBaseType = await CRUD_itemBaseType.get(db=db, filter=item_base_type_map)
 
@@ -37,12 +47,20 @@ async def get_item_base_type(baseType: str, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=Union[schemas.ItemBaseType, List[schemas.ItemBaseType]])
-async def get_all_item_base_types(db: Session = Depends(get_db)):
+async def get_all_item_base_types(
+    db: Session = Depends(get_db), verification: bool = Depends(verification)
+):
     """
     Get all item base types.
 
     Returns a list of all item base types.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {get_all_item_base_types.__name__}",
+        )
+
     all_item_base_types = await CRUD_itemBaseType.get(db=db)
 
     return all_item_base_types
@@ -51,12 +69,20 @@ async def get_all_item_base_types(db: Session = Depends(get_db)):
 @router.get(
     "/baseTypes/", response_model=Union[schemas.BaseType, List[schemas.BaseType]]
 )
-async def get_base_types(db: Session = Depends(get_db)):
+async def get_base_types(
+    db: Session = Depends(get_db), verification: bool = Depends(verification)
+):
     """
     Get all base types.
 
     Returns a list of all base types.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {get_base_types.__name__}",
+        )
+
     all_base_types = await CRUD_itemBaseType.get_base_types(db=db)
 
     return all_base_types
@@ -68,12 +94,21 @@ async def get_base_types(db: Session = Depends(get_db)):
         schemas.ItemBaseTypeCategory, List[schemas.ItemBaseTypeCategory]
     ],
 )
-async def get_unique_categories(db: Session = Depends(get_db)):
+async def get_unique_categories(
+    db: Session = Depends(get_db),
+    verification: bool = Depends(verification),
+):
     """
     Get all unique categories.
 
     Returns a list of all categories.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {get_unique_categories.__name__}",
+        )
+
     all_categories = await CRUD_itemBaseType.get_unique_item_categories(db=db)
 
     return all_categories
@@ -85,12 +120,20 @@ async def get_unique_categories(db: Session = Depends(get_db)):
         schemas.ItemBaseTypeSubCategory, List[schemas.ItemBaseTypeSubCategory]
     ],
 )
-async def get_unique_sub_categories(db: Session = Depends(get_db)):
+async def get_unique_sub_categories(
+    db: Session = Depends(get_db), verification: bool = Depends(verification)
+):
     """
     Get all unique sub categories.
 
     Returns a list of all sub categories.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {get_unique_sub_categories.__name__}",
+        )
+
     all_sub_categories = await CRUD_itemBaseType.get_unique_item_sub_categories(db=db)
 
     return all_sub_categories

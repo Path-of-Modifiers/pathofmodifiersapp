@@ -25,12 +25,22 @@ item_prefix = "item"
     "/{itemId}",
     response_model=Union[schemas.Item, List[schemas.Item]],
 )
-async def get_item(itemId: str, db: Session = Depends(get_db)):
+async def get_item(
+    itemId: str,
+    db: Session = Depends(get_db),
+    verification: bool = Depends(verification),
+):
     """
     Get item by key and value for "itemId".
 
     Always returns one item.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {get_item.__name__}",
+        )
+
     item_map = {"itemId": itemId}
     item = await CRUD_item.get(db=db, filter=item_map)
 
@@ -38,12 +48,21 @@ async def get_item(itemId: str, db: Session = Depends(get_db)):
 
 
 @router.get("/latest_item_id/", response_model=int, tags=["latest_item_id"])
-async def get_latest_item_id(db: Session = Depends(get_db)):
+async def get_latest_item_id(
+    db: Session = Depends(get_db),
+    verification: bool = Depends(verification),
+):
     """
     Get the latest "itemId"
 
     Can only be used safely on an empty table or directly after an insertion.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {get_latest_item_id.__name__}",
+        )
+
     result = db.execute(text("""SELECT MAX("itemId") FROM item""")).fetchone()
     if result:
         return int(result[0])
@@ -52,12 +71,21 @@ async def get_latest_item_id(db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=Union[schemas.Item, List[schemas.Item]])
-async def get_all_items(db: Session = Depends(get_db)):
+async def get_all_items(
+    db: Session = Depends(get_db),
+    verification: bool = Depends(verification),
+):
     """
     Get all items.
 
     Returns a list of all items.
     """
+    if not verification:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Unauthorized API access for {get_all_items.__name__}",
+        )
+
     all_items = await CRUD_item.get(db=db)
 
     return all_items
