@@ -182,11 +182,11 @@ class APIHandler:
         if n == 0:
             # End of recursion
             return []
-        waiting_for_next_id_lock.acquire()
+        print(f"Thread {threading.get_ident()} acquired lock.")
         if self.requests_since_last_checkpoint == 30:
             # End of expedition
-            waiting_for_next_id_lock.release()
             return []
+        waiting_for_next_id_lock.acquire()
         async with session.get(
             self.url, params={"id": self.next_change_id}
         ) as response:
@@ -195,10 +195,10 @@ class APIHandler:
                 if response.status == 502:
                     waiting_for_next_id_lock.release()
                     time.sleep(2)
-                    self._send_n_recursion_requests(
+                    stashes = await self._send_n_recursion_requests(
                         n, session, waiting_for_next_id_lock
                     )
-                    return
+                    return stashes
                 response.raise_for_status()
 
             new_next_change_id = headers["X-Next-Change-Id"]
@@ -206,9 +206,9 @@ class APIHandler:
 
             self.requests_since_last_checkpoint += 1
             n -= 1
-            print(
-                f"New id ready, releasing lock. Current request count = {self.requests_since_last_checkpoint}"
-            )
+            # print(
+            #     f"New id ready, releasing lock. Current request count = {self.requests_since_last_checkpoint}"
+            # )
             if (
                 headers["X-Rate-Limit-Ip"].split(":")[0]
                 == headers["X-Rate-Limit-Ip-State"].split(":")[0]
@@ -216,6 +216,7 @@ class APIHandler:
                 print("Hit ratelimit, cooling down for one test period.")
                 time.sleep(int(headers["X-Rate-Limit-Ip"].split(":")[1]))
             waiting_for_next_id_lock.release()
+
             stashes = await self._send_n_recursion_requests(
                 n, session, waiting_for_next_id_lock
             )
@@ -244,6 +245,7 @@ class APIHandler:
                     stashes = await self._send_n_recursion_requests(
                         5, session, waiting_for_next_id_lock
                     )
+                    # print(f"Thread {threading.get_ident()} finished 5 requests")
                     stash_lock.acquire()
                     self.stashes += stashes
                     stash_lock.release()
