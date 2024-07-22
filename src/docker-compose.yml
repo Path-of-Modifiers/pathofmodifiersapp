@@ -16,9 +16,14 @@ services:
           - node.labels.${STACK_NAME?Variable not set}.pom-db-data == true
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+    shm_size: "8gb"
 
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_SERVER -p $POSTGRES_PORT']
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB -h $POSTGRES_SERVER -p $POSTGRES_PORT",
+        ]
       interval: 5s
       timeout: 5s
       retries: 5
