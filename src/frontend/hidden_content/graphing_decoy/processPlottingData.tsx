@@ -1,4 +1,4 @@
-import PostPlottingData from "./postPlottingData";
+import usePostPlottingData from "./postPlottingData";
 import { PlotQuery } from "../../client";
 import Datum from "../../schemas/Datum";
 import { allValueInChaos } from "./utils";
@@ -11,7 +11,7 @@ function GetPlotData(plotQuery: PlotQuery): {
   result: Datum[] | undefined;
   fetchStatus: string;
 } {
-  const { plotData, fetchStatus } = PostPlottingData(plotQuery);
+  const { plotData, fetchStatus } = usePostPlottingData(plotQuery);
   let result: Datum[] | undefined = undefined;
   if (plotData === undefined) {
     return { result, fetchStatus };
