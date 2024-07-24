@@ -187,12 +187,15 @@ class APIHandler:
                     if response.status == 502:
                         waiting_for_next_id_lock.release()
                         time.sleep(2)
-                        stashes = await self._send_n_recursion_requests(
+                        return await self._send_n_recursion_requests(
                             n, session, waiting_for_next_id_lock
                         )
-                        return stashes
                     elif response.status == 429:
                         time.sleep(int(headers["Retry-After"]))
+                        waiting_for_next_id_lock.release()
+                        return await self._send_n_recursion_requests(
+                            n, session, waiting_for_next_id_lock
+                        )
                     else:
                         response.raise_for_status()
 
@@ -225,7 +228,7 @@ class APIHandler:
                 return stashes
         except Exception as e:
             print("Exiting '_send_n_recursion_requests' gracefully")
-            self.logger.critical(e)
+            self.logger.critical(e.with_traceback())
             self.logger.info("Exiting '_send_n_recursion_requests' gracefully")
             if waiting_for_next_id_lock.locked():
                 print("Released lock after crash")
