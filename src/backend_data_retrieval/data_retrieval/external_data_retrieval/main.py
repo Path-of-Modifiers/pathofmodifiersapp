@@ -4,7 +4,7 @@ import pandas as pd
 from typing import Dict, List
 from concurrent.futures import ThreadPoolExecutor, Future, wait, FIRST_EXCEPTION
 
-from backend_data_retrieval.data_retrieval.external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
+from external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
     APIHandler,
 )
 from external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_ninja_currency_api import (
