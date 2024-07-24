@@ -191,7 +191,10 @@ class APIHandler:
                             n, session, waiting_for_next_id_lock
                         )
                         return stashes
-                    response.raise_for_status()
+                    elif response.status == 429:
+                        time.sleep(int(headers["Retry-After"]))
+                    else:
+                        response.raise_for_status()
 
                 new_next_change_id = headers["X-Next-Change-Id"]
                 # print(
