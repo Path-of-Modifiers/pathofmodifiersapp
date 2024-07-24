@@ -169,6 +169,7 @@ class APIHandler:
         waiting_for_next_id_lock: threading.Lock,
     ) -> List:
         stashes = []  # For exeption handling
+        headers = None  # For exeption handling
         if n == 0:
             # End of recursion
             return []
@@ -225,6 +226,14 @@ class APIHandler:
             self.logger.info("Exiting '_send_n_recursion_requests' gracefully")
             if waiting_for_next_id_lock.locked():
                 print("Released lock after crash")
+                if headers is not None:
+                    if (
+                        headers["X-Rate-Limit-Ip"].split(":")[0]
+                        == headers["X-Rate-Limit-Ip-State"].split(":")[0]
+                    ):
+                        print("Hit ratelimit, cooling down for one test period.")
+                        time.sleep(int(headers["X-Rate-Limit-Ip"].split(":")[1]))
+
                 waiting_for_next_id_lock.release()
             raise e
 
