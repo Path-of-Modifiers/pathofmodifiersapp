@@ -193,9 +193,9 @@ class APIHandler:
                     response.raise_for_status()
 
                 new_next_change_id = headers["X-Next-Change-Id"]
-                print(
-                    f"Thread {threading.get_ident()} acquired lock. Current id={self.next_change_id}, next id={new_next_change_id}"
-                )
+                # print(
+                #     f"Thread {threading.get_ident()} acquired lock. Current id={self.next_change_id}, next id={new_next_change_id}"
+                # )
                 self.next_change_id = new_next_change_id
 
                 self.requests_since_last_checkpoint += 1
@@ -248,7 +248,7 @@ class APIHandler:
                     stashes = await self._send_n_recursion_requests(
                         5, session, waiting_for_next_id_lock
                     )
-                    print(f"Thread {threading.get_ident()} finished 5 requests")
+                    # print(f"Thread {threading.get_ident()} finished 5 requests")
                     stash_lock.acquire()
                     self.stashes += stashes
                     stash_lock.release()
@@ -298,7 +298,7 @@ class APIHandler:
         stash_lock.release()
         stashes_ready_event.clear()
 
-        print("Copied stashes locally and reset the event.")
+        # print("Copied stashes locally and reset the event.")
         wandted_df = self._check_stashes(stashes_local)
         df = pd.concat((df, wandted_df))
         print("Finished processing the data, waiting for more.")
@@ -376,3 +376,4 @@ class APIHandler:
                 print("Finished processing the stream, entering transformation phase")
                 yield df.reset_index()
                 del df
+                print("Finished transformation phase.")
