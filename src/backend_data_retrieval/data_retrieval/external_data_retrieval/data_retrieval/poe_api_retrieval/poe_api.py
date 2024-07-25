@@ -182,19 +182,14 @@ class APIHandler:
             ) as response:
                 headers = response.headers
                 if response.status >= 300:
-                    if response.status == 502:
-                        waiting_for_next_id_lock.release()
-                        time.sleep(2)
-                        return await self._send_n_recursion_requests(
-                            n, session, waiting_for_next_id_lock
-                        )
-                    elif response.status == 429:
+                    if response.status == 429:
                         time.sleep(int(headers["Retry-After"]))
                         waiting_for_next_id_lock.release()
                         return await self._send_n_recursion_requests(
                             n, session, waiting_for_next_id_lock
                         )
                     else:
+                        waiting_for_next_id_lock.release()
                         response.raise_for_status()
 
                 new_next_change_id = headers["X-Next-Change-Id"]
