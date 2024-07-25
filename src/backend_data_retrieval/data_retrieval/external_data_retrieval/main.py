@@ -182,7 +182,20 @@ class ContiniousDataRetrieval:
                         except ProgramTooSlowException:
                             print("Program was too slow")
                             self.poe_api_handler.set_program_too_slow()
-                            time.sleep(5)
+
+                            while True:
+                                threads_still_running = []
+                                for future, future_job in futures.items():
+                                    if future_job == "listener":
+                                        thread_running_status = future.running()
+                                        threads_still_running.append(
+                                            thread_running_status
+                                        )
+                                if any(threads_still_running):
+                                    time.sleep(1)
+                                else:
+                                    break
+
                             raise ProgramTooSlowException
                         except Exception:
                             follow_future = executor.submit(
