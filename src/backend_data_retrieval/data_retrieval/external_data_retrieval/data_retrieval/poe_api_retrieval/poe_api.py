@@ -6,9 +6,7 @@ import aiohttp
 import os
 import threading
 import pandas as pd
-from tqdm import tqdm
-from copy import deepcopy
-from typing import List, Union, Tuple, Dict, Coroutine, Iterator, Optional
+from typing import List, Union, Dict, Iterator
 from concurrent.futures import ThreadPoolExecutor, Future
 
 from external_data_retrieval.detectors.unique_detector import (

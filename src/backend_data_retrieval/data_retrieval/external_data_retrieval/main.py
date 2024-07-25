@@ -2,7 +2,7 @@ import logging
 import os
 import time
 import pandas as pd
-from typing import Dict, List
+from typing import Dict
 from concurrent.futures import ThreadPoolExecutor, Future, wait, FIRST_EXCEPTION
 
 from external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
