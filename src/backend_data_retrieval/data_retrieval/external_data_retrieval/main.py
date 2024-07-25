@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 import pandas as pd
 from typing import Dict, List
 from concurrent.futures import ThreadPoolExecutor, Future, wait, FIRST_EXCEPTION
@@ -17,6 +18,7 @@ from external_data_retrieval.transforming_data.transform_poe_api_data import (
     PoeAPIDataTransformer,
     UniquePoeAPIDataTransformer,
 )
+from external_data_retrieval.utils import ProgramTooSlowException
 
 logger = logging.getLogger("external_data_retrieval")
 logging.basicConfig(
@@ -145,9 +147,11 @@ class ContiniousDataRetrieval:
                         modifier_df=modifier_dfs[data_transformer_type],
                         currency_df=currency_df.copy(deep=True),
                     )
-        except Exception as e:
-            self.logger.critical(e)
-            raise e
+        except Exception:
+            self.logger.exception(
+                "The following exception occured during '_follow_data_dump_stream'"
+            )
+            raise
 
     def retrieve_data(self):
         self.logger.info("Program starting up.")
@@ -165,26 +169,44 @@ class ContiniousDataRetrieval:
                     done_futures, not_done_futures = wait(
                         futures, return_when=FIRST_EXCEPTION
                     )
-                    print("Some future crashed, rebooting it.", done_futures)
                     crashed_future = list(done_futures)[0]
-                    crashed_future_reason = futures.pop(crashed_future)
-                    if crashed_future_reason == "listener":
+                    future_job = futures.pop(crashed_future)
+                    print(
+                        f"Some future crashed, rebooting it ({future_job}).",
+                        done_futures,
+                    )
+                    if future_job == "data_processing":
+                        crashed_future_exception = crashed_future.exception()
+                        try:
+                            raise crashed_future_exception
+                        except ProgramTooSlowException:
+                            print("Program was too slow")
+                            self.poe_api_handler.set_program_too_slow()
+                            time.sleep(5)
+                            raise ProgramTooSlowException
+                        except Exception:
+                            follow_future = executor.submit(
+                                self._follow_data_dump_stream
+                            )
+                            futures[follow_future] = "data_processing"
+                    elif future_job == "listener":
                         new_future = self._start_data_stream(
-                            executor, listeners=1, has_crashed=True
+                            executor,
+                            listeners=1,
+                            has_crashed=True,
                         )
                         futures[new_future] = "listener"
-                        print("Started a new thread:, ", new_future)
-                    elif crashed_future_reason == "data_processing":
-                        follow_future = executor.submit(self._follow_data_dump_stream)
-                        futures[follow_future] = "data_processing"
-                        print("Started a new thread:, ", follow_future)
-
-        except Exception as e:
-            self.logger.critical(e)
-            raise e
+        except ProgramTooSlowException:
+            self.logger.critical("Program was too slow, restarting.")
+        except Exception:
+            self.logger.exception(
+                "The following exception occured during 'retrieve_data'"
+            )
+            raise
 
 
 def main():
+    print("Starting a new thing")
     items_per_batch = 300
     data_transformers = {"unique": UniquePoeAPIDataTransformer}
 

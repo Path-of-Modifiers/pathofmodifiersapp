@@ -64,3 +64,7 @@ def sync_timing_tracker(func: Callable) -> Callable:
         return result
 
     return wrap
+
+
+class ProgramTooSlowException(Exception):
+    pass

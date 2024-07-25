@@ -19,7 +19,7 @@ from external_data_retrieval.detectors.unique_detector import (
     UniqueDetector,
 )
 
-from external_data_retrieval.utils import sync_timing_tracker
+from external_data_retrieval.utils import sync_timing_tracker, ProgramTooSlowException
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
@@ -75,22 +75,8 @@ class APIHandler:
 
         self.logger = logger_parent.getChild("API_handler")
 
-        self.time_for_last_ratelimit = None
-
-    @property
-    def recently_ratelimited(self) -> bool:
-        """
-        To avoid continously running into the rate limit, we want to track
-        if we have recently been rate limited. Currently "recently" refers
-        to 180 seconds. If we have been recently ratelimited, you can choose
-        to act differently, such as adding artificial delay.
-        """
-        if self.time_for_last_ratelimit is None:
-            return False
-        elif time.perf_counter() - self.time_for_last_ratelimit > 180:
-            return False
-        else:
-            return True
+        self._program_too_slow = False
+        self.time_of_launch = time.perf_counter()
 
     def _json_to_df(self, stashes: List) -> pd.DataFrame:
         df_temp = pd.json_normalize(stashes)
@@ -175,6 +161,8 @@ class APIHandler:
         if self.requests_since_last_checkpoint == 30:
             # End of expedition
             return []
+        if self._program_too_slow:
+            raise ProgramTooSlowException
         waiting_for_next_id_lock.acquire()
         try:
             async with session.get(
@@ -183,6 +171,7 @@ class APIHandler:
                 headers = response.headers
                 if response.status >= 300:
                     if response.status == 429:
+                        print(headers)
                         time.sleep(int(headers["Retry-After"]))
                         waiting_for_next_id_lock.release()
                         return await self._send_n_recursion_requests(
@@ -325,9 +314,18 @@ class APIHandler:
     ) -> pd.DataFrame:
         df = pd.DataFrame()
         for i in range(n):
+            start_time = time.perf_counter()
             df = self._process_stream(stashes_ready_event, stash_lock, df)
+            end_time = time.perf_counter()
+
+            time_per_batch = end_time - start_time
+            if time_per_batch > (2 * 60)
+                raise ProgramTooSlowException
 
         return df
+
+    def set_program_too_slow(self):
+        self._program_too_slow = True
 
     def start_data_stream(
         self, executor: ThreadPoolExecutor, listeners: int, has_crashed: bool
@@ -362,7 +360,10 @@ class APIHandler:
             futures[future] = "listener"
 
         if has_crashed:
-            return future
+            if len(futures) == 1:
+                return future
+            else:
+                return futures.keys()
         else:
             return futures
 
@@ -390,3 +391,7 @@ class APIHandler:
                 yield df.reset_index()
                 del df
                 print("Finished transformation phase.")
+                current_time = time.perf_counter()
+                time_since_launch = current_time - self.time_of_launch
+                if time_since_launch > 3600:
+                    raise ProgramTooSlowException
