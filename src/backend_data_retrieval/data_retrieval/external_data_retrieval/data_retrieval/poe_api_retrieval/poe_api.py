@@ -134,12 +134,11 @@ class APIHandler:
                 n_total_unique_items += n_unique_found_items
 
                 df = df_leftover.copy(deep=True)
-        except Exception as e:
-            self.logger.critical(
+        except:
+            self.logger.exception(
                 f"While checking stashes (detector: {item_detector}), the exception below occured:"
             )
-            self.logger.critical(e)
-            raise e
+            raise
 
         # Updates progress bars
         self.n_found_items += n_new_items
@@ -168,7 +167,6 @@ class APIHandler:
         session: aiohttp.ClientSession,
         waiting_for_next_id_lock: threading.Lock,
     ) -> List:
-        stashes = []  # For exeption handling
         headers = None  # For exeption handling
         if n == 0:
             # End of recursion
@@ -226,12 +224,14 @@ class APIHandler:
                 stashes += response_json["stashes"]
                 del response_json
                 return stashes
-        except Exception as e:
+        except:
             print("Exiting '_send_n_recursion_requests' gracefully")
-            self.logger.critical(e.with_traceback())
+            self.logger.exception(
+                "The following exception occured during '_send_n_recursion_requests'"
+            )
             self.logger.info("Exiting '_send_n_recursion_requests' gracefully")
             if waiting_for_next_id_lock.locked():
-                print("Released lock after crash")
+                self.logger.info("Released lock after crash")
                 if headers is not None:
                     if (
                         headers["X-Rate-Limit-Ip"].split(":")[0]
@@ -241,7 +241,7 @@ class APIHandler:
                         time.sleep(int(headers["X-Rate-Limit-Ip"].split(":")[1]))
 
                 waiting_for_next_id_lock.release()
-            raise e
+            raise
 
     async def _follow_stream(
         self,
@@ -254,7 +254,8 @@ class APIHandler:
         """
         stashes = []  # For exeption handling
 
-        session = aiohttp.ClientSession(headers=self.headers)
+        timeout = aiohttp.ClientTimeout(total=60)
+        session = aiohttp.ClientSession(headers=self.headers, timeout=timeout)
         expedition_depth = 30
         try:
             while True:
@@ -272,9 +273,11 @@ class APIHandler:
                 stashes = []
                 stashes_ready_event.set()
                 time.sleep(1)
-        except Exception as e:
-            self.logger.critical(e)
-            raise e
+        except:
+            self.logger.exception(
+                "The following exception occured during '_follow_stream'"
+            )
+            raise
         finally:
             self.logger.info("Exiting '_follow_stream' gracefully.")
             print("Exiting '_follow_stream' gracefully.")
