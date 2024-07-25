@@ -3,7 +3,13 @@ import os
 import time
 import pandas as pd
 from typing import Dict
-from concurrent.futures import ThreadPoolExecutor, Future, wait, FIRST_EXCEPTION
+from concurrent.futures import (
+    ThreadPoolExecutor,
+    Future,
+    wait,
+    FIRST_EXCEPTION,
+    ALL_COMPLETED,
+)
 
 from external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
     APIHandler,
@@ -161,7 +167,6 @@ class ContiniousDataRetrieval:
         try:
             with ThreadPoolExecutor(max_workers=max_workers) as executor:
                 futures = self._start_data_stream(executor, listeners=listeners)
-                print(futures)
                 follow_future = executor.submit(self._follow_data_dump_stream)
                 futures[follow_future] = "data_processing"
                 print("Waiting for futures to crash.")
@@ -183,21 +188,10 @@ class ContiniousDataRetrieval:
                             print("Program was too slow")
                             self.poe_api_handler.set_program_too_slow()
 
-                            while True:
-                                threads_still_running = []
-                                for future, future_job in futures.items():
-                                    if future_job == "listener":
-                                        thread_running_status = future.running()
-                                        threads_still_running.append(
-                                            thread_running_status
-                                        )
-                                if any(threads_still_running):
-                                    time.sleep(1)
-                                else:
-                                    break
+                            wait(futures, return_when=ALL_COMPLETED)
 
                             raise ProgramTooSlowException
-                        except Exception:
+                        except:
                             follow_future = executor.submit(
                                 self._follow_data_dump_stream
                             )
@@ -219,7 +213,7 @@ class ContiniousDataRetrieval:
 
 
 def main():
-    print("Starting a new thing")
+    print("Starting the program.")
     items_per_batch = 300
     data_transformers = {"unique": UniquePoeAPIDataTransformer}
 
