@@ -137,10 +137,12 @@ class ContiniousDataRetrieval:
         currency_df = self.poe_ninja_transformer.transform_into_tables(currency_df)
         return currency_df
 
-    def _start_data_stream(
+    def _initialize_data_stream_threads(
         self, executor: ThreadPoolExecutor, listeners: int, has_crashed: bool = False
     ) -> Dict[Future, str]:
-        return self.poe_api_handler.start_data_stream(executor, listeners, has_crashed)
+        return self.poe_api_handler.initialize_data_stream_threads(
+            executor, listeners, has_crashed
+        )
 
     def _follow_data_dump_stream(self):
         try:
@@ -170,7 +172,9 @@ class ContiniousDataRetrieval:
         listeners = max_workers - 1  # minus one because of transformation threa
         try:
             with ThreadPoolExecutor(max_workers=max_workers) as executor:
-                futures = self._start_data_stream(executor, listeners=listeners)
+                futures = self._initialize_data_stream_threads(
+                    executor, listeners=listeners
+                )
                 follow_future = executor.submit(self._follow_data_dump_stream)
                 futures[follow_future] = "data_processing"
                 print("Waiting for futures to crash.")
@@ -201,7 +205,7 @@ class ContiniousDataRetrieval:
                             )
                             futures[follow_future] = "data_processing"
                     elif future_job == "listener":
-                        new_future = self._start_data_stream(
+                        new_future = self._initialize_data_stream_threads(
                             executor,
                             listeners=1,
                             has_crashed=True,
