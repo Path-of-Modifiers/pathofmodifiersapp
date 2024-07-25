@@ -190,7 +190,7 @@ class APIHandler:
                         time.sleep(int(headers["Retry-After"]))
                         waiting_for_next_id_lock.release()
                         return await self._send_n_recursion_requests(
-                            n, session, waiting_for_next_id_lock
+                            n, session, waiting_for_next_id_lock, mini_batch_size
                         )
                     else:
                         waiting_for_next_id_lock.release()
@@ -216,7 +216,7 @@ class APIHandler:
                 waiting_for_next_id_lock.release()
 
                 stashes = await self._send_n_recursion_requests(
-                    n, session, waiting_for_next_id_lock
+                    n, session, waiting_for_next_id_lock, mini_batch_size
                 )
 
                 response_json = await response.json()
