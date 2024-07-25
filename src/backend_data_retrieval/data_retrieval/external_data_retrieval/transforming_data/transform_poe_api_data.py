@@ -4,7 +4,7 @@ import logging
 import pandas as pd
 from typing import List
 
-from pom_api_authentication import get_super_authentication
+from pom_api_authentication import get_basic_authentication, get_super_authentication
 from modifier_data_deposit.utils import insert_data
 from external_data_retrieval.transforming_data.utils import (
     get_rolls,
@@ -78,12 +78,12 @@ class PoeAPIDataTransformer:
 
     def _clean_stash_table(self, stash_df: pd.DataFrame) -> pd.DataFrame:
         stash_df = stash_df.drop_duplicates(["stashId"])  # , "accountName", "league"])
-        headers = {"Authorization": self.pom_api_authentication}
+        headers = {"Authorization": get_basic_authentication()}
         db_stash_df = pd.read_json(
             self.url + "/stash/", dtype=str, storage_options=headers
         )
         if db_stash_df.empty:
-            return stash_dfF
+            return stash_df
 
         stash_df = stash_df.loc[~stash_df["stashId"].isin(db_stash_df["stashId"])]
         return stash_df
@@ -132,7 +132,7 @@ class PoeAPIDataTransformer:
         self, item_basetype_df: pd.DataFrame
     ) -> pd.DataFrame:
         item_basetype_df = item_basetype_df.drop_duplicates(["baseType"])
-        headers = {"Authorization": self.pom_api_authentication}
+        headers = {"Authorization": get_basic_authentication()}
         db_item_basetype_df = pd.read_json(
             self.url + "/itemBaseType/", dtype=str, storage_options=headers
         )
