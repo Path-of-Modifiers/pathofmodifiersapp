@@ -11,7 +11,7 @@ from modifier_data_deposit.modifier_processing_modules import (
     check_for_additional_modifier_types,
 )
 from modifier_data_deposit.utils import df_to_JSON
-from pom_api_authentication import get_super_authentication
+from pom_api_authentication import get_basic_authentication, get_super_authentication
 
 logging.basicConfig(
     filename="modifier_data_deposit.log",
@@ -69,7 +69,7 @@ class DataDepositer:
 
     def _get_current_modifiers(self) -> Optional[pd.DataFrame]:
         self.logger.info("Retrieving previously deposited data.")
-        headers = {"Authorization": self.pom_api_authentication}
+        headers = {"Authorization": get_basic_authentication()}
         df = pd.read_json(self.url, dtype=str, storage_options=headers)
         if df.empty:
             self.logger.info("Found no previously deposited data.")

@@ -1,3 +1,4 @@
+from base64 import b64encode
 from inspect import iscoroutinefunction
 import os
 import random
@@ -217,6 +218,5 @@ def get_super_authentication() -> HTTPBasicAuth:
     """
     authentication = HTTPBasicAuth(FIRST_SUPERUSER, FIRST_SUPERUSER_PASSWORD)
     return authentication
-
 
 

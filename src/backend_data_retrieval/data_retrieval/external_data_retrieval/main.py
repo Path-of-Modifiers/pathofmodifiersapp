@@ -11,7 +11,7 @@ from concurrent.futures import (
     ALL_COMPLETED,
 )
 
-from pom_api_authentication import get_super_authentication
+from pom_api_authentication import get_super_authentication, get_basic_authentication
 from external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
     APIHandler,
 )
@@ -81,7 +81,7 @@ class ContiniousDataRetrieval:
         self.logger = logger
 
     def _get_modifiers(self) -> Dict[str, pd.DataFrame]:
-        headers = {"Authorization": self.pom_authentication}
+        headers = {"Authorization": get_basic_authentication()}
         modifier_df = pd.read_json(
             self.modifier_url, dtype=str, storage_options=headers
         )
