@@ -1,5 +1,9 @@
+import os
 import pandas as pd
 from typing import Tuple
+
+
+CURRENT_SOFTCORE_LEAGUE = os.getenv("CURRENT_SOFTCORE_LEAGUE")
 
 
 class DetectorBase:
@@ -9,6 +13,8 @@ class DetectorBase:
 
     wanted_items = {}
     found_items = {}
+
+    current_league = CURRENT_SOFTCORE_LEAGUE
 
     def __init__(self) -> None:
         """
@@ -37,6 +43,8 @@ class DetectorBase:
             df = df.loc[df["hybrid"].isnull()]
         if "ultimatumMods" in columns:
             df = df.loc[df["ultimatumMods"].isnull()]
+
+        df = df.loc[df["league"] == self.current_league]
 
         return df
 
