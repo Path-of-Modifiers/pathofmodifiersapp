@@ -347,8 +347,8 @@ class APIHandler:
             df = self._process_stream(stashes_ready_event, stash_lock, df)
             end_time = time.perf_counter()
 
-            time_per_batch = end_time - start_time
-            if time_per_batch > (2 * 60):
+            time_per_mini_batch = end_time - start_time
+            if time_per_mini_batch > (2 * 60):
                 # Does not allow a batch to take longer than 2 minutes
                 raise ProgramTooSlowException
 
@@ -361,7 +361,7 @@ class APIHandler:
         """
         self._program_too_slow = True
 
-    def start_data_stream(
+    def initialize_data_stream_threads(
         self, executor: ThreadPoolExecutor, listeners: int, has_crashed: bool
     ) -> Dict[Future, str] | Future:
         """
