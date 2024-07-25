@@ -319,7 +319,7 @@ class APIHandler:
             end_time = time.perf_counter()
 
             time_per_batch = end_time - start_time
-            if time_per_batch > (2 * 60)
+            if time_per_batch > (2 * 60):
                 raise ProgramTooSlowException
 
         return df
