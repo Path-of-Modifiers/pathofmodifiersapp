@@ -11,6 +11,7 @@ from concurrent.futures import (
     ALL_COMPLETED,
 )
 
+from pom_api_authentication import get_super_authentication, get_basic_authentication
 from external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
     APIHandler,
 )
@@ -68,6 +69,7 @@ class ContiniousDataRetrieval:
             n_wanted_items=items_per_batch,
             n_unique_wanted_items=10,
         )
+        self.pom_authentication = get_super_authentication()
 
         self.poe_ninja_currency_api_handler = PoeNinjaCurrencyAPIHandler(
             url=f"https://poe.ninja/api/data/currencyoverview?league={self.current_league}&type=Currency"
@@ -79,8 +81,10 @@ class ContiniousDataRetrieval:
         self.logger = logger
 
     def _get_modifiers(self) -> Dict[str, pd.DataFrame]:
-
-        modifier_df = pd.read_json(self.modifier_url, dtype=str)
+        headers = {"Authorization": get_basic_authentication()}
+        modifier_df = pd.read_json(
+            self.modifier_url, dtype=str, storage_options=headers
+        )
         modifier_types = [
             "implicit",
             "explicit",
@@ -133,10 +137,12 @@ class ContiniousDataRetrieval:
         currency_df = self.poe_ninja_transformer.transform_into_tables(currency_df)
         return currency_df
 
-    def _start_data_stream(
+    def _initialize_data_stream_threads(
         self, executor: ThreadPoolExecutor, listeners: int, has_crashed: bool = False
     ) -> Dict[Future, str]:
-        return self.poe_api_handler.start_data_stream(executor, listeners, has_crashed)
+        return self.poe_api_handler.initialize_data_stream_threads(
+            executor, listeners, has_crashed
+        )
 
     def _follow_data_dump_stream(self):
         try:
@@ -166,7 +172,9 @@ class ContiniousDataRetrieval:
         listeners = max_workers - 1  # minus one because of transformation threa
         try:
             with ThreadPoolExecutor(max_workers=max_workers) as executor:
-                futures = self._start_data_stream(executor, listeners=listeners)
+                futures = self._initialize_data_stream_threads(
+                    executor, listeners=listeners
+                )
                 follow_future = executor.submit(self._follow_data_dump_stream)
                 futures[follow_future] = "data_processing"
                 print("Waiting for futures to crash.")
@@ -197,7 +205,7 @@ class ContiniousDataRetrieval:
                             )
                             futures[follow_future] = "data_processing"
                     elif future_job == "listener":
-                        new_future = self._start_data_stream(
+                        new_future = self._initialize_data_stream_threads(
                             executor,
                             listeners=1,
                             has_crashed=True,
