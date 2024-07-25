@@ -185,6 +185,7 @@ class APIHandler:
                 headers = response.headers
                 if response.status >= 300:
                     if response.status == 429:
+                        self.logger.critical("Recieved a 429 (ratelimited) response")
                         print(headers)
                         time.sleep(int(headers["Retry-After"]))
                         waiting_for_next_id_lock.release()
