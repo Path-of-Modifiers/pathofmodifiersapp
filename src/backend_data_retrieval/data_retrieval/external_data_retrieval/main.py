@@ -11,6 +11,7 @@ from concurrent.futures import (
     ALL_COMPLETED,
 )
 
+from pom_api_authentication import get_super_authentication
 from external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
     APIHandler,
 )
@@ -68,6 +69,7 @@ class ContiniousDataRetrieval:
             n_wanted_items=items_per_batch,
             n_unique_wanted_items=10,
         )
+        self.pom_authentication = get_super_authentication()
 
         self.poe_ninja_currency_api_handler = PoeNinjaCurrencyAPIHandler(
             url=f"https://poe.ninja/api/data/currencyoverview?league={self.current_league}&type=Currency"
@@ -79,8 +81,10 @@ class ContiniousDataRetrieval:
         self.logger = logger
 
     def _get_modifiers(self) -> Dict[str, pd.DataFrame]:
-
-        modifier_df = pd.read_json(self.modifier_url, dtype=str)
+        headers = {"Authorization": self.pom_authentication}
+        modifier_df = pd.read_json(
+            self.modifier_url, dtype=str, storage_options=headers
+        )
         modifier_types = [
             "implicit",
             "explicit",

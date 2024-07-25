@@ -78,9 +78,12 @@ class PoeAPIDataTransformer:
 
     def _clean_stash_table(self, stash_df: pd.DataFrame) -> pd.DataFrame:
         stash_df = stash_df.drop_duplicates(["stashId"])  # , "accountName", "league"])
-        db_stash_df = pd.read_json(self.url + "/stash/", dtype=str)
+        headers = {"Authorization": self.pom_api_authentication}
+        db_stash_df = pd.read_json(
+            self.url + "/stash/", dtype=str, storage_options=headers
+        )
         if db_stash_df.empty:
-            return stash_df
+            return stash_dfF
 
         stash_df = stash_df.loc[~stash_df["stashId"].isin(db_stash_df["stashId"])]
         return stash_df
@@ -129,7 +132,10 @@ class PoeAPIDataTransformer:
         self, item_basetype_df: pd.DataFrame
     ) -> pd.DataFrame:
         item_basetype_df = item_basetype_df.drop_duplicates(["baseType"])
-        db_item_basetype_df = pd.read_json(self.url + "/itemBaseType/", dtype=str)
+        headers = {"Authorization": self.pom_api_authentication}
+        db_item_basetype_df = pd.read_json(
+            self.url + "/itemBaseType/", dtype=str, storage_options=headers
+        )
         if db_item_basetype_df.empty:
             return item_basetype_df
 
@@ -290,7 +296,9 @@ class PoeAPIDataTransformer:
         return item_df
 
     def _get_latest_item_id_series(self, item_df: pd.DataFrame) -> pd.Series:
-        response = requests.get(self.url + "/item/latest_item_id/")
+        response = requests.get(
+            self.url + "/item/latest_item_id/", auth=self.pom_api_authentication
+        )
         response.raise_for_status()
         latest_item_id = int(response.text)
 

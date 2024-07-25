@@ -4,6 +4,8 @@ from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixe
 import requests
 import os
 
+from pom_api_authentication import get_super_authentication
+
 BASEURL = os.getenv("DOMAIN")
 
 logger = logging.getLogger(__name__)
@@ -28,7 +30,8 @@ def init() -> None:
             test_url = "https://" + BASEURL + "/api/api_v1/modifier/"
         else:
             test_url = "http://src-backend-1/api/api_v1/modifier/"
-        response = requests.get(test_url)
+        pom_api_authentication = get_super_authentication()
+        response = requests.get(test_url, auth=pom_api_authentication)
         response.raise_for_status()
     except Exception as e:
         logger.error(e)

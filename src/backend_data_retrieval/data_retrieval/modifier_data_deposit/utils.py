@@ -99,7 +99,8 @@ def insert_data(
 
 
 def retrieve_data(*, url: str, table_name: str) -> pd.DataFrame | None:
-    df = pd.read_json(url + f"/{table_name}/", dtype=str)
+    headers = {"Authorization": get_super_authentication()}
+    df = pd.read_json(url + f"/{table_name}/", dtype=str, storage_options=headers)
     if df.empty:
         return None
     return df
