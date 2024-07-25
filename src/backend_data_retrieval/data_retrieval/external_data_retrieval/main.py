@@ -173,9 +173,11 @@ class ContiniousDataRetrieval:
                             executor, listeners=1, has_crashed=True
                         )
                         futures[new_future] = "listener"
+                        print("Started a new thread:, ", new_future)
                     elif crashed_future_reason == "data_processing":
                         follow_future = executor.submit(self._follow_data_dump_stream)
                         futures[follow_future] = "data_processing"
+                        print("Started a new thread:, ", follow_future)
 
         except Exception as e:
             self.logger.critical(e)
