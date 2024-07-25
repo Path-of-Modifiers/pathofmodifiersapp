@@ -139,7 +139,7 @@ class ContiniousDataRetrieval:
             get_df = self.poe_api_handler.dump_stream()
             for i, df in enumerate(get_df):
                 split_dfs = self._categorize_new_items(df)
-                if i % 10 == 0:
+                if i % 50 == 0:
                     currency_df = self._get_new_currency_data()
                 for data_transformer_type in self.data_transformers:
                     self.data_transformers[data_transformer_type].transform_into_tables(
