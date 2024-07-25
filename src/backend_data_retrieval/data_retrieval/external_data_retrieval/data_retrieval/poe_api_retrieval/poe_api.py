@@ -132,6 +132,16 @@ class APIHandler:
         return df_wanted.reset_index()
 
     def _get_latest_change_id(self) -> str:
+        """
+        Gets the latest change id from GGG or uses a manual one.
+        The change id provided by GGG does not become available in the stream
+        before 5 minutes. A manual next change id circumvents this wait.
+        """
+
+        if MANUAL_NEXT_CHANGE_ID:  # For testing purposes, set manual next_change_id
+            next_change_id = NEXT_CHANGE_ID
+            return next_change_id
+
         response = requests.get(
             "https://www.pathofexile.com/api/trade/data/change-ids",
             headers={"User-Agent": self.headers["User-Agent"]},
@@ -140,9 +150,6 @@ class APIHandler:
         response_json = response.json()
         next_change_id = response_json["psapi"]
 
-        if MANUAL_NEXT_CHANGE_ID:  # For testing purposes, set manual next_change_id
-            next_change_id = NEXT_CHANGE_ID
-
         return next_change_id
 
     async def _send_n_recursion_requests(
@@ -150,14 +157,23 @@ class APIHandler:
         n: int,
         session: aiohttp.ClientSession,
         waiting_for_next_id_lock: threading.Lock,
+        mini_batch_size: int,
     ) -> List:
+        """
+        Because we are restricted by the `next_change_id`, queueing get requests is non trivial.
+        We therefore send a non-blocking get request and retrieve the `next_change_id` from the headers
+        and immediately send another request, without waiting for the response body. This is repeated
+        `n` times before finally waiting for the response body.
+
+        The `waiting_for_next_id_lock` is required to make any request.
+        """
         headers = None  # For exeption handling
         if n == 0:
             # End of recursion
             return []
 
-        if self.requests_since_last_checkpoint == 30:
-            # End of expedition
+        if self.requests_since_last_checkpoint == mini_batch_size:
+            # End of batch
             return []
         if self._program_too_slow:
             raise ProgramTooSlowException
@@ -232,19 +248,20 @@ class APIHandler:
         stash_lock: threading.Lock,
     ):
         """
-        Follows the API stream until conditions are met
+        Follows the API stream for 30 requests before letting another thread take
+        the stashes. Sends 5 requets before waiting to recieve the request body.
         """
         stashes = []  # For exeption handling
 
         timeout = aiohttp.ClientTimeout(total=60)
         session = aiohttp.ClientSession(headers=self.headers, timeout=timeout)
-        expedition_depth = 30
+        mini_batch_size = 30
         try:
             while True:
-                while self.requests_since_last_checkpoint < expedition_depth:
+                while self.requests_since_last_checkpoint < mini_batch_size:
 
                     stashes = await self._send_n_recursion_requests(
-                        5, session, waiting_for_next_id_lock
+                        5, session, waiting_for_next_id_lock, mini_batch_size
                     )
                     # print(f"Thread {threading.get_ident()} finished 5 requests")
                     stash_lock.acquire()
@@ -272,6 +289,9 @@ class APIHandler:
         waiting_for_next_id_lock: threading.Lock,
         stash_lock: threading.Lock,
     ):
+        """
+        Needed to run an async function from a submit call.
+        """
         asyncio.run(
             self._follow_stream(
                 stashes_ready_event, waiting_for_next_id_lock, stash_lock
@@ -285,6 +305,13 @@ class APIHandler:
         stash_lock: threading.Lock,
         df: pd.DataFrame,
     ) -> pd.DataFrame:
+        """
+        Waits for stashes to be ready (a mini batch), copies them over to the local scope
+        of the method, deletes the stashes stored in the class instance,
+        and resets the internal mini batch counter.
+
+        Then checks the stashes (filters them).
+        """
 
         stashes_ready_event.wait()
         stash_lock.acquire()
@@ -310,6 +337,10 @@ class APIHandler:
         stash_lock: threading.Lock,
         n: int = 10,
     ) -> pd.DataFrame:
+        """
+        The data collecting is divided into mini batches and batches.
+        A batch size is determined by n, and the mini batch size (currently hard coded to be 30).
+        """
         df = pd.DataFrame()
         for i in range(n):
             start_time = time.perf_counter()
@@ -318,16 +349,27 @@ class APIHandler:
 
             time_per_batch = end_time - start_time
             if time_per_batch > (2 * 60):
+                # Does not allow a batch to take longer than 2 minutes
                 raise ProgramTooSlowException
 
         return df
 
     def set_program_too_slow(self):
+        """
+        Used to forceall threads to crash, letting the program shut down.
+        This method should not be used unless `self.dump_stream` has raised a `ProgramTooSlowException`
+        """
         self._program_too_slow = True
 
     def start_data_stream(
         self, executor: ThreadPoolExecutor, listeners: int, has_crashed: bool
     ) -> Dict[Future, str] | Future:
+        """
+        Creates the communication tools between threads and store them for later use.
+        Gets the latest change id, and initializes the listeners.
+
+        If `has_crashed` is True, these communication tools are not recreated, but reused.
+        """
         if not has_crashed:
             stashes_ready_event = threading.Event()
             waiting_for_next_id_lock = threading.Lock()
@@ -365,11 +407,9 @@ class APIHandler:
         else:
             return futures
 
-    def dump_stream(
-        self, track_progress: bool = True, listeners: int = 2
-    ) -> Iterator[pd.DataFrame]:
+    def dump_stream(self, track_progress: bool = True) -> Iterator[pd.DataFrame]:
         """
-        The method which begins making API calls and fetching data.
+        The method uses premad thread communication tools, which requires `start_data_stream` to have been called previously.
 
         Parameters:
             :track_progress: (bool) Defaults to True. Currently has no function
@@ -381,7 +421,7 @@ class APIHandler:
         except AttributeError:
             raise Exception("The method 'start_data_stream' must be called prior")
         else:
-            time.sleep(5)
+            time.sleep(5)  # Waits for the listening threads to have time to start up.
             while True:
                 print("Begining processing the stream")
                 df = self._gather_n_checkpoints(stashes_ready_event, stash_lock)
