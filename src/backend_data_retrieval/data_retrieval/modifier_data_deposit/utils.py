@@ -4,7 +4,7 @@ import logging
 import pandas as pd
 from typing import List, Dict, Any, Union, Optional
 
-from pom_api_authentication import get_super_authentication
+from pom_api_authentication import get_basic_authentication, get_super_authentication
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -99,7 +99,8 @@ def insert_data(
 
 
 def retrieve_data(*, url: str, table_name: str) -> pd.DataFrame | None:
-    df = pd.read_json(url + f"/{table_name}/", dtype=str)
+    headers = {"Authorization": get_basic_authentication()}
+    df = pd.read_json(url + f"/{table_name}/", dtype=str, storage_options=headers)
     if df.empty:
         return None
     return df
