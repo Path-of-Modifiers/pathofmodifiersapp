@@ -35,17 +35,16 @@ Copy the content and use that as password / secret key. And run that again to ge
 
 ```bash
 // vite.config.ts
-import { defineConfig } from "vite";
-import { TanStackRouterVite } from "@tanstack/router-vite-plugin";
+import { TanStackRouterVite } from "@tanstack/router-vite-plugin"
+import react from "@vitejs/plugin-react-swc"
+import { defineConfig } from "vite"
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    // ...,
-    TanStackRouterVite(),
-  ],
-});                                                                                                                                                            
+  plugins: [react(), TanStackRouterVite()],
+});                                                                                                                                               
 ```
+
 4. In `src/frontend/src/env-vars.tsx`, change:
 ```bash
 defaultSoftcoreLeague = "Current league";
