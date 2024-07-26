@@ -1,8 +1,15 @@
 # Path of Modifiers - Deployment
 
+## Preparation
+
+ - Have a remote server ready and available.
+ - Configure the DNS records of your domain to point to the IP of the server you just created.
+ - Configure a wildcard subdomain for your domain, so that you can have multiple subdomains for different services, `*.pathofmodifiers.com`. This will be useful for accessing different components, like `traefik.pathofmodifiers.com`, `adminer.pathofmodifiers.com`, etc. And also for staging, like `staging.pathofmodifiers.com`, `staging.adminer.pathofmodifiers.com`, etc.
+ - Install and configure [Docker][https://docs.docker.com/engine/install/ubuntu/] on the remote server (Docker Engine, not Docker Desktop).
+
 ## Setting up environment variables 
 
-1. Follow the steps to set the `changethis` variables in [Generate secret keys](#generate-secret-keys). 
+Follow the steps to set the `changethis` variables in [Generate secret keys](#generate-secret-keys). 
 
 ### <a id="generate-secret-keys"></a> Generate secret keys
 
