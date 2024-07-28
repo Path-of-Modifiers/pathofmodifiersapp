@@ -122,6 +122,12 @@ Create an environment variable with the email for Let's Encrypt:
 export EMAIL=pomodifiers@outlook.com
 ```
 
+Create an environment variable with the CF_DNS_API_TOKEN for cloudfare api token:
+
+```bash
+export CF_DNS_API_TOKEN=changethis
+```
+
 ### Start the Traefik Docker Compose
 Go to the directory where you copied the Traefik Docker Compose file in your remote server:
 
