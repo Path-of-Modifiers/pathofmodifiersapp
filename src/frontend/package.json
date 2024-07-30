@@ -20,6 +20,7 @@
         "@fontsource/asap": "^5.0.20",
         "@fontsource/inter": "^5.0.17",
         "@fontsource/josefin-sans": "^5.0.19",
+        "@marsidev/react-turnstile": "^0.7.2",
         "@tanstack/react-query": "^5.28.9",
         "@tanstack/router-cli": "^1.23.0",
         "@tanstack/router-devtools": "^1.23.1",
