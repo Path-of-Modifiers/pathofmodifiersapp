@@ -117,3 +117,9 @@ export interface ErrorState {
   setModifiersError: (modifiersError: boolean) => void;
   setResultError: (resultError: boolean) => void;
 }
+
+
+export interface CaptchaState {
+  status: string;
+  setStatus: (status: string) => void;
+}
