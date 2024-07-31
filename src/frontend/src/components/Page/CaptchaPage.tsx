@@ -1,9 +1,18 @@
 import Cookies from "js-cookie";
 import { Flex, FlexProps, Text } from "@chakra-ui/layout";
 import CaptchaWidget from "../Widget/CaptchaWidget";
+import { useEffect, useState } from "react";
 
 export const CaptchaPage = (props: FlexProps) => {
-  const status = Cookies.get("cf-captcha-status");
+  const cookieStatus = Cookies.get("cf-captcha-status");
+  const [captchaCookieStatus, setCaptchaCookieStatus] = useState<
+    string | undefined
+  >(cookieStatus);
+
+  useEffect(() => {
+    setCaptchaCookieStatus(cookieStatus);
+  }, [cookieStatus]);
+
   return (
     <Flex
       {...props}
@@ -18,28 +27,26 @@ export const CaptchaPage = (props: FlexProps) => {
         Are you human?
       </Text>
       <CaptchaWidget />
-      {status === "solved" && (
+      {captchaCookieStatus === "solved" && (
         <Text fontSize="xl" textColor="ui.white" mb={"2rem"}>
           You have successfully completed the captcha. Waiting for website to
           load...
         </Text>
       )}
-      {status === "error" && (
+      {captchaCookieStatus === "error" && (
         <Text fontSize="xl" textColor="ui.white" mb={"2rem"}>
           There was an error with the captcha
         </Text>
       )}
-      {status === "expired" && (
+      {captchaCookieStatus === "expired" && (
         <Text fontSize="xl" textColor="ui.white" mb={"2rem"}>
           The captcha has expired
         </Text>
       )}
-      {status === "" && (
-        <>
-          <Text fontSize="xl" textColor="ui.white" mt={"2rem"}>
-            Please complete the captcha to continue to www.pathofmodifiers.com
-          </Text>
-        </>
+      {!captchaCookieStatus && (
+        <Text fontSize="xl" textColor="ui.white" mt={"2rem"}>
+          Please complete the captcha to continue to www.pathofmodifiers.com
+        </Text>
       )}
     </Flex>
   );
