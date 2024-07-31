@@ -4,18 +4,20 @@ import {
   ItemSpecState,
   ModifierSpecState,
 } from "./StateInterface";
-import { defaultSoftcoreLeague } from "../env-vars";
+
+const defaultLeague = import.meta.env.VITE_APP_DEFAULT_LEAGUE;
+console.log(import.meta.env.VITE_APP_HCAPTCHA_SECRET_KEY)
 
 // Graph Input Store  -  This store is used to store graph input data.
 export const useGraphInputStore = create<GraphInputState>((set) => ({
   clearClicked: false,
   queryClicked: false,
-  league: defaultSoftcoreLeague,
+  league: defaultLeague,
   itemSpec: {},
   baseSpec: {},
   modifierSpecs: [],
   plotQuery: {
-    league: defaultSoftcoreLeague,
+    league: defaultLeague,
     itemSpecifications: {},
     wantedModifiers: [],
   },
