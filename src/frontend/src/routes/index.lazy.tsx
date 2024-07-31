@@ -44,7 +44,10 @@ function Index() {
     []
   );
   const { modifiersError, leagueError, resultError } = useErrorStore();
-  const status = Cookies.get("cf-captcha-status");
+  const cookiesCaptchaStatus = Cookies.get("cf-captcha-status");
+  const [captchaStatus, setCaptchaStatus] = useState<string | undefined>(
+    cookiesCaptchaStatus
+  );
   const isFetched = useRef(false);
 
   useEffect(() => {
@@ -59,7 +62,8 @@ function Index() {
       });
       isFetched.current = true; // Mark as fetched
     }
-  }, []);
+    setCaptchaStatus(cookiesCaptchaStatus);
+  }, [cookiesCaptchaStatus]);
   return (
     <>
       <Flex
@@ -69,10 +73,12 @@ function Index() {
         width="99vw"
         minWidth="bgBoxes.miniPBox"
       >
-        <Center mt={"7rem"}>
-          <CaptchaPage />
-        </Center>
-        {status === "solved" && (
+        {captchaStatus !== "solved" && (
+          <Center mt={"7rem"}>
+            <CaptchaPage />
+          </Center>
+        )}
+        {captchaStatus === "solved" && (
           <>
             <Box mb={"7rem"}>
               <Header />

@@ -1,16 +1,31 @@
 import { Turnstile } from "@marsidev/react-turnstile";
 import Cookies from "js-cookie";
 
-// Cloudfare Captcha Widget
+// Cloudflare Captcha Widget
 export const CaptchaWidget = () => {
   return (
     <Turnstile
       siteKey="0x4AAAAAAAgHwIJ8mwbZ2cuJ"
-      // Set cookies variables for 24 hours to track captcha status
-      onError={() => Cookies.set("cf-captcha-status", "error")}
-      onExpire={() => Cookies.set("cf-captcha-status", "expired")}
+      onError={() =>
+        Cookies.set("cf-captcha-status", "error", {
+          expires: 1,
+          secure: true,
+          sameSite: "strict",
+        })
+      }
+      onExpire={() =>
+        Cookies.set("cf-captcha-status", "expired", {
+          expires: 1,
+          secure: true,
+          sameSite: "strict",
+        })
+      }
       onSuccess={() =>
-        Cookies.set("cf-captcha-status", "solved", { expires: 1 })
+        Cookies.set("cf-captcha-status", "solved", {
+          expires: 1,
+          secure: true,
+          sameSite: "strict",
+        })
       }
     />
   );
