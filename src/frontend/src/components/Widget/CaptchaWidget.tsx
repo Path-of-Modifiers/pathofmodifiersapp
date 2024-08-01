@@ -1,34 +1,23 @@
-import { Turnstile } from "@marsidev/react-turnstile";
-import Cookies from "js-cookie";
+import Turnstile, { useTurnstile } from "react-turnstile";
 
-// Cloudflare Captcha Widget
-export const CaptchaWidget = () => {
+const siteKey = import.meta.env.VITE_APP_TURNSTILE_SITE_KEY || "";
+
+// Cloudfare turnstile widget for captcha
+function CaptchaWidget() {
+  const turnstile = useTurnstile();
   return (
     <Turnstile
-      siteKey="0x4AAAAAAAgHwIJ8mwbZ2cuJ"
-      onError={() =>
-        Cookies.set("cf-captcha-status", "error", {
-          expires: 1,
-          secure: true,
-          sameSite: "strict",
-        })
-      }
-      onExpire={() =>
-        Cookies.set("cf-captcha-status", "expired", {
-          expires: 1,
-          secure: true,
-          sameSite: "strict",
-        })
-      }
-      onSuccess={() =>
-        Cookies.set("cf-captcha-status", "solved", {
-          expires: 1,
-          secure: true,
-          sameSite: "strict",
-        })
-      }
+      sitekey={siteKey}
+      onVerify={(token) => {
+        fetch("/", {
+          method: "POST",
+          body: JSON.stringify({ token }),
+        }).then((response) => {
+          if (!response.ok) turnstile.reset();
+        });
+      }}
     />
   );
-};
+}
 
 export default CaptchaWidget;
