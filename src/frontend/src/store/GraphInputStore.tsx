@@ -6,7 +6,6 @@ import {
 } from "./StateInterface";
 
 const defaultLeague = import.meta.env.VITE_APP_DEFAULT_LEAGUE;
-console.log(import.meta.env.VITE_APP_HCAPTCHA_SECRET_KEY)
 
 // Graph Input Store  -  This store is used to store graph input data.
 export const useGraphInputStore = create<GraphInputState>((set) => ({
