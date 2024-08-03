@@ -39,4 +39,4 @@ async def get_turnstyle_validation(
             detail=f"Unauthorize API access for {get_turnstyle_validation.__name__}",
         )
 
-    return await validate_turnstyle_request(query=query)
+    return validate_turnstyle_request(request_data=query)
