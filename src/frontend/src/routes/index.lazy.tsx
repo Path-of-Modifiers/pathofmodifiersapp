@@ -1,5 +1,4 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import Cookies from "js-cookie";
 import Header from "../components/Common/Header";
 import QueryButtons from "../components/Common/QueryButtons";
 import { Flex, Box, VStack, Center } from "@chakra-ui/layout";
@@ -13,6 +12,7 @@ import {
   GroupedModifierByEffect,
   ItemBaseTypeCategory,
   ItemBaseTypeSubCategory,
+  TurnstileResponse,
 } from "../client";
 import { prefetchAllBaseTypeData } from "../hooks/getData/getBaseTypeCategories";
 import Footer from "../components/Common/Footer";
@@ -44,11 +44,16 @@ function Index() {
     []
   );
   const { modifiersError, leagueError, resultError } = useErrorStore();
-  const cookiesCaptchaStatus = Cookies.get("cf-captcha-status");
-  const [captchaStatus, setCaptchaStatus] = useState<string | undefined>(
-    cookiesCaptchaStatus
-  );
+  const [turnstileResponse, setTurnstileResponse] = useState<
+    TurnstileResponse | undefined
+  >(undefined);
   const isFetched = useRef(false);
+
+  const handleTurnstileResponse = (response: TurnstileResponse | undefined) => {
+    setTurnstileResponse(response);
+    // Handle the response as needed
+    console.log("Captcha response:", response);
+  };
 
   useEffect(() => {
     if (!isFetched.current) {
@@ -62,43 +67,42 @@ function Index() {
       });
       isFetched.current = true; // Mark as fetched
     }
-    setCaptchaStatus(cookiesCaptchaStatus);
-  }, [cookiesCaptchaStatus]);
+  }, []);
   return (
     <>
-      <Flex
-        direction="column"
-        minHeight="100rem"
-        bg="ui.main"
-        width="99vw"
-        minWidth="bgBoxes.miniPBox"
-      >
-        {captchaStatus !== "solved" && (
-          <Center mt={"7rem"}>
-            <CaptchaPage />
-          </Center>
-        )}
-        {captchaStatus === "solved" && (
-          <>
-            <Box mb={"7rem"}>
-              <Header />
-            </Box>
+      <QueryClientProvider client={queryClient}>
+        <Flex
+          direction="column"
+          minHeight="100rem"
+          bg="ui.main"
+          width="99vw"
+          minWidth="bgBoxes.miniPBox"
+        >
+          {!turnstileResponse?.success && (
+            <Center mt={"7rem"}>
+              <CaptchaPage onTurnstileResponse={handleTurnstileResponse} />
+            </Center>
+          )}
+          {turnstileResponse?.success && (
+            <>
+              <Box mb={"7rem"}>
+                <Header />
+              </Box>
 
-            <Flex
-              direction="row"
-              bg="ui.secondary"
-              justifyContent="center"
-              maxWidth={"100%"}
-              width="bgBoxes.defaultBox"
-              flexWrap="wrap"
-              minHeight="100rem"
-              p={2}
-              borderTopRadius={10}
-              borderTopColor={"ui.darkBrown"}
-              borderTopWidth={1}
-              alignSelf="center"
-            >
-              <QueryClientProvider client={queryClient}>
+              <Flex
+                direction="row"
+                bg="ui.secondary"
+                justifyContent="center"
+                maxWidth={"100%"}
+                width="bgBoxes.defaultBox"
+                flexWrap="wrap"
+                minHeight="100rem"
+                p={2}
+                borderTopRadius={10}
+                borderTopColor={"ui.darkBrown"}
+                borderTopWidth={1}
+                alignSelf="center"
+              >
                 <VStack>
                   {modifiersData.length > 0 && baseTypes.length > 0 && (
                     <GraphInput
@@ -136,11 +140,11 @@ function Index() {
                   />
                   <Footer />
                 </VStack>
-              </QueryClientProvider>
-            </Flex>
-          </>
-        )}
-      </Flex>
+              </Flex>
+            </>
+          )}
+        </Flex>
+      </QueryClientProvider>
     </>
   );
 }
