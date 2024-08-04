@@ -2,8 +2,13 @@ import Cookies from "js-cookie";
 import { Flex, FlexProps, Text } from "@chakra-ui/layout";
 import CaptchaWidget from "../Widget/CaptchaWidget";
 import { useEffect, useState } from "react";
+import { TurnstileResponse } from "../../client";
 
-export const CaptchaPage = (props: FlexProps) => {
+interface CaptchaPageProps extends FlexProps {
+  onTurnstileResponse: (response: TurnstileResponse | undefined) => void;
+}
+
+export const CaptchaPage = (props: CaptchaPageProps) => {
   const cookieStatus = Cookies.get("cf-captcha-status");
   const [captchaCookieStatus, setCaptchaCookieStatus] = useState<
     string | undefined
@@ -26,7 +31,7 @@ export const CaptchaPage = (props: FlexProps) => {
       <Text fontSize="xl" textColor="ui.white" mb={"2rem"}>
         Are you human?
       </Text>
-      <CaptchaWidget />
+      <CaptchaWidget onTurnstileResponse={props.onTurnstileResponse} />
       {captchaCookieStatus === "solved" && (
         <Text fontSize="xl" textColor="ui.white" mb={"2rem"}>
           You have successfully completed the captcha. Waiting for website to
