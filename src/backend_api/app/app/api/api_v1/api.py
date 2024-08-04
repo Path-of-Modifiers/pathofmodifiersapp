@@ -9,7 +9,7 @@ from app.api.api_v1.endpoints import (
     modifier,
     stash,
     plot,
-    turnstyle,
+    turnstile,
     account_prefix,
     currency_prefix,
     item_base_type_prefix,
@@ -18,7 +18,7 @@ from app.api.api_v1.endpoints import (
     modifier_prefix,
     stash_prefix,
     plot_prefix,
-    turnstyle_prefix,
+    turnstile_prefix,
 )
 
 api_router = APIRouter()
@@ -53,5 +53,5 @@ api_router.include_router(
     plot.router, prefix=f"/{plot_prefix}", tags=[f"{plot_prefix}s"]
 )
 api_router.include_router(
-    turnstyle.router, prefix=f"/{turnstyle_prefix}", tags=[f"{turnstyle_prefix}s"]
+    turnstile.router, prefix=f"/{turnstile_prefix}", tags=[f"{turnstile_prefix}s"]
 )

@@ -26,4 +26,4 @@ from .item_modifier import (
 )
 from .item import Item, ItemInDB, ItemCreate, ItemUpdate
 from .stash import Stash, StashInDB, StashCreate, StashUpdate
-from .turnstyle import TurnstyleQuery, TurnstyleResponse
+from .turnstile import TurnstileQuery, TurnstileResponse

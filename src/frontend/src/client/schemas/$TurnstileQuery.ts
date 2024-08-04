@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export const $TurnstyleQuery = {
+export const $TurnstileQuery = {
     properties: {
         token: {
             type: 'string',
