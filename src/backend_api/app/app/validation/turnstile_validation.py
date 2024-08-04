@@ -2,12 +2,12 @@ import os
 from pydantic import TypeAdapter
 from requests import HTTPError, post
 
-from app.core.schemas import TurnstyleQuery, TurnstyleResponse
+from app.core.schemas import TurnstileQuery, TurnstileResponse
 
 TURNSTILE_SECRET_KEY = os.environ.get("TURNSTILE_SECRET_KEY")
 
 
-def validate_turnstyle_request(request_data: TurnstyleQuery) -> TurnstyleResponse:
+def validate_turnstile_request(request_data: TurnstileQuery) -> TurnstileResponse:
     url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
     body = {
         "secret": TURNSTILE_SECRET_KEY,
@@ -15,14 +15,14 @@ def validate_turnstyle_request(request_data: TurnstyleQuery) -> TurnstyleRespons
         "remoteip": request_data.ip,
     }
 
-    validate = TypeAdapter(TurnstyleResponse).validate_python
+    validate = TypeAdapter(TurnstileResponse).validate_python
 
     try:
         result = post(url, json=body, headers={"Content-Type": "application/json"})
         print("result", result)
     except Exception as e:
         raise HTTPError(
-            f"""Failed to send challenge request to cloudflare turnstyle
+            f"""Failed to send challenge request to cloudflare turnstile
             endpoint with error: {e}"""
         )
 
@@ -32,5 +32,5 @@ def validate_turnstyle_request(request_data: TurnstyleQuery) -> TurnstyleRespons
         return validate(outcome)
     else:
         raise HTTPError(
-            f'Failed validation in turnstyle request with error: {outcome["error-codes"]}'
+            f'Failed validation in turnstile request with error: {outcome["error-codes"]}'
         )

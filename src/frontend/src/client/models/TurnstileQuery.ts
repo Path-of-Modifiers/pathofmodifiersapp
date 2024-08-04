@@ -2,10 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type TurnstyleResponse = {
-    success: boolean;
-    challenge_ts: string;
-    hostname: string;
-    error_codes: Array<string>;
+export type TurnstileQuery = {
+    token: string;
+    ip: string;
 };
 

@@ -6,4 +6,4 @@ from app.api.api_v1.endpoints.item import item_prefix
 from app.api.api_v1.endpoints.modifier import modifier_prefix
 from app.api.api_v1.endpoints.stash import stash_prefix
 from app.api.api_v1.endpoints.plot import plot_prefix
-from app.api.api_v1.endpoints.turnstyle import turnstyle_prefix
+from app.api.api_v1.endpoints.turnstile import turnstile_prefix
