@@ -8,7 +8,7 @@ services:
       - 443:443
     restart: always
     environment:
-      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN?Variable not set}
+      - CF_DNS_API_TOKEN=${CF_API_TOKEN}
     labels:
       # Enable Traefik for this service, to make it available in the public network
       - traefik.enable=true
@@ -42,6 +42,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       # Mount the volume to store the certificates
       - traefik-public-certificates:/certificates
+      - ./logs/:/logs/
     command:
       # Enable Docker in Traefik, so that it reads labels from Docker services
       - --providers.docker
@@ -55,14 +56,16 @@ services:
       - --certificatesresolvers.le.acme.email=${EMAIL?Variable not set}
       # Store the Let's Encrypt certificates in the mounted volume
       - --certificatesresolvers.le.acme.storage=/certificates/acme.json
-      # Use the TLS Challenge for Let's Encrypt
-      - --certificatesresolvers.le.acme.tlschallenge=true
+
+      - --certificatesresolvers.le.acme.dnschallenge=true
+      - --certificatesresolvers.le.acme.dnschallenge.provider=cloudflare
+
       # Enable the access log, with HTTP requests
       - --accesslog
       # Enable the Traefik log, for configurations and errors
-      - --log
+      - --log.level=DEBUG
       # Traefik log path
-      - --log.filePath=/home/traefik.log
+      - --log.filePath=/logs/traefik.log
       # Enable the Dashboard and API
       - --api
     networks:
