@@ -6,3 +6,4 @@ from app.api.routes.item import item_prefix
 from app.api.routes.modifier import modifier_prefix
 from app.api.routes.stash import stash_prefix
 from app.api.routes.plot import plot_prefix
+from app.api.routes.turnstile import turnstile_prefix
