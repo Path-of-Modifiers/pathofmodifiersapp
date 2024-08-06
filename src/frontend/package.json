@@ -34,7 +34,6 @@
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-icons": "^5.0.1",
-        "react-turnstile": "^1.1.3",
         "recharts": "^2.12.7",
         "zustand": "^4.5.2"
     },

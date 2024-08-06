@@ -1,4 +1,4 @@
-import Turnstile, { useTurnstile } from "react-turnstile";
+import { Turnstile } from "@marsidev/react-turnstile";
 import useTurnstileValidation from "../../hooks/turnstile/turnstileValidation";
 import { useEffect, useRef, useState } from "react";
 import { TurnstileResponse } from "../../client";
@@ -17,7 +17,6 @@ const CaptchaWidget = (props: CaptchaWidgetProps) => {
     token: token,
     ip: ip.current,
   });
-  const turnstile = useTurnstile();
 
   useEffect(() => {
     fetch("https://api.ipify.org?format=json")
@@ -31,20 +30,10 @@ const CaptchaWidget = (props: CaptchaWidgetProps) => {
   }, []);
 
   useEffect(() => {
-    if (!turnstileResponse || !turnstileResponse.success) {
-      turnstile.reset();
-    }
     props.onTurnstileResponse?.(turnstileResponse ?? undefined);
-  }, [turnstile, turnstileResponse, props]);
+  }, [token, turnstileResponse, props]);
 
-  return (
-    <Turnstile
-      sitekey={siteKey}
-      onVerify={(token) => {
-        setToken(token);
-      }}
-    />
-  );
+  return <Turnstile siteKey={siteKey} onSuccess={setToken} />;
 };
 
 export default CaptchaWidget;
