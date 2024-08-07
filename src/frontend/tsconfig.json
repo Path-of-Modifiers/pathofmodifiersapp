@@ -20,6 +20,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "src/components", "src/hooks/turnstyle"],
+  "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
