@@ -1,23 +1,9 @@
-import Cookies from "js-cookie";
 import { Flex, FlexProps, Text } from "@chakra-ui/layout";
+import { useTurnstileStore } from "../../store/TurnstileStore";
 import CaptchaWidget from "../Widget/CaptchaWidget";
-import { useEffect, useState } from "react";
-import { TurnstileResponse } from "../../client";
 
-interface CaptchaPageProps extends FlexProps {
-  onTurnstileResponse: (response: TurnstileResponse | undefined) => void;
-}
-
-export const CaptchaPage = (props: CaptchaPageProps) => {
-  const cookieStatus = Cookies.get("cf-captcha-status");
-  const [captchaCookieStatus, setCaptchaCookieStatus] = useState<
-    string | undefined
-  >(cookieStatus);
-
-  useEffect(() => {
-    setCaptchaCookieStatus(cookieStatus);
-  }, [cookieStatus]);
-
+export const CaptchaPage = (props: FlexProps) => {
+  const { turnstileResponse } = useTurnstileStore();
   return (
     <Flex
       {...props}
@@ -31,24 +17,24 @@ export const CaptchaPage = (props: CaptchaPageProps) => {
       <Text fontSize="xl" textColor="ui.white" mb={"2rem"}>
         Are you human?
       </Text>
-      <CaptchaWidget onTurnstileResponse={props.onTurnstileResponse} />
-      {captchaCookieStatus === "solved" && (
+      <CaptchaWidget />
+      {turnstileResponse?.success && (
         <Text fontSize="xl" textColor="ui.white" mb={"2rem"}>
           You have successfully completed the captcha. Waiting for website to
           load...
         </Text>
       )}
-      {captchaCookieStatus === "error" && (
-        <Text fontSize="xl" textColor="ui.white" mb={"2rem"}>
-          There was an error with the captcha
-        </Text>
+      {turnstileResponse?.error_codes && (
+        <>
+          <Text fontSize="xl" textColor="ui.white" mb={"2rem"}>
+            There was an error with the captcha.
+          </Text>
+          <Text fontSize="xl" textColor="ui.white" mb={"2rem"}>
+            Error: {turnstileResponse.error_codes}
+          </Text>
+        </>
       )}
-      {captchaCookieStatus === "expired" && (
-        <Text fontSize="xl" textColor="ui.white" mb={"2rem"}>
-          The captcha has expired
-        </Text>
-      )}
-      {!captchaCookieStatus && (
+      {!turnstileResponse && (
         <Text fontSize="xl" textColor="ui.white" mt={"2rem"}>
           Please complete the captcha to continue to www.pathofmodifiers.com
         </Text>

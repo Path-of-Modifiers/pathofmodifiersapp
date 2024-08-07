@@ -1,4 +1,4 @@
-import { PlotQuery } from "../client";
+import { PlotQuery, TurnstileResponse } from "../client";
 
 export interface InfluenceSpecState {
   elder?: boolean | null;
@@ -116,4 +116,11 @@ export interface ErrorState {
   setLeagueError: (leagueError: boolean) => void;
   setModifiersError: (modifiersError: boolean) => void;
   setResultError: (resultError: boolean) => void;
+}
+
+export interface TurnstileState {
+  turnstileResponse: TurnstileResponse | undefined;
+  setTurnstileResponse: (
+    turnstileResponse: TurnstileResponse | undefined
+  ) => void;
 }
