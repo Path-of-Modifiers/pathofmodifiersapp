@@ -19,7 +19,6 @@ def validate_turnstile_request(request_data: TurnstileQuery) -> TurnstileRespons
 
     try:
         result = post(url, json=body, headers={"Content-Type": "application/json"})
-        print("result", result)
     except Exception as e:
         raise HTTPError(
             f"""Failed to send challenge request to cloudflare turnstile
@@ -27,7 +26,6 @@ def validate_turnstile_request(request_data: TurnstileQuery) -> TurnstileRespons
         )
 
     outcome = result.json()
-    print("outcome", outcome)
     if outcome["success"]:
         return validate(outcome)
     else:
