@@ -19,7 +19,6 @@ function useTurnstileValidation(requestBody: TurnstileQuery): {
   isError: boolean;
   isFetched: boolean;
 } {
-  const { setTurnstileResponse } = useTurnstileStore();
   const {
     data: turnstileResponse,
     status: fetchStatus,
@@ -41,7 +40,6 @@ function useTurnstileValidation(requestBody: TurnstileQuery): {
     },
     enabled: !!requestBody && !!requestBody.token && !!requestBody.ip, // Only run the query if requestBody is valid
   });
-  setTurnstileResponse(turnstileResponse);
   return { turnstileResponse, fetchStatus, isFetched, isError };
 }
 
