@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   TurnstileQuery,
   TurnstileResponse,
   TurnstilesService,
 } from "../../client";
-import { useQuery } from "@tanstack/react-query";
 
 /**
  * Posts the request body (a turnstile query) and returns the
@@ -19,26 +18,28 @@ function useTurnstileValidation(requestBody: TurnstileQuery): {
   isError: boolean;
   isFetched: boolean;
 } {
-  const [turnstileResponse, setTurnstileRespones] =
-      useState<TurnstileResponse | undefined>();
-  const { fetchStatus, isFetched, isError } = useQuery({
-    queryKey: ["allTurnstileData"],
+  const {
+    data: turnstileResponse,
+    status: fetchStatus,
+    isError,
+    isFetched,
+  } = useQuery({
+    queryKey: ["allTurnstileData", requestBody], // Include requestBody to ensure it updates on changes
     queryFn: async () => {
       if (!requestBody || !requestBody.token || !requestBody.ip) {
-        return 0;
+        return undefined; // Return undefined if the request body is invalid
       }
+
       const returnBody =
         await TurnstilesService.getTurnstileValidationApiApiV1TurnstilePost({
           requestBody,
         });
 
-      console.log("RETURNBODY TURNSTYLE", returnBody);
-
-      setTurnstileRespones(returnBody);
-      return 1;
+      return returnBody; // Return the fetched data
     },
-    enabled: false, // stops constant refreshes
+    enabled: !!requestBody && !!requestBody.token && !!requestBody.ip, // Only run the query if requestBody is valid
   });
+
   return { turnstileResponse, fetchStatus, isFetched, isError };
 }
 
