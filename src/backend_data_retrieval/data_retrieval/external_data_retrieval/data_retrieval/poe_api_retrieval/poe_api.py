@@ -142,7 +142,6 @@ class APIHandler:
             next_change_id = settings.NEXT_CHANGE_ID
             return next_change_id
 
-        print("HOIHOIHOI")
         response = requests.get(
             "https://www.pathofexile.com/api/trade/data/change-ids",
             headers={"User-Agent": self.headers["User-Agent"]},
@@ -151,6 +150,9 @@ class APIHandler:
         response.raise_for_status()
         response_json = response.json()
         next_change_id = response_json["psapi"]
+        time.sleep(
+            310
+        )  # Sleeps for 5 minutes and 10 seconds (for safety) for the latest change id to be populated
 
         return next_change_id
 
@@ -206,6 +208,11 @@ class APIHandler:
                         return []
 
                 new_next_change_id = headers["X-Next-Change-Id"]
+                if new_next_change_id == self.next_change_id:
+                    self.logger.info("We sucessfully caught up to the stream!")
+                    time.sleep(
+                        30
+                    )  # We have caught up to the stream, sleep for 30 seconds to fall behind.
                 # print(
                 #     f"Thread {threading.get_ident()} acquired lock. Current id={self.next_change_id}, next id={new_next_change_id}"
                 # )
