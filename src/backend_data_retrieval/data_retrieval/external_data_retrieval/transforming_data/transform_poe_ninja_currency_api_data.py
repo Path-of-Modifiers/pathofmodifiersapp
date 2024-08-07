@@ -1,17 +1,13 @@
-import os
 import requests
 import logging
-from typing import Dict, List
 import pandas as pd
 
 from external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_ninja_currency_api import (
     PoeNinjaCurrencyAPIHandler,
 )
-from modifier_data_deposit.utils import insert_data, retrieve_data
+from modifier_data_deposit.utils import insert_data
 from pom_api_authentication import get_super_authentication
-
-BASEURL = os.getenv("DOMAIN")
-CURRENT_SOFTCORE_LEAGUE = os.getenv("CURRENT_SOFTCORE_LEAGUE")
+from external_data_retrieval.config import settings
 
 
 def load_currency_data():
@@ -19,7 +15,7 @@ def load_currency_data():
     Loads data from the poe.ninja currency API.
     """
     poe_ninja_currency_api_handler = PoeNinjaCurrencyAPIHandler(
-        url=f"https://poe.ninja/api/data/currencyoverview?league={CURRENT_SOFTCORE_LEAGUE}&type=Currency"
+        url=f"https://poe.ninja/api/data/currencyoverview?league={settings.CURRENT_SOFTCORE_LEAGUE}&type=Currency"
     )
 
     currencies_df = poe_ninja_currency_api_handler.make_request()
@@ -29,8 +25,8 @@ def load_currency_data():
 
 class TransformPoeNinjaCurrencyAPIData:
     def __init__(self, logger_parent: logging.Logger):
-        if "localhost" not in BASEURL:
-            self.url = f"https://{BASEURL}"
+        if "localhost" not in settings.BASEURL:
+            self.url = f"https://{settings.BASEURL}"
         else:
             self.url = "http://src-backend-1"
         self.url += "/api/api_v1"

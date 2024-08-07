@@ -17,23 +17,19 @@ from external_data_retrieval.detectors.unique_detector import (
     UniqueWeaponDetector,
     UniqueDetector,
 )
-
+from external_data_retrieval.config import settings
 from external_data_retrieval.utils import sync_timing_tracker, ProgramTooSlowException
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
-BASEURL = os.getenv("DOMAIN")
-MANUAL_NEXT_CHANGE_ID = os.getenv("MANUAL_NEXT_CHANGE_ID")
-NEXT_CHANGE_ID = os.getenv("NEXT_CHANGE_ID")
-OATH_ACC_TOKEN_CONTACT_EMAIL = os.getenv("OATH_ACC_TOKEN_CONTACT_EMAIL")
 
 class APIHandler:
     headers = {
-        f"User-Agent": "OAuth pathofmodifiers/0.1.0 (contact: {OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
+        "User-Agent": f"OAuth pathofmodifiers/0.1.0 (contact: {settings.OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
     }
 
-    if "localhost" not in BASEURL:
-        base_pom_api_url = f"https://{BASEURL}"
+    if "localhost" not in settings.BASEURL:
+        base_pom_api_url = f"https://{settings.BASEURL}"
     else:
         base_pom_api_url = "http://src-backend-1"
 
@@ -140,13 +136,17 @@ class APIHandler:
         before 5 minutes. A manual next change id circumvents this wait.
         """
 
-        if MANUAL_NEXT_CHANGE_ID:  # For testing purposes, set manual next_change_id
-            next_change_id = NEXT_CHANGE_ID
+        if (
+            settings.MANUAL_NEXT_CHANGE_ID
+        ):  # For testing purposes, set manual next_change_id
+            next_change_id = settings.NEXT_CHANGE_ID
             return next_change_id
+
+        print("HOIHOIHOI")
         response = requests.get(
             "https://www.pathofexile.com/api/trade/data/change-ids",
             headers={"User-Agent": self.headers["User-Agent"]},
-            auth=self.pom_api_authentication
+            auth=self.pom_api_authentication,
         )
         response.raise_for_status()
         response_json = response.json()
@@ -196,7 +196,14 @@ class APIHandler:
                         )
                     else:
                         waiting_for_next_id_lock.release()
+                        self.logger.critical(
+                            f"Recieved the response code {response.status}"
+                        )
                         response.raise_for_status()
+                        self.logger.critical(
+                            f"The above response code did not result in an error, discarding the response for safety"
+                        )
+                        return []
 
                 new_next_change_id = headers["X-Next-Change-Id"]
                 # print(
