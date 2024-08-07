@@ -12,13 +12,13 @@ import {
   GroupedModifierByEffect,
   ItemBaseTypeCategory,
   ItemBaseTypeSubCategory,
-  TurnstileResponse,
 } from "../client";
 import { prefetchAllBaseTypeData } from "../hooks/getData/getBaseTypeCategories";
 import Footer from "../components/Common/Footer";
 import { ErrorMessage } from "../components/Input/StandardLayoutInput/ErrorMessage";
 import { useErrorStore } from "../store/ErrorStore";
 import CaptchaPage from "../components/Page/CaptchaPage";
+import { useTurnstileStore } from "../store/TurnstileStore";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
@@ -44,14 +44,8 @@ function Index() {
     []
   );
   const { modifiersError, leagueError, resultError } = useErrorStore();
-  const [turnstileResponse, setTurnstileResponse] = useState<
-    TurnstileResponse | undefined
-  >(undefined);
+  const { turnstileResponse } = useTurnstileStore();
   const isFetched = useRef(false);
-
-  const handleTurnstileResponse = (response: TurnstileResponse | undefined) => {
-    setTurnstileResponse(response);
-  };
 
   useEffect(() => {
     if (!isFetched.current) {
@@ -78,7 +72,7 @@ function Index() {
         >
           {!turnstileResponse?.success && (
             <Center mt={"7rem"}>
-              <CaptchaPage onTurnstileResponse={handleTurnstileResponse} />
+              <CaptchaPage />
             </Center>
           )}
           {turnstileResponse?.success && (
