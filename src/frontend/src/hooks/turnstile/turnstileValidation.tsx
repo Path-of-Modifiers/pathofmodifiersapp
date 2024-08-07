@@ -4,7 +4,6 @@ import {
   TurnstileResponse,
   TurnstilesService,
 } from "../../client";
-import { useTurnstileStore } from "../../store/TurnstileStore";
 
 /**
  * Posts the request body (a turnstile query) and returns the
