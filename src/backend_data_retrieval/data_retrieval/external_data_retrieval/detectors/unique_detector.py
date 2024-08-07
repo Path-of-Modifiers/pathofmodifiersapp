@@ -31,7 +31,7 @@ class UniqueJewelDetector(UniqueDetector):
             "Thread of Hope",
         ],
         "Viridian Jewel": ["Impossible Escape", "Grand Spectrum"],
-        "Prismatic Jewel": ["Watcher's Eye", "Sublime Vision"],
+        "Prismatic Jewel": ["Watcher's Eye", "Sublime Vision", "The Light Of Meaning"],
         "Timeless Jewel": [
             "Glorious Vanity",
             "Lethal Pride",
@@ -52,6 +52,7 @@ class UniqueJewelDetector(UniqueDetector):
         "Impossible Escape",
         "Watcher's Eye",
         "Sublime Vision",
+        "The Light Of Meaning",
         "Glorious Vanity",
         "Lethal Pride",
         "Brutal Restraint",
