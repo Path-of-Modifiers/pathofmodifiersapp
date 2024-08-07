@@ -51,8 +51,6 @@ function Index() {
 
   const handleTurnstileResponse = (response: TurnstileResponse | undefined) => {
     setTurnstileResponse(response);
-    // Handle the response as needed
-    console.log("Captcha response:", response);
   };
 
   useEffect(() => {
