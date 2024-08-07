@@ -25,6 +25,7 @@ from external_data_retrieval.transforming_data.transform_poe_api_data import (
     PoeAPIDataTransformer,
     UniquePoeAPIDataTransformer,
 )
+from external_data_retrieval.config import settings
 from external_data_retrieval.utils import ProgramTooSlowException
 
 logger = logging.getLogger("external_data_retrieval")
@@ -35,18 +36,14 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
-BASEURL = os.getenv("DOMAIN")
-POE_PUBLIC_STASHES_AUTH_TOKEN = os.getenv("POE_PUBLIC_STASHES_AUTH_TOKEN")
-CURRENT_SOFTCORE_LEAGUE = os.getenv("CURRENT_SOFTCORE_LEAGUE")
-
 
 class ContiniousDataRetrieval:
-    auth_token = POE_PUBLIC_STASHES_AUTH_TOKEN
-    current_league = CURRENT_SOFTCORE_LEAGUE
+    auth_token = settings.POE_PUBLIC_STASHES_AUTH_TOKEN
+    current_league = settings.CURRENT_SOFTCORE_LEAGUE
     url = "https://api.pathofexile.com/public-stash-tabs"
 
-    if "localhost" not in BASEURL:
-        base_pom_api_url = f"https://{BASEURL}"
+    if "localhost" not in settings.BASEURL:
+        base_pom_api_url = f"https://{settings.BASEURL}"
     else:
         base_pom_api_url = "http://src-backend-1"
     modifier_url = base_pom_api_url + "/api/api_v1/modifier/"
