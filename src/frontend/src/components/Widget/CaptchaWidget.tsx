@@ -1,6 +1,7 @@
 import { Turnstile } from "@marsidev/react-turnstile";
 import useTurnstileValidation from "../../hooks/turnstile/turnstileValidation";
 import { useEffect, useRef, useState } from "react";
+import { useTurnstileStore } from "../../store/TurnstileStore";
 
 const siteKey = import.meta.env.VITE_APP_TURNSTILE_SITE_KEY || "";
 
@@ -8,7 +9,8 @@ const siteKey = import.meta.env.VITE_APP_TURNSTILE_SITE_KEY || "";
 const CaptchaWidget = () => {
   const ip = useRef<string>("");
   const [token, setToken] = useState<string>("");
-  useTurnstileValidation({
+  const { setTurnstileResponse } = useTurnstileStore();
+  const { turnstileResponse } = useTurnstileValidation({
     token: token,
     ip: ip.current,
   });
@@ -22,7 +24,11 @@ const CaptchaWidget = () => {
       .catch((error) => {
         console.log("Captcha Error fetching IP:", error);
       });
-  }, []);
+
+    if (turnstileResponse) {
+      setTurnstileResponse(turnstileResponse);
+    }
+  }, [turnstileResponse, setTurnstileResponse]);
 
   return <Turnstile siteKey={siteKey} onSuccess={setToken} />;
 };
