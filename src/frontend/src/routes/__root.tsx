@@ -1,7 +1,7 @@
 import { Outlet, createRootRoute } from "@tanstack/react-router";
 import React, { Suspense } from "react";
 
-import NotFound from "../components/Common/NotFound";
+import NotFound from "../components/Page/NotFound";
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === "production"

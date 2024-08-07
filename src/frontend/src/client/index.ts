@@ -39,6 +39,8 @@ export type { PlotQuery } from './models/PlotQuery';
 export type { Stash } from './models/Stash';
 export type { StashCreate } from './models/StashCreate';
 export type { StashUpdate } from './models/StashUpdate';
+export type { TurnstileQuery } from './models/TurnstileQuery';
+export type { TurnstileResponse } from './models/TurnstileResponse';
 export type { ValidationError } from './models/ValidationError';
 export type { WantedModifier } from './models/WantedModifier';
 
@@ -74,6 +76,8 @@ export { $PlotQuery } from './schemas/$PlotQuery';
 export { $Stash } from './schemas/$Stash';
 export { $StashCreate } from './schemas/$StashCreate';
 export { $StashUpdate } from './schemas/$StashUpdate';
+export { $TurnstileQuery } from './schemas/$TurnstileQuery';
+export { $TurnstileResponse } from './schemas/$TurnstileResponse';
 export { $ValidationError } from './schemas/$ValidationError';
 export { $WantedModifier } from './schemas/$WantedModifier';
 
@@ -88,3 +92,4 @@ export { LatestItemIdService } from './services/LatestItemIdService';
 export { ModifiersService } from './services/ModifiersService';
 export { PlotsService } from './services/PlotsService';
 export { StashsService } from './services/StashsService';
+export { TurnstilesService } from './services/TurnstilesService';

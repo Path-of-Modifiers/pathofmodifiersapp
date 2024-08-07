@@ -1,6 +1,5 @@
 import { useGraphInputStore } from "../../store/GraphInputStore";
 import { useEffect } from "react";
-import { defaultSoftcoreLeague } from "../../env-vars";
 import {
   SelectBoxInput,
   SelectBoxOptionValue,
@@ -11,16 +10,18 @@ import { getEventTextContent } from "../../hooks/utils";
 // League Input Component  -  This component is used to select the league of the game.
 export const LeagueInput = () => {
   // FUTURE IMPLEMENTATION: Add default hardcore league
-  //   const defaultHardcoreLeague = process.env.CURRENT_HARDCORE_LEAGUE;
+  //   const defaultHardcoreLeague = import.meta.env.CURRENT_HARDCORE_LEAGUE;
   const { setLeague } = useGraphInputStore();
 
   const clearClicked = useGraphInputStore((state) => state.clearClicked);
+
+  const defaultLeague = import.meta.env.VITE_APP_DEFAULT_LEAGUE || "";
 
   const handleLeagueChange = (
     event: React.FormEvent<HTMLElement> | React.ChangeEvent<HTMLInputElement>
   ) => {
     const league = getEventTextContent(event);
-    setLeague(league || defaultSoftcoreLeague);
+    setLeague(league || defaultLeague);
   };
 
   const getLeagueValue = () => {
@@ -33,15 +34,15 @@ export const LeagueInput = () => {
   };
 
   useEffect(() => {
-    useGraphInputStore.setState({ league: defaultSoftcoreLeague });
+    useGraphInputStore.setState({ league: defaultLeague });
 
     if (clearClicked) {
-      useGraphInputStore.setState({ league: defaultSoftcoreLeague });
+      useGraphInputStore.setState({ league: defaultLeague });
     }
-  }, [clearClicked]);
+  }, [clearClicked, defaultLeague]);
 
   const selectLeagueOptions: Array<SelectBoxOptionValue> = [
-    { value: defaultSoftcoreLeague, text: defaultSoftcoreLeague },
+    { value: defaultLeague, text: defaultLeague },
     /* FUTURE IMPLEMENTATION: Add more leagues here */
     // ,
     // { value: defaultHardcoreLeague, text: defaultHardcoreLeague },
@@ -56,8 +57,8 @@ export const LeagueInput = () => {
       descriptionText={"League"}
       optionsList={selectLeagueOptions}
       itemKeyId={"LeagueInput"}
-      defaultValue={defaultSoftcoreLeague}
-      defaultText={defaultSoftcoreLeague}
+      defaultValue={defaultLeague}
+      defaultText={defaultLeague}
       getSelectTextValue={getLeagueValue()}
       handleChange={(e) => handleLeagueChange(e)}
     />

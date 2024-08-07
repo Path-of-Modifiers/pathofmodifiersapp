@@ -1,7 +1,7 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import Header from "../components/Common/Header";
 import QueryButtons from "../components/Common/QueryButtons";
-import { Flex, Box, VStack } from "@chakra-ui/layout";
+import { Flex, Box, VStack, Center } from "@chakra-ui/layout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GraphInput } from "../components/Input/GraphInput";
 import GraphComponent from "../components/Graph/GraphComponent";
@@ -17,6 +17,8 @@ import { prefetchAllBaseTypeData } from "../hooks/getData/getBaseTypeCategories"
 import Footer from "../components/Common/Footer";
 import { ErrorMessage } from "../components/Input/StandardLayoutInput/ErrorMessage";
 import { useErrorStore } from "../store/ErrorStore";
+import CaptchaPage from "../components/Page/CaptchaPage";
+import { useTurnstileStore } from "../store/TurnstileStore";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
@@ -41,9 +43,8 @@ function Index() {
   const [subCategories, setSubCategories] = useState<ItemBaseTypeSubCategory[]>(
     []
   );
-  const modifiersError = useErrorStore((state) => state.modifiersError);
-  const leagueError = useErrorStore((state) => state.leagueError);
-  const resultError = useErrorStore((state) => state.resultError);
+  const { modifiersError, leagueError, resultError } = useErrorStore();
+  const { turnstileResponse } = useTurnstileStore();
   const isFetched = useRef(false);
 
   useEffect(() => {
@@ -60,71 +61,82 @@ function Index() {
     }
   }, []);
   return (
-    <Flex
-      direction="column"
-      minHeight="100rem"
-      bg="ui.main"
-      width="99vw"
-      minWidth="bgBoxes.miniPBox"
-    >
-      <Box mb={"7rem"}>
-        <Header />
-      </Box>
+    <>
+      <QueryClientProvider client={queryClient}>
+        <Flex
+          direction="column"
+          minHeight="100rem"
+          bg="ui.main"
+          width="99vw"
+          minWidth="bgBoxes.miniPBox"
+        >
+          {!turnstileResponse?.success && (
+            <Center mt={"7rem"}>
+              <CaptchaPage />
+            </Center>
+          )}
+          {turnstileResponse?.success && (
+            <>
+              <Box mb={"7rem"}>
+                <Header />
+              </Box>
 
-      <Flex
-        direction="row"
-        bg="ui.secondary"
-        justifyContent="center"
-        maxWidth={"100%"}
-        width="bgBoxes.defaultBox"
-        flexWrap="wrap"
-        minHeight="100rem"
-        p={2}
-        borderTopRadius={10}
-        borderTopColor={"ui.darkBrown"}
-        borderTopWidth={1}
-        alignSelf="center"
-      >
-        <QueryClientProvider client={queryClient}>
-          <VStack>
-            {modifiersData.length > 0 && baseTypes.length > 0 && (
-              <GraphInput
-                prefetchedmodifiers={modifiersData}
-                prefetchbasetypes={baseTypes}
-                prefetchcategories={categories}
-                prefetchsubcategories={subCategories}
-              />
-            )}
-            <QueryButtons />
-            {modifiersError && (
-              <ErrorMessage
-                alertTitle="No Modifiers Selected"
-                alertDescription="Please select at least one modifier."
-              />
-            )}
-            {leagueError && (
-              <ErrorMessage
-                alertTitle="No League Selected"
-                alertDescription="Please select a league."
-              />
-            )}
-            {resultError && (
-              <ErrorMessage
-                alertTitle="No Results Found"
-                alertDescription="No results were found for the current query."
-              />
-            )}
+              <Flex
+                direction="row"
+                bg="ui.secondary"
+                justifyContent="center"
+                maxWidth={"100%"}
+                width="bgBoxes.defaultBox"
+                flexWrap="wrap"
+                minHeight="100rem"
+                p={2}
+                borderTopRadius={10}
+                borderTopColor={"ui.darkBrown"}
+                borderTopWidth={1}
+                alignSelf="center"
+              >
+                <VStack>
+                  {modifiersData.length > 0 && baseTypes.length > 0 && (
+                    <GraphInput
+                      prefetchedmodifiers={modifiersData}
+                      prefetchbasetypes={baseTypes}
+                      prefetchcategories={categories}
+                      prefetchsubcategories={subCategories}
+                    />
+                  )}
+                  <QueryButtons />
+                  {modifiersError && (
+                    <ErrorMessage
+                      alertTitle="No Modifiers Selected"
+                      alertDescription="Please select at least one modifier."
+                    />
+                  )}
+                  {leagueError && (
+                    <ErrorMessage
+                      alertTitle="No League Selected"
+                      alertDescription="Please select a league."
+                    />
+                  )}
+                  {resultError && (
+                    <ErrorMessage
+                      alertTitle="No Results Found"
+                      alertDescription="No results were found for the current query."
+                    />
+                  )}
 
-            <GraphComponent
-              width={"bgBoxes.mediumBox"}
-              height={"bgBoxes.smallBox"}
-              maxW="98vw"
-              maxH="98vh"
-            />
-            <Footer />
-          </VStack>
-        </QueryClientProvider>
-      </Flex>
-    </Flex>
+                  <GraphComponent
+                    width={"bgBoxes.mediumBox"}
+                    height={"bgBoxes.smallBox"}
+                    maxW="98vw"
+                    maxH="98vh"
+                  />
+                  <Footer />
+                </VStack>
+              </Flex>
+            </>
+          )}
+        </Flex>
+      </QueryClientProvider>
+    </>
   );
 }
