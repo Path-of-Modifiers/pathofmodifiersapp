@@ -178,37 +178,37 @@ def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame
     dynamic_modifier_df, static_modifier_df = divide_modifiers_into_dynamic_static(
         modifier_df=modifier_df
     )
-    if not dynamic_modifier_df.empty:
-        # child_logger.info("Successfully divided modifier dataframe.")
+    if dynamic_modifier_df.empty:
+        child_logger.info("No regex needed.")
+        return static_modifier_df
+    # child_logger.info("Successfully divided modifier dataframe.")
 
-        # child_logger.info("Preparing dynamic modifier dataframe for regex conversion.")
-        dynamic_modifier_df = prepare_df_for_regex(
-            dynamic_modifier_df=dynamic_modifier_df
-        )
-        # child_logger.info("Successfully prepared dynamic modifier dataframe.")
+    # child_logger.info("Preparing dynamic modifier dataframe for regex conversion.")
+    dynamic_modifier_df = prepare_df_for_regex(dynamic_modifier_df=dynamic_modifier_df)
+    # child_logger.info("Successfully prepared dynamic modifier dataframe.")
 
-        # child_logger.info("Grouping dynamic modifier dataframe per modifier.")
-        grouped_dynamic_modifier_df = group_df(dynamic_modifier_df=dynamic_modifier_df)
-        # child_logger.info("Successfully grouped dynamic modifier dataframe.")
+    # child_logger.info("Grouping dynamic modifier dataframe per modifier.")
+    grouped_dynamic_modifier_df = group_df(dynamic_modifier_df=dynamic_modifier_df)
+    # child_logger.info("Successfully grouped dynamic modifier dataframe.")
 
-        # child_logger.info("Adding regex column to grouped dynamic modifer dataframe.")
-        grouped_dynamic_modifier_df = add_regex_column(
-            grouped_dynamic_modifier_df=grouped_dynamic_modifier_df
-        )
-        # child_logger.info(
-        #     "Successfully added regex column to grouped dynamic modifer dataframe."
-        # )
+    # child_logger.info("Adding regex column to grouped dynamic modifer dataframe.")
+    grouped_dynamic_modifier_df = add_regex_column(
+        grouped_dynamic_modifier_df=grouped_dynamic_modifier_df
+    )
+    # child_logger.info(
+    #     "Successfully added regex column to grouped dynamic modifer dataframe."
+    # )
 
-        # child_logger.info("Converting grouped dynamic modifer dataframe to normal.")
-        dynamic_modifier_df = grouped_df_to_normal(
-            dynamic_modifier_df=dynamic_modifier_df,
-            grouped_dynamic_modifier_df=grouped_dynamic_modifier_df,
-        )
-        # child_logger.info("Successfully converted grouped dynamic modifer dataframe.")
+    # child_logger.info("Converting grouped dynamic modifer dataframe to normal.")
+    dynamic_modifier_df = grouped_df_to_normal(
+        dynamic_modifier_df=dynamic_modifier_df,
+        grouped_dynamic_modifier_df=grouped_dynamic_modifier_df,
+    )
+    # child_logger.info("Successfully converted grouped dynamic modifer dataframe.")
 
-        # child_logger.info(
-        #     "Combining dynamic and static modifers into final modifier dataframe."
-        # )
+    # child_logger.info(
+    #     "Combining dynamic and static modifers into final modifier dataframe."
+    # )
     final_df = combine_dynamic_static(
         dynamic_modifier_df=dynamic_modifier_df, static_modifier_df=static_modifier_df
     )
