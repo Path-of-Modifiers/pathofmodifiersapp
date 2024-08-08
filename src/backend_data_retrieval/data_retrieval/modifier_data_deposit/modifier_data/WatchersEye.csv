@@ -61,24 +61,24 @@ minRoll,maxRoll,position,effect,static,unique
 ,,0,"Immune to Ignite while affected by Purity of Fire",True,True
 ,,0,"Unaffected by Burning Ground while affected by Purity of Fire",True,True
 ,,0,"Unaffected by Flammability while affected by Purity of Fire",True,True
-10,20,0,#% of Cold and Lightning Damage taken as Fire Damage while affected by Purity of Fire,,True
+10,20,0,"#% of Cold and Lightning Damage taken as Fire Damage while affected by Purity of Fire",,True
 6,10,0,"#% of Physical Damage from Hits taken as Cold Damage while affected by Purity of Ice",,True
 ,,0,"Immune to Freeze while affected by Purity of Ice",True,True
 ,,0,"Unaffected by Chilled Ground while affected by Purity of Ice",True,True
 ,,0,"Unaffected by Frostbite while affected by Purity of Ice",True,True
-10,20,0,#% of Fire and Lightning Damage taken as Cold Damage while affected by Purity of Ice,,True
+10,20,0,"#% of Fire and Lightning Damage taken as Cold Damage while affected by Purity of Ice",,True
 6,10,0,"#% of Physical Damage from Hits taken as Lightning Damage while affected by Purity of Lightning",,True
 ,,0,"Immune to Shock while affected by Purity of Lightning",True,True
 ,,0,"Unaffected by Shocked Ground while affected by Purity of Lightning",True,True
 ,,0,"Unaffected by Conductivity while affected by Purity of Lightning",True,True
-10,20,0,#% of Fire and Cold Damage taken as Lightning Damage while affected by Purity of Lightning,,True
+10,20,0,"#% of Fire and Cold Damage taken as Lightning Damage while affected by Purity of Lightning",,True
 8,12,0,"#% of Physical Damage from Hits taken as Fire Damage while affected by Purity of Elements",,True
 8,12,0,"#% of Physical Damage from Hits taken as Cold Damage while affected by Purity of Elements",,True
 8,12,0,"#% of Physical Damage from Hits taken as Lightning Damage while affected by Purity of Elements",,True
 ,,0,"Unaffected by Elemental Weakness while affected by Purity of Elements",True,True
 30,50,0,"+#% to Chaos Resistance while affected by Purity of Elements",,True
 40,50,0,"#% reduced Reflected Elemental Damage taken while affected by Purity of Elements",,True
-1,1,0,+#% to all maximum Elemental Resistances while affected by Purity of Elements,,True
+1,1,0,"+#% to all maximum Elemental Resistances while affected by Purity of Elements",,True
 18,22,0,"+#% to Damage over Time Multiplier while affected by Malevolence",,True
 8,12,0,"#% increased Recovery rate of Life and Energy Shield while affected by Malevolence",,True
 ,,0,"Unaffected by Poison while affected by Malevolence",True,True
