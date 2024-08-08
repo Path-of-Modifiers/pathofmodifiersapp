@@ -4,6 +4,10 @@ from fastapi import Request
 
 from app.logger import logger
 
+"""
+Taken from https://medium.com/@roy-pstr/fastapi-server-errors-and-logs-take-back-control-696405437983
+"""
+
 
 async def log_request_middleware(request: Request, call_next):
     """
