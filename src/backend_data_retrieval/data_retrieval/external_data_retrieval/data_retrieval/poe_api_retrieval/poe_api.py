@@ -18,7 +18,11 @@ from external_data_retrieval.detectors.unique_detector import (
     UniqueDetector,
 )
 from external_data_retrieval.config import settings
-from external_data_retrieval.utils import sync_timing_tracker, ProgramTooSlowException
+from external_data_retrieval.utils import (
+    sync_timing_tracker,
+    ProgramTooSlowException,
+    ProgramRunTooLongException,
+)
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
@@ -449,4 +453,4 @@ class APIHandler:
                 current_time = time.perf_counter()
                 time_since_launch = current_time - self.time_of_launch
                 if time_since_launch > 3600:
-                    raise ProgramTooSlowException
+                    raise ProgramRunTooLongException
