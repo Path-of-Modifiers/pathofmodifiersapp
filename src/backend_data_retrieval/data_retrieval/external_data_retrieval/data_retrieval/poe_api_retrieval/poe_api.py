@@ -3,10 +3,9 @@ import time
 import logging
 import asyncio
 import aiohttp
-import os
 import threading
 import pandas as pd
-from typing import List, Union, Dict, Iterator
+from typing import List, Union, Dict, Iterator, Optional
 from concurrent.futures import ThreadPoolExecutor, Future
 
 from pom_api_authentication import get_super_authentication
@@ -78,8 +77,10 @@ class APIHandler:
         self._program_too_slow = False
         self.time_of_launch = time.perf_counter()
 
-    def _json_to_df(self, stashes: List) -> pd.DataFrame:
+    def _json_to_df(self, stashes: List) -> Optional[pd.DataFrame]:
         df_temp = pd.json_normalize(stashes)
+        if "items" not in df_temp.columns:
+            return None
         df_temp = df_temp.explode(["items"])
         df_temp = df_temp.loc[~df_temp["items"].isnull()]
         df_temp.drop("items", axis=1, inplace=True)
@@ -104,6 +105,8 @@ class APIHandler:
         n_total_unique_items = 0
 
         df = self._json_to_df(stashes)
+        if df is None:
+            return df_wanted
 
         # The stashes are fed to all item detectors, slowly being filtered down
         try:
