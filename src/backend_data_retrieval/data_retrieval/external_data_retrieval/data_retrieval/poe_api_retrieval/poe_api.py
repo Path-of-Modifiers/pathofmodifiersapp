@@ -253,11 +253,15 @@ class APIHandler:
                 self.logger.info("Released lock after crash")
                 if headers is not None:
                     if (
-                        headers["X-Rate-Limit-Ip"].split(":")[0]
-                        == headers["X-Rate-Limit-Ip-State"].split(":")[0]
+                        "X-Rate-Limit-Ip" in headers.keys()
+                        and "X-Rate-Limit-Ip-State" in headers.keys()
                     ):
-                        print("Hit ratelimit, cooling down for one test period.")
-                        time.sleep(int(headers["X-Rate-Limit-Ip"].split(":")[1]))
+                        if (
+                            headers["X-Rate-Limit-Ip"].split(":")[0]
+                            == headers["X-Rate-Limit-Ip-State"].split(":")[0]
+                        ):
+                            print("Hit ratelimit, cooling down for one test period.")
+                            time.sleep(int(headers["X-Rate-Limit-Ip"].split(":")[1]))
 
                 waiting_for_next_id_lock.release()
             raise
