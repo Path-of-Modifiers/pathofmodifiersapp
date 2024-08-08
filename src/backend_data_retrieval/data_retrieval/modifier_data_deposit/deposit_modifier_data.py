@@ -87,7 +87,7 @@ class DataDepositer:
 
         current_duplicate_modifiers = current_modifiers_df.loc[
             current_modifiers_df["effect"].isin(duplicate_df["effect"])
-        ]
+        ].copy()
         current_duplicate_modifiers.sort_values(by=["effect", "position"], inplace=True)
         duplicate_df.sort_values(by=["effect", "position"], inplace=True)
 
@@ -145,9 +145,9 @@ class DataDepositer:
         self.logger.info("Removing duplicate modifiers")
         duplicate_mask = new_modifiers_df["effect"].isin(current_modifiers_df["effect"])
 
-        duplicate_df = new_modifiers_df.loc[duplicate_mask]
+        duplicate_df = new_modifiers_df.loc[duplicate_mask].copy()
         self._update_duplicates(duplicate_df, current_modifiers_df)
-        non_duplicate_df = new_modifiers_df.loc[~duplicate_mask]
+        non_duplicate_df = new_modifiers_df.loc[~duplicate_mask].copy()
 
         return non_duplicate_df
 
