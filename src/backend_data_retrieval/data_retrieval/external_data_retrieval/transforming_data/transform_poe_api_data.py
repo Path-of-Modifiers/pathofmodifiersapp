@@ -1,4 +1,3 @@
-import os
 import requests
 import logging
 import pandas as pd
@@ -9,17 +8,16 @@ from modifier_data_deposit.utils import insert_data
 from external_data_retrieval.transforming_data.utils import (
     get_rolls,
 )
+from external_data_retrieval.config import settings
 
 pd.options.mode.chained_assignment = None  # default="warn"
-
-BASEURL = os.getenv("DOMAIN")
 
 
 class PoeAPIDataTransformer:
     def __init__(self, main_logger: logging.Logger):
 
-        if "localhost" not in BASEURL:
-            self.url = f"https://{BASEURL}"
+        if "localhost" not in settings.BASEURL:
+            self.url = f"https://{settings.BASEURL}"
         else:
             self.url = "http://src-backend-1"
         self.url += "/api/api_v1"
