@@ -1,9 +1,17 @@
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
 from starlette.middleware.cors import CORSMiddleware
+from starlette.exceptions import HTTPException
 
 from app.api.api import api_router
 from app.core.config import settings
+from app.exception_handlers import (
+    request_validation_exception_handler,
+    http_exception_handler,
+    unhandled_exception_handler,
+)
+from app.middleware.request_logs import log_request_middleware
 
 
 def custom_generate_unique_id(route: APIRoute) -> str:
@@ -29,3 +37,8 @@ if settings.BACKEND_CORS_ORIGINS:
     )
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
+app.middleware("http")(log_request_middleware)
+app.add_exception_handler(RequestValidationError, request_validation_exception_handler)
+app.add_exception_handler(HTTPException, http_exception_handler)
+app.add_exception_handler(Exception, unhandled_exception_handler)
