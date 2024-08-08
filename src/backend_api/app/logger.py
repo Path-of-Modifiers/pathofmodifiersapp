@@ -1,5 +1,9 @@
 import logging
 
+"""
+Taken from https://medium.com/@roy-pstr/fastapi-server-errors-and-logs-take-back-control-696405437983
+"""
+
 # Disable uvicorn access logger
 uvicorn_access = logging.getLogger("uvicorn.access")
 uvicorn_access.disabled = True
