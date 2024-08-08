@@ -1,9 +1,7 @@
-import os
 import pandas as pd
 from typing import Tuple
 
-
-CURRENT_SOFTCORE_LEAGUE = os.getenv("CURRENT_SOFTCORE_LEAGUE")
+from external_data_retrieval.config import settings
 
 
 class DetectorBase:
@@ -14,7 +12,7 @@ class DetectorBase:
     wanted_items = {}
     found_items = {}
 
-    current_league = CURRENT_SOFTCORE_LEAGUE
+    current_league = settings.CURRENT_SOFTCORE_LEAGUE
 
     def __init__(self) -> None:
         """

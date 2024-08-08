@@ -12,6 +12,7 @@ from modifier_data_deposit.modifier_processing_modules import (
 )
 from modifier_data_deposit.utils import df_to_JSON
 from pom_api_authentication import get_basic_authentication, get_super_authentication
+from external_data_retrieval.config import settings
 
 logging.basicConfig(
     filename="modifier_data_deposit.log",
@@ -20,15 +21,14 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
-BASEURL = os.getenv("DOMAIN")
 CASCADING_UPDATE = True
 
 
 class DataDepositer:
     def __init__(self) -> None:
         self.new_data_location = "modifier_data_deposit/modifier_data"
-        if "localhost" not in BASEURL:
-            self.url = f"https://{BASEURL}"
+        if "localhost" not in settings.BASEURL:
+            self.url = f"https://{settings.BASEURL}"
         else:
             self.url = "http://src-backend-1"
         self.url += "/api/api_v1/modifier/"

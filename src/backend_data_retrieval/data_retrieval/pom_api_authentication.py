@@ -1,10 +1,7 @@
 from base64 import b64encode
 from requests.auth import HTTPBasicAuth
-import os
 
-
-FIRST_SUPERUSER = os.getenv("FIRST_SUPERUSER")
-FIRST_SUPERUSER_PASSWORD = os.getenv("FIRST_SUPERUSER_PASSWORD")
+from external_data_retrieval.config import settings
 
 
 def get_super_authentication() -> HTTPBasicAuth:
@@ -14,7 +11,9 @@ def get_super_authentication() -> HTTPBasicAuth:
     Returns:
         HTTPBasicAuth: POM user and password authentication.
     """
-    authentication = HTTPBasicAuth(FIRST_SUPERUSER, FIRST_SUPERUSER_PASSWORD)
+    authentication = HTTPBasicAuth(
+        settings.FIRST_SUPERUSER, settings.FIRST_SUPERUSER_PASSWORD
+    )
     return authentication
 
 
@@ -26,6 +25,8 @@ def get_basic_authentication() -> str:
         str: Basic super user and super password authentication.
     """
     token = b64encode(
-        f"{FIRST_SUPERUSER}:{FIRST_SUPERUSER_PASSWORD}".encode("utf-8")
+        f"{settings.FIRST_SUPERUSER}:{settings.FIRST_SUPERUSER_PASSWORD}".encode(
+            "utf-8"
+        )
     ).decode("ascii")
     return f"Basic {token}"

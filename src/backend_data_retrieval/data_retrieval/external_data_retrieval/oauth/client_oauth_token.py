@@ -1,10 +1,6 @@
 import requests
-import os
 
-
-OAUTH_CLIENT_ID = os.getenv("OAUTH_CLIENT_ID")
-OAUTH_CLIENT_SECRET = os.getenv("OAUTH_CLIENT_SECRET")
-OATH_ACC_TOKEN_CONTACT_EMAIL = os.getenv("OATH_ACC_TOKEN_CONTACT_EMAIL")
+from external_data_retrieval.config import settings
 
 
 def error_reason(response):
@@ -47,9 +43,9 @@ def get_access_token(
 
 def main():
     url = "https://www.pathofexile.com/oauth/token"
-    client_id = OAUTH_CLIENT_ID
-    client_secret = OAUTH_CLIENT_SECRET
-    contact_email = OATH_ACC_TOKEN_CONTACT_EMAIL
+    client_id = settings.OAUTH_CLIENT_ID
+    client_secret = settings.OAUTH_CLIENT_SECRET
+    contact_email = settings.OATH_ACC_TOKEN_CONTACT_EMAIL
     token = get_access_token(
         url=url,
         client_id=client_id,
@@ -58,6 +54,7 @@ def main():
     )
     print(f"Generated a new token:\n {token}")
     return 0
+
 
 if __name__ == "__main__":
     main()

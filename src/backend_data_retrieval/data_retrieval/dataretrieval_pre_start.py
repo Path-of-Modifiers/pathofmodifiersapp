@@ -2,11 +2,10 @@ import logging
 
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 import requests
-import os
 
+from external_data_retrieval.config import settings
 from pom_api_authentication import get_super_authentication
 
-BASEURL = os.getenv("DOMAIN")
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -26,8 +25,8 @@ wait_seconds = 1
 )
 def init() -> None:
     try:
-        if "localhost" not in BASEURL:
-            test_url = "https://" + BASEURL + "/api/api_v1/modifier/"
+        if "localhost" not in settings.BASEURL:
+            test_url = "https://" + settings.BASEURL + "/api/api_v1/modifier/"
         else:
             test_url = "http://src-backend-1/api/api_v1/modifier/"
         pom_api_authentication = get_super_authentication()
