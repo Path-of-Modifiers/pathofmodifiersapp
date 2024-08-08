@@ -178,6 +178,9 @@ def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame
     dynamic_modifier_df, static_modifier_df = divide_modifiers_into_dynamic_static(
         modifier_df=modifier_df
     )
+    if dynamic_modifier_df.empty:
+        child_logger.info("No regex needed.")
+        return static_modifier_df
     # child_logger.info("Successfully divided modifier dataframe.")
     # child_logger.info("Preparing dynamic modifier dataframe for regex conversion.")
     dynamic_modifier_df = prepare_df_for_regex(dynamic_modifier_df=dynamic_modifier_df)
