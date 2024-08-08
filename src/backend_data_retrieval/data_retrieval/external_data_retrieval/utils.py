@@ -68,3 +68,7 @@ def sync_timing_tracker(func: Callable) -> Callable:
 
 class ProgramTooSlowException(Exception):
     pass
+
+
+class ProgramRunTooLongException(Exception):
+    pass

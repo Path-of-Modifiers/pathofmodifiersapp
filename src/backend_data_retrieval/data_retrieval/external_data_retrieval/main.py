@@ -26,7 +26,10 @@ from external_data_retrieval.transforming_data.transform_poe_api_data import (
     UniquePoeAPIDataTransformer,
 )
 from external_data_retrieval.config import settings
-from external_data_retrieval.utils import ProgramTooSlowException
+from external_data_retrieval.utils import (
+    ProgramTooSlowException,
+    ProgramRunTooLongException,
+)
 
 logger = logging.getLogger("external_data_retrieval")
 logging.basicConfig(
@@ -190,12 +193,18 @@ class ContiniousDataRetrieval:
                         try:
                             raise crashed_future_exception
                         except ProgramTooSlowException:
-                            print("Program was too slow")
+                            print("Program was too slow. Restarting")
                             self.poe_api_handler.set_program_too_slow()
 
                             wait(futures, return_when=ALL_COMPLETED)
 
                             raise ProgramTooSlowException
+                        except ProgramRunTooLongException:
+                            print("Program has been running too long. Restarting.")
+                            self.poe_api_handler.set_program_too_slow()
+
+                            wait(futures, return_when=ALL_COMPLETED)
+                            raise ProgramRunTooLongException
                         except:
                             follow_future = executor.submit(
                                 self._follow_data_dump_stream
@@ -209,7 +218,9 @@ class ContiniousDataRetrieval:
                         )
                         futures[new_future] = "listener"
         except ProgramTooSlowException:
-            self.logger.critical("Program was too slow, restarting.")
+            self.logger.critical("Program was too slow. Restarting.")
+        except ProgramRunTooLongException:
+            self.logger.critical("Program has run too long. Restarting")
         except Exception:
             self.logger.exception(
                 "The following exception occured during 'retrieve_data'"
