@@ -18,7 +18,11 @@ from external_data_retrieval.detectors.unique_detector import (
     UniqueDetector,
 )
 from external_data_retrieval.config import settings
-from external_data_retrieval.utils import sync_timing_tracker, ProgramTooSlowException
+from external_data_retrieval.utils import (
+    sync_timing_tracker,
+    ProgramTooSlowException,
+    ProgramRunTooLongException,
+)
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
@@ -249,11 +253,15 @@ class APIHandler:
                 self.logger.info("Released lock after crash")
                 if headers is not None:
                     if (
-                        headers["X-Rate-Limit-Ip"].split(":")[0]
-                        == headers["X-Rate-Limit-Ip-State"].split(":")[0]
+                        "X-Rate-Limit-Ip" in headers.keys()
+                        and "X-Rate-Limit-Ip-State" in headers.keys()
                     ):
-                        print("Hit ratelimit, cooling down for one test period.")
-                        time.sleep(int(headers["X-Rate-Limit-Ip"].split(":")[1]))
+                        if (
+                            headers["X-Rate-Limit-Ip"].split(":")[0]
+                            == headers["X-Rate-Limit-Ip-State"].split(":")[0]
+                        ):
+                            print("Hit ratelimit, cooling down for one test period.")
+                            time.sleep(int(headers["X-Rate-Limit-Ip"].split(":")[1]))
 
                 waiting_for_next_id_lock.release()
             raise
@@ -449,4 +457,4 @@ class APIHandler:
                 current_time = time.perf_counter()
                 time_since_launch = current_time - self.time_of_launch
                 if time_since_launch > 3600:
-                    raise ProgramTooSlowException
+                    raise ProgramRunTooLongException

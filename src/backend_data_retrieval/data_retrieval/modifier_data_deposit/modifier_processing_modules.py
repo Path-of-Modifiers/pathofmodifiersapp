@@ -20,8 +20,8 @@ def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame
         """
         static_modifier_mask = modifier_df["static"] == "True"
 
-        dynamic_modifier_df = modifier_df.loc[~static_modifier_mask]
-        static_modifier_df = modifier_df.loc[static_modifier_mask]
+        dynamic_modifier_df = modifier_df.loc[~static_modifier_mask].copy()
+        static_modifier_df = modifier_df.loc[static_modifier_mask].copy()
 
         return dynamic_modifier_df, static_modifier_df
 
