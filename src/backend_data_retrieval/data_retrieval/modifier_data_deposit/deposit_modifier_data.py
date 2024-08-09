@@ -114,6 +114,9 @@ class DataDepositer:
                 same_modifier_df = duplicate_df.loc[
                     duplicate_df["effect"] == effect
                 ].copy()
+                same_modifier_df.sort_index(
+                    by="position", inplace=True
+                )  # So that the rolls are added in the correct order
                 rolls = []
                 for _, same_modifier_row in same_modifier_df.iterrows():
                     if not pd.isna(same_modifier_row["static"]):
