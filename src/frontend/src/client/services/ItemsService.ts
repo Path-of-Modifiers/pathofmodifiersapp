@@ -17,7 +17,7 @@ export class ItemsService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getItemApiApiV1ItemItemIdGet({
+    public static getItem({
         itemId,
     }: {
         itemId: string,
@@ -41,7 +41,7 @@ export class ItemsService {
      * @returns Item Successful Response
      * @throws ApiError
      */
-    public static updateItemApiApiV1ItemItemIdPut({
+    public static updateItem({
         itemId,
         requestBody,
     }: {
@@ -70,7 +70,7 @@ export class ItemsService {
      * @returns string Successful Response
      * @throws ApiError
      */
-    public static deleteItemApiApiV1ItemItemIdDelete({
+    public static deleteItem({
         itemId,
     }: {
         itemId: string,
@@ -94,7 +94,7 @@ export class ItemsService {
      * @returns number Successful Response
      * @throws ApiError
      */
-    public static getLatestItemIdApiApiV1ItemLatestItemIdGet(): CancelablePromise<number> {
+    public static getLatestItemId(): CancelablePromise<number> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/item/latest_item_id/',
@@ -108,7 +108,7 @@ export class ItemsService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAllItemsApiApiV1ItemGet(): CancelablePromise<(Item | Array<Item>)> {
+    public static getAllItems(): CancelablePromise<(Item | Array<Item>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/item/',
@@ -122,7 +122,7 @@ export class ItemsService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static createItemApiApiV1ItemPost({
+    public static createItem({
         requestBody,
     }: {
         requestBody: (ItemCreate | Array<ItemCreate>),
