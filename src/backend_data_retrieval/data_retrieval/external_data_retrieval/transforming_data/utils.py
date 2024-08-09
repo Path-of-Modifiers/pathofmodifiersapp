@@ -136,8 +136,12 @@ def get_rolls(
         logger.critical(
             f"Failed to add rolls to listed modifiers, this likely means the modifier is legacy.\n{failed_df}"
         )
-        logger.critical(f"These items have missing modifiers: {failed_df["name"].unique().tolist()}")
-        logger.critical(f"These modifiers were present: {failed_df["effect"].unique().tolist()}")
+        logger.critical(
+            f"These items have missing modifiers: {failed_df['name'].unique().tolist()}"
+        )
+        logger.critical(
+            f"These modifiers were present: {failed_df['effect'].unique().tolist()}"
+        )
         dynamic_df = dynamic_df.loc[dynamic_df["roll"].str.len() != 0]
 
     # Creates a column for position, which contains a list of numerical strings
