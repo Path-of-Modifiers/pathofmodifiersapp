@@ -234,14 +234,17 @@ def check_for_updated_text_rolls(
         data["textRolls"] = row_new["textRolls"]
         if rolls is not None:
             data["rolls"] = rolls
+            data["effect"] = data["effect"].replace("+", r"(\+|\-)")
             data["regex"] = create_regex_string_from_row(data)
+
             if "increased" in data["regex"]:
                 data["regex"] = data["regex"].replace(
                     "increased", r"(increased|reduced)"
                 )
             elif "reduced" in data["regex"]:
                 data["regex"] = data["regex"].replace("reduced", r"(increased|reduced)")
-            data["regex"] = data["regex"].replace("+", r"(\+|\-)")
+
+            data["effect"] = data["effect"].replace(r"(\+|\-)", "+")
             data.pop("rolls")
 
         put_update = True
@@ -277,18 +280,6 @@ def check_for_updated_numerical_rolls(
 
     if min_roll != new_min_roll or max_roll != new_max_roll:
         logger.info("Updating modifier to bring numerical roll range up-to-date.")
-
-        if rolls is not None:
-            data["rolls"] = rolls
-            data["regex"] = create_regex_string_from_row(data)
-            if "increased" in data["regex"]:
-                data["regex"] = data["regex"].replace(
-                    "increased", r"(increased|reduced)"
-                )
-            elif "reduced" in data["regex"]:
-                data["regex"] = data["regex"].replace("reduced", r"(increased|reduced)")
-            data["regex"] = data["regex"].replace("+", r"(\+|\-)")
-            data.pop("rolls")
         put_update = True
     else:
         put_update = False
