@@ -114,7 +114,7 @@ class DataDepositer:
                 same_modifier_df = duplicate_df.loc[
                     duplicate_df["effect"] == effect
                 ].copy()
-                same_modifier_df.sort_index(
+                same_modifier_df.sort_values(
                     by="position", inplace=True
                 )  # So that the rolls are added in the correct order
                 rolls = []
