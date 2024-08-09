@@ -85,18 +85,46 @@ class DataDepositer:
             return None
         self.logger.info("Checking if duplicates contain updated information.")
 
-        current_duplicate_modifiers = current_modifiers_df.loc[
+        current_duplicate_modifiers_df = current_modifiers_df.loc[
             current_modifiers_df["effect"].isin(duplicate_df["effect"])
         ].copy()
-        current_duplicate_modifiers.sort_values(by=["effect", "position"], inplace=True)
-        duplicate_df.sort_values(by=["effect", "position"], inplace=True)
+
+        # We sort them so that they line up.
+        # We go through in reverse, as we wish to start with the row that has the highest position.
+        current_duplicate_modifiers_df.sort_values(
+            by=["effect", "position"], ascending=False, inplace=True
+        )
+        duplicate_df.sort_values(
+            by=["effect", "position"], ascending=False, inplace=True
+        )
 
         update_url = self.url + "?modifierId={}"
+
+        rolls = None
         for (_, row_cur), (_, row_new) in zip(
-            current_duplicate_modifiers.iterrows(), duplicate_df.iterrows()
+            current_duplicate_modifiers_df.iterrows(),
+            duplicate_df.iterrows(),
         ):
             put_update = False
             data = df_to_JSON(row_cur, request_method="put")
+            position = int(data["position"])
+            # if position is higher than 1, we want to store the types of rolls it has
+            if position >= 1 and rolls is None:
+                effect = data["effect"]
+                same_modifier_df = duplicate_df.loc[
+                    duplicate_df["effect"] == effect
+                ].copy()
+                rolls = []
+                for _, same_modifier_row in same_modifier_df.iterrows():
+                    if not pd.isna(same_modifier_row["static"]):
+                        pass
+                    elif not pd.isna(same_modifier_row["textRolls"]):
+                        rolls.append(same_modifier_row["textRolls"])
+                    else:
+                        # We only need to check if the roll is of type float,
+                        # which we only need 'minRoll' for and not both 'minRoll' and 'maxRoll'
+                        rolls.append(same_modifier_row["minRoll"])
+
             if "updatedAt" in data:
                 data.pop("updatedAt")
 
@@ -104,11 +132,11 @@ class DataDepositer:
                 pass
             elif not pd.isna(row_new["textRolls"]):
                 data, put_update = check_for_updated_text_rolls(
-                    data=data, row_new=row_new, logger=self.logger
+                    data=data, row_new=row_new, rolls=rolls, logger=self.logger
                 )
             else:
                 data, put_update = check_for_updated_numerical_rolls(
-                    data=data, row_new=row_new, logger=self.logger
+                    data=data, row_new=row_new, rolls=rolls, logger=self.logger
                 )
 
             data, put_update = check_for_additional_modifier_types(
@@ -132,6 +160,10 @@ class DataDepositer:
                     auth=self.pom_api_authentication,
                 )
                 response.raise_for_status()
+
+            # We reset the rolls if the position is 0, because then the next row will be a new modifier
+            if position == 0 and rolls is not None:
+                rolls = None
 
     def _remove_duplicates(self, new_modifiers_df: pd.DataFrame) -> pd.DataFrame:
         current_modifiers_df = self._get_current_modifiers()

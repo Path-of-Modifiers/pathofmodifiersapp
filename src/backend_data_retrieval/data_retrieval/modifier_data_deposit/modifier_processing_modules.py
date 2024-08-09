@@ -1,6 +1,6 @@
 import logging
 import pandas as pd
-from typing import Tuple, List, Optional, Dict, Any
+from typing import Tuple, List, Optional, Dict, Any, Union
 
 
 logging.basicConfig(
@@ -71,7 +71,6 @@ def create_regex_string_from_row(row: pd.DataFrame):
     f"({row["textRolls"][0].replace("-","|")})" matches all possible text rolls.
     """
     effect = row["effect"]
-    positions = row["position"]
     rolls = row["rolls"]
     effect_parts = effect.split("#")
     final_effect = ""
@@ -82,7 +81,7 @@ def create_regex_string_from_row(row: pd.DataFrame):
             final_effect += "([+-]?([0-9]*[.])?[0-9]+)"  # catches all floats
 
         except ValueError:
-            final_effect += f"({row['textRolls'][0].replace('-','|')})"
+            final_effect += f"({roll.replace('-','|')})"
         # if roll.isnumeric():
         #     final_effect += "([+-]?([0-9]*[.])?[0-9]+)"  # catches all floats
         # else:
@@ -223,21 +222,23 @@ def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame
 
 
 def check_for_updated_text_rolls(
-    data: Dict[str, Any], row_new: pd.DataFrame, logger: logging.Logger
+    data: Dict[str, Any],
+    row_new: pd.DataFrame,
+    rolls: Optional[List[Union[int, str]]],
+    logger: logging.Logger,
 ) -> Tuple[Dict[str, Any], bool]:
     if data["textRolls"] != row_new["textRolls"]:
         logger.info(
             f"Found a modifier with new 'textRolls'. Modifier: {data['effect']}"
         )
         data["textRolls"] = row_new["textRolls"]
-        data["rolls"] = []
-        if "minRoll" in data:
-            data["rolls"].append(data["minRoll"])
+        if rolls is not None:
+            data["rolls"] = rolls
+            # print(data["regex"])
+            data["regex"] = create_regex_string_from_row(data)
+            # print(data["regex"])
+            data.pop("rolls")
 
-        data["rolls"].append(data["textRolls"])
-
-        data["regex"] = create_regex_string_from_row(data)
-        data.pop("rolls")
         put_update = True
     else:
         put_update = False
@@ -246,7 +247,10 @@ def check_for_updated_text_rolls(
 
 
 def check_for_updated_numerical_rolls(
-    data: Dict[str, Any], row_new: pd.DataFrame, logger: logging.Logger
+    data: Dict[str, Any],
+    row_new: pd.DataFrame,
+    rolls: Optional[List[Union[int, str]]],
+    logger: logging.Logger,
 ) -> Tuple[Dict[str, Any], bool]:
     min_roll = data["minRoll"]
     max_roll = data["maxRoll"]
@@ -269,16 +273,12 @@ def check_for_updated_numerical_rolls(
     if min_roll != new_min_roll or max_roll != new_max_roll:
         logger.info("Updating modifier to bring numerical roll range up-to-date.")
 
-        data["rolls"] = []
-        data["rolls"].append(data["minRoll"])
-
-        if "textRolls" in data:
-            data["rolls"].append(data["textRolls"])
-
-        print(data["regex"])
-        data["regex"] = create_regex_string_from_row(data)
-        print(data["regex"])
-        data.pop("rolls")
+        if rolls is not None:
+            data["rolls"] = rolls
+            # print(data["regex"])
+            data["regex"] = create_regex_string_from_row(data)
+            # print(data["regex"])
+            data.pop("rolls")
         put_update = True
     else:
         put_update = False
