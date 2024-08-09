@@ -234,9 +234,14 @@ def check_for_updated_text_rolls(
         data["textRolls"] = row_new["textRolls"]
         if rolls is not None:
             data["rolls"] = rolls
-            # print(data["regex"])
             data["regex"] = create_regex_string_from_row(data)
-            # print(data["regex"])
+            if "increased" in data["regex"]:
+                data["regex"] = data["regex"].replace(
+                    "increased", r"(increased|reduced)"
+                )
+            elif "reduced" in data["regex"]:
+                data["regex"] = data["regex"].replace("reduced", r"(increased|reduced)")
+            data["regex"] = data["regex"].replace("+", r"(\+|\-)")
             data.pop("rolls")
 
         put_update = True
@@ -275,9 +280,14 @@ def check_for_updated_numerical_rolls(
 
         if rolls is not None:
             data["rolls"] = rolls
-            # print(data["regex"])
             data["regex"] = create_regex_string_from_row(data)
-            # print(data["regex"])
+            if "increased" in data["regex"]:
+                data["regex"] = data["regex"].replace(
+                    "increased", r"(increased|reduced)"
+                )
+            elif "reduced" in data["regex"]:
+                data["regex"] = data["regex"].replace("reduced", r"(increased|reduced)")
+            data["regex"] = data["regex"].replace("+", r"(\+|\-)")
             data.pop("rolls")
         put_update = True
     else:
