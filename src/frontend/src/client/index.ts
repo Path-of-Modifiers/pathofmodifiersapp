@@ -83,7 +83,6 @@ export { $WantedModifier } from './schemas/$WantedModifier';
 
 export { AccountsService } from './services/AccountsService';
 export { CurrencysService } from './services/CurrencysService';
-export { DefaultService } from './services/DefaultService';
 export { ItemBaseTypesService } from './services/ItemBaseTypesService';
 export { ItemModifiersService } from './services/ItemModifiersService';
 export { ItemsService } from './services/ItemsService';

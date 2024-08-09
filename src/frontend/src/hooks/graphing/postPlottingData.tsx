@@ -20,7 +20,7 @@ function usePostPlottingData(requestBody: PlotQuery): {
   const { fetchStatus, refetch, isFetched, isError } = useQuery({
     queryKey: ["allPlotData"],
     queryFn: async () => {
-      const returnBody = await PlotsService.getPlotDataApiApiV1PlotPost({
+      const returnBody = await PlotsService.getPlotData({
         requestBody,
       });
 
