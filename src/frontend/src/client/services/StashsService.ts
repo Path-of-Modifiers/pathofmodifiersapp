@@ -17,7 +17,7 @@ export class StashsService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getStashApiApiV1StashStashIdGet({
+    public static getStash({
         stashId,
     }: {
         stashId: string,
@@ -41,7 +41,7 @@ export class StashsService {
      * @returns Stash Successful Response
      * @throws ApiError
      */
-    public static updateStashApiApiV1StashStashIdPut({
+    public static updateStash({
         stashId,
         requestBody,
     }: {
@@ -70,7 +70,7 @@ export class StashsService {
      * @returns string Successful Response
      * @throws ApiError
      */
-    public static deleteStashApiApiV1StashStashIdDelete({
+    public static deleteStash({
         stashId,
     }: {
         stashId: string,
@@ -94,7 +94,7 @@ export class StashsService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAllStashesApiApiV1StashGet(): CancelablePromise<(Stash | Array<Stash>)> {
+    public static getAllStashes(): CancelablePromise<(Stash | Array<Stash>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/stash/',
@@ -108,7 +108,7 @@ export class StashsService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static createStashApiApiV1StashPost({
+    public static createStash({
         requestBody,
     }: {
         requestBody: (StashCreate | Array<StashCreate>),

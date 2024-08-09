@@ -14,7 +14,7 @@ export class LatestItemIdService {
      * @returns number Successful Response
      * @throws ApiError
      */
-    public static getLatestItemIdApiApiV1ItemLatestItemIdGet(): CancelablePromise<number> {
+    public static getLatestItemId(): CancelablePromise<number> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/item/latest_item_id/',
