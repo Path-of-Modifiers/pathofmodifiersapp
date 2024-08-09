@@ -1,26 +1,10 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Path of Modifiers",
+    "title": "pathofmodifiers",
     "version": "0.1.0"
   },
   "paths": {
-    "/": {
-      "get": {
-        "summary": "Read Main",
-        "operationId": "read_main__get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/api_v1/account/{accountName}": {
       "get": {
         "tags": [
@@ -28,7 +12,7 @@
         ],
         "summary": "Get Account",
         "description": "Get the account by mapping with key and value for \"accountName\" .\n\nAlways returns one account.",
-        "operationId": "get_account_api_api_v1_account__accountName__get",
+        "operationId": "get_account",
         "security": [
           {
             "HTTPBasic": []
@@ -62,7 +46,7 @@
                       }
                     }
                   ],
-                  "title": "Response Get Account Api Api V1 Account  Accountname  Get"
+                  "title": "Response Accounts-Get Account"
                 }
               }
             }
@@ -85,7 +69,7 @@
         ],
         "summary": "Update Account",
         "description": "Update an account by key and value for \"accountName\".\n\nReturns the updated account.",
-        "operationId": "update_account_api_api_v1_account__accountName__put",
+        "operationId": "update_account",
         "security": [
           {
             "HTTPBasic": []
@@ -141,7 +125,7 @@
         ],
         "summary": "Delete Account",
         "description": "Delete an account by key and value \"accountName\".\n\nReturns a message indicating the account was deleted.\nAlways deletes one account.",
-        "operationId": "delete_account_api_api_v1_account__accountName__delete",
+        "operationId": "delete_account",
         "security": [
           {
             "HTTPBasic": []
@@ -165,7 +149,7 @@
               "application/json": {
                 "schema": {
                   "type": "string",
-                  "title": "Response Delete Account Api Api V1 Account  Accountname  Delete"
+                  "title": "Response Accounts-Delete Account"
                 }
               }
             }
@@ -190,7 +174,7 @@
         ],
         "summary": "Get All Accounts",
         "description": "Get all accounts.\n\nReturns a list of all accounts.",
-        "operationId": "get_all_accounts_api_api_v1_account__get",
+        "operationId": "get_all_accounts",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -208,7 +192,7 @@
                       "type": "array"
                     }
                   ],
-                  "title": "Response Get All Accounts Api Api V1 Account  Get"
+                  "title": "Response Accounts-Get All Accounts"
                 }
               }
             }
@@ -226,7 +210,7 @@
         ],
         "summary": "Create Account",
         "description": "Create one or a list of accounts.\n\nReturns the created account or list of accounts.",
-        "operationId": "create_account_api_api_v1_account__post",
+        "operationId": "create_account",
         "requestBody": {
           "content": {
             "application/json": {
@@ -265,7 +249,7 @@
                       "type": "array"
                     }
                   ],
-                  "title": "Response Create Account Api Api V1 Account  Post"
+                  "title": "Response Accounts-Create Account"
                 }
               }
             }
@@ -295,7 +279,7 @@
         ],
         "summary": "Get Currency",
         "description": "Get currency by key and value for \"currencyId\".\n\nAlways returns one currency.",
-        "operationId": "get_currency_api_api_v1_currency__currencyId__get",
+        "operationId": "get_currency",
         "security": [
           {
             "HTTPBasic": []
@@ -329,7 +313,7 @@
                       }
                     }
                   ],
-                  "title": "Response Get Currency Api Api V1 Currency  Currencyid  Get"
+                  "title": "Response Currencys-Get Currency"
                 }
               }
             }
@@ -352,7 +336,7 @@
         ],
         "summary": "Update Currency",
         "description": "Update a currency by key and value for \"currencyId\".\n\nReturns the updated currency.",
-        "operationId": "update_currency_api_api_v1_currency__currencyId__put",
+        "operationId": "update_currency",
         "security": [
           {
             "HTTPBasic": []
@@ -408,7 +392,7 @@
         ],
         "summary": "Delete Currency",
         "description": "Delete a currency by key and value for \"currencyId\".\n\nReturns a message indicating the currency was deleted.\nAlways deletes one currency.",
-        "operationId": "delete_currency_api_api_v1_currency__currencyId__delete",
+        "operationId": "delete_currency",
         "security": [
           {
             "HTTPBasic": []
@@ -432,7 +416,7 @@
               "application/json": {
                 "schema": {
                   "type": "string",
-                  "title": "Response Delete Currency Api Api V1 Currency  Currencyid  Delete"
+                  "title": "Response Currencys-Delete Currency"
                 }
               }
             }
@@ -457,7 +441,7 @@
         ],
         "summary": "Get All Currencies",
         "description": "Get all currencies.\n\nReturns a list of all currencies.",
-        "operationId": "get_all_currencies_api_api_v1_currency__get",
+        "operationId": "get_all_currencies",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -475,7 +459,7 @@
                       "type": "array"
                     }
                   ],
-                  "title": "Response Get All Currencies Api Api V1 Currency  Get"
+                  "title": "Response Currencys-Get All Currencies"
                 }
               }
             }
@@ -493,7 +477,7 @@
         ],
         "summary": "Create Currency",
         "description": "Create one or a list of currencies.\n\nReturns the created currency or list of currencies.",
-        "operationId": "create_currency_api_api_v1_currency__post",
+        "operationId": "create_currency",
         "requestBody": {
           "content": {
             "application/json": {
@@ -532,7 +516,7 @@
                       "type": "array"
                     }
                   ],
-                  "title": "Response Create Currency Api Api V1 Currency  Post"
+                  "title": "Response Currencys-Create Currency"
                 }
               }
             }
@@ -563,7 +547,7 @@
         ],
         "summary": "Get Latest Currency Id",
         "description": "Get the latest currencyId\n\nCan only be used safely on an empty table or directly after an insertion.",
-        "operationId": "get_latest_currency_id_api_api_v1_currency_latest_currency_id__get",
+        "operationId": "get_latest_currency_id",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -571,7 +555,7 @@
               "application/json": {
                 "schema": {
                   "type": "integer",
-                  "title": "Response Get Latest Currency Id Api Api V1 Currency Latest Currency Id  Get"
+                  "title": "Response Currencys-Get Latest Currency Id"
                 }
               }
             }
@@ -591,7 +575,7 @@
         ],
         "summary": "Get Item Base Type",
         "description": "Get item base type by key and value for \"baseType\".\n\nAlways returns one item base type.",
-        "operationId": "get_item_base_type_api_api_v1_itemBaseType__baseType__get",
+        "operationId": "get_item_base_type",
         "security": [
           {
             "HTTPBasic": []
@@ -625,7 +609,7 @@
                       }
                     }
                   ],
-                  "title": "Response Get Item Base Type Api Api V1 Itembasetype  Basetype  Get"
+                  "title": "Response Itembasetypes-Get Item Base Type"
                 }
               }
             }
@@ -648,7 +632,7 @@
         ],
         "summary": "Update Item Base Type",
         "description": "Update an item base type by key and value for \"baseType\".\n\nReturns the updated item base type.",
-        "operationId": "update_item_base_type_api_api_v1_itemBaseType__baseType__put",
+        "operationId": "update_item_base_type",
         "security": [
           {
             "HTTPBasic": []
@@ -704,7 +688,7 @@
         ],
         "summary": "Delete Item Base Type",
         "description": "Delete an item base type by key and value for \"baseType\".\n\nReturns a message that the item base type was deleted successfully.\nAlways deletes one item base type.",
-        "operationId": "delete_item_base_type_api_api_v1_itemBaseType__baseType__delete",
+        "operationId": "delete_item_base_type",
         "security": [
           {
             "HTTPBasic": []
@@ -728,7 +712,7 @@
               "application/json": {
                 "schema": {
                   "type": "string",
-                  "title": "Response Delete Item Base Type Api Api V1 Itembasetype  Basetype  Delete"
+                  "title": "Response Itembasetypes-Delete Item Base Type"
                 }
               }
             }
@@ -753,7 +737,7 @@
         ],
         "summary": "Get All Item Base Types",
         "description": "Get all item base types.\n\nReturns a list of all item base types.",
-        "operationId": "get_all_item_base_types_api_api_v1_itemBaseType__get",
+        "operationId": "get_all_item_base_types",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -771,7 +755,7 @@
                       "type": "array"
                     }
                   ],
-                  "title": "Response Get All Item Base Types Api Api V1 Itembasetype  Get"
+                  "title": "Response Itembasetypes-Get All Item Base Types"
                 }
               }
             }
@@ -789,7 +773,7 @@
         ],
         "summary": "Create Item Base Type",
         "description": "Create one or a list of new item base types.\n\nReturns the created item base type or list of item base types.",
-        "operationId": "create_item_base_type_api_api_v1_itemBaseType__post",
+        "operationId": "create_item_base_type",
         "requestBody": {
           "content": {
             "application/json": {
@@ -828,7 +812,7 @@
                       "type": "array"
                     }
                   ],
-                  "title": "Response Create Item Base Type Api Api V1 Itembasetype  Post"
+                  "title": "Response Itembasetypes-Create Item Base Type"
                 }
               }
             }
@@ -858,7 +842,7 @@
         ],
         "summary": "Get Base Types",
         "description": "Get all base types.\n\nReturns a list of all base types.",
-        "operationId": "get_base_types_api_api_v1_itemBaseType_baseTypes__get",
+        "operationId": "get_base_types",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -876,7 +860,7 @@
                       "type": "array"
                     }
                   ],
-                  "title": "Response Get Base Types Api Api V1 Itembasetype Basetypes  Get"
+                  "title": "Response Itembasetypes-Get Base Types"
                 }
               }
             }
@@ -896,7 +880,7 @@
         ],
         "summary": "Get Unique Categories",
         "description": "Get all unique categories.\n\nReturns a list of all categories.",
-        "operationId": "get_unique_categories_api_api_v1_itemBaseType_uniqueCategories__get",
+        "operationId": "get_unique_categories",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -914,7 +898,7 @@
                       "type": "array"
                     }
                   ],
-                  "title": "Response Get Unique Categories Api Api V1 Itembasetype Uniquecategories  Get"
+                  "title": "Response Itembasetypes-Get Unique Categories"
                 }
               }
             }
@@ -934,7 +918,7 @@
         ],
         "summary": "Get Unique Sub Categories",
         "description": "Get all unique sub categories.\n\nReturns a list of all sub categories.",
-        "operationId": "get_unique_sub_categories_api_api_v1_itemBaseType_uniqueSubCategories__get",
+        "operationId": "get_unique_sub_categories",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -952,7 +936,7 @@
                       "type": "array"
                     }
                   ],
-                  "title": "Response Get Unique Sub Categories Api Api V1 Itembasetype Uniquesubcategories  Get"
+                  "title": "Response Itembasetypes-Get Unique Sub Categories"
                 }
               }
             }
@@ -972,7 +956,7 @@
         ],
         "summary": "Get Item Modifier",
         "description": "Get item modifier or list of item modifiers by key and\nvalue for \"itemId\", optional \"modifierId\" and optional \"position\".\n\nDominant key is \"itemId\".\n\nReturns one or a list of item modifiers.",
-        "operationId": "get_item_modifier_api_api_v1_itemModifier__itemId__get",
+        "operationId": "get_item_modifier",
         "security": [
           {
             "HTTPBasic": []
@@ -1038,7 +1022,7 @@
                       }
                     }
                   ],
-                  "title": "Response Get Item Modifier Api Api V1 Itemmodifier  Itemid  Get"
+                  "title": "Response Itemmodifiers-Get Item Modifier"
                 }
               }
             }
@@ -1061,7 +1045,7 @@
         ],
         "summary": "Delete Item Modifier",
         "description": "Delete an item modifier by key and value for\n\"itemId\", optional \"modifierId\" and optional \"position\".\n\nDominant key is \"itemId\".\n\nReturns a message that the item modifier was deleted successfully.\nAlways deletes one item modifier.",
-        "operationId": "delete_item_modifier_api_api_v1_itemModifier__itemId__delete",
+        "operationId": "delete_item_modifier",
         "security": [
           {
             "HTTPBasic": []
@@ -1123,7 +1107,7 @@
         ],
         "summary": "Get All Item Modifiers",
         "description": "Get all item modifiers.\n\nReturns a list of all item modifiers.",
-        "operationId": "get_all_item_modifiers_api_api_v1_itemModifier__get",
+        "operationId": "get_all_item_modifiers",
         "security": [
           {
             "HTTPBasic": []
@@ -1146,7 +1130,7 @@
                       }
                     }
                   ],
-                  "title": "Response Get All Item Modifiers Api Api V1 Itemmodifier  Get"
+                  "title": "Response Itemmodifiers-Get All Item Modifiers"
                 }
               }
             }
@@ -1159,7 +1143,7 @@
         ],
         "summary": "Create Item Modifier",
         "description": "Create one or a list item modifiers.\n\nReturns the created item modifier or list of item modifiers.",
-        "operationId": "create_item_modifier_api_api_v1_itemModifier__post",
+        "operationId": "create_item_modifier",
         "security": [
           {
             "HTTPBasic": []
@@ -1203,7 +1187,7 @@
                       }
                     }
                   ],
-                  "title": "Response Create Item Modifier Api Api V1 Itemmodifier  Post"
+                  "title": "Response Itemmodifiers-Create Item Modifier"
                 }
               }
             }
@@ -1226,7 +1210,7 @@
         ],
         "summary": "Update Item Modifier",
         "description": "Update an item modifier by key and value for\n\"itemId\", optional \"modifierId\" and optional \"position\".\n\nDominant key is \"itemId\".\n\nReturns the updated item modifier.",
-        "operationId": "update_item_modifier_api_api_v1_itemModifier__put",
+        "operationId": "update_item_modifier",
         "security": [
           {
             "HTTPBasic": []
@@ -1293,7 +1277,7 @@
         ],
         "summary": "Get Item",
         "description": "Get item by key and value for \"itemId\".\n\nAlways returns one item.",
-        "operationId": "get_item_api_api_v1_item__itemId__get",
+        "operationId": "get_item",
         "security": [
           {
             "HTTPBasic": []
@@ -1327,7 +1311,7 @@
                       }
                     }
                   ],
-                  "title": "Response Get Item Api Api V1 Item  Itemid  Get"
+                  "title": "Response Items-Get Item"
                 }
               }
             }
@@ -1350,7 +1334,7 @@
         ],
         "summary": "Update Item",
         "description": "Update an item by key and value for \"itemId\".\n\nReturns the updated item.",
-        "operationId": "update_item_api_api_v1_item__itemId__put",
+        "operationId": "update_item",
         "security": [
           {
             "HTTPBasic": []
@@ -1406,7 +1390,7 @@
         ],
         "summary": "Delete Item",
         "description": "Delete an item by key and value for \"itemId\".\n\nReturns a message indicating the item was deleted.\nAlways deletes one item.",
-        "operationId": "delete_item_api_api_v1_item__itemId__delete",
+        "operationId": "delete_item",
         "security": [
           {
             "HTTPBasic": []
@@ -1430,7 +1414,7 @@
               "application/json": {
                 "schema": {
                   "type": "string",
-                  "title": "Response Delete Item Api Api V1 Item  Itemid  Delete"
+                  "title": "Response Items-Delete Item"
                 }
               }
             }
@@ -1456,7 +1440,7 @@
         ],
         "summary": "Get Latest Item Id",
         "description": "Get the latest \"itemId\"\n\nCan only be used safely on an empty table or directly after an insertion.",
-        "operationId": "get_latest_item_id_api_api_v1_item_latest_item_id__get",
+        "operationId": "get_latest_item_id",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -1464,7 +1448,7 @@
               "application/json": {
                 "schema": {
                   "type": "integer",
-                  "title": "Response Get Latest Item Id Api Api V1 Item Latest Item Id  Get"
+                  "title": "Response Items-Get Latest Item Id"
                 }
               }
             }
@@ -1484,7 +1468,7 @@
         ],
         "summary": "Get All Items",
         "description": "Get all items.\n\nReturns a list of all items.",
-        "operationId": "get_all_items_api_api_v1_item__get",
+        "operationId": "get_all_items",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -1502,7 +1486,7 @@
                       "type": "array"
                     }
                   ],
-                  "title": "Response Get All Items Api Api V1 Item  Get"
+                  "title": "Response Items-Get All Items"
                 }
               }
             }
@@ -1520,7 +1504,7 @@
         ],
         "summary": "Create Item",
         "description": "Create one or a list of new items.\n\nReturns the created item or list of items.",
-        "operationId": "create_item_api_api_v1_item__post",
+        "operationId": "create_item",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1559,7 +1543,7 @@
                       "type": "array"
                     }
                   ],
-                  "title": "Response Create Item Api Api V1 Item  Post"
+                  "title": "Response Items-Create Item"
                 }
               }
             }
@@ -1589,7 +1573,7 @@
         ],
         "summary": "Get Modifier",
         "description": "Get modifier or list of modifiers by key and\nvalue for \"modifierId\"\n\nDominant key is \"modifierId\".\n\nReturns one or a list of modifiers.",
-        "operationId": "get_modifier_api_api_v1_modifier__modifierId__get",
+        "operationId": "get_modifier",
         "security": [
           {
             "HTTPBasic": []
@@ -1623,7 +1607,7 @@
                       }
                     }
                   ],
-                  "title": "Response Get Modifier Api Api V1 Modifier  Modifierid  Get"
+                  "title": "Response Modifiers-Get Modifier"
                 }
               }
             }
@@ -1646,7 +1630,7 @@
         ],
         "summary": "Delete Modifier",
         "description": "Delete a modifier by key and value for \"modifierId\"\n\nReturns a message that the modifier was deleted.\nAlways deletes one modifier.",
-        "operationId": "delete_modifier_api_api_v1_modifier__modifierId__delete",
+        "operationId": "delete_modifier",
         "security": [
           {
             "HTTPBasic": []
@@ -1670,7 +1654,7 @@
               "application/json": {
                 "schema": {
                   "type": "string",
-                  "title": "Response Delete Modifier Api Api V1 Modifier  Modifierid  Delete"
+                  "title": "Response Modifiers-Delete Modifier"
                 }
               }
             }
@@ -1695,7 +1679,7 @@
         ],
         "summary": "Get All Modifiers",
         "description": "Get all modifiers.\n\nReturns a list of all modifiers.",
-        "operationId": "get_all_modifiers_api_api_v1_modifier__get",
+        "operationId": "get_all_modifiers",
         "security": [
           {
             "HTTPBasic": []
@@ -1718,7 +1702,7 @@
                       }
                     }
                   ],
-                  "title": "Response Get All Modifiers Api Api V1 Modifier  Get"
+                  "title": "Response Modifiers-Get All Modifiers"
                 }
               }
             }
@@ -1731,7 +1715,7 @@
         ],
         "summary": "Create Modifier",
         "description": "Create one or a list of new modifiers.\n\nReturns the created modifier or list of modifiers.",
-        "operationId": "create_modifier_api_api_v1_modifier__post",
+        "operationId": "create_modifier",
         "security": [
           {
             "HTTPBasic": []
@@ -1775,7 +1759,7 @@
                       }
                     }
                   ],
-                  "title": "Response Create Modifier Api Api V1 Modifier  Post"
+                  "title": "Response Modifiers-Create Modifier"
                 }
               }
             }
@@ -1798,7 +1782,7 @@
         ],
         "summary": "Update Modifier",
         "description": "Update a modifier by key and value for \"modifierId\"\n\nDominant key is \"modifierId\".\n\nReturns the updated modifier.",
-        "operationId": "update_modifier_api_api_v1_modifier__put",
+        "operationId": "update_modifier",
         "security": [
           {
             "HTTPBasic": []
@@ -1856,7 +1840,7 @@
         ],
         "summary": "Get Grouped Modifier By Effect",
         "description": "Get all grouped modifiers by effect.\n\nReturns a list of all grouped modifiers by effect.",
-        "operationId": "get_grouped_modifier_by_effect_api_api_v1_modifier_grouped_modifiers_by_effect__get",
+        "operationId": "get_grouped_modifier_by_effect",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -1874,7 +1858,7 @@
                       "type": "array"
                     }
                   ],
-                  "title": "Response Get Grouped Modifier By Effect Api Api V1 Modifier Grouped Modifiers By Effect  Get"
+                  "title": "Response Modifiers-Get Grouped Modifier By Effect"
                 }
               }
             }
@@ -1894,7 +1878,7 @@
         ],
         "summary": "Get Stash",
         "description": "Get stash by key and value for \"stashId\".\n\nAlways returns one stash.",
-        "operationId": "get_stash_api_api_v1_stash__stashId__get",
+        "operationId": "get_stash",
         "security": [
           {
             "HTTPBasic": []
@@ -1928,7 +1912,7 @@
                       }
                     }
                   ],
-                  "title": "Response Get Stash Api Api V1 Stash  Stashid  Get"
+                  "title": "Response Stashs-Get Stash"
                 }
               }
             }
@@ -1951,7 +1935,7 @@
         ],
         "summary": "Update Stash",
         "description": "Update a stash by key and value for \"stashId\".\n\nReturns the updated stash.",
-        "operationId": "update_stash_api_api_v1_stash__stashId__put",
+        "operationId": "update_stash",
         "security": [
           {
             "HTTPBasic": []
@@ -2007,7 +1991,7 @@
         ],
         "summary": "Delete Stash",
         "description": "Delete a stash by key and value for \"stashId\".\n\nReturns a message that the stash was deleted successfully.\nAlways deletes one stash.",
-        "operationId": "delete_stash_api_api_v1_stash__stashId__delete",
+        "operationId": "delete_stash",
         "security": [
           {
             "HTTPBasic": []
@@ -2031,7 +2015,7 @@
               "application/json": {
                 "schema": {
                   "type": "string",
-                  "title": "Response Delete Stash Api Api V1 Stash  Stashid  Delete"
+                  "title": "Response Stashs-Delete Stash"
                 }
               }
             }
@@ -2056,7 +2040,7 @@
         ],
         "summary": "Get All Stashes",
         "description": "Get all stashes.\n\nReturns a list of all stashes.",
-        "operationId": "get_all_stashes_api_api_v1_stash__get",
+        "operationId": "get_all_stashes",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -2074,7 +2058,7 @@
                       "type": "array"
                     }
                   ],
-                  "title": "Response Get All Stashes Api Api V1 Stash  Get"
+                  "title": "Response Stashs-Get All Stashes"
                 }
               }
             }
@@ -2092,7 +2076,7 @@
         ],
         "summary": "Create Stash",
         "description": "Create one or a list of new stashes.\n\nReturns the created stash or list of stashes.",
-        "operationId": "create_stash_api_api_v1_stash__post",
+        "operationId": "create_stash",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2131,7 +2115,7 @@
                       "type": "array"
                     }
                   ],
-                  "title": "Response Create Stash Api Api V1 Stash  Post"
+                  "title": "Response Stashs-Create Stash"
                 }
               }
             }
@@ -2161,7 +2145,7 @@
         ],
         "summary": "Get Plot Data",
         "description": "Takes a query based on the 'PlotQuery' schema and retrieves data\nto be used for plotting in the format of the 'PlotData' schema.\n\nThe 'PlotQuery' schema allows for modifier restriction and item specifications.",
-        "operationId": "get_plot_data_api_api_v1_plot__post",
+        "operationId": "get_plot_data",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2208,7 +2192,7 @@
         ],
         "summary": "Get Turnstile Validation",
         "description": "Takes a query based on the 'TurnstileQuery' schema and retrieves data\nbased on the cloudfare challenge turnstile validation response.\n\nArgs:\n    query (schemas.TurnstileQuery): Query based on the 'TurnstileQuery' schema.\n    verification (bool, optional): Verification flag. Defaults to Depends(verification).\n\nRaises:\n    HTTPException: If verification fails.\n\nReturns:\n    _type_: Returns a response based on the 'TurnstileResponse' schema.",
-        "operationId": "get_turnstile_validation_api_api_v1_turnstile__post",
+        "operationId": "get_turnstile_validation",
         "requestBody": {
           "content": {
             "application/json": {

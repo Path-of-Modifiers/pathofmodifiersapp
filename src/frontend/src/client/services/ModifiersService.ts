@@ -21,7 +21,7 @@ export class ModifiersService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getModifierApiApiV1ModifierModifierIdGet({
+    public static getModifier({
         modifierId,
     }: {
         modifierId: string,
@@ -46,7 +46,7 @@ export class ModifiersService {
      * @returns string Successful Response
      * @throws ApiError
      */
-    public static deleteModifierApiApiV1ModifierModifierIdDelete({
+    public static deleteModifier({
         modifierId,
     }: {
         modifierId: number,
@@ -70,7 +70,7 @@ export class ModifiersService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAllModifiersApiApiV1ModifierGet(): CancelablePromise<(Modifier | Array<Modifier>)> {
+    public static getAllModifiers(): CancelablePromise<(Modifier | Array<Modifier>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/modifier/',
@@ -84,7 +84,7 @@ export class ModifiersService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static createModifierApiApiV1ModifierPost({
+    public static createModifier({
         requestBody,
     }: {
         requestBody: (ModifierCreate | Array<ModifierCreate>),
@@ -109,7 +109,7 @@ export class ModifiersService {
      * @returns Modifier Successful Response
      * @throws ApiError
      */
-    public static updateModifierApiApiV1ModifierPut({
+    public static updateModifier({
         modifierId,
         requestBody,
     }: {
@@ -137,7 +137,7 @@ export class ModifiersService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getGroupedModifierByEffectApiApiV1ModifierGroupedModifiersByEffectGet(): CancelablePromise<(GroupedModifierByEffect | Array<GroupedModifierByEffect>)> {
+    public static getGroupedModifierByEffect(): CancelablePromise<(GroupedModifierByEffect | Array<GroupedModifierByEffect>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/modifier/grouped_modifiers_by_effect/',

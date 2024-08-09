@@ -20,7 +20,7 @@ export class ItemModifiersService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getItemModifierApiApiV1ItemModifierItemIdGet({
+    public static getItemModifier({
         itemId,
         modifierId,
         position,
@@ -56,7 +56,7 @@ export class ItemModifiersService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static deleteItemModifierApiApiV1ItemModifierItemIdDelete({
+    public static deleteItemModifier({
         itemId,
         modifierId,
     }: {
@@ -85,7 +85,7 @@ export class ItemModifiersService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAllItemModifiersApiApiV1ItemModifierGet(): CancelablePromise<(ItemModifier | Array<ItemModifier>)> {
+    public static getAllItemModifiers(): CancelablePromise<(ItemModifier | Array<ItemModifier>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/itemModifier/',
@@ -99,7 +99,7 @@ export class ItemModifiersService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static createItemModifierApiApiV1ItemModifierPost({
+    public static createItemModifier({
         requestBody,
     }: {
         requestBody: (ItemModifierCreate | Array<ItemModifierCreate>),
@@ -125,7 +125,7 @@ export class ItemModifiersService {
      * @returns ItemModifier Successful Response
      * @throws ApiError
      */
-    public static updateItemModifierApiApiV1ItemModifierPut({
+    public static updateItemModifier({
         itemId,
         modifierId,
         requestBody,

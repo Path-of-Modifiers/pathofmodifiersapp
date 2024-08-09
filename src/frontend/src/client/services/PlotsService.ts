@@ -17,7 +17,7 @@ export class PlotsService {
      * @returns PlotData Successful Response
      * @throws ApiError
      */
-    public static getPlotDataApiApiV1PlotPost({
+    public static getPlotData({
         requestBody,
     }: {
         requestBody: PlotQuery,

@@ -17,7 +17,7 @@ export class AccountsService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAccountApiApiV1AccountAccountNameGet({
+    public static getAccount({
         accountName,
     }: {
         accountName: string,
@@ -41,7 +41,7 @@ export class AccountsService {
      * @returns Account Successful Response
      * @throws ApiError
      */
-    public static updateAccountApiApiV1AccountAccountNamePut({
+    public static updateAccount({
         accountName,
         requestBody,
     }: {
@@ -70,7 +70,7 @@ export class AccountsService {
      * @returns string Successful Response
      * @throws ApiError
      */
-    public static deleteAccountApiApiV1AccountAccountNameDelete({
+    public static deleteAccount({
         accountName,
     }: {
         accountName: string,
@@ -94,7 +94,7 @@ export class AccountsService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAllAccountsApiApiV1AccountGet(): CancelablePromise<(Account | Array<Account>)> {
+    public static getAllAccounts(): CancelablePromise<(Account | Array<Account>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/account/',
@@ -108,7 +108,7 @@ export class AccountsService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static createAccountApiApiV1AccountPost({
+    public static createAccount({
         requestBody,
     }: {
         requestBody: (AccountCreate | Array<AccountCreate>),

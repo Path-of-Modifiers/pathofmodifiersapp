@@ -31,7 +31,7 @@ function useTurnstileValidation(requestBody: TurnstileQuery): {
       }
 
       const returnBody =
-        await TurnstilesService.getTurnstileValidationApiApiV1TurnstilePost({
+        await TurnstilesService.getTurnstileValidation({
           requestBody,
         });
 

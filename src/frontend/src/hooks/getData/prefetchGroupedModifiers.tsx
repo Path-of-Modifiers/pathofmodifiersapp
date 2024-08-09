@@ -10,7 +10,7 @@ export const prefetchedGroupedModifiers = async (queryClient: QueryClient) => {
       queryKey: ["prefetchedgroupedmodifiers"],
       queryFn: async () => {
         const data =
-          await ModifiersService.getGroupedModifierByEffectApiApiV1ModifierGroupedModifiersByEffectGet();
+          await ModifiersService.getGroupedModifierByEffect();
         if (Array.isArray(data)) {
           groupedModifiers = data;
         } else {

@@ -12,7 +12,7 @@ export const GetGroupedModifiersByEffect = () => {
       queryKey: ["allModifiers"],
       queryFn: async () => {
         setModifiers(
-          await ModifiersService.getGroupedModifierByEffectApiApiV1ModifierGroupedModifiersByEffectGet()
+          await ModifiersService.getGroupedModifierByEffect()
         );
         return 1;
       },
