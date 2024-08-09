@@ -16,7 +16,7 @@ minRoll,maxRoll,position,effect,static,unique
 20,50,0,"#% reduced Ignite Duration on you",,True
 ,,0,"Cannot be Stunned while you have at least 25 Rage",True,True
 5,12,0,"Adds # to # Physical Damage if you've dealt a Critical Strike Recently",,True
-14,27,1,"Adds # to # Physical Damage if you've dealt a Critical Strike Recently",,True
+14,22,1,"Adds # to # Physical Damage if you've dealt a Critical Strike Recently",,True
 2,5,0,"+# to Maximum Rage",,True
 2,5,0,"Warcries grant # Rage per 5 Power if you have less than 25 Rage",,True
 3,8,0,"#% of Leech is Instant",,True
@@ -25,7 +25,7 @@ minRoll,maxRoll,position,effect,static,unique
 ,,0,"Cannot be Stunned while Fortified",True,True
 10,30,0,"#% chance to Taunt on Hit",,True
 ,,0,"Banner Skills have no Reservation",True,True
-10,25,0,"When you create a Banner, it gains #% of the Stages of your placed Banner",,True
+10,25,0,"When you leave your Banner's Area, recover #% of the Valour consumed for that Banner",,True
 ,,0,"Gain Adrenaline for 4 seconds when you reach Low Life",True,True
 ,,0,"Impales you inflict last 1 additional Hit",True,True
 5,20,0,"Melee Hits have #% chance to Fortify",,True
@@ -34,7 +34,7 @@ minRoll,maxRoll,position,effect,static,unique
 10,30,0,"Attack Hits against Blinded Enemies have #% chance to Maim",,True
 ,,0,"Cannot be Stunned by Hits you Block",True,True
 1,3,0,"+#% to maximum Chance to Block Attack Damage",,True
-,,0,"Hits ignore Enemy Monster Physical Damage Reduction if you've Blocked in the past 20 seconds",True,True
+,,0,"Hits ignore Enemy Physical Damage Reduction if you've Blocked in the past 20 seconds",True,True
 3,6,0,"+# to Armour and Evasion Rating per 1% Chance to Block Attack Damage",,True
 3,6,0,"+#% Chance to Block Attack Damage",,True
 4,12,0,"Gain #% increased Attack Speed for 20 seconds when you Kill a Rare or Unique Enemy",,True
