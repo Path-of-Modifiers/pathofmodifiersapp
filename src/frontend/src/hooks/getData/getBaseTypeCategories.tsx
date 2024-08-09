@@ -17,7 +17,7 @@ export const prefetchAllBaseTypeData = async (queryClient: QueryClient) => {
       queryKey: ["baseTypes"],
       queryFn: async () => {
         const data =
-          await ItemBaseTypesService.getBaseTypesApiApiV1ItemBaseTypeBaseTypesGet();
+          await ItemBaseTypesService.getAllItemBaseTypes();
         if (Array.isArray(data)) {
           baseTypes = data;
         } else {
@@ -33,7 +33,7 @@ export const prefetchAllBaseTypeData = async (queryClient: QueryClient) => {
       queryKey: ["itemBaseTypeCategory"],
       queryFn: async () => {
         const data =
-          await ItemBaseTypesService.getUniqueCategoriesApiApiV1ItemBaseTypeUniqueCategoriesGet();
+          await ItemBaseTypesService.getUniqueCategories();
         if (Array.isArray(data)) {
           itemBaseTypeCategory = data;
         } else {
@@ -49,7 +49,7 @@ export const prefetchAllBaseTypeData = async (queryClient: QueryClient) => {
       queryKey: ["itemBaseTypeSubCategory"],
       queryFn: async () => {
         const data =
-          await ItemBaseTypesService.getUniqueSubCategoriesApiApiV1ItemBaseTypeUniqueSubCategoriesGet();
+          await ItemBaseTypesService.getUniqueSubCategories();
         if (Array.isArray(data)) {
           itemBaseTypeSubCategory = data;
         } else {
