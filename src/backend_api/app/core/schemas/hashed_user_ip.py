@@ -3,27 +3,31 @@ import pydantic as _pydantic
 
 
 # Shared hashed user ip props
-class _BaseTemporaryHashedUserIP(_pydantic.BaseModel):
+class _BaseHashedUserIP(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
     hashedIp: str
 
 
 # Properties to receive on hashed user ip creation
-class TemporaryHashedUserIpCreate(_BaseTemporaryHashedUserIP):
+class HashedUserIpCreate(_BaseHashedUserIP):
+    pass
+
+
+class HashedUserIpQuery(_BaseHashedUserIP):
     pass
 
 
 # Properties shared by models stored in DB
-class TemporaryHashedUserIpInDBBase(_BaseTemporaryHashedUserIP):
+class HashedUserIpInDBBase(_BaseHashedUserIP):
     createdAt: _dt.datetime
 
 
 # Properties to return to client
-class TemporaryHashedUserIp(_BaseTemporaryHashedUserIP):
+class HashedUserIp(_BaseHashedUserIP):
     pass
 
 
 # Properties stored in DB
-class TemporaryHashedUserIpInDB(_BaseTemporaryHashedUserIP):
+class HashedUserIpInDB(_BaseHashedUserIP):
     pass

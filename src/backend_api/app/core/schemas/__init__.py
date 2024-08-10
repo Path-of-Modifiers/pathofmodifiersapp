@@ -26,9 +26,10 @@ from .item_modifier import (
 )
 from .item import Item, ItemInDB, ItemCreate, ItemUpdate
 from .stash import Stash, StashInDB, StashCreate, StashUpdate
-from .temporary_hashed_user_ip import (
-    TemporaryHashedUserIpCreate,
-    TemporaryHashedUserIpInDB,
-    TemporaryHashedUserIp,
+from .hashed_user_ip import (
+    HashedUserIpCreate,
+    HashedUserIpInDB,
+    HashedUserIp,
+    HashedUserIpQuery,
 )
 from .turnstile import TurnstileQuery, TurnstileResponse

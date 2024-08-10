@@ -1,4 +1,4 @@
-from validation.turnstile_validation import ValidateTurnstileRequest
+from backend_api.app.validation.turnstile_validation import ValidateTurnstileRequest
 
 
 class TestTurnstileValidation:
