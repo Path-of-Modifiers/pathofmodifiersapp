@@ -19,7 +19,7 @@ temporary_hashed_user_ip_prefix = "temporary_hashed_user_ip_prefix"
 
 @router.post("/check/", response_model=bool)
 async def check_temporary_hashed_user_ip(
-    query: schemas.HashedUserIpQuery,
+    ip: str,
     db: Session = Depends(get_db),
     validation: bool = Depends(verification),
 ):
@@ -33,7 +33,7 @@ async def check_temporary_hashed_user_ip(
             detail=f"Unauthorize API access for {check_temporary_hashed_user_ip.__name__}",
         )
 
-    is_valid = await CRUD_hashed_user_ip.check_temporary_hashed_ip(db, query)
+    is_valid = await CRUD_hashed_user_ip.check_temporary_hashed_ip(db, ip)
 
     return is_valid
 
