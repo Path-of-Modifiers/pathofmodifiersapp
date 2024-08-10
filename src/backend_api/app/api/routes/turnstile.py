@@ -7,7 +7,7 @@ from app.api.deps import get_db
 from app.core.security import verification
 import app.core.schemas as schemas
 
-from app.validation import validation_tool
+from app.validation import turnstile_validation_tool
 
 
 router = APIRouter()
@@ -41,4 +41,6 @@ async def get_turnstile_validation(
             detail=f"Unauthorize API access for {get_turnstile_validation.__name__}",
         )
 
-    return await validation_tool.validate_turnstile_request(db, request_data=query)
+    return await turnstile_validation_tool.validate_turnstile_request(
+        db, request_data=query
+    )
