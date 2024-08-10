@@ -4,7 +4,7 @@ from requests import HTTPError, post
 
 from app.core.schemas import TurnstileQuery, TurnstileResponse
 from app.core.config import settings
-from app.validation import hashed_ip_validation_tool
+from app.validation.hashed_ip_validation import HashedIpValidation
 
 
 class ValidateTurnstileRequest:
@@ -12,7 +12,7 @@ class ValidateTurnstileRequest:
         self.validate = TypeAdapter(TurnstileResponse).validate_python
         self.turnstile_url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
         self.turnstile_secret_key = settings.TURNSTILE_SECRET_KEY
-        self.hashed_ip_validation_tool = hashed_ip_validation_tool
+        self.hashed_ip_validation_tool = HashedIpValidation()
 
     async def validate_turnstile_request(
         self, db: Session, *, request_data: TurnstileQuery
