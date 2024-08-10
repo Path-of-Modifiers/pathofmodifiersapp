@@ -30,8 +30,8 @@ class ValidateTurnstileRequest:
 
         ip_query = HashedUserIpQuery(hashedIp=create_hashed_ip(ip))
 
-        check_temporary_hashed_ip = self.CRUD_hashed_user_ip.check_temporary_hashed_ip(
-            db, ip_query
+        check_temporary_hashed_ip = (
+            await self.CRUD_hashed_user_ip.check_temporary_hashed_ip(db, ip_query)
         )
 
         if check_temporary_hashed_ip:
