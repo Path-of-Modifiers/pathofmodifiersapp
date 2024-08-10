@@ -6,7 +6,7 @@ from requests import HTTPError, post
 
 import bcrypt
 
-
+from app.core.schemas import TemporaryHashedUserIpCreate
 from app.core.schemas import TurnstileQuery, TurnstileResponse
 from app.core.models.models import TemporaryHashedUserIP as model_TemporaryHashedUserIP
 from app.core.config import settings
@@ -28,9 +28,9 @@ class ValidateTurnstileRequest:
         encoded_ip = request_data_ip.encode("utf-8")
 
         hashed_ip = bcrypt.hashpw(encoded_ip, salt)
-        
+
         hashed_ip = hashed_ip.decode("utf-8")
-        
+
         return hashed_ip
 
     def _get_hashed_ip_statement(self) -> Select:
@@ -41,10 +41,12 @@ class ValidateTurnstileRequest:
 
     def _add_hashed_ip_to_db(self, db: Session, hashed_ip: str) -> None:
         hashed_ip_map = {"hashedIp": hashed_ip}
-
-        hashed_ip_obj = model_TemporaryHashedUserIP(hashed_ip_map)
-
-        db.add(hashed_ip_obj)
+        
+        obj_create = TemporaryHashedUserIpCreate(**hashed_ip_map)
+        
+        db_obj = model_TemporaryHashedUserIP(**obj_create.model_dump())
+        
+        db.add(db_obj)
         db.commit()
 
     async def validate_turnstile_request(
