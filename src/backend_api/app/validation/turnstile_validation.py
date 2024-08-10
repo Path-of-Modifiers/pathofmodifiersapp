@@ -54,7 +54,7 @@ class ValidateTurnstileRequest:
 
         ip = request_data.ip
 
-        statement = self._get_hashed_ip_statement(db)
+        statement = self._get_hashed_ip_statement()
 
         all_hashes = db.execute(statement).mappings().all()
 
