@@ -1,13 +1,12 @@
-import bcrypt
 from sqlalchemy.orm import Session
 from pydantic import TypeAdapter
 from requests import HTTPError, post
 
 from app.core.schemas import TurnstileQuery, TurnstileResponse
+from app.core.schemas.hashed_user_ip import HashedUserIpQuery
 from app.core.config import settings
 from app.validation.utils import create_hashed_ip
 from app.crud import CRUD_hashed_user_ip
-from app.core.schemas.hashed_user_ip import HashedUserIpQuery
 
 
 class ValidateTurnstileRequest:
@@ -15,7 +14,6 @@ class ValidateTurnstileRequest:
         self.validate = TypeAdapter(TurnstileResponse).validate_python
         self.turnstile_url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
         self.turnstile_secret_key = settings.TURNSTILE_SECRET_KEY
-        self.CRUD_hashed_user_ip = CRUD_hashed_user_ip
 
     async def validate_turnstile_request(
         self, db: Session, *, request_data: TurnstileQuery
@@ -30,8 +28,8 @@ class ValidateTurnstileRequest:
 
         ip_query = HashedUserIpQuery(hashedIp=create_hashed_ip(ip))
 
-        check_temporary_hashed_ip = (
-            await self.CRUD_hashed_user_ip.check_temporary_hashed_ip(db, ip_query)
+        check_temporary_hashed_ip = await CRUD_hashed_user_ip.check_temporary_hashed_ip(
+            db, ip_query
         )
 
         if check_temporary_hashed_ip:
@@ -53,7 +51,7 @@ class ValidateTurnstileRequest:
         if outcome["success"]:
             hashed_ip = create_hashed_ip(ip)
             hashed_ip_map = {"hashedIp": hashed_ip}
-            await self.CRUD_hashed_user_ip.create(db, hashed_ip_map)
+            await CRUD_hashed_user_ip.create(db, hashed_ip_map)
 
             return self.validate(outcome)
         else:
