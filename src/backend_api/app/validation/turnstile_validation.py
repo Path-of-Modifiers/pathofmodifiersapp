@@ -25,7 +25,9 @@ class ValidateTurnstileRequest:
         """
         salt = bcrypt.gensalt()
 
-        hashed_ip = bcrypt.hashpw(request_data_ip.encode(), salt)
+        encoded_ip = request_data_ip.encode("utf-8")
+
+        hashed_ip = bcrypt.hashpw(encoded_ip, salt)
 
         return hashed_ip
 
@@ -59,7 +61,8 @@ class ValidateTurnstileRequest:
         all_hashes = db.execute(statement).mappings().all()
 
         for hashed_ip in all_hashes:
-            if bcrypt.checkpw(password=ip.encode(), hashed_password=hashed_ip["hashedIp"]):
+            encoded_ip = ip.encode("utf-8")
+            if bcrypt.checkpw(encoded_ip, hashed_password=hashed_ip["hashedIp"]):
                 print("IP already exists in database")
                 outcome = {"success": True}
                 return self.validate(outcome)
@@ -80,7 +83,7 @@ class ValidateTurnstileRequest:
         if outcome["success"]:
             hashed_ip = self._create_hashed_ip(ip)
             self._add_hashed_ip_to_db(db, hashed_ip)
-            
+
             return self.validate(outcome)
         else:
             raise HTTPError(
