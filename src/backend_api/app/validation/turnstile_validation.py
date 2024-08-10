@@ -1,4 +1,3 @@
-import os
 from typing import Optional
 from sqlalchemy import Select, select
 from sqlalchemy.orm import Session
@@ -10,13 +9,14 @@ import bcrypt
 
 from app.core.schemas import TurnstileQuery, TurnstileResponse
 from app.core.models.models import TemporaryHashedUserIP as model_TemporaryHashedUserIP
-
-TURNSTILE_SECRET_KEY = os.environ.get("TURNSTILE_SECRET_KEY")
+from app.core.config import settings
 
 
 class ValidateTurnstileRequest:
     def __init__(self):
         self.validate = TypeAdapter(TurnstileResponse).validate_python
+        self.turnstile_url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
+        self.turnstile_secret_key = settings.TURNSTILE_SECRET_KEY
 
     def _create_hashed_ip(request_data_ip: str) -> None:
         """Temporary storage of hashed ip address for 24 hours time period.
@@ -46,9 +46,8 @@ class ValidateTurnstileRequest:
     async def validate_turnstile_request(
         self, db: Session, *, request_data: TurnstileQuery
     ) -> TurnstileResponse:
-        url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
         body = {
-            "secret": TURNSTILE_SECRET_KEY,
+            "secret": self.turnstile_secret_key,
             "response": request_data.token,
             "remoteip": request_data.ip,
         }
@@ -66,7 +65,7 @@ class ValidateTurnstileRequest:
                 return self.validate(outcome)
 
         try:
-            result = post(url, json=body, headers={"Content-Type": "application/json"})
+            result = post(self.turnstile_url, json=body, headers={"Content-Type": "application/json"})
         except Exception as e:
             raise HTTPError(
                 f"""Failed to send challenge request to cloudflare turnstile
