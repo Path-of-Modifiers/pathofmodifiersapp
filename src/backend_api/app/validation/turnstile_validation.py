@@ -18,7 +18,7 @@ class ValidateTurnstileRequest:
         self.turnstile_url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
         self.turnstile_secret_key = settings.TURNSTILE_SECRET_KEY
 
-    def _create_hashed_ip(self, request_data_ip: str) -> None:
+    def _create_hashed_ip(self, request_data_ip: str) -> str:
         """Temporary storage of hashed ip address for 24 hours time period.
         IPs are hashed to protect user privacy.
         They are used to secure the turnstile endpoint from abuse.
@@ -59,7 +59,7 @@ class ValidateTurnstileRequest:
         all_hashes = db.execute(statement).mappings().all()
 
         for hashed_ip in all_hashes:
-            if bcrypt.checkpw(password=ip, hashed_password=hashed_ip["hashedIp"]):
+            if bcrypt.checkpw(password=ip.encode(), hashed_password=hashed_ip["hashedIp"]):
                 print("IP already exists in database")
                 outcome = {"success": True}
                 return self.validate(outcome)
@@ -78,9 +78,8 @@ class ValidateTurnstileRequest:
 
         outcome = result.json()
         if outcome["success"]:
-            hashed_ip = self._create_hashed_ip(ip)
-
             self._add_hashed_ip_to_db(db, hashed_ip)
+            
             return self.validate(outcome)
         else:
             raise HTTPError(
