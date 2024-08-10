@@ -3,7 +3,7 @@ from pydantic import TypeAdapter
 from requests import HTTPError, post
 
 from app.core.schemas import TurnstileQuery, TurnstileResponse
-from app.core.schemas.hashed_user_ip import HashedUserIpQuery, HashedUserIpCreate
+from app.core.schemas.hashed_user_ip import HashedUserIpCreate
 from app.core.config import settings
 from app.validation.utils import create_hashed_ip
 from app.crud import CRUD_hashed_user_ip
@@ -49,7 +49,7 @@ class ValidateTurnstileRequest:
         if outcome["success"]:
             hashed_ip = create_hashed_ip(ip)
             hashed_ip_obj = HashedUserIpCreate(hashedIp=hashed_ip)
-            await CRUD_hashed_user_ip.create(db, hashed_ip_obj)
+            await CRUD_hashed_user_ip.create(db=db, obj_in=hashed_ip_obj)
 
             return self.validate(outcome)
         else:
