@@ -78,6 +78,7 @@ class ValidateTurnstileRequest:
 
         outcome = result.json()
         if outcome["success"]:
+            hashed_ip = self._create_hashed_ip(ip)
             self._add_hashed_ip_to_db(db, hashed_ip)
             
             return self.validate(outcome)
