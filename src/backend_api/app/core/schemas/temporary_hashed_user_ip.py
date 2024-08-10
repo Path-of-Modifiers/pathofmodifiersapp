@@ -6,7 +6,7 @@ import pydantic as _pydantic
 class _BaseTemporaryHashedUserIP(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
-    hashedIP: str
+    hashedIp: str
 
 
 # Properties to receive on hashed user ip creation

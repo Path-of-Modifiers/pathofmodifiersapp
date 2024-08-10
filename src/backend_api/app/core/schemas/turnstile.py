@@ -7,6 +7,8 @@ class TurnstileQuery(_pydantic.BaseModel):
     token: str
     ip: str
 
+class MetadataObject(_pydantic.BaseModel):
+    interactive: Optional[bool] = None
 
 class TurnstileResponse(_pydantic.BaseModel):
     success: bool
@@ -15,4 +17,4 @@ class TurnstileResponse(_pydantic.BaseModel):
     hostname: Optional[str] = None
     action: Optional[str] = None
     cdata: Optional[str] = None
-    metadata: Optional[str] = None
+    metadata: Optional[MetadataObject] = None
