@@ -137,7 +137,7 @@ def upgrade() -> None:
     )
     op.create_table(
         "temporary_hashed_user_ip",
-        sa.Column("hashedIp", sa.String(length=70), nullable=False),
+        sa.Column("hashedIp", sa.String(length=150), nullable=False),
         sa.Column("createdAt", sa.DateTime(), nullable=False),
         sa.PrimaryKeyConstraint("hashedIp"),
     )
