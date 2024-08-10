@@ -18,7 +18,6 @@ from app.core.schemas.account import AccountCreate, AccountUpdate, Account
 from app.core.schemas.currency import CurrencyCreate, CurrencyUpdate, Currency
 from app.core.schemas.item_base_type import (
     ItemBaseTypeCreate,
-    ItemBaseTypeUpdate,
     ItemBaseType,
 )
 from app.core.schemas.item_modifier import (
@@ -31,9 +30,7 @@ from app.core.schemas.item import ItemCreate, ItemUpdate, Item
 from app.core.schemas.stash import StashCreate, StashUpdate, Stash
 from app.core.schemas.hashed_user_ip import (
     HashedUserIpCreate,
-    HashedUserIpInDB,
     HashedUserIp,
-    HashedUserIpQuery,
 )
 
 
