@@ -53,7 +53,7 @@ class ValidateTurnstileRequest:
         if outcome["success"]:
             hashed_ip = create_hashed_ip(ip)
             hashed_ip_map = {"hashedIp": hashed_ip}
-            self.CRUD_hashed_user_ip.create(db, hashed_ip_map)
+            await self.CRUD_hashed_user_ip.create(db, hashed_ip_map)
 
             return self.validate(outcome)
         else:
