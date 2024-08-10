@@ -18,7 +18,7 @@ class ValidateTurnstileRequest:
         self.turnstile_url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
         self.turnstile_secret_key = settings.TURNSTILE_SECRET_KEY
 
-    def _create_hashed_ip(request_data_ip: str) -> None:
+    def _create_hashed_ip(self, request_data_ip: str) -> None:
         """Temporary storage of hashed ip address for 24 hours time period.
         IPs are hashed to protect user privacy.
         They are used to secure the turnstile endpoint from abuse.
@@ -29,7 +29,7 @@ class ValidateTurnstileRequest:
 
         return hashed_ip
 
-    def _get_hashed_ip_statement(self, db: Session) -> Select:
+    def _get_hashed_ip_statement(self) -> Select:
         statement = select(
             model_TemporaryHashedUserIP.hashedIp, model_TemporaryHashedUserIP.createdAt
         )
@@ -65,7 +65,11 @@ class ValidateTurnstileRequest:
                 return self.validate(outcome)
 
         try:
-            result = post(self.turnstile_url, json=body, headers={"Content-Type": "application/json"})
+            result = post(
+                self.turnstile_url,
+                json=body,
+                headers={"Content-Type": "application/json"},
+            )
         except Exception as e:
             raise HTTPError(
                 f"""Failed to send challenge request to cloudflare turnstile
