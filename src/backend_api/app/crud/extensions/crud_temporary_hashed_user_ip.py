@@ -33,9 +33,7 @@ class CRUDTemporaryHashedUserIp(
         )
         return statement
 
-    async def check_temporary_hashed_ip(
-        self, db: Session, temporary_hashed_user_ip_query: HashedUserIpQuery
-    ) -> bool:
+    async def check_temporary_hashed_ip(self, db: Session, ip: str) -> bool:
         """Check temporary hashed IP in the database.
 
         Args:
@@ -50,7 +48,7 @@ class CRUDTemporaryHashedUserIp(
         all_hashes = db.execute(statement).mappings().all()
 
         for hashed_ip in all_hashes:
-            encoded_ip = temporary_hashed_user_ip_query.hashedIp.encode("utf-8")
+            encoded_ip = ip.encode("utf-8")
             encoded_hashed_ip = hashed_ip["hashedIp"].encode("utf-8")
             if bcrypt.checkpw(encoded_ip, encoded_hashed_ip):
                 return True

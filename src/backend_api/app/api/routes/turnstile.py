@@ -42,5 +42,5 @@ async def get_turnstile_validation(
         )
 
     return await turnstile_validation_tool.validate_turnstile_request(
-        db, request_data=query
+        db=db, request_data=query
     )
