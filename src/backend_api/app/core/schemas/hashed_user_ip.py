@@ -9,12 +9,16 @@ class _BaseHashedUserIP(_pydantic.BaseModel):
     hashedIp: str
 
 
+class HashedUserIpQuery(_BaseHashedUserIP):
+    pass
+
+
 # Properties to receive on hashed user ip creation
 class HashedUserIpCreate(_BaseHashedUserIP):
     pass
 
 
-class HashedUserIpQuery(_BaseHashedUserIP):
+class HashedUserIpUpdate(_BaseHashedUserIP):
     pass
 
 
