@@ -1,25 +1,28 @@
+import { useEffect, useRef } from "react";
+
 /**
- *
- * @returns
+ * Get the IP address of the user
+ * Gets the IP address of the user and stores it in local storage
+ * for use in the captcha validation
+ * Hashes the IP address before storing it for 24 hours in DB
+ * @returns {string} ip
  */
 const useGetIp = () => {
-  let ip: string | undefined = undefined;
+  const ip = useRef<string>("");
 
-  fetch("https://api.ipify.org?format=json")
-    .then((response) => response.json())
-    .then((data) => {
-      ip = data.ip;
-    })
-    .catch((error) => {
-      console.log("Error fetching IP:", error);
-    });
-    console.log("IPPPPPPPP", ip);
+  useEffect(() => {
+    fetch("https://api.ipify.org?format=json")
+      .then((response) => response.json())
+      .then((data) => {
+        ip.current = data.ip;
+        localStorage.setItem("security_ip", ip.current);
+      })
+      .catch((error) => {
+        console.log("Captcha Error fetching IP:", error);
+      });
+  }, []);
 
-  if (ip) {
-    console.log("YESSSIPPPPPP", ip);
-    localStorage.setItem("secured_ip", JSON.stringify(ip));
-    return ip;
-  }
+  return ip;
 };
 
 export default useGetIp;

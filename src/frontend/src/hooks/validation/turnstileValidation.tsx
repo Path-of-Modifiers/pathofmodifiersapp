@@ -4,6 +4,7 @@ import {
   TurnstileResponse,
   TurnstilesService,
 } from "../../client";
+import { useNavigate } from "@tanstack/react-router";
 
 export const hasCompletedCaptcha = () => {
   return localStorage.getItem("hasCompletedCaptcha") === "true";
@@ -23,6 +24,7 @@ function useTurnstileValidation(requestBody: TurnstileQuery): {
   isFetched: boolean;
   isLoading: boolean;
 } {
+  const navigate = useNavigate();
   const {
     data: turnstileResponse,
     status: fetchStatus,
@@ -40,6 +42,7 @@ function useTurnstileValidation(requestBody: TurnstileQuery): {
         requestBody,
       });
       if (returnBody.success) {
+        navigate({ to: "/" }); // Redirect to the home page if the captcha is successful
         localStorage.setItem("hasCompletedCaptcha", "true");
       }
 

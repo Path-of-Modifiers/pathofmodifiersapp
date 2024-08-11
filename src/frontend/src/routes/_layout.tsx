@@ -4,6 +4,7 @@ import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 import useTurnstileValidation, {
   hasCompletedCaptcha,
 } from "../hooks/validation/turnstileValidation";
+import useGetIp from "../hooks/validation/getIp";
 
 const security_ip = localStorage.getItem("security_ip");
 
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/_layout")({
 });
 
 function Layout() {
+  useGetIp();
   const { isLoading } = useTurnstileValidation({
     token: "",
     ip: security_ip ?? "",
