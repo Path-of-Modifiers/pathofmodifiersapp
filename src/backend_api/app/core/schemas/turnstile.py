@@ -7,12 +7,14 @@ class TurnstileQuery(_pydantic.BaseModel):
     token: str
     ip: str
 
+class MetadataObject(_pydantic.BaseModel):
+    interactive: Optional[bool] = None
 
 class TurnstileResponse(_pydantic.BaseModel):
     success: bool
     error_codes: Optional[List[str]] = None
-    challenge_ts: str
-    hostname: str
-    action: str
-    cdata: str
-    metadata: dict
+    challenge_ts: Optional[str] = None
+    hostname: Optional[str] = None
+    action: Optional[str] = None
+    cdata: Optional[str] = None
+    metadata: Optional[MetadataObject] = None
