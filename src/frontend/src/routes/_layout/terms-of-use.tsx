@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import {
   Flex,
   Box,
@@ -8,11 +8,11 @@ import {
   ListItem,
 } from "@chakra-ui/layout";
 
-import Header from "../components/Common/Header";
-import Footer from "../components/Common/Footer";
-import { TextWithUnderline } from "../components/Text/TextWithUnderline";
+import Header from "../../components/Common/Header";
+import Footer from "../../components/Common/Footer";
+import { TextWithUnderline } from "../../components/Text/TextWithUnderline";
 
-export const Route = createLazyFileRoute("/terms-of-use")({
+export const Route = createFileRoute("/_layout/terms-of-use")({
   component: TermsOfUse,
 });
 
