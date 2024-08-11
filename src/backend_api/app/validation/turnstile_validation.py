@@ -14,7 +14,6 @@ class ValidateTurnstileRequest:
         self.validate = TypeAdapter(TurnstileResponse).validate_python
         self.turnstile_url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
         self.turnstile_secret_key = settings.TURNSTILE_SECRET_KEY
-        self.ENVIRONMENT = settings.ENVIRONMENT
 
     async def validate_turnstile_request(
         self, db: Session, *, request_data: TurnstileQuery
@@ -31,8 +30,8 @@ class ValidateTurnstileRequest:
             db, ip
         )
 
-        # Skip turnstile validation if the IP is already hashed or if the environment is local
-        if check_temporary_hashed_ip or self.ENVIRONMENT == "local":
+        # Skip turnstile validation if the IP is already hashed 
+        if check_temporary_hashed_ip:
             return self.validate({"success": True})
 
         try:
