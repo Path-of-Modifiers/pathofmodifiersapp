@@ -78,7 +78,8 @@ function Index() {
           maxWidth={"100%"}
           width="bgBoxes.defaultBox"
           flexWrap="wrap"
-          minHeight="100rem"
+          minHeight="100vh"
+          height="100rem"
           p={2}
           borderTopRadius={10}
           borderTopColor={"ui.darkBrown"}
