@@ -7,7 +7,9 @@ import { routeTree } from "./routeTree.gen";
 import { ChakraProvider } from "@chakra-ui/react";
 
 import theme from "./theme";
+import { OpenAPI } from "./client";
 
+OpenAPI.BASE = import.meta.env.VITE_API_URL;
 // Create a new router instance
 const router = createRouter({ routeTree });
 
