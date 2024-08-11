@@ -5,6 +5,7 @@ import {
   TurnstilesService,
 } from "../../client";
 import { useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 export const hasCompletedCaptcha = () => {
   return localStorage.getItem("hasCompletedCaptcha") === "true";
@@ -24,6 +25,10 @@ function useTurnstileValidation(requestBody: TurnstileQuery): {
   isFetched: boolean;
   isLoading: boolean;
 } {
+  useEffect(() => {
+    localStorage.setItem("hasCompletedCaptcha", "false");
+  }, []);
+
   const navigate = useNavigate();
   const {
     data: turnstileResponse,
@@ -42,14 +47,19 @@ function useTurnstileValidation(requestBody: TurnstileQuery): {
         requestBody,
       });
       if (returnBody.success) {
-        navigate({ to: "/" }); // Redirect to the home page if the captcha is successful
         localStorage.setItem("hasCompletedCaptcha", "true");
+      } else {
+        localStorage.setItem("hasCompletedCaptcha", "false");
       }
 
       return returnBody; // Return the fetched data
     },
-    enabled: !!requestBody && !!requestBody.token && !!requestBody.ip, // Only run the query if requestBody is valid
+    enabled: !!requestBody && !!requestBody.ip, // Only run the query if requestBody is valid
   });
+
+  if (turnstileResponse?.success) {
+    navigate({ to: "/" }); // Redirect to the home page if the captcha is successful
+  }
   return { turnstileResponse, fetchStatus, isFetched, isError, isLoading };
 }
 
