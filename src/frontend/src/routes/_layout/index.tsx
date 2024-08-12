@@ -61,7 +61,6 @@ function Index() {
   return (
     <Flex
       direction="column"
-      minHeight="100rem"
       bg="ui.main"
       width="99vw"
       minWidth="bgBoxes.miniPBox"
@@ -79,7 +78,6 @@ function Index() {
           width="bgBoxes.defaultBox"
           flexWrap="wrap"
           minHeight="100vh"
-          height="100rem"
           p={3}
           pl={10}
           pr={10}
@@ -88,7 +86,7 @@ function Index() {
           borderTopWidth={1}
           alignSelf="center"
         >
-          <VStack width={"bgBoxes.defaultBox"} maxWidth={"100%"}>
+          <VStack width={"bgBoxes.defaultBox"} height={"100%"} maxW={"100%"}>
             {modifiersData.length > 0 && baseTypes.length > 0 && (
               <GraphInput
                 prefetchedmodifiers={modifiersData}
@@ -119,9 +117,10 @@ function Index() {
 
             <GraphComponent
               width={"bgBoxes.mediumBox"}
+              minH={"bgBoxes.smallBox"}
               height={"bgBoxes.smallBox"}
               maxW="98vw"
-              maxH="98vh"
+              mb="10rem"
             />
             <Footer />
           </VStack>
