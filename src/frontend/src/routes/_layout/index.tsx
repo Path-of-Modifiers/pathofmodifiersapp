@@ -80,13 +80,15 @@ function Index() {
           flexWrap="wrap"
           minHeight="100vh"
           height="100rem"
-          p={2}
+          p={3}
+          pl={10}
+          pr={10}
           borderTopRadius={10}
           borderTopColor={"ui.darkBrown"}
           borderTopWidth={1}
           alignSelf="center"
         >
-          <VStack>
+          <VStack width={"bgBoxes.defaultBox"} maxWidth={"100%"}>
             {modifiersData.length > 0 && baseTypes.length > 0 && (
               <GraphInput
                 prefetchedmodifiers={modifiersData}
