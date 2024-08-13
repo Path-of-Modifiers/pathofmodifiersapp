@@ -38,9 +38,17 @@ Not officially released, but currently testing in production :smiley:
 
 ## Dashboard - Front page
 
+![Screenshot from 2024-08-13 13-34-17](https://github.com/user-attachments/assets/d76d8eb4-a2c0-412d-88d3-ddeaeb1ee58b)
+
+
 ## Dashboard - Query Parameters for Glorious Vanity
 
+![Screenshot from 2024-08-13 13-35-25](https://github.com/user-attachments/assets/31c6a824-b490-4988-8f2c-19a773a74e44)
+
+
 ## Dashboard - Plot graph
+
+![Screenshot from 2024-08-13 13-36-01](https://github.com/user-attachments/assets/381764e4-8b3e-46dd-9a63-0903eb9b6392)
 
 
 ## How it works
