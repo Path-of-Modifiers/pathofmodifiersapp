@@ -460,6 +460,6 @@ class APIHandler:
                 print("Finished transformation phase.")
                 current_time = time.perf_counter()
                 time_since_launch = current_time - self.time_of_launch
-                if time_since_launch > 1:
+                if time_since_launch > 3600:
                     print("Program has run for more than an hour, shutting down.")
                     os._exit(0)
