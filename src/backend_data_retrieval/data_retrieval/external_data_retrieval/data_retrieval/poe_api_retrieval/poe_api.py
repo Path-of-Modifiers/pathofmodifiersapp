@@ -462,4 +462,4 @@ class APIHandler:
                 time_since_launch = current_time - self.time_of_launch
                 if time_since_launch > 1:
                     print("Program has run for more than an hour, shutting down.")
-                    os._exit(1)
+                    os._exit(0)
