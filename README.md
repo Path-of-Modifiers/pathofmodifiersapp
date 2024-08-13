@@ -1,74 +1,52 @@
-# Path of Modifiers Application  
-Website application for checking prices on explicit and affixes specific items in Path of Exile  
+# Path of Modifiers Application :game_die:
 
-## Current goals we are working towards:
- - Beta release before next the next expansion in the end of July
+Website application for analyzing prices on items with customized parameters plotted on graphs in Path of Exile.
 
-## Future goals:
- - Introduce other uniques where rolls matter
- - Introduce synthesis implicit tracking
- - Introduce fractured explicit tracking
+Not officially released, but currently testing in production :smiley:  
 
-# Technical information
-## Download python requirements:
- 1. Enter a local python virtual enviroment
- 2. Make sure `poetry` package is installed
-    - If not run `pip install poetry`
- 3. cd into `.\src\backend\app`
- 4. Run `poetry install`
+## :pencil: Technology Stack and Features
 
-## Create and run docker containers
-1. Enter `.\src`
-2. Run `docker-compose up -d`
-    - This will trigger the override docker-compose
+- [FastAPI](https://fastapi.tiangolo.com/) for the Python backend API.
+- [SQLAlchemy](https://www.sqlalchemy.org/) for the Python SQL database interactions (ORM).
+- [Pydantic](https://docs.pydantic.dev/latest/) for data validation and settings management.
+- [PostgreSQL](https://www.postgresql.org/) as the SQL database.
+- [Alembic](https://alembic.sqlalchemy.org/en/latest/front.html) to automate migrations to database
+- Continous stream requests to official [POE API endpoints](https://www.pathofexile.com/developer/docs) written in threaded Python
+- [React](https://react.dev/) for the frontend.
+- Using TypeScript, hooks, Vite, Tanstack and other tools for the frontend stack.
+- [Chakra UI](https://v2.chakra-ui.com/) for the frontend components.
+- An automatically generated frontend client through OpenAPI tools.
+- [Docker Compose](https://docs.docker.com/compose/) for development and production.
+- Tests with [Pytest](https://docs.pytest.org/en/stable/)
+- [Cloudflare](https://www.cloudflare.com/en-gb/learning/what-is-cloudflare/) for networking
+- [Traefik](https://traefik.io/) as a reverse proxy / load balancer.
+- CI (continuous integration) and CD (continuous deployment) based on GitHub Actions.
 
-## Access pgAdmin
-1. Go to `http://localhost:8888/`
-2. Enter credentials
-   - email: `user@pgadmin.com`
-   - password: ${PGAdmin}
-3. Add server
-   - General &#8594; `Name = pom_oltp_db`
-   - Connection &#8594; `Host name/address = db`
-      - Use `Host name/address = localhost` if connecting with pgAdmin on own computer
-   - Connection &#8594; `username = pom_oltp_superuser`
-   - Connection &#8594; `password = ${POSTGRES_PASSWORD}`
-   - Leave everything else unchanged
-4. Save
-5. Tables can be found under:
-   - pom_oltp_db>Databases>pom_oltp_db>Schemas>Tables
-## Local alembic migrations
-This section describes how to migrate changes made in database models to the local database postgres server
+## :bike: Current goals we are working towards:
 
-Run `docker container exec -it src-backend-1 bash` to enter the local backend container
+- Production testing through the Settlers POE league
+- Comprehensive application testing end-to-end
+- Rate limit security for the API
+- Secure user account storage for tracking rates
 
-### How to migrate alembic database model changes
-1. Run `alembic revision --autogenerate -m "Message"` to create a alembic revision
-   - [What does and doesn't Alembic autamtically detect](https://alembic.sqlalchemy.org/en/latest/autogenerate.html#what-does-autogenerate-detect-and-what-does-it-not-detect)
-2. Review the generated migration template
-3. Run `alembic upgrade head` to migrate database changes
+## :checkered_flag: Future goals:
 
-### How to revert the database to an alembic revision
-- Run `alembic downgrade -1` to revert to the last revision made
+- Introduce other uniques where rolls matter
+- Introduce synthesis implicit tracking
+- Introduce fractured explicit tracking
+- Confidence checking
 
-## Current tech-stack
- - Docker\
-    &#8594; To set up containers
- - Fast-API\
-    &#8594; To handle communication with database
- - SQLAlchemy\
-    &#8594; To set up database
- - Alembic\
-    &#8594; To enable database version controll
- - GitHub\
-    &#8594; To enable code version controll
- - Traefik\
-    &#8594; To handle proxy and https communication
- - Poetry\
-    &#8594; To handle python packages
- - pgAdmin\
-    &#8594; To view and modify the database
+## Dashboard - Front page
+
+## Dashboard - Query Parameters for Glorious Vanity
+
+## Dashboard - Plot graph
 
 
+## How it works
 
-    
+Path of Modifiers uses a continous data retrieval system consuming [Path of Exile's Public Stashes Endpoint](https://www.pathofexile.com/developer/docs/reference#publicstashes), submitting new data to the database every ~10-15 minutes. 
+
+The data is stored with its parameters used for querying. When queried, the data is aggregated and uses several methods to calculate the exchange rates between currencies, items and their modifiers. Secret methods are used to calculate the prizes to counteract price checking. Currently prices are displayed for every 10 minutes.
+
+User are able to query items with their specified interest through the user interface. A graph gets generated based on the user's specifications.
