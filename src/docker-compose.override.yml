@@ -55,7 +55,7 @@ services:
     command: /start-reload.sh
 
   backend-data-retrieval:
-    restart: "no"
+    restart: always
     ports:
       - "8889:8889"
     volumes:
