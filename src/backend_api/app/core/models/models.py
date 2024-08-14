@@ -1,5 +1,5 @@
 import sqlalchemy as _sql
-from sqlalchemy.dialects.postgresql import JSONB, UUID, ema
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy import func
 import uuid
 
@@ -258,7 +258,7 @@ class User(Base):
     email = _sql.Column(_sql.String(), unique=True, index=True, nullable=False)
     isActive = _sql.Column(_sql.Boolean(), default=True)
     isSuperuser = _sql.Column(_sql.Boolean(), default=False)
-    rateLimitTier = _sql.Column(_sql.SmallInteger(), default=0)  # 0 = no limit
+    rateLimitTier = _sql.Column(_sql.SmallInteger(), default=5)  # 5 = Regular user
     isBanned = _sql.Column(_sql.Boolean(), default=False)
     createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
     updatedAt = _sql.Column(
