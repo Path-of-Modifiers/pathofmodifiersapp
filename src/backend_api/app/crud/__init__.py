@@ -1,3 +1,4 @@
+from app.crud.user import CRUDUser
 from .base import CRUDBase
 from app.crud.extensions.crud_modifier import CRUDModifier
 from app.crud.extensions.crud_item_base_type import CRUDItemBaseType
@@ -72,3 +73,6 @@ CRUD_stash = CRUDBase[
     StashCreate,
     StashUpdate,
 ](model=model_Stash, schema=Stash, create_schema=StashCreate)
+
+
+CRUD_user = CRUDUser()
