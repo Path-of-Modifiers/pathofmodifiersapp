@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel, Field, EmailStr, ConfigDict
 import uuid
 
@@ -9,8 +9,11 @@ class _BaseUser(BaseModel):
 
     username: str = Field(max_length=255)
     email: EmailStr = Field(max_length=255)
-    isActive: bool = True
-    isSuperuser: bool = False
+    hashedPassword: str
+    isActive: Optional[bool] = True
+    isSuperuser: Optional[bool] = False
+    rateLimitTier: Optional[int] = 0
+    isBanned: Optional[bool] = False
 
 
 # Properties to receive via API on creation
@@ -36,7 +39,7 @@ class UserUpdateMe(BaseModel):
 
 
 class UpdatePassword(BaseModel):
-    current_password: str = Field(min_length=8, max_length=40)
+    currentPassword: str = Field(min_length=8, max_length=40)
     newPassword: str = Field(min_length=8, max_length=40)
 
 
@@ -49,3 +52,19 @@ class UserPublic(_BaseUser):
 class UsersPublic(BaseModel):
     data: List[UserPublic]
     count: int
+
+
+# Properties to return to client
+class UserInDBBase(_BaseUser):
+    userId: uuid.UUID
+    createdAt: Optional[str]
+    updatedAt: Optional[str]
+
+
+# Properties returned to client
+class User(UserInDBBase):
+    pass
+
+
+class UserInDB(UserInDBBase):
+    pass
