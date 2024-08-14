@@ -36,5 +36,5 @@ from .user import (
     UserUpdateMe,
     UpdatePassword,
 )
-from .token import Token, TokenPayload
+from .token import Token, TokenPayload, NewPassword
 from .message import Message
