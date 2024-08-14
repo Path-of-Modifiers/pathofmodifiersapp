@@ -27,3 +27,13 @@ from .item_modifier import (
 from .item import Item, ItemInDB, ItemCreate, ItemUpdate
 from .stash import Stash, StashInDB, StashCreate, StashUpdate
 from .turnstile import TurnstileQuery, TurnstileResponse
+from .user import (
+    UserCreate,
+    UserUpdate,
+    UserRegister,
+    UsersPublic,
+    UserPublic,
+    UserUpdateMe,
+    UpdatePassword,
+)
+from .token import Token, TokenPayload
