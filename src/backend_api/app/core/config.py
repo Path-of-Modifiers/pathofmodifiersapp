@@ -5,6 +5,7 @@ from typing import Annotated, Any, Literal
 from pydantic import (
     AnyUrl,
     BeforeValidator,
+    EmailStr,
     PostgresDsn,
     HttpUrl,
     computed_field,
@@ -31,7 +32,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = secrets.token_urlsafe(32)
 
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
-    DOMAIN: str 
+    DOMAIN: str
     ENVIRONMENT: Literal["local", "staging", "production"] = "production"
 
     @computed_field  # type: ignore[prop-decorator]
@@ -73,8 +74,8 @@ class Settings(BaseSettings):
     SMTP_USER: str | None = None
     SMTP_PASSWORD: str | None = None
     # TODO: update type to EmailStr when sqlmodel supports it
-    EMAILS_FROM_EMAIL: str | None = None
-    EMAILS_FROM_NAME: str | None = None
+    EMAILS_FROM_EMAIL: EmailStr | None = None
+    EMAILS_FROM_NAME: EmailStr | None = None
 
     @model_validator(mode="after")
     def _set_default_emails_from(self) -> Self:
@@ -89,10 +90,9 @@ class Settings(BaseSettings):
     def emails_enabled(self) -> bool:
         return bool(self.SMTP_HOST and self.EMAILS_FROM_EMAIL)
 
-    # TODO: update type to EmailStr when sqlmodel supports it
-    EMAIL_TEST_USER: str = "test@example.com"
-    # TODO: update type to EmailStr when sqlmodel supports it
-    FIRST_SUPERUSER: str
+    EMAIL_TEST_USER: EmailStr = "test@example.com"
+
+    FIRST_SUPERUSER: EmailStr
     FIRST_SUPERUSER_PASSWORD: str
 
     def _check_default_secret(self, var_name: str, value: str | None) -> None:
