@@ -25,13 +25,12 @@ sqlmodel = "^0.0.20"
 bcrypt = "4.0.1"
 pydantic-settings = "^2.2.1"
 sentry-sdk = {extras = ["fastapi"], version = "^1.40.6"}
-pyjwt = "^2.8.0"
 psycopg2 = "^2.9.9" # for PostgreSQL database
 pandas = "2.2.0" # for dataframe processing
 requests = "^2.31.0"
 tqdm = "^4.66.2"
 aiohttp = "^3.9.3"
-jwt = "^1.3.1"
+pyjwt = "^2.9.0"
 
 
 
