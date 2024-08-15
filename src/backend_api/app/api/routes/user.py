@@ -1,7 +1,6 @@
 # From FastAPI Fullstack Template https://github.com/fastapi/full-stack-fastapi-template/blob/master/backend/app/api/routes/login.py
 from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select, func
 import uuid
 
 from app.api.deps import CurrentUser, SessionDep, get_current_active_superuser
@@ -18,7 +17,6 @@ from app.core.schemas import (
     UserUpdateMe,
     UserRegister,
     UpdatePassword,
-    UserInDB,
 )
 from app.utils.user import (
     generate_new_account_email,
@@ -36,18 +34,14 @@ user_prefix = "user"
     dependencies=[Depends(get_current_active_superuser)],
     response_model=UsersPublic,
 )
-def read_users(db: SessionDep, skip: int = 0, limit: int = 100) -> Any:
+def get_all_users(db: SessionDep, skip: int = 0, limit: int = 100) -> Any:
     """
-    Retrieve users.
+    Retrieve all users.
     """
 
-    count_statement = select(func.count()).select_from(User)
-    count = db.exec(count_statement).one()
+    users_public = CRUD_user.get_all_users(db, skip=skip, limit=limit)
 
-    statement = select(User).offset(skip).limit(limit)
-    users = db.exec(statement).all()
-
-    return UsersPublic(data=users, count=count)
+    return users_public
 
 
 @router.post(
@@ -57,13 +51,6 @@ def create_user(*, db: SessionDep, user_in: UserCreate) -> Any:
     """
     Create new user.
     """
-    user = CRUD_user.get_user_by_email(db=db, email=user_in.email)
-    if user:
-        raise HTTPException(
-            status_code=400,
-            detail="The user with this email already exists in the system.",
-        )
-
     user = CRUD_user.create_user(db=db, user_create=user_in)
     if settings.emails_enabled and user_in.email:
         email_data = generate_new_account_email(
@@ -86,7 +73,8 @@ def update_user_me(
     """
 
     if user_in.email:
-        existing_user = CRUD_user.get_user_by_email(db=db, email=user_in.email)
+        get_user_filter = {"email": user_in.email}
+        existing_user = CRUD_user.get_user_by_filter(db=db, filter_map=get_user_filter)
         if existing_user and existing_user.userId != current_user.userId:
             raise HTTPException(
                 status_code=409, detail="User with this email already exists"
@@ -122,7 +110,7 @@ def update_password_me(
 
 
 @router.get("/me", response_model=UserPublic)
-def read_user_me(current_user: CurrentUser) -> Any:
+def get_user_me(current_user: CurrentUser) -> Any:
     """
     Get current user.
     """
@@ -148,35 +136,37 @@ def register_user(db: SessionDep, user_in: UserRegister) -> Any:
     """
     Create new user without the need to be logged in.
     """
-    print("USER IN ", user_in)
-    user = CRUD_user.get_user_by_email(db=db, email=user_in.email)
-    print("USER GET EMAIL ", user)
-    if user:
-        raise HTTPException(
-            status_code=400,
-            detail="The user with this email already exists in the system",
-        )
-    print("USER GET EMAIL ", user)
-    user = CRUD_user.create_user(db=db, user_create=user)
+    user_create = UserCreate(
+        username=user_in.username,
+        email=user_in.email,
+        password=user_in.password,
+    )
+
+    user = CRUD_user.create_user(db=db, user_create=user_create)
     return user
 
 
 @router.get("/{user_id}", response_model=UserPublic)
-def read_user_by_id(
+def get_user_by_id(
     user_id: uuid.UUID, db: SessionDep, current_user: CurrentUser
 ) -> Any:
     """
     Get a specific user by id.
     """
-    user = db.get(User, user_id)
-    if user == current_user:
-        return user
+    db_user = db.get(User, user_id)
+    if not db_user:
+        raise HTTPException(
+            status_code=404,
+            detail="The db_user with this id does not exist in the system",
+        )
+    if db_user == current_user:
+        return db_user
     if not current_user.isSuperuser:
         raise HTTPException(
             status_code=403,
-            detail="The user doesis_supern't have enough privileges",
+            detail="The db_user does not have enough privileges",
         )
-    return user
+    return db_user
 
 
 @router.patch(
@@ -193,19 +183,12 @@ def update_user(
     """
     Update a user.
     """
-
     db_user = db.get(User, user_id)
     if not db_user:
         raise HTTPException(
             status_code=404,
             detail="The user with this id does not exist in the system",
         )
-    if user_in.email:
-        existing_user = CRUD_user.get_user_by_email(db=db, email=user_in.email)
-        if existing_user and existing_user.userId != user_id:
-            raise HTTPException(
-                status_code=409, detail="User with this email already exists"
-            )
 
     db_user = CRUD_user.update_user(db=db, db_user=db_user, user_in=user_in)
     return db_user
@@ -218,13 +201,49 @@ def delete_user(
     """
     Delete a user.
     """
-    user = db.get(User, user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    if user == current_user:
+    db_user = db.get(User, user_id)
+    if not db_user:
+        raise HTTPException(
+            status_code=404, detail="Could not delete user. User not found"
+        )
+    if db_user == current_user:
         raise HTTPException(
             status_code=403, detail="Super users are not allowed to delete themselves"
         )
-    db.delete(user)
+    db.delete(db_user)
     db.commit()
     return Message(message="User deleted successfully")
+
+
+@router.patch(
+    "/activate/{user_id}",
+)
+def change_activate_user(
+    db: SessionDep,
+    current_user: CurrentUser,
+    user_id: uuid.UUID,
+    activate: bool,
+) -> Message:
+    """
+    Change activity to current user.
+    """
+    db_user = db.get(User, user_id)
+    if db_user == current_user:
+        CRUD_user.set_active(db=db, db_user=db_user, active=activate)
+        return Message(
+            message=f"User {current_user.username} status changed successfully to {activate}"
+        )
+    if not current_user.isSuperuser:
+        raise HTTPException(
+            status_code=403,
+            detail="The user does not have enough privileges",
+        )
+    if db_user == current_user:
+        raise HTTPException(
+            status_code=403,
+            detail="Super users are not allowed to change their own status",
+        )
+    CRUD_user.set_active(db=db, db_user=db_user, active=activate)
+    return Message(
+        message=f"User {db_user.username} status changed successfully to {activate}"
+    )
