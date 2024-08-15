@@ -1,7 +1,8 @@
 # From FastAPI Fullstack Template https://github.com/fastapi/full-stack-fastapi-template/blob/master/backend/app/api/routes/login.py
 from datetime import timedelta
-from typing import Annotated, Any
+from typing import Annotated, Any, Optional
 
+from app.core.schemas.user import UserInDB
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
@@ -18,13 +19,14 @@ from app.utils.user import (
     send_email,
     verify_password_reset_token,
 )
+from pydantic import EmailStr
 
 router = APIRouter()
 
 login_prefix = "login"
 
 
-@router.post("/login/access-token")
+@router.post("/access-token")
 def login_access_token(
     session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ) -> Token:
@@ -32,7 +34,7 @@ def login_access_token(
     OAuth2 compatible token login, get an access token for future requests
     """
     user = CRUD_user.authenticate(
-        session=session, email=form_data.username, password=form_data.password
+        db=session, email=form_data.username, password=form_data.password
     )
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect email or password")
@@ -46,7 +48,7 @@ def login_access_token(
     )
 
 
-@router.post("/login/test-token", response_model=UserPublic)
+@router.post("/test-token", response_model=UserPublic)
 def test_token(current_user: CurrentUser) -> Any:
     """
     Test access token
@@ -54,18 +56,34 @@ def test_token(current_user: CurrentUser) -> Any:
     return current_user
 
 
-@router.post("/password-recovery/{email}")
-def recover_password(email: str, session: SessionDep) -> Message:
+@router.post("/password-recovery/")
+def recover_password(
+    session: SessionDep,
+    username: Optional[str] = None,
+    email: Optional[EmailStr] = None,
+) -> Message:
     """
     Password Recovery
     """
-    user = CRUD_user.get_user_by_email(session=session, email=email)
-
+    if not email and not username:
+        raise HTTPException(
+            status_code=400, detail="Email or username required for recovery"
+        )
+    get_user_filter = {}
+    if email:
+        get_user_filter["email"] = email
+    if username:
+        get_user_filter["username"] = username
+    user = CRUD_user.get_user_by_filter(db=session, filter_map=get_user_filter)
     if not user:
         raise HTTPException(
             status_code=404,
-            detail="The user with this email does not exist in the system.",
+            detail="The user with this email or username does not exist in the system.",
         )
+
+    if not email:
+        email = CRUD_user.get_email_by_username(db=session, username=username)
+
     password_reset_token = generate_password_reset_token(email=email)
     email_data = generate_reset_password_email(
         email_to=user.email, email=email, token=password_reset_token
@@ -86,7 +104,8 @@ def reset_password(session: SessionDep, body: NewPassword) -> Message:
     email = verify_password_reset_token(token=body.token)
     if not email:
         raise HTTPException(status_code=400, detail="Invalid token")
-    user = CRUD_user.get_user_by_email(session=session, email=email)
+    get_user_filter = {"email": email}
+    user = CRUD_user.get_user_by_filter(db=session, filter_map=get_user_filter)
     if not user:
         raise HTTPException(
             status_code=404,
@@ -95,7 +114,7 @@ def reset_password(session: SessionDep, body: NewPassword) -> Message:
     elif not user.isActive:
         raise HTTPException(status_code=400, detail="Inactive user")
     hashed_password = get_password_hash(password=body.new_password)
-    user.hashedPassword = hashed_password
+    setattr(user, "hashedPassword", hashed_password)
     session.add(user)
     session.commit()
     return Message(message="Password updated successfully")
@@ -106,11 +125,12 @@ def reset_password(session: SessionDep, body: NewPassword) -> Message:
     dependencies=[Depends(get_current_active_superuser)],
     response_class=HTMLResponse,
 )
-def recover_password_html_content(email: str, session: SessionDep) -> Any:
+def recover_password_html_content(email: EmailStr, session: SessionDep) -> Any:
     """
     HTML Content for Password Recovery
     """
-    user = CRUD_user.get_user_by_email(session=session, email=email)
+    filter_map = {"email": email}
+    user = CRUD_user.get_user_by_filter(db=session, filter_map=filter_map)
 
     if not user:
         raise HTTPException(
