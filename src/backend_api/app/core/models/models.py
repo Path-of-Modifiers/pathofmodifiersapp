@@ -265,6 +265,8 @@ class User(Base):
         _sql.DateTime(),
         onupdate=func.now(),
     )
+
+
 class TemporaryHashedUserIP(Base):
 
     __tablename__ = "temporary_hashed_user_ip"
