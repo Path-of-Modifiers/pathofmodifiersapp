@@ -1,6 +1,7 @@
 import sqlalchemy as _sql
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy import func
+import uuid
 
 from app.core.models.database import Base
 
@@ -229,6 +230,7 @@ class Stash(Base):
     )
 
 
+# POE account API model
 class Account(Base):
 
     __tablename__ = "account"
@@ -244,6 +246,25 @@ class Account(Base):
     )
 
 
+# User model, a user that uses the application
+class User(Base):
+    __tablename__ = "pom_user"
+
+    userId = _sql.Column(
+        UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4
+    )
+    username = _sql.Column(_sql.String(), unique=True, index=True, nullable=False)
+    hashedPassword = _sql.Column(_sql.String(), nullable=False)
+    email = _sql.Column(_sql.String(), unique=True, index=True, nullable=False)
+    isActive = _sql.Column(_sql.Boolean(), default=True)
+    isSuperuser = _sql.Column(_sql.Boolean(), default=False)
+    rateLimitTier = _sql.Column(_sql.SmallInteger(), default=0)  # 0 = basic limit usage
+    isBanned = _sql.Column(_sql.Boolean(), default=False)
+    createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
+    updatedAt = _sql.Column(
+        _sql.DateTime(),
+        onupdate=func.now(),
+    )
 class TemporaryHashedUserIP(Base):
 
     __tablename__ = "temporary_hashed_user_ip"
