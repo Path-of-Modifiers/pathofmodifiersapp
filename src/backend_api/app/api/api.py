@@ -10,6 +10,7 @@ from app.api.routes import (
     stash,
     plot,
     turnstile,
+    temporary_hashed_user_ip,
     account_prefix,
     currency_prefix,
     item_base_type_prefix,
@@ -19,6 +20,7 @@ from app.api.routes import (
     stash_prefix,
     plot_prefix,
     turnstile_prefix,
+    temporary_hashed_user_ip_prefix,
 )
 
 api_router = APIRouter()
@@ -51,6 +53,11 @@ api_router.include_router(
 )
 api_router.include_router(
     plot.router, prefix=f"/{plot_prefix}", tags=[f"{plot_prefix}s"]
+)
+api_router.include_router(
+    temporary_hashed_user_ip.router,
+    prefix=f"/{temporary_hashed_user_ip_prefix}",
+    tags=[f"{temporary_hashed_user_ip_prefix}s"],
 )
 api_router.include_router(
     turnstile.router, prefix=f"/{turnstile_prefix}", tags=[f"{turnstile_prefix}s"]
