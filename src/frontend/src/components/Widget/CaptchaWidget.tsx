@@ -9,12 +9,27 @@ const CaptchaWidget = () => {
   const [token, setToken] = useState<string>("");
   const security_ip = localStorage.getItem("security_ip");
 
-  useTurnstileValidation({
+  const { performTurnstileValidation, resetError } = useTurnstileValidation({
     token: token,
     ip: security_ip ?? "",
   });
 
-  return <Turnstile siteKey={siteKey} onSuccess={setToken} />;
+  const turnstileHandler = async (token: string) => {
+    setToken(token);
+
+    resetError();
+
+    try {
+      await performTurnstileValidation.mutateAsync({
+        token: token,
+        ip: security_ip ?? "",
+      });
+    } catch {
+      // error is handled by useAuth hook
+    }
+  };
+
+  return <Turnstile siteKey={siteKey} onSuccess={turnstileHandler} />;
 };
 
 export default CaptchaWidget;

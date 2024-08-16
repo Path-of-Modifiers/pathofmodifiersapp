@@ -20,28 +20,44 @@ export const $TurnstileResponse = {
             }],
         },
         challenge_ts: {
-            type: 'string',
-            isRequired: true,
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+            }, {
+                type: 'null',
+            }],
         },
         hostname: {
-            type: 'string',
-            isRequired: true,
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+            }, {
+                type: 'null',
+            }],
         },
         action: {
-            type: 'string',
-            isRequired: true,
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+            }, {
+                type: 'null',
+            }],
         },
         cdata: {
-            type: 'string',
-            isRequired: true,
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+            }, {
+                type: 'null',
+            }],
         },
         metadata: {
-            type: 'dictionary',
-            contains: {
-                properties: {
-                },
-            },
-            isRequired: true,
+            type: 'any-of',
+            contains: [{
+                type: 'MetadataObject',
+            }, {
+                type: 'null',
+            }],
         },
     },
 } as const;
