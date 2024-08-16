@@ -4437,24 +4437,24 @@
             "type": "array",
             "title": "Timestamp"
           },
-          "mostCommonCurrencyUsed": {
-            "type": "string",
-            "title": "Mostcommoncurrencyused"
-          },
-          "conversionValue": {
+          "valueInMostCommonCurrencyUsed": {
             "items": {
               "type": "number"
             },
             "type": "array",
-            "title": "Conversionvalue"
+            "title": "Valueinmostcommoncurrencyused"
+          },
+          "mostCommonCurrencyUsed": {
+            "type": "string",
+            "title": "Mostcommoncurrencyused"
           }
         },
         "type": "object",
         "required": [
           "valueInChaos",
           "timeStamp",
-          "mostCommonCurrencyUsed",
-          "conversionValue"
+          "valueInMostCommonCurrencyUsed",
+          "mostCommonCurrencyUsed"
         ],
         "title": "PlotData"
       },

@@ -1,7 +1,7 @@
 import usePostPlottingData from "./postPlottingData";
 import { PlotQuery } from "../../client";
 import Datum from "../../schemas/Datum";
-import { allValueInChaos } from "./utils";
+import formatDateToLocal from "./utils";
 import { useErrorStore } from "../../store/ErrorStore";
 import { useEffect } from "react";
 
@@ -20,8 +20,6 @@ function useGetPlotData(plotQuery: PlotQuery): {
   const { plotData, fetchStatus, isFetched, isError } =
     usePostPlottingData(plotQuery);
 
-  let result: Datum[] | undefined = undefined;
-
   useEffect(() => {
     if (isError && isFetched) {
       setResultError(true);
@@ -31,19 +29,21 @@ function useGetPlotData(plotQuery: PlotQuery): {
   }, [isError, isFetched, setResultError]);
 
   if (isError || leagueError || modifiersError) {
-    return { result, fetchStatus, isError: true };
-  }
-  const data: Datum[] = [];
-  if (plotData?.timeStamp !== undefined) {
+    return { result: undefined, fetchStatus, isError: true };
+  } else if (plotData?.timeStamp !== undefined) {
+    const data: Datum[] = [];
     for (let i = 0; i < plotData?.timeStamp.length; i++) {
       data.push({
-        date: plotData.timeStamp[i],
+        date: formatDateToLocal(plotData.timeStamp[i]),
         valueInChaos: plotData.valueInChaos[i],
+        valueInMostCommonCurrencyUsed:
+          plotData.valueInMostCommonCurrencyUsed[i],
       });
     }
+    return { result: data, fetchStatus, isError: false };
+  } else {
+    return { result: undefined, fetchStatus, isError: true };
   }
-  result = allValueInChaos(data, 1);
-  return { result, fetchStatus, isError: false };
 }
 
 export default useGetPlotData;
