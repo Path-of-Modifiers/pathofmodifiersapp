@@ -1,4 +1,5 @@
 from typing import List, Optional
+from datetime import datetime
 from pydantic import BaseModel, Field, EmailStr, ConfigDict
 import uuid
 
@@ -57,8 +58,8 @@ class UsersPublic(BaseModel):
 # Properties to return to client
 class UserInDBBase(_BaseUser):
     userId: uuid.UUID
-    createdAt: Optional[str]
-    updatedAt: Optional[str]
+    createdAt: Optional[datetime]
+    updatedAt: Optional[datetime]
 
 
 # Properties returned to client
