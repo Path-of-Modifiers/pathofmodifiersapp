@@ -25,7 +25,7 @@ modifier_prefix = "modifier"
     response_model=Union[schemas.Modifier, List[schemas.Modifier]],
 )
 async def get_modifier(
-    modifierId: str,
+    modifierId: int,
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
 ):

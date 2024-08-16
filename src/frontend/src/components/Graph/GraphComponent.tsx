@@ -49,10 +49,12 @@ function GraphComponent(props: BoxProps) {
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" />
-            <YAxis />
+            {/* Set Y-axis label */}
+            <YAxis label={{ value: "Chaos value", angle: -90, position: "insideLeft" }} />
             <Tooltip />
             <Legend verticalAlign="top" height={36} />
-            <Line type="monotone" dataKey="valueInChaos" stroke="#8884d8" />
+            {/* Update the Line dataKey to match "Chaos value" */}
+            <Line type="monotone" dataKey="valueInChaos" name="Chaos value" stroke="#bea06a" />
             {/**
              * Example for adding more graphs
              * result[0].yaxis2 !== undefined && <Line type="monotone" dataKey="yaxis2" stroke="#82ca9d" />}

@@ -26,7 +26,7 @@ item_prefix = "item"
     response_model=Union[schemas.Item, List[schemas.Item]],
 )
 async def get_item(
-    itemId: str,
+    itemId: int,
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
 ):
@@ -116,7 +116,7 @@ async def create_item(
 
 @router.put("/{itemId}", response_model=schemas.Item)
 async def update_item(
-    itemId: str,
+    itemId: int,
     item_update: schemas.ItemUpdate,
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
@@ -143,7 +143,7 @@ async def update_item(
 
 @router.delete("/{itemId}", response_model=str)
 async def delete_item(
-    itemId: str,
+    itemId: int,
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
 ):

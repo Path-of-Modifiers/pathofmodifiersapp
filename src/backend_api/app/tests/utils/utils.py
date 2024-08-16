@@ -220,3 +220,11 @@ def get_super_authentication() -> HTTPBasicAuth:
     return authentication
 
 
+def create_random_ip() -> str:
+    """
+    Create a random IP address.
+
+    Returns:
+        str: Random IP address.
+    """
+    return ".".join(str(random.randint(0, 255)) for _ in range(4))

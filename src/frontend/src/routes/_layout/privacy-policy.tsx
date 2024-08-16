@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import {
   Flex,
   Box,
@@ -9,18 +9,24 @@ import {
   OrderedList,
 } from "@chakra-ui/layout";
 
-import Header from "../components/Common/Header";
-import Footer from "../components/Common/Footer";
-import { TextWithUnderline } from "../components/Text/TextWithUnderline";
+import Header from "../../components/Common/Header";
+import Footer from "../../components/Common/Footer";
+import { TextWithUnderline } from "../../components/Text/TextWithUnderline";
 
-export const Route = createLazyFileRoute("/privacy-policy")({
+export const Route = createFileRoute("/_layout/privacy-policy")({
   component: PrivacyPolicy,
 });
 
 // About Route  - This component is the main component for the about route.
 function PrivacyPolicy() {
   return (
-    <Flex direction="column" minHeight="100vh" minWidth="98vw" bg="ui.main">
+    <Flex
+      direction="column"
+      minHeight="100rem"
+      bg="ui.main"
+      width="99vw"
+      minWidth="bgBoxes.miniPBox"
+    >
       <Box mb={"7rem"}>
         <Header />
       </Box>
@@ -30,6 +36,8 @@ function PrivacyPolicy() {
         bg="ui.secondary"
         width={"bgBoxes.defaultBox"}
         maxWidth={"98vw"}
+        minHeight="100vh"
+        height="100rem"
         p={2}
         borderTopRadius={10}
         borderTopColor={"ui.darkBrown"}
