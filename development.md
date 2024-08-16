@@ -12,7 +12,7 @@ poetry install
 
 ## Create and run docker containers in development
 
-For local development and testing, we use the `override` containers. These have localized ports which can be accessed. 
+For local development and testing, we use the `override` containers. These have localized ports which can be accessed.
 
 In directory `./src`, run:
 
@@ -73,8 +73,45 @@ To revert to the latest changes made by an alembic revision, run:
 
 ```bash
 alembic downgrade -1
-``` 
+```
 
+## Pre-commits and code linting
+
+We use a tool called [pre-commit](https://pre-commit.com/#intro) for code linting and formatting.
+
+When you install it, it runs right before making a commit in git. This way it ensures that the code is consistent and formatted even before it is committed.
+
+You can find a file `.pre-commit-config.yaml` with configurations at the root of the project.
+
+### Install pre-commit to run automatically
+
+`pre-commit`is already part of the dependencies of the project, but you could also install it globally if you prefer to, following the [official pre-commit docs](https://pre-commit.com/#usage).
+
+After having the pre-commit tool installed and available, you need to "install" it in the local repository, so that it runs automatically before each commit.
+
+Using Poetry, you could do it with:
+
+```bash
+poetry run pre-commit install
+```
+
+Now whenever you try to commit, e.g. with:
+
+```bash
+git commit
+```
+
+...pre-commit will run and check and format the code you are about to commit, and will ask you to add that code (stage it) with git again before committing.
+
+Then you can git add the modified/fixed files again and now you can commit.
+
+### Running pre-commit hooks manually
+
+You can also run pre-commit manually on all the files. To do it using Poetry:
+
+```bash
+poetry run pre-commit run --all-files
+```
 
 ### URLs
 
