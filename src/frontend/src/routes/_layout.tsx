@@ -4,7 +4,6 @@ import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 import useTurnstileValidation, {
   hasCompletedCaptcha,
 } from "../hooks/validation/turnstileValidation";
-import useGetIp from "../hooks/validation/getIp";
 
 const security_ip = localStorage.getItem("security_ip");
 
@@ -20,17 +19,16 @@ export const Route = createFileRoute("/_layout")({
 });
 
 function Layout() {
-  useGetIp();
   const { isLoading } = useTurnstileValidation({
     token: "",
     ip: security_ip ?? "",
   });
 
   return (
-    <Flex maxW="large" h="auto" position="relative">
+    <Flex maxW="large" h="auto" position="relative" bgColor="ui.main">
       {isLoading ? (
         <Flex justify="center" align="center" height="100vh" width="full">
-          <Spinner size="xl" color="ui.main" />
+          <Spinner size="xl" color={"ui.white"} />
         </Flex>
       ) : (
         <Outlet />

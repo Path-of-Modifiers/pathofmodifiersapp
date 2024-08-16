@@ -22,17 +22,6 @@ class CRUDTemporaryHashedUserIp(
         HashedUserIpQuery,
     ]
 ):
-    def _get_temporary_hashed_ip_statement(self) -> Select:
-        """Get temporary hashed IP statement.
-
-        Returns:
-            Select: Temporary hashed IP statement.
-        """
-        statement = select(
-            model_TemporaryHashedUserIP.hashedIp, model_TemporaryHashedUserIP.createdAt
-        )
-        return statement
-
     async def check_temporary_hashed_ip(self, db: Session, ip: str) -> bool:
         """Check temporary hashed IP in the database.
 
@@ -43,9 +32,9 @@ class CRUDTemporaryHashedUserIp(
         Returns:
             bool: True if the IP is in the database, False otherwise.
         """
-        statement = self._get_temporary_hashed_ip_statement()
+        get_hashed_ip_map = {"hashedIp": ip}
 
-        all_hashes = db.execute(statement).mappings().all()
+        all_hashes = self.get(db=db, filter=get_hashed_ip_map)
 
         for hashed_ip in all_hashes:
             encoded_ip = ip.encode("utf-8")

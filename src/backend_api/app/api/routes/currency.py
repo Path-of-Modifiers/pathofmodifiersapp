@@ -26,7 +26,7 @@ currency_prefix = "currency"
     response_model=Union[schemas.Currency, List[schemas.Currency]],
 )
 async def get_currency(
-    currencyId: str,
+    currencyId: int,
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
 ):
@@ -114,7 +114,7 @@ async def create_currency(
 
 @router.put("/{currencyId}", response_model=schemas.Currency)
 async def update_currency(
-    currencyId: str,
+    currencyId: int,
     currency_update: schemas.CurrencyUpdate,
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
@@ -141,7 +141,7 @@ async def update_currency(
 
 @router.delete("/{currencyId}", response_model=str)
 async def delete_currency(
-    currencyId: str,
+    currencyId: int,
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
 ):
