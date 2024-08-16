@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from pydantic import TypeAdapter
-from requests import HTTPError, post
+from requests import post
+from fastapi import HTTPException
 
 from app.core.schemas import TurnstileQuery, TurnstileResponse
 from app.core.schemas.hashed_user_ip import HashedUserIpCreate
@@ -40,9 +41,10 @@ class ValidateTurnstileRequest:
                 headers={"Content-Type": "application/json"},
             )
         except Exception as e:
-            raise HTTPError(
-                f"""Failed to send challenge request to cloudflare turnstile
-                endpoint with error: {e}"""
+            raise HTTPException(
+                detail=f"""Failed to send challenge request to cloudflare turnstile
+                endpoint with error: {e}""",
+                status_code=406,
             )
 
         outcome = result.json()
@@ -53,6 +55,7 @@ class ValidateTurnstileRequest:
 
             return self.validate(outcome)
         else:
-            raise HTTPError(
-                f'Failed validation in turnstile request with error: {outcome["error-codes"]}'
+            raise HTTPException(
+                detail=f'Failed validation in turnstile request with error: {outcome["error-codes"]}',
+                status_code=400,
             )
