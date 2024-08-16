@@ -31,6 +31,7 @@ class ValidateTurnstileRequest:
             db, ip
         )
 
+        # Skip turnstile validation if the IP is already hashed 
         if check_temporary_hashed_ip:
             return self.validate({"success": True})
 
