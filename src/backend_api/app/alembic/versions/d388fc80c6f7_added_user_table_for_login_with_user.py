@@ -1,7 +1,7 @@
 """Added pom_user table for login with pom_user
 
 Revision ID: d388fc80c6f7
-Revises: c88ade998b10
+Revises: 99c06cd7231c
 Create Date: 2024-08-14 14:53:16.814628
 
 """
@@ -13,7 +13,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = 'd388fc80c6f7'
-down_revision: Union[str, None] = 'c88ade998b10'
+down_revision: Union[str, None] = '99c06cd7231c'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
