@@ -1,8 +1,9 @@
-from typing import Any, List, Union
+from typing import List, Union
 
+from app.core.schemas.user import UsersPublic
 from fastapi import HTTPException
 from pydantic import TypeAdapter
-from sqlalchemy.sql import select
+from sqlalchemy.sql import select, func
 from sqlalchemy.orm import Session
 
 from app.core.security import get_password_hash, verify_password
@@ -17,6 +18,7 @@ class CRUDUser:
 
     def __init__(self):
         self.validate = TypeAdapter(Union[User, List[User]]).validate_python
+        self.validate_users_public = TypeAdapter(UsersPublic).validate_python
 
     def create_user(self, db: Session, *, user_create: UserCreate) -> model_User:
         """Create a new user
@@ -28,13 +30,53 @@ class CRUDUser:
         Returns:
             User: Created user
         """
+        get_user_filter = {"email": user_create.email}
+        user = self.get_user_by_filter(db=db, filter_map=get_user_filter)
+        if user:
+            raise HTTPException(
+                status_code=400,
+                detail="The user with this email already exists in the system.",
+            )
 
-        db_obj = model_User(**user_create.model_dump())
-        print("CREATING USER", db_obj)
+        # Hash the password
+        hashed_password = get_password_hash(user_create.password)
+
+        # Convert the Pydantic model to a dictionary
+        user_data = user_create.model_dump()
+
+        # Replace the password field with hashed_password
+        user_data["hashedPassword"] = hashed_password
+
+        # Remove the plain-text password field, if necessary
+        user_data.pop("password", None)
+
+        # Create the database object with the modified data
+        db_obj = model_User(**user_data)
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
         return self.validate(db_obj)
+
+    def get_all_users(
+        self, db: Session, *, skip: int = 0, limit: int = 100
+    ) -> UsersPublic:
+        """Get all users
+
+        Args:
+            db (Session): DB session
+            skip (int, optional): Skip. Defaults to 0.
+            limit (int, optional): Limit. Defaults to 100.
+
+        Returns:
+            List[model_User]: List of users
+        """
+        count_statement = select(func.count()).select_from(model_User)
+        count = db.execute(count_statement).one()[0]
+
+        users = db.query(model_User).offset(skip).limit(limit).all()
+
+        users_public = UsersPublic(data=users, count=count)
+        return self.validate_users_public(users_public)
 
     def update_user(
         self, db: Session, *, db_user: model_User, user_in: UserUpdate
@@ -49,41 +91,111 @@ class CRUDUser:
         Returns:
             Any: Updated user
         """
+        if user_in.email or user_in.username:
+            get_user_email_filter = {"email": user_in.email}
+            get_user_username_filter = {"username": user_in.username}
+            existing_user_with_email = self.get_user_by_filter(
+                db=db, filter_map=get_user_email_filter
+            )
+            existing_user_with_username = self.get_user_by_filter(
+                db=db, filter_map=get_user_username_filter
+            )
+            if (
+                existing_user_with_email
+                and existing_user_with_email.userId != db_user.userId
+            ) or (
+                existing_user_with_username
+                and existing_user_with_username.userId != db_user.userId
+            ):
+                raise HTTPException(
+                    status_code=409,
+                    detail="User with this email or username already exists",
+                )
 
-        user_data = user_in.model_dump(exclude_unset=True)
+        obj_data = db_user.__table__.columns.keys()
+
+        user_update_data = user_in.model_dump(exclude_unset=True)
         extra_data = {}
-        if "password" in user_data:
-            password = user_data["password"]
+        if "password" in user_update_data:
+            password = user_update_data["password"]
             hashed_password = get_password_hash(password)
-            extra_data["hashed_password"] = hashed_password
-        for field in db_user:
-            if field in user_in:
-                setattr(db_user, field, user_in[field])
+            extra_data["hashedPassword"] = hashed_password
+            user_update_data.pop("password")
+        for field in obj_data:
+            if field in user_update_data:
+                setattr(db_user, field, user_update_data[field])
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
         return self.validate(db_user)
 
-    def get_user_by_email(self, db: Session, *, email: str) -> model_User | None:
-        """Get user by email
+    def get_all_users(
+        self, db: Session, skip: int = 0, limit: int = 100
+    ) -> UsersPublic:
+        """Get all users
 
         Args:
             db (Session): DB session
-            email (str): Email
+            skip (int, optional): Skip. Defaults to 0.
+            limit (int, optional): Limit. Defaults to 100.
+
+        Returns:
+            List[model_User]: List of all users
+        """
+        count_statement = select(func.count()).select_from(model_User)
+        count = db.execute(count_statement).one()[0]
+
+        users = db.query(model_User).offset(skip).limit(limit).all()
+        if not users:
+            raise HTTPException(
+                status_code=404,
+                detail="No users found",
+            )
+
+        users_public = UsersPublic(data=users, count=count)
+        return self.validate_users_public(users_public)
+
+    def get_user_by_filter(
+        self,
+        db: Session,
+        *,
+        filter_map: dict,
+    ) -> model_User | None:
+        """Get user by filter
+
+        Args:
+            db (Session): DB session
+            filter_map (dict): Filter map
 
         Returns:
             model_User | None: model_User object or None
         """
-
-        statement = select(model_User).where(model_User.email == email)
-        session_user = db.execute(statement).first()
-        if not session_user:
+        if not filter_map:
             raise HTTPException(
-                status_code=404,
-                detail="The user with this email does not exist in the system.",
+                status_code=400,
+                detail="Could not get user. Filter parameters required.",
             )
-        print("session_user", session_user)
-        return self.validate(session_user)
+        session_user = db.query(model_User).filter_by(**filter_map).first()
+        if not session_user:
+            return None
+        self.validate(session_user)
+        return session_user
+
+    def get_email_by_username(self, db: Session, *, username: str) -> str | None:
+        """Get email by username
+
+        Args:
+            db (Session): DB session
+            username (str): Username
+
+        Returns:
+            str | None: Email or None
+        """
+        username_map = {"username": username}
+        session_user = db.query(model_User).filter_by(**username_map).first()
+        if not session_user:
+            return None
+        return session_user.email
 
     def authenticate(
         self, db: Session, *, email: str, password: str
@@ -98,8 +210,8 @@ class CRUDUser:
         Returns:
             model_User | None: model_User object or None
         """
-
-        db_user = self.get_user_by_email(db=db, email=email)
+        get_user_filter = {"email": email}
+        db_user = self.get_user_by_filter(db=db, filter_map=get_user_filter)
         if not db_user:
             raise HTTPException(
                 status_code=404,
@@ -111,3 +223,29 @@ class CRUDUser:
                 detail="Incorrect password",
             )
         return self.validate(db_user)
+
+    def set_active(
+        self, db: Session, *, db_user: model_User, active: bool
+    ) -> model_User:
+        """Set user active status
+
+        Args:
+            db (Session): DB session
+            user (model_User): User object
+            active (bool): Active status
+
+        Returns:
+            model_User: Updated user
+        """
+        db_user = db.query(model_User).filter_by(userId=db_user.userId).first()
+        if not db_user:
+            raise HTTPException(
+                status_code=404,
+                detail="Could not set active. The user with this id does not exist in the system",
+            )
+        setattr(db_user, "isActive", active)
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        self.validate(db_user)
+        return db_user
