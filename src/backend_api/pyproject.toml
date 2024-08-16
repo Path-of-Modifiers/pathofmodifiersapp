@@ -20,18 +20,17 @@ jinja2 = "^3.1.4"
 alembic = "^1.12.1"
 httpx = "^0.25.1"
 psycopg = {extras = ["binary"], version = "^3.1.13"}
-sqlmodel = "^0.0.20"
 # Pin bcrypt until passlib supports the latest
 bcrypt = "4.0.1"
 pydantic-settings = "^2.2.1"
 sentry-sdk = {extras = ["fastapi"], version = "^1.40.6"}
-pyjwt = "^2.8.0"
 psycopg2 = "^2.9.9" # for PostgreSQL database
 pandas = "2.2.0" # for dataframe processing
 requests = "^2.31.0"
 tqdm = "^4.66.2"
 aiohttp = "^3.9.3"
 git-commit = "^1.2"
+pyjwt = "^2.9.0"
 
 
 

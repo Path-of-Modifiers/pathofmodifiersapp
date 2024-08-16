@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import {
   Flex,
   Box,
@@ -8,18 +8,24 @@ import {
   ListItem,
 } from "@chakra-ui/layout";
 
-import Header from "../components/Common/Header";
-import Footer from "../components/Common/Footer";
-import { TextWithUnderline } from "../components/Text/TextWithUnderline";
+import Header from "../../components/Common/Header";
+import Footer from "../../components/Common/Footer";
+import { TextWithUnderline } from "../../components/Text/TextWithUnderline";
 
-export const Route = createLazyFileRoute("/terms-of-use")({
+export const Route = createFileRoute("/_layout/terms-of-use")({
   component: TermsOfUse,
 });
 
 // About Route  - This component is the main component for the about route.
 function TermsOfUse() {
   return (
-    <Flex direction="column" minHeight="100vh" minWidth="98vw" bg="ui.main">
+    <Flex
+      direction="column"
+      minHeight="100rem"
+      bg="ui.main"
+      width="99vw"
+      minWidth="bgBoxes.miniPBox"
+    >
       <Box mb={"7rem"}>
         <Header />
       </Box>
@@ -27,7 +33,8 @@ function TermsOfUse() {
       <Flex
         direction="row"
         bg="ui.secondary"
-        height="100vh"
+        minHeight="100vh"
+        height="100rem"
         width={"bgBoxes.defaultBox"}
         maxWidth={"98vw"}
         p={2}

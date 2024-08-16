@@ -1,6 +1,8 @@
+from app.crud.user import CRUDUser
 from .base import CRUDBase
 from app.crud.extensions.crud_modifier import CRUDModifier
 from app.crud.extensions.crud_item_base_type import CRUDItemBaseType
+from app.crud.extensions.crud_temporary_hashed_user_ip import CRUDTemporaryHashedUserIp
 
 from app.core.models.models import Currency
 
@@ -11,12 +13,12 @@ from app.core.models.models import ItemModifier as model_ItemModifier
 from app.core.models.models import Modifier as model_Modifier
 from app.core.models.models import Item as model_Item
 from app.core.models.models import Stash as model_Stash
+from app.core.models.models import TemporaryHashedUserIP as model_TemporaryHashedUserIP
 
 from app.core.schemas.account import AccountCreate, AccountUpdate, Account
 from app.core.schemas.currency import CurrencyCreate, CurrencyUpdate, Currency
 from app.core.schemas.item_base_type import (
     ItemBaseTypeCreate,
-    ItemBaseTypeUpdate,
     ItemBaseType,
 )
 from app.core.schemas.item_modifier import (
@@ -27,6 +29,10 @@ from app.core.schemas.item_modifier import (
 from app.core.schemas.modifier import ModifierCreate, ModifierUpdate, Modifier
 from app.core.schemas.item import ItemCreate, ItemUpdate, Item
 from app.core.schemas.stash import StashCreate, StashUpdate, Stash
+from app.core.schemas.hashed_user_ip import (
+    HashedUserIpCreate,
+    HashedUserIp,
+)
 
 
 CRUD_account = CRUDBase[
@@ -45,7 +51,9 @@ CRUD_currency = CRUDBase[
 ](model=model_Currency, schema=Currency, create_schema=CurrencyCreate)
 
 
-CRUD_itemBaseType = CRUDItemBaseType(model=model_ItemBaseType, schema=ItemBaseType, create_schema=ItemBaseTypeCreate)
+CRUD_itemBaseType = CRUDItemBaseType(
+    model=model_ItemBaseType, schema=ItemBaseType, create_schema=ItemBaseTypeCreate
+)
 
 
 CRUD_itemModifier = CRUDBase[
@@ -72,3 +80,13 @@ CRUD_stash = CRUDBase[
     StashCreate,
     StashUpdate,
 ](model=model_Stash, schema=Stash, create_schema=StashCreate)
+
+
+CRUD_user = CRUDUser()
+
+
+CRUD_hashed_user_ip = CRUDTemporaryHashedUserIp(
+    model=model_TemporaryHashedUserIP,
+    schema=HashedUserIp,
+    create_schema=HashedUserIpCreate,
+)
