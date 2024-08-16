@@ -51,7 +51,9 @@ const QueryButtons = (props: FlexProps) => {
       {...props}
       direction={["column", "row"]} // Column for small screens, row for larger screens
       alignItems="center"
-      width="100%"
+      width="bgBoxes.defaultBox"
+      maxW="98vw"
+      mr="2rem"
       flexWrap="wrap"
     >
       <Box width="10vw" flex={["none", "1"]} mb={[4, 20]} alignContent={"center"}></Box>{" "}
@@ -74,7 +76,6 @@ const QueryButtons = (props: FlexProps) => {
       <Flex
         flex={["none", "1"]}
         justifyContent={["center", "flex-end"]}
-        width={["100%", "auto"]} // Full width for small screens, auto for larger screens
       >
         <Button
           variant="solid"
