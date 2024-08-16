@@ -55,6 +55,10 @@ function GraphComponent(props: BoxProps) {
             <Legend verticalAlign="top" height={36} />
             {/* Update the Line dataKey to match "Chaos value" */}
             <Line type="monotone" dataKey="valueInChaos" name="Chaos value" stroke="#bea06a" />
+            {/**
+             * Example for adding more graphs
+             * result[0].yaxis2 !== undefined && <Line type="monotone" dataKey="yaxis2" stroke="#82ca9d" />}
+             */}
           </LineChart>
         </ResponsiveContainer>
       </Box>
