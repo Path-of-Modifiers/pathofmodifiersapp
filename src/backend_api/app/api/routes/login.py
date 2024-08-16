@@ -74,7 +74,7 @@ def recover_password(
         get_user_filter["email"] = email
     if username:
         get_user_filter["username"] = username
-    user = CRUD_user.get_user_by_filter(db=session, filter_map=get_user_filter)
+    user = CRUD_user.get(db=session, filter_map=get_user_filter)
     if not user:
         raise HTTPException(
             status_code=404,
@@ -105,7 +105,7 @@ def reset_password(session: SessionDep, body: NewPassword) -> Message:
     if not email:
         raise HTTPException(status_code=400, detail="Invalid token")
     get_user_filter = {"email": email}
-    user = CRUD_user.get_user_by_filter(db=session, filter_map=get_user_filter)
+    user = CRUD_user.get(db=session, filter_map=get_user_filter)
     if not user:
         raise HTTPException(
             status_code=404,
@@ -130,7 +130,7 @@ def recover_password_html_content(email: EmailStr, session: SessionDep) -> Any:
     HTML Content for Password Recovery
     """
     filter_map = {"email": email}
-    user = CRUD_user.get_user_by_filter(db=session, filter_map=filter_map)
+    user = CRUD_user.get(db=session, filter_map=filter_map)
 
     if not user:
         raise HTTPException(

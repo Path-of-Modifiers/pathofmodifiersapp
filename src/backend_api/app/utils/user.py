@@ -33,7 +33,7 @@ def send_email(
     subject: str = "",
     html_content: str = "",
 ) -> None:
-    assert settings.emails_enabled, "no provided configuration for email variables"
+    assert settings.emails_enabled, "No provided configuration for email variables"
     message = emails.Message(
         subject=subject,
         html=html_content,
@@ -49,7 +49,7 @@ def send_email(
     if settings.SMTP_PASSWORD:
         smtp_options["password"] = settings.SMTP_PASSWORD
     response = message.send(to=email_to, smtp=smtp_options)
-    logging.info(f"send email result: {response}")
+    logging.info(f"Send email result: {response}")
 
 
 def generate_test_email(email_to: EmailStr) -> EmailData:

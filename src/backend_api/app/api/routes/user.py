@@ -74,15 +74,18 @@ def update_user_me(
 
     if user_in.email:
         get_user_filter = {"email": user_in.email}
-        existing_user = CRUD_user.get_user_by_filter(db=db, filter_map=get_user_filter)
+        existing_user = CRUD_user.get(db=db, filter_map=get_user_filter)
         if existing_user and existing_user.userId != current_user.userId:
             raise HTTPException(
                 status_code=409, detail="User with this email already exists"
             )
     user_data = user_in.model_dump(exclude_unset=True)
-    for field in user_data:
+    current_user_data = current_user.__table__.columns.keys()
+
+    for field in current_user_data:
         if field in user_data:
             setattr(current_user, field, user_data[field])
+
     db.add(current_user)
     db.commit()
     db.refresh(current_user)
@@ -183,14 +186,8 @@ def update_user(
     """
     Update a user.
     """
-    db_user = db.get(User, user_id)
-    if not db_user:
-        raise HTTPException(
-            status_code=404,
-            detail="The user with this id does not exist in the system",
-        )
 
-    db_user = CRUD_user.update_user(db=db, db_user=db_user, user_in=user_in)
+    db_user = CRUD_user.update_user(db=db, user_id=user_id, user_in=user_in)
     return db_user
 
 
