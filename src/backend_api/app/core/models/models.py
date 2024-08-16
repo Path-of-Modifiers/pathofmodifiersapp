@@ -1,5 +1,5 @@
 import sqlalchemy as _sql
-from sqlalchemy.dialects.postgresql import JSONB, UUID, ema
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy import func
 import uuid
 
@@ -248,7 +248,7 @@ class Account(Base):
 
 # User model, a user that uses the application
 class User(Base):
-    __tablename__ = "user"
+    __tablename__ = "pom_user"
 
     userId = _sql.Column(
         UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4
