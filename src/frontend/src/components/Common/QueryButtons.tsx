@@ -51,10 +51,12 @@ const QueryButtons = (props: FlexProps) => {
       {...props}
       direction={["column", "row"]} // Column for small screens, row for larger screens
       alignItems="center"
-      width="100%"
+      width="bgBoxes.defaultBox"
+      maxW="98vw"
+      mr="2rem"
       flexWrap="wrap"
     >
-      <Box flex={["none", "1"]} mb={[4, 0]}></Box>{" "}
+      <Box width="10vw" flex={["none", "1"]} mb={[4, 20]} alignContent={"center"}></Box>{" "}
       {/* Empty space for centering the middle item */}
       <Box textAlign="center" mb={[4, 0]}>
         <Button
@@ -64,8 +66,8 @@ const QueryButtons = (props: FlexProps) => {
           _hover={{ bg: "ui.queryMainInput" }}
           borderWidth={1}
           borderColor="ui.grey"
-          width="inputSizes.lgBox"
-          maxW="100vw"
+          width={["inputSizes.defaultBox", "inputSizes.lgBox"]}
+          maxW="98vw"
           onClick={handlePlotQuery}
         >
           Query and Plot
@@ -74,7 +76,6 @@ const QueryButtons = (props: FlexProps) => {
       <Flex
         flex={["none", "1"]}
         justifyContent={["center", "flex-end"]}
-        width={["100%", "auto"]} // Full width for small screens, auto for larger screens
       >
         <Button
           variant="solid"

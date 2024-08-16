@@ -1,14 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
+  ApiError,
+  TemporaryHashedUserIpPrefixsService,
   TurnstileQuery,
-  TurnstileResponse,
   TurnstilesService,
 } from "../../client";
 import { useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useState } from "react";
+import { AxiosError } from "axios";
 
 export const hasCompletedCaptcha = () => {
-  return localStorage.getItem("hasCompletedCaptcha") === "true";
+  return localStorage.getItem("hasCompletedCaptcha") !== null;
 };
 
 /**
@@ -16,51 +18,80 @@ export const hasCompletedCaptcha = () => {
  * corresponding turnstile response from the cloudflare verify challenge
  * endpoint.
  * @param requestBody The Plot Query
- * @returns The Plot Data or undefined if no query yet, and the fetch status
+ * @returns The Plot valid_ip_response or undefined if no query yet, and the fetch status
  */
-function useTurnstileValidation(requestBody: TurnstileQuery): {
-  turnstileResponse: TurnstileResponse | undefined;
-  fetchStatus: string;
-  isError: boolean;
-  isFetched: boolean;
-  isLoading: boolean;
-} {
-  useEffect(() => {
-    localStorage.setItem("hasCompletedCaptcha", "false");
-  }, []);
+const useTurnstileValidation = (requestBody: TurnstileQuery) => {
+  const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
-  const {
-    data: turnstileResponse,
-    status: fetchStatus,
-    isError,
-    isFetched,
-    isLoading,
-  } = useQuery({
-    queryKey: ["allTurnstileData", requestBody], // Include requestBody to ensure it updates on changes
+
+  const { data: valid_ip_response, isLoading } = useQuery<
+    boolean | null,
+    Error
+  >({
+    queryKey: ["valid_ip_check", hasCompletedCaptcha()],
     queryFn: async () => {
-      if (!requestBody || !requestBody.ip) {
-        return undefined; // Return undefined if the request body is invalid
-      }
+      const ip = requestBody.ip;
+      const response =
+        await TemporaryHashedUserIpPrefixsService.checkTemporaryHashedUserIp({
+          ip,
+        });
 
-      const returnBody = await TurnstilesService.getTurnstileValidation({
-        requestBody,
-      });
-      if (returnBody.success) {
-        localStorage.setItem("hasCompletedCaptcha", "true");
+      if (response) {
+        localStorage.setItem("hasCompletedCaptcha", response.toString());
       } else {
-        localStorage.setItem("hasCompletedCaptcha", "false");
+        localStorage.removeItem("hasCompletedCaptcha");
+        navigate({ to: "/captcha" });
       }
-
-      return returnBody; // Return the fetched data
+      return response;
     },
-    enabled: !!requestBody && !!requestBody.ip, // Only run the query if requestBody is valid
   });
 
-  if (turnstileResponse?.success) {
-    navigate({ to: "/" }); // Redirect to the home page if the captcha is successful
-  }
-  return { turnstileResponse, fetchStatus, isFetched, isError, isLoading };
-}
+  const getTurnstileValidation = async (valid_ip_response: TurnstileQuery) => {
+    const turnstileValidation = await TurnstilesService.getTurnstileValidation({
+      requestBody: valid_ip_response,
+    });
+
+    localStorage.setItem(
+      "hasCompletedCaptcha",
+      turnstileValidation.success?.toString()
+    );
+  };
+
+  const performTurnstileValidation = useMutation({
+    mutationFn: getTurnstileValidation,
+
+    onSuccess: () => {
+      navigate({ to: "/" });
+    },
+    onError: (err: ApiError) => {
+      let errDetail = err.body?.detail;
+
+      if (err instanceof AxiosError) {
+        errDetail = err.message;
+      }
+
+      if (Array.isArray(errDetail)) {
+        errDetail = "Something went wrong";
+      }
+
+      setError(errDetail);
+    },
+  });
+
+  const logout = () => {
+    localStorage.removeItem("hasCompletedCaptcha");
+    navigate({ to: "/captcha" });
+  };
+
+  return {
+    performTurnstileValidation,
+    valid_ip_response,
+    logout,
+    isLoading,
+    error,
+    resetError: () => setError(null),
+  };
+};
 
 export default useTurnstileValidation;

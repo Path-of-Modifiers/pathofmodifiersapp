@@ -1,9 +1,14 @@
-import secrets
-from typing import Annotated
-from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-
 import os
+import secrets
+from typing import Any
+from fastapi import Depends
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from datetime import datetime, timedelta, timezone
+from passlib.context import CryptContext
+import jwt
+
+
+from app.core.config import settings
 
 
 PRIVATIZE_API = os.getenv("PRIVATIZE_API")
@@ -17,7 +22,7 @@ def verification(
     credentials: HTTPBasicCredentials = Depends(security),
 ) -> None:
     """Verify the username and password for the API.
-    
+
     Needs to raise HTTPException if return False.
 
     Args:
@@ -46,3 +51,24 @@ def verification(
             return False
     else:
         return True
+
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+ALGORITHM = "HS256"
+
+
+def create_access_token(subject: str | Any, expires_delta: timedelta) -> str:
+    expire = datetime.now(timezone.utc) + expires_delta
+    to_encode = {"exp": expire, "sub": str(subject)}
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+def get_password_hash(password: str) -> str:
+    return pwd_context.hash(password)
