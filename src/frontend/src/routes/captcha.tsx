@@ -1,4 +1,4 @@
-import { Center, Flex } from "@chakra-ui/layout";
+import { Center, Container } from "@chakra-ui/layout";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import CaptchaPage from "../components/Common/CaptchaPage";
@@ -38,18 +38,17 @@ function Captcha() {
   }, []);
 
   return (
-    <>
-      <Flex
-        direction="column"
-        minHeight="100rem"
-        bg="ui.main"
-        width="99vw"
-        minWidth="bgBoxes.miniPBox"
-      >
-        <Center mt={"7rem"}>
-          <CaptchaPage />
-        </Center>
-      </Flex>
-    </>
+    <Container
+      minHeight="100rem"
+      bg="ui.main"
+      maxW="100wh"
+      p={100}
+      h="100vh"
+      minWidth="bgBoxes.miniPBox"
+    >
+      <Center>
+        <CaptchaPage />
+      </Center>
+    </Container>
   );
 }
