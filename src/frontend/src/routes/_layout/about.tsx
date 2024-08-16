@@ -1,11 +1,11 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Flex, Box, VStack, Text } from "@chakra-ui/layout";
 
-import Header from "../components/Common/Header";
-import Footer from "../components/Common/Footer";
-import { TextWithUnderline } from "../components/Text/TextWithUnderline";
+import Header from "../../components/Common/Header";
+import Footer from "../..//components/Common/Footer";
+import { TextWithUnderline } from "../../components/Text/TextWithUnderline";
 
-export const Route = createLazyFileRoute("/about")({
+export const Route = createFileRoute("/_layout/about")({
   component: About,
 });
 
@@ -18,7 +18,13 @@ Supported items are listed under the "Item Name" field. As of now, we support a 
 The data is updated live with a 5 minute delay. The data is fetched from the official Path of Exile API. Some techniques are used to prevent price manipulation by users.
   `;
   return (
-    <Flex direction="column" minHeight="100vh" minWidth="98vw" bg="ui.main">
+    <Flex
+      direction="column"
+      minHeight="100rem"
+      bg="ui.main"
+      width="99vw"
+      minWidth="bgBoxes.miniPBox"
+    >
       <Box mb={"7rem"}>
         <Header />
       </Box>
@@ -27,7 +33,8 @@ The data is updated live with a 5 minute delay. The data is fetched from the off
         direction="row"
         bg="ui.secondary"
         opacity={0.98}
-        height="100vh"
+        minHeight="100vh"
+        height="100rem"
         width={"bgBoxes.defaultBox"}
         maxWidth={"98vw"}
         p={2}
