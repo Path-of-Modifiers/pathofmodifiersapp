@@ -2,7 +2,6 @@
 from datetime import timedelta
 from typing import Annotated, Any, Optional
 
-from app.core.schemas.user import UserInDB
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
@@ -74,7 +73,7 @@ def recover_password(
         get_user_filter["email"] = email
     if username:
         get_user_filter["username"] = username
-    user = CRUD_user.get(db=session, filter_map=get_user_filter)
+    user = CRUD_user.get(db=session, filter=get_user_filter)
     if not user:
         raise HTTPException(
             status_code=404,
@@ -88,11 +87,17 @@ def recover_password(
     email_data = generate_reset_password_email(
         email_to=user.email, email=email, token=password_reset_token
     )
+    # try:
     send_email(
         email_to=user.email,
         subject=email_data.subject,
         html_content=email_data.html_content,
     )
+    # except Exception as e:
+    #     raise HTTPException(
+    #         status_code=400,
+    #         detail="Failed to send email. Please try again later. Error: " + str(e),
+    #     )
     return Message(message="Password recovery email sent")
 
 
@@ -105,7 +110,7 @@ def reset_password(session: SessionDep, body: NewPassword) -> Message:
     if not email:
         raise HTTPException(status_code=400, detail="Invalid token")
     get_user_filter = {"email": email}
-    user = CRUD_user.get(db=session, filter_map=get_user_filter)
+    user = CRUD_user.get(db=session, filter=get_user_filter)
     if not user:
         raise HTTPException(
             status_code=404,
@@ -129,8 +134,8 @@ def recover_password_html_content(email: EmailStr, session: SessionDep) -> Any:
     """
     HTML Content for Password Recovery
     """
-    filter_map = {"email": email}
-    user = CRUD_user.get(db=session, filter_map=filter_map)
+    filter = {"email": email}
+    user = CRUD_user.get(db=session, filter=filter)
 
     if not user:
         raise HTTPException(

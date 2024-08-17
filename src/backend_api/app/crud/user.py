@@ -20,6 +20,7 @@ class CRUDUser:
     def __init__(self):
         self.validate = TypeAdapter(Union[User, List[User]]).validate_python
         self.validate_users_public = TypeAdapter(UsersPublic).validate_python
+        self.validate_user_create = TypeAdapter(UserCreate).validate_python
 
     def create_user(self, db: Session, *, user_create: UserCreate) -> model_User:
         """Create a new user
@@ -31,16 +32,18 @@ class CRUDUser:
         Returns:
             User: Created user
         """
+        self.validate_user_create(user_create)
+        
         get_user_email_filter = {"email": user_create.email}
         get_user_username_filter = {"username": user_create.username}
 
-        user_email = self.get(db=db, filter_map=get_user_email_filter)
+        user_email = self.get(db=db, filter=get_user_email_filter)
         if user_email:
             raise HTTPException(
                 status_code=400,
                 detail="The user with this email already exists in the system.",
             )
-        user_username = self.get(db=db, filter_map=get_user_username_filter)
+        user_username = self.get(db=db, filter=get_user_username_filter)
         if user_username:
             raise HTTPException(
                 status_code=400,
@@ -100,11 +103,11 @@ class CRUDUser:
         Returns:
             Any: Updated user
         """
-        db_user = self.get(db=db, filter_map={"userId": user_id})
+        db_user = self.get(db=db, filter={"userId": user_id})
 
         if user_in.email:
             get_user_email_filter = {"email": user_in.email}
-            existing_user_with_email = self.get(db=db, filter_map=get_user_email_filter)
+            existing_user_with_email = self.get(db=db, filter=get_user_email_filter)
 
             if (
                 existing_user_with_email
@@ -117,7 +120,7 @@ class CRUDUser:
         if user_in.username:
             get_user_username_filter = {"username": user_in.username}
             existing_user_with_username = self.get(
-                db=db, filter_map=get_user_username_filter
+                db=db, filter=get_user_username_filter
             )
             if (
                 existing_user_with_username
@@ -149,23 +152,23 @@ class CRUDUser:
         self,
         db: Session,
         *,
-        filter_map: dict,
+        filter: dict,
     ) -> Union[model_User, List[model_User]] | None:
         """Get user by filter
 
         Args:
             db (Session): DB session
-            filter_map (dict): Filter map
+            filter (dict): Filter map
 
         Returns:
             model_User | None: model_User object or None
         """
-        if not filter_map:
+        if not filter:
             raise HTTPException(
                 status_code=400,
                 detail="Could not get user. Filter parameters required.",
             )
-        session_user = db.query(model_User).filter_by(**filter_map).all()
+        session_user = db.query(model_User).filter_by(**filter).all()
         if len(session_user) == 1 and filter:
             session_user = session_user[0]
         if not session_user:
@@ -193,8 +196,8 @@ class CRUDUser:
         self,
         db: Session,
         *,
-        email: Optional[EmailStr],
-        username: Optional[str],
+        email: Optional[EmailStr] = None,
+        username: Optional[str] = None,
         password: str,
     ) -> model_User | None:
         """Authenticate user
@@ -212,8 +215,8 @@ class CRUDUser:
             get_user_filter["email"] = email
         if username:
             get_user_filter["username"] = username
-
-        db_user = self.get(db=db, filter_map=get_user_filter)
+        
+        db_user = self.get(db=db, filter=get_user_filter)
         if not db_user or not verify_password(password, db_user.hashedPassword):
             raise HTTPException(
                 status_code=400,

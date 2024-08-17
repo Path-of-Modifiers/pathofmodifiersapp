@@ -19,10 +19,6 @@ export const $UserUpdate = {
                 type: 'null',
             }],
         },
-        hashedPassword: {
-            type: 'string',
-            isRequired: true,
-        },
         isActive: {
             type: 'any-of',
             contains: [{

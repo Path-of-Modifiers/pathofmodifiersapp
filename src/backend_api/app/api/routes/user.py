@@ -74,7 +74,7 @@ def update_user_me(
 
     if user_in.email:
         get_user_filter = {"email": user_in.email}
-        existing_user = CRUD_user.get(db=db, filter_map=get_user_filter)
+        existing_user = CRUD_user.get(db=db, filter=get_user_filter)
         if existing_user and existing_user.userId != current_user.userId:
             raise HTTPException(
                 status_code=409, detail="User with this email already exists"
