@@ -1,6 +1,7 @@
 import { Turnstile } from "@marsidev/react-turnstile";
-import useTurnstileValidation from "../../hooks/validation/turnstileValidation";
+import useTurnstileValidation from "../../schemas/validation/turnstileValidation";
 import { useState } from "react";
+import { Text } from "@chakra-ui/react";
 
 const siteKey = import.meta.env.VITE_APP_TURNSTILE_SITE_KEY || "";
 
@@ -9,10 +10,11 @@ const CaptchaWidget = () => {
   const [token, setToken] = useState<string>("");
   const security_ip = localStorage.getItem("security_ip");
 
-  const { performTurnstileValidation, resetError } = useTurnstileValidation({
-    token: token,
-    ip: security_ip ?? "",
-  });
+  const { performTurnstileValidation, error, resetError } =
+    useTurnstileValidation({
+      token: token,
+      ip: security_ip ?? "",
+    });
 
   const turnstileHandler = async (token: string) => {
     setToken(token);
@@ -29,7 +31,12 @@ const CaptchaWidget = () => {
     }
   };
 
-  return <Turnstile siteKey={siteKey} onSuccess={turnstileHandler} />;
+  return (
+    <>
+      {!error && <Turnstile siteKey={siteKey} onSuccess={turnstileHandler} />}
+      {error && <Text color={"ui.white"}>{error}</Text>}
+    </>
+  );
 };
 
 export default CaptchaWidget;

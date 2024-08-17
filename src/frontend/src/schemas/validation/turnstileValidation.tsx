@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   ApiError,
-  TemporaryHashedUserIpPrefixsService,
+  TemporaryHashedUserIpsService,
   TurnstileQuery,
   TurnstilesService,
 } from "../../client";
@@ -25,15 +25,16 @@ const useTurnstileValidation = (requestBody: TurnstileQuery) => {
 
   const navigate = useNavigate();
 
-  const { data: valid_ip_response, isLoading } = useQuery<
-    boolean | null,
-    Error
-  >({
+  const {
+    data: valid_ip_response,
+    isLoading,
+    isError,
+  } = useQuery<boolean | null, Error>({
     queryKey: ["valid_ip_check", hasCompletedCaptcha()],
     queryFn: async () => {
       const ip = requestBody.ip;
       const response =
-        await TemporaryHashedUserIpPrefixsService.checkTemporaryHashedUserIp({
+        await TemporaryHashedUserIpsService.checkTemporaryHashedUserIp({
           ip,
         });
 
@@ -43,27 +44,32 @@ const useTurnstileValidation = (requestBody: TurnstileQuery) => {
         localStorage.removeItem("hasCompletedCaptcha");
         navigate({ to: "/captcha" });
       }
+
       return response;
     },
+    retry: false,
   });
 
-  const getTurnstileValidation = async (valid_ip_response: TurnstileQuery) => {
-    const turnstileValidation = await TurnstilesService.getTurnstileValidation({
-      requestBody: valid_ip_response,
-    });
+  if (isError) {
+    localStorage.removeItem("hasCompletedCaptcha");
+    navigate({ to: "/captcha" });
+  }
 
-    localStorage.setItem(
-      "hasCompletedCaptcha",
-      turnstileValidation.success?.toString()
-    );
+  const completeCaptcha = async (data: TurnstileQuery) => {
+    console.log("Completing captcha...");
+    const response = await TurnstilesService.getTurnstileValidation({
+      requestBody: data,
+    });
+    localStorage.setItem("hasCompletedCaptcha", response.success.toString());
   };
 
   const performTurnstileValidation = useMutation({
-    mutationFn: getTurnstileValidation,
+    mutationFn: completeCaptcha,
 
     onSuccess: () => {
       navigate({ to: "/" });
     },
+
     onError: (err: ApiError) => {
       let errDetail = err.body?.detail;
 
@@ -77,6 +83,7 @@ const useTurnstileValidation = (requestBody: TurnstileQuery) => {
 
       setError(errDetail);
     },
+    retry: false,
   });
 
   const logout = () => {
