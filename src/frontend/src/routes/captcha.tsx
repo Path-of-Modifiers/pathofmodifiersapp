@@ -1,8 +1,8 @@
 import { Center, Container } from "@chakra-ui/layout";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import CaptchaPage from "../components/Common/CaptchaPage";
-import { hasCompletedCaptcha } from "../hooks/validation/turnstileValidation";
-import useGetIp from "../hooks/validation/getIp";
+import { hasCompletedCaptcha } from "../schemas/validation/turnstileValidation";
+import useGetIp from "../schemas/validation/getIp";
 
 export const Route = createFileRoute("/captcha")({
   component: Captcha,

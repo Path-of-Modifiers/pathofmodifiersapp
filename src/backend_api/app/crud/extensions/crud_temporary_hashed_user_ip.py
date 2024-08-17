@@ -1,6 +1,7 @@
 import bcrypt
 
 
+from fastapi import HTTPException
 from sqlalchemy import Select, select
 from sqlalchemy.orm import Session
 
@@ -32,13 +33,15 @@ class CRUDTemporaryHashedUserIp(
         Returns:
             bool: True if the IP is in the database, False otherwise.
         """
-        get_hashed_ip_map = {"hashedIp": ip}
 
-        all_hashes = self.get(db=db, filter=get_hashed_ip_map)
+        try:
+            all_temporary_hashed_ips = await self.get(db=db)
+        except HTTPException:
+            return False
 
-        for hashed_ip in all_hashes:
+        for temporary_hashed_ip in all_temporary_hashed_ips:
             encoded_ip = ip.encode("utf-8")
-            encoded_hashed_ip = hashed_ip["hashedIp"].encode("utf-8")
+            encoded_hashed_ip = temporary_hashed_ip.hashedIp.encode("utf-8")
             if bcrypt.checkpw(encoded_ip, encoded_hashed_ip):
                 return True
 

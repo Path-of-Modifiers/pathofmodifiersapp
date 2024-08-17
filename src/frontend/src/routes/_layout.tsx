@@ -3,7 +3,7 @@ import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
 import useTurnstileValidation, {
   hasCompletedCaptcha,
-} from "../hooks/validation/turnstileValidation";
+} from "../schemas/validation/turnstileValidation";
 
 const security_ip = localStorage.getItem("security_ip");
 

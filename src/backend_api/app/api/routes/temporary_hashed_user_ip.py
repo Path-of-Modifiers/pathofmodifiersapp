@@ -14,7 +14,7 @@ from app.crud import CRUD_hashed_user_ip
 router = APIRouter()
 
 
-temporary_hashed_user_ip_prefix = "temporary_hashed_user_ip_prefix"
+temporary_hashed_user_ip_prefix = "temporary_hashed_user_ip"
 
 
 @router.post("/check/", response_model=bool)
