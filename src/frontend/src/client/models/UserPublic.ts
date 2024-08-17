@@ -5,7 +5,6 @@
 export type UserPublic = {
     username: string;
     email: string;
-    hashedPassword: string;
     isActive?: (boolean | null);
     isSuperuser?: (boolean | null);
     rateLimitTier?: (number | null);

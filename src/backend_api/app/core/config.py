@@ -69,7 +69,7 @@ class Settings(BaseSettings):
         )
 
     SMTP_TLS: bool = True
-    SMTP_SSL: bool = False
+    SMTP_SSL: bool = True
     SMTP_PORT: int = 587
     SMTP_HOST: str | None = None
     SMTP_USER: str | None = None

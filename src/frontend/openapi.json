@@ -5921,23 +5921,23 @@
       },
       "UpdatePassword": {
         "properties": {
-          "currentPassword": {
+          "current_password": {
             "type": "string",
             "maxLength": 40,
             "minLength": 8,
-            "title": "Currentpassword"
+            "title": "Current Password"
           },
-          "newPassword": {
+          "new_password": {
             "type": "string",
             "maxLength": 40,
             "minLength": 8,
-            "title": "Newpassword"
+            "title": "New Password"
           }
         },
         "type": "object",
         "required": [
-          "currentPassword",
-          "newPassword"
+          "current_password",
+          "new_password"
         ],
         "title": "UpdatePassword"
       },
@@ -5953,10 +5953,6 @@
             "maxLength": 255,
             "format": "email",
             "title": "Email"
-          },
-          "hashedPassword": {
-            "type": "string",
-            "title": "Hashedpassword"
           },
           "isActive": {
             "anyOf": [
@@ -6017,7 +6013,6 @@
         "required": [
           "username",
           "email",
-          "hashedPassword",
           "password"
         ],
         "title": "UserCreate"
@@ -6034,10 +6029,6 @@
             "maxLength": 255,
             "format": "email",
             "title": "Email"
-          },
-          "hashedPassword": {
-            "type": "string",
-            "title": "Hashedpassword"
           },
           "isActive": {
             "anyOf": [
@@ -6097,7 +6088,6 @@
         "required": [
           "username",
           "email",
-          "hashedPassword",
           "userId"
         ],
         "title": "UserPublic"
@@ -6149,10 +6139,6 @@
               }
             ],
             "title": "Email"
-          },
-          "hashedPassword": {
-            "type": "string",
-            "title": "Hashedpassword"
           },
           "isActive": {
             "anyOf": [
@@ -6218,8 +6204,7 @@
         },
         "type": "object",
         "required": [
-          "username",
-          "hashedPassword"
+          "username"
         ],
         "title": "UserUpdate"
       },

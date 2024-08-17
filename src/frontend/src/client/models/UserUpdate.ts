@@ -5,7 +5,6 @@
 export type UserUpdate = {
     username: string;
     email?: (string | null);
-    hashedPassword: string;
     isActive?: (boolean | null);
     isSuperuser?: (boolean | null);
     rateLimitTier?: (number | null);

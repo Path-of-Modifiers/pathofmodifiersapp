@@ -10,7 +10,6 @@ class _BaseUser(BaseModel):
 
     username: str = Field(max_length=255)
     email: EmailStr = Field(max_length=255)
-    hashedPassword: str
     isActive: Optional[bool] = True
     isSuperuser: Optional[bool] = False
     rateLimitTier: Optional[int] = 0
@@ -40,8 +39,8 @@ class UserUpdateMe(BaseModel):
 
 
 class UpdatePassword(BaseModel):
-    currentPassword: str = Field(min_length=8, max_length=40)
-    newPassword: str = Field(min_length=8, max_length=40)
+    current_password: str = Field(min_length=8, max_length=40)
+    new_password: str = Field(min_length=8, max_length=40)
 
 
 # Properties to return via API, id is always required
@@ -58,6 +57,7 @@ class UsersPublic(BaseModel):
 # Properties to return to client
 class UserInDBBase(_BaseUser):
     userId: uuid.UUID
+    hashedPassword: str
     createdAt: Optional[datetime]
     updatedAt: Optional[datetime]
 

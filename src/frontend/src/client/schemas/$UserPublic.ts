@@ -15,10 +15,6 @@ export const $UserPublic = {
             format: 'email',
             maxLength: 255,
         },
-        hashedPassword: {
-            type: 'string',
-            isRequired: true,
-        },
         isActive: {
             type: 'any-of',
             contains: [{
