@@ -20,7 +20,7 @@ export class ItemsService {
     public static getItem({
         itemId,
     }: {
-        itemId: string,
+        itemId: number,
     }): CancelablePromise<(Item | Array<Item>)> {
         return __request(OpenAPI, {
             method: 'GET',
@@ -45,7 +45,7 @@ export class ItemsService {
         itemId,
         requestBody,
     }: {
-        itemId: string,
+        itemId: number,
         requestBody: ItemUpdate,
     }): CancelablePromise<Item> {
         return __request(OpenAPI, {
@@ -73,7 +73,7 @@ export class ItemsService {
     public static deleteItem({
         itemId,
     }: {
-        itemId: string,
+        itemId: number,
     }): CancelablePromise<string> {
         return __request(OpenAPI, {
             method: 'DELETE',

@@ -8,7 +8,7 @@ import type { HashedUserIpUpdate } from '../models/HashedUserIpUpdate';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class TemporaryHashedUserIpPrefixsService {
+export class TemporaryHashedUserIpsService {
     /**
      * Check Temporary Hashed User Ip
      * Takes a query based on the 'TemporaryHashedUserIp' schema and retrieves
@@ -23,7 +23,7 @@ export class TemporaryHashedUserIpPrefixsService {
     }): CancelablePromise<boolean> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/api_v1/temporary_hashed_user_ip_prefix/check/',
+            url: '/api/api_v1/temporary_hashed_user_ip/check/',
             query: {
                 'ip': ip,
             },
@@ -45,7 +45,7 @@ export class TemporaryHashedUserIpPrefixsService {
     }): CancelablePromise<(HashedUserIp | Array<HashedUserIp>)> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/api_v1/temporary_hashed_user_ip_prefix/{temporaryHashedUserIp}',
+            url: '/api/api_v1/temporary_hashed_user_ip/{temporaryHashedUserIp}',
             path: {
                 'temporaryHashedUserIp': temporaryHashedUserIp,
             },
@@ -69,7 +69,7 @@ export class TemporaryHashedUserIpPrefixsService {
     }): CancelablePromise<(HashedUserIp | Array<HashedUserIp>)> {
         return __request(OpenAPI, {
             method: 'PUT',
-            url: '/api/api_v1/temporary_hashed_user_ip_prefix/{temporaryHashedUserIp}',
+            url: '/api/api_v1/temporary_hashed_user_ip/{temporaryHashedUserIp}',
             path: {
                 'temporaryHashedUserIp': temporaryHashedUserIp,
             },
@@ -93,7 +93,7 @@ export class TemporaryHashedUserIpPrefixsService {
     }): CancelablePromise<string> {
         return __request(OpenAPI, {
             method: 'DELETE',
-            url: '/api/api_v1/temporary_hashed_user_ip_prefix/{temporaryHashedUserIp}',
+            url: '/api/api_v1/temporary_hashed_user_ip/{temporaryHashedUserIp}',
             path: {
                 'temporaryHashedUserIp': temporaryHashedUserIp,
             },
@@ -111,7 +111,7 @@ export class TemporaryHashedUserIpPrefixsService {
     public static getAllTemporaryHashedUserIps(): CancelablePromise<(HashedUserIp | Array<HashedUserIp>)> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/api_v1/temporary_hashed_user_ip_prefix/',
+            url: '/api/api_v1/temporary_hashed_user_ip/',
         });
     }
     /**
@@ -127,7 +127,7 @@ export class TemporaryHashedUserIpPrefixsService {
     }): CancelablePromise<(HashedUserIpCreate | Array<HashedUserIpCreate>)> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/api_v1/temporary_hashed_user_ip_prefix/',
+            url: '/api/api_v1/temporary_hashed_user_ip/',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
