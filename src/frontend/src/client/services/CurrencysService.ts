@@ -20,7 +20,7 @@ export class CurrencysService {
     public static getCurrency({
         currencyId,
     }: {
-        currencyId: string,
+        currencyId: number,
     }): CancelablePromise<(Currency | Array<Currency>)> {
         return __request(OpenAPI, {
             method: 'GET',
@@ -45,7 +45,7 @@ export class CurrencysService {
         currencyId,
         requestBody,
     }: {
-        currencyId: string,
+        currencyId: number,
         requestBody: CurrencyUpdate,
     }): CancelablePromise<Currency> {
         return __request(OpenAPI, {
@@ -73,7 +73,7 @@ export class CurrencysService {
     public static deleteCurrency({
         currencyId,
     }: {
-        currencyId: string,
+        currencyId: number,
     }): CancelablePromise<string> {
         return __request(OpenAPI, {
             method: 'DELETE',
