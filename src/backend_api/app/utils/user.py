@@ -3,12 +3,12 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+
 import emails  # type: ignore
 import jwt
 from jinja2 import Template
 from jwt.exceptions import InvalidTokenError
 from pydantic import EmailStr
-
 
 from app.core.config import settings
 
@@ -50,7 +50,7 @@ def send_email(
         smtp_options["password"] = settings.SMTP_PASSWORD
 
     response = message.send(to=email_to, smtp=smtp_options)
-    
+
     logging.info(f"Send email result: {response}")
 
 

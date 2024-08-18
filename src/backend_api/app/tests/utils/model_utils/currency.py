@@ -1,14 +1,12 @@
-import asyncio
-from typing import Dict, Tuple
 from sqlalchemy.orm import Session
 
 from app import crud
 from app.core.models.models import Currency
 from app.core.schemas import CurrencyCreate
-from app.tests.utils.utils import random_lower_string, random_float, random_url
+from app.tests.utils.utils import random_float, random_lower_string, random_url
 
 
-def create_random_currency_dict() -> Dict:
+def create_random_currency_dict() -> dict:
     """Create a random currency dictionary.
 
     Returns:
@@ -27,7 +25,7 @@ def create_random_currency_dict() -> Dict:
     return currency
 
 
-async def generate_random_currency(db: Session) -> Tuple[Dict, Currency]:
+async def generate_random_currency(db: Session) -> tuple[dict, Currency]:
     """Generates a random currency.
 
     Args:

@@ -7,9 +7,9 @@
  - Configure a wildcard subdomain for your domain, so that you can have multiple subdomains for different services, `*.pathofmodifiers.com`. This will be useful for accessing different components, like `traefik.pathofmodifiers.com`, `adminer.pathofmodifiers.com`, etc. And also for staging, like `staging.pathofmodifiers.com`, `staging.adminer.pathofmodifiers.com`, etc.
  - Install and configure [Docker Engine](https://docs.docker.com/engine/install/ubuntu/) on the remote server (Docker Engine, not Docker Desktop).
 
-## Setting up environment variables 
+## Setting up environment variables
 
-Follow the steps to set the `changethis` variables in [Generate secret keys](#generate-secret-keys). 
+Follow the steps to set the `changethis` variables in [Generate secret keys](#generate-secret-keys).
 
 ### <a id="generate-secret-keys"></a> Generate secret keys
 
@@ -134,7 +134,7 @@ docker compose -f docker-compose.traefik.yml up -d
 
 ## Oracle cloud open connections
 
-To open port 80 (HTTP) and 443 (HTTPS), run the commands below in the oracle cloud instance: 
+To open port 80 (HTTP) and 443 (HTTPS), run the commands below in the oracle cloud instance:
 
 ```bash
 sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 443 -j ACCEPT

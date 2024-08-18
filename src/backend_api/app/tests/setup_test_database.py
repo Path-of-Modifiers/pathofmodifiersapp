@@ -1,12 +1,12 @@
 import os
-from typing import Optional
+
 from pydantic import PostgresDsn
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from app.core.models.database import Base
 
-
-TEST_DATABASE_URL: Optional[PostgresDsn] = os.getenv("TEST_DATABASE_URL")
+TEST_DATABASE_URL: PostgresDsn | None = os.getenv("TEST_DATABASE_URL")
 
 test_db_engine = create_engine(TEST_DATABASE_URL)
 

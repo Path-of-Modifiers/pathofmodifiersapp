@@ -1,4 +1,5 @@
 from base64 import b64encode
+
 from requests.auth import HTTPBasicAuth
 
 from external_data_retrieval.config import settings
@@ -25,8 +26,6 @@ def get_basic_authentication() -> str:
         str: Basic super user and super password authentication.
     """
     token = b64encode(
-        f"{settings.FIRST_SUPERUSER}:{settings.FIRST_SUPERUSER_PASSWORD}".encode(
-            "utf-8"
-        )
+        f"{settings.FIRST_SUPERUSER}:{settings.FIRST_SUPERUSER_PASSWORD}".encode()
     ).decode("ascii")
     return f"Basic {token}"

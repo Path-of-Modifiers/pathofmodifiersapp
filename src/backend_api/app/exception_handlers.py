@@ -1,16 +1,12 @@
 import sys
 
-from typing import Union
-
 from fastapi import Request
-from fastapi.exceptions import RequestValidationError, HTTPException
 from fastapi.exception_handlers import http_exception_handler as _http_exception_handler
 from fastapi.exception_handlers import (
     request_validation_exception_handler as _request_validation_exception_handler,
 )
-from fastapi.responses import JSONResponse
-from fastapi.responses import PlainTextResponse
-from fastapi.responses import Response
+from fastapi.exceptions import HTTPException, RequestValidationError
+from fastapi.responses import JSONResponse, PlainTextResponse, Response
 
 from app.logger import logger
 
@@ -40,7 +36,7 @@ async def request_validation_exception_handler(
 
 async def http_exception_handler(
     request: Request, exc: HTTPException
-) -> Union[JSONResponse, Response]:
+) -> JSONResponse | Response:
     """
     This is a wrapper to the default HTTPException handler of FastAPI.
     This function will be called when a HTTPException is explicitly raised.

@@ -5,13 +5,13 @@ from typing import Annotated, Any, Literal
 from pydantic import (
     AnyUrl,
     BeforeValidator,
-    PostgresDsn,
     HttpUrl,
+    PostgresDsn,
     computed_field,
     model_validator,
 )
-from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic_core import MultiHostUrl
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Self
 
 
@@ -29,11 +29,11 @@ class Settings(BaseSettings):
     )
     API_V1_STR: str = "/api/api_v1"
     SECRET_KEY: str = secrets.token_urlsafe(32)
-    
+
     TURNSTILE_SECRET_KEY: str
 
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
-    DOMAIN: str 
+    DOMAIN: str
     ENVIRONMENT: Literal["local", "staging", "production"] = "production"
 
     @computed_field  # type: ignore[prop-decorator]
@@ -44,9 +44,9 @@ class Settings(BaseSettings):
             return f"http://{self.DOMAIN}"
         return f"https://{self.DOMAIN}"
 
-    BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = (
-        []
-    )
+    BACKEND_CORS_ORIGINS: Annotated[
+        list[AnyUrl] | str, BeforeValidator(parse_cors)
+    ] = []
 
     PROJECT_NAME: str = "Path of Modifiers"
     SENTRY_DSN: HttpUrl | None = None

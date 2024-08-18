@@ -1,18 +1,13 @@
 from __future__ import annotations
+
 from fastapi import APIRouter, Depends, HTTPException
-from typing import List, Union
-
-from app.api.deps import get_db
-
-from app.crud import CRUD_itemBaseType
-
-import app.core.schemas as schemas
-
 from sqlalchemy.orm import Session
 
-from app.core.security import verification
+import app.core.schemas as schemas
+from app.api.deps import get_db
 from app.api.utils import get_delete_return_message
-
+from app.core.security import verification
+from app.crud import CRUD_itemBaseType
 
 router = APIRouter()
 
@@ -22,7 +17,7 @@ item_base_type_prefix = "itemBaseType"
 
 @router.get(
     "/{baseType}",
-    response_model=Union[schemas.ItemBaseType, List[schemas.ItemBaseType]],
+    response_model=schemas.ItemBaseType | list[schemas.ItemBaseType],
 )
 async def get_item_base_type(
     baseType: str,
@@ -46,7 +41,7 @@ async def get_item_base_type(
     return itemBaseType
 
 
-@router.get("/", response_model=Union[schemas.ItemBaseType, List[schemas.ItemBaseType]])
+@router.get("/", response_model=schemas.ItemBaseType | list[schemas.ItemBaseType])
 async def get_all_item_base_types(
     db: Session = Depends(get_db), verification: bool = Depends(verification)
 ):
@@ -66,9 +61,7 @@ async def get_all_item_base_types(
     return all_item_base_types
 
 
-@router.get(
-    "/baseTypes/", response_model=Union[schemas.BaseType, List[schemas.BaseType]]
-)
+@router.get("/baseTypes/", response_model=schemas.BaseType | list[schemas.BaseType])
 async def get_base_types(
     db: Session = Depends(get_db), verification: bool = Depends(verification)
 ):
@@ -90,9 +83,7 @@ async def get_base_types(
 
 @router.get(
     "/uniqueCategories/",
-    response_model=Union[
-        schemas.ItemBaseTypeCategory, List[schemas.ItemBaseTypeCategory]
-    ],
+    response_model=schemas.ItemBaseTypeCategory | list[schemas.ItemBaseTypeCategory],
 )
 async def get_unique_categories(
     db: Session = Depends(get_db),
@@ -116,9 +107,8 @@ async def get_unique_categories(
 
 @router.get(
     "/uniqueSubCategories/",
-    response_model=Union[
-        schemas.ItemBaseTypeSubCategory, List[schemas.ItemBaseTypeSubCategory]
-    ],
+    response_model=schemas.ItemBaseTypeSubCategory
+    | list[schemas.ItemBaseTypeSubCategory],
 )
 async def get_unique_sub_categories(
     db: Session = Depends(get_db), verification: bool = Depends(verification)
@@ -141,10 +131,10 @@ async def get_unique_sub_categories(
 
 @router.post(
     "/",
-    response_model=Union[schemas.ItemBaseTypeCreate, List[schemas.ItemBaseTypeCreate]],
+    response_model=schemas.ItemBaseTypeCreate | list[schemas.ItemBaseTypeCreate],
 )
 async def create_item_base_type(
-    itemBaseType: Union[schemas.ItemBaseTypeCreate, List[schemas.ItemBaseTypeCreate]],
+    itemBaseType: schemas.ItemBaseTypeCreate | list[schemas.ItemBaseTypeCreate],
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
 ):

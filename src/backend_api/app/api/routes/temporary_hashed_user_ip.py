@@ -1,14 +1,12 @@
 from __future__ import annotations
-from typing import List, Union
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-
-from app.api.deps import get_db
-from app.core.security import verification
 import app.core.schemas as schemas
-
+from app.api.deps import get_db
 from app.api.utils import get_delete_return_message
+from app.core.security import verification
 from app.crud import CRUD_hashed_user_ip
 
 router = APIRouter()
@@ -40,7 +38,7 @@ async def check_temporary_hashed_user_ip(
 
 @router.get(
     "/{temporaryHashedUserIp}",
-    response_model=Union[schemas.HashedUserIp, List[schemas.HashedUserIp]],
+    response_model=schemas.HashedUserIp | list[schemas.HashedUserIp],
 )
 async def get_temporary_hashed_user_ip(
     temporaryHashedUserIp: str,
@@ -62,7 +60,7 @@ async def get_temporary_hashed_user_ip(
     return hashed_ip
 
 
-@router.get("/", response_model=Union[schemas.HashedUserIp, List[schemas.HashedUserIp]])
+@router.get("/", response_model=schemas.HashedUserIp | list[schemas.HashedUserIp])
 async def get_all_temporary_hashed_user_ips(
     db: Session = Depends(get_db), validation: bool = Depends(verification)
 ):
@@ -82,10 +80,10 @@ async def get_all_temporary_hashed_user_ips(
 
 @router.post(
     "/",
-    response_model=Union[schemas.HashedUserIpCreate, List[schemas.HashedUserIpCreate]],
+    response_model=schemas.HashedUserIpCreate | list[schemas.HashedUserIpCreate],
 )
 async def create_temporary_hashed_user_ip(
-    hashed_user_ip: Union[schemas.HashedUserIpCreate, List[schemas.HashedUserIpCreate]],
+    hashed_user_ip: schemas.HashedUserIpCreate | list[schemas.HashedUserIpCreate],
     db: Session = Depends(get_db),
     validation: bool = Depends(verification),
 ):
@@ -103,13 +101,12 @@ async def create_temporary_hashed_user_ip(
 
 @router.put(
     "/{temporaryHashedUserIp}",
-    response_model=Union[schemas.HashedUserIp, List[schemas.HashedUserIp]],
+    response_model=schemas.HashedUserIp | list[schemas.HashedUserIp],
 )
 async def update_temporary_hashed_user_ip(
     temporaryHashedUserIp: str,
-    hashed_user_ip_update: Union[
-        schemas.HashedUserIpUpdate, List[schemas.HashedUserIpUpdate]
-    ],
+    hashed_user_ip_update: schemas.HashedUserIpUpdate
+    | list[schemas.HashedUserIpUpdate],
     db: Session = Depends(get_db),
     validation: bool = Depends(verification),
 ):

@@ -19,7 +19,7 @@ ENV POETRY_ENV=${POETRY_ENV} \
 # Make sure to update it!
 
 # Install Poetry
-RUN curl -sSL https://install.python-poetry.org | python3 - 
+RUN curl -sSL https://install.python-poetry.org | python3 -
 
 WORKDIR /data_retrieval/
 

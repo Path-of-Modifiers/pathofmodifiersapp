@@ -1,17 +1,12 @@
 from __future__ import annotations
+
 from fastapi import APIRouter, Depends, HTTPException
-from typing import List, Optional, Union
-
-from app.api.deps import get_db
-
-from app.plotting import plotter_tool
-
-import app.plotting.schemas as schemas
-
 from sqlalchemy.orm import Session
 
+import app.plotting.schemas as schemas
+from app.api.deps import get_db
 from app.core.security import verification
-
+from app.plotting import plotter_tool
 
 router = APIRouter()
 

@@ -1,13 +1,13 @@
-from sqlalchemy.orm import Session
+from fastapi import HTTPException
 from pydantic import TypeAdapter
 from requests import post
-from fastapi import HTTPException
+from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.core.schemas import TurnstileQuery, TurnstileResponse
 from app.core.schemas.hashed_user_ip import HashedUserIpCreate
-from app.core.config import settings
-from app.validation.utils import create_hashed_ip
 from app.crud import CRUD_hashed_user_ip
+from app.validation.utils import create_hashed_ip
 
 
 class ValidateTurnstileRequest:
@@ -31,7 +31,7 @@ class ValidateTurnstileRequest:
             db, ip
         )
 
-        # Skip turnstile validation if the IP is already hashed 
+        # Skip turnstile validation if the IP is already hashed
         if check_temporary_hashed_ip:
             return self.validate({"success": True})
 
