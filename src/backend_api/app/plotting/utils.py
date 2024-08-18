@@ -1,8 +1,8 @@
 import pandas as pd
-import numpy as np
 
 
-def summarize_function(values: pd.Series, *args) -> int:
+def summarize_function(*args) -> int:
+    values = args[0]
     return values.get(0)
 
 
