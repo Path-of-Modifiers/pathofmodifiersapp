@@ -153,15 +153,15 @@ class Plotter:
             (
                 value_in_chaos,
                 time_stamps,
-                most_common_currency_used,
-                conversionValue,
+                value_in_most_common_currency_used,
+                mostCommonCurrencyUsed,
             ) = self._create_plot_data(df)
 
         output_dict = {
             "valueInChaos": value_in_chaos,
             "timeStamp": time_stamps,
-            "mostCommonCurrencyUsed": most_common_currency_used,
-            "conversionValue": conversionValue,
+            "valueInMostCommonCurrencyUsed": value_in_most_common_currency_used,
+            "mostCommonCurrencyUsed": mostCommonCurrencyUsed,
         }
 
         return self.validate(output_dict)
