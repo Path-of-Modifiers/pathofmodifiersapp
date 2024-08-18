@@ -30,7 +30,7 @@ function useGetPlotData(plotQuery: PlotQuery): {
 
   if (isError || leagueError || modifiersError) {
     return { result: undefined, fetchStatus, isError: true };
-  } else if (plotData?.timeStamp !== undefined) {
+  } else if (plotData !== undefined) {
     const data: Datum[] = [];
     for (let i = 0; i < plotData?.timeStamp.length; i++) {
       data.push({
