@@ -1,19 +1,14 @@
 from __future__ import annotations
+
 from fastapi import APIRouter, Depends, HTTPException
-from typing import List, Union
-
-from app.api.deps import get_db
-
-from app.crud import CRUD_currency
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
-
-from sqlalchemy.orm import Session
-from sqlalchemy import text
-
-from app.core.security import verification
+from app.api.deps import get_db
 from app.api.utils import get_delete_return_message
-
+from app.core.security import verification
+from app.crud import CRUD_currency
 
 router = APIRouter()
 
@@ -23,7 +18,7 @@ currency_prefix = "currency"
 
 @router.get(
     "/{currencyId}",
-    response_model=Union[schemas.Currency, List[schemas.Currency]],
+    response_model=schemas.Currency | list[schemas.Currency],
 )
 async def get_currency(
     currencyId: int,
@@ -47,7 +42,7 @@ async def get_currency(
     return currency
 
 
-@router.get("/", response_model=Union[schemas.Currency, List[schemas.Currency]])
+@router.get("/", response_model=schemas.Currency | list[schemas.Currency])
 async def get_all_currencies(
     db: Session = Depends(get_db), verification: bool = Depends(verification)
 ):
@@ -91,10 +86,10 @@ async def get_latest_currency_id(
 
 @router.post(
     "/",
-    response_model=Union[schemas.CurrencyCreate, List[schemas.CurrencyCreate]],
+    response_model=schemas.CurrencyCreate | list[schemas.CurrencyCreate],
 )
 async def create_currency(
-    currency: Union[schemas.CurrencyCreate, List[schemas.CurrencyCreate]],
+    currency: schemas.CurrencyCreate | list[schemas.CurrencyCreate],
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
 ):

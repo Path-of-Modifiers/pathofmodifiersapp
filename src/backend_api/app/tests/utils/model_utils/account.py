@@ -1,14 +1,12 @@
-import asyncio
-from typing import Dict, Tuple
 from sqlalchemy.orm import Session
 
 from app import crud
 from app.core.models.models import Account
 from app.core.schemas.account import AccountCreate
-from app.tests.utils.utils import random_lower_string, random_bool
+from app.tests.utils.utils import random_bool, random_lower_string
 
 
-def create_random_account_dict() -> Dict:
+def create_random_account_dict() -> dict:
     """Create a random account dictionary.
 
     Returns:
@@ -26,7 +24,7 @@ def create_random_account_dict() -> Dict:
     return account
 
 
-async def generate_random_account(db: Session) -> Tuple[Dict, Account]:
+async def generate_random_account(db: Session) -> tuple[dict, Account]:
     """Generates a random account.
 
     Args:

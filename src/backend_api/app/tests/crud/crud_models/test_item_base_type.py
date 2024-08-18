@@ -1,14 +1,15 @@
-from typing import Callable, Dict
+from collections.abc import Callable
+
 import pytest
 
+import app.tests.crud.crud_test_base as test_crud
 from app.crud import CRUD_itemBaseType
 from app.crud.base import CRUDBase
-import app.tests.crud.crud_test_base as test_crud
 from app.tests.utils.model_utils.item_base_type import generate_random_item_base_type
 
 
 @pytest.fixture(scope="module")
-def object_generator_func() -> Callable[[], Dict]:
+def object_generator_func() -> Callable[[], dict]:
     return generate_random_item_base_type
 
 

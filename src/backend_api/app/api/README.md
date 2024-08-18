@@ -53,11 +53,11 @@ Each function serves one of five basic operations: retrieving specific data ``Ge
 The ``Get X`` function retrieves an object by mapping to its primary key. Some primary key attributes are essential and can't be null, while others in the query can be nullable. For ``Get X``, if any or all of the non-essential attributes are null, the query fetches all objects with non-null values for the primary key. It's worth noting that this feature is currently limited to ``Get X`` and isn't available for ``Update X`` and ``Delete X``. However, these capabilities are planned for future releases.
 
 
-## /account 
+## /account
 
 ### [GET] "/account/{accountName}"  Get Account
 
-Get the account by mapping with key and value for "accountName". 
+Get the account by mapping with key and value for "accountName".
 
 Always returns one account.
 
@@ -106,7 +106,7 @@ Always deletes one account.
 ### [GET] "/currency/{currencyId}" Get Currency
 
 Get currency by key and value for "currencyId".
-    
+
 Always returns one currency.
 
 ![get_currency](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/58422369-bc4c-4b25-ac14-7c90a21b8a10)
@@ -128,7 +128,7 @@ Returns the created currency or list of currencies.
 ![create_currency](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/c0daccb6-97e5-4f35-9954-6ff287ac3fce)
 
 
-### [PUT] "/currency/{currencyId}" Update Currency 
+### [PUT] "/currency/{currencyId}" Update Currency
 
 Update a currency by key and value for "currencyId".
 
@@ -203,9 +203,9 @@ Always deletes one item base type.
 
 ### [GET] "/itemModifier/{itemId}" Get Item Modifier
 
-Get item modifier or list of item modifiers by key and 
+Get item modifier or list of item modifiers by key and
 value for "itemId", optional "modifierId" and optional "position".
-    
+
 Dominant key is "itemId".
 
 Returns one or a list of item modifiers.
@@ -230,7 +230,7 @@ Returns the created item modifier or list of item modifiers.
 
 ### [PUT] "/itemModifier/{itemId}" Update Item Modifier
 
-Update an item modifier by key and value for 
+Update an item modifier by key and value for
 "itemId", optional "modifierId" and optional "position".
 
 Dominant key is "itemId".
@@ -241,9 +241,9 @@ Returns the updated item modifier.
 
 ### [DELETE] "/itemModifier/{itemId}" Delete Item Modifier
 
-Delete an item modifier by key and value for 
+Delete an item modifier by key and value for
 "itemId", optional "modifierId" and optional "position".
-    
+
 Dominant key is "itemId".
 
 Returns a message that the item modifier was deleted successfully.
@@ -308,9 +308,9 @@ Always deletes one item.
 
 ### [GET] "/modifier/{modifierId}"  Get Modifier
 
-Get modifier or list of modifiers by key and 
-value for "modifierId" and optional "position" 
-    
+Get modifier or list of modifiers by key and
+value for "modifierId" and optional "position"
+
 Dominant key is "modifierId".
 
 Returns one or a list of modifiers.
@@ -337,7 +337,7 @@ Returns the created modifier or list of modifiers.
 ### [PUT] "/modifier/{modifierId}" Update Modifier
 
 Update a modifier by key and value for "modifierId" and "position".
-    
+
 Dominant key is "modifierId".
 
 Returns the updated modifier.
@@ -347,7 +347,7 @@ Returns the updated modifier.
 
 ### [DELETE] "/modifier/{modifierId}" Delete Modifier
 
-Delete a modifier by key and value for "modifierId" 
+Delete a modifier by key and value for "modifierId"
 and optional "position".
 
 Dominant key is "modifierId".

@@ -1,15 +1,14 @@
-from typing import List, Optional, Union
 from uuid import UUID
 
-from app.core.schemas.user import UsersPublic
 from fastapi import HTTPException
 from pydantic import EmailStr, TypeAdapter
-from sqlalchemy.sql import select, func
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import func, select
 
-from app.core.security import get_password_hash, verify_password
 from app.core.models.models import User as model_User
-from app.core.schemas import UserCreate, UserUpdate, User
+from app.core.schemas import User, UserCreate, UserUpdate
+from app.core.schemas.user import UsersPublic
+from app.core.security import get_password_hash, verify_password
 
 
 class CRUDUser:
@@ -18,7 +17,7 @@ class CRUDUser:
     """
 
     def __init__(self):
-        self.validate = TypeAdapter(Union[User, List[User]]).validate_python
+        self.validate = TypeAdapter(User | list[User]).validate_python
         self.validate_users_public = TypeAdapter(UsersPublic).validate_python
         self.validate_user_create = TypeAdapter(UserCreate).validate_python
 
@@ -33,7 +32,7 @@ class CRUDUser:
             User: Created user
         """
         self.validate_user_create(user_create)
-        
+
         get_user_email_filter = {"email": user_create.email}
         get_user_username_filter = {"username": user_create.username}
 
@@ -153,7 +152,7 @@ class CRUDUser:
         db: Session,
         *,
         filter: dict,
-    ) -> Union[model_User, List[model_User]] | None:
+    ) -> model_User | list[model_User] | None:
         """Get user by filter
 
         Args:
@@ -196,8 +195,8 @@ class CRUDUser:
         self,
         db: Session,
         *,
-        email: Optional[EmailStr] = None,
-        username: Optional[str] = None,
+        email: EmailStr | None = None,
+        username: str | None = None,
         password: str,
     ) -> model_User | None:
         """Authenticate user
@@ -215,7 +214,7 @@ class CRUDUser:
             get_user_filter["email"] = email
         if username:
             get_user_filter["username"] = username
-        
+
         db_user = self.get(db=db, filter=get_user_filter)
         if not db_user or not verify_password(password, db_user.hashedPassword):
             raise HTTPException(
@@ -243,7 +242,7 @@ class CRUDUser:
                 status_code=404,
                 detail="Could not set active. The user with this id does not exist in the system",
             )
-        setattr(db_user, "isActive", active)
+        db_user.isActive = active
         db.add(db_user)
         db.commit()
         db.refresh(db_user)

@@ -1,18 +1,19 @@
-import requests
 import logging
 import os
-import pandas as pd
-from typing import Iterator, Optional
+from collections.abc import Iterator
 
+import pandas as pd
+import requests
+
+from external_data_retrieval.config import settings
 from modifier_data_deposit.modifier_processing_modules import (
     add_regex,
-    check_for_updated_text_rolls,
-    check_for_updated_numerical_rolls,
     check_for_additional_modifier_types,
+    check_for_updated_numerical_rolls,
+    check_for_updated_text_rolls,
 )
 from modifier_data_deposit.utils import df_to_JSON
 from pom_api_authentication import get_basic_authentication, get_super_authentication
-from external_data_retrieval.config import settings
 
 logging.basicConfig(
     filename="modifier_data_deposit.log",
@@ -67,7 +68,7 @@ class DataDepositer:
 
             yield df
 
-    def _get_current_modifiers(self) -> Optional[pd.DataFrame]:
+    def _get_current_modifiers(self) -> pd.DataFrame:
         self.logger.info("Retrieving previously deposited data.")
         headers = {"Authorization": get_basic_authentication()}
         df = pd.read_json(self.url, dtype=str, storage_options=headers)
@@ -104,6 +105,7 @@ class DataDepositer:
         for (_, row_cur), (_, row_new) in zip(
             current_duplicate_modifiers_df.iterrows(),
             duplicate_df.iterrows(),
+            strict=False,
         ):
             put_update = False
             data = df_to_JSON(row_cur, request_method="put")
@@ -139,7 +141,7 @@ class DataDepositer:
                 )
             else:
                 data, put_update = check_for_updated_numerical_rolls(
-                    data=data, row_new=row_new, rolls=rolls, logger=self.logger
+                    data=data, row_new=row_new, logger=self.logger
                 )
 
             data, put_update = check_for_additional_modifier_types(

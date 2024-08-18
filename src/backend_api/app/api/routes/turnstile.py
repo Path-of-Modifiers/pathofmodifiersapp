@@ -1,14 +1,12 @@
 from __future__ import annotations
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-
+import app.core.schemas as schemas
 from app.api.deps import get_db
 from app.core.security import verification
-import app.core.schemas as schemas
-
 from app.validation import turnstile_validation_tool
-
 
 router = APIRouter()
 

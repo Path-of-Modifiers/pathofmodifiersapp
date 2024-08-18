@@ -14,7 +14,7 @@ class UniqueDetector(DetectorBase):
 
         temp_df = df["name"] + df["baseType"]
         for name_baseType in temp_df.unique():
-            if not name_baseType in self.found_items:
+            if name_baseType not in self.found_items:
                 self.found_items[name_baseType] = True
 
         return df

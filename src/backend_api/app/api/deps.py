@@ -1,17 +1,17 @@
 from typing import Annotated
-from fastapi.security import OAuth2PasswordBearer
-import app.core.models.database as _database
+
+import jwt
 from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
-import jwt
-from jwt.exceptions import InvalidTokenError
 
-from app.core.config import settings
+import app.core.models.database as _database
 from app.core import security
+from app.core.config import settings
 from app.core.models.models import User
 from app.core.schemas.token import TokenPayload
-
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/login/access-token"

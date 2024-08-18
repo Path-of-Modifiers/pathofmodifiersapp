@@ -1,18 +1,13 @@
 from __future__ import annotations
+
 from fastapi import APIRouter, Depends, HTTPException
-from typing import List, Union
-
-from app.api.deps import get_db
-
-from app.crud import CRUD_account
-
-import app.core.schemas as schemas
-
 from sqlalchemy.orm import Session
 
-from app.core.security import verification
+import app.core.schemas as schemas
+from app.api.deps import get_db
 from app.api.utils import get_delete_return_message
-
+from app.core.security import verification
+from app.crud import CRUD_account
 
 router = APIRouter()
 
@@ -22,7 +17,7 @@ account_prefix = "account"
 
 @router.get(
     "/{accountName}",
-    response_model=Union[schemas.Account, List[schemas.Account]],
+    response_model=schemas.Account | list[schemas.Account],
 )
 async def get_account(
     accountName: str,
@@ -46,7 +41,7 @@ async def get_account(
     return account
 
 
-@router.get("/", response_model=Union[schemas.Account, List[schemas.Account]])
+@router.get("/", response_model=schemas.Account | list[schemas.Account])
 async def get_all_accounts(
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
@@ -69,10 +64,10 @@ async def get_all_accounts(
 
 @router.post(
     "/",
-    response_model=Union[schemas.AccountCreate, List[schemas.AccountCreate]],
+    response_model=schemas.AccountCreate | list[schemas.AccountCreate],
 )
 async def create_account(
-    account: Union[schemas.AccountCreate, List[schemas.AccountCreate]],
+    account: schemas.AccountCreate | list[schemas.AccountCreate],
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
 ):
