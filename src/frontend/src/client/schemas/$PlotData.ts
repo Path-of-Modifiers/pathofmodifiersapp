@@ -19,15 +19,15 @@ export const $PlotData = {
             },
             isRequired: true,
         },
-        mostCommonCurrencyUsed: {
-            type: 'string',
-            isRequired: true,
-        },
-        conversionValue: {
+        valueInMostCommonCurrencyUsed: {
             type: 'array',
             contains: {
                 type: 'number',
             },
+            isRequired: true,
+        },
+        mostCommonCurrencyUsed: {
+            type: 'string',
             isRequired: true,
         },
     },
