@@ -13,7 +13,7 @@ function formatDateToLocal(date: string): string {
     .toLocaleDateString("en-GB", { month: "short", day: "numeric" })
     .replace(".", "");
 
-  // Format the time as "kl HHmm" (e.g., "kl 1830")
+  // Format the time as e.g., "1830"
   const formattedTime = localDate
     .toLocaleTimeString("en-GB", {
       hour: "2-digit",
