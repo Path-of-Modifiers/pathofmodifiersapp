@@ -1,10 +1,9 @@
 import datetime as _dt
-
 import pydantic as _pydantic
 
 
 class PlotData(_pydantic.BaseModel):
-    valueInChaos: list[float]
-    timeStamp: list[_dt.datetime]
+    valueInChaos: List[float]
+    timeStamp: List[_dt.datetime]
+    valueInMostCommonCurrencyUsed: List[float]
     mostCommonCurrencyUsed: str
-    conversionValue: list[float]
