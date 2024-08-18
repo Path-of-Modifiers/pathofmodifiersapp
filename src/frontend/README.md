@@ -62,39 +62,6 @@ npm run generate-client
 
 - Commit the changes.
 
-## Add hidden files
-
-The frontend contains some hidden files that we do not want to share with the public. These hidden files are located in the src/frontend/hidden_content directory. Below are the commands to import the hidden files and develop or produce with them. Our project includes decoy files in place of the hidden ones, allowing the project to run, but with different behavior.
-
-- Copy the hidden files to `src\frontend\hidden_content\` respective folders.
-
-- Run the git commands below.
-
-Add clean and smudge filters:
-
-```bash
-git config filter.replaceGraphing.clean src/frontend/hidden_content/replaceGraphingCleanScript.sh
-
-git config filter.replaceGraphing.smudge src/frontend/hidden_content/replaceGraphingSmudgeScript.sh
-```
-
-Ignore changes to the hidden files:
-
-```bash
-git update-index --assume-unchanged src/frontend/src/hooks/graphing/utils.tsx
-git update-index --assume-unchanged src/frontend/src/hooks/graphing/processPlottingData.tsx
-```
-
-- To stop syncing the hidden files, for instance to move to another branch:
-
-1. Run the command below
-```bash
-git config -e
-```
-
-2. Remove the lines for filter `replaceGraphing`
-
-
 
 ## Code structure
 

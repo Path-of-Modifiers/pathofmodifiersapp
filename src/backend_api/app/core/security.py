@@ -1,15 +1,14 @@
 import os
 import secrets
+from datetime import datetime, timedelta, timezone
 from typing import Any
+
+import jwt
 from fastapi import Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from datetime import datetime, timedelta, timezone
 from passlib.context import CryptContext
-import jwt
-
 
 from app.core.config import settings
-
 
 PRIVATIZE_API = os.getenv("PRIVATIZE_API")
 FIRST_SUPERUSER = os.getenv("FIRST_SUPERUSER")

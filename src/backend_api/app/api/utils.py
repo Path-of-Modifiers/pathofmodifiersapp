@@ -1,9 +1,6 @@
-from typing import Dict
-
-
 def get_delete_return_message(
     prefix: str,
-    mapping: Dict[str, str],
+    mapping: dict[str, str],
 ) -> str:
     """Returns a message indicating the object was deleted successfully.
 

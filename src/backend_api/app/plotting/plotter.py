@@ -1,17 +1,17 @@
-from sqlalchemy.orm import Session
-from sqlalchemy import select
-from sqlalchemy.sql.expression import Select
-from pydantic import TypeAdapter
-from fastapi import HTTPException
-from typing import Dict, Union
 import pandas as pd
+from fastapi import HTTPException
+from pydantic import TypeAdapter
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+from sqlalchemy.sql.expression import Select
 
-from .schemas import PlotQuery, PlotData
-from app.plotting.utils import summarize_function, find_conversion_value
 from app.core.models.models import Currency as model_Currency
 from app.core.models.models import Item as model_Item
-from app.core.models.models import ItemModifier as model_ItemModifier
 from app.core.models.models import ItemBaseType as model_ItemBaseType
+from app.core.models.models import ItemModifier as model_ItemModifier
+from app.plotting.utils import find_conversion_value, summarize_function
+
+from .schemas import PlotData, PlotQuery
 
 
 class Plotter:
@@ -145,7 +145,7 @@ class Plotter:
         time_stamps: pd.Series,
         value_in_most_common_currency_used: pd.Series,
         mostCommonCurrencyUsed: str,
-    ) -> Dict[str, Union[pd.Series, str]]:
+    ) -> dict[str, pd.Series | str]:
         # Convert to dict
         plot_data = {
             "valueInChaos": value_in_chaos,

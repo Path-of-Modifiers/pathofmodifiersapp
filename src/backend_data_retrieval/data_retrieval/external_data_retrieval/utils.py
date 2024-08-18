@@ -1,7 +1,7 @@
-from typing import Callable
-from functools import wraps
-import time
 import os
+import time
+from collections.abc import Callable
+from functools import wraps
 
 
 def async_timing_tracker(func: Callable) -> Callable:

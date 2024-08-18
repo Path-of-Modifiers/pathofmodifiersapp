@@ -1,14 +1,12 @@
-from typing import List, Tuple
 import pandas as pd
 import requests
 
 
 class PoeNinjaCurrencyAPIHandler:
     def __init__(self, url: str) -> None:
-
         self.url = url
 
-    def _combine_currency_data(self, currencies: List, currency_details: List) -> List:
+    def _combine_currency_data(self, currencies: list, currency_details: list) -> list:
         """
         Combines the currency data.
         """
@@ -25,7 +23,7 @@ class PoeNinjaCurrencyAPIHandler:
         )
         return combined_currency_data_df
 
-    def _json_to_df(self, currencies: List) -> pd.DataFrame:
+    def _json_to_df(self, currencies: list) -> pd.DataFrame:
         df = pd.json_normalize(currencies)
 
         return df

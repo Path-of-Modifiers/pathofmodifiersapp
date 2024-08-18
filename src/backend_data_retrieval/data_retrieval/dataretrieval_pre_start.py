@@ -1,11 +1,10 @@
 import logging
 
-from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 import requests
+from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 
 from external_data_retrieval.config import settings
 from pom_api_authentication import get_super_authentication
-
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(

@@ -1,27 +1,28 @@
-import requests
-import time
-import logging
 import asyncio
-import aiohttp
+import logging
 import threading
-import pandas as pd
-from typing import List, Union, Dict, Iterator, Optional
-from concurrent.futures import ThreadPoolExecutor, Future
+import time
+from collections.abc import Iterator
+from concurrent.futures import Future, ThreadPoolExecutor
 
-from pom_api_authentication import get_super_authentication
+import aiohttp
+import pandas as pd
+import requests
+
+from external_data_retrieval.config import settings
 from external_data_retrieval.detectors.unique_detector import (
+    UniqueArmourDetector,
+    UniqueDetector,
     UniqueJewelDetector,
     UniqueJewelleryDetector,
-    UniqueArmourDetector,
     UniqueWeaponDetector,
-    UniqueDetector,
 )
-from external_data_retrieval.config import settings
 from external_data_retrieval.utils import (
-    sync_timing_tracker,
-    ProgramTooSlowException,
     ProgramRunTooLongException,
+    ProgramTooSlowException,
+    sync_timing_tracker,
 )
+from pom_api_authentication import get_super_authentication
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
@@ -44,12 +45,7 @@ class APIHandler:
         logger_parent: logging.Logger,
         n_wanted_items: int = 100,
         n_unique_wanted_items: int = 5,
-        item_detectors: List[Union[UniqueDetector]] = [
-            UniqueJewelDetector(),
-            UniqueJewelleryDetector(),
-            UniqueArmourDetector(),
-            UniqueWeaponDetector(),
-        ],
+        item_detectors: list[UniqueDetector] | None = None,
     ) -> None:
         """
         Parameters:
@@ -57,8 +53,15 @@ class APIHandler:
             :param auth_token: (str) A string containing OAuth2 auth token.
             :param n_wanted_items: (int) The number of items the program should search for before quitting.
             :param n_unique_wanted_items: (int) The number of different type of items the program should search for before quitin.
-            :param item_detectors: (List[ItemDetector]) A list of `ItemDetector` instances.
+            :param item_detectors: (list[ItemDetector]) A list of `ItemDetector` instances.
         """
+        if item_detectors is None:
+            item_detectors = [
+                UniqueArmourDetector(),
+                UniqueJewelDetector(),
+                UniqueJewelleryDetector(),
+                UniqueWeaponDetector(),
+            ]
         self.url = url
         self.auth_token = auth_token
         self.headers["Authorization"] = "Bearer " + auth_token
@@ -77,7 +80,7 @@ class APIHandler:
         self._program_too_slow = False
         self.time_of_launch = time.perf_counter()
 
-    def _json_to_df(self, stashes: List) -> Optional[pd.DataFrame]:
+    def _json_to_df(self, stashes: list) -> pd.DataFrame:
         df_temp = pd.json_normalize(stashes)
         if "items" not in df_temp.columns:
             return None
@@ -95,7 +98,7 @@ class APIHandler:
 
         return df
 
-    def _check_stashes(self, stashes: List) -> pd.DataFrame:
+    def _check_stashes(self, stashes: list) -> pd.DataFrame:
         """
         Parameters:
             :param stashes: (list) A list of stash objects
@@ -169,7 +172,7 @@ class APIHandler:
         session: aiohttp.ClientSession,
         waiting_for_next_id_lock: threading.Lock,
         mini_batch_size: int,
-    ) -> List:
+    ) -> list:
         """
         Because we are restricted by the `next_change_id`, queueing get requests is non trivial.
         We therefore send a non-blocking get request and retrieve the `next_change_id` from the headers
@@ -210,7 +213,7 @@ class APIHandler:
                         )
                         response.raise_for_status()
                         self.logger.critical(
-                            f"The above response code did not result in an error, discarding the response for safety"
+                            "The above response code did not result in an error, discarding the response for safety"
                         )
                         return []
 
@@ -287,7 +290,6 @@ class APIHandler:
         try:
             while True:
                 while self.requests_since_last_checkpoint < mini_batch_size:
-
                     stashes = await self._send_n_recursion_requests(
                         5, session, waiting_for_next_id_lock, mini_batch_size
                     )
@@ -370,7 +372,7 @@ class APIHandler:
         A batch size is determined by n, and the mini batch size (currently hard coded to be 30).
         """
         df = pd.DataFrame()
-        for i in range(n):
+        for _ in range(n):
             start_time = time.perf_counter()
             df = self._process_stream(stashes_ready_event, stash_lock, df)
             end_time = time.perf_counter()
@@ -391,7 +393,7 @@ class APIHandler:
 
     def initialize_data_stream_threads(
         self, executor: ThreadPoolExecutor, listeners: int, has_crashed: bool
-    ) -> Dict[Future, str] | Future:
+    ) -> dict[Future, str] | Future:
         """
         Creates the communication tools between threads and store them for later use.
         Gets the latest change id, and initializes the listeners.
@@ -418,7 +420,7 @@ class APIHandler:
 
         print("Initializing follow stream threads")
         futures = {}
-        for i in range(listeners):
+        for _ in range(listeners):
             future = executor.submit(
                 self._run_async_follow_stream,
                 stashes_ready_event,

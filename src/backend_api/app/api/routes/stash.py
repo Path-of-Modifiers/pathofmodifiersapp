@@ -1,18 +1,13 @@
 from __future__ import annotations
+
 from fastapi import APIRouter, Depends, HTTPException
-from typing import List, Union
-
-from app.api.deps import get_db
-
-from app.crud import CRUD_stash
-
-import app.core.schemas as schemas
-
 from sqlalchemy.orm import Session
 
-from app.core.security import verification
+import app.core.schemas as schemas
+from app.api.deps import get_db
 from app.api.utils import get_delete_return_message
-
+from app.core.security import verification
+from app.crud import CRUD_stash
 
 router = APIRouter()
 
@@ -22,7 +17,7 @@ stash_prefix = "stash"
 
 @router.get(
     "/{stashId}",
-    response_model=Union[schemas.Stash, List[schemas.Stash]],
+    response_model=schemas.Stash | list[schemas.Stash],
 )
 async def get_stash(
     stashId: str,
@@ -46,7 +41,7 @@ async def get_stash(
     return stash
 
 
-@router.get("/", response_model=Union[schemas.Stash, List[schemas.Stash]])
+@router.get("/", response_model=schemas.Stash | list[schemas.Stash])
 async def get_all_stashes(
     db: Session = Depends(get_db), verification: bool = Depends(verification)
 ):
@@ -68,10 +63,10 @@ async def get_all_stashes(
 
 @router.post(
     "/",
-    response_model=Union[schemas.StashCreate, List[schemas.StashCreate]],
+    response_model=schemas.StashCreate | list[schemas.StashCreate],
 )
 async def create_stash(
-    stash: Union[schemas.StashCreate, List[schemas.StashCreate]],
+    stash: schemas.StashCreate | list[schemas.StashCreate],
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
 ):

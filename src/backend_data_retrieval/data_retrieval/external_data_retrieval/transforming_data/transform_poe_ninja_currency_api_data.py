@@ -1,13 +1,14 @@
-import requests
 import logging
-import pandas as pd
 
+import pandas as pd
+import requests
+
+from external_data_retrieval.config import settings
 from external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_ninja_currency_api import (
     PoeNinjaCurrencyAPIHandler,
 )
 from modifier_data_deposit.utils import insert_data
 from pom_api_authentication import get_super_authentication
-from external_data_retrieval.config import settings
 
 
 def load_currency_data():

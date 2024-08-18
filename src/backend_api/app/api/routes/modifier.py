@@ -1,18 +1,13 @@
 from __future__ import annotations
+
 from fastapi import APIRouter, Depends, HTTPException
-from typing import List, Optional, Union
-
-from app.api.deps import get_db
-
-from app.crud import CRUD_modifier
-
-import app.core.schemas as schemas
-
 from sqlalchemy.orm import Session
 
-from app.core.security import verification
+import app.core.schemas as schemas
+from app.api.deps import get_db
 from app.api.utils import get_delete_return_message
-
+from app.core.security import verification
+from app.crud import CRUD_modifier
 
 router = APIRouter()
 
@@ -22,7 +17,7 @@ modifier_prefix = "modifier"
 
 @router.get(
     "/{modifierId}",
-    response_model=Union[schemas.Modifier, List[schemas.Modifier]],
+    response_model=schemas.Modifier | list[schemas.Modifier],
 )
 async def get_modifier(
     modifierId: int,
@@ -49,7 +44,7 @@ async def get_modifier(
     return modifier
 
 
-@router.get("/", response_model=Union[schemas.Modifier, List[schemas.Modifier]])
+@router.get("/", response_model=schemas.Modifier | list[schemas.Modifier])
 async def get_all_modifiers(
     db: Session = Depends(get_db), verification: bool = Depends(verification)
 ):
@@ -71,9 +66,8 @@ async def get_all_modifiers(
 
 @router.get(
     "/grouped_modifiers_by_effect/",
-    response_model=Union[
-        schemas.GroupedModifierByEffect, List[schemas.GroupedModifierByEffect]
-    ],
+    response_model=schemas.GroupedModifierByEffect
+    | list[schemas.GroupedModifierByEffect],
 )
 async def get_grouped_modifier_by_effect(
     db: Session = Depends(get_db), verification: bool = Depends(verification)
@@ -98,10 +92,10 @@ async def get_grouped_modifier_by_effect(
 
 @router.post(
     "/",
-    response_model=Union[schemas.ModifierCreate, List[schemas.ModifierCreate]],
+    response_model=schemas.ModifierCreate | list[schemas.ModifierCreate],
 )
 async def create_modifier(
-    modifier: Union[schemas.ModifierCreate, List[schemas.ModifierCreate]],
+    modifier: schemas.ModifierCreate | list[schemas.ModifierCreate],
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
 ):

@@ -1,47 +1,46 @@
-from typing import Optional, List
 import pydantic as _pydantic
 
 from app.core.schemas.item import Influences
 
 
 class ItemSpecs(_pydantic.BaseModel):
-    name: Optional[str] = None
-    identified: Optional[bool] = None
-    minIlvl: Optional[int] = None
-    maxIlvl: Optional[int] = None
-    rarity: Optional[str] = None
-    corrupted: Optional[bool] = None
-    delve: Optional[bool] = None
-    fractured: Optional[bool] = None
-    synthesized: Optional[bool] = None
-    replica: Optional[bool] = None
-    influences: Optional[Influences] = None
-    searing: Optional[bool] = None
-    tangled: Optional[bool] = None
-    isRelic: Optional[bool] = None
-    foilVariation: Optional[int] = None
+    name: str | None = None
+    identified: bool | None = None
+    minIlvl: int | None = None
+    maxIlvl: int | None = None
+    rarity: str | None = None
+    corrupted: bool | None = None
+    delve: bool | None = None
+    fractured: bool | None = None
+    synthesized: bool | None = None
+    replica: bool | None = None
+    influences: Influences | None = None
+    searing: bool | None = None
+    tangled: bool | None = None
+    isRelic: bool | None = None
+    foilVariation: int | None = None
 
 
 class BaseSpecs(_pydantic.BaseModel):
-    baseType: Optional[str] = None
-    category: Optional[str] = None
-    subCategory: Optional[str] = None
+    baseType: str | None = None
+    category: str | None = None
+    subCategory: str | None = None
 
 
 class ModifierLimitations(_pydantic.BaseModel):
-    maxRoll: Optional[float] = None
-    minRoll: Optional[float] = None
-    textRoll: Optional[int] = None
+    maxRoll: float | None = None
+    minRoll: float | None = None
+    textRoll: int | None = None
 
 
 class WantedModifier(_pydantic.BaseModel):
     modifierId: int
     position: int
-    modifierLimitations: Optional[ModifierLimitations] = None
+    modifierLimitations: ModifierLimitations | None = None
 
 
 class PlotQuery(_pydantic.BaseModel):
     league: str
     itemSpecifications: ItemSpecs
-    baseSpecifications: Optional[BaseSpecs] = None
-    wantedModifiers: List[WantedModifier]
+    baseSpecifications: BaseSpecs | None = None
+    wantedModifiers: list[WantedModifier]

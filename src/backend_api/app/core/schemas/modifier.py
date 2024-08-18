@@ -1,5 +1,5 @@
 import datetime as _dt
-from typing import List, Optional, Union
+
 import pydantic as _pydantic
 
 
@@ -8,36 +8,36 @@ class _BaseModifier(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
     position: int
-    minRoll: Optional[float] = None
-    maxRoll: Optional[float] = None
-    textRolls: Optional[str] = None
-    static: Optional[bool] = None
+    minRoll: float | None = None
+    maxRoll: float | None = None
+    textRolls: str | None = None
+    static: bool | None = None
     effect: str
-    regex: Optional[str] = None
-    implicit: Optional[bool] = None
-    explicit: Optional[bool] = None
-    delve: Optional[bool] = None
-    fractured: Optional[bool] = None
-    synthesized: Optional[bool] = None
-    unique: Optional[bool] = None
-    corrupted: Optional[bool] = None
-    enchanted: Optional[bool] = None
-    veiled: Optional[bool] = None
+    regex: str | None = None
+    implicit: bool | None = None
+    explicit: bool | None = None
+    delve: bool | None = None
+    fractured: bool | None = None
+    synthesized: bool | None = None
+    unique: bool | None = None
+    corrupted: bool | None = None
+    enchanted: bool | None = None
+    veiled: bool | None = None
 
 
 class GroupedModifierByEffect(_pydantic.BaseModel):
-    modifierId: List[int]
-    position: List[int]
-    minRoll: List[Union[float, None]]
-    maxRoll: List[Union[float, None]]
-    textRolls: List[Union[str, None]]
+    modifierId: list[int]
+    position: list[int]
+    minRoll: list[float | None]
+    maxRoll: list[float | None]
+    textRolls: list[str | None]
     effect: str
-    static: List[Union[bool, None]]
+    static: list[bool | None]
 
 
 # Properties to receive on modifier creation
 class ModifierCreate(_BaseModifier):
-    modifierId: Optional[int] = None
+    modifierId: int | None = None
 
 
 # Properties to receive on update
@@ -49,7 +49,7 @@ class ModifierUpdate(_BaseModifier):
 class ModifierInDBBase(_BaseModifier):
     modifierId: int
     createdAt: _dt.datetime
-    updatedAt: Optional[_dt.datetime] = None
+    updatedAt: _dt.datetime | None = None
 
 
 # Properties to return to client

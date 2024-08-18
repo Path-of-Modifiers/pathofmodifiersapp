@@ -1,19 +1,14 @@
 from __future__ import annotations
+
 from fastapi import APIRouter, Depends, HTTPException
-from typing import List, Union
-
-from app.api.deps import get_db
-
-from app.crud import CRUD_item
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
-
-from sqlalchemy.orm import Session
-from sqlalchemy import text
-
-from app.core.security import verification
+from app.api.deps import get_db
 from app.api.utils import get_delete_return_message
-
+from app.core.security import verification
+from app.crud import CRUD_item
 
 router = APIRouter()
 
@@ -23,7 +18,7 @@ item_prefix = "item"
 
 @router.get(
     "/{itemId}",
-    response_model=Union[schemas.Item, List[schemas.Item]],
+    response_model=schemas.Item | list[schemas.Item],
 )
 async def get_item(
     itemId: int,
@@ -70,7 +65,7 @@ async def get_latest_item_id(
         return 1
 
 
-@router.get("/", response_model=Union[schemas.Item, List[schemas.Item]])
+@router.get("/", response_model=schemas.Item | list[schemas.Item])
 async def get_all_items(
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
@@ -93,10 +88,10 @@ async def get_all_items(
 
 @router.post(
     "/",
-    response_model=Union[schemas.ItemCreate, List[schemas.ItemCreate]],
+    response_model=schemas.ItemCreate | list[schemas.ItemCreate],
 )
 async def create_item(
-    item: Union[schemas.ItemCreate, List[schemas.ItemCreate]],
+    item: schemas.ItemCreate | list[schemas.ItemCreate],
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
 ):

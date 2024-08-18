@@ -1,30 +1,28 @@
-import pytest
-from typing import Dict, List,  Union, Callable, Tuple
+from collections.abc import Callable
 from copy import deepcopy
-from sqlalchemy.orm import Session
+
+import pytest
 from fastapi import HTTPException
+from sqlalchemy.orm import Session
 
 from app.crud.base import (
     CRUDBase,
     ModelType,
 )
 from app.tests.crud.crud_test_base import TestCRUD
-from app.core.models.database import insp
 from app.tests.utils.utils import random_based_on_type
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
 class TestCascade(TestCRUD):
-   
-
     @pytest.mark.asyncio
     async def test_cascade_delete(
         self,
         db: Session,
         crud_instance: CRUDBase,
-        crud_deps_instances: List[CRUDBase],
+        crud_deps_instances: list[CRUDBase],
         object_generator_func_w_deps: Callable[
-            [], Tuple[Dict, ModelType, List[Union[Dict, ModelType]]]
+            [], tuple[dict, ModelType, list[dict | ModelType]]
         ],
     ) -> None:
         """
@@ -77,9 +75,9 @@ class TestCascade(TestCRUD):
         self,
         db: Session,
         crud_instance: CRUDBase,
-        crud_deps_instances: List[CRUDBase],
+        crud_deps_instances: list[CRUDBase],
         object_generator_func_w_deps: Callable[
-            [], Tuple[Dict, ModelType, List[Union[Dict, ModelType]]]
+            [], tuple[dict, ModelType, list[dict | ModelType]]
         ],
     ) -> None:
         """

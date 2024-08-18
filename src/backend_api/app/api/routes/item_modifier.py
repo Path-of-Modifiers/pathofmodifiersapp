@@ -1,18 +1,13 @@
 from __future__ import annotations
+
 from fastapi import APIRouter, Depends, HTTPException
-from typing import List, Optional, Union
-
-from app.api.deps import get_db
-
-from app.crud import CRUD_itemModifier
-
-import app.core.schemas as schemas
-
 from sqlalchemy.orm import Session
 
-from app.core.security import verification
+import app.core.schemas as schemas
+from app.api.deps import get_db
 from app.api.utils import get_delete_return_message
-
+from app.core.security import verification
+from app.crud import CRUD_itemModifier
 
 router = APIRouter()
 
@@ -22,12 +17,12 @@ item_modifier_prefix = "itemModifier"
 
 @router.get(
     "/{itemId}",
-    response_model=Union[schemas.ItemModifier, List[schemas.ItemModifier]],
+    response_model=schemas.ItemModifier | list[schemas.ItemModifier],
 )
 async def get_item_modifier(
     itemId: int,
-    modifierId: Optional[int] = None,
-    position: Optional[int] = None,
+    modifierId: int | None = None,
+    position: int | None = None,
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
 ):
@@ -55,7 +50,7 @@ async def get_item_modifier(
     return itemModifier
 
 
-@router.get("/", response_model=Union[schemas.ItemModifier, List[schemas.ItemModifier]])
+@router.get("/", response_model=schemas.ItemModifier | list[schemas.ItemModifier])
 async def get_all_item_modifiers(
     db: Session = Depends(get_db), verification: bool = Depends(verification)
 ):
@@ -77,10 +72,10 @@ async def get_all_item_modifiers(
 
 @router.post(
     "/",
-    response_model=Union[schemas.ItemModifierCreate, List[schemas.ItemModifierCreate]],
+    response_model=schemas.ItemModifierCreate | list[schemas.ItemModifierCreate],
 )
 async def create_item_modifier(
-    itemModifier: Union[schemas.ItemModifierCreate, List[schemas.ItemModifierCreate]],
+    itemModifier: schemas.ItemModifierCreate | list[schemas.ItemModifierCreate],
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
 ):
@@ -137,7 +132,7 @@ async def update_item_modifier(
 @router.delete("/{itemId}")
 async def delete_item_modifier(
     itemId: int,
-    modifierId: Optional[int] = None,
+    modifierId: int | None = None,
     db: Session = Depends(get_db),
     verification: bool = Depends(verification),
 ):

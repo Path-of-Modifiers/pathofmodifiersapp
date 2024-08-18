@@ -1,14 +1,16 @@
 import math
-from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
+from collections.abc import Awaitable, Callable
+from typing import Any
+
+import pytest
 from fastapi import Response
 from fastapi.testclient import TestClient
-import pytest
 from sqlalchemy.orm import Session
 
-from app.crud.base import ModelType
 from app.core.config import settings
-from app.tests.utils.utils import is_courotine_function
+from app.crud.base import ModelType
 from app.tests.base_test import BaseTest
+from app.tests.utils.utils import is_courotine_function
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
@@ -16,13 +18,11 @@ class TestAPI(BaseTest):
     async def _create_object_api(
         self,
         db: Session,
-        create_random_object_func: Union[
-            Callable[[], Tuple[Dict, ModelType, Dict]], Any
-        ],
+        create_random_object_func: Callable[[], tuple[dict, ModelType, dict]] | Any,
         client: TestClient,
         route_name: str,
-        superuser_headers: Dict[str, str],
-    ) -> Tuple[Dict, Response]:
+        superuser_headers: dict[str, str],
+    ) -> tuple[dict, Response]:
         """Create an object using the API
 
         Also tests correct response codes and if the object created is
@@ -64,17 +64,19 @@ class TestAPI(BaseTest):
 
     def _compare_dicts(
         self,
-        dict1: Dict,
-        dict2: Dict,
-        ignore: Optional[List[str]] = [],
+        dict1: dict,
+        dict2: dict,
+        ignore: list[str] | None = None,
     ) -> None:
         """Compare two dictionaries
 
         Args:
             dict1 (Dict): Dictionary 1
             dict2 (Dict): Dictionary 2
-            ignore (Optional[List[str]], optional): Keys to ignore. Defaults to [].
+            ignore (list[str] | optional): Keys to ignore. Defaults to [].
         """
+        if ignore is None:
+            ignore = []
         for key in dict1:
             if key in ignore:
                 continue
@@ -91,12 +93,12 @@ class TestAPI(BaseTest):
     async def test_create_instance(
         self,
         client: TestClient,
-        superuser_headers: Dict[str, str],
+        superuser_headers: dict[str, str],
         route_name: str,
         db: Session,
-        create_random_object_func: Union[
-            Callable[[Session], Awaitable[Dict]], Callable[[], Dict]
-        ],
+        create_random_object_func: (
+            Callable[[Session], Awaitable[dict]] | Callable[[], dict]
+        ),
     ) -> None:
         """Test create instance
 
@@ -118,11 +120,11 @@ class TestAPI(BaseTest):
     async def test_get_instance(
         self,
         client: TestClient,
-        superuser_headers: Dict[str, str],
+        superuser_headers: dict[str, str],
         db: Session,
         unique_identifier: str,
-        ignore_test_columns: List[str],
-        object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
+        ignore_test_columns: list[str],
+        object_generator_func: Callable[[], tuple[dict, ModelType]],
         route_name: str,
     ) -> None:
         """Test get instance
@@ -157,7 +159,7 @@ class TestAPI(BaseTest):
     def test_get_instance_not_found(
         self,
         client: TestClient,
-        superuser_headers: Dict[str, str],
+        superuser_headers: dict[str, str],
         model_name: str,
         route_name: str,
         unique_identifier: str,
@@ -188,7 +190,7 @@ class TestAPI(BaseTest):
         self,
         client: TestClient,
         db: Session,
-        object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
+        object_generator_func: Callable[[], tuple[dict, ModelType]],
         get_high_permissions: bool,
         route_name: str,
         unique_identifier: str,
@@ -224,9 +226,9 @@ class TestAPI(BaseTest):
     async def test_get_instances(
         self,
         client: TestClient,
-        superuser_headers: Dict[str, str],
+        superuser_headers: dict[str, str],
         db: Session,
-        object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
+        object_generator_func: Callable[[], tuple[dict, ModelType]],
         route_name: str,
     ) -> None:
         """Test get instances
@@ -242,7 +244,9 @@ class TestAPI(BaseTest):
             route_name (str): Route name
         """
         object_count = 5
-        await self._create_multiple_objects_crud(db, object_generator_func, object_count)
+        await self._create_multiple_objects_crud(
+            db, object_generator_func, object_count
+        )
         response = client.get(
             f"{settings.API_V1_STR}/{route_name}/",
             auth=superuser_headers,
@@ -255,13 +259,13 @@ class TestAPI(BaseTest):
     async def test_update_instance(
         self,
         client: TestClient,
-        superuser_headers: Dict[str, str],
+        superuser_headers: dict[str, str],
         db: Session,
-        object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
+        object_generator_func: Callable[[], tuple[dict, ModelType]],
         route_name: str,
         unique_identifier: str,
         update_request_params: bool,
-        ignore_test_columns: List[str],
+        ignore_test_columns: list[str],
     ) -> None:
         """Test update instance
 
@@ -326,8 +330,8 @@ class TestAPI(BaseTest):
         self,
         client: TestClient,
         db: Session,
-        superuser_headers: Dict[str, str],
-        object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
+        superuser_headers: dict[str, str],
+        object_generator_func: Callable[[], tuple[dict, ModelType]],
         route_name: str,
         model_name: str,
         update_request_params: bool,
@@ -400,9 +404,9 @@ class TestAPI(BaseTest):
         self,
         client: TestClient,
         db: Session,
-        object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
+        object_generator_func: Callable[[], tuple[dict, ModelType]],
         route_name: str,
-        superuser_headers: Dict[str, str],
+        superuser_headers: dict[str, str],
         unique_identifier: str,
         update_request_params: bool,
     ) -> None:
@@ -464,9 +468,9 @@ class TestAPI(BaseTest):
     async def test_delete_instance(
         self,
         client: TestClient,
-        superuser_headers: Dict[str, str],
+        superuser_headers: dict[str, str],
         db: Session,
-        object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
+        object_generator_func: Callable[[], tuple[dict, ModelType]],
         route_name: str,
         unique_identifier: str,
     ) -> None:
@@ -502,7 +506,7 @@ class TestAPI(BaseTest):
     async def test_delete_instance_not_found(
         self,
         client: TestClient,
-        superuser_headers: Dict[str, str],
+        superuser_headers: dict[str, str],
         route_name: str,
         model_name: str,
         unique_identifier: str,
@@ -533,7 +537,7 @@ class TestAPI(BaseTest):
         self,
         client: TestClient,
         db: Session,
-        object_generator_func: Union[Callable[[], Tuple[Dict, ModelType]]],
+        object_generator_func: Callable[[], tuple[dict, ModelType]],
         route_name: str,
         unique_identifier: str,
     ) -> None:
