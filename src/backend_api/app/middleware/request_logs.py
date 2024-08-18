@@ -1,5 +1,6 @@
 import http
 import time
+
 from fastapi import Request
 
 from app.logger import logger
@@ -24,7 +25,7 @@ async def log_request_middleware(request: Request, call_next):
     start_time = time.time()
     response = await call_next(request)
     process_time = (time.time() - start_time) * 1000
-    formatted_process_time = "{0:.2f}".format(process_time)
+    formatted_process_time = f"{process_time:.2f}"
     host = getattr(getattr(request, "client", None), "host", None)
     port = getattr(getattr(request, "client", None), "port", None)
     try:

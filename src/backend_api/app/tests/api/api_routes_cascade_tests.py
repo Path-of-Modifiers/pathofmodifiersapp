@@ -1,13 +1,12 @@
 from copy import deepcopy
-from typing import Dict, List, Optional, Tuple, Union
-from fastapi.testclient import TestClient
+
 import pytest
-from typing import Dict, List, Optional, Tuple, Union
+from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
-from app.tests.api.api_routes_test_base import TestAPI
 from app.crud.base import ModelType
+from app.tests.api.api_routes_test_base import TestAPI
 from app.tests.utils.utils import random_based_on_type
 
 
@@ -17,15 +16,15 @@ class TestCascadeAPI(TestAPI):
     async def test_cascade_delete(
         self,
         db: Session,
-        object_generator_func_w_deps: Tuple[
-            Dict, ModelType, Optional[List[Union[Dict, ModelType]]]
+        object_generator_func_w_deps: tuple[
+            dict, ModelType, list[dict | ModelType] | None
         ],
         client: TestClient,
         route_name: str,
         unique_identifier: str,
-        ignore_test_columns: List[str],
-        superuser_headers: Dict,
-        api_deps_instances: List[List[str]],
+        ignore_test_columns: list[str],
+        superuser_headers: dict,
+        api_deps_instances: list[list[str]],
     ) -> None:
         """Test cascade delete function for the API.
 
@@ -40,7 +39,7 @@ class TestCascadeAPI(TestAPI):
             db (Session): DB session
 
             object_generator_func_w_deps
-            (Tuple[ Dict, ModelType, Optional[List[Union[Dict, ModelType]]] ]):
+            (Tuple[ Dict, ModelType, List[Union[Dict, ModelType]]] ]):
             Object generator function with dependencies
 
             client (TestClient): FastAPI test client
@@ -59,9 +58,7 @@ class TestCascadeAPI(TestAPI):
         # We cannot rely on errors to tell us if a table has restricted deletes,
         # this is because the item is already deleted by the time we are notified
         # that it was not allowed.
-        restricted_tables = self._find_restricted_delete(
-            object_out, deps
-        )
+        restricted_tables = self._find_restricted_delete(object_out, deps)
 
         # Number of dependencies is half the length of deps list (since it is a list of pairs)
         n_deps = len(deps) // 2
@@ -123,16 +120,16 @@ class TestCascadeAPI(TestAPI):
     async def test_cascade_update(
         self,
         db: Session,
-        object_generator_func_w_deps: Tuple[
-            Dict, ModelType, Optional[List[Union[Dict, ModelType]]]
+        object_generator_func_w_deps: tuple[
+            dict, ModelType, list[dict | ModelType] | None
         ],
         client: TestClient,
         route_name: str,
         unique_identifier: str,
-        update_request_params_deps: List[str],
-        ignore_test_columns: List[str],
-        superuser_headers: Dict,
-        api_deps_instances: List[List[str]],
+        update_request_params_deps: list[str],
+        ignore_test_columns: list[str],
+        superuser_headers: dict,
+        api_deps_instances: list[list[str]],
     ) -> None:
         """Test cascade update function for the API.
 
@@ -147,7 +144,7 @@ class TestCascadeAPI(TestAPI):
             db (Session): DB session
 
             object_generator_func_w_deps
-            (Tuple[ Dict, ModelType, Optional[List[Union[Dict, ModelType]]] ]):
+            (Tuple[ Dict, ModelType, List[Union[Dict, ModelType]]] ]):
             Object generator function with dependencies
 
             client (TestClient): FastAPI test client
@@ -167,9 +164,7 @@ class TestCascadeAPI(TestAPI):
             retrieve_dependencies=True,
         )
 
-        cascading_tables = self._find_cascading_update(
-            object_out, deps
-        )
+        cascading_tables = self._find_cascading_update(object_out, deps)
 
         n_deps = len(deps) // 2
         for i in range(n_deps):

@@ -1,7 +1,8 @@
-import sqlalchemy as _sql
-from sqlalchemy.dialects.postgresql import JSONB, UUID
-from sqlalchemy import func
 import uuid
+
+import sqlalchemy as _sql
+from sqlalchemy import func
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 
 from app.core.models.database import Base
 
@@ -15,7 +16,6 @@ Base.update = update
 
 
 class Currency(Base):
-
     __tablename__ = "currency"
 
     currencyId = _sql.Column(
@@ -32,7 +32,6 @@ class Currency(Base):
 
 
 class ItemBaseType(Base):
-
     __tablename__ = "item_base_type"
 
     baseType = _sql.Column(_sql.String(), nullable=False, primary_key=True, index=True)
@@ -46,7 +45,6 @@ class ItemBaseType(Base):
 
 
 class Item(Base):
-
     __tablename__ = "item"
 
     itemId = _sql.Column(
@@ -99,7 +97,6 @@ class Item(Base):
 
 
 class Modifier(Base):
-
     __tablename__ = "modifier"
 
     modifierId = _sql.Column(
@@ -134,11 +131,11 @@ class Modifier(Base):
     __table_args__ = (
         _sql.CheckConstraint(
             """
-            CASE 
-                WHEN (modifier.static = TRUE) 
+            CASE
+                WHEN (modifier.static = TRUE)
                 THEN (
                         (modifier."minRoll" IS NULL AND modifier."maxRoll" IS NULL)
-                        AND modifier."textRolls" IS NULL 
+                        AND modifier."textRolls" IS NULL
                         AND modifier.regex IS NULL
                     )
                 ELSE (
@@ -182,7 +179,6 @@ class Modifier(Base):
 
 
 class ItemModifier(Base):
-
     __tablename__ = "item_modifier"
 
     itemId = _sql.Column(
@@ -212,7 +208,6 @@ class ItemModifier(Base):
 
 
 class Stash(Base):
-
     __tablename__ = "stash"
 
     stashId = _sql.Column(_sql.String(), primary_key=True, index=True, nullable=False)
@@ -232,7 +227,6 @@ class Stash(Base):
 
 # POE account API model
 class Account(Base):
-
     __tablename__ = "account"
 
     accountName = _sql.Column(
@@ -268,7 +262,6 @@ class User(Base):
 
 
 class TemporaryHashedUserIP(Base):
-
     __tablename__ = "temporary_hashed_user_ip"
 
     hashedIp = _sql.Column(

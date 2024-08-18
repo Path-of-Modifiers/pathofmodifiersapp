@@ -1,6 +1,6 @@
-from typing import Optional
-import pydantic as _pydantic
 import datetime as _dt
+
+import pydantic as _pydantic
 
 
 # Shared item modifier props
@@ -10,7 +10,7 @@ class _BaseItemModifier(_pydantic.BaseModel):
     itemId: int
     modifierId: int
     position: int
-    roll: Optional[float] = None
+    roll: float | None = None
 
 
 # Properties to receive on item modifier creation
@@ -26,7 +26,7 @@ class ItemModifierUpdate(_BaseItemModifier):
 # Properties shared by models stored in DB
 class ItemModifierInDBBase(_BaseItemModifier):
     createdAt: _dt.datetime
-    updatedAt: Optional[_dt.datetime] = None
+    updatedAt: _dt.datetime | None = None
 
 
 # Properties to return to client

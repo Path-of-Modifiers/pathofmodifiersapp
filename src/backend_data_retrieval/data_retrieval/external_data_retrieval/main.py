@@ -1,35 +1,33 @@
 import logging
-import os
-import time
-import pandas as pd
-from typing import Dict
 from concurrent.futures import (
-    ThreadPoolExecutor,
-    Future,
-    wait,
-    FIRST_EXCEPTION,
     ALL_COMPLETED,
+    FIRST_EXCEPTION,
+    Future,
+    ThreadPoolExecutor,
+    wait,
 )
 
-from pom_api_authentication import get_super_authentication, get_basic_authentication
+import pandas as pd
+
+from external_data_retrieval.config import settings
 from external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
     APIHandler,
 )
 from external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_ninja_currency_api import (
     PoeNinjaCurrencyAPIHandler,
 )
-from external_data_retrieval.transforming_data.transform_poe_ninja_currency_api_data import (
-    TransformPoeNinjaCurrencyAPIData,
-)
 from external_data_retrieval.transforming_data.transform_poe_api_data import (
     PoeAPIDataTransformer,
     UniquePoeAPIDataTransformer,
 )
-from external_data_retrieval.config import settings
-from external_data_retrieval.utils import (
-    ProgramTooSlowException,
-    ProgramRunTooLongException,
+from external_data_retrieval.transforming_data.transform_poe_ninja_currency_api_data import (
+    TransformPoeNinjaCurrencyAPIData,
 )
+from external_data_retrieval.utils import (
+    ProgramRunTooLongException,
+    ProgramTooSlowException,
+)
+from pom_api_authentication import get_basic_authentication, get_super_authentication
 
 logger = logging.getLogger("external_data_retrieval")
 logging.basicConfig(
@@ -54,10 +52,9 @@ class ContiniousDataRetrieval:
     def __init__(
         self,
         items_per_batch: int,
-        data_transformers: Dict[str, PoeAPIDataTransformer],
+        data_transformers: dict[str, PoeAPIDataTransformer],
         logger: logging.Logger,
     ):
-
         self.data_transformers = {
             key: data_transformers[key](main_logger=logger) for key in data_transformers
         }
@@ -80,7 +77,7 @@ class ContiniousDataRetrieval:
 
         self.logger = logger
 
-    def _get_modifiers(self) -> Dict[str, pd.DataFrame]:
+    def _get_modifiers(self) -> dict[str, pd.DataFrame]:
         headers = {"Authorization": get_basic_authentication()}
         modifier_df = pd.read_json(
             self.modifier_url, dtype=str, storage_options=headers
@@ -104,17 +101,17 @@ class ContiniousDataRetrieval:
                 ]
         return modifier_dfs
 
-    def _categorize_new_items(self, df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
+    def _categorize_new_items(self, df: pd.DataFrame) -> dict[str, pd.DataFrame]:
         split_dfs = {}
 
         # TODO not fully exhaustive yet, needs to be updated over time
-        category_priority = [
-            # "synthesized",
-            # "fractured",
-            # "delve",
-            # "veiled",
-            "unique",
-        ]
+        # category_priority = [
+        # "synthesized",
+        # "fractured",
+        # "delve",
+        # "veiled",
+        # "unique",
+        # ]
         # Needs to take priority, see nebulis and rational doctrine
         # not_synth_mask = df["synthesized"].isna()
         # split_dfs["synthesized"] = df.loc[~not_synth_mask]
@@ -139,7 +136,7 @@ class ContiniousDataRetrieval:
 
     def _initialize_data_stream_threads(
         self, executor: ThreadPoolExecutor, listeners: int, has_crashed: bool = False
-    ) -> Dict[Future, str]:
+    ) -> dict[Future, str]:
         return self.poe_api_handler.initialize_data_stream_threads(
             executor, listeners, has_crashed
         )
@@ -205,7 +202,7 @@ class ContiniousDataRetrieval:
 
                             wait(futures, return_when=ALL_COMPLETED)
                             raise ProgramRunTooLongException
-                        except:
+                        except Exception:
                             follow_future = executor.submit(
                                 self._follow_data_dump_stream
                             )

@@ -1,15 +1,16 @@
-from sqlalchemy.orm import Session
-from sqlalchemy import select
-from sqlalchemy.sql.expression import Select
-from pydantic import TypeAdapter
-from fastapi import HTTPException
 import pandas as pd
+from fastapi import HTTPException
+from pydantic import TypeAdapter
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+from sqlalchemy.sql.expression import Select
 
-from .schemas import PlotQuery, PlotData
 from app.core.models.models import Currency as model_Currency
 from app.core.models.models import Item as model_Item
-from app.core.models.models import ItemModifier as model_ItemModifier
 from app.core.models.models import ItemBaseType as model_ItemBaseType
+from app.core.models.models import ItemModifier as model_ItemModifier
+
+from .schemas import PlotData, PlotQuery
 
 
 class Plotter:
@@ -149,9 +150,12 @@ class Plotter:
                 status_code=404, detail="No data matching criteria found."
             )
         else:
-            value_in_chaos, time_stamps, most_common_currency_used, conversionValue = (
-                self._create_plot_data(df)
-            )
+            (
+                value_in_chaos,
+                time_stamps,
+                most_common_currency_used,
+                conversionValue,
+            ) = self._create_plot_data(df)
 
         output_dict = {
             "valueInChaos": value_in_chaos,

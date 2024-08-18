@@ -1,28 +1,28 @@
 # From FastAPI Fullstack Template https://github.com/fastapi/full-stack-fastapi-template/blob/master/backend/app/api/routes/login.py
-from typing import Any
-from fastapi import APIRouter, Depends, HTTPException
 import uuid
+from typing import Any
+
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.api.deps import CurrentUser, SessionDep, get_current_active_superuser
 from app.core.config import settings
-from app.core.security import get_password_hash, verify_password
 from app.core.models.models import User
-from app.crud import CRUD_user
 from app.core.schemas import (
     Message,
-    UserPublic,
-    UsersPublic,
+    UpdatePassword,
     UserCreate,
+    UserPublic,
+    UserRegister,
+    UsersPublic,
     UserUpdate,
     UserUpdateMe,
-    UserRegister,
-    UpdatePassword,
 )
+from app.core.security import get_password_hash, verify_password
+from app.crud import CRUD_user
 from app.utils.user import (
     generate_new_account_email,
     send_email,
 )
-
 
 router = APIRouter()
 

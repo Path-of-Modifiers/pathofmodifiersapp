@@ -1,19 +1,17 @@
-import asyncio
-from typing import Dict, Tuple, Optional
 from sqlalchemy.orm import Session
 
 from app import crud
 from app.core.models.models import Modifier
 from app.core.schemas.modifier import ModifierCreate
 from app.tests.utils.utils import (
-    random_lower_string,
-    random_int,
     random_bool,
     random_float,
+    random_int,
+    random_lower_string,
 )
 
 
-def create_random_modifier_dict() -> Dict:
+def create_random_modifier_dict() -> dict:
     """Create a random modifier dictionary.
 
     Returns:
@@ -77,8 +75,8 @@ def create_random_modifier_dict() -> Dict:
 
 async def generate_random_modifier(
     db: Session,
-    # main_key: Optional[int] = None
-) -> Tuple[Dict, Modifier]:
+    # main_key: int = None
+) -> tuple[dict, Modifier]:
     """Create a random modifier.
 
     Args:

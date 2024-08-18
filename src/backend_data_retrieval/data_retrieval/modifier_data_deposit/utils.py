@@ -1,8 +1,9 @@
+import logging
+from typing import Any
+
+import pandas as pd
 import requests
 from requests.auth import HTTPBasicAuth
-import logging
-import pandas as pd
-from typing import List, Dict, Any, Union, Optional
 
 from pom_api_authentication import get_basic_authentication, get_super_authentication
 
@@ -21,7 +22,7 @@ def _chunks(lst, n):
         yield lst[i : i + n]
 
 
-def remove_empty_fields(json_in: List[Dict[str, str]]) -> List[Dict[str, Any]]:
+def remove_empty_fields(json_in: list[dict[str, str]]) -> list[dict[str, Any]]:
     json_out = []
     for obj in json_in:
         filtered_obj = {key: obj[key] for key in obj if obj[key] != ""}
@@ -32,8 +33,8 @@ def remove_empty_fields(json_in: List[Dict[str, str]]) -> List[Dict[str, Any]]:
 
 
 def df_to_JSON(
-    df: Union[pd.DataFrame, pd.Series], request_method: str
-) -> Union[List[Dict[str, Any]], Dict]:
+    df: pd.DataFrame | pd.Series, request_method: str
+) -> list[dict[str, Any]] | dict:
     if isinstance(df, pd.Series):
         df = df.to_frame().transpose()
     with pd.option_context("future.no_silent_downcasting", True):
@@ -59,8 +60,8 @@ def insert_data(
     *,
     url: str,
     table_name: str,
-    authentication: Optional[HTTPBasicAuth] = get_super_authentication(),
-    logger: Optional[logging.Logger] = None,
+    authentication: HTTPBasicAuth = get_super_authentication(),
+    logger: logging.Logger = None,
 ) -> None:
     if df.empty:
         return None

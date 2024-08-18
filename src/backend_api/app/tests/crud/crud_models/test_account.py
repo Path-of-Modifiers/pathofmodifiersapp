@@ -1,14 +1,15 @@
-from typing import Dict, Callable
+from collections.abc import Callable
+
 import pytest
 
+import app.tests.crud.crud_test_base as test_crud
 from app.crud import CRUD_account
 from app.crud.base import CRUDBase
-import app.tests.crud.crud_test_base as test_crud
 from app.tests.utils.model_utils.account import generate_random_account
 
 
 @pytest.fixture(scope="module")
-def object_generator_func() -> Callable[[], Dict]:
+def object_generator_func() -> Callable[[], dict]:
     return generate_random_account
 
 

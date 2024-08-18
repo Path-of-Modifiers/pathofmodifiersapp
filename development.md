@@ -40,6 +40,24 @@ This will trigger the containers in `docker-compose.override.yml` file.
 5. Tables can be found under:
    - `'custom name'>Databases>${POSTGRES_DB}>Schemas>public>Tables`
 
+### Run tests
+
+To run tests, you must have docker container `backend` running.
+
+Also, run the command for starting docker test container:
+
+```bash
+docker compose -f docker-compose.test.yml up -d
+```
+
+To run the tests, run this command:
+
+```bash
+docker compose exec -T backend pytest
+```
+
+Tests should now be completed.
+
 ## Alembic migrations
 
 This section describes how to migrate changes made in database models to the database postgres server. Migrations are done inside the `backend` container, which runs our API.
@@ -89,10 +107,10 @@ You can find a file `.pre-commit-config.yaml` with configurations at the root of
 
 After having the pre-commit tool installed and available, you need to "install" it in the local repository, so that it runs automatically before each commit.
 
-Using Poetry, you could do it with:
+In root directory `.`, using Poetry, you could do it with:
 
 ```bash
-poetry run pre-commit install
+poetry -C src/backend_api run pre-commit install --config src/.pre-commit-config.yaml
 ```
 
 Now whenever you try to commit, e.g. with:
@@ -107,10 +125,12 @@ Then you can git add the modified/fixed files again and now you can commit.
 
 ### Running pre-commit hooks manually
 
-You can also run pre-commit manually on all the files. To do it using Poetry:
+You can also run pre-commit manually on all the files.
+
+In root directory `.`, using Poetry, you could do it with:
 
 ```bash
-poetry run pre-commit run --all-files
+poetry -C src/backend_api run pre-commit run --all-files --config src/.pre-commit-config.yaml
 ```
 
 ### URLs

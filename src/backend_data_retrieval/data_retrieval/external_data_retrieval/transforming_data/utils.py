@@ -1,4 +1,5 @@
 import logging
+
 import pandas as pd
 
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -29,7 +30,9 @@ def get_rolls(
 
     The method contains assertions to ensure successful steps.
     """
-    df.loc[:, "modifier"] = df["modifier"].replace(
+    df.loc[:, "modifier"] = df[
+        "modifier"
+    ].replace(
         r"\\n|\n", " ", regex=True
     )  # Replaces newline with a space, so that it does not mess up the regex and matches modifiers in the `modifier` table
 
@@ -134,7 +137,7 @@ def get_rolls(
         assert failed_df.empty
     except AssertionError:
         logger.critical(
-            f"Failed to add rolls to listed modifiers, this likely means the modifier is legacy."
+            "Failed to add rolls to listed modifiers, this likely means the modifier is legacy."
         )
         logger.critical(
             f"These items have missing modifiers: {failed_df['name'].unique().tolist()}"

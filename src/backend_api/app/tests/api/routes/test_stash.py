@@ -1,17 +1,18 @@
-from typing import Awaitable, Callable, Dict, List, Tuple, Union
+from collections.abc import Awaitable, Callable
+
 import pytest
 from sqlalchemy.orm import Session
 
 import app.tests.api.api_routes_cascade_tests as test_cascade_api
+from app.api.routes import account_prefix, stash_prefix
+from app.core.models.models import Account, Stash
+from app.crud.base import ModelType
+from app.tests.crud.cascade_tests import TestCascade as UtilTestCascadeCRUD
+from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
 from app.tests.utils.model_utils.stash import (
     create_random_stash_dict,
     generate_random_stash,
 )
-from app.crud.base import ModelType
-from app.api.routes import stash_prefix, account_prefix
-from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
-from app.tests.crud.cascade_tests import TestCascade as UtilTestCascadeCRUD
-from app.core.models.models import Account, Stash
 from app.tests.utils.utils import get_model_table_name, get_model_unique_identifier
 
 
@@ -43,7 +44,7 @@ def update_request_params() -> bool:
 
 
 @pytest.fixture(scope="module")
-def ignore_test_columns() -> List[str]:
+def ignore_test_columns() -> list[str]:
     """Ignore these columns when testing the model
 
     updatedAt and createdAt are ignored because currently, the API returns
@@ -78,13 +79,13 @@ def get_high_permissions() -> bool:
 
 
 @pytest.fixture(scope="module")
-def object_generator_func() -> Callable[[], Tuple[Dict, ModelType]]:
+def object_generator_func() -> Callable[[], tuple[dict, ModelType]]:
     return generate_random_stash
 
 
 @pytest.fixture(scope="module")
-def create_random_object_func() -> Callable[[Session], Awaitable[Dict]]:
-    async def create_object(db: Session) -> Dict:
+def create_random_object_func() -> Callable[[Session], Awaitable[dict]]:
+    async def create_object(db: Session) -> dict:
         return await create_random_stash_dict(db)
 
     return create_object
@@ -92,18 +93,18 @@ def create_random_object_func() -> Callable[[Session], Awaitable[Dict]]:
 
 @pytest.fixture(scope="module")
 def object_generator_func_w_deps() -> (
-    Callable[[], Tuple[Dict, Stash, List[Union[Dict, Account]]]]
+    Callable[[], tuple[dict, Stash, list[dict | Account]]]
 ):
     def generate_random_stash_w_deps(
         db,
-    ) -> Callable[[], Tuple[Dict, Stash, List[Union[Dict, Account]]]]:
+    ) -> Callable[[], tuple[dict, Stash, list[dict | Account]]]:
         return generate_random_stash(db, retrieve_dependencies=True)
 
     return generate_random_stash_w_deps
 
 
 @pytest.fixture(scope="module")
-def api_deps_instances() -> List[List[str]]:
+def api_deps_instances() -> list[list[str]]:
     """Fixture for API dependencies instances.
 
     Dependencies in return list needs to be in correct order.
@@ -119,7 +120,7 @@ def api_deps_instances() -> List[List[str]]:
 
 
 @pytest.fixture(scope="module")
-def update_request_params_deps() -> List[str]:
+def update_request_params_deps() -> list[str]:
     return []
 
 

@@ -1,17 +1,13 @@
 import bcrypt
-
-
 from fastapi import HTTPException
-from sqlalchemy import Select, select
 from sqlalchemy.orm import Session
 
-
+from app.core.models.models import TemporaryHashedUserIP as model_TemporaryHashedUserIP
 from app.core.schemas.hashed_user_ip import (
-    HashedUserIpCreate,
     HashedUserIp,
+    HashedUserIpCreate,
     HashedUserIpQuery,
 )
-from app.core.models.models import TemporaryHashedUserIP as model_TemporaryHashedUserIP
 from app.crud.base import CRUDBase
 
 

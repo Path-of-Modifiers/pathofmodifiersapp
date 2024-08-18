@@ -1,20 +1,20 @@
-import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 
 def plot(filename):
     df = pd.read_csv(filename)
 
     time_diff = df["time_diff"].to_numpy()
-    max_time_diff = max(time_diff)
+    # max_time_diff = max(time_diff)
 
-    start_time = df.loc[1:, "start_time"].to_numpy()
-    n_data_points = len(start_time)
-    end_time = df.loc[: n_data_points - 1, "end_time"].to_numpy()
+    # start_time = df.loc[1:, "start_time"].to_numpy()
+    # n_data_points = len(start_time)
+    # end_time = df.loc[: n_data_points - 1, "end_time"].to_numpy()
 
-    hand_off_time = abs(end_time - start_time)
-    max_hand_off_time = max(hand_off_time)
+    # hand_off_time = abs(end_time - start_time)
+    # max_hand_off_time = max(hand_off_time)
 
     # time_diff_divisible_by_10 = time_diff[: 10 * (len(time_diff) // 10)]
     # time_diff_wo_transformation = np.array(
@@ -48,7 +48,7 @@ def plot(filename):
 
 
 def main():
-    plot("_process_stream/10.csv")
+    plot("_process_stream/data.csv")
     # plot("_start_new_mini_expedition/loading_headers_first_1.csv")
     plt.show()
     return 0

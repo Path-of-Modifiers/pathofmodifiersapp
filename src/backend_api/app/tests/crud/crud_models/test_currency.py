@@ -1,11 +1,12 @@
-from sqlalchemy.orm import Session
-from typing import Callable, Dict, Generator
-import pytest
+from collections.abc import Callable, Generator
 
-from app.crud import CRUD_currency
-from app.core.models.database import engine
-from app.crud.base import CRUDBase
+import pytest
+from sqlalchemy.orm import Session
+
 import app.tests.crud.crud_test_base as test_crud
+from app.core.models.database import engine
+from app.crud import CRUD_currency
+from app.crud.base import CRUDBase
 from app.tests.utils.model_utils.currency import generate_random_currency
 
 
@@ -18,7 +19,7 @@ def db() -> Generator:
 
 
 @pytest.fixture(scope="module")
-def object_generator_func() -> Callable[[], Dict]:
+def object_generator_func() -> Callable[[], dict]:
     return generate_random_currency
 
 
