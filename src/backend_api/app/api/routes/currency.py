@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
 from app.api.deps import get_db
 from app.api.utils import get_delete_return_message
-from app.core.security import verification
 from app.crud import CRUD_currency
 
 router = APIRouter()
@@ -23,18 +22,12 @@ currency_prefix = "currency"
 async def get_currency(
     currencyId: int,
     db: Session = Depends(get_db),
-    verification: bool = Depends(verification),
 ):
     """
     Get currency by key and value for "currencyId".
 
     Always returns one currency.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {get_currency.__name__}",
-        )
 
     currency_map = {"currencyId": currencyId}
     currency = await CRUD_currency.get(db=db, filter=currency_map)
@@ -44,18 +37,13 @@ async def get_currency(
 
 @router.get("/", response_model=schemas.Currency | list[schemas.Currency])
 async def get_all_currencies(
-    db: Session = Depends(get_db), verification: bool = Depends(verification)
+    db: Session = Depends(get_db),
 ):
     """
     Get all currencies.
 
     Returns a list of all currencies.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {get_all_currencies.__name__}",
-        )
 
     all_currencies = await CRUD_currency.get(db=db)
 
@@ -64,18 +52,13 @@ async def get_all_currencies(
 
 @router.get("/latest_currency_id/", response_model=int, tags=["latest_currency_id"])
 async def get_latest_currency_id(
-    db: Session = Depends(get_db), verification: bool = Depends(verification)
+    db: Session = Depends(get_db),
 ):
     """
     Get the latest currencyId
 
     Can only be used safely on an empty table or directly after an insertion.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {get_latest_currency_id.__name__}",
-        )
 
     result = db.execute(text("""SELECT MAX("currencyId") FROM currency""")).fetchone()
     if result:
@@ -91,18 +74,12 @@ async def get_latest_currency_id(
 async def create_currency(
     currency: schemas.CurrencyCreate | list[schemas.CurrencyCreate],
     db: Session = Depends(get_db),
-    verification: bool = Depends(verification),
 ):
     """
     Create one or a list of currencies.
 
     Returns the created currency or list of currencies.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {create_currency.__name__}",
-        )
 
     return await CRUD_currency.create(db=db, obj_in=currency)
 
@@ -112,18 +89,12 @@ async def update_currency(
     currencyId: int,
     currency_update: schemas.CurrencyUpdate,
     db: Session = Depends(get_db),
-    verification: bool = Depends(verification),
 ):
     """
     Update a currency by key and value for "currencyId".
 
     Returns the updated currency.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {update_currency.__name__}",
-        )
 
     currency_map = {"currencyId": currencyId}
     currency = await CRUD_currency.get(
@@ -138,7 +109,6 @@ async def update_currency(
 async def delete_currency(
     currencyId: int,
     db: Session = Depends(get_db),
-    verification: bool = Depends(verification),
 ):
     """
     Delete a currency by key and value for "currencyId".
@@ -146,11 +116,6 @@ async def delete_currency(
     Returns a message indicating the currency was deleted.
     Always deletes one currency.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {delete_currency.__name__}",
-        )
 
     currency_map = {"currencyId": currencyId}
     await CRUD_currency.remove(db=db, filter=currency_map)
