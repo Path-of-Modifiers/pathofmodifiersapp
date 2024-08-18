@@ -1,3 +1,4 @@
+import os
 import requests
 import time
 import logging
@@ -460,4 +461,5 @@ class APIHandler:
                 current_time = time.perf_counter()
                 time_since_launch = current_time - self.time_of_launch
                 if time_since_launch > 3600:
-                    raise ProgramRunTooLongException
+                    print("Program has run for more than an hour, shutting down.")
+                    os._exit(0)
