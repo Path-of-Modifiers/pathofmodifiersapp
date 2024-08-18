@@ -60,7 +60,7 @@ services:
       - "8881:80"
 
   backend-data-retrieval:
-    restart: "no"
+    restart: always
     ports:
       - "8889:8889"
     volumes:
