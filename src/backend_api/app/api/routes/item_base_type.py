@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
 from app.api.deps import get_db
 from app.api.utils import get_delete_return_message
-from app.core.security import verification
 from app.crud import CRUD_itemBaseType
 
 router = APIRouter()
@@ -22,18 +21,12 @@ item_base_type_prefix = "itemBaseType"
 async def get_item_base_type(
     baseType: str,
     db: Session = Depends(get_db),
-    verification: bool = Depends(verification),
 ):
     """
     Get item base type by key and value for "baseType".
 
     Always returns one item base type.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {get_item_base_type.__name__}",
-        )
 
     item_base_type_map = {"baseType": baseType}
     itemBaseType = await CRUD_itemBaseType.get(db=db, filter=item_base_type_map)
@@ -43,18 +36,13 @@ async def get_item_base_type(
 
 @router.get("/", response_model=schemas.ItemBaseType | list[schemas.ItemBaseType])
 async def get_all_item_base_types(
-    db: Session = Depends(get_db), verification: bool = Depends(verification)
+    db: Session = Depends(get_db),
 ):
     """
     Get all item base types.
 
     Returns a list of all item base types.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {get_all_item_base_types.__name__}",
-        )
 
     all_item_base_types = await CRUD_itemBaseType.get(db=db)
 
@@ -63,18 +51,13 @@ async def get_all_item_base_types(
 
 @router.get("/baseTypes/", response_model=schemas.BaseType | list[schemas.BaseType])
 async def get_base_types(
-    db: Session = Depends(get_db), verification: bool = Depends(verification)
+    db: Session = Depends(get_db),
 ):
     """
     Get all base types.
 
     Returns a list of all base types.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {get_base_types.__name__}",
-        )
 
     all_base_types = await CRUD_itemBaseType.get_base_types(db=db)
 
@@ -87,18 +70,12 @@ async def get_base_types(
 )
 async def get_unique_categories(
     db: Session = Depends(get_db),
-    verification: bool = Depends(verification),
 ):
     """
     Get all unique categories.
 
     Returns a list of all categories.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {get_unique_categories.__name__}",
-        )
 
     all_categories = await CRUD_itemBaseType.get_unique_item_categories(db=db)
 
@@ -111,18 +88,13 @@ async def get_unique_categories(
     | list[schemas.ItemBaseTypeSubCategory],
 )
 async def get_unique_sub_categories(
-    db: Session = Depends(get_db), verification: bool = Depends(verification)
+    db: Session = Depends(get_db),
 ):
     """
     Get all unique sub categories.
 
     Returns a list of all sub categories.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {get_unique_sub_categories.__name__}",
-        )
 
     all_sub_categories = await CRUD_itemBaseType.get_unique_item_sub_categories(db=db)
 
@@ -136,18 +108,12 @@ async def get_unique_sub_categories(
 async def create_item_base_type(
     itemBaseType: schemas.ItemBaseTypeCreate | list[schemas.ItemBaseTypeCreate],
     db: Session = Depends(get_db),
-    verification: bool = Depends(verification),
 ):
     """
     Create one or a list of new item base types.
 
     Returns the created item base type or list of item base types.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {create_item_base_type.__name__}",
-        )
 
     return await CRUD_itemBaseType.create(db=db, obj_in=itemBaseType)
 
@@ -157,18 +123,12 @@ async def update_item_base_type(
     baseType: str,
     item_base_type_update: schemas.ItemBaseTypeUpdate,
     db: Session = Depends(get_db),
-    verification: bool = Depends(verification),
 ):
     """
     Update an item base type by key and value for "baseType".
 
     Returns the updated item base type.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {update_item_base_type.__name__}",
-        )
 
     item_base_type_map = {"baseType": baseType}
     itemBaseType = await CRUD_itemBaseType.get(
@@ -185,7 +145,6 @@ async def update_item_base_type(
 async def delete_item_base_type(
     baseType: str,
     db: Session = Depends(get_db),
-    verification: bool = Depends(verification),
 ):
     """
     Delete an item base type by key and value for "baseType".
@@ -193,11 +152,6 @@ async def delete_item_base_type(
     Returns a message that the item base type was deleted successfully.
     Always deletes one item base type.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {delete_item_base_type.__name__}",
-        )
 
     item_base_type_map = {"baseType": baseType}
     await CRUD_itemBaseType.remove(db=db, filter=item_base_type_map)
