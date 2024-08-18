@@ -4,7 +4,11 @@ from pydantic import TypeAdapter
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import Select
+from pydantic import TypeAdapter
+from fastapi import HTTPException
+import pandas as pd
 
+from app.plotting.utils import summarize_function, find_conversion_value
 from app.core.models.models import Currency as model_Currency
 from app.core.models.models import Item as model_Item
 from app.core.models.models import ItemBaseType as model_ItemBaseType
@@ -111,30 +115,72 @@ class Plotter:
         return intersection_statement
 
     def _create_plot_data(self, df: pd.DataFrame) -> tuple:
+        # Sort values by date
         df.sort_values(by="createdAt", inplace=True)
+
+        # Find most common currency
         most_common_currency_used = df.tradeName.mode()[0]
+
+        # Find value in chaos
         value_in_chaos = df["currencyAmount"] * df["valueInChaos"]
-        conversionValue = value_in_chaos.copy(deep=True)
+
+        # Get timestamps of when the items were retrieved
         time_stamps = df["createdAt"]
 
-        most_common_currency_used_unique_ids = df.loc[
-            df["tradeName"] == most_common_currency_used, "currencyId"
-        ].unique()
+        # Find conversion value between chaos and most common currency
+        conversion_value = find_conversion_value(
+            df,
+            value_in_chaos=value_in_chaos,
+            most_common_currency_used=most_common_currency_used,
+        )
+        value_in_most_common_currency_used = value_in_chaos / conversion_value
 
-        for id in most_common_currency_used_unique_ids:
-            most_common_currency_value = df.loc[
-                df["currencyId"] == id, "valueInChaos"
-            ].iloc[0]
-            most_common_currency_timestamp = df.loc[
-                df["currencyId"] == id, "currencyCreatedAt"
-            ].iloc[0]
+        return (
+            value_in_chaos,
+            time_stamps,
+            value_in_most_common_currency_used,
+            most_common_currency_used,
+        )
 
-            current_timestamp_mask = (
-                df["currencyCreatedAt"] == most_common_currency_timestamp
-            )
-            conversionValue[current_timestamp_mask] = most_common_currency_value
+    def _summarize_plot_data(
+        self,
+        value_in_chaos: pd.Series,
+        time_stamps: pd.Series,
+        value_in_most_common_currency_used: pd.Series,
+        mostCommonCurrencyUsed: str,
+    ) -> Dict[str, Union[pd.Series, str]]:
+        # Convert to dict
+        plot_data = {
+            "valueInChaos": value_in_chaos,
+            "timeStamp": time_stamps,
+            "valueInMostCommonCurrencyUsed": value_in_most_common_currency_used,
+            "mostCommonCurrencyUsed": mostCommonCurrencyUsed,
+        }
+        # Then as a dataframe
+        df = pd.DataFrame(plot_data)
 
-        return value_in_chaos, time_stamps, most_common_currency_used, conversionValue
+        # Group by hour
+        grouped_by_date_df = df.groupby(pd.Grouper(key="timeStamp", axis=0, freq="h"))
+
+        # Aggregate by custom function
+        agg_by_date_df = grouped_by_date_df.agg(
+            {
+                "valueInChaos": lambda values: summarize_function(values, 2),
+                "valueInMostCommonCurrencyUsed": lambda values: summarize_function(
+                    values, 2
+                ),
+            }
+        )
+        agg_by_date_df = agg_by_date_df.loc[~agg_by_date_df["valueInChaos"].isna()]
+
+        # Update the values in the dict
+        plot_data["timeStamp"] = agg_by_date_df.index
+        plot_data["valueInChaos"] = agg_by_date_df["valueInChaos"].values
+        plot_data["valueInMostCommonCurrencyUsed"] = agg_by_date_df[
+            "valueInMostCommonCurrencyUsed"
+        ].values
+
+        return plot_data
 
     async def plot(self, db: Session, *, query: PlotQuery) -> PlotData:
         statement = self._init_query(query)
@@ -153,15 +199,15 @@ class Plotter:
             (
                 value_in_chaos,
                 time_stamps,
-                most_common_currency_used,
-                conversionValue,
+                value_in_most_common_currency_used,
+                mostCommonCurrencyUsed,
             ) = self._create_plot_data(df)
 
-        output_dict = {
-            "valueInChaos": value_in_chaos,
-            "timeStamp": time_stamps,
-            "mostCommonCurrencyUsed": most_common_currency_used,
-            "conversionValue": conversionValue,
-        }
+        plot_data = self._summarize_plot_data(
+            value_in_chaos,
+            time_stamps,
+            value_in_most_common_currency_used,
+            mostCommonCurrencyUsed,
+        )
 
-        return self.validate(output_dict)
+        return self.validate(plot_data)
