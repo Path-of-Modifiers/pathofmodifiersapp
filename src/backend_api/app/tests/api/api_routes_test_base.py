@@ -404,19 +404,9 @@ class TestAPI(BaseTest):
                 json=update_object_dict,
             )
 
-        print("TRANE MONGO MANNEN", response.status_code)
-
         assert response.status_code == 404
 
         content = response.json()
-
-        print("DETAIL MONGO MANNEN", content["detail"])
-        print(
-            "DETAIL MONGO MANNEN",
-            get_no_obj_matching_query_msg(
-                filter=update_obj_out_pk_map, model_table_name=model_table_name
-            ).message,
-        )
 
         assert (
             content["detail"]
@@ -528,14 +518,6 @@ class TestAPI(BaseTest):
         assert response.status_code == 200
         content = response.json()
         update_obj_pk_map = self._create_primary_key_map(update_object_out)
-        print("CONTENT my LORD", content)
-        print(
-            "MESSAGE MY LORD BEAST",
-            get_delete_return_msg(
-                model_table_name=model_table_name,
-                mapping={unique_identifier: update_obj_pk_map[unique_identifier]},
-            ).message,
-        )
         assert (
             content
             == get_delete_return_msg(
