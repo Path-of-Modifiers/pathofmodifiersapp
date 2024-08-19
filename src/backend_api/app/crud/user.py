@@ -5,6 +5,11 @@ from pydantic import EmailStr, TypeAdapter
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func, select
 
+from app.api.api_message_util import (
+    get_bad_login_credentials_msg,
+    get_db_obj_already_exists_msg,
+    get_no_obj_matching_query_msg,
+)
 from app.core.models.models import User as model_User
 from app.core.schemas import User, UserCreate, UserUpdate
 from app.core.schemas.user import UsersPublic
@@ -21,6 +26,34 @@ class CRUDUser:
         self.validate_users_public = TypeAdapter(UsersPublic).validate_python
         self.validate_user_create = TypeAdapter(UserCreate).validate_python
 
+    def _check_user_exists_raise(
+        self, db: Session, *, filter: dict[str, str], user_in: User | None = None
+    ):
+        """Check if object exists, raise an exception if it does
+
+        Args:
+            db (Session): DB session
+            filter (dict): Filter map
+            user_in (User, optional): User object. Defaults to None.
+        """
+        existing_user = self.get(db=db, filter=filter)
+        if user_in:
+            if (
+                existing_user
+                and existing_user.username != user_in.username
+                and existing_user.email != user_in.email
+            ):
+                raise HTTPException(
+                    status_code=409,
+                    detail=get_db_obj_already_exists_msg("user", filter).message,
+                )
+        else:
+            if existing_user:
+                raise HTTPException(
+                    status_code=409,
+                    detail=get_db_obj_already_exists_msg("user", filter).message,
+                )
+
     def create_user(self, db: Session, *, user_create: UserCreate) -> model_User:
         """Create a new user
 
@@ -36,18 +69,8 @@ class CRUDUser:
         get_user_email_filter = {"email": user_create.email}
         get_user_username_filter = {"username": user_create.username}
 
-        user_email = self.get(db=db, filter=get_user_email_filter)
-        if user_email:
-            raise HTTPException(
-                status_code=400,
-                detail="The user with this email already exists in the system.",
-            )
-        user_username = self.get(db=db, filter=get_user_username_filter)
-        if user_username:
-            raise HTTPException(
-                status_code=400,
-                detail="The user with this username already exists in the system.",
-            )
+        self._check_user_exists_raise(db=db, filter=get_user_email_filter)
+        self._check_user_exists_raise(db=db, filter=get_user_username_filter)
 
         # Hash the password
         hashed_password = get_password_hash(user_create.password)
@@ -102,33 +125,14 @@ class CRUDUser:
         Returns:
             Any: Updated user
         """
-        db_user = self.get(db=db, filter={"userId": user_id})
+        db_user = db.query(model_User).filter_by(userId=user_id).first()
 
         if user_in.email:
-            get_user_email_filter = {"email": user_in.email}
-            existing_user_with_email = self.get(db=db, filter=get_user_email_filter)
-
-            if (
-                existing_user_with_email
-                and existing_user_with_email.userId != db_user.userId
-            ):
-                raise HTTPException(
-                    status_code=409,
-                    detail="User with this email already exists",
-                )
+            email_filter = {"email": user_in.email}
+            self._check_user_exists_raise(db=db, filter=email_filter, user_in=user_in)
         if user_in.username:
             get_user_username_filter = {"username": user_in.username}
-            existing_user_with_username = self.get(
-                db=db, filter=get_user_username_filter
-            )
-            if (
-                existing_user_with_username
-                and existing_user_with_username.userId != db_user.userId
-            ):
-                raise HTTPException(
-                    status_code=409,
-                    detail="User with this username already exists",
-                )
+            self._check_user_exists_raise(db=db, filter=get_user_username_filter)
 
         obj_data = db_user.__table__.columns.keys()
 
@@ -162,11 +166,6 @@ class CRUDUser:
         Returns:
             model_User | None: model_User object or None
         """
-        if not filter:
-            raise HTTPException(
-                status_code=400,
-                detail="Could not get user. Filter parameters required.",
-            )
         session_user = db.query(model_User).filter_by(**filter).all()
         if len(session_user) == 1 and filter:
             session_user = session_user[0]
@@ -219,7 +218,7 @@ class CRUDUser:
         if not db_user or not verify_password(password, db_user.hashedPassword):
             raise HTTPException(
                 status_code=400,
-                detail="Could not authenticate. Invalid login credentials",
+                detail=get_bad_login_credentials_msg().message,
             )
         return self.validate(db_user)
 
@@ -240,7 +239,9 @@ class CRUDUser:
         if not db_user:
             raise HTTPException(
                 status_code=404,
-                detail="Could not set active. The user with this id does not exist in the system",
+                detail=get_no_obj_matching_query_msg(
+                    {"userId": db_user.userId}, "user"
+                ).message,
             )
         db_user.isActive = active
         db.add(db_user)
