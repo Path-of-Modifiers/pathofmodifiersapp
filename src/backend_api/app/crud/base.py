@@ -80,7 +80,9 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         elif not db_obj:
             raise HTTPException(
                 status_code=404,
-                detail=get_no_obj_matching_query_msg(filter, self.model).message,
+                detail=get_no_obj_matching_query_msg(
+                    filter, self.model.__tablename__
+                ).message,
             )
         if len(db_obj) == 1 and filter:
             db_obj = db_obj[0]
@@ -139,7 +141,9 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         if not db_objs:
             raise HTTPException(
                 status_code=404,
-                detail=get_no_obj_matching_query_msg(filter, self.model).message,
+                detail=get_no_obj_matching_query_msg(
+                    filter, model_table_name=self.model.__tablename__
+                ).message,
             )
         elif (
             len(db_objs) > max_deletion_limit
