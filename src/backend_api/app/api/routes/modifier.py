@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
-from app.api.deps import get_db
-from app.api.utils import get_delete_return_message
+from app.api.api_message_util import (
+    get_delete_return_msg,
+)
+from app.api.deps import (
+    SessionDep,
+    get_current_active_superuser,
+    get_current_active_user,
+)
 from app.crud import CRUD_modifier
 
 router = APIRouter()
@@ -17,10 +22,11 @@ modifier_prefix = "modifier"
 @router.get(
     "/{modifierId}",
     response_model=schemas.Modifier | list[schemas.Modifier],
+    dependencies=[Depends(get_current_active_user)],
 )
 async def get_modifier(
     modifierId: int,
-    db: Session = Depends(get_db),
+    db: SessionDep,
 ):
     """
     Get modifier or list of modifiers by key and
@@ -37,9 +43,13 @@ async def get_modifier(
     return modifier
 
 
-@router.get("/", response_model=schemas.Modifier | list[schemas.Modifier])
+@router.get(
+    "/",
+    response_model=schemas.Modifier | list[schemas.Modifier],
+    dependencies=[Depends(get_current_active_user)],
+)
 async def get_all_modifiers(
-    db: Session = Depends(get_db),
+    db: SessionDep,
 ):
     """
     Get all modifiers.
@@ -56,9 +66,10 @@ async def get_all_modifiers(
     "/grouped_modifiers_by_effect/",
     response_model=schemas.GroupedModifierByEffect
     | list[schemas.GroupedModifierByEffect],
+    dependencies=[Depends(get_current_active_user)],
 )
 async def get_grouped_modifier_by_effect(
-    db: Session = Depends(get_db),
+    db: SessionDep,
 ):
     """
     Get all grouped modifiers by effect.
@@ -76,10 +87,11 @@ async def get_grouped_modifier_by_effect(
 @router.post(
     "/",
     response_model=schemas.ModifierCreate | list[schemas.ModifierCreate],
+    dependencies=[Depends(get_current_active_superuser)],
 )
 async def create_modifier(
     modifier: schemas.ModifierCreate | list[schemas.ModifierCreate],
-    db: Session = Depends(get_db),
+    db: SessionDep,
 ):
     """
     Create one or a list of new modifiers.
@@ -90,11 +102,15 @@ async def create_modifier(
     return await CRUD_modifier.create(db=db, obj_in=modifier)
 
 
-@router.put("/", response_model=schemas.Modifier)
+@router.put(
+    "/",
+    response_model=schemas.Modifier,
+    dependencies=[Depends(get_current_active_superuser)],
+)
 async def update_modifier(
     modifierId: int,
     modifier_update: schemas.ModifierUpdate,
-    db: Session = Depends(get_db),
+    db: SessionDep,
 ):
     """
     Update a modifier by key and value for "modifierId"
@@ -114,10 +130,14 @@ async def update_modifier(
     return await CRUD_modifier.update(db_obj=modifier, obj_in=modifier_update, db=db)
 
 
-@router.delete("/{modifierId}", response_model=str)
+@router.delete(
+    "/{modifierId}",
+    response_model=str,
+    dependencies=[Depends(get_current_active_superuser)],
+)
 async def delete_modifier(
     modifierId: int,
-    db: Session = Depends(get_db),
+    db: SessionDep,
 ):
     """
     Delete a modifier by key and value for "modifierId"
@@ -129,4 +149,4 @@ async def delete_modifier(
     modifier_map = {"modifierId": modifierId}
     await CRUD_modifier.remove(db=db, filter=modifier_map)
 
-    return get_delete_return_message(modifier_prefix, modifier_map)
+    return get_delete_return_msg(modifier_prefix, modifier_map)

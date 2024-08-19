@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
+from fastapi import APIRouter
 
 import app.core.schemas as schemas
-from app.api.deps import get_db
+from app.api.deps import SessionDep
 from app.validation import turnstile_validation_tool
 
 router = APIRouter()
@@ -16,7 +15,7 @@ turnstile_prefix = "turnstile"
 @router.post("/", response_model=schemas.TurnstileResponse)
 async def get_turnstile_validation(
     query: schemas.TurnstileQuery,
-    db: Session = Depends(get_db),
+    db: SessionDep,
 ):
     """Takes a query based on the 'TurnstileQuery' schema and retrieves data
     based on the cloudfare challenge turnstile validation response.
