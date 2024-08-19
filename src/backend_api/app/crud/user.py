@@ -26,7 +26,7 @@ class CRUDUser:
         self.validate_users_public = TypeAdapter(UsersPublic).validate_python
         self.validate_user_create = TypeAdapter(UserCreate).validate_python
 
-    def _check_user_exists_raise(
+    def _check_exists_raise(
         self, db: Session, *, filter: dict[str, str], user_in: User | None = None
     ):
         """Check if object exists, raise an exception if it does
@@ -54,7 +54,7 @@ class CRUDUser:
                     detail=get_db_obj_already_exists_msg("user", filter).message,
                 )
 
-    def create_user(self, db: Session, *, user_create: UserCreate) -> model_User:
+    def create(self, db: Session, *, user_create: UserCreate) -> model_User:
         """Create a new user
 
         Args:
@@ -69,8 +69,8 @@ class CRUDUser:
         get_user_email_filter = {"email": user_create.email}
         get_user_username_filter = {"username": user_create.username}
 
-        self._check_user_exists_raise(db=db, filter=get_user_email_filter)
-        self._check_user_exists_raise(db=db, filter=get_user_username_filter)
+        self._check_exists_raise(db=db, filter=get_user_email_filter)
+        self._check_exists_raise(db=db, filter=get_user_username_filter)
 
         # Hash the password
         hashed_password = get_password_hash(user_create.password)
@@ -91,9 +91,7 @@ class CRUDUser:
         db.refresh(db_obj)
         return self.validate(db_obj)
 
-    def get_all_users(
-        self, db: Session, *, skip: int = 0, limit: int = 100
-    ) -> UsersPublic:
+    def get_all(self, db: Session, *, skip: int = 0, limit: int = 100) -> UsersPublic:
         """Get all users
 
         Args:
@@ -112,9 +110,7 @@ class CRUDUser:
         users_public = UsersPublic(data=users, count=count)
         return self.validate_users_public(users_public)
 
-    def update_user(
-        self, db: Session, *, user_id: UUID, user_in: UserUpdate
-    ) -> model_User:
+    def update(self, db: Session, *, user_id: UUID, user_in: UserUpdate) -> model_User:
         """Update user
 
         Args:
@@ -129,10 +125,10 @@ class CRUDUser:
 
         if user_in.email:
             email_filter = {"email": user_in.email}
-            self._check_user_exists_raise(db=db, filter=email_filter, user_in=user_in)
+            self._check_exists_raise(db=db, filter=email_filter, user_in=user_in)
         if user_in.username:
             get_user_username_filter = {"username": user_in.username}
-            self._check_user_exists_raise(db=db, filter=get_user_username_filter)
+            self._check_exists_raise(db=db, filter=get_user_username_filter)
 
         obj_data = db_user.__table__.columns.keys()
 
