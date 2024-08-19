@@ -1,31 +1,16 @@
-from base64 import b64encode
-
-from requests.auth import HTTPBasicAuth
+import requests
+from pydantic import HttpUrl
 
 from external_data_retrieval.config import settings
 
 
-def get_super_authentication() -> HTTPBasicAuth:
-    """
-    Get the super authentication for the Path of Modifiers API.
-
-    Returns:
-        HTTPBasicAuth: POM user and password authentication.
-    """
-    authentication = HTTPBasicAuth(
-        settings.FIRST_SUPERUSER, settings.FIRST_SUPERUSER_PASSWORD
-    )
-    return authentication
-
-
-def get_basic_authentication() -> str:
-    """
-    Get the basic authentication for the Path of Modifiers API.
-
-    Returns:
-        str: Basic super user and super password authentication.
-    """
-    token = b64encode(
-        f"{settings.FIRST_SUPERUSER}:{settings.FIRST_SUPERUSER_PASSWORD}".encode()
-    ).decode("ascii")
-    return f"Basic {token}"
+def get_superuser_token_headers(url: HttpUrl) -> dict[str, str]:
+    login_data = {
+        "username": settings.FIRST_SUPERUSER,
+        "password": settings.FIRST_SUPERUSER_PASSWORD,
+    }
+    r = requests.post(f"{url}/login/access-token", data=login_data)
+    tokens = r.json()
+    a_token = tokens["access_token"]
+    headers = {"Authorization": f"Bearer {a_token}"}
+    return headers
