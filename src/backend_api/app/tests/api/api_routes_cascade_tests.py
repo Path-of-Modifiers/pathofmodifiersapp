@@ -107,13 +107,6 @@ class TestCascadeAPI(TestAPI):
             )
             content_dep = response_delete_dep.json()
             primary_keys_map = self._create_primary_key_map(dep_model)
-            print("CONTENT DEP IN CASC DELETE", content_dep)
-            print(
-                "GET DELETE RETURN MSG IN CASC DELETE",
-                get_delete_return_msg(
-                    model_table_name=dep_model_table_name, mapping=primary_keys_map
-                ).message,
-            )
             assert (
                 content_dep
                 == get_delete_return_msg(
