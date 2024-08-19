@@ -33,14 +33,13 @@ from app.tests.utils.utils import get_model_table_name, get_model_unique_identif
 
 
 @pytest.fixture(scope="module")
-def model_name() -> str:
-    table_name = get_model_table_name(ItemModifier)
-    return table_name
+def route_prefix() -> str:
+    return item_modifier_prefix
 
 
 @pytest.fixture(scope="module")
-def route_name() -> str:
-    return item_modifier_prefix
+def model_table_name() -> str:
+    return get_model_table_name(ItemModifier)
 
 
 @pytest.fixture(scope="module")
@@ -142,17 +141,29 @@ def api_deps_instances() -> list[list[str]]:
     the one its dependent on. The order is defined by 'generate_random_item'.
 
     Returns:
-        List[Dict]: API dependencies instances. Format: [dep_route_name: dep_unique_identifier]
+        List[Dict]: API dependencies instances. Format: [dep_route_prefix: dep_unique_identifier]
 
 
     """
     return [
-        [account_prefix, get_model_unique_identifier(Account)],
-        [stash_prefix, get_model_unique_identifier(Stash)],
-        [item_base_type_prefix, get_model_unique_identifier(ItemBaseType)],
-        [currency_prefix, get_model_unique_identifier(Currency)],
-        [item_prefix, get_model_unique_identifier(Item)],
-        [modifier_prefix, get_model_unique_identifier(Modifier)],
+        [account_prefix, get_model_unique_identifier(Account), Account.__tablename__],
+        [stash_prefix, get_model_unique_identifier(Stash), Stash.__tablename__],
+        [
+            item_base_type_prefix,
+            get_model_unique_identifier(ItemBaseType),
+            ItemBaseType.__tablename__,
+        ],
+        [
+            currency_prefix,
+            get_model_unique_identifier(Currency),
+            Currency.__tablename__,
+        ],
+        [item_prefix, get_model_unique_identifier(Item), Item.__tablename__],
+        [
+            modifier_prefix,
+            get_model_unique_identifier(Modifier),
+            Modifier.__tablename__,
+        ],
     ]
 
 

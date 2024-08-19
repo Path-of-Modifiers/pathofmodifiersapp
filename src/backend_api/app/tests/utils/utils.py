@@ -1,4 +1,3 @@
-import os
 import random
 import string
 from collections.abc import Callable
@@ -6,13 +5,11 @@ from datetime import datetime, timedelta
 from inspect import iscoroutinefunction
 from typing import Any
 
-from requests.auth import HTTPBasicAuth
+from fastapi.testclient import TestClient
 from sqlalchemy import inspect
 
+from app.core.config import settings
 from app.crud.base import ModelType
-
-FIRST_SUPERUSER = os.getenv("FIRST_SUPERUSER")
-FIRST_SUPERUSER_PASSWORD = os.getenv("FIRST_SUPERUSER_PASSWORD")
 
 
 def random_lower_string(*, small_string: bool | None = None) -> str:
@@ -206,18 +203,20 @@ def get_model_table_name(model: ModelType) -> str:
     Returns:
         str: Table name of the model.
     """
-    return model.__table__.name
+    return model.__tablename__
 
 
-def get_super_authentication() -> HTTPBasicAuth:
-    """
-    Get the super authentication for the Path of Modifiers API.
-
-    Returns:
-        HTTPBasicAuth: POM user and password authentication.
-    """
-    authentication = HTTPBasicAuth(FIRST_SUPERUSER, FIRST_SUPERUSER_PASSWORD)
-    return authentication
+def get_superuser_token_headers(client: TestClient) -> dict[str, str]:
+    login_data = {
+        "username": settings.FIRST_SUPERUSER,
+        "password": settings.FIRST_SUPERUSER_PASSWORD,
+    }
+    r = client.post(f"{settings.API_V1_STR}/login/access-token", data=login_data)
+    tokens = r.json()
+    print("TOKENS MY LORD", tokens)
+    a_token = tokens["access_token"]
+    headers = {"Authorization": f"Bearer {a_token}"}
+    return headers
 
 
 def create_random_ip() -> str:
