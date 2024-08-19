@@ -11,6 +11,7 @@ from app.api.deps import (
     get_current_active_superuser,
     get_current_active_user,
 )
+from app.core.models.models import Modifier
 from app.crud import CRUD_modifier
 
 router = APIRouter()
@@ -149,4 +150,6 @@ async def delete_modifier(
     modifier_map = {"modifierId": modifierId}
     await CRUD_modifier.remove(db=db, filter=modifier_map)
 
-    return get_delete_return_msg(modifier_prefix, modifier_map)
+    return get_delete_return_msg(
+        model_table_name=Modifier.__tablename__, mapping=modifier_map
+    ).message

@@ -11,6 +11,7 @@ from app.api.deps import (
     get_current_active_superuser,
     get_current_active_user,
 )
+from app.core.models.models import Stash
 from app.crud import CRUD_stash
 
 router = APIRouter()
@@ -121,4 +122,6 @@ async def delete_stash(
     stash_map = {"stashId": stashId}
     await CRUD_stash.remove(db=db, filter=stash_map)
 
-    return get_delete_return_msg(stash_prefix, stash_map)
+    return get_delete_return_msg(
+        model_table_name=Stash.__tablename__, mapping=stash_map
+    ).message

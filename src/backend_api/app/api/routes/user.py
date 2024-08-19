@@ -50,12 +50,12 @@ user_prefix = "user"
     dependencies=[Depends(get_current_active_superuser)],
     response_model=UsersPublic,
 )
-def get_all_users(db: SessionDep, skip: int = 0, limit: int = 100) -> Any:
+def get_all(db: SessionDep, skip: int = 0, limit: int = 100) -> Any:
     """
     Retrieve all users.
     """
 
-    users_public = CRUD_user.get_all_users(db, skip=skip, limit=limit)
+    users_public = CRUD_user.get_all(db, skip=skip, limit=limit)
 
     return users_public
 
@@ -63,11 +63,11 @@ def get_all_users(db: SessionDep, skip: int = 0, limit: int = 100) -> Any:
 @router.post(
     "/", dependencies=[Depends(get_current_active_superuser)], response_model=UserPublic
 )
-def create_user(*, db: SessionDep, user_in: UserCreate) -> Any:
+def create(*, db: SessionDep, user_in: UserCreate) -> Any:
     """
     Create new user.
     """
-    user = CRUD_user.create_user(db=db, user_create=user_in)
+    user = CRUD_user.create(db=db, user_create=user_in)
     if settings.emails_enabled and user_in.email:
         email_data = generate_new_account_email(
             email_to=user_in.email, username=user_in.email, password=user_in.password
@@ -81,7 +81,7 @@ def create_user(*, db: SessionDep, user_in: UserCreate) -> Any:
 
 
 @router.patch("/me", response_model=UserPublic)
-def update_user_me(
+def update_me(
     *, db: SessionDep, user_in: UserUpdateMe, current_user: CurrentUser
 ) -> Any:
     """
@@ -154,7 +154,9 @@ def delete_user_me(db: SessionDep, current_user: CurrentUser) -> Any:
         )
     db.delete(current_user)
     db.commit()
-    return get_delete_return_msg(user_prefix, {"userId": current_user.userId})
+    return get_delete_return_msg(
+        model_table_name=User.__tablename__, mapping={"userId": current_user.userId}
+    ).message
 
 
 @router.post("/signup", response_model=UserPublic)
@@ -168,7 +170,7 @@ def register_user(db: SessionDep, user_in: UserRegister) -> Any:
         password=user_in.password,
     )
 
-    user = CRUD_user.create_user(db=db, user_create=user_create)
+    user = CRUD_user.create(db=db, user_create=user_create)
     return user
 
 
@@ -200,7 +202,7 @@ def get_user_by_id(
     dependencies=[Depends(get_current_active_superuser)],
     response_model=UserPublic,
 )
-def update_user(
+def update(
     *,
     db: SessionDep,
     user_id: uuid.UUID,
@@ -210,7 +212,7 @@ def update_user(
     Update a user.
     """
 
-    db_user = CRUD_user.update_user(db=db, user_id=user_id, user_in=user_in)
+    db_user = CRUD_user.update(db=db, user_id=user_id, user_in=user_in)
     return db_user
 
 
@@ -236,7 +238,9 @@ def delete_user(
         )
     db.delete(db_user)
     db.commit()
-    return get_delete_return_msg(user_prefix, {"userId": user_id})
+    return get_delete_return_msg(
+        model_table_name=User.__tablename__, mapping={"userId": user_id}
+    ).message
 
 
 @router.patch(

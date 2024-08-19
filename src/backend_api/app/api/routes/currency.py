@@ -12,6 +12,7 @@ from app.api.deps import (
     get_current_active_superuser,
     get_current_active_user,
 )
+from app.core.models.models import Currency
 from app.crud import CRUD_currency
 
 router = APIRouter()
@@ -156,4 +157,6 @@ async def delete_currency(
     currency_map = {"currencyId": currencyId}
     await CRUD_currency.remove(db=db, filter=currency_map)
 
-    return get_delete_return_msg(currency_prefix, currency_map)
+    return get_delete_return_msg(
+        model_table_name=Currency.__tablename__, mapping=currency_map
+    ).message

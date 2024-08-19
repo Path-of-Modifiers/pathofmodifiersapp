@@ -13,7 +13,6 @@ from app.api.deps import (
     get_current_active_user,
 )
 from app.core.models.models import ItemBaseType
-from app.core.schemas.message import Message
 from app.crud import CRUD_itemBaseType
 
 router = APIRouter()
@@ -177,7 +176,7 @@ async def update_item_base_type(
 
 @router.delete(
     "/{baseType}",
-    response_model=Message,
+    response_model=str,
     dependencies=[Depends(get_current_active_superuser)],
 )
 async def delete_item_base_type(
@@ -192,6 +191,11 @@ async def delete_item_base_type(
     """
 
     item_base_type_map = {"baseType": baseType}
-    await CRUD_itemBaseType.remove(db=db, filter=item_base_type_map)
+    await CRUD_itemBaseType.remove(
+        db=db,
+        filter=item_base_type_map,
+    )
 
-    return get_delete_return_msg(item_base_type_prefix, item_base_type_map)
+    return get_delete_return_msg(
+        model_table_name=ItemBaseType.__tablename__, mapping=item_base_type_map
+    ).message

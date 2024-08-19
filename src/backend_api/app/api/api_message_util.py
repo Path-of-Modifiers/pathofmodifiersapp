@@ -2,13 +2,13 @@ from app.core.schemas.message import Message
 
 
 def get_delete_return_msg(
-    route_prefix: str,
+    model_table_name: str,
     mapping: dict[str, str],
 ) -> Message:
     """Returns a message indicating the object was deleted successfully.
 
     Args:
-        route_prefix (str): Route route_prefix for the object.
+        model_table_name (str): Table name for the object.
         unique_identifier (str): Unique identifier for the object (main primary key name).
         unique_identifier_value (str): Value of the unique identifier.
 
@@ -17,20 +17,20 @@ def get_delete_return_msg(
     """
 
     return Message(
-        message=f"""{route_prefix} with mapping
-        ({', '.join([key + ': ' + str(item) for key, item in mapping.items()])})
+        message=f"""{model_table_name} with mapping
+        {mapping} was
         deleted successfully"""
     )
 
 
 def get_db_obj_already_exists_msg(
-    route_prefix: str,
+    model_table_name: str,
     mapping: dict[str, str],
 ) -> Message:
     """Returns a message indicating the object already exists.
 
     Args:
-        route_prefix (str): Route route_prefix for the object.
+        model_table_name (str): Model table name for the object.
         mapping (dict[str, str]): Mapping of the object.
 
     Returns:
@@ -38,7 +38,7 @@ def get_db_obj_already_exists_msg(
     """
 
     return Message(
-        message=f"""{route_prefix} with mapping
+        message=f"""{model_table_name} with mapping
         ({', '.join([key + ': ' + str(item) for key, item in mapping.items()])})
         already exists"""
     )
@@ -172,7 +172,7 @@ def get_sorting_method_not_supported_msg(
 
 
 def get_no_obj_matching_query_msg(
-    filter: dict[str, str], route_route_prefix: str
+    filter: dict[str, str], model_table_name: str
 ) -> Message:
     """Returns a message indicating no object matching the query was found.
 
@@ -185,7 +185,7 @@ def get_no_obj_matching_query_msg(
     """
 
     return Message(
-        message=f"No object matching the query ({', '.join([key + ': ' + str(item) for key, item in filter.items()])}) in the route {route_route_prefix} was found."
+        message=f"No object matching the query ({', '.join([key + ': ' + str(item) for key, item in filter.items()])}) in the route {model_table_name} was found."
     )
 
 
