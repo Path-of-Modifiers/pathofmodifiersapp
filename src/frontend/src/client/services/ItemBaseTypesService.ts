@@ -17,14 +17,14 @@ export class ItemBaseTypesService {
      * Get item base type by key and value for "baseType".
      *
      * Always returns one item base type.
-     * @returns any Successful Response
+     * @returns ItemBaseType Successful Response
      * @throws ApiError
      */
     public static getItemBaseType({
         baseType,
     }: {
         baseType: string,
-    }): CancelablePromise<(ItemBaseType | Array<ItemBaseType>)> {
+    }): CancelablePromise<ItemBaseType> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/itemBaseType/{baseType}',

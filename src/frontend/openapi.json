@@ -15,7 +15,7 @@
         "operationId": "get_account",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -35,18 +35,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Account"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Account"
-                      }
-                    }
-                  ],
-                  "title": "Response Accounts-Get Account"
+                  "$ref": "#/components/schemas/Account"
                 }
               }
             }
@@ -72,7 +61,7 @@
         "operationId": "update_account",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -128,7 +117,7 @@
         "operationId": "delete_account",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -200,7 +189,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       },
@@ -267,7 +256,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -282,7 +271,7 @@
         "operationId": "get_currency",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -302,18 +291,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Currency"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Currency"
-                      }
-                    }
-                  ],
-                  "title": "Response Currencys-Get Currency"
+                  "$ref": "#/components/schemas/Currency"
                 }
               }
             }
@@ -339,7 +317,7 @@
         "operationId": "update_currency",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -395,7 +373,7 @@
         "operationId": "delete_currency",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -467,7 +445,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       },
@@ -534,7 +512,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -563,7 +541,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -578,7 +556,7 @@
         "operationId": "get_item_base_type",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -598,18 +576,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/ItemBaseType"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/ItemBaseType"
-                      }
-                    }
-                  ],
-                  "title": "Response Itembasetypes-Get Item Base Type"
+                  "$ref": "#/components/schemas/ItemBaseType"
                 }
               }
             }
@@ -635,7 +602,7 @@
         "operationId": "update_item_base_type",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -691,7 +658,7 @@
         "operationId": "delete_item_base_type",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -763,7 +730,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       },
@@ -830,7 +797,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -868,7 +835,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -906,7 +873,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -944,7 +911,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -957,11 +924,6 @@
         "summary": "Get Item Modifier",
         "description": "Get item modifier or list of item modifiers by key and\nvalue for \"itemId\", optional \"modifierId\" and optional \"position\".\n\nDominant key is \"itemId\".\n\nReturns one or a list of item modifiers.",
         "operationId": "get_item_modifier",
-        "security": [
-          {
-            "HTTPBasic": []
-          }
-        ],
         "parameters": [
           {
             "name": "itemId",
@@ -1048,7 +1010,7 @@
         "operationId": "delete_item_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1110,7 +1072,7 @@
         "operationId": "get_all_item_modifiers",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "responses": {
@@ -1146,7 +1108,7 @@
         "operationId": "create_item_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "requestBody": {
@@ -1213,7 +1175,7 @@
         "operationId": "update_item_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1280,7 +1242,7 @@
         "operationId": "get_item",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1300,18 +1262,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Item"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Item"
-                      }
-                    }
-                  ],
-                  "title": "Response Items-Get Item"
+                  "$ref": "#/components/schemas/Item"
                 }
               }
             }
@@ -1337,7 +1288,7 @@
         "operationId": "update_item",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1393,7 +1344,7 @@
         "operationId": "delete_item",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1456,7 +1407,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -1494,7 +1445,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       },
@@ -1561,7 +1512,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -1803,7 +1754,7 @@
         "operationId": "get_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1860,7 +1811,7 @@
         "operationId": "delete_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1909,7 +1860,7 @@
         "operationId": "get_all_modifiers",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "responses": {
@@ -1945,7 +1896,7 @@
         "operationId": "create_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "requestBody": {
@@ -2012,7 +1963,7 @@
         "operationId": "update_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -2093,7 +2044,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -2108,7 +2059,7 @@
         "operationId": "get_stash",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -2128,18 +2079,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Stash"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Stash"
-                      }
-                    }
-                  ],
-                  "title": "Response Stashs-Get Stash"
+                  "$ref": "#/components/schemas/Stash"
                 }
               }
             }
@@ -2165,7 +2105,7 @@
         "operationId": "update_stash",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -2221,7 +2161,7 @@
         "operationId": "delete_stash",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -2293,7 +2233,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       },
@@ -2360,7 +2300,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -2407,7 +2347,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -2420,11 +2360,6 @@
         "summary": "Check Temporary Hashed User Ip",
         "description": "Takes a query based on the 'TemporaryHashedUserIp' schema and retrieves\nwhether the hashed user ip is valid.",
         "operationId": "check_temporary_hashed_user_ip",
-        "security": [
-          {
-            "HTTPBasic": []
-          }
-        ],
         "parameters": [
           {
             "name": "ip",
@@ -2471,7 +2406,7 @@
         "operationId": "get_temporary_hashed_user_ip",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -2528,7 +2463,7 @@
         "operationId": "update_temporary_hashed_user_ip",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -2606,7 +2541,7 @@
         "operationId": "delete_temporary_hashed_user_ip",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -2678,7 +2613,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       },
@@ -2745,7 +2680,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -2789,12 +2724,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "HTTPBasic": []
-          }
-        ]
+        }
       }
     },
     "/api/api_v1/user/": {
@@ -2802,9 +2732,9 @@
         "tags": [
           "users"
         ],
-        "summary": "Get All Users",
+        "summary": "Get All",
         "description": "Retrieve all users.",
-        "operationId": "get_all_users",
+        "operationId": "get_all",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -2859,9 +2789,9 @@
         "tags": [
           "users"
         ],
-        "summary": "Create User",
+        "summary": "Create",
         "description": "Create new user.",
-        "operationId": "create_user",
+        "operationId": "create",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -2956,9 +2886,9 @@
         "tags": [
           "users"
         ],
-        "summary": "Update User Me",
+        "summary": "Update Me",
         "description": "Update own user.",
-        "operationId": "update_user_me",
+        "operationId": "update_me",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3139,9 +3069,9 @@
         "tags": [
           "users"
         ],
-        "summary": "Update User",
+        "summary": "Update",
         "description": "Update a user.",
-        "operationId": "update_user",
+        "operationId": "update",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -6323,10 +6253,6 @@
       }
     },
     "securitySchemes": {
-      "HTTPBasic": {
-        "type": "http",
-        "scheme": "basic"
-      },
       "OAuth2PasswordBearer": {
         "type": "oauth2",
         "flows": {
