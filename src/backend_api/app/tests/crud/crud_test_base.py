@@ -108,7 +108,10 @@ class TestCRUD(BaseTest):
         self._test_object(object_out, object_dict)
 
         object_map = self._create_primary_key_map(object_out)
-        deleted_object = await crud_instance.remove(db=db, filter=object_map)
+        deleted_object = await crud_instance.remove(
+            db=db,
+            filter=object_map,
+        )
         assert deleted_object
         self._test_object(deleted_object, object_out)
 
@@ -144,7 +147,8 @@ class TestCRUD(BaseTest):
 
         object_map = self._create_primary_key_map(temp_object_out)
         deleted_object = await crud_instance.remove(
-            db=db, filter=object_map
+            db=db,
+            filter=object_map,
         )  # Delete the template from the db
         assert deleted_object
         self._test_object(deleted_object, temp_object_out)

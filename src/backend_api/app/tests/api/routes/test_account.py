@@ -15,14 +15,13 @@ from app.tests.utils.utils import get_model_table_name, get_model_unique_identif
 
 
 @pytest.fixture(scope="module")
-def model_name() -> str:
-    table_name = get_model_table_name(Account)
-    return table_name
+def route_prefix() -> str:
+    return account_prefix
 
 
 @pytest.fixture(scope="module")
-def route_name() -> str:
-    return account_prefix
+def model_table_name() -> str:
+    return get_model_table_name(Account)
 
 
 @pytest.fixture(scope="module")
