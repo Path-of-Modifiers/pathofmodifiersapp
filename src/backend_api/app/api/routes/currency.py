@@ -2,11 +2,16 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import text
-from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
-from app.api.deps import get_db
-from app.api.utils import get_delete_return_message
+from app.api.api_message_util import (
+    get_delete_return_msg,
+)
+from app.api.deps import (
+    SessionDep,
+    get_current_active_superuser,
+    get_current_active_user,
+)
 from app.crud import CRUD_currency
 
 router = APIRouter()
@@ -17,11 +22,14 @@ currency_prefix = "currency"
 
 @router.get(
     "/{currencyId}",
-    response_model=schemas.Currency | list[schemas.Currency],
+    response_model=schemas.Currency,
+    dependencies=[
+        Depends(get_current_active_superuser),
+    ],
 )
 async def get_currency(
     currencyId: int,
-    db: Session = Depends(get_db),
+    db: SessionDep,
 ):
     """
     Get currency by key and value for "currencyId".
@@ -35,9 +43,15 @@ async def get_currency(
     return currency
 
 
-@router.get("/", response_model=schemas.Currency | list[schemas.Currency])
+@router.get(
+    "/",
+    response_model=schemas.Currency | list[schemas.Currency],
+    dependencies=[
+        Depends(get_current_active_superuser),
+    ],
+)
 async def get_all_currencies(
-    db: Session = Depends(get_db),
+    db: SessionDep,
 ):
     """
     Get all currencies.
@@ -50,9 +64,16 @@ async def get_all_currencies(
     return all_currencies
 
 
-@router.get("/latest_currency_id/", response_model=int, tags=["latest_currency_id"])
+@router.get(
+    "/latest_currency_id/",
+    response_model=int,
+    tags=["latest_currency_id"],
+    dependencies=[
+        Depends(get_current_active_user),
+    ],
+)
 async def get_latest_currency_id(
-    db: Session = Depends(get_db),
+    db: SessionDep,
 ):
     """
     Get the latest currencyId
@@ -70,10 +91,13 @@ async def get_latest_currency_id(
 @router.post(
     "/",
     response_model=schemas.CurrencyCreate | list[schemas.CurrencyCreate],
+    dependencies=[
+        Depends(get_current_active_superuser),
+    ],
 )
 async def create_currency(
     currency: schemas.CurrencyCreate | list[schemas.CurrencyCreate],
-    db: Session = Depends(get_db),
+    db: SessionDep,
 ):
     """
     Create one or a list of currencies.
@@ -84,11 +108,17 @@ async def create_currency(
     return await CRUD_currency.create(db=db, obj_in=currency)
 
 
-@router.put("/{currencyId}", response_model=schemas.Currency)
+@router.put(
+    "/{currencyId}",
+    response_model=schemas.Currency,
+    dependencies=[
+        Depends(get_current_active_superuser),
+    ],
+)
 async def update_currency(
     currencyId: int,
     currency_update: schemas.CurrencyUpdate,
-    db: Session = Depends(get_db),
+    db: SessionDep,
 ):
     """
     Update a currency by key and value for "currencyId".
@@ -105,10 +135,16 @@ async def update_currency(
     return await CRUD_currency.update(db_obj=currency, obj_in=currency_update, db=db)
 
 
-@router.delete("/{currencyId}", response_model=str)
+@router.delete(
+    "/{currencyId}",
+    response_model=str,
+    dependencies=[
+        Depends(get_current_active_superuser),
+    ],
+)
 async def delete_currency(
     currencyId: int,
-    db: Session = Depends(get_db),
+    db: SessionDep,
 ):
     """
     Delete a currency by key and value for "currencyId".
@@ -120,4 +156,4 @@ async def delete_currency(
     currency_map = {"currencyId": currencyId}
     await CRUD_currency.remove(db=db, filter=currency_map)
 
-    return get_delete_return_message(currency_prefix, currency_map)
+    return get_delete_return_msg(currency_prefix, currency_map)

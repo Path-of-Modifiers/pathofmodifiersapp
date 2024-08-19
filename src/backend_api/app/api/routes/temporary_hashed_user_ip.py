@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
-from app.api.deps import get_db
-from app.api.utils import get_delete_return_message
+from app.api.api_message_util import (
+    get_delete_return_msg,
+)
+from app.api.deps import (
+    SessionDep,
+    get_current_active_superuser,
+)
 from app.crud import CRUD_hashed_user_ip
 
 router = APIRouter()
@@ -14,10 +18,13 @@ router = APIRouter()
 temporary_hashed_user_ip_prefix = "temporary_hashed_user_ip"
 
 
-@router.post("/check/", response_model=bool)
+@router.post(
+    "/check/",
+    response_model=bool,
+)
 async def check_temporary_hashed_user_ip(
     ip: str,
-    db: Session = Depends(get_db),
+    db: SessionDep,
 ):
     """
     Takes a query based on the 'TemporaryHashedUserIp' schema and retrieves
@@ -32,10 +39,11 @@ async def check_temporary_hashed_user_ip(
 @router.get(
     "/{temporaryHashedUserIp}",
     response_model=schemas.HashedUserIp | list[schemas.HashedUserIp],
+    dependencies=[Depends(get_current_active_superuser)],
 )
 async def get_temporary_hashed_user_ip(
     temporaryHashedUserIp: str,
-    db: Session = Depends(get_db),
+    db: SessionDep,
 ):
     """
     Get temporary hashed user ip by key and value for "temporaryHashedUserIp".
@@ -47,9 +55,13 @@ async def get_temporary_hashed_user_ip(
     return hashed_ip
 
 
-@router.get("/", response_model=schemas.HashedUserIp | list[schemas.HashedUserIp])
+@router.get(
+    "/",
+    response_model=schemas.HashedUserIp | list[schemas.HashedUserIp],
+    dependencies=[Depends(get_current_active_superuser)],
+)
 async def get_all_temporary_hashed_user_ips(
-    db: Session = Depends(get_db),
+    db: SessionDep,
 ):
     """
     Get all temporary hashed user ips.
@@ -63,10 +75,11 @@ async def get_all_temporary_hashed_user_ips(
 @router.post(
     "/",
     response_model=schemas.HashedUserIpCreate | list[schemas.HashedUserIpCreate],
+    dependencies=[Depends(get_current_active_superuser)],
 )
 async def create_temporary_hashed_user_ip(
     hashed_user_ip: schemas.HashedUserIpCreate | list[schemas.HashedUserIpCreate],
-    db: Session = Depends(get_db),
+    db: SessionDep,
 ):
     """
     Create temporary hashed user ip.
@@ -78,12 +91,14 @@ async def create_temporary_hashed_user_ip(
 @router.put(
     "/{temporaryHashedUserIp}",
     response_model=schemas.HashedUserIp | list[schemas.HashedUserIp],
+    dependencies=[Depends(get_current_active_superuser)],
 )
 async def update_temporary_hashed_user_ip(
     temporaryHashedUserIp: str,
-    hashed_user_ip_update: schemas.HashedUserIpUpdate
-    | list[schemas.HashedUserIpUpdate],
-    db: Session = Depends(get_db),
+    hashed_user_ip_update: (
+        schemas.HashedUserIpUpdate | list[schemas.HashedUserIpUpdate]
+    ),
+    db: SessionDep,
 ):
     """
     Update temporary hashed user ip by key and value for "temporaryHashedUserIp".
@@ -100,10 +115,11 @@ async def update_temporary_hashed_user_ip(
 @router.delete(
     "/{temporaryHashedUserIp}",
     response_model=str,
+    dependencies=[Depends(get_current_active_superuser)],
 )
 async def delete_temporary_hashed_user_ip(
     temporaryHashedUserIp: str,
-    db: Session = Depends(get_db),
+    db: SessionDep,
 ):
     """
     Delete temporary hashed user ip by key and value for "temporaryHashedUserIp".
@@ -112,4 +128,4 @@ async def delete_temporary_hashed_user_ip(
     hashed_ip_map = {"hashedIp": temporaryHashedUserIp}
     await CRUD_hashed_user_ip.remove(db, filter=hashed_ip_map)
 
-    return get_delete_return_message(temporary_hashed_user_ip_prefix, hashed_ip_map)
+    return get_delete_return_msg(temporary_hashed_user_ip_prefix, hashed_ip_map)

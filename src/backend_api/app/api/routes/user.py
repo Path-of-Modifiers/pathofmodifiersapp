@@ -4,7 +4,23 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.api.deps import CurrentUser, SessionDep, get_current_active_superuser
+from app.api.api_message_util import (
+    get_db_obj_already_exists_msg,
+    get_delete_return_msg,
+    get_incorrect_psw_msg,
+    get_new_psw_not_same_msg,
+    get_no_obj_matching_query_msg,
+    get_not_superuser_auth_msg,
+    get_superuser_not_allowed_change_active_self_msg,
+    get_superuser_not_allowed_delete_self_msg,
+    get_user_active_change_msg,
+    get_user_psw_change_msg,
+)
+from app.api.deps import (
+    CurrentUser,
+    SessionDep,
+    get_current_active_superuser,
+)
 from app.core.config import settings
 from app.core.models.models import User
 from app.core.schemas import (
@@ -77,7 +93,10 @@ def update_user_me(
         existing_user = CRUD_user.get(db=db, filter=get_user_filter)
         if existing_user and existing_user.userId != current_user.userId:
             raise HTTPException(
-                status_code=409, detail="User with this email already exists"
+                status_code=409,
+                detail=get_db_obj_already_exists_msg(
+                    user_prefix, user_in.email
+                ).message,
             )
     user_data = user_in.model_dump(exclude_unset=True)
     current_user_data = current_user.__table__.columns.keys()
@@ -100,19 +119,20 @@ def update_password_me(
     Update own password.
     """
     if not verify_password(body.current_password, current_user.hashedPassword):
-        raise HTTPException(status_code=400, detail="Incorrect password")
+        raise HTTPException(status_code=400, detail=get_incorrect_psw_msg().message)
     if body.current_password == body.new_password:
-        raise HTTPException(
-            status_code=400, detail="New password cannot be the same as the current one"
-        )
+        raise HTTPException(status_code=400, detail=get_new_psw_not_same_msg().message)
     hashed_password = get_password_hash(body.new_password)
     current_user.hashedPassword = hashed_password
     db.add(current_user)
     db.commit()
-    return Message(message="Password updated successfully")
+    return get_user_psw_change_msg(current_user.username)
 
 
-@router.get("/me", response_model=UserPublic)
+@router.get(
+    "/me",
+    response_model=UserPublic,
+)
 def get_user_me(current_user: CurrentUser) -> Any:
     """
     Get current user.
@@ -127,11 +147,14 @@ def delete_user_me(db: SessionDep, current_user: CurrentUser) -> Any:
     """
     if current_user.isSuperuser:
         raise HTTPException(
-            status_code=403, detail="Super users are not allowed to delete themselves"
+            status_code=403,
+            detail=get_superuser_not_allowed_delete_self_msg(
+                current_user.username
+            ).message,
         )
     db.delete(current_user)
     db.commit()
-    return Message(message="User deleted successfully")
+    return get_delete_return_msg(user_prefix, {"userId": current_user.userId})
 
 
 @router.post("/signup", response_model=UserPublic)
@@ -160,14 +183,14 @@ def get_user_by_id(
     if not db_user:
         raise HTTPException(
             status_code=404,
-            detail="The db_user with this id does not exist in the system",
+            detail=get_no_obj_matching_query_msg({"userId": user_id}, User).message,
         )
     if db_user == current_user:
         return db_user
     if not current_user.isSuperuser:
         raise HTTPException(
             status_code=403,
-            detail="The db_user does not have enough privileges",
+            detail=get_not_superuser_auth_msg(current_user.username).message,
         )
     return db_user
 
@@ -201,15 +224,19 @@ def delete_user(
     db_user = db.get(User, user_id)
     if not db_user:
         raise HTTPException(
-            status_code=404, detail="Could not delete user. User not found"
+            status_code=404,
+            detail=get_no_obj_matching_query_msg({"userId": user_id}, User).message,
         )
     if db_user == current_user:
         raise HTTPException(
-            status_code=403, detail="Super users are not allowed to delete themselves"
+            status_code=403,
+            detail=get_superuser_not_allowed_delete_self_msg(
+                current_user.username
+            ).message,
         )
     db.delete(db_user)
     db.commit()
-    return Message(message="User deleted successfully")
+    return get_delete_return_msg(user_prefix, {"userId": user_id})
 
 
 @router.patch(
@@ -228,19 +255,21 @@ def change_activate_user(
     if db_user == current_user:
         CRUD_user.set_active(db=db, db_user=db_user, active=activate)
         return Message(
-            message=f"User {current_user.username} status changed successfully to {activate}"
+            message=get_user_active_change_msg(db_user.username, activate),
         )
     if not current_user.isSuperuser:
         raise HTTPException(
             status_code=403,
-            detail="The user does not have enough privileges",
+            detail=get_not_superuser_auth_msg(current_user.username).message,
         )
     if db_user == current_user:
         raise HTTPException(
             status_code=403,
-            detail="Super users are not allowed to change their own status",
+            detail=get_superuser_not_allowed_change_active_self_msg(
+                current_user.username
+            ).message,
         )
     CRUD_user.set_active(db=db, db_user=db_user, active=activate)
     return Message(
-        message=f"User {db_user.username} status changed successfully to {activate}"
+        message=get_user_active_change_msg(db_user.username, activate),
     )
