@@ -10,6 +10,7 @@ from app.api.deps import (
     SessionDep,
     get_current_active_superuser,
 )
+from app.core.models.models import ItemModifier
 from app.crud import CRUD_itemModifier
 
 router = APIRouter()
@@ -145,4 +146,6 @@ async def delete_item_modifier(
 
     await CRUD_itemModifier.remove(db=db, filter=itemModifier_map)
 
-    return get_delete_return_msg(item_modifier_prefix, itemModifier_map)
+    return get_delete_return_msg(
+        model_table_name=ItemModifier.__tablename__, mapping=itemModifier_map
+    ).message

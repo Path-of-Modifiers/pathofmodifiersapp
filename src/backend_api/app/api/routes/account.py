@@ -141,4 +141,6 @@ async def delete_account(accountName: str, db: SessionDep):
     account_map = {"accountName": accountName}
     await CRUD_account.remove(db=db, filter=account_map)
 
-    return get_delete_return_msg(account_prefix, account_map)
+    return get_delete_return_msg(
+        model_table_name=Account.__tablename__, mapping=account_map
+    ).message

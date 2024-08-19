@@ -12,6 +12,7 @@ from app.api.deps import (
     get_current_active_superuser,
     get_current_active_user,
 )
+from app.core.models.models import Item
 from app.crud import CRUD_item
 
 router = APIRouter()
@@ -143,4 +144,6 @@ async def delete_item(
     item_map = {"itemId": itemId}
     await CRUD_item.remove(db=db, filter=item_map)
 
-    return get_delete_return_msg(item_prefix, item_map)
+    return get_delete_return_msg(
+        model_table_name=Item.__tablename__, mapping=item_map
+    ).message

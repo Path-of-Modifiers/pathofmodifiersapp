@@ -10,6 +10,7 @@ from app.api.deps import (
     SessionDep,
     get_current_active_superuser,
 )
+from app.core.models.models import TemporaryHashedUserIP
 from app.crud import CRUD_hashed_user_ip
 
 router = APIRouter()
@@ -126,6 +127,11 @@ async def delete_temporary_hashed_user_ip(
     """
 
     hashed_ip_map = {"hashedIp": temporaryHashedUserIp}
-    await CRUD_hashed_user_ip.remove(db, filter=hashed_ip_map)
+    await CRUD_hashed_user_ip.remove(
+        db,
+        filter=hashed_ip_map,
+    )
 
-    return get_delete_return_msg(temporary_hashed_user_ip_prefix, hashed_ip_map)
+    return get_delete_return_msg(
+        model_table_name=TemporaryHashedUserIP.__tablename__, mapping=hashed_ip_map
+    ).message
