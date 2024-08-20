@@ -12,6 +12,8 @@ export const namePattern = {
 };
 
 interface PasswordRules {
+  password?: string;
+  new_password?: string;
   minLength?: {
     value: number;
     message: string;
@@ -36,8 +38,7 @@ export const passwordRules = (isRequired = true) => {
 };
 
 export const confirmPasswordRules = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  getValues: () => any,
+  getValues: () => PasswordRules,
   isRequired = true
 ) => {
   const rules: PasswordRules = {
