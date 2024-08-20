@@ -15,12 +15,12 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class UsersService {
     /**
-     * Get All Users
+     * Get All
      * Retrieve all users.
      * @returns UsersPublic Successful Response
      * @throws ApiError
      */
-    public static getAllUsers({
+    public static getAll({
         skip,
         limit = 100,
     }: {
@@ -40,12 +40,12 @@ export class UsersService {
         });
     }
     /**
-     * Create User
+     * Create
      * Create new user.
      * @returns UserPublic Successful Response
      * @throws ApiError
      */
-    public static createUser({
+    public static create({
         requestBody,
     }: {
         requestBody: UserCreate,
@@ -85,12 +85,12 @@ export class UsersService {
         });
     }
     /**
-     * Update User Me
+     * Update Me
      * Update own user.
      * @returns UserPublic Successful Response
      * @throws ApiError
      */
-    public static updateUserMe({
+    public static updateMe({
         requestBody,
     }: {
         requestBody: UserUpdateMe,
@@ -170,12 +170,12 @@ export class UsersService {
         });
     }
     /**
-     * Update User
+     * Update
      * Update a user.
      * @returns UserPublic Successful Response
      * @throws ApiError
      */
-    public static updateUser({
+    public static update({
         userId,
         requestBody,
     }: {
