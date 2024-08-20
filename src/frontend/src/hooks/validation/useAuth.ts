@@ -41,8 +41,7 @@ const useAuth = () => {
       );
     },
     onError: (err: ApiError) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let errDetail = (err.body as any)?.detail;
+      let errDetail = (err.body)?.detail;
 
       if (err instanceof AxiosError) {
         errDetail = err.message;
@@ -68,8 +67,7 @@ const useAuth = () => {
       navigate({ to: "/" });
     },
     onError: (err: ApiError) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let errDetail = (err.body as any)?.detail;
+      let errDetail = (err.body)?.detail;
 
       if (err instanceof AxiosError) {
         errDetail = err.message;
