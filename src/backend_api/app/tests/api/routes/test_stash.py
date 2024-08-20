@@ -17,14 +17,13 @@ from app.tests.utils.utils import get_model_table_name, get_model_unique_identif
 
 
 @pytest.fixture(scope="module")
-def model_name() -> str:
-    table_name = get_model_table_name(Stash)
-    return table_name
+def route_prefix() -> str:
+    return stash_prefix
 
 
 @pytest.fixture(scope="module")
-def route_name() -> str:
-    return stash_prefix
+def model_table_name() -> str:
+    return get_model_table_name(Stash)
 
 
 @pytest.fixture(scope="module")
@@ -112,11 +111,13 @@ def api_deps_instances() -> list[list[str]]:
     the one its dependent on. The order is defined by 'generate_random_stash'.
 
     Returns:
-        List[Dict]: API dependencies instances. Format: [dep_route_name: dep_unique_identifier]
+        List[Dict]: API dependencies instances. Format: [dep_route_prefix: dep_unique_identifier]
 
 
     """
-    return [[account_prefix, get_model_unique_identifier(Account)]]
+    return [
+        [account_prefix, get_model_unique_identifier(Account), Account.__tablename__]
+    ]
 
 
 @pytest.fixture(scope="module")

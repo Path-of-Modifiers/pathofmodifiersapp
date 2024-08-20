@@ -14,14 +14,14 @@ export class ItemsService {
      * Get item by key and value for "itemId".
      *
      * Always returns one item.
-     * @returns any Successful Response
+     * @returns Item Successful Response
      * @throws ApiError
      */
     public static getItem({
         itemId,
     }: {
         itemId: number,
-    }): CancelablePromise<(Item | Array<Item>)> {
+    }): CancelablePromise<Item> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/item/{itemId}',

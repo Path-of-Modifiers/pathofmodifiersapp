@@ -4,6 +4,11 @@ from fastapi import HTTPException
 from pydantic import BaseModel, TypeAdapter
 from sqlalchemy.orm import Session
 
+from app.api.api_message_util import (
+    get_no_obj_matching_query_msg,
+    get_sorting_method_not_supported_msg,
+    get_too_many_items_delete_msg,
+)
 from app.utils.sort_algorithms import sort_with_reference
 
 ModelType = TypeVar("ModelType", bound=Any)
@@ -44,7 +49,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             return objs
         elif sort not in available_sorting_choices:
             raise NotImplementedError(
-                f"The sorting method {sort} is not supported, instead choose one of {available_sorting_choices}"
+                get_sorting_method_not_supported_msg(sort, available_sorting_choices)
             )
         if sort in ["asc", "dec"]:
             unsorted_extracted_column = []
@@ -75,7 +80,9 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         elif not db_obj:
             raise HTTPException(
                 status_code=404,
-                detail=f"No object matching the query ({', '.join([key + ': ' + str(item) for key, item in filter.items()])}) in the table {self.model.__tablename__} was found.",
+                detail=get_no_obj_matching_query_msg(
+                    filter, self.model.__tablename__
+                ).message,
             )
         if len(db_obj) == 1 and filter:
             db_obj = db_obj[0]
@@ -128,19 +135,24 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         filter: Any,
         sort_key: str | None = None,
         sort: str | None = None,
+        max_deletion_limit: int | None = 12,
     ) -> ModelType:
         db_objs = db.query(self.model).filter_by(**filter).all()
         if not db_objs:
             raise HTTPException(
                 status_code=404,
-                detail=f"No object matching the query ({', '.join([key + ': ' + str(item) for key, item in filter.items()])}) in the table {self.model.__tablename__} was found.",
+                detail=get_no_obj_matching_query_msg(
+                    filter, model_table_name=self.model.__tablename__
+                ).message,
             )
         elif (
-            len(db_objs) > 12
+            len(db_objs) > max_deletion_limit
         ):  # Arbitrary number, not too large, but should allow deleting all modifiers assosiated with an item
             raise HTTPException(
                 status_code=403,
-                detail=f"Too many objects ({len(db_objs)}) matching the query ({','.join([key + ': ' + str(item) for key, item in filter.items()])}), cannot delete and guarantee safety.",
+                detail=get_too_many_items_delete_msg(
+                    filter, max_deletion_limit
+                ).message,
             )
 
         if len(db_objs) == 1:
