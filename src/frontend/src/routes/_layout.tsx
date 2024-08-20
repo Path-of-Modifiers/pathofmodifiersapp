@@ -3,7 +3,9 @@ import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
 import useTurnstileValidation, {
   hasCompletedCaptcha,
-} from "../schemas/validation/turnstileValidation";
+} from "../hooks/validation/turnstileValidation";
+
+import { isLoggedIn } from "../hooks/validation/useAuth";
 
 const security_ip = localStorage.getItem("security_ip");
 
@@ -13,6 +15,11 @@ export const Route = createFileRoute("/_layout")({
     if (!hasCompletedCaptcha()) {
       throw redirect({
         to: "/captcha",
+      });
+    }
+    if (!isLoggedIn()) {
+      throw redirect({
+        to: "/login",
       });
     }
   },
