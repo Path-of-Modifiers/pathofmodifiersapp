@@ -2,7 +2,6 @@ from collections.abc import Generator
 
 import pytest
 from fastapi.testclient import TestClient
-from requests.auth import HTTPBasicAuth
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
@@ -12,7 +11,7 @@ from app.tests.utils.database_utils import (
     clear_all_tables,
     mock_src_database_for_test_db,
 )
-from app.tests.utils.utils import get_super_authentication
+from app.tests.utils.utils import get_superuser_token_headers
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -20,13 +19,13 @@ def db() -> Generator:
     mock_src_database_for_test_db()
     with Session(test_db_engine) as session:
         yield session
-    session.rollback()
-    session.close()
+        session.rollback()
+        session.close()
 
 
 @pytest.fixture(scope="module")
-def superuser_headers() -> HTTPBasicAuth:
-    return get_super_authentication()
+def superuser_token_headers(client: TestClient) -> dict[str, str]:
+    return get_superuser_token_headers(client)
 
 
 @pytest.fixture(scope="module")

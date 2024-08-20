@@ -11,7 +11,7 @@ from app.api.deps import CurrentUser, SessionDep, get_current_active_superuser
 from app.core import security
 from app.core.config import settings
 from app.core.schemas import Message, NewPassword, Token, UserPublic
-from app.core.security import get_password_hash
+from app.core.security import get_password_hash, verify_password
 from app.crud import CRUD_user
 from app.utils.user import (
     generate_password_reset_token,
@@ -51,6 +51,7 @@ def login_access_token(
 def test_token(current_user: CurrentUser) -> Any:
     """
     Test access token
+
     """
     return current_user
 
@@ -118,6 +119,8 @@ def reset_password(session: SessionDep, body: NewPassword) -> Message:
         )
     elif not user.isActive:
         raise HTTPException(status_code=400, detail="Inactive user")
+    if verify_password(body.new_password, user.hashedPassword):
+        raise HTTPException(status_code=400, detail="New password cannot be the same")
     hashed_password = get_password_hash(password=body.new_password)
     user.hashedPassword = hashed_password
     session.add(user)
