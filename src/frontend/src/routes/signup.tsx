@@ -19,7 +19,7 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 
 import Logo from "/assets/images/POM_logo_rec.svg";
 import type { UserRegister } from "../client";
-import useAuth, { isLoggedIn } from "../hooks/useAuth";
+import useAuth, { isLoggedIn } from "../hooks/validation/useAuth";
 import { confirmPasswordRules, emailPattern, passwordRules } from "../utils";
 import { hasCompletedCaptcha } from "../hooks/validation/turnstileValidation";
 

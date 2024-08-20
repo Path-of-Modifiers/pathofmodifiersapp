@@ -21,7 +21,7 @@ import {
   type UserUpdateMe,
   UsersService,
 } from "../../client"
-import useAuth from "../../hooks/useAuth"
+import useAuth from "../../hooks/validation/useAuth"
 import useCustomToast from "../../hooks/useCustomToast"
 import { emailPattern, handleError } from "../../utils"
 

@@ -12,7 +12,7 @@ import React from "react"
 import { useForm } from "react-hook-form"
 
 import { type ApiError, UsersService } from "../../client"
-import useAuth from "../../hooks/useAuth"
+import useAuth from "../../hooks/validation/useAuth"
 import useCustomToast from "../../hooks/useCustomToast"
 import { handleError } from "../../utils"
 
