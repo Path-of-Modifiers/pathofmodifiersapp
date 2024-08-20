@@ -13,7 +13,7 @@ import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { type SubmitHandler, useForm } from "react-hook-form";
 
 import { type ApiError, LoginsService, type NewPassword } from "../client";
-import { isLoggedIn } from "../hooks/useAuth";
+import { isLoggedIn } from "../hooks/validation/useAuth";
 import useCustomToast from "../hooks/useCustomToast";
 import { confirmPasswordRules, handleError, passwordRules } from "../utils";
 import { hasCompletedCaptcha } from "../hooks/validation/turnstileValidation";

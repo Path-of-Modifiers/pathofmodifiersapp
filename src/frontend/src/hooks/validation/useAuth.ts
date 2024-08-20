@@ -10,8 +10,8 @@ import {
   type UserPublic,
   type UserRegister,
   UsersService,
-} from "../client";
-import useCustomToast from "./useCustomToast";
+} from "../../client";
+import useCustomToast from "../useCustomToast";
 
 const isLoggedIn = () => {
   return localStorage.getItem("access_token") !== null;
