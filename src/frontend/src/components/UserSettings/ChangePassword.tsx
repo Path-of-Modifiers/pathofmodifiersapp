@@ -53,7 +53,7 @@ const ChangePassword = () => {
   return (
     <>
       <Container maxW="full">
-        <Heading size="sm" py={4}>
+        <Heading size="md" py={4}>
           Change Password
         </Heading>
         <Box
@@ -107,6 +107,8 @@ const ChangePassword = () => {
             )}
           </FormControl>
           <Button
+            bgColor="ui.success"
+            _hover={{ bgColor: "ui.queryMainInput" }}
             variant="primary"
             mt={4}
             type="submit"
