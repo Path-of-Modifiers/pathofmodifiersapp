@@ -22,7 +22,6 @@ from external_data_retrieval.utils import (
     ProgramTooSlowException,
     sync_timing_tracker,
 )
-from pom_api_authentication import get_super_authentication
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
@@ -65,7 +64,6 @@ class APIHandler:
         self.url = url
         self.auth_token = auth_token
         self.headers["Authorization"] = "Bearer " + auth_token
-        self.pom_api_authentication = get_super_authentication()
 
         self.item_detectors = item_detectors
 
@@ -151,11 +149,9 @@ class APIHandler:
         ):  # For testing purposes, set manual next_change_id
             next_change_id = settings.NEXT_CHANGE_ID
             return next_change_id
-
         response = requests.get(
             "https://www.pathofexile.com/api/trade/data/change-ids",
-            headers={"User-Agent": self.headers["User-Agent"]},
-            auth=self.pom_api_authentication,
+            headers=self.headers,
         )
         response.raise_for_status()
         response_json = response.json()

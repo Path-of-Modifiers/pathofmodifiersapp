@@ -8,6 +8,11 @@ from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 import app.core.models.database as _database
+from app.api.api_message_util import (
+    get_invalid_token_credentials_msg,
+    get_not_active_or_auth_user_error_msg,
+    get_not_superuser_auth_msg,
+)
 from app.core import security
 from app.core.config import settings
 from app.core.models.models import User
@@ -39,7 +44,7 @@ def get_current_user(session: SessionDep, token: TokenDep) -> User:
     except (InvalidTokenError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Could not validate credentials",
+            detail=get_invalid_token_credentials_msg().message,
         )
     user = session.get(User, token_data.sub)
     if not user:
@@ -55,6 +60,16 @@ CurrentUser = Annotated[User, Depends(get_current_user)]
 def get_current_active_superuser(current_user: CurrentUser) -> User:
     if not current_user.isSuperuser:
         raise HTTPException(
-            status_code=403, detail="The user doesn't have enough privileges"
+            status_code=403,
+            detail=get_not_superuser_auth_msg(current_user.username).message,
+        )
+    return current_user
+
+
+def get_current_active_user(current_user: CurrentUser) -> User:
+    if not current_user.isActive:
+        raise HTTPException(
+            status_code=403,
+            detail=get_not_active_or_auth_user_error_msg(current_user.username).message,
         )
     return current_user

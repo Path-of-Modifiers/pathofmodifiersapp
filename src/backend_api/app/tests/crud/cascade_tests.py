@@ -60,14 +60,18 @@ class TestCascade(TestCRUD):
 
             dep_map = self._create_primary_key_map(dep_model)
             deleted_dep_model = await crud_deps_instances[i].remove(
-                db=db, filter=dep_map
+                db=db,
+                filter=dep_map,
             )
 
             assert deleted_dep_model
             self._test_object(deleted_dep_model, dep_model)
 
             with pytest.raises(HTTPException) as excinfo:
-                await crud_instance.remove(db, filter=obj_map)
+                await crud_instance.remove(
+                    db,
+                    filter=obj_map,
+                )
             assert excinfo.value.status_code == 404
 
     @pytest.mark.asyncio
