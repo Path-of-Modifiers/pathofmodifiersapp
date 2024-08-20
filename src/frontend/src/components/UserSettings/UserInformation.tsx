@@ -10,27 +10,27 @@ import {
   Input,
   Text,
   useColorModeValue,
-} from "@chakra-ui/react"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useState } from "react"
-import { type SubmitHandler, useForm } from "react-hook-form"
+} from "@chakra-ui/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { type SubmitHandler, useForm } from "react-hook-form";
 
 import {
   type ApiError,
   type UserPublic,
   type UserUpdateMe,
   UsersService,
-} from "../../client"
-import useAuth from "../../hooks/validation/useAuth"
-import useCustomToast from "../../hooks/useCustomToast"
-import { emailPattern, handleError } from "../../utils"
+} from "../../client";
+import useAuth from "../../hooks/validation/useAuth";
+import useCustomToast from "../../hooks/useCustomToast";
+import { emailPattern, handleError } from "../../utils";
 
 const UserInformation = () => {
-  const queryClient = useQueryClient()
-  const color = useColorModeValue("inherit", "ui.light")
-  const showToast = useCustomToast()
-  const [editMode, setEditMode] = useState(false)
-  const { user: currentUser } = useAuth()
+  const queryClient = useQueryClient();
+  const color = useColorModeValue("inherit", "ui.light");
+  const showToast = useCustomToast();
+  const [editMode, setEditMode] = useState(false);
+  const { user: currentUser } = useAuth();
   const {
     register,
     handleSubmit,
@@ -44,39 +44,39 @@ const UserInformation = () => {
       username: currentUser?.username,
       email: currentUser?.email,
     },
-  })
+  });
 
   const toggleEditMode = () => {
-    setEditMode(!editMode)
-  }
+    setEditMode(!editMode);
+  };
 
   const mutation = useMutation({
     mutationFn: (data: UserUpdateMe) =>
-      UsersService.updateUserMe({ requestBody: data }),
+      UsersService.updateMe({ requestBody: data }),
     onSuccess: () => {
-      showToast("Success!", "User updated successfully.", "success")
+      showToast("Success!", "User updated successfully.", "success");
     },
     onError: (err: ApiError) => {
-      handleError(err, showToast)
+      handleError(err, showToast);
     },
     onSettled: () => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries();
     },
-  })
+  });
 
   const onSubmit: SubmitHandler<UserUpdateMe> = async (data) => {
-    mutation.mutate(data)
-  }
+    mutation.mutate(data);
+  };
 
   const onCancel = () => {
-    reset()
-    toggleEditMode()
-  }
+    reset();
+    toggleEditMode();
+  };
 
   return (
     <>
       <Container maxW="full">
-        <Heading size="sm" py={4}>
+        <Heading size="md" py={4}>
           User Information
         </Heading>
         <Box
@@ -120,11 +120,12 @@ const UserInformation = () => {
                   pattern: emailPattern,
                 })}
                 type="email"
+                maxWidth="250px"
                 size="md"
                 w="auto"
               />
             ) : (
-              <Text size="md" py={2} isTruncated maxWidth="250px">
+              <Text width="inputSizes.lgBox" py={2} isTruncated>
                 {currentUser?.email}
               </Text>
             )}
@@ -135,6 +136,8 @@ const UserInformation = () => {
           <Flex mt={4} gap={3}>
             <Button
               variant="primary"
+              bgColor="ui.success"
+              _hover={{ bgColor: "ui.queryMainInput" }}
               onClick={toggleEditMode}
               type={editMode ? "button" : "submit"}
               isLoading={editMode ? isSubmitting : false}
@@ -143,7 +146,11 @@ const UserInformation = () => {
               {editMode ? "Save" : "Edit"}
             </Button>
             {editMode && (
-              <Button onClick={onCancel} isDisabled={isSubmitting}>
+              <Button
+                _hover={{ bgColor: "ui.grey" }}
+                onClick={onCancel}
+                isDisabled={isSubmitting}
+              >
                 Cancel
               </Button>
             )}
@@ -151,7 +158,7 @@ const UserInformation = () => {
         </Box>
       </Container>
     </>
-  )
-}
+  );
+};
 
-export default UserInformation
+export default UserInformation;
