@@ -199,11 +199,13 @@ def get_user_by_id(
     """
     Get a specific user by id.
     """
-    db_user = db.get(User, user_id)
+    db_user = CRUD_user.get(db, {"userId": user_id})
     if not db_user:
         raise HTTPException(
             status_code=404,
-            detail=get_no_obj_matching_query_msg({"userId": user_id}, User).message,
+            detail=get_no_obj_matching_query_msg(
+                {"userId": user_id}, User.__tablename__
+            ).message,
         )
     if db_user == current_user:
         return db_user
@@ -241,11 +243,13 @@ def delete_user(
     """
     Delete a user.
     """
-    db_user = db.get(User, user_id)
+    db_user = CRUD_user.get(db, {"userId": user_id})
     if not db_user:
         raise HTTPException(
             status_code=404,
-            detail=get_no_obj_matching_query_msg({"userId": user_id}, User).message,
+            detail=get_no_obj_matching_query_msg(
+                {"userId": user_id}, User.__tablename__
+            ).message,
         )
     if db_user == current_user:
         raise HTTPException(
@@ -274,7 +278,7 @@ def change_activate_user(
     """
     Change activity to current user.
     """
-    db_user = db.get(User, user_id)
+    db_user = CRUD_user.get(db, {"userId": user_id})
     if db_user == current_user:
         CRUD_user.set_active(db=db, db_user=db_user, active=activate)
         return Message(
