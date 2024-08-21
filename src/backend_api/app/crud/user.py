@@ -121,7 +121,8 @@ class CRUDUser:
         Returns:
             Any: Updated user
         """
-        db_user = db.query(model_User).filter_by(userId=user_id).first()
+        user_id_map = {"userId": user_id}
+        db_user = self.get(db=db, filter=user_id_map)
 
         if user_in.email:
             email_filter = {"email": user_in.email}

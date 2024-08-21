@@ -22,6 +22,7 @@ item_modifier_prefix = "itemModifier"
 @router.get(
     "/{itemId}",
     response_model=schemas.ItemModifier | list[schemas.ItemModifier],
+    dependencies=[Depends(get_current_active_superuser)],
 )
 async def get_item_modifier(
     itemId: int,

@@ -42,7 +42,7 @@ async def get_item_base_type(baseType: str, db: SessionDep):
 @router.get(
     "/",
     response_model=schemas.ItemBaseType | list[schemas.ItemBaseType],
-    dependencies=[Depends(get_current_active_superuser)],
+    dependencies=[Depends(get_current_active_user)],
 )
 async def get_all_item_base_types(db: SessionDep):
     """
