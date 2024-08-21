@@ -14,14 +14,14 @@ export class CurrencysService {
      * Get currency by key and value for "currencyId".
      *
      * Always returns one currency.
-     * @returns any Successful Response
+     * @returns Currency Successful Response
      * @throws ApiError
      */
     public static getCurrency({
         currencyId,
     }: {
-        currencyId: string,
-    }): CancelablePromise<(Currency | Array<Currency>)> {
+        currencyId: number,
+    }): CancelablePromise<Currency> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/currency/{currencyId}',
@@ -45,7 +45,7 @@ export class CurrencysService {
         currencyId,
         requestBody,
     }: {
-        currencyId: string,
+        currencyId: number,
         requestBody: CurrencyUpdate,
     }): CancelablePromise<Currency> {
         return __request(OpenAPI, {
@@ -73,7 +73,7 @@ export class CurrencysService {
     public static deleteCurrency({
         currencyId,
     }: {
-        currencyId: string,
+        currencyId: number,
     }): CancelablePromise<string> {
         return __request(OpenAPI, {
             method: 'DELETE',

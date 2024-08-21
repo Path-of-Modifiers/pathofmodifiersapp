@@ -3,11 +3,12 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+
 import emails  # type: ignore
 import jwt
 from jinja2 import Template
 from jwt.exceptions import InvalidTokenError
-
+from pydantic import EmailStr
 
 from app.core.config import settings
 
@@ -28,11 +29,11 @@ def render_email_template(*, template_name: str, context: dict[str, Any]) -> str
 
 def send_email(
     *,
-    email_to: str,
+    email_to: EmailStr,
     subject: str = "",
     html_content: str = "",
 ) -> None:
-    assert settings.emails_enabled, "no provided configuration for email variables"
+    assert settings.emails_enabled, "No provided configuration for email variables"
     message = emails.Message(
         subject=subject,
         html=html_content,
@@ -47,11 +48,13 @@ def send_email(
         smtp_options["user"] = settings.SMTP_USER
     if settings.SMTP_PASSWORD:
         smtp_options["password"] = settings.SMTP_PASSWORD
+
     response = message.send(to=email_to, smtp=smtp_options)
-    logging.info(f"send email result: {response}")
+
+    logging.info(f"Send email result: {response}")
 
 
-def generate_test_email(email_to: str) -> EmailData:
+def generate_test_email(email_to: EmailStr) -> EmailData:
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - Test email"
     html_content = render_email_template(
@@ -61,7 +64,9 @@ def generate_test_email(email_to: str) -> EmailData:
     return EmailData(html_content=html_content, subject=subject)
 
 
-def generate_reset_password_email(email_to: str, email: str, token: str) -> EmailData:
+def generate_reset_password_email(
+    email_to: EmailStr, email: str, token: str
+) -> EmailData:
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - Password recovery for user {email}"
     link = f"{settings.server_host}/reset-password?token={token}"
@@ -79,7 +84,7 @@ def generate_reset_password_email(email_to: str, email: str, token: str) -> Emai
 
 
 def generate_new_account_email(
-    email_to: str, username: str, password: str
+    email_to: EmailStr, username: str, password: str
 ) -> EmailData:
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - New account for user {username}"
@@ -96,7 +101,7 @@ def generate_new_account_email(
     return EmailData(html_content=html_content, subject=subject)
 
 
-def generate_password_reset_token(email: str) -> str:
+def generate_password_reset_token(email: EmailStr) -> str:
     delta = timedelta(hours=settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
     now = datetime.now(timezone.utc)
     expires = now + delta

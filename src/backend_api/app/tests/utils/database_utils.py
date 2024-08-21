@@ -1,8 +1,8 @@
 from sqlalchemy import MetaData
 from sqlalchemy.exc import SQLAlchemyError
+
 from app.core.models.database import engine as src_db_engine
 from app.tests.setup_test_database import test_db_engine
-
 
 src_db_metadata = MetaData()
 test_db_metadata = MetaData()

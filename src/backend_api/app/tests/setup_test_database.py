@@ -1,12 +1,15 @@
-import os
-from typing import Optional
 from pydantic import PostgresDsn
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
+from app.core.config import settings
 from app.core.models.database import Base
+from app.core.models.init_db import init_db
 
+TEST_DATABASE_URL: PostgresDsn | None = str(settings.TEST_DATABASE_URI)
 
-TEST_DATABASE_URL: Optional[PostgresDsn] = os.getenv("TEST_DATABASE_URL")
+if not TEST_DATABASE_URL:
+    raise ValueError("TEST_DATABASE_URL environment variable is not set")
 
 test_db_engine = create_engine(TEST_DATABASE_URL)
 
@@ -21,6 +24,7 @@ Base.metadata.create_all(bind=test_db_engine)
 def override_get_db():
     try:
         db = TestingSessionLocal()
+        init_db(db)
         yield db
     finally:
         db.close()

@@ -1,6 +1,7 @@
-from typing import List, Optional
-from pydantic import BaseModel, Field, EmailStr, ConfigDict
 import uuid
+from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 # Shared properties
@@ -9,11 +10,10 @@ class _BaseUser(BaseModel):
 
     username: str = Field(max_length=255)
     email: EmailStr = Field(max_length=255)
-    hashedPassword: str
-    isActive: Optional[bool] = True
-    isSuperuser: Optional[bool] = False
-    rateLimitTier: Optional[int] = 0
-    isBanned: Optional[bool] = False
+    isActive: bool | None = True
+    isSuperuser: bool | None = False
+    rateLimitTier: int | None = 0
+    isBanned: bool | None = False
 
 
 # Properties to receive via API on creation
@@ -39,8 +39,8 @@ class UserUpdateMe(BaseModel):
 
 
 class UpdatePassword(BaseModel):
-    currentPassword: str = Field(min_length=8, max_length=40)
-    newPassword: str = Field(min_length=8, max_length=40)
+    current_password: str = Field(min_length=8, max_length=40)
+    new_password: str = Field(min_length=8, max_length=40)
 
 
 # Properties to return via API, id is always required
@@ -50,15 +50,16 @@ class UserPublic(_BaseUser):
 
 # Properties on multiple users
 class UsersPublic(BaseModel):
-    data: List[UserPublic]
+    data: list[UserPublic]
     count: int
 
 
 # Properties to return to client
 class UserInDBBase(_BaseUser):
     userId: uuid.UUID
-    createdAt: Optional[str]
-    updatedAt: Optional[str]
+    hashedPassword: str
+    createdAt: datetime | None
+    updatedAt: datetime | None
 
 
 # Properties returned to client

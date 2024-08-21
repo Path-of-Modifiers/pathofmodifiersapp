@@ -5,13 +5,14 @@ from typing import Annotated, Any, Literal
 from pydantic import (
     AnyUrl,
     BeforeValidator,
-    PostgresDsn,
+    EmailStr,
     HttpUrl,
+    PostgresDsn,
     computed_field,
     model_validator,
 )
-from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic_core import MultiHostUrl
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Self
 
 
@@ -30,8 +31,10 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/api_v1"
     SECRET_KEY: str = secrets.token_urlsafe(32)
 
+    TURNSTILE_SECRET_KEY: str
+
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
-    DOMAIN: str 
+    DOMAIN: str
     ENVIRONMENT: Literal["local", "staging", "production"] = "production"
 
     @computed_field  # type: ignore[prop-decorator]
@@ -42,9 +45,9 @@ class Settings(BaseSettings):
             return f"http://{self.DOMAIN}"
         return f"https://{self.DOMAIN}"
 
-    BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = (
-        []
-    )
+    BACKEND_CORS_ORIGINS: Annotated[
+        list[AnyUrl] | str, BeforeValidator(parse_cors)
+    ] = []
 
     PROJECT_NAME: str = "Path of Modifiers"
     SENTRY_DSN: HttpUrl | None = None
@@ -67,14 +70,14 @@ class Settings(BaseSettings):
         )
 
     SMTP_TLS: bool = True
-    SMTP_SSL: bool = False
+    SMTP_SSL: bool = True
     SMTP_PORT: int = 587
     SMTP_HOST: str | None = None
     SMTP_USER: str | None = None
     SMTP_PASSWORD: str | None = None
-    # TODO: update type to EmailStr when sqlmodel supports it
-    EMAILS_FROM_EMAIL: str | None = None
-    EMAILS_FROM_NAME: str | None = None
+
+    EMAILS_FROM_EMAIL: EmailStr | None = None
+    EMAILS_FROM_NAME: EmailStr | None = None
 
     @model_validator(mode="after")
     def _set_default_emails_from(self) -> Self:
@@ -89,10 +92,18 @@ class Settings(BaseSettings):
     def emails_enabled(self) -> bool:
         return bool(self.SMTP_HOST and self.EMAILS_FROM_EMAIL)
 
-    # TODO: update type to EmailStr when sqlmodel supports it
-    EMAIL_TEST_USER: str = "test@example.com"
-    # TODO: update type to EmailStr when sqlmodel supports it
-    FIRST_SUPERUSER: str
+    EMAIL_TEST_USER: EmailStr = "test@example.com"
+    TEST_DATABASE_URI: PostgresDsn | None = MultiHostUrl.build(
+        scheme="postgresql+psycopg",
+        username="test-pom-oltp-user",
+        password="test-pom-oltp-password",
+        host="test-db",
+        port=5432,
+        path="test-pom-oltp-db",
+    )
+
+    FIRST_SUPERUSER: EmailStr
+    FIRST_SUPERUSER_USERNAME: str
     FIRST_SUPERUSER_PASSWORD: str
 
     def _check_default_secret(self, var_name: str, value: str | None) -> None:

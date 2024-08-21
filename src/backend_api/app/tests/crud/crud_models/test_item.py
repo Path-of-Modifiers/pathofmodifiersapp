@@ -1,38 +1,39 @@
-from typing import Callable, Dict, Tuple, List, Union
+from collections.abc import Callable
+
 import pytest
 
+import app.tests.crud.cascade_tests as cascade_test
+from app.core.models.models import Account, Currency, Item, ItemBaseType, Stash
 from app.crud import (
-    CRUD_item,
     CRUD_account,
-    CRUD_itemBaseType,
     CRUD_currency,
+    CRUD_item,
+    CRUD_itemBaseType,
     CRUD_stash,
 )
-from app.core.models.models import Account, Item, ItemBaseType, Currency, Stash
 from app.crud.base import CRUDBase
-import app.tests.crud.cascade_tests as cascade_test
 from app.tests.utils.model_utils.item import generate_random_item
 
 
 @pytest.fixture(scope="module")
-def object_generator_func() -> Callable[[], Dict]:
+def object_generator_func() -> Callable[[], dict]:
     return generate_random_item
 
 
 @pytest.fixture(scope="module")
 def object_generator_func_w_deps() -> (
     Callable[
-        [], Tuple[Dict, Item, List[Union[Dict, Stash, ItemBaseType, Currency, Account]]]
+        [], tuple[dict, Item, list[dict | Stash | ItemBaseType | Currency | Account]]
     ]
 ):
     def generate_random_item_w_deps(
         db,
     ) -> Callable[
         [],
-        Tuple[
-            Dict,
+        tuple[
+            dict,
             Item,
-            List[Union[Dict, Stash, ItemBaseType, Currency, Account]],
+            list[dict | Stash | ItemBaseType | Currency | Account],
         ],
     ]:
         return generate_random_item(db, retrieve_dependencies=True)

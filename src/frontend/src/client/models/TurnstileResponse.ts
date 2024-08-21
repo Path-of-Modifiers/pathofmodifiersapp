@@ -2,13 +2,14 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { MetadataObject } from './MetadataObject';
 export type TurnstileResponse = {
     success: boolean;
     error_codes?: (Array<string> | null);
-    challenge_ts: string;
-    hostname: string;
-    action: string;
-    cdata: string;
-    metadata: Record<string, any>;
+    challenge_ts?: (string | null);
+    hostname?: (string | null);
+    action?: (string | null);
+    cdata?: (string | null);
+    metadata?: (MetadataObject | null);
 };
 

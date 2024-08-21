@@ -1,9 +1,10 @@
-from typing import Callable, Dict, Tuple
-import pytest
-import app.tests.crud.crud_test_base as test_crud
+from collections.abc import Callable
 
-from app.crud import CRUD_modifier
+import pytest
+
+import app.tests.crud.crud_test_base as test_crud
 from app.core.models.models import Modifier
+from app.crud import CRUD_modifier
 from app.crud.base import CRUDBase
 from app.tests.utils.model_utils.modifier import generate_random_modifier
 
@@ -14,7 +15,7 @@ def object_generator_func():
 
 
 @pytest.fixture(scope="function")
-def object_generator_func_w_main_key() -> Callable[[], Tuple[Dict, Modifier]]:
+def object_generator_func_w_main_key() -> Callable[[], tuple[dict, Modifier]]:
     pass
     # modifier_id = random_int(big_int=True)
 
@@ -30,6 +31,7 @@ def crud_instance() -> CRUDBase:
 
 
 # Modifier has only one key, which is 'modifierId'. Therefore, the following tests are not needed.
+
 
 class TestModifierCRUD(test_crud.TestCRUD):
     pass
@@ -75,7 +77,7 @@ class TestModifierCRUD(test_crud.TestCRUD):
 #     db: Session,
 #     crud_instance: CRUDBase,
 #     object_generator_func_w_main_key: Callable[[], Tuple[Dict, ModelType]],
-#     count: Optional[int] = 5,
+#     count: int] = 5,
 # ) -> None:
 #     """
 #     A test function.

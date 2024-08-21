@@ -2,26 +2,28 @@ from fastapi import APIRouter
 
 from app.api.routes import (
     account,
-    currency,
-    item_base_type,
-    item_modifier,
-    item,
-    login,
-    modifier,
-    stash,
-    plot,
-    turnstile,
-    user,
     account_prefix,
+    currency,
     currency_prefix,
+    item,
+    item_base_type,
     item_base_type_prefix,
+    item_modifier,
     item_modifier_prefix,
     item_prefix,
+    login,
     login_prefix,
+    modifier,
     modifier_prefix,
-    stash_prefix,
+    plot,
     plot_prefix,
+    stash,
+    stash_prefix,
+    temporary_hashed_user_ip,
+    temporary_hashed_user_ip_prefix,
+    turnstile,
     turnstile_prefix,
+    user,
     user_prefix,
 )
 
@@ -58,6 +60,11 @@ api_router.include_router(
 )
 api_router.include_router(
     plot.router, prefix=f"/{plot_prefix}", tags=[f"{plot_prefix}s"]
+)
+api_router.include_router(
+    temporary_hashed_user_ip.router,
+    prefix=f"/{temporary_hashed_user_ip_prefix}",
+    tags=[f"{temporary_hashed_user_ip_prefix}s"],
 )
 api_router.include_router(
     turnstile.router, prefix=f"/{turnstile_prefix}", tags=[f"{turnstile_prefix}s"]

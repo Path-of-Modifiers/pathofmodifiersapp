@@ -1,28 +1,29 @@
-from typing import Callable, Dict, Tuple, List, Union
+from collections.abc import Callable
+
 import pytest
 
-from app.crud import (
-    CRUD_stash,
-    CRUD_account,
-)
-from app.core.models.models import Stash, Account
-from app.crud.base import CRUDBase
 import app.tests.crud.cascade_tests as cascade_test
+from app.core.models.models import Account, Stash
+from app.crud import (
+    CRUD_account,
+    CRUD_stash,
+)
+from app.crud.base import CRUDBase
 from app.tests.utils.model_utils.stash import generate_random_stash
 
 
 @pytest.fixture(scope="module")
-def object_generator_func() -> Callable[[], Dict]:
+def object_generator_func() -> Callable[[], dict]:
     return generate_random_stash
 
 
 @pytest.fixture(scope="module")
 def object_generator_func_w_deps() -> (
-    Callable[[], Tuple[Dict, Stash, List[Union[Dict, Account]]]]
+    Callable[[], tuple[dict, Stash, list[dict | Account]]]
 ):
     def generate_random_stash_w_deps(
         db,
-    ) -> Callable[[], Tuple[Dict, Stash, List[Union[Dict, Account]]]]:
+    ) -> Callable[[], tuple[dict, Stash, list[dict | Account]]]:
         return generate_random_stash(db, retrieve_dependencies=True)
 
     return generate_random_stash_w_deps

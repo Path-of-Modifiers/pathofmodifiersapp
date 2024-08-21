@@ -1,21 +1,21 @@
-import requests
 import logging
-import pandas as pd
-from typing import List
+from io import StringIO
 
-from pom_api_authentication import get_basic_authentication, get_super_authentication
-from modifier_data_deposit.utils import insert_data
+import pandas as pd
+import requests
+
+from external_data_retrieval.config import settings
 from external_data_retrieval.transforming_data.utils import (
     get_rolls,
 )
-from external_data_retrieval.config import settings
+from modifier_data_deposit.utils import insert_data
+from pom_api_authentication import get_superuser_token_headers
 
 pd.options.mode.chained_assignment = None  # default="warn"
 
 
 class PoeAPIDataTransformer:
     def __init__(self, main_logger: logging.Logger):
-
         if "localhost" not in settings.BASEURL:
             self.url = f"https://{settings.BASEURL}"
         else:
@@ -23,7 +23,7 @@ class PoeAPIDataTransformer:
         self.url += "/api/api_v1"
 
         self.logger = main_logger.getChild("transform_poe")
-        self.pom_api_authentication = get_super_authentication()
+        self.pom_auth_headers = get_superuser_token_headers(self.url)
 
     def _create_account_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -45,7 +45,7 @@ class PoeAPIDataTransformer:
 
         account_df["isBanned"] = None
         account_response = requests.get(
-            self.url + "/account/", auth=self.pom_api_authentication
+            self.url + "/account/", headers=self.pom_auth_headers
         )
         account_json = account_response.json()
         db_account_df = pd.json_normalize(account_json)
@@ -76,10 +76,15 @@ class PoeAPIDataTransformer:
 
     def _clean_stash_table(self, stash_df: pd.DataFrame) -> pd.DataFrame:
         stash_df = stash_df.drop_duplicates(["stashId"])  # , "accountName", "league"])
-        headers = {"Authorization": get_basic_authentication()}
-        db_stash_df = pd.read_json(
-            self.url + "/stash/", dtype=str, storage_options=headers
-        )
+
+        response = requests.get(self.url + "/stash/", headers=self.pom_auth_headers)
+        db_stash_df = pd.DataFrame()
+        # Check if the request was successful
+        if response.status_code == 200:
+            # Load the JSON data into a pandas DataFrame
+            json_io = StringIO(response.content.decode("utf-8"))
+            db_stash_df = pd.read_json(json_io, dtype=str)
+
         if db_stash_df.empty:
             return stash_df
 
@@ -111,7 +116,6 @@ class PoeAPIDataTransformer:
     def _transform_item_basetype_table(
         self, item_basetype_df: pd.DataFrame
     ) -> pd.DataFrame:
-
         item_basetype_df.rename(
             {
                 "extended.category": "category",
@@ -130,10 +134,18 @@ class PoeAPIDataTransformer:
         self, item_basetype_df: pd.DataFrame
     ) -> pd.DataFrame:
         item_basetype_df = item_basetype_df.drop_duplicates(["baseType"])
-        headers = {"Authorization": get_basic_authentication()}
-        db_item_basetype_df = pd.read_json(
-            self.url + "/itemBaseType/", dtype=str, storage_options=headers
+
+        response = requests.get(
+            self.url + "/itemBaseType/", headers=self.pom_auth_headers
         )
+
+        db_item_basetype_df = pd.DataFrame()
+        # Check if the request was successful
+        if response.status_code == 200:
+            # Load the JSON data into a pandas DataFrame
+            json_io = StringIO(response.content.decode("utf-8"))
+            db_item_basetype_df = pd.read_json(json_io, dtype=str)
+
         if db_item_basetype_df.empty:
             return item_basetype_df
 
@@ -223,16 +235,16 @@ class PoeAPIDataTransformer:
 
             return ""
 
-        def transform_influences(row: pd.DataFrame, influence_columns: List[str]):
+        def transform_influences(row: pd.DataFrame, influence_columns: list[str]):
             if not row[influence_columns].any():
                 return pd.NA
             else:
                 influence_dict = {}
                 for influence_column in influence_columns:
                     if row[influence_column]:
-                        influence_dict[influence_column.replace("influences.", "")] = (
-                            True
-                        )
+                        influence_dict[
+                            influence_column.replace("influences.", "")
+                        ] = True
                 return influence_dict
 
         influence_columns = [
@@ -295,7 +307,7 @@ class PoeAPIDataTransformer:
 
     def _get_latest_item_id_series(self, item_df: pd.DataFrame) -> pd.Series:
         response = requests.get(
-            self.url + "/item/latest_item_id/", auth=self.pom_api_authentication
+            self.url + "/item/latest_item_id/", headers=self.pom_auth_headers
         )
         response.raise_for_status()
         latest_item_id = int(response.text)

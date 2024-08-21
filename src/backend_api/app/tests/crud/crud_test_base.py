@@ -1,24 +1,24 @@
+from collections.abc import Callable
+
 import pytest
-from typing import Callable, Tuple, Dict
 from sqlalchemy.orm import Session
 
-from app.tests.base_test import BaseTest
 from app.crud.base import (
     CRUDBase,
     ModelType,
 )
+from app.tests.base_test import BaseTest
 from app.tests.utils.utils import get_ignore_keys
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
 class TestCRUD(BaseTest):
-
     @pytest.mark.asyncio
     async def test_get(
         self,
         db: Session,
         crud_instance: CRUDBase,
-        object_generator_func: Callable[[], Tuple[Dict, ModelType]],
+        object_generator_func: Callable[[], tuple[dict, ModelType]],
     ) -> None:
         """
         A test function.
@@ -28,7 +28,9 @@ class TestCRUD(BaseTest):
         3. Uses the get method to retrieve whats in the db
         4. Checks the retrieved object agains the initial
         """
-        object_dict, object_out = await self._create_object_crud(db, object_generator_func)
+        object_dict, object_out = await self._create_object_crud(
+            db, object_generator_func
+        )
         self._test_object(object_out, object_dict)
 
         object_map = self._create_primary_key_map(object_out)
@@ -40,7 +42,7 @@ class TestCRUD(BaseTest):
     async def test_create(
         self,
         db: Session,
-        object_generator_func: Callable[[], Tuple[Dict, ModelType]],
+        object_generator_func: Callable[[], tuple[dict, ModelType]],
     ) -> None:
         """
         A test function.
@@ -48,7 +50,9 @@ class TestCRUD(BaseTest):
         1. Uses the create method to create the objects.
         2. Tests if the initially created objects are valid.
         """
-        object_dict, object_out = await self._create_object_crud(db, object_generator_func)
+        object_dict, object_out = await self._create_object_crud(
+            db, object_generator_func
+        )
         self._test_object(object_out, object_dict)
 
     @pytest.mark.asyncio
@@ -56,7 +60,7 @@ class TestCRUD(BaseTest):
         self,
         db: Session,
         crud_instance: CRUDBase,
-        object_generator_func: Callable[[], Tuple[Dict, ModelType]],
+        object_generator_func: Callable[[], tuple[dict, ModelType]],
         count: int = 5,
     ) -> None:
         """
@@ -70,7 +74,10 @@ class TestCRUD(BaseTest):
         """
         initial_object_count = len(await crud_instance.get(db))
 
-        multiple_object_dict, multiple_object_out = await self._create_multiple_objects_crud(
+        (
+            multiple_object_dict,
+            multiple_object_out,
+        ) = await self._create_multiple_objects_crud(
             db, object_generator_func, count=count
         )
         self._test_object(multiple_object_out, multiple_object_dict)
@@ -84,7 +91,7 @@ class TestCRUD(BaseTest):
         self,
         db: Session,
         crud_instance: CRUDBase,
-        object_generator_func: Callable[[], Tuple[Dict, ModelType]],
+        object_generator_func: Callable[[], tuple[dict, ModelType]],
     ) -> None:
         """
         A test function.
@@ -95,11 +102,16 @@ class TestCRUD(BaseTest):
         4. Deletes the object that matches the filter
         5. Tests that the deleted object is the same as the initial.
         """
-        object_dict, object_out = await self._create_object_crud(db, object_generator_func)
+        object_dict, object_out = await self._create_object_crud(
+            db, object_generator_func
+        )
         self._test_object(object_out, object_dict)
 
         object_map = self._create_primary_key_map(object_out)
-        deleted_object = await crud_instance.remove(db=db, filter=object_map)
+        deleted_object = await crud_instance.remove(
+            db=db,
+            filter=object_map,
+        )
         assert deleted_object
         self._test_object(deleted_object, object_out)
 
@@ -108,7 +120,7 @@ class TestCRUD(BaseTest):
         self,
         db: Session,
         crud_instance: CRUDBase,
-        object_generator_func: Callable[[], Tuple[Dict, ModelType]],
+        object_generator_func: Callable[[], tuple[dict, ModelType]],
     ) -> None:
         """
         A test function.
@@ -123,7 +135,9 @@ class TestCRUD(BaseTest):
         7. Updates the values of the initial object.
         8. Tests if the returned updated object has been updated.
         """
-        object_dict, object_out = await self._create_object_crud(db, object_generator_func)
+        object_dict, object_out = await self._create_object_crud(
+            db, object_generator_func
+        )
         self._test_object(object_out, object_dict)
 
         updated_object_dict, temp_object_out = await self._create_object_crud(
@@ -133,7 +147,8 @@ class TestCRUD(BaseTest):
 
         object_map = self._create_primary_key_map(temp_object_out)
         deleted_object = await crud_instance.remove(
-            db=db, filter=object_map
+            db=db,
+            filter=object_map,
         )  # Delete the template from the db
         assert deleted_object
         self._test_object(deleted_object, temp_object_out)

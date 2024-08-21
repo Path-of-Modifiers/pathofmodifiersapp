@@ -1,27 +1,27 @@
-from typing import Callable, Dict, List, Tuple
+from collections.abc import Callable
+
 import pytest
 
 import app.tests.api.api_routes_test_base as test_api
+from app.api.routes import currency_prefix
+from app.core.models.models import Currency
+from app.crud.base import ModelType
+from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
 from app.tests.utils.model_utils.currency import (
     create_random_currency_dict,
     generate_random_currency,
 )
-from app.crud.base import ModelType
-from app.api.routes import currency_prefix
-from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
-from app.core.models.models import Currency
 from app.tests.utils.utils import get_model_table_name, get_model_unique_identifier
 
 
 @pytest.fixture(scope="module")
-def model_name() -> str:
-    model_name = get_model_table_name(Currency)
-    return model_name
+def route_prefix() -> str:
+    return currency_prefix
 
 
 @pytest.fixture(scope="module")
-def route_name() -> str:
-    return currency_prefix
+def model_table_name() -> str:
+    return get_model_table_name(Currency)
 
 
 @pytest.fixture(scope="module")
@@ -35,7 +35,7 @@ def update_request_params() -> bool:
 
 
 @pytest.fixture(scope="module")
-def ignore_test_columns() -> List[str]:
+def ignore_test_columns() -> list[str]:
     """Ignore these columns when testing the model
 
     createdAt are ignored because currently, the API returns
@@ -60,7 +60,7 @@ def get_crud_test_model() -> UtilTestCRUD:
 
 
 @pytest.fixture(scope="module")
-def object_generator_func() -> Callable[[], Tuple[Dict, ModelType]]:
+def object_generator_func() -> Callable[[], tuple[dict, ModelType]]:
     return generate_random_currency
 
 
@@ -75,7 +75,7 @@ def get_high_permissions() -> bool:
 
 
 @pytest.fixture(scope="module")
-def create_random_object_func() -> Callable[[], Dict]:
+def create_random_object_func() -> Callable[[], dict]:
     return create_random_currency_dict
 
 

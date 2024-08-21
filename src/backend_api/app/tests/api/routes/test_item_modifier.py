@@ -1,20 +1,18 @@
-from typing import Awaitable, Callable, Dict, List, Tuple, Union
+from collections.abc import Awaitable, Callable
+
 import pytest
 from sqlalchemy.orm import Session
 
 import app.tests.api.api_routes_cascade_tests as test_cascade_api
-from app.crud.base import ModelType
 from app.api.routes import (
-    item_prefix,
-    item_modifier_prefix,
     account_prefix,
-    stash_prefix,
-    item_base_type_prefix,
     currency_prefix,
+    item_base_type_prefix,
+    item_modifier_prefix,
+    item_prefix,
     modifier_prefix,
+    stash_prefix,
 )
-from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
-from app.tests.crud.cascade_tests import TestCascade as UtilTestCascadeCRUD
 from app.core.models.models import (
     Account,
     Currency,
@@ -24,22 +22,24 @@ from app.core.models.models import (
     Modifier,
     Stash,
 )
-from app.tests.utils.utils import get_model_table_name, get_model_unique_identifier
+from app.crud.base import ModelType
+from app.tests.crud.cascade_tests import TestCascade as UtilTestCascadeCRUD
+from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
 from app.tests.utils.model_utils.item_modifier import (
     create_random_item_modifier_dict,
     generate_random_item_modifier,
 )
+from app.tests.utils.utils import get_model_table_name, get_model_unique_identifier
 
 
 @pytest.fixture(scope="module")
-def model_name() -> str:
-    table_name = get_model_table_name(ItemModifier)
-    return table_name
-
-
-@pytest.fixture(scope="module")
-def route_name() -> str:
+def route_prefix() -> str:
     return item_modifier_prefix
+
+
+@pytest.fixture(scope="module")
+def model_table_name() -> str:
+    return get_model_table_name(ItemModifier)
 
 
 @pytest.fixture(scope="module")
@@ -65,7 +65,7 @@ def update_request_params() -> bool:
 
 
 @pytest.fixture(scope="module")
-def ignore_test_columns() -> List[str]:
+def ignore_test_columns() -> list[str]:
     """Ignore these columns when testing the model
 
     updatedAt and createdAt are ignored because currently, the API returns
@@ -94,35 +94,37 @@ def get_high_permissions() -> bool:
 
 
 @pytest.fixture(scope="module")
-def object_generator_func() -> Callable[[], Tuple[Dict, ModelType]]:
+def object_generator_func() -> Callable[[], tuple[dict, ModelType]]:
     return generate_random_item_modifier
 
 
 @pytest.fixture(scope="module")
-def create_random_object_func() -> Callable[[Session], Awaitable[Dict]]:
-    async def create_object(db: Session) -> Dict:
+def create_random_object_func() -> Callable[[Session], Awaitable[dict]]:
+    async def create_object(db: Session) -> dict:
         return await create_random_item_modifier_dict(db)
 
     return create_object
 
 
 @pytest.fixture(scope="module")
-def object_generator_func_w_deps() -> Callable[
-    [],
-    Tuple[
-        Dict,
-        ItemModifier,
-        List[Union[Dict, Item, Stash, Account, ItemBaseType, Currency, Modifier]],
-    ],
-]:
+def object_generator_func_w_deps() -> (
+    Callable[
+        [],
+        tuple[
+            dict,
+            ItemModifier,
+            list[dict | Item | Stash | Account | ItemBaseType | Currency | Modifier],
+        ],
+    ]
+):
     def generate_random_item_modifier_w_deps(
         db,
     ) -> Callable[
         [],
-        Tuple[
-            Dict,
+        tuple[
+            dict,
             ItemModifier,
-            List[Union[Dict, Item, Stash, Account, ItemBaseType, Currency, Modifier]],
+            list[dict | Item | Stash | Account | ItemBaseType | Currency | Modifier],
         ],
     ]:
         return generate_random_item_modifier(db, retrieve_dependencies=True)
@@ -131,7 +133,7 @@ def object_generator_func_w_deps() -> Callable[
 
 
 @pytest.fixture(scope="module")
-def api_deps_instances() -> List[List[str]]:
+def api_deps_instances() -> list[list[str]]:
     """Fixture for API dependencies instances.
 
     Dependencies in return list needs to be in correct order.
@@ -139,22 +141,34 @@ def api_deps_instances() -> List[List[str]]:
     the one its dependent on. The order is defined by 'generate_random_item'.
 
     Returns:
-        List[Dict]: API dependencies instances. Format: [dep_route_name: dep_unique_identifier]
+        List[Dict]: API dependencies instances. Format: [dep_route_prefix: dep_unique_identifier]
 
 
     """
     return [
-        [account_prefix, get_model_unique_identifier(Account)],
-        [stash_prefix, get_model_unique_identifier(Stash)],
-        [item_base_type_prefix, get_model_unique_identifier(ItemBaseType)],
-        [currency_prefix, get_model_unique_identifier(Currency)],
-        [item_prefix, get_model_unique_identifier(Item)],
-        [modifier_prefix, get_model_unique_identifier(Modifier)],
+        [account_prefix, get_model_unique_identifier(Account), Account.__tablename__],
+        [stash_prefix, get_model_unique_identifier(Stash), Stash.__tablename__],
+        [
+            item_base_type_prefix,
+            get_model_unique_identifier(ItemBaseType),
+            ItemBaseType.__tablename__,
+        ],
+        [
+            currency_prefix,
+            get_model_unique_identifier(Currency),
+            Currency.__tablename__,
+        ],
+        [item_prefix, get_model_unique_identifier(Item), Item.__tablename__],
+        [
+            modifier_prefix,
+            get_model_unique_identifier(Modifier),
+            Modifier.__tablename__,
+        ],
     ]
 
 
 @pytest.fixture(scope="module")
-def update_request_params_deps() -> List[str]:
+def update_request_params_deps() -> list[str]:
     return [item_modifier_prefix, modifier_prefix]
 
 
