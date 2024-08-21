@@ -162,6 +162,15 @@ def random_based_on_type(reference: str | float | int) -> str | int | float:
         raise NotImplementedError(f"Objects of type {type_reference} is not supported")
 
 
+def random_email() -> str:
+    """Generate a random email.
+
+    Returns:
+        str: Random email.
+    """
+    return f"{random_lower_string()}@{random_lower_string()}.com"
+
+
 def get_ignore_keys(model: ModelType, dict: dict) -> list[str]:
     """Compare a model with a dictionary, and return the model's keys that are not in the dictionary
 
