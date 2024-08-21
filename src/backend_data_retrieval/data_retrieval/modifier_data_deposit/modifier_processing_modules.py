@@ -1,7 +1,7 @@
 import logging
-import pandas as pd
-from typing import Tuple, List, Optional, Dict, Any, Union
+from typing import Any
 
+import pandas as pd
 
 logging.basicConfig(
     filename="modifier_data_deposit.log",
@@ -13,7 +13,7 @@ logging.basicConfig(
 
 def divide_modifiers_into_dynamic_static(
     modifier_df: pd.DataFrame,
-) -> Tuple[pd.DataFrame, pd.DataFrame]:
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Simply filters the modifier df based on if the modifier is static or not
     """
@@ -26,7 +26,7 @@ def divide_modifiers_into_dynamic_static(
 
 
 def prepare_df_for_regex(dynamic_modifier_df: pd.DataFrame) -> pd.DataFrame:
-    """
+    r"""
     The newline symbol continues to be a pain and is easier to just remove. `+` is a regex flag and must therefor
     be replaced by `\+` to distinguish it as a regular charachter
     """
@@ -48,7 +48,7 @@ def group_df(dynamic_modifier_df: pd.DataFrame) -> pd.DataFrame:
     and no NA rolls.
     """
     agg_dict = {
-        "position": lambda positions: [position for position in set(positions)],
+        "position": lambda positions: list(set(positions)),
         "minRoll": lambda rolls: [roll for roll in rolls if not pd.isna(roll)],
         "textRolls": lambda rolls: [roll for roll in rolls if not pd.isna(roll)],
     }
@@ -74,7 +74,8 @@ def create_regex_string_from_row(row: pd.DataFrame):
     rolls = row["rolls"]
     effect_parts = effect.split("#")
     final_effect = ""
-    for i, (roll, part) in enumerate(zip(rolls, effect_parts)):
+    length_min = min(len(rolls), len(effect_parts))
+    for _, (roll, part) in enumerate(zip(rolls, effect_parts, strict=False)):
         final_effect += part
         try:
             float(roll)
@@ -91,7 +92,7 @@ def create_regex_string_from_row(row: pd.DataFrame):
         #         final_effect += "([+-]?([0-9]*[.])?[0-9]+)"
 
     final_effect += "".join(
-        effect_parts[i + 1 :]
+        effect_parts[length_min:]
     )  # adds the final part of the effect if there is one
     return final_effect
 
@@ -118,7 +119,7 @@ def add_regex_column(grouped_dynamic_modifier_df: pd.DataFrame) -> pd.DataFrame:
     ].str.replace("increased|reduced", r"(increased|reduced)", regex=True)
     grouped_dynamic_modifier_df["regex"] = grouped_dynamic_modifier_df[
         "regex"
-    ].str.replace("\+", r"(\+|\-)")
+    ].str.replace(r"\+", r"(\+|\-)")
 
     return grouped_dynamic_modifier_df
 
@@ -222,11 +223,11 @@ def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame
 
 
 def check_for_updated_text_rolls(
-    data: Dict[str, Any],
+    data: dict[str, Any],
     row_new: pd.DataFrame,
-    rolls: Optional[List[Union[int, str]]],
+    rolls: list[int | str],
     logger: logging.Logger,
-) -> Tuple[Dict[str, Any], bool]:
+) -> tuple[dict[str, Any], bool]:
     if data["textRolls"] != row_new["textRolls"]:
         logger.info(
             f"Found a modifier with new 'textRolls'. Modifier: {data['effect']}"
@@ -255,11 +256,10 @@ def check_for_updated_text_rolls(
 
 
 def check_for_updated_numerical_rolls(
-    data: Dict[str, Any],
+    data: dict[str, Any],
     row_new: pd.DataFrame,
-    rolls: Optional[List[Union[int, str]]],
     logger: logging.Logger,
-) -> Tuple[Dict[str, Any], bool]:
+) -> tuple[dict[str, Any], bool]:
     min_roll = data["minRoll"]
     max_roll = data["maxRoll"]
 
@@ -288,12 +288,12 @@ def check_for_updated_numerical_rolls(
 
 
 def check_for_additional_modifier_types(
-    data: Dict[str, Any],
+    data: dict[str, Any],
     row_new: pd.Series,
     put_update: bool,
-    modifier_types: List[str],
+    modifier_types: list[str],
     logger: logging.Logger,
-) -> Tuple[Dict[str, Any], bool]:
+) -> tuple[dict[str, Any], bool]:
     for modifier_type in modifier_types:
         if modifier_type in row_new.index and modifier_type not in data:
             logger.info(

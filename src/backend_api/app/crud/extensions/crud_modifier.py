@@ -1,22 +1,19 @@
-from typing import Any, List, Union
+from typing import Any
 
 from fastapi import HTTPException
 from pydantic import TypeAdapter
-
-from sqlalchemy.orm import Session
-from sqlalchemy import Column, select
-from sqlalchemy import func
-from sqlalchemy import String, Integer, Boolean, Float
+from sqlalchemy import Boolean, Column, Float, Integer, String, func, select
 from sqlalchemy.dialects.postgresql import ARRAY, aggregate_order_by
+from sqlalchemy.orm import Session
 
+from app.core.models.models import Modifier as model_Modifier
 from app.core.schemas.modifier import (
+    GroupedModifierByEffect,
+    Modifier,
     ModifierCreate,
     ModifierUpdate,
-    Modifier,
-    GroupedModifierByEffect,
 )
-from app.core.models.models import Modifier as model_Modifier
-from app.crud.base import CRUDBase, SchemaType
+from app.crud.base import CRUDBase
 
 
 class CRUDModifier(
@@ -27,13 +24,13 @@ class CRUDModifier(
         ModifierUpdate,
     ]
 ):
-
     def _create_array_agg(self, column: Column[Any], type_: ARRAY):
         return func.array_agg(column, type_=type_).label(column.name)
 
     def _create_array_agg_position(self):
         return func.array_agg(
-            aggregate_order_by(model_Modifier.position, model_Modifier.position.asc()), type_=ARRAY(Integer)
+            aggregate_order_by(model_Modifier.position, model_Modifier.position.asc()),
+            type_=ARRAY(Integer),
         ).label(model_Modifier.position.name)
 
     async def get_grouped_modifier_by_effect(self, db: Session):
@@ -49,7 +46,7 @@ class CRUDModifier(
         static_agg = self._create_array_agg(model_Modifier.static, type_=ARRAY(Boolean))
 
         statement = (
-            select (
+            select(
                 modifier_agg,
                 position_agg,
                 minRoll_agg,
@@ -76,7 +73,7 @@ class CRUDModifier(
             db_obj = db_obj[0]
 
         validate = TypeAdapter(
-            Union[GroupedModifierByEffect, List[GroupedModifierByEffect]]
+            GroupedModifierByEffect | list[GroupedModifierByEffect]
         ).validate_python
 
         return validate(db_obj)

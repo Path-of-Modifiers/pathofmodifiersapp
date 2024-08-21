@@ -1,13 +1,13 @@
 from copy import deepcopy
-from typing import Dict, List, Optional, Tuple, Union
-from fastapi.testclient import TestClient
+
 import pytest
-from typing import Dict, List, Optional, Tuple, Union
+from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
+from app.api.api_message_util import get_delete_return_msg
 from app.core.config import settings
-from app.tests.api.api_routes_test_base import TestAPI
 from app.crud.base import ModelType
+from app.tests.api.api_routes_test_base import TestAPI
 from app.tests.utils.utils import random_based_on_type
 
 
@@ -17,15 +17,16 @@ class TestCascadeAPI(TestAPI):
     async def test_cascade_delete(
         self,
         db: Session,
-        object_generator_func_w_deps: Tuple[
-            Dict, ModelType, Optional[List[Union[Dict, ModelType]]]
+        object_generator_func_w_deps: tuple[
+            dict, ModelType, list[dict | ModelType] | None
         ],
         client: TestClient,
-        route_name: str,
+        route_prefix: str,
+        model_table_name: str,
         unique_identifier: str,
-        ignore_test_columns: List[str],
-        superuser_headers: Dict,
-        api_deps_instances: List[List[str]],
+        ignore_test_columns: list[str],
+        superuser_token_headers: dict[str, str],
+        api_deps_instances: list[list[str]],
     ) -> None:
         """Test cascade delete function for the API.
 
@@ -40,14 +41,15 @@ class TestCascadeAPI(TestAPI):
             db (Session): DB session
 
             object_generator_func_w_deps
-            (Tuple[ Dict, ModelType, Optional[List[Union[Dict, ModelType]]] ]):
+            (Tuple[ Dict, ModelType, List[Union[Dict, ModelType]]] ]):
             Object generator function with dependencies
 
             client (TestClient): FastAPI test client
-            route_name (str): Route name
+            route_prefix (str): Route name
+            model_table_name (str): Model table name
             unique_identifier (str): Unique identifier for the object
             ignore_test_columns (List[str]): Columns to ignore
-            superuser_headers (Dict): Superuser headers
+            superuser_token_headers: dict[str, str] (Dict): Superuser headers
             api_deps_instances (List[List[str]]): API dependencies instances
         """
         _, object_out, deps = await self._create_object_cascade_crud(
@@ -59,9 +61,7 @@ class TestCascadeAPI(TestAPI):
         # We cannot rely on errors to tell us if a table has restricted deletes,
         # this is because the item is already deleted by the time we are notified
         # that it was not allowed.
-        restricted_tables = self._find_restricted_delete(
-            object_out, deps
-        )
+        restricted_tables = self._find_restricted_delete(object_out, deps)
 
         # Number of dependencies is half the length of deps list (since it is a list of pairs)
         n_deps = len(deps) // 2
@@ -76,8 +76,8 @@ class TestCascadeAPI(TestAPI):
             obj_out_pk_map = self._create_primary_key_map(object_out)
 
             response_get_before_deletion = client.get(
-                f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
-                auth=superuser_headers,
+                f"{settings.API_V1_STR}/{route_prefix}/{obj_out_pk_map[unique_identifier]}",
+                headers=superuser_token_headers,
             )
             content_before_deletion = response_get_before_deletion.json()
             assert response_get_before_deletion.status_code == 200
@@ -94,28 +94,31 @@ class TestCascadeAPI(TestAPI):
                 continue
 
             # Get key name of dict api_deps_instances[i]
-            dep_route_name = api_deps_instances[i][0]
+            dep_route_prefix = api_deps_instances[i][0]
             dep_unique_identifier = api_deps_instances[i][1]
+            dep_model_table_name = api_deps_instances[i][2]
 
             if dep_unique_identifier not in dep_dict:
                 continue
 
             response_delete_dep = client.delete(
-                f"{settings.API_V1_STR}/{dep_route_name}/{dep_dict[dep_unique_identifier]}",
-                auth=superuser_headers,
+                f"{settings.API_V1_STR}/{dep_route_prefix}/{dep_dict[dep_unique_identifier]}",
+                headers=superuser_token_headers,
             )
             content_dep = response_delete_dep.json()
             primary_keys_map = self._create_primary_key_map(dep_model)
             assert (
                 content_dep
-                == f"{dep_route_name} with mapping ({dep_unique_identifier}: {primary_keys_map[dep_unique_identifier]}) deleted successfully"
+                == get_delete_return_msg(
+                    model_table_name=dep_model_table_name, mapping=primary_keys_map
+                ).message
             )
 
             assert response_delete_dep.status_code == 200
 
             response_get_after_deletion = client.get(
-                f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
-                auth=superuser_headers,
+                f"{settings.API_V1_STR}/{route_prefix}/{obj_out_pk_map[unique_identifier]}",
+                headers=superuser_token_headers,
             )
             assert response_get_after_deletion.status_code == 404
 
@@ -123,16 +126,16 @@ class TestCascadeAPI(TestAPI):
     async def test_cascade_update(
         self,
         db: Session,
-        object_generator_func_w_deps: Tuple[
-            Dict, ModelType, Optional[List[Union[Dict, ModelType]]]
+        object_generator_func_w_deps: tuple[
+            dict, ModelType, list[dict | ModelType] | None
         ],
         client: TestClient,
-        route_name: str,
+        route_prefix: str,
         unique_identifier: str,
-        update_request_params_deps: List[str],
-        ignore_test_columns: List[str],
-        superuser_headers: Dict,
-        api_deps_instances: List[List[str]],
+        update_request_params_deps: list[str],
+        ignore_test_columns: list[str],
+        superuser_token_headers: dict[str, str],
+        api_deps_instances: list[list[str]],
     ) -> None:
         """Test cascade update function for the API.
 
@@ -147,18 +150,18 @@ class TestCascadeAPI(TestAPI):
             db (Session): DB session
 
             object_generator_func_w_deps
-            (Tuple[ Dict, ModelType, Optional[List[Union[Dict, ModelType]]] ]):
+            (Tuple[ Dict, ModelType, List[Union[Dict, ModelType]]] ]):
             Object generator function with dependencies
 
             client (TestClient): FastAPI test client
-            route_name (str): Route name
+            route_prefix (str): Route name
             unique_identifier (str): Unique identifier for the object
 
             update_request_params_deps (List[str]): List of dependencies that require
             parameters for PUT
 
             ignore_test_columns (List[str]): Columns to ignore
-            superuser_headers (Dict): Superuser headers
+            superuser_token_headers: dict[str, str] (Dict): Superuser headers
             api_deps_instances (List[List[str]]): API dependencies instances
         """
         _, object_out, deps = await self._create_object_cascade_crud(
@@ -167,9 +170,7 @@ class TestCascadeAPI(TestAPI):
             retrieve_dependencies=True,
         )
 
-        cascading_tables = self._find_cascading_update(
-            object_out, deps
-        )
+        cascading_tables = self._find_cascading_update(object_out, deps)
 
         n_deps = len(deps) // 2
         for i in range(n_deps):
@@ -203,22 +204,22 @@ class TestCascadeAPI(TestAPI):
 
                 assert object_dict[key] != new_dep_dict[key]
 
-            dep_route_name = api_deps_instances[i][0]
+            dep_route_prefix = api_deps_instances[i][0]
             dep_unique_identifier = api_deps_instances[i][1]
 
             dep_obj_out_pk_map = self._create_primary_key_map(dep_model)
 
-            if dep_route_name in update_request_params_deps:
+            if dep_route_prefix in update_request_params_deps:
                 response_update_dep = client.put(
-                    f"{settings.API_V1_STR}/{dep_route_name}/",
-                    auth=superuser_headers,
+                    f"{settings.API_V1_STR}/{dep_route_prefix}/",
+                    headers=superuser_token_headers,
                     json=new_dep_dict,
                     params=dep_obj_out_pk_map,
                 )
             else:
                 response_update_dep = client.put(
-                    f"{settings.API_V1_STR}/{dep_route_name}/{dep_obj_out_pk_map[dep_unique_identifier]}",
-                    auth=superuser_headers,
+                    f"{settings.API_V1_STR}/{dep_route_prefix}/{dep_obj_out_pk_map[dep_unique_identifier]}",
+                    headers=superuser_token_headers,
                     json=new_dep_dict,
                 )
 
@@ -233,8 +234,8 @@ class TestCascadeAPI(TestAPI):
 
             # Get the original model
             response_get_model = client.get(
-                f"{settings.API_V1_STR}/{route_name}/{obj_out_pk_map[unique_identifier]}",
-                auth=superuser_headers,
+                f"{settings.API_V1_STR}/{route_prefix}/{obj_out_pk_map[unique_identifier]}",
+                headers=superuser_token_headers,
             )
             assert response_get_model.status_code == 200
 

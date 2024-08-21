@@ -15,7 +15,7 @@
         "operationId": "get_account",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -35,18 +35,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Account"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Account"
-                      }
-                    }
-                  ],
-                  "title": "Response Accounts-Get Account"
+                  "$ref": "#/components/schemas/Account"
                 }
               }
             }
@@ -72,7 +61,7 @@
         "operationId": "update_account",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -128,7 +117,7 @@
         "operationId": "delete_account",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -200,7 +189,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       },
@@ -267,7 +256,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -282,7 +271,7 @@
         "operationId": "get_currency",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -291,7 +280,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
+              "type": "integer",
               "title": "Currencyid"
             }
           }
@@ -302,18 +291,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Currency"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Currency"
-                      }
-                    }
-                  ],
-                  "title": "Response Currencys-Get Currency"
+                  "$ref": "#/components/schemas/Currency"
                 }
               }
             }
@@ -339,7 +317,7 @@
         "operationId": "update_currency",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -348,7 +326,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
+              "type": "integer",
               "title": "Currencyid"
             }
           }
@@ -395,7 +373,7 @@
         "operationId": "delete_currency",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -404,7 +382,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
+              "type": "integer",
               "title": "Currencyid"
             }
           }
@@ -467,7 +445,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       },
@@ -534,7 +512,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -563,7 +541,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -578,7 +556,7 @@
         "operationId": "get_item_base_type",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -598,18 +576,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/ItemBaseType"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/ItemBaseType"
-                      }
-                    }
-                  ],
-                  "title": "Response Itembasetypes-Get Item Base Type"
+                  "$ref": "#/components/schemas/ItemBaseType"
                 }
               }
             }
@@ -635,7 +602,7 @@
         "operationId": "update_item_base_type",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -691,7 +658,7 @@
         "operationId": "delete_item_base_type",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -763,7 +730,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       },
@@ -830,7 +797,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -868,7 +835,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -906,7 +873,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -944,7 +911,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -957,11 +924,6 @@
         "summary": "Get Item Modifier",
         "description": "Get item modifier or list of item modifiers by key and\nvalue for \"itemId\", optional \"modifierId\" and optional \"position\".\n\nDominant key is \"itemId\".\n\nReturns one or a list of item modifiers.",
         "operationId": "get_item_modifier",
-        "security": [
-          {
-            "HTTPBasic": []
-          }
-        ],
         "parameters": [
           {
             "name": "itemId",
@@ -1048,7 +1010,7 @@
         "operationId": "delete_item_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1110,7 +1072,7 @@
         "operationId": "get_all_item_modifiers",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "responses": {
@@ -1146,7 +1108,7 @@
         "operationId": "create_item_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "requestBody": {
@@ -1213,7 +1175,7 @@
         "operationId": "update_item_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1280,7 +1242,7 @@
         "operationId": "get_item",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1289,7 +1251,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
+              "type": "integer",
               "title": "Itemid"
             }
           }
@@ -1300,18 +1262,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Item"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Item"
-                      }
-                    }
-                  ],
-                  "title": "Response Items-Get Item"
+                  "$ref": "#/components/schemas/Item"
                 }
               }
             }
@@ -1337,7 +1288,7 @@
         "operationId": "update_item",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1346,7 +1297,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
+              "type": "integer",
               "title": "Itemid"
             }
           }
@@ -1393,7 +1344,7 @@
         "operationId": "delete_item",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1402,7 +1353,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
+              "type": "integer",
               "title": "Itemid"
             }
           }
@@ -1456,7 +1407,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -1494,7 +1445,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       },
@@ -1561,9 +1512,236 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
+      }
+    },
+    "/api/api_v1/login/access-token": {
+      "post": {
+        "tags": [
+          "logins"
+        ],
+        "summary": "Login Access Token",
+        "description": "OAuth2 compatible token login, get an access token for future requests",
+        "operationId": "login_access_token",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_logins-login_access_token"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/login/test-token": {
+      "post": {
+        "tags": [
+          "logins"
+        ],
+        "summary": "Test Token",
+        "description": "Test access token",
+        "operationId": "test_token",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/api_v1/login/password-recovery/": {
+      "post": {
+        "tags": [
+          "logins"
+        ],
+        "summary": "Recover Password",
+        "description": "Password Recovery",
+        "operationId": "recover_password",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Username"
+            }
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "email"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Email"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/login/reset-password/": {
+      "post": {
+        "tags": [
+          "logins"
+        ],
+        "summary": "Reset Password",
+        "description": "Reset password",
+        "operationId": "reset_password",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewPassword"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/login/password-recovery-html-content/{email}": {
+      "post": {
+        "tags": [
+          "logins"
+        ],
+        "summary": "Recover Password Html Content",
+        "description": "HTML Content for Password Recovery",
+        "operationId": "recover_password_html_content",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "email",
+              "title": "Email"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/api_v1/modifier/{modifierId}": {
@@ -1576,7 +1754,7 @@
         "operationId": "get_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1585,7 +1763,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
+              "type": "integer",
               "title": "Modifierid"
             }
           }
@@ -1633,7 +1811,7 @@
         "operationId": "delete_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1682,7 +1860,7 @@
         "operationId": "get_all_modifiers",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "responses": {
@@ -1718,7 +1896,7 @@
         "operationId": "create_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "requestBody": {
@@ -1785,7 +1963,7 @@
         "operationId": "update_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1866,7 +2044,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -1881,7 +2059,7 @@
         "operationId": "get_stash",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1901,18 +2079,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Stash"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Stash"
-                      }
-                    }
-                  ],
-                  "title": "Response Stashs-Get Stash"
+                  "$ref": "#/components/schemas/Stash"
                 }
               }
             }
@@ -1938,7 +2105,7 @@
         "operationId": "update_stash",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1994,7 +2161,7 @@
         "operationId": "delete_stash",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -2066,7 +2233,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       },
@@ -2133,7 +2300,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -2180,7 +2347,340 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/api_v1/temporary_hashed_user_ip/check/": {
+      "post": {
+        "tags": [
+          "temporary_hashed_user_ips"
+        ],
+        "summary": "Check Temporary Hashed User Ip",
+        "description": "Takes a query based on the 'TemporaryHashedUserIp' schema and retrieves\nwhether the hashed user ip is valid.",
+        "operationId": "check_temporary_hashed_user_ip",
+        "parameters": [
+          {
+            "name": "ip",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ip"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean",
+                  "title": "Response Temporary Hashed User Ips-Check Temporary Hashed User Ip"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/temporary_hashed_user_ip/{temporaryHashedUserIp}": {
+      "get": {
+        "tags": [
+          "temporary_hashed_user_ips"
+        ],
+        "summary": "Get Temporary Hashed User Ip",
+        "description": "Get temporary hashed user ip by key and value for \"temporaryHashedUserIp\".",
+        "operationId": "get_temporary_hashed_user_ip",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "temporaryHashedUserIp",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Temporaryhasheduserip"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/HashedUserIp"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/HashedUserIp"
+                      }
+                    }
+                  ],
+                  "title": "Response Temporary Hashed User Ips-Get Temporary Hashed User Ip"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "temporary_hashed_user_ips"
+        ],
+        "summary": "Update Temporary Hashed User Ip",
+        "description": "Update temporary hashed user ip by key and value for \"temporaryHashedUserIp\".",
+        "operationId": "update_temporary_hashed_user_ip",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "temporaryHashedUserIp",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Temporaryhasheduserip"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/HashedUserIpUpdate"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/HashedUserIpUpdate"
+                    }
+                  }
+                ],
+                "title": "Hashed User Ip Update"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/HashedUserIp"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/HashedUserIp"
+                      }
+                    }
+                  ],
+                  "title": "Response Temporary Hashed User Ips-Update Temporary Hashed User Ip"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "temporary_hashed_user_ips"
+        ],
+        "summary": "Delete Temporary Hashed User Ip",
+        "description": "Delete temporary hashed user ip by key and value for \"temporaryHashedUserIp\".",
+        "operationId": "delete_temporary_hashed_user_ip",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "temporaryHashedUserIp",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Temporaryhasheduserip"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "title": "Response Temporary Hashed User Ips-Delete Temporary Hashed User Ip"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/temporary_hashed_user_ip/": {
+      "get": {
+        "tags": [
+          "temporary_hashed_user_ips"
+        ],
+        "summary": "Get All Temporary Hashed User Ips",
+        "description": "Get all temporary hashed user ips.",
+        "operationId": "get_all_temporary_hashed_user_ips",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/HashedUserIp"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/HashedUserIp"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Temporary Hashed User Ips-Get All Temporary Hashed User Ips"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "temporary_hashed_user_ips"
+        ],
+        "summary": "Create Temporary Hashed User Ip",
+        "description": "Create temporary hashed user ip.",
+        "operationId": "create_temporary_hashed_user_ip",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/HashedUserIpCreate"
+                  },
+                  {
+                    "items": {
+                      "$ref": "#/components/schemas/HashedUserIpCreate"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "title": "Hashed User Ip"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/HashedUserIpCreate"
+                    },
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/HashedUserIpCreate"
+                      },
+                      "type": "array"
+                    }
+                  ],
+                  "title": "Response Temporary Hashed User Ips-Create Temporary Hashed User Ip"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -2224,12 +2724,508 @@
               }
             }
           }
+        }
+      }
+    },
+    "/api/api_v1/user/": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get All",
+        "description": "Retrieve all users.",
+        "operationId": "get_all",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsersPublic"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Create",
+        "description": "Create new user.",
+        "operationId": "create",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/user/me": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get User Me",
+        "description": "Get current user.",
+        "operationId": "get_user_me",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            }
+          }
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
+      },
+      "delete": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Delete User Me",
+        "description": "Delete own user.",
+        "operationId": "delete_user_me",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Update Me",
+        "description": "Update own user.",
+        "operationId": "update_me",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdateMe"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/api_v1/user/me/password": {
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Update Password Me",
+        "description": "Update own password.",
+        "operationId": "update_password_me",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePassword"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/api_v1/user/signup": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Register User",
+        "description": "Create new user without the need to be logged in.",
+        "operationId": "register_user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRegister"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/user/{user_id}": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get User By Id",
+        "description": "Get a specific user by id.",
+        "operationId": "get_user_by_id",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Update",
+        "description": "Update a user.",
+        "operationId": "update",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Delete User",
+        "description": "Delete a user.",
+        "operationId": "delete_user",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/user/activate/{user_id}": {
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Change Activate User",
+        "description": "Change activity to current user.",
+        "operationId": "change_activate_user",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "User Id"
+            }
+          },
+          {
+            "name": "activate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "boolean",
+              "title": "Activate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -2376,6 +3372,63 @@
           "baseType"
         ],
         "title": "BaseType"
+      },
+      "Body_logins-login_access_token": {
+        "properties": {
+          "grant_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "password"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grant Type"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          },
+          "scope": {
+            "type": "string",
+            "title": "Scope",
+            "default": ""
+          },
+          "client_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Id"
+          },
+          "client_secret": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Secret"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "Body_logins-login_access_token"
       },
       "Currency": {
         "properties": {
@@ -2558,6 +3611,45 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "HashedUserIp": {
+        "properties": {
+          "hashedIp": {
+            "type": "string",
+            "title": "Hashedip"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hashedIp"
+        ],
+        "title": "HashedUserIp"
+      },
+      "HashedUserIpCreate": {
+        "properties": {
+          "hashedIp": {
+            "type": "string",
+            "title": "Hashedip"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hashedIp"
+        ],
+        "title": "HashedUserIpCreate"
+      },
+      "HashedUserIpUpdate": {
+        "properties": {
+          "hashedIp": {
+            "type": "string",
+            "title": "Hashedip"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hashedIp"
+        ],
+        "title": "HashedUserIpUpdate"
       },
       "Influences": {
         "properties": {
@@ -3831,6 +4923,36 @@
         ],
         "title": "ItemUpdate"
       },
+      "Message": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "Message"
+      },
+      "MetadataObject": {
+        "properties": {
+          "interactive": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interactive"
+          }
+        },
+        "type": "object",
+        "title": "MetadataObject"
+      },
       "Modifier": {
         "properties": {
           "position": {
@@ -4420,6 +5542,26 @@
         ],
         "title": "ModifierUpdate"
       },
+      "NewPassword": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "new_password": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 8,
+            "title": "New Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "new_password"
+        ],
+        "title": "NewPassword"
+      },
       "PlotData": {
         "properties": {
           "valueInChaos": {
@@ -4437,24 +5579,24 @@
             "type": "array",
             "title": "Timestamp"
           },
-          "mostCommonCurrencyUsed": {
-            "type": "string",
-            "title": "Mostcommoncurrencyused"
-          },
-          "conversionValue": {
+          "valueInMostCommonCurrencyUsed": {
             "items": {
               "type": "number"
             },
             "type": "array",
-            "title": "Conversionvalue"
+            "title": "Valueinmostcommoncurrencyused"
+          },
+          "mostCommonCurrencyUsed": {
+            "type": "string",
+            "title": "Mostcommoncurrencyused"
           }
         },
         "type": "object",
         "required": [
           "valueInChaos",
           "timeStamp",
-          "mostCommonCurrencyUsed",
-          "conversionValue"
+          "valueInMostCommonCurrencyUsed",
+          "mostCommonCurrencyUsed"
         ],
         "title": "PlotData"
       },
@@ -4590,6 +5732,24 @@
         ],
         "title": "StashUpdate"
       },
+      "Token": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token"
+        ],
+        "title": "Token"
+      },
       "TurnstileQuery": {
         "properties": {
           "token": {
@@ -4629,36 +5789,406 @@
             "title": "Error Codes"
           },
           "challenge_ts": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Challenge Ts"
           },
           "hostname": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Hostname"
           },
           "action": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Action"
           },
           "cdata": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Cdata"
           },
           "metadata": {
-            "type": "object",
-            "title": "Metadata"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MetadataObject"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
         "required": [
-          "success",
-          "challenge_ts",
-          "hostname",
-          "action",
-          "cdata",
-          "metadata"
+          "success"
         ],
         "title": "TurnstileResponse"
+      },
+      "UpdatePassword": {
+        "properties": {
+          "current_password": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 8,
+            "title": "Current Password"
+          },
+          "new_password": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 8,
+            "title": "New Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "current_password",
+          "new_password"
+        ],
+        "title": "UpdatePassword"
+      },
+      "UserCreate": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 255,
+            "title": "Username"
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 255,
+            "format": "email",
+            "title": "Email"
+          },
+          "isActive": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isactive",
+            "default": true
+          },
+          "isSuperuser": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issuperuser",
+            "default": false
+          },
+          "rateLimitTier": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ratelimittier",
+            "default": 0
+          },
+          "isBanned": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isbanned",
+            "default": false
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 8,
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "email",
+          "password"
+        ],
+        "title": "UserCreate"
+      },
+      "UserPublic": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 255,
+            "title": "Username"
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 255,
+            "format": "email",
+            "title": "Email"
+          },
+          "isActive": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isactive",
+            "default": true
+          },
+          "isSuperuser": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issuperuser",
+            "default": false
+          },
+          "rateLimitTier": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ratelimittier",
+            "default": 0
+          },
+          "isBanned": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isbanned",
+            "default": false
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Userid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "email",
+          "userId"
+        ],
+        "title": "UserPublic"
+      },
+      "UserRegister": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 255,
+            "title": "Username"
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 255,
+            "format": "email",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 8,
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "email",
+          "password"
+        ],
+        "title": "UserRegister"
+      },
+      "UserUpdate": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 255,
+            "title": "Username"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "format": "email"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "isActive": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isactive",
+            "default": true
+          },
+          "isSuperuser": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issuperuser",
+            "default": false
+          },
+          "rateLimitTier": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ratelimittier",
+            "default": 0
+          },
+          "isBanned": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isbanned",
+            "default": false
+          },
+          "password": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40,
+                "minLength": 8
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username"
+        ],
+        "title": "UserUpdate"
+      },
+      "UserUpdateMe": {
+        "properties": {
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "format": "email"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username"
+          }
+        },
+        "type": "object",
+        "title": "UserUpdateMe"
+      },
+      "UsersPublic": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/UserPublic"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "count"
+        ],
+        "title": "UsersPublic"
       },
       "ValidationError": {
         "properties": {
@@ -4723,9 +6253,14 @@
       }
     },
     "securitySchemes": {
-      "HTTPBasic": {
-        "type": "http",
-        "scheme": "basic"
+      "OAuth2PasswordBearer": {
+        "type": "oauth2",
+        "flows": {
+          "password": {
+            "scopes": {},
+            "tokenUrl": "/api/api_v1/login/access-token"
+          }
+        }
       }
     }
   }

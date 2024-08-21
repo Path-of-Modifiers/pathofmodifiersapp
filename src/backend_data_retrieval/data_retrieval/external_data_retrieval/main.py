@@ -1,34 +1,36 @@
 import logging
-import os
-import time
-import pandas as pd
-from typing import Dict
 from concurrent.futures import (
-    ThreadPoolExecutor,
-    Future,
-    wait,
-    FIRST_EXCEPTION,
     ALL_COMPLETED,
+    FIRST_EXCEPTION,
+    Future,
+    ThreadPoolExecutor,
+    wait,
 )
+from io import StringIO
 
-from pom_api_authentication import get_super_authentication, get_basic_authentication
+import pandas as pd
+import requests
+
+from external_data_retrieval.config import settings
 from external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
     APIHandler,
 )
 from external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_ninja_currency_api import (
     PoeNinjaCurrencyAPIHandler,
 )
-from external_data_retrieval.transforming_data.transform_poe_ninja_currency_api_data import (
-    TransformPoeNinjaCurrencyAPIData,
-)
 from external_data_retrieval.transforming_data.transform_poe_api_data import (
     PoeAPIDataTransformer,
     UniquePoeAPIDataTransformer,
 )
-from external_data_retrieval.config import settings
+from external_data_retrieval.transforming_data.transform_poe_ninja_currency_api_data import (
+    TransformPoeNinjaCurrencyAPIData,
+)
 from external_data_retrieval.utils import (
-    ProgramTooSlowException,
     ProgramRunTooLongException,
+    ProgramTooSlowException,
+)
+from pom_api_authentication import (
+    get_superuser_token_headers,
 )
 
 logger = logging.getLogger("external_data_retrieval")
@@ -46,18 +48,18 @@ class ContiniousDataRetrieval:
     url = "https://api.pathofexile.com/public-stash-tabs"
 
     if "localhost" not in settings.BASEURL:
-        base_pom_api_url = f"https://{settings.BASEURL}"
+        base_pom_api_url = f"https://{settings.BASEURL}/api/api_v1"
     else:
-        base_pom_api_url = "http://src-backend-1"
-    modifier_url = base_pom_api_url + "/api/api_v1/modifier/"
+        base_pom_api_url = "http://src-backend-1/api/api_v1"
+    modifier_url = base_pom_api_url + "/modifier/"
+    pom_auth_headers = get_superuser_token_headers(base_pom_api_url)
 
     def __init__(
         self,
         items_per_batch: int,
-        data_transformers: Dict[str, PoeAPIDataTransformer],
+        data_transformers: dict[str, PoeAPIDataTransformer],
         logger: logging.Logger,
     ):
-
         self.data_transformers = {
             key: data_transformers[key](main_logger=logger) for key in data_transformers
         }
@@ -69,7 +71,6 @@ class ContiniousDataRetrieval:
             n_wanted_items=items_per_batch,
             n_unique_wanted_items=10,
         )
-        self.pom_authentication = get_super_authentication()
 
         self.poe_ninja_currency_api_handler = PoeNinjaCurrencyAPIHandler(
             url=f"https://poe.ninja/api/data/currencyoverview?league={self.current_league}&type=Currency"
@@ -80,11 +81,15 @@ class ContiniousDataRetrieval:
 
         self.logger = logger
 
-    def _get_modifiers(self) -> Dict[str, pd.DataFrame]:
-        headers = {"Authorization": get_basic_authentication()}
-        modifier_df = pd.read_json(
-            self.modifier_url, dtype=str, storage_options=headers
-        )
+    def _get_modifiers(self) -> dict[str, pd.DataFrame]:
+        response = requests.get(self.modifier_url, headers=self.pom_auth_headers)
+        # Check if the request was successful
+        modifier_df = pd.DataFrame()
+        if response.status_code == 200:
+            # Load the JSON data into a pandas DataFrame
+            json_io = StringIO(response.content.decode("utf-8"))
+            modifier_df = pd.read_json(json_io, dtype=str)
+
         modifier_types = [
             "implicit",
             "explicit",
@@ -104,17 +109,17 @@ class ContiniousDataRetrieval:
                 ]
         return modifier_dfs
 
-    def _categorize_new_items(self, df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
+    def _categorize_new_items(self, df: pd.DataFrame) -> dict[str, pd.DataFrame]:
         split_dfs = {}
 
         # TODO not fully exhaustive yet, needs to be updated over time
-        category_priority = [
-            # "synthesized",
-            # "fractured",
-            # "delve",
-            # "veiled",
-            "unique",
-        ]
+        # category_priority = [
+        # "synthesized",
+        # "fractured",
+        # "delve",
+        # "veiled",
+        # "unique",
+        # ]
         # Needs to take priority, see nebulis and rational doctrine
         # not_synth_mask = df["synthesized"].isna()
         # split_dfs["synthesized"] = df.loc[~not_synth_mask]
@@ -139,7 +144,7 @@ class ContiniousDataRetrieval:
 
     def _initialize_data_stream_threads(
         self, executor: ThreadPoolExecutor, listeners: int, has_crashed: bool = False
-    ) -> Dict[Future, str]:
+    ) -> dict[Future, str]:
         return self.poe_api_handler.initialize_data_stream_threads(
             executor, listeners, has_crashed
         )
@@ -205,7 +210,7 @@ class ContiniousDataRetrieval:
 
                             wait(futures, return_when=ALL_COMPLETED)
                             raise ProgramRunTooLongException
-                        except:
+                        except Exception:
                             follow_future = executor.submit(
                                 self._follow_data_dump_stream
                             )

@@ -1,25 +1,22 @@
-from base64 import b64encode
-from inspect import iscoroutinefunction
-import os
 import random
 import string
-from typing import Callable, List, Optional, Dict, Any, Union
+from collections.abc import Callable
 from datetime import datetime, timedelta
-from requests.auth import HTTPBasicAuth
+from inspect import iscoroutinefunction
+from typing import Any
+
+from fastapi.testclient import TestClient
 from sqlalchemy import inspect
 
+from app.core.config import settings
 from app.crud.base import ModelType
 
 
-FIRST_SUPERUSER = os.getenv("FIRST_SUPERUSER")
-FIRST_SUPERUSER_PASSWORD = os.getenv("FIRST_SUPERUSER_PASSWORD")
-
-
-def random_lower_string(*, small_string: Optional[bool] = None) -> str:
+def random_lower_string(*, small_string: bool | None = None) -> str:
     """Generate a random lowercase string.
 
     Args:
-        small_string (Optional[bool], optional): Optional whether to have small string. Defaults to None.
+        small_string (bool | None): Optional whether to have small string. Defaults to None.
 
     Returns:
         str: Random lowercase string.
@@ -32,18 +29,18 @@ def random_lower_string(*, small_string: Optional[bool] = None) -> str:
 
 def random_int(
     *,
-    small_int: Optional[bool] = None,
-    big_int: Optional[bool] = None,
-    negative: Optional[bool] = None,
-    max_value: Optional[int] = None,
+    small_int: bool | None = None,
+    big_int: bool | None = None,
+    negative: bool | None = None,
+    max_value: int | None = None,
 ) -> int:
     """Generate a random integer.
 
     Args:
-        small_int (Optional[bool], optional): Optional whether to have small integer. Defaults to None.
-        big_int (Optional[bool], optional): Optional whether to have big integer. Defaults to None.
-        negative (Optional[bool], optional): Optional whether to have negative integer. Defaults to None.
-        max_value (Optional[int], optional): Optional to have max_value integer. Defaults to None.
+        small_int (bool | None): Optional whether to have small integer. Defaults to None.
+        big_int (bool | None): Optional whether to have big integer. Defaults to None.
+        negative (bool | None): Optional whether to have negative integer. Defaults to None.
+        max_value (int | None): Optional to have max_value integer. Defaults to None.
 
     Returns:
         int: Random integer.
@@ -64,16 +61,16 @@ def random_int(
 
 def random_float(
     *,
-    small_float: Optional[bool] = None,
-    negative: Optional[bool] = None,
-    max_value: Optional[int] = None,
+    small_float: bool | None = None,
+    negative: bool | None = None,
+    max_value: int | None = None,
 ) -> float:
     """Generate a random float.
 
     Args:
-        small_float (Optional[bool], optional): Optional whether to have small float. Defaults to None.
-        negative (Optional[bool], optional): Optional whether to have negative float. Defaults to None.
-        max_value (Optional[int], optional): Optional to have max_value float. Defaults to None.
+        small_float (bool | None): Optional whether to have small float. Defaults to None.
+        negative (bool | None): Optional whether to have negative float. Defaults to None.
+        max_value (int] | None): Optional to have max_value float. Defaults to None.
 
     Returns:
         float: Random float.
@@ -98,11 +95,11 @@ def random_bool() -> bool:
     return random.choice([True, False])
 
 
-def random_json(key_type: Dict[str, bool]) -> Dict[str, Any]:
+def random_json(key_type: dict[str, bool]) -> dict[str, Any]:
     """Generate a random JSON object based on the key_type dictionary.
 
     Args:
-        key_type (Dict[str, bool]): Dictionary with the key and the type of the key.
+        key_type (Dict[str, bool): Dictionary with the key and the type of the key.
 
     Returns:
         Dict[str, Any]: Random JSON object.
@@ -142,7 +139,7 @@ def random_datetime() -> datetime:
     return datetime.now() + random.uniform(-5, 5) * timedelta(days=1)
 
 
-def random_based_on_type(reference: Union[str, float, int]) -> Union[str, int, float]:
+def random_based_on_type(reference: str | float | int) -> str | int | float:
     """Generate a random value based on the type of the reference.
 
     Args:
@@ -165,7 +162,7 @@ def random_based_on_type(reference: Union[str, float, int]) -> Union[str, int, f
         raise NotImplementedError(f"Objects of type {type_reference} is not supported")
 
 
-def get_ignore_keys(model: ModelType, dict: Dict) -> List[str]:
+def get_ignore_keys(model: ModelType, dict: dict) -> list[str]:
     """Compare a model with a dictionary, and return the model's keys that are not in the dictionary
 
     Args:
@@ -206,17 +203,46 @@ def get_model_table_name(model: ModelType) -> str:
     Returns:
         str: Table name of the model.
     """
-    return model.__table__.name
+    return model.__tablename__
 
 
-def get_super_authentication() -> HTTPBasicAuth:
+def get_superuser_token_headers(client: TestClient) -> dict[str, str]:
+    login_data = {
+        "username": settings.FIRST_SUPERUSER,
+        "password": settings.FIRST_SUPERUSER_PASSWORD,
+    }
+    r = client.post(f"{settings.API_V1_STR}/login/access-token", data=login_data)
+    tokens = r.json()
+    a_token = tokens["access_token"]
+    headers = {"Authorization": f"Bearer {a_token}"}
+    return headers
+
+
+def create_random_ip() -> str:
     """
-    Get the super authentication for the Path of Modifiers API.
+    Create a random IP address.
 
     Returns:
-        HTTPBasicAuth: POM user and password authentication.
+        str: Random IP address.
     """
-    authentication = HTTPBasicAuth(FIRST_SUPERUSER, FIRST_SUPERUSER_PASSWORD)
-    return authentication
+    return ".".join(str(random.randint(0, 255)) for _ in range(4))
 
 
+def get_extract_functions(compare_obj: dict | ModelType) -> tuple[Callable]:
+    if isinstance(compare_obj, dict):
+
+        def extract_value(obj: dict, key: Any) -> Any:
+            return obj[key]
+
+        def extract_fields(obj: dict) -> dict:
+            return obj
+
+    else:
+
+        def extract_value(obj: ModelType, field: Any) -> Any:
+            return getattr(obj, field)
+
+        def extract_fields(obj: ModelType) -> Any:
+            return obj.__table__.columns.keys()
+
+    return extract_value, extract_fields

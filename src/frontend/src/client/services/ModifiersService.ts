@@ -24,7 +24,7 @@ export class ModifiersService {
     public static getModifier({
         modifierId,
     }: {
-        modifierId: string,
+        modifierId: number,
     }): CancelablePromise<(Modifier | Array<Modifier>)> {
         return __request(OpenAPI, {
             method: 'GET',

@@ -14,14 +14,14 @@ export class AccountsService {
      * Get the account by mapping with key and value for "accountName" .
      *
      * Always returns one account.
-     * @returns any Successful Response
+     * @returns Account Successful Response
      * @throws ApiError
      */
     public static getAccount({
         accountName,
     }: {
         accountName: string,
-    }): CancelablePromise<(Account | Array<Account>)> {
+    }): CancelablePromise<Account> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/account/{accountName}',

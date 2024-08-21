@@ -31,7 +31,7 @@ def get_access_token(
         headers={
             "Content-Type": "application/x-www-form-urlencoded",
             "accept": "application/json",
-            f"User-Agent": head_user_agent,
+            "User-Agent": head_user_agent,
         },
     )  # Sends necessary information required to generate a new OAuth2 Access Token
     if (
