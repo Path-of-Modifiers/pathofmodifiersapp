@@ -41,7 +41,7 @@ class TestAPI(BaseTest):
 
             client (TestClient): FastAPI test client
             route_prefix (str): Route name
-            superuser_token_headers: dict[str, str] (Dict[str, str]): Superuser headers
+            superuser_token_headers: (dict[str, str]): Superuser headers
 
         Returns:
             Dict: Object dictionary created
@@ -108,7 +108,7 @@ class TestAPI(BaseTest):
 
         Args:
             client (TestClient): FastAPI test client
-            superuser_token_headers: dict[str, str] (Dict[str, str]): Superuser headers
+            superuser_token_headers: dict[str, str] : Superuser headers
             route_prefix (str): Route name
             db (Session): DB session
 
@@ -135,7 +135,7 @@ class TestAPI(BaseTest):
 
         Args:
             client (TestClient): FastAPI test client
-            superuser_token_headers: dict[str, str] (Dict[str, str]): Superuser headers
+            superuser_token_headers: dict[str, str] : Superuser headers
             db (Session): DB session
             unique_identifier (str): Unique identifier
             ignore_test_columns (List[str]): Columns to ignore
@@ -172,7 +172,7 @@ class TestAPI(BaseTest):
 
         Args:
             client (TestClient): FastAPI test client
-            superuser_token_headers: dict[str, str] (Dict[str, str]): Superuser headers
+            superuser_token_headers: dict[str, str] : Superuser headers
             model_table_name (str): Model name
             route_prefix (str): Route name
             unique_identifier (str): Unique identifier for the model
@@ -242,7 +242,7 @@ class TestAPI(BaseTest):
 
         Args:
             client (TestClient): FastAPI test client
-            superuser_token_headers: dict[str, str] (Dict[str, str]): Superuser headers
+            superuser_token_headers: dict[str, str] : Superuser headers
             db (Session): DB session
 
             object_generator_func
@@ -278,7 +278,7 @@ class TestAPI(BaseTest):
 
         Args:
             client (TestClient): FastAPI test client
-            superuser_token_headers: dict[str, str] (Dict[str, str]): Superuser headers
+            superuser_token_headers: dict[str, str] : Superuser headers
             db (Session): DB session
             object_generator_func (Union[Callable[[], Tuple[Dict, ModelType]]]): Object generator function
             route_prefix (str): Route name
@@ -352,7 +352,7 @@ class TestAPI(BaseTest):
         Args:
             client (TestClient): FastAPI test client
             db (Session): DB session
-            superuser_token_headers: dict[str, str] (Dict[str, str]): Superuser headers
+            superuser_token_headers: dict[str, str] : Superuser headers
 
             object_generator_func
             (Union[Callable[[], Tuple[Dict, ModelType]]]): Object generator function
@@ -437,7 +437,7 @@ class TestAPI(BaseTest):
             (Union[Callable[[], Tuple[Dict, ModelType]]]): Object generator function
 
             route_prefix (str): Route name
-            superuser_token_headers: dict[str, str] (Dict[str, str]): Superuser headers
+            superuser_token_headers: dict[str, str] : Superuser headers
             unique_identifier (str): Unique identifier
             update_request_params (bool): Whether the update request requires params
         """
@@ -499,7 +499,7 @@ class TestAPI(BaseTest):
 
         Args:
             client (TestClient): FastAPI test client
-            superuser_token_headers: dict[str, str] (Dict[str, str]): Superuser headers
+            superuser_token_headers: dict[str, str] : Superuser headers
             db (Session): DB session
 
             object_generator_func
@@ -539,7 +539,7 @@ class TestAPI(BaseTest):
 
         Args:
             client (TestClient): FastAPI test client
-            superuser_token_headers: dict[str, str] (Dict[str, str]): Superuser headers
+            superuser_token_headers: dict[str, str] : Superuser headers
             model_table_name (str): Route name
             model_table_name (str): Model table name
             unique_identifier (str): Unique identifier for the model
