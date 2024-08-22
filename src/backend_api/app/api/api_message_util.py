@@ -153,6 +153,16 @@ def get_new_psw_not_same_msg() -> Message:
     return Message(message="The new password cannot be the same as the old password")
 
 
+def get_email_or_username_required_msg() -> Message:
+    """Returns a message indicating an email or username is required for password recovery.
+
+    Returns:
+        Message: Message indicating an email or username is required for password recovery.
+    """
+
+    return Message(message="Email or username required for password recovery")
+
+
 def get_sorting_method_not_supported_msg(
     sort: str, available_sorting_choices: list[str]
 ) -> Message:
