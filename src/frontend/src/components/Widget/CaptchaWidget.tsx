@@ -1,5 +1,5 @@
 import { Turnstile } from "@marsidev/react-turnstile";
-import useTurnstileValidation from "../../schemas/validation/turnstileValidation";
+import useTurnstileValidation from "../../hooks/validation/turnstileValidation";
 import { useState } from "react";
 import { Text } from "@chakra-ui/react";
 

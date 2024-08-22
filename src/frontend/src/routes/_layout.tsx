@@ -5,7 +5,7 @@ import useTurnstileValidation, {
   hasCompletedCaptcha,
 } from "../hooks/validation/turnstileValidation";
 
-import { isLoggedIn } from "../hooks/validation/useAuth";
+import useAuth, { isLoggedIn } from "../hooks/validation/useAuth";
 
 const security_ip = localStorage.getItem("security_ip");
 
@@ -26,14 +26,16 @@ export const Route = createFileRoute("/_layout")({
 });
 
 function Layout() {
-  const { isLoading } = useTurnstileValidation({
+  const { isLoadingCaptcha } = useTurnstileValidation({
     token: "",
     ip: security_ip ?? "",
   });
 
+  const { isLoadingUser } = useAuth();
+
   return (
     <Flex maxW="large" h="auto" position="relative" bgColor="ui.main">
-      {isLoading ? (
+      {isLoadingCaptcha || isLoadingUser ? (
         <Flex justify="center" align="center" height="100vh" width="full">
           <Spinner size="xl" color={"ui.white"} />
         </Flex>

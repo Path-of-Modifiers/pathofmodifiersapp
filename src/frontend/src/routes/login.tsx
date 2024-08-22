@@ -24,7 +24,6 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import Logo from "/assets/images/POM_logo_rec.svg";
 import type { Body_logins_login_access_token as AccessToken } from "../client";
 import useAuth, { isLoggedIn } from "../hooks/validation/useAuth";
-import { emailPattern } from "../utils";
 import { hasCompletedCaptcha } from "../hooks/validation/turnstileValidation";
 
 export const Route = createFileRoute("/login")({
@@ -91,16 +90,19 @@ function Login() {
           alignSelf="center"
           mb={4}
         />
-        <Text fontSize={"20px"} alignSelf="center">Use your Path of Modifiers account</Text>
-        <FormControl id="username" isInvalid={!!errors.username || !!error}>
+        <Text fontSize={"20px"} alignSelf="center">
+          Use your Path of Modifiers account
+        </Text>
+        <FormControl
+          id="emailOrUsername"
+          isInvalid={!!errors.username || !!error}
+        >
           <Input
-            id="email"
+            id="emailOrUsername"
             {...register("username", {
-              required: "Username is required",
-              pattern: emailPattern,
+              required: "Email or Username is required",
             })}
-            placeholder="Email"
-            type="email"
+            placeholder="Email or Username"
             required
           />
           {errors.username && (

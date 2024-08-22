@@ -23,7 +23,7 @@ import {
 } from "../../client";
 import useAuth from "../../hooks/validation/useAuth";
 import useCustomToast from "../../hooks/useCustomToast";
-import { emailPattern, handleError } from "../../utils";
+import { emailPattern, handleError, usernamePattern } from "../../utils";
 
 const UserInformation = () => {
   const queryClient = useQueryClient();
@@ -91,7 +91,10 @@ const UserInformation = () => {
             {editMode ? (
               <Input
                 id="name"
-                {...register("username", { maxLength: 30 })}
+                {...register("username", {
+                  maxLength: 50,
+                  pattern: usernamePattern,
+                })}
                 type="text"
                 size="md"
                 w="auto"
