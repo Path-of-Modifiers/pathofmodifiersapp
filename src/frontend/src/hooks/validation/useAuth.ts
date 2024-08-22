@@ -22,11 +22,34 @@ const useAuth = () => {
   const navigate = useNavigate();
   const showToast = useCustomToast();
   const queryClient = useQueryClient();
-  const { data: user, isLoading } = useQuery<UserPublic | null, Error>({
-    queryKey: ["currentUser"],
-    queryFn: UsersService.getUserMe,
-    enabled: isLoggedIn(),
+  const searchParams = new URLSearchParams(window.location.search);
+  const from = searchParams.get("from");
+  const {
+    data: user,
+    isLoading: isLoadingUser,
+    isError,
+  } = useQuery<UserPublic | null, Error>({
+    queryKey: ["currentUser", isLoggedIn()],
+    queryFn: async () => {
+      const user = await UsersService.getUserMe();
+
+      if (!user) {
+        localStorage.removeItem("access_token");
+        if (from) {
+          navigate({ to: "/login" });
+        }
+      }
+
+      return user; // Add this line to return the user
+    },
+    retry: false,
+    enabled: !!localStorage.getItem("access_token"),
   });
+
+  if (isError) {
+    localStorage.removeItem("access_token");
+    navigate({ to: from ? "/" + `${from}` : "/login" });
+  }
 
   const signUpMutation = useMutation({
     mutationFn: (data: UserRegister) =>
@@ -41,7 +64,7 @@ const useAuth = () => {
       );
     },
     onError: (err: ApiError) => {
-      let errDetail = (err.body)?.detail;
+      let errDetail = err.body?.detail;
 
       if (err instanceof AxiosError) {
         errDetail = err.message;
@@ -67,7 +90,7 @@ const useAuth = () => {
       navigate({ to: "/" });
     },
     onError: (err: ApiError) => {
-      let errDetail = (err.body)?.detail;
+      let errDetail = err.body?.detail;
 
       if (err instanceof AxiosError) {
         errDetail = err.message;
@@ -91,7 +114,7 @@ const useAuth = () => {
     loginMutation,
     logout,
     user,
-    isLoading,
+    isLoadingUser,
     error,
     resetError: () => setError(null),
   };
