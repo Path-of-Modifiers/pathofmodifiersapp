@@ -20,7 +20,12 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import Logo from "/assets/images/POM_logo_rec.svg";
 import type { UserRegister } from "../client";
 import useAuth, { isLoggedIn } from "../hooks/validation/useAuth";
-import { confirmPasswordRules, emailPattern, passwordRules } from "../utils";
+import {
+  confirmPasswordRules,
+  emailPattern,
+  usernamePattern,
+  passwordRules,
+} from "../utils";
 import { hasCompletedCaptcha } from "../hooks/validation/turnstileValidation";
 
 export const Route = createFileRoute("/signup")({
@@ -98,8 +103,11 @@ function SignUp() {
             </FormLabel>
             <Input
               id="username"
-              minLength={3}
-              {...register("username", { required: "Username is required" })}
+              maxLength={50}
+              {...register("username", {
+                required: "Username is required",
+                pattern: usernamePattern,
+              })}
               placeholder="Username"
               type="text"
             />

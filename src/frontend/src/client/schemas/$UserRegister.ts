@@ -7,18 +7,16 @@ export const $UserRegister = {
         username: {
             type: 'string',
             isRequired: true,
-            maxLength: 255,
+            pattern: '^[\\p{L}\\p{N}_]+$',
         },
         email: {
             type: 'string',
             isRequired: true,
             format: 'email',
-            maxLength: 255,
         },
         password: {
             type: 'string',
             isRequired: true,
-            maxLength: 40,
             minLength: 8,
         },
     },

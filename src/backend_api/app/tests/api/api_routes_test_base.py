@@ -307,7 +307,7 @@ class TestAPI(BaseTest):
             content_delete
             == get_delete_return_msg(
                 model_table_name=model_table_name,
-                mapping={unique_identifier: update_obj_pk_map[unique_identifier]},
+                filter={unique_identifier: update_obj_pk_map[unique_identifier]},
             ).message
         )
 
@@ -382,7 +382,7 @@ class TestAPI(BaseTest):
             content_delete
             == get_delete_return_msg(
                 model_table_name=model_table_name,
-                mapping={unique_identifier: update_obj_out_pk_map[unique_identifier]},
+                filter={unique_identifier: update_obj_out_pk_map[unique_identifier]},
             ).message
         )
 
@@ -464,7 +464,7 @@ class TestAPI(BaseTest):
             content_delete
             == get_delete_return_msg(
                 model_table_name=model_table_name,
-                mapping={unique_identifier: update_obj_pk_map[unique_identifier]},
+                filter={unique_identifier: update_obj_pk_map[unique_identifier]},
             ).message
         )
 
@@ -522,7 +522,7 @@ class TestAPI(BaseTest):
             content
             == get_delete_return_msg(
                 model_table_name=model_table_name,
-                mapping={unique_identifier: update_obj_pk_map[unique_identifier]},
+                filter={unique_identifier: update_obj_pk_map[unique_identifier]},
             ).message
         )
 
