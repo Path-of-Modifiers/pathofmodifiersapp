@@ -29,7 +29,7 @@ const useTurnstileValidation = (requestBody: TurnstileQuery) => {
 
   const {
     data: valid_ip_response,
-    isLoading,
+    isLoading: isLoadingCaptcha,
     isError,
   } = useQuery<boolean | null, Error>({
     queryKey: ["valid_ip_check", hasCompletedCaptcha()],
@@ -91,7 +91,7 @@ const useTurnstileValidation = (requestBody: TurnstileQuery) => {
   return {
     performTurnstileValidation,
     valid_ip_response,
-    isLoading,
+    isLoadingCaptcha,
     error,
     resetError: () => setError(null),
   };
