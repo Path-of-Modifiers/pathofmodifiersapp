@@ -133,5 +133,5 @@ async def delete_temporary_hashed_user_ip(
     )
 
     return get_delete_return_msg(
-        model_table_name=TemporaryHashedUserIP.__tablename__, mapping=hashed_ip_map
+        model_table_name=TemporaryHashedUserIP.__tablename__, filter=hashed_ip_map
     ).message

@@ -3,7 +3,7 @@ from app.core.schemas.message import Message
 
 def get_delete_return_msg(
     model_table_name: str,
-    mapping: dict[str, str],
+    filter: dict[str, str],
 ) -> Message:
     """Returns a message indicating the object was deleted successfully.
 
@@ -17,29 +17,29 @@ def get_delete_return_msg(
     """
 
     return Message(
-        message=f"""{model_table_name} with mapping
-        {mapping} was
+        message=f"""{model_table_name} with filter
+        {filter} was
         deleted successfully"""
     )
 
 
 def get_db_obj_already_exists_msg(
     model_table_name: str,
-    mapping: dict[str, str],
+    filter: dict[str, str],
 ) -> Message:
     """Returns a message indicating the object already exists.
 
     Args:
         model_table_name (str): Model table name for the object.
-        mapping (dict[str, str]): Mapping of the object.
+        filter (dict[str, str]): filter of the object.
 
     Returns:
         Message: Message indicating the object already exists.
     """
 
     return Message(
-        message=f"""{model_table_name} with mapping
-        ({', '.join([key + ': ' + str(item) for key, item in mapping.items()])})
+        message=f"""{model_table_name} with filter
+        ({', '.join([key + ': ' + str(item) for key, item in filter.items()])})
         already exists"""
     )
 

@@ -45,13 +45,17 @@ class CRUDUser:
             ):
                 raise HTTPException(
                     status_code=409,
-                    detail=get_db_obj_already_exists_msg("user", filter).message,
+                    detail=get_db_obj_already_exists_msg(
+                        model_User.__tablename__, filter
+                    ).message,
                 )
         else:
             if existing_user:
                 raise HTTPException(
                     status_code=409,
-                    detail=get_db_obj_already_exists_msg("user", filter).message,
+                    detail=get_db_obj_already_exists_msg(
+                        model_User.__tablename__, filter
+                    ).message,
                 )
 
     def create(self, db: Session, *, user_create: UserCreate) -> model_User:

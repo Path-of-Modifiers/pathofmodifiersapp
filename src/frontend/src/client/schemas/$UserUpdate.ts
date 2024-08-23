@@ -7,14 +7,13 @@ export const $UserUpdate = {
         username: {
             type: 'string',
             isRequired: true,
-            maxLength: 255,
+            pattern: '^[\\p{L}\\p{N}_]+$',
         },
         email: {
             type: 'any-of',
             contains: [{
                 type: 'string',
                 format: 'email',
-                maxLength: 255,
             }, {
                 type: 'null',
             }],
@@ -55,7 +54,6 @@ export const $UserUpdate = {
             type: 'any-of',
             contains: [{
                 type: 'string',
-                maxLength: 40,
                 minLength: 8,
             }, {
                 type: 'null',
