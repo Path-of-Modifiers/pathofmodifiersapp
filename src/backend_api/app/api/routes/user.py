@@ -100,7 +100,7 @@ def update_me(
             raise HTTPException(
                 status_code=409,
                 detail=get_db_obj_already_exists_msg(
-                    user_prefix, user_in.email
+                    User.__tablename__, {"username": user_in.username}
                 ).message,
             )
     user_data = user_in.model_dump(exclude_unset=True)
@@ -169,7 +169,7 @@ def delete_user_me(db: SessionDep, current_user: CurrentUser) -> Any:
     db.delete(current_user)
     db.commit()
     return get_delete_return_msg(
-        model_table_name=User.__tablename__, mapping={"userId": current_user.userId}
+        model_table_name=User.__tablename__, filter={"userId": current_user.userId}
     ).message
 
 
@@ -261,7 +261,7 @@ def delete_user(
     db.delete(db_user)
     db.commit()
     return get_delete_return_msg(
-        model_table_name=User.__tablename__, mapping={"userId": user_id}
+        model_table_name=User.__tablename__, filter={"userId": user_id}
     ).message
 
 

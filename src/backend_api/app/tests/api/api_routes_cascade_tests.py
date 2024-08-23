@@ -109,7 +109,7 @@ class TestCascadeAPI(TestAPI):
             assert (
                 content_dep
                 == get_delete_return_msg(
-                    model_table_name=dep_model_table_name, mapping=primary_keys_map
+                    model_table_name=dep_model_table_name, filter=primary_keys_map
                 ).message
             )
 

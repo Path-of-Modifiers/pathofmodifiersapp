@@ -158,5 +158,5 @@ async def delete_currency(
     await CRUD_currency.remove(db=db, filter=currency_map)
 
     return get_delete_return_msg(
-        model_table_name=Currency.__tablename__, mapping=currency_map
+        model_table_name=Currency.__tablename__, filter=currency_map
     ).message
