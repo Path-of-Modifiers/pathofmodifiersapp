@@ -231,3 +231,13 @@ def get_invalid_token_credentials_msg() -> Message:
     """
 
     return Message(message="Could not validate credentials. Invalid token")
+
+
+def get_password_rec_email_sent_success() -> Message:
+    """Returns a message indicating the password recovery email was sent successfully.
+
+    Returns:
+        Message: Message indicating the password recovery email was sent successfully.
+    """
+
+    return Message(message="Password recovery email sent successfully")
