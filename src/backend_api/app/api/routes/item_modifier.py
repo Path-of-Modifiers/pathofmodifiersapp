@@ -22,6 +22,7 @@ item_modifier_prefix = "itemModifier"
 @router.get(
     "/{itemId}",
     response_model=schemas.ItemModifier | list[schemas.ItemModifier],
+    dependencies=[Depends(get_current_active_superuser)],
 )
 async def get_item_modifier(
     itemId: int,
@@ -147,5 +148,5 @@ async def delete_item_modifier(
     await CRUD_itemModifier.remove(db=db, filter=itemModifier_map)
 
     return get_delete_return_msg(
-        model_table_name=ItemModifier.__tablename__, mapping=itemModifier_map
+        model_table_name=ItemModifier.__tablename__, filter=itemModifier_map
     ).message
