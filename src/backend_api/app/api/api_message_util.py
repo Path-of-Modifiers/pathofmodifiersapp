@@ -182,7 +182,7 @@ def get_sorting_method_not_supported_msg(
 
 
 def get_no_obj_matching_query_msg(
-    filter: dict[str, str], model_table_name: str
+    filter: dict[str, str] | None, model_table_name: str
 ) -> Message:
     """Returns a message indicating no object matching the query was found.
 
@@ -193,6 +193,10 @@ def get_no_obj_matching_query_msg(
     Returns:
         Message: Message indicating no object matching the query was found.
     """
+    if not filter:
+        return Message(
+            message=f"No object matching the query in the route {model_table_name} was found."
+        )
 
     return Message(
         message=f"No object matching the query ({', '.join([key + ': ' + str(item) for key, item in filter.items()])}) in the route {model_table_name} was found."
