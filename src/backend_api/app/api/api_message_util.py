@@ -3,7 +3,7 @@ from app.core.schemas.message import Message
 
 def get_delete_return_msg(
     model_table_name: str,
-    mapping: dict[str, str],
+    filter: dict[str, str],
 ) -> Message:
     """Returns a message indicating the object was deleted successfully.
 
@@ -17,29 +17,29 @@ def get_delete_return_msg(
     """
 
     return Message(
-        message=f"""{model_table_name} with mapping
-        {mapping} was
+        message=f"""{model_table_name} with filter
+        {filter} was
         deleted successfully"""
     )
 
 
 def get_db_obj_already_exists_msg(
     model_table_name: str,
-    mapping: dict[str, str],
+    filter: dict[str, str],
 ) -> Message:
     """Returns a message indicating the object already exists.
 
     Args:
         model_table_name (str): Model table name for the object.
-        mapping (dict[str, str]): Mapping of the object.
+        filter (dict[str, str]): filter of the object.
 
     Returns:
         Message: Message indicating the object already exists.
     """
 
     return Message(
-        message=f"""{model_table_name} with mapping
-        ({', '.join([key + ': ' + str(item) for key, item in mapping.items()])})
+        message=f"""{model_table_name} with filter
+        ({', '.join([key + ': ' + str(item) for key, item in filter.items()])})
         already exists"""
     )
 
@@ -153,6 +153,16 @@ def get_new_psw_not_same_msg() -> Message:
     return Message(message="The new password cannot be the same as the old password")
 
 
+def get_email_or_username_required_msg() -> Message:
+    """Returns a message indicating an email or username is required for password recovery.
+
+    Returns:
+        Message: Message indicating an email or username is required for password recovery.
+    """
+
+    return Message(message="Email or username required for password recovery")
+
+
 def get_sorting_method_not_supported_msg(
     sort: str, available_sorting_choices: list[str]
 ) -> Message:
@@ -172,7 +182,7 @@ def get_sorting_method_not_supported_msg(
 
 
 def get_no_obj_matching_query_msg(
-    filter: dict[str, str], model_table_name: str
+    filter: dict[str, str] | None, model_table_name: str
 ) -> Message:
     """Returns a message indicating no object matching the query was found.
 
@@ -183,6 +193,10 @@ def get_no_obj_matching_query_msg(
     Returns:
         Message: Message indicating no object matching the query was found.
     """
+    if not filter:
+        return Message(
+            message=f"No object matching the query in the route {model_table_name} was found."
+        )
 
     return Message(
         message=f"No object matching the query ({', '.join([key + ': ' + str(item) for key, item in filter.items()])}) in the route {model_table_name} was found."
@@ -217,3 +231,13 @@ def get_invalid_token_credentials_msg() -> Message:
     """
 
     return Message(message="Could not validate credentials. Invalid token")
+
+
+def get_password_rec_email_sent_success() -> Message:
+    """Returns a message indicating the password recovery email was sent successfully.
+
+    Returns:
+        Message: Message indicating the password recovery email was sent successfully.
+    """
+
+    return Message(message="Password recovery email sent successfully")
