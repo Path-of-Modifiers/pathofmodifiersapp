@@ -6,7 +6,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql import func, select
 
 from app.api.api_message_util import (
-    get_bad_login_credentials_msg,
     get_db_obj_already_exists_msg,
     get_incorrect_psw_msg,
     get_new_psw_not_same_msg,
@@ -153,6 +152,7 @@ class CRUDUser:
             hashed_password = get_password_hash(password)
             extra_data["hashedPassword"] = hashed_password
             user_update_data.pop("password")
+            user_update_data.update(extra_data)
         for field in user_update_data:
             if field in obj_data:
                 setattr(db_user, field, user_update_data[field])
@@ -226,10 +226,7 @@ class CRUDUser:
 
         db_user = self.get(db=db, filter=get_user_filter)
         if not db_user or not verify_password(password, db_user.hashedPassword):
-            raise HTTPException(
-                status_code=400,
-                detail=get_bad_login_credentials_msg().message,
-            )
+            return None
         return self.validate(db_user)
 
     def set_active(
