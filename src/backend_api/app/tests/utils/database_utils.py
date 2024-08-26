@@ -34,6 +34,7 @@ def mock_src_database_for_test_db():
         table.create(bind=test_db_engine)
 
     tgt_conn.commit()
+
     src_conn.close()
     tgt_conn.close()
 
