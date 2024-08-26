@@ -7,7 +7,7 @@ export const emailPattern = {
 };
 
 export const usernamePattern = {
-  value: /^(?!\p{Zs})(?!.*\p{Zs}$)[\p{L}\p{M}\p{Zs}]$/u,
+  value: /^[\p{L},.0-9\s-]+$/u,
   message: "Invalid username",
 };
 
