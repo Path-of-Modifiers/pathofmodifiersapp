@@ -3,6 +3,7 @@ from pydantic import TypeAdapter
 from requests import post
 from sqlalchemy.orm import Session
 
+from app.api.api_message_util import get_failed_send_challenge_request_error_msg
 from app.core.config import settings
 from app.core.schemas import TurnstileQuery, TurnstileResponse
 from app.core.schemas.hashed_user_ip import HashedUserIpCreate
@@ -14,13 +15,12 @@ class ValidateTurnstileRequest:
     def __init__(self):
         self.validate = TypeAdapter(TurnstileResponse).validate_python
         self.turnstile_url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
-        self.turnstile_secret_key = settings.TURNSTILE_SECRET_KEY
 
     async def validate_turnstile_request(
         self, db: Session, *, request_data: TurnstileQuery
     ) -> TurnstileResponse:
         body = {
-            "secret": self.turnstile_secret_key,
+            "secret": settings.TURNSTILE_SECRET_KEY,
             "response": request_data.token,
             "remoteip": request_data.ip,
         }
@@ -43,8 +43,7 @@ class ValidateTurnstileRequest:
             )
         except Exception as e:
             raise HTTPException(
-                detail=f"""Failed to send challenge request to cloudflare turnstile
-                endpoint with error: {e}""",
+                detail=get_failed_send_challenge_request_error_msg(e).message,
                 status_code=406,
             )
 
@@ -57,6 +56,6 @@ class ValidateTurnstileRequest:
             return self.validate(outcome)
         else:
             raise HTTPException(
-                detail=f'Failed validation in turnstile request with error: {outcome["error-codes"]}',
+                detail=f'{get_failed_send_challenge_request_error_msg(outcome["error-codes"]).message}',
                 status_code=400,
             )
