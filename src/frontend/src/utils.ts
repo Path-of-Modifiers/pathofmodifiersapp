@@ -11,10 +11,6 @@ export const usernamePattern = {
   message: "Invalid username",
 };
 
-export const namePattern = {
-  value: /^[\p{L}\p{M}\p{N}_.+-]+@[\p{L}\p{M}\p{N}.-]+\.[\p{L}]{2,}$/u,
-  message: "Invalid name",
-};
 
 interface PasswordRules {
   password?: string;
