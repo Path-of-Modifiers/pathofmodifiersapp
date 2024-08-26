@@ -123,5 +123,5 @@ async def delete_stash(
     await CRUD_stash.remove(db=db, filter=stash_map)
 
     return get_delete_return_msg(
-        model_table_name=Stash.__tablename__, filter=stash_map
+        model_table_name=Stash.__tablename__, mapping=stash_map
     ).message

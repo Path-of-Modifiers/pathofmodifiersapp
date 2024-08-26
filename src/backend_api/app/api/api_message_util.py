@@ -3,7 +3,7 @@ from app.core.schemas.message import Message
 
 def get_delete_return_msg(
     model_table_name: str,
-    filter: dict[str, str],
+    mapping: dict[str, str],
 ) -> Message:
     """Returns a message indicating the object was deleted successfully.
 
@@ -17,29 +17,29 @@ def get_delete_return_msg(
     """
 
     return Message(
-        message=f"""{model_table_name} with filter
-        {filter} was
+        message=f"""{model_table_name} with mapping
+        {mapping} was
         deleted successfully"""
     )
 
 
 def get_db_obj_already_exists_msg(
     model_table_name: str,
-    filter: dict[str, str],
+    mapping: dict[str, str],
 ) -> Message:
     """Returns a message indicating the object already exists.
 
     Args:
         model_table_name (str): Model table name for the object.
-        filter (dict[str, str]): filter of the object.
+        mapping (dict[str, str]): Mapping of the object.
 
     Returns:
         Message: Message indicating the object already exists.
     """
 
     return Message(
-        message=f"""{model_table_name} with filter
-        ({', '.join([key + ': ' + str(item) for key, item in filter.items()])})
+        message=f"""{model_table_name} with mapping
+        ({', '.join([key + ': ' + str(item) for key, item in mapping.items()])})
         already exists"""
     )
 
@@ -151,16 +151,6 @@ def get_new_psw_not_same_msg() -> Message:
     """
 
     return Message(message="The new password cannot be the same as the old password")
-
-
-def get_email_or_username_required_msg() -> Message:
-    """Returns a message indicating an email or username is required for password recovery.
-
-    Returns:
-        Message: Message indicating an email or username is required for password recovery.
-    """
-
-    return Message(message="Email or username required for password recovery")
 
 
 def get_sorting_method_not_supported_msg(

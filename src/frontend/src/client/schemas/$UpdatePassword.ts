@@ -7,11 +7,13 @@ export const $UpdatePassword = {
         current_password: {
             type: 'string',
             isRequired: true,
+            maxLength: 40,
             minLength: 8,
         },
         new_password: {
             type: 'string',
             isRequired: true,
+            maxLength: 40,
             minLength: 8,
         },
     },

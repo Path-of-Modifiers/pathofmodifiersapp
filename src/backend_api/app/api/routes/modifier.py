@@ -151,5 +151,5 @@ async def delete_modifier(
     await CRUD_modifier.remove(db=db, filter=modifier_map)
 
     return get_delete_return_msg(
-        model_table_name=Modifier.__tablename__, filter=modifier_map
+        model_table_name=Modifier.__tablename__, mapping=modifier_map
     ).message

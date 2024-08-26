@@ -29,7 +29,7 @@ account_prefix = "account"
 )
 async def get_account(accountName: str, db: SessionDep):
     """
-    Get the account by filter with key and value for "accountName" .
+    Get the account by mapping with key and value for "accountName" .
 
     Always returns one account.
     """
@@ -81,7 +81,7 @@ async def create_account(
         raise HTTPException(
             status_code=400,
             detail=get_db_obj_already_exists_msg(
-                Account.__tablename__, {"accountName": account.accountName}
+                account_prefix, account.accountName
             ).message,
         )
 
@@ -110,7 +110,7 @@ async def update_account(
         raise HTTPException(
             status_code=400,
             detail=get_db_obj_already_exists_msg(
-                Account.__tablename__, {"accountName": account_update.accountName}
+                account_prefix, account_update.accountName
             ).message,
         )
 
@@ -142,5 +142,5 @@ async def delete_account(accountName: str, db: SessionDep):
     await CRUD_account.remove(db=db, filter=account_map)
 
     return get_delete_return_msg(
-        model_table_name=Account.__tablename__, filter=account_map
+        model_table_name=Account.__tablename__, mapping=account_map
     ).message

@@ -260,14 +260,6 @@ class User(Base):
         onupdate=func.now(),
     )
 
-    # Check contstraint where username can only hold letters and numbers with multiple languages
-    __table_args__ = (
-        _sql.CheckConstraint(
-            "username ~* '^[[:alnum:]]+$'",
-            name="check_username_letters_and_numbers",
-        ),
-    )
-
 
 class TemporaryHashedUserIP(Base):
     __tablename__ = "temporary_hashed_user_ip"

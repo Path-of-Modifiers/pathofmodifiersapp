@@ -42,7 +42,7 @@ async def get_item_base_type(baseType: str, db: SessionDep):
 @router.get(
     "/",
     response_model=schemas.ItemBaseType | list[schemas.ItemBaseType],
-    dependencies=[Depends(get_current_active_user)],
+    dependencies=[Depends(get_current_active_superuser)],
 )
 async def get_all_item_base_types(db: SessionDep):
     """
@@ -130,7 +130,7 @@ async def create_item_base_type(
         raise HTTPException(
             status_code=400,
             detail=get_db_obj_already_exists_msg(
-                ItemBaseType.__tablename__, {"baseType": itemBaseType.baseType}
+                item_base_type_prefix, db_item_base_type.baseType
             ).message,
         )
 
@@ -159,7 +159,7 @@ async def update_item_base_type(
         raise HTTPException(
             status_code=400,
             detail=get_db_obj_already_exists_msg(
-                ItemBaseType.__tablename__, {"baseType": item_base_type_update.baseType}
+                item_base_type_prefix, db_item_base_type_update.baseType
             ).message,
         )
 
@@ -197,5 +197,5 @@ async def delete_item_base_type(
     )
 
     return get_delete_return_msg(
-        model_table_name=ItemBaseType.__tablename__, filter=item_base_type_map
+        model_table_name=ItemBaseType.__tablename__, mapping=item_base_type_map
     ).message

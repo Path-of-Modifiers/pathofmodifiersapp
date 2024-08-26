@@ -7,19 +7,9 @@ from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import EmailStr
 
-from app.api.api_message_util import (
-    get_bad_login_credentials_msg,
-    get_email_or_username_required_msg,
-    get_invalid_token_credentials_msg,
-    get_new_psw_not_same_msg,
-    get_no_obj_matching_query_msg,
-    get_not_active_or_auth_user_error_msg,
-    get_user_psw_change_msg,
-)
 from app.api.deps import CurrentUser, SessionDep, get_current_active_superuser
 from app.core import security
 from app.core.config import settings
-from app.core.models.models import User
 from app.core.schemas import Message, NewPassword, Token, UserPublic
 from app.core.security import get_password_hash, verify_password
 from app.crud import CRUD_user
@@ -43,17 +33,12 @@ def login_access_token(
     OAuth2 compatible token login, get an access token for future requests
     """
     user = CRUD_user.authenticate(
-        db=session, email_or_username=form_data.username, password=form_data.password
+        db=session, email=form_data.username, password=form_data.password
     )
     if not user:
-        raise HTTPException(
-            status_code=400, detail=get_bad_login_credentials_msg().message
-        )
+        raise HTTPException(status_code=400, detail="Incorrect email or password")
     elif not user.isActive:
-        raise HTTPException(
-            status_code=400,
-            detail=get_not_active_or_auth_user_error_msg(user.userName).message,
-        )
+        raise HTTPException(status_code=400, detail="Inactive user")
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     return Token(
         access_token=security.create_access_token(
@@ -82,7 +67,7 @@ def recover_password(
     """
     if not email and not username:
         raise HTTPException(
-            status_code=400, detail=get_email_or_username_required_msg().message
+            status_code=400, detail="Email or username required for recovery"
         )
     get_user_filter = {}
     if email:
@@ -93,9 +78,7 @@ def recover_password(
     if not user:
         raise HTTPException(
             status_code=404,
-            detail=get_no_obj_matching_query_msg(
-                get_user_filter, User.__tablename__
-            ).message,
+            detail="The user with this email or username does not exist in the system.",
         )
 
     if not email:
@@ -126,28 +109,23 @@ def reset_password(session: SessionDep, body: NewPassword) -> Message:
     """
     email = verify_password_reset_token(token=body.token)
     if not email:
-        raise HTTPException(status_code=400, detail=get_invalid_token_credentials_msg())
+        raise HTTPException(status_code=400, detail="Invalid token")
     get_user_filter = {"email": email}
     user = CRUD_user.get(db=session, filter=get_user_filter)
     if not user:
         raise HTTPException(
             status_code=404,
-            detail=get_no_obj_matching_query_msg(
-                get_user_filter, User.__tablename__
-            ).message,
+            detail="The user with this email does not exist in the system.",
         )
     elif not user.isActive:
-        raise HTTPException(
-            status_code=400,
-            detail=get_not_active_or_auth_user_error_msg(user.userName).message,
-        )
+        raise HTTPException(status_code=400, detail="Inactive user")
     if verify_password(body.new_password, user.hashedPassword):
-        raise HTTPException(status_code=400, detail=get_new_psw_not_same_msg().message)
+        raise HTTPException(status_code=400, detail="New password cannot be the same")
     hashed_password = get_password_hash(password=body.new_password)
     user.hashedPassword = hashed_password
     session.add(user)
     session.commit()
-    return get_user_psw_change_msg(user.userName)
+    return Message(message="Password updated successfully")
 
 
 @router.post(
@@ -165,7 +143,7 @@ def recover_password_html_content(email: EmailStr, session: SessionDep) -> Any:
     if not user:
         raise HTTPException(
             status_code=404,
-            detail=get_no_obj_matching_query_msg(filter, User.__tablename__).message,
+            detail="The user with this username does not exist in the system.",
         )
     password_reset_token = generate_password_reset_token(email=email)
     email_data = generate_reset_password_email(
