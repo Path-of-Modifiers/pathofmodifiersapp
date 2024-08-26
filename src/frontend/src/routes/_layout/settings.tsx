@@ -30,7 +30,6 @@ export const Route = createFileRoute("/_layout/settings")({
 function UserSettings() {
   const queryClient = useQueryClient();
   const currentUser = queryClient.getQueryData<UserPublic>(["currentUser"]);
-  console.log(currentUser);
   const finalTabs = currentUser?.isSuperuser
     ? tabsConfig.slice(0, 3)
     : tabsConfig;
