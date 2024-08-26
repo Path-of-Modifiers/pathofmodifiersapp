@@ -9,6 +9,7 @@ export const $UserUpdateMe = {
             contains: [{
                 type: 'string',
                 format: 'email',
+                maxLength: 255,
             }, {
                 type: 'null',
             }],
@@ -17,7 +18,7 @@ export const $UserUpdateMe = {
             type: 'any-of',
             contains: [{
                 type: 'string',
-                pattern: '^[\\p{L}\\p{N}_]+$',
+                maxLength: 255,
             }, {
                 type: 'null',
             }],

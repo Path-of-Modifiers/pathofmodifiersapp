@@ -7,12 +7,13 @@ export const $UserCreate = {
         username: {
             type: 'string',
             isRequired: true,
-            pattern: '^[\\p{L}\\p{N}_]+$',
+            maxLength: 255,
         },
         email: {
             type: 'string',
             isRequired: true,
             format: 'email',
+            maxLength: 255,
         },
         isActive: {
             type: 'any-of',
@@ -49,6 +50,7 @@ export const $UserCreate = {
         password: {
             type: 'string',
             isRequired: true,
+            maxLength: 40,
             minLength: 8,
         },
     },

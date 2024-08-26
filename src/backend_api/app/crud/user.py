@@ -45,17 +45,13 @@ class CRUDUser:
             ):
                 raise HTTPException(
                     status_code=409,
-                    detail=get_db_obj_already_exists_msg(
-                        model_User.__tablename__, filter
-                    ).message,
+                    detail=get_db_obj_already_exists_msg("user", filter).message,
                 )
         else:
             if existing_user:
                 raise HTTPException(
                     status_code=409,
-                    detail=get_db_obj_already_exists_msg(
-                        model_User.__tablename__, filter
-                    ).message,
+                    detail=get_db_obj_already_exists_msg("user", filter).message,
                 )
 
     def create(self, db: Session, *, user_create: UserCreate) -> model_User:
@@ -125,8 +121,7 @@ class CRUDUser:
         Returns:
             Any: Updated user
         """
-        user_id_map = {"userId": user_id}
-        db_user = self.get(db=db, filter=user_id_map)
+        db_user = db.query(model_User).filter_by(userId=user_id).first()
 
         if user_in.email:
             email_filter = {"email": user_in.email}
@@ -186,7 +181,7 @@ class CRUDUser:
             str | None: Email or None
         """
         username_map = {"username": username}
-        session_user = self.get(db=db, filter=username_map)
+        session_user = db.query(model_User).filter_by(**username_map).first()
         if not session_user:
             return None
         return session_user.email
@@ -195,7 +190,8 @@ class CRUDUser:
         self,
         db: Session,
         *,
-        email_or_username: EmailStr | str | None,
+        email: EmailStr | None = None,
+        username: str | None = None,
         password: str,
     ) -> model_User | None:
         """Authenticate user
@@ -209,11 +205,10 @@ class CRUDUser:
             model_User | None: model_User object or None
         """
         get_user_filter = {}
-        if email_or_username is not None:
-            if "@" in email_or_username:
-                get_user_filter["email"] = email_or_username
-            else:
-                get_user_filter["username"] = email_or_username
+        if email:
+            get_user_filter["email"] = email
+        if username:
+            get_user_filter["username"] = username
 
         db_user = self.get(db=db, filter=get_user_filter)
         if not db_user or not verify_password(password, db_user.hashedPassword):

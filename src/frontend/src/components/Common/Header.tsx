@@ -1,9 +1,7 @@
 import { Flex, Link, Text } from "@chakra-ui/react";
-import useAuth from "../../hooks/validation/useAuth";
 
 // Header component for the application
 const Header = () => {
-  const { user: currentUser } = useAuth();
   return (
     <Flex as="header" align="center" justify="space-between" padding="1rem">
       <Link href={"/"}>
@@ -16,16 +14,7 @@ const Header = () => {
           Path of Modifiers
         </Text>
       </Link>
-      <Link href={"/settings"}>
-        <Text
-          color="ui.white"
-          fontSize="20px"
-          fontWeight="medium"
-          _hover={{ color: "ui.inputChanged", textDecoration: "underline" }}
-        >
-          {currentUser?.username}
-        </Text>
-      </Link>
+      {/* Add any additional header content here */}
     </Flex>
   );
 };

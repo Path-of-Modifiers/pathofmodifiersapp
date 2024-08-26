@@ -7,12 +7,13 @@ export const $UserPublic = {
         username: {
             type: 'string',
             isRequired: true,
-            pattern: '^[\\p{L}\\p{N}_]+$',
+            maxLength: 255,
         },
         email: {
             type: 'string',
             isRequired: true,
             format: 'email',
+            maxLength: 255,
         },
         isActive: {
             type: 'any-of',
