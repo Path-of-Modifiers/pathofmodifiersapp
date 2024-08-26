@@ -267,12 +267,3 @@ class User(Base):
             name="check_username_letters_and_numbers",
         ),
     )
-
-
-class TemporaryHashedUserIP(Base):
-    __tablename__ = "temporary_hashed_user_ip"
-
-    hashedIp = _sql.Column(
-        _sql.String(80), primary_key=True, index=True, nullable=False
-    )
-    createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
