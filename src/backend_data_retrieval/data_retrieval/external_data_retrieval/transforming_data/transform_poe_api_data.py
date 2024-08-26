@@ -62,7 +62,13 @@ class PoeAPIDataTransformer:
     def _process_account_table(self, df: pd.DataFrame) -> None:
         account_df = self._create_account_table(df)
         account_df = self._transform_account_table(account_df)
-        insert_data(account_df, url=self.url, table_name="account", logger=self.logger)
+        insert_data(
+            account_df,
+            url=self.url,
+            table_name="account",
+            logger=self.logger,
+            headers=self.pom_auth_headers,
+        )
 
     def _create_stash_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
