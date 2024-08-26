@@ -22,7 +22,6 @@ class TestCascadeAPI(TestAPI):
         ],
         client: TestClient,
         route_prefix: str,
-        model_table_name: str,
         unique_identifier: str,
         ignore_test_columns: list[str],
         superuser_token_headers: dict[str, str],
@@ -49,7 +48,7 @@ class TestCascadeAPI(TestAPI):
             model_table_name (str): Model table name
             unique_identifier (str): Unique identifier for the object
             ignore_test_columns (List[str]): Columns to ignore
-            superuser_token_headers: dict[str, str] (Dict): Superuser headers
+            superuser_token_headers: (dict[str, str]): Superuser headers
             api_deps_instances (List[List[str]]): API dependencies instances
         """
         _, object_out, deps = await self._create_object_cascade_crud(
@@ -110,7 +109,7 @@ class TestCascadeAPI(TestAPI):
             assert (
                 content_dep
                 == get_delete_return_msg(
-                    model_table_name=dep_model_table_name, mapping=primary_keys_map
+                    model_table_name=dep_model_table_name, filter=primary_keys_map
                 ).message
             )
 
@@ -161,7 +160,7 @@ class TestCascadeAPI(TestAPI):
             parameters for PUT
 
             ignore_test_columns (List[str]): Columns to ignore
-            superuser_token_headers: dict[str, str] (Dict): Superuser headers
+            superuser_token_headers: (dict[str, str]): Superuser headers
             api_deps_instances (List[List[str]]): API dependencies instances
         """
         _, object_out, deps = await self._create_object_cascade_crud(
