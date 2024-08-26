@@ -20,6 +20,7 @@ from app.api.deps import (
     CurrentUser,
     SessionDep,
     get_current_active_superuser,
+    get_current_active_user,
 )
 from app.core.config import settings
 from app.core.models.models import User
@@ -80,7 +81,11 @@ def create(*, db: SessionDep, user_in: UserCreate) -> Any:
     return user
 
 
-@router.patch("/me", response_model=UserPublic)
+@router.patch(
+    "/me",
+    response_model=UserPublic,
+    dependencies=[Depends(get_current_active_user)],
+)
 def update_me(
     *, db: SessionDep, user_in: UserUpdateMe, current_user: CurrentUser
 ) -> Any:
@@ -95,7 +100,7 @@ def update_me(
             raise HTTPException(
                 status_code=409,
                 detail=get_db_obj_already_exists_msg(
-                    user_prefix, user_in.email
+                    User.__tablename__, {"username": user_in.username}
                 ).message,
             )
     user_data = user_in.model_dump(exclude_unset=True)
@@ -111,7 +116,11 @@ def update_me(
     return current_user
 
 
-@router.patch("/me/password", response_model=Message)
+@router.patch(
+    "/me/password",
+    response_model=Message,
+    dependencies=[Depends(get_current_active_user)],
+)
 def update_password_me(
     *, db: SessionDep, body: UpdatePassword, current_user: CurrentUser
 ) -> Any:
@@ -132,6 +141,7 @@ def update_password_me(
 @router.get(
     "/me",
     response_model=UserPublic,
+    dependencies=[Depends(get_current_active_user)],
 )
 def get_user_me(current_user: CurrentUser) -> Any:
     """
@@ -140,7 +150,11 @@ def get_user_me(current_user: CurrentUser) -> Any:
     return current_user
 
 
-@router.delete("/me", response_model=Message)
+@router.delete(
+    "/me",
+    response_model=Message,
+    dependencies=[Depends(get_current_active_user)],
+)
 def delete_user_me(db: SessionDep, current_user: CurrentUser) -> Any:
     """
     Delete own user.
@@ -155,7 +169,7 @@ def delete_user_me(db: SessionDep, current_user: CurrentUser) -> Any:
     db.delete(current_user)
     db.commit()
     return get_delete_return_msg(
-        model_table_name=User.__tablename__, mapping={"userId": current_user.userId}
+        model_table_name=User.__tablename__, filter={"userId": current_user.userId}
     ).message
 
 
@@ -174,18 +188,24 @@ def register_user(db: SessionDep, user_in: UserRegister) -> Any:
     return user
 
 
-@router.get("/{user_id}", response_model=UserPublic)
+@router.get(
+    "/{user_id}",
+    response_model=UserPublic,
+    dependencies=[Depends(get_current_active_user)],
+)
 def get_user_by_id(
     user_id: uuid.UUID, db: SessionDep, current_user: CurrentUser
 ) -> Any:
     """
     Get a specific user by id.
     """
-    db_user = db.get(User, user_id)
+    db_user = CRUD_user.get(db, {"userId": user_id})
     if not db_user:
         raise HTTPException(
             status_code=404,
-            detail=get_no_obj_matching_query_msg({"userId": user_id}, User).message,
+            detail=get_no_obj_matching_query_msg(
+                {"userId": user_id}, User.__tablename__
+            ).message,
         )
     if db_user == current_user:
         return db_user
@@ -223,11 +243,13 @@ def delete_user(
     """
     Delete a user.
     """
-    db_user = db.get(User, user_id)
+    db_user = CRUD_user.get(db, {"userId": user_id})
     if not db_user:
         raise HTTPException(
             status_code=404,
-            detail=get_no_obj_matching_query_msg({"userId": user_id}, User).message,
+            detail=get_no_obj_matching_query_msg(
+                {"userId": user_id}, User.__tablename__
+            ).message,
         )
     if db_user == current_user:
         raise HTTPException(
@@ -239,12 +261,13 @@ def delete_user(
     db.delete(db_user)
     db.commit()
     return get_delete_return_msg(
-        model_table_name=User.__tablename__, mapping={"userId": user_id}
+        model_table_name=User.__tablename__, filter={"userId": user_id}
     ).message
 
 
 @router.patch(
     "/activate/{user_id}",
+    dependencies=[Depends(get_current_active_user)],
 )
 def change_activate_user(
     db: SessionDep,
@@ -255,7 +278,7 @@ def change_activate_user(
     """
     Change activity to current user.
     """
-    db_user = db.get(User, user_id)
+    db_user = CRUD_user.get(db, {"userId": user_id})
     if db_user == current_user:
         CRUD_user.set_active(db=db, db_user=db_user, active=activate)
         return Message(
