@@ -22,12 +22,14 @@ export const hasCompletedCaptcha = () => {
  */
 const useTurnstileValidation = (requestBody: TurnstileQuery) => {
   const [error, setError] = useState<string | null>(null);
+  const searchParams = new URLSearchParams(window.location.search);
+  const from = searchParams.get("from");
 
   const navigate = useNavigate();
 
   const {
     data: valid_ip_response,
-    isLoading,
+    isLoading: isLoadingCaptcha,
     isError,
   } = useQuery<boolean | null, Error>({
     queryKey: ["valid_ip_check", hasCompletedCaptcha()],
@@ -67,7 +69,7 @@ const useTurnstileValidation = (requestBody: TurnstileQuery) => {
     mutationFn: completeCaptcha,
 
     onSuccess: () => {
-      navigate({ to: "/" });
+      navigate({ to: from ? "/" + `${from}` : "/" });
     },
 
     onError: (err: ApiError) => {
@@ -86,16 +88,10 @@ const useTurnstileValidation = (requestBody: TurnstileQuery) => {
     retry: false,
   });
 
-  const logout = () => {
-    localStorage.removeItem("hasCompletedCaptcha");
-    navigate({ to: "/captcha" });
-  };
-
   return {
     performTurnstileValidation,
     valid_ip_response,
-    logout,
-    isLoading,
+    isLoadingCaptcha,
     error,
     resetError: () => setError(null),
   };
