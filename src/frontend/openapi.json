@@ -11,7 +11,7 @@
           "accounts"
         ],
         "summary": "Get Account",
-        "description": "Get the account by mapping with key and value for \"accountName\" .\n\nAlways returns one account.",
+        "description": "Get the account by filter with key and value for \"accountName\" .\n\nAlways returns one account.",
         "operationId": "get_account",
         "security": [
           {
@@ -924,6 +924,11 @@
         "summary": "Get Item Modifier",
         "description": "Get item modifier or list of item modifiers by key and\nvalue for \"itemId\", optional \"modifierId\" and optional \"position\".\n\nDominant key is \"itemId\".\n\nReturns one or a list of item modifiers.",
         "operationId": "get_item_modifier",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "itemId",
@@ -5853,13 +5858,11 @@
         "properties": {
           "current_password": {
             "type": "string",
-            "maxLength": 40,
             "minLength": 8,
             "title": "Current Password"
           },
           "new_password": {
             "type": "string",
-            "maxLength": 40,
             "minLength": 8,
             "title": "New Password"
           }
@@ -5875,12 +5878,11 @@
         "properties": {
           "username": {
             "type": "string",
-            "maxLength": 255,
+            "pattern": "^[\\p{L}\\p{N}_]+$",
             "title": "Username"
           },
           "email": {
             "type": "string",
-            "maxLength": 255,
             "format": "email",
             "title": "Email"
           },
@@ -5934,7 +5936,6 @@
           },
           "password": {
             "type": "string",
-            "maxLength": 40,
             "minLength": 8,
             "title": "Password"
           }
@@ -5951,12 +5952,11 @@
         "properties": {
           "username": {
             "type": "string",
-            "maxLength": 255,
+            "pattern": "^[\\p{L}\\p{N}_]+$",
             "title": "Username"
           },
           "email": {
             "type": "string",
-            "maxLength": 255,
             "format": "email",
             "title": "Email"
           },
@@ -6026,18 +6026,16 @@
         "properties": {
           "username": {
             "type": "string",
-            "maxLength": 255,
+            "pattern": "^[\\p{L}\\p{N}_]+$",
             "title": "Username"
           },
           "email": {
             "type": "string",
-            "maxLength": 255,
             "format": "email",
             "title": "Email"
           },
           "password": {
             "type": "string",
-            "maxLength": 40,
             "minLength": 8,
             "title": "Password"
           }
@@ -6054,14 +6052,13 @@
         "properties": {
           "username": {
             "type": "string",
-            "maxLength": 255,
+            "pattern": "^[\\p{L}\\p{N}_]+$",
             "title": "Username"
           },
           "email": {
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 255,
                 "format": "email"
               },
               {
@@ -6122,7 +6119,6 @@
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 40,
                 "minLength": 8
               },
               {
@@ -6144,7 +6140,6 @@
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 255,
                 "format": "email"
               },
               {
@@ -6157,7 +6152,7 @@
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 255
+                "pattern": "^[\\p{L}\\p{N}_]+$"
               },
               {
                 "type": "null"
