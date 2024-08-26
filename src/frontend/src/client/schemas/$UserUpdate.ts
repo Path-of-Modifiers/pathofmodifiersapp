@@ -5,9 +5,13 @@
 export const $UserUpdate = {
     properties: {
         username: {
-            type: 'string',
-            isRequired: true,
-            pattern: '^[\\p{L}\\p{N}_]+$',
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+                pattern: '^[\\p{L}\\p{N}_]+$',
+            }, {
+                type: 'null',
+            }],
         },
         email: {
             type: 'any-of',

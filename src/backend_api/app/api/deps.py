@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 import app.core.models.database as _database
 from app.api.api_message_util import (
     get_invalid_token_credentials_msg,
+    get_no_obj_matching_query_msg,
     get_not_active_or_auth_user_error_msg,
     get_not_superuser_auth_msg,
 )
@@ -48,9 +49,15 @@ def get_current_user(session: SessionDep, token: TokenDep) -> User:
         )
     user = session.get(User, token_data.sub)
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(
+            status_code=404,
+            detail=get_no_obj_matching_query_msg(None, User.__tablename__).message,
+        )
     if not user.isActive:
-        raise HTTPException(status_code=400, detail="Inactive user")
+        raise HTTPException(
+            status_code=400,
+            detail=get_not_active_or_auth_user_error_msg(user.username).message,
+        )
     return user
 
 

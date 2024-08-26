@@ -2,7 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type HashedUserIpUpdate = {
-    hashedIp: string;
+export type RecoverPassword = {
+    username?: (string | null);
+    email?: (string | null);
 };
 

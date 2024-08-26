@@ -26,7 +26,7 @@ export const Route = createFileRoute("/_layout")({
 });
 
 function Layout() {
-  const { isLoadingCaptcha } = useTurnstileValidation({
+  const { isLoadingTurnstile } = useTurnstileValidation({
     token: "",
     ip: security_ip ?? "",
   });
@@ -35,7 +35,7 @@ function Layout() {
 
   return (
     <Flex maxW="large" h="auto" position="relative" bgColor="ui.main">
-      {isLoadingCaptcha || isLoadingUser ? (
+      {isLoadingTurnstile || isLoadingUser ? (
         <Flex justify="center" align="center" height="100vh" width="full">
           <Spinner size="xl" color={"ui.white"} />
         </Flex>
