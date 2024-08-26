@@ -14,6 +14,7 @@ from app.api.api_message_util import (
     get_new_psw_not_same_msg,
     get_no_obj_matching_query_msg,
     get_not_active_or_auth_user_error_msg,
+    get_password_rec_email_sent_success,
     get_user_psw_change_msg,
 )
 from app.api.deps import CurrentUser, SessionDep, get_current_active_superuser
@@ -21,6 +22,7 @@ from app.core import security
 from app.core.config import settings
 from app.core.models.models import User
 from app.core.schemas import Message, NewPassword, Token, UserPublic
+from app.core.schemas.token import RecoverPassword
 from app.core.security import get_password_hash, verify_password
 from app.crud import CRUD_user
 from app.utils.user import (
@@ -52,7 +54,7 @@ def login_access_token(
     elif not user.isActive:
         raise HTTPException(
             status_code=400,
-            detail=get_not_active_or_auth_user_error_msg(user.userName).message,
+            detail=get_not_active_or_auth_user_error_msg(user.username).message,
         )
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     return Token(
@@ -72,23 +74,19 @@ def test_token(current_user: CurrentUser) -> Any:
 
 
 @router.post("/password-recovery/")
-def recover_password(
-    session: SessionDep,
-    username: str | None = None,
-    email: EmailStr | None = None,
-) -> Message:
+def recover_password(session: SessionDep, body: RecoverPassword) -> Message:
     """
     Password Recovery
     """
-    if not email and not username:
+    if not body.email and not body.username:
         raise HTTPException(
             status_code=400, detail=get_email_or_username_required_msg().message
         )
     get_user_filter = {}
-    if email:
-        get_user_filter["email"] = email
-    if username:
-        get_user_filter["username"] = username
+    if body.email:
+        get_user_filter["email"] = body.email
+    if body.username:
+        get_user_filter["username"] = body.username
     user = CRUD_user.get(db=session, filter=get_user_filter)
     if not user:
         raise HTTPException(
@@ -98,25 +96,20 @@ def recover_password(
             ).message,
         )
 
-    if not email:
-        email = CRUD_user.get_email_by_username(db=session, username=username)
+    email = ""
+    if not body.email:
+        email = CRUD_user.get_email_by_username(db=session, username=body.username)
 
-    password_reset_token = generate_password_reset_token(email=email)
+    password_reset_token = generate_password_reset_token(email=body.email)
     email_data = generate_reset_password_email(
         email_to=user.email, email=email, token=password_reset_token
     )
-    # try:
     send_email(
         email_to=user.email,
         subject=email_data.subject,
         html_content=email_data.html_content,
     )
-    # except Exception as e:
-    #     raise HTTPException(
-    #         status_code=400,
-    #         detail="Failed to send email. Please try again later. Error: " + str(e),
-    #     )
-    return Message(message="Password recovery email sent")
+    return get_password_rec_email_sent_success()
 
 
 @router.post("/reset-password/")
@@ -126,7 +119,9 @@ def reset_password(session: SessionDep, body: NewPassword) -> Message:
     """
     email = verify_password_reset_token(token=body.token)
     if not email:
-        raise HTTPException(status_code=400, detail=get_invalid_token_credentials_msg())
+        raise HTTPException(
+            status_code=400, detail=get_invalid_token_credentials_msg().message
+        )
     get_user_filter = {"email": email}
     user = CRUD_user.get(db=session, filter=get_user_filter)
     if not user:
@@ -139,7 +134,7 @@ def reset_password(session: SessionDep, body: NewPassword) -> Message:
     elif not user.isActive:
         raise HTTPException(
             status_code=400,
-            detail=get_not_active_or_auth_user_error_msg(user.userName).message,
+            detail=get_not_active_or_auth_user_error_msg(user.username).message,
         )
     if verify_password(body.new_password, user.hashedPassword):
         raise HTTPException(status_code=400, detail=get_new_psw_not_same_msg().message)
@@ -147,7 +142,8 @@ def reset_password(session: SessionDep, body: NewPassword) -> Message:
     user.hashedPassword = hashed_password
     session.add(user)
     session.commit()
-    return get_user_psw_change_msg(user.userName)
+    session.refresh(user)
+    return get_user_psw_change_msg(user.username)
 
 
 @router.post(

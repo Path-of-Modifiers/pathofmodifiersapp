@@ -5,10 +5,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.api.api_message_util import (
-    get_db_obj_already_exists_msg,
     get_delete_return_msg,
-    get_incorrect_psw_msg,
-    get_new_psw_not_same_msg,
     get_no_obj_matching_query_msg,
     get_not_superuser_auth_msg,
     get_superuser_not_allowed_change_active_self_msg,
@@ -34,7 +31,6 @@ from app.core.schemas import (
     UserUpdate,
     UserUpdateMe,
 )
-from app.core.security import get_password_hash, verify_password
 from app.crud import CRUD_user
 from app.utils.user import (
     generate_new_account_email,
@@ -93,26 +89,8 @@ def update_me(
     Update own user.
     """
 
-    if user_in.email:
-        get_user_filter = {"email": user_in.email}
-        existing_user = CRUD_user.get(db=db, filter=get_user_filter)
-        if existing_user and existing_user.userId != current_user.userId:
-            raise HTTPException(
-                status_code=409,
-                detail=get_db_obj_already_exists_msg(
-                    User.__tablename__, {"username": user_in.username}
-                ).message,
-            )
-    user_data = user_in.model_dump(exclude_unset=True)
-    current_user_data = current_user.__table__.columns.keys()
+    CRUD_user.update(db=db, user_id=current_user.userId, user_in=user_in)
 
-    for field in current_user_data:
-        if field in user_data:
-            setattr(current_user, field, user_data[field])
-
-    db.add(current_user)
-    db.commit()
-    db.refresh(current_user)
     return current_user
 
 
@@ -127,14 +105,12 @@ def update_password_me(
     """
     Update own password.
     """
-    if not verify_password(body.current_password, current_user.hashedPassword):
-        raise HTTPException(status_code=400, detail=get_incorrect_psw_msg().message)
-    if body.current_password == body.new_password:
-        raise HTTPException(status_code=400, detail=get_new_psw_not_same_msg().message)
-    hashed_password = get_password_hash(body.new_password)
-    current_user.hashedPassword = hashed_password
-    db.add(current_user)
-    db.commit()
+    CRUD_user.update_password(
+        db=db,
+        db_user=current_user,
+        body=body,
+    )
+
     return get_user_psw_change_msg(current_user.username)
 
 
@@ -155,7 +131,7 @@ def get_user_me(current_user: CurrentUser) -> Any:
     response_model=Message,
     dependencies=[Depends(get_current_active_user)],
 )
-def delete_user_me(db: SessionDep, current_user: CurrentUser) -> Any:
+def delete_user_me(db: SessionDep, current_user: CurrentUser) -> Message:
     """
     Delete own user.
     """
@@ -170,7 +146,7 @@ def delete_user_me(db: SessionDep, current_user: CurrentUser) -> Any:
     db.commit()
     return get_delete_return_msg(
         model_table_name=User.__tablename__, filter={"userId": current_user.userId}
-    ).message
+    )
 
 
 @router.post("/signup", response_model=UserPublic)
@@ -199,7 +175,7 @@ def get_user_by_id(
     """
     Get a specific user by id.
     """
-    db_user = CRUD_user.get(db, {"userId": user_id})
+    db_user = CRUD_user.get(db, filter={"userId": user_id})
     if not db_user:
         raise HTTPException(
             status_code=404,
@@ -243,7 +219,7 @@ def delete_user(
     """
     Delete a user.
     """
-    db_user = CRUD_user.get(db, {"userId": user_id})
+    db_user = CRUD_user.get(db, filter={"userId": user_id})
     if not db_user:
         raise HTTPException(
             status_code=404,
@@ -262,7 +238,7 @@ def delete_user(
     db.commit()
     return get_delete_return_msg(
         model_table_name=User.__tablename__, filter={"userId": user_id}
-    ).message
+    )
 
 
 @router.patch(
@@ -278,7 +254,7 @@ def change_activate_user(
     """
     Change activity to current user.
     """
-    db_user = CRUD_user.get(db, {"userId": user_id})
+    db_user = CRUD_user.get(db, filter={"userId": user_id})
     if db_user == current_user:
         CRUD_user.set_active(db=db, db_user=db_user, active=activate)
         return Message(
