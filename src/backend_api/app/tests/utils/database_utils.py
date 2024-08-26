@@ -1,7 +1,9 @@
-from sqlalchemy import MetaData
+from sqlalchemy import MetaData, delete
 from sqlalchemy.exc import SQLAlchemyError
 
+from app.core.config import settings
 from app.core.models.database import engine as src_db_engine
+from app.core.models.models import User
 from app.tests.setup_test_database import test_db_engine
 
 src_db_metadata = MetaData()
@@ -32,6 +34,7 @@ def mock_src_database_for_test_db():
         table.create(bind=test_db_engine)
 
     tgt_conn.commit()
+
     src_conn.close()
     tgt_conn.close()
 
@@ -47,7 +50,17 @@ def clear_all_tables():
     try:
         for table in reversed(test_db_metadata.sorted_tables):
             print(f"Clearing table {table.name}...")
-            src_conn.execute(table.delete())
+            if table.name == "alembic_version":
+                continue
+            elif table.name == User.__tablename__:
+                # Don't delete first superuser row or test user row
+                stmt = delete(User).where(
+                    User.username != settings.FIRST_SUPERUSER_USERNAME
+                    or User.username != settings.TEST_USER_USERNAME
+                )
+                src_conn.execute(stmt)
+            else:
+                src_conn.execute(table.delete())
         transaction.commit()
         print("All tables cleared successfully.")
     except SQLAlchemyError as e:
