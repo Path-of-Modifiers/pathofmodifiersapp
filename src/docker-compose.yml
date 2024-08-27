@@ -28,6 +28,28 @@ services:
       timeout: 5s
       retries: 5
 
+  cache:
+    image: redis:7.4.0
+    restart: always
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - default
+    deploy:
+      placement:
+        constraints:
+          - node.labels.${STACK_NAME?Variable not set}.pom-cache-data == true
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD?Variable not set}
+      REDIS_CACHE: ${REDIS_CACHE?Variable not set}
+    volumes:
+      - pom-cache-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD?Variable not set}
+
   backend:
     image: "${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}"
     restart: always
@@ -38,6 +60,8 @@ services:
       - default
     depends_on:
       db:
+        condition: service_healthy
+      cache:
         condition: service_healthy
     env_file:
       - .env
@@ -52,6 +76,8 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER?Variable not set}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+      - REDIS_HOST=cache
+      - REDIS_PASSWORD=${REDIS_PASSWORD?Variable not set}
     build:
       context: ./backend_api
       args:
@@ -80,22 +106,22 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.middlewares=${STACK_NAME?Variable not set}-www-redirect
 
-  backend-data-retrieval:
-    image: backend_data_retrieval:1.0.0
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      # Use the public network created to be shared between Traefik and
-      # any other service that needs to be publicly available with HTTPS
-      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
-      - default
-    env_file:
-      - .env
-    build:
-      context: ./backend_data_retrieval
-      args:
-        INSTALL_DEV: ${INSTALL_DEV-false}
+  # backend-data-retrieval:
+  #   image: backend_data_retrieval:1.0.0
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   networks:
+  #     # Use the public network created to be shared between Traefik and
+  #     # any other service that needs to be publicly available with HTTPS
+  #     - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+  #     - default
+  #   env_file:
+  #     - .env
+  #   build:
+  #     context: ./backend_data_retrieval
+  #     args:
+  #       INSTALL_DEV: ${INSTALL_DEV-false}
 
   pgadmin:
     image: dpage/pgadmin4
@@ -122,39 +148,41 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-https.tls.certresolver=le
       - traefik.http.services.${STACK_NAME?Variable not set}-pgadmin.loadbalancer.server.port=5432
 
-  frontend:
-    image: "${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}"
-    restart: always
-    networks:
-      - traefik-public
-      - default
-    build:
-      context: ./frontend
-      args:
-        - VITE_API_URL=https://${DOMAIN?Variable not set}
-        - NODE_ENV=production
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=traefik-public
-      - traefik.constraint-label=traefik-public
+  # frontend:
+  #   image: "${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}"
+  #   restart: always
+  #   networks:
+  #     - traefik-public
+  #     - default
+  #   build:
+  #     context: ./frontend
+  #     args:
+  #       - VITE_API_URL=https://${DOMAIN?Variable not set}
+  #       - NODE_ENV=production
+  #   labels:
+  #     - traefik.enable=true
+  #     - traefik.docker.network=traefik-public
+  #     - traefik.constraint-label=traefik-public
 
-      - traefik.http.services.${STACK_NAME?Variable not set}-frontend.loadbalancer.server.port=80
+  #     - traefik.http.services.${STACK_NAME?Variable not set}-frontend.loadbalancer.server.port=80
 
-      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.rule=Host(`${DOMAIN?Variable not set}`) || Host(`www.${DOMAIN?Variable not set}`)
-      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.entrypoints=http
+  #     - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.rule=Host(`${DOMAIN?Variable not set}`) || Host(`www.${DOMAIN?Variable not set}`)
+  #     - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.entrypoints=http
 
-      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.rule=Host(`${DOMAIN?Variable not set}`) || Host(`www.${DOMAIN?Variable not set}`)
-      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.entrypoints=https
-      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.tls=true
-      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.tls.certresolver=le
+  #     - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.rule=Host(`${DOMAIN?Variable not set}`) || Host(`www.${DOMAIN?Variable not set}`)
+  #     - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.entrypoints=https
+  #     - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.tls=true
+  #     - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.tls.certresolver=le
 
-      # Enable www redirection for HTTP and HTTPS
-      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.middlewares=${STACK_NAME?Variable not set}-www-redirect
-      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect
+  #     # Enable www redirection for HTTP and HTTPS
+  #     - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.middlewares=${STACK_NAME?Variable not set}-www-redirect
+  #     - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect
 
 volumes:
   pom-db-data:
     name: "pom-db-data"
+  pom-cache-data:
+    name: "pom-cache-data"
   pgadmin-data:
     name: "pgadmin-data"
 
