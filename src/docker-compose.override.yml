@@ -42,6 +42,11 @@ services:
     ports:
       - 5432:5432
 
+  cache:
+    restart: "no"
+    ports:
+      - "6379:6379"
+
   backend:
     restart: "no"
     ports:
@@ -59,25 +64,25 @@ services:
     ports:
       - "8881:80"
 
-  backend-data-retrieval:
-    restart: "no"
-    ports:
-      - "8889:8889"
-    volumes:
-      - ./backend_data_retrieval/data_retrieval:/data_retrieval
-    build:
-      context: ./backend_data_retrieval
-      args:
-        INSTALL_DEV: ${INSTALL_DEV-true}
-    command: /prestart.sh
+  # backend-data-retrieval:
+  #   restart: "no"
+  #   ports:
+  #     - "8889:8889"
+  #   volumes:
+  #     - ./backend_data_retrieval/data_retrieval:/data_retrieval
+  #   build:
+  #     context: ./backend_data_retrieval
+  #     args:
+  #       INSTALL_DEV: ${INSTALL_DEV-true}
+  #   command: /prestart.sh
 
-  frontend:
-    restart: "no"
-    build:
-      context: ./frontend
-      args:
-        - VITE_API_URL=http://${DOMAIN?Variable not set}
-        - NODE_ENV=development
+  # frontend:
+  #   restart: "no"
+  #   build:
+  #     context: ./frontend
+  #     args:
+  #       - VITE_API_URL=http://${DOMAIN?Variable not set}
+  #       - NODE_ENV=development
 
 networks:
   traefik-public:
