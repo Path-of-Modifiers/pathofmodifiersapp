@@ -7,11 +7,13 @@ from fastapi.exception_handlers import (
 )
 from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.responses import JSONResponse, PlainTextResponse, Response
+from slowapi.errors import RateLimitExceeded
 
 from app.logger import logger
 
 """
 Taken from https://medium.com/@roy-pstr/fastapi-server-errors-and-logs-take-back-control-696405437983
+
 """
 
 
@@ -66,3 +68,22 @@ async def unhandled_exception_handler(
         f'{host}:{port} - "{request.method} {url}" 500 Internal Server Error <{exception_name}: {exception_value}>'
     )
     return PlainTextResponse(str(exc), status_code=500)
+
+
+async def rate_limit_exceeded_handler(
+    request: Request,  # noqa: ARG001
+    exc: RateLimitExceeded,
+):
+    retry_after = getattr(
+        exc, "retry_after", 60
+    )  # Default to 60 seconds if attribute is missing
+
+    response_body = {
+        "detail": "Rate limit exceeded. Please try again later.",
+        "retry_after_seconds": retry_after,
+    }
+    return JSONResponse(
+        status_code=429,
+        content=response_body,
+        headers={"Retry-After": str(retry_after)},
+    )
