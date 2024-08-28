@@ -19,6 +19,7 @@ limiter_user = Limiter(
     key_func=get_current_user_id_by_request,  # Limits based on IP address is default, but can be changed to other functions
     default_limits=default_limit_provider(),
     storage_uri=str(settings.CACHE_URI),
+    headers_enabled=True,
     enabled=settings.RATE_LIMIT,
 )
 
@@ -27,6 +28,7 @@ limiter_ip = Limiter(
     key_func=get_remote_address,
     default_limits=default_limit_provider(),
     storage_uri=str(settings.CACHE_URI),
+    headers_enabled=True,
     enabled=settings.RATE_LIMIT,
 )
 
