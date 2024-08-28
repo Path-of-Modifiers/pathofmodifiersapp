@@ -15,7 +15,7 @@ from app.api.deps import (
 from app.core.config import settings
 from app.core.models.models import Stash
 from app.crud import CRUD_stash
-from app.limiter import apply_ip_rate_limits
+from app.limiter import apply_user_rate_limits
 
 router = APIRouter()
 
@@ -28,7 +28,7 @@ stash_prefix = "stash"
     response_model=schemas.Stash,
     dependencies=[Depends(get_current_active_user)],
 )
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     settings.DEFAULT_USER_RATE_LIMIT_SECOND,
     settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
     settings.DEFAULT_USER_RATE_LIMIT_HOUR,

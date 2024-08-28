@@ -16,7 +16,7 @@ from app.api.deps import (
 from app.core.config import settings
 from app.core.models.models import Item
 from app.crud import CRUD_item
-from app.limiter import apply_ip_rate_limits
+from app.limiter import apply_user_rate_limits
 
 router = APIRouter()
 
@@ -29,7 +29,7 @@ item_prefix = "item"
     response_model=schemas.Item,
     dependencies=[Depends(get_current_active_user)],
 )
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     settings.DEFAULT_USER_RATE_LIMIT_SECOND,
     settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
     settings.DEFAULT_USER_RATE_LIMIT_HOUR,
@@ -59,7 +59,7 @@ async def get_item(
     tags=["latest_item_id"],
     dependencies=[Depends(get_current_active_user)],
 )
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     settings.DEFAULT_USER_RATE_LIMIT_SECOND,
     settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
     settings.DEFAULT_USER_RATE_LIMIT_HOUR,

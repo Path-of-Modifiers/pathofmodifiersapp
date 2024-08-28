@@ -26,7 +26,7 @@ from app.core.schemas import Message, NewPassword, Token, UserPublic
 from app.core.schemas.token import RecoverPassword
 from app.core.security import get_password_hash, verify_password
 from app.crud import CRUD_user
-from app.limiter import apply_ip_rate_limits
+from app.limiter import apply_user_rate_limits
 from app.utils.user import (
     generate_password_reset_token,
     generate_reset_password_email,
@@ -40,7 +40,7 @@ login_prefix = "login"
 
 
 @router.post("/access-token")
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     settings.LOGIN_RATE_LIMIT_SECOND,
     settings.LOGIN_RATE_LIMIT_MINUTE,
     settings.LOGIN_RATE_LIMIT_HOUR,
@@ -76,7 +76,7 @@ def login_access_token(
 
 
 @router.post("/test-token", response_model=UserPublic)
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     settings.LOGIN_RATE_LIMIT_SECOND,
     settings.LOGIN_RATE_LIMIT_MINUTE,
     settings.LOGIN_RATE_LIMIT_HOUR,
@@ -95,7 +95,7 @@ def test_token(
 
 
 @router.post("/password-recovery/")
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     settings.RECOVERY_PASSWORD_RATE_LIMIT_SECOND,
     settings.RECOVERY_PASSWORD_RATE_LIMIT_MINUTE,
     settings.RECOVERY_PASSWORD_RATE_LIMIT_HOUR,
@@ -145,7 +145,7 @@ def recover_password(
 
 
 @router.post("/reset-password/")
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     settings.RESET_PASSWORD_RATE_LIMIT_SECOND,
     settings.RESET_PASSWORD_RATE_LIMIT_MINUTE,
     settings.RESET_PASSWORD_RATE_LIMIT_HOUR,

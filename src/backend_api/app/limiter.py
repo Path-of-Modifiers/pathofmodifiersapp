@@ -1,7 +1,7 @@
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from app.api.deps import get_current_user_id_by_request
+from app.api.deps import get_user_token_by_request
 from app.core.config import settings
 
 
@@ -16,7 +16,7 @@ def default_limit_provider() -> list[str]:
 
 # Limiter for user
 limiter_user = Limiter(
-    key_func=get_current_user_id_by_request,  # Limits based on IP address is default, but can be changed to other functions
+    key_func=get_user_token_by_request,  # Limits based on IP address is default, but can be changed to other functions
     default_limits=default_limit_provider(),
     storage_uri=str(settings.CACHE_URI),
     headers_enabled=True,
