@@ -1,19 +1,22 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
 from app.api.api_message_util import (
     get_delete_return_msg,
 )
 from app.api.deps import (
-    SessionDep,
     get_current_active_superuser,
     get_current_active_user,
+    get_db,
 )
+from app.core.config import settings
 from app.core.models.models import Item
 from app.crud import CRUD_item
+from app.limiter import apply_ip_rate_limits
 
 router = APIRouter()
 
@@ -26,9 +29,17 @@ item_prefix = "item"
     response_model=schemas.Item,
     dependencies=[Depends(get_current_active_user)],
 )
+@apply_ip_rate_limits(
+    settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
 async def get_item(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
     itemId: int,
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Get item by key and value for "itemId".
@@ -48,8 +59,16 @@ async def get_item(
     tags=["latest_item_id"],
     dependencies=[Depends(get_current_active_user)],
 )
+@apply_ip_rate_limits(
+    settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
 async def get_latest_item_id(
-    db: SessionDep,
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    db: Session = Depends(get_db),
 ):
     """
     Get the latest "itemId"
@@ -70,7 +89,7 @@ async def get_latest_item_id(
     dependencies=[Depends(get_current_active_superuser)],
 )
 async def get_all_items(
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Get all items.
@@ -90,7 +109,7 @@ async def get_all_items(
 )
 async def create_item(
     item: schemas.ItemCreate | list[schemas.ItemCreate],
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Create one or a list of new items.
@@ -109,7 +128,7 @@ async def create_item(
 async def update_item(
     itemId: int,
     item_update: schemas.ItemUpdate,
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Update an item by key and value for "itemId".
@@ -133,7 +152,7 @@ async def update_item(
 )
 async def delete_item(
     itemId: int,
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Delete an item by key and value for "itemId".

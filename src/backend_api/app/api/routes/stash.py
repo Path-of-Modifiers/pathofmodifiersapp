@@ -1,18 +1,21 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request, Response
+from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
 from app.api.api_message_util import (
     get_delete_return_msg,
 )
 from app.api.deps import (
-    SessionDep,
     get_current_active_superuser,
     get_current_active_user,
+    get_db,
 )
+from app.core.config import settings
 from app.core.models.models import Stash
 from app.crud import CRUD_stash
+from app.limiter import apply_ip_rate_limits
 
 router = APIRouter()
 
@@ -25,9 +28,17 @@ stash_prefix = "stash"
     response_model=schemas.Stash,
     dependencies=[Depends(get_current_active_user)],
 )
+@apply_ip_rate_limits(
+    settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
 async def get_stash(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
     stashId: str,
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Get stash by key and value for "stashId".
@@ -47,7 +58,7 @@ async def get_stash(
     dependencies=[Depends(get_current_active_superuser)],
 )
 async def get_all_stashes(
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Get all stashes.
@@ -67,7 +78,7 @@ async def get_all_stashes(
 )
 async def create_stash(
     stash: schemas.StashCreate | list[schemas.StashCreate],
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Create one or a list of new stashes.
@@ -86,7 +97,7 @@ async def create_stash(
 async def update_stash(
     stashId: str,
     stash_update: schemas.StashUpdate,
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Update a stash by key and value for "stashId".
@@ -110,7 +121,7 @@ async def update_stash(
 )
 async def delete_stash(
     stashId: str,
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Delete a stash by key and value for "stashId".

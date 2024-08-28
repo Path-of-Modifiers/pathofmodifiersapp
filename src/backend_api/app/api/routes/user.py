@@ -2,7 +2,8 @@
 import uuid
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from sqlalchemy.orm import Session
 
 from app.api.api_message_util import (
     get_delete_return_msg,
@@ -15,9 +16,9 @@ from app.api.api_message_util import (
 )
 from app.api.deps import (
     CurrentUser,
-    SessionDep,
     get_current_active_superuser,
     get_current_active_user,
+    get_db,
 )
 from app.core.config import settings
 from app.core.models.models import User
@@ -32,6 +33,9 @@ from app.core.schemas import (
     UserUpdateMe,
 )
 from app.crud import CRUD_user
+from app.limiter import (
+    apply_ip_rate_limits,
+)
 from app.utils.user import (
     generate_new_account_email,
     send_email,
@@ -47,7 +51,7 @@ user_prefix = "user"
     dependencies=[Depends(get_current_active_superuser)],
     response_model=UsersPublic,
 )
-def get_all(db: SessionDep, skip: int = 0, limit: int = 100) -> Any:
+def get_all(db: Session = Depends(get_db), skip: int = 0, limit: int = 100) -> Any:
     """
     Retrieve all users.
     """
@@ -60,7 +64,7 @@ def get_all(db: SessionDep, skip: int = 0, limit: int = 100) -> Any:
 @router.post(
     "/", dependencies=[Depends(get_current_active_superuser)], response_model=UserPublic
 )
-def create(*, db: SessionDep, user_in: UserCreate) -> Any:
+def create(*, db: Session = Depends(get_db), user_in: UserCreate) -> Any:
     """
     Create new user.
     """
@@ -82,8 +86,19 @@ def create(*, db: SessionDep, user_in: UserCreate) -> Any:
     response_model=UserPublic,
     dependencies=[Depends(get_current_active_user)],
 )
+@apply_ip_rate_limits(
+    settings.UPDATE_ME_RATE_LIMIT_SECOND,
+    settings.UPDATE_ME_RATE_LIMIT_MINUTE,
+    settings.UPDATE_ME_RATE_LIMIT_HOUR,
+    settings.UPDATE_ME_RATE_LIMIT_DAY,
+)
 def update_me(
-    *, db: SessionDep, user_in: UserUpdateMe, current_user: CurrentUser
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    *,
+    db: Session = Depends(get_db),
+    user_in: UserUpdateMe,
+    current_user: CurrentUser,
 ) -> Any:
     """
     Update own user.
@@ -99,8 +114,19 @@ def update_me(
     response_model=Message,
     dependencies=[Depends(get_current_active_user)],
 )
+@apply_ip_rate_limits(
+    settings.UPDATE_PASSWORD_ME_RATE_LIMIT_SECOND,
+    settings.UPDATE_PASSWORD_ME_RATE_LIMIT_MINUTE,
+    settings.UPDATE_PASSWORD_ME_RATE_LIMIT_HOUR,
+    settings.UPDATE_PASSWORD_ME_RATE_LIMIT_DAY,
+)
 def update_password_me(
-    *, db: SessionDep, body: UpdatePassword, current_user: CurrentUser
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    *,
+    db: Session = Depends(get_db),
+    body: UpdatePassword,
+    current_user: CurrentUser,
 ) -> Any:
     """
     Update own password.
@@ -119,7 +145,17 @@ def update_password_me(
     response_model=UserPublic,
     dependencies=[Depends(get_current_active_user)],
 )
-def get_user_me(current_user: CurrentUser) -> Any:
+@apply_ip_rate_limits(
+    settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
+def get_user_me(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    current_user: CurrentUser,
+) -> Any:
     """
     Get current user.
     """
@@ -131,7 +167,18 @@ def get_user_me(current_user: CurrentUser) -> Any:
     response_model=Message,
     dependencies=[Depends(get_current_active_user)],
 )
-def delete_user_me(db: SessionDep, current_user: CurrentUser) -> Message:
+@apply_ip_rate_limits(
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_DAY,
+)
+def delete_user_me(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    current_user: CurrentUser,
+    db: Session = Depends(get_db),
+) -> Message:
     """
     Delete own user.
     """
@@ -150,7 +197,18 @@ def delete_user_me(db: SessionDep, current_user: CurrentUser) -> Message:
 
 
 @router.post("/signup", response_model=UserPublic)
-def register_user(db: SessionDep, user_in: UserRegister) -> Any:
+@apply_ip_rate_limits(
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_DAY,
+)
+def register_user(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    user_in: UserRegister,
+    db: Session = Depends(get_db),
+) -> Any:
     """
     Create new user without the need to be logged in.
     """
@@ -169,8 +227,18 @@ def register_user(db: SessionDep, user_in: UserRegister) -> Any:
     response_model=UserPublic,
     dependencies=[Depends(get_current_active_user)],
 )
+@apply_ip_rate_limits(
+    settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
 def get_user_by_id(
-    user_id: uuid.UUID, db: SessionDep, current_user: CurrentUser
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    user_id: uuid.UUID,
+    current_user: CurrentUser,
+    db: Session = Depends(get_db),
 ) -> Any:
     """
     Get a specific user by id.
@@ -200,7 +268,7 @@ def get_user_by_id(
 )
 def update(
     *,
-    db: SessionDep,
+    db: Session = Depends(get_db),
     user_id: uuid.UUID,
     user_in: UserUpdate,
 ) -> Any:
@@ -214,7 +282,9 @@ def update(
 
 @router.delete("/{user_id}", dependencies=[Depends(get_current_active_superuser)])
 def delete_user(
-    db: SessionDep, current_user: CurrentUser, user_id: uuid.UUID
+    current_user: CurrentUser,
+    user_id: uuid.UUID,
+    db: Session = Depends(get_db),
 ) -> Message:
     """
     Delete a user.
@@ -245,11 +315,19 @@ def delete_user(
     "/activate/{user_id}",
     dependencies=[Depends(get_current_active_user)],
 )
+@apply_ip_rate_limits(
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_DAY,
+)
 def change_activate_user(
-    db: SessionDep,
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
     current_user: CurrentUser,
     user_id: uuid.UUID,
     activate: bool,
+    db: Session = Depends(get_db),
 ) -> Message:
     """
     Change activity to current user.

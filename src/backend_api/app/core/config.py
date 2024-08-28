@@ -197,10 +197,10 @@ class Settings(BaseSettings):
     UPDATE_PASSWORD_ME_RATE_LIMIT_DAY: str = "2/day"  # Default rate limit days
 
     # Plotting rate limits
-    TIER_0_PLOT_RATE_LIMIT: str = "4/minute"  # Default rate limit for plotting
-    TIER_1_PLOT_RATE_LIMIT: str = "6/minute"  # Rate limit for tier 1 users
-    TIER_2_PLOT_RATE_LIMIT: str = "8/minute"  # Rate limit for tier 2 users
-    TIER_3_PLOT_RATE_LIMIT: str = "10/minute"  # Rate limit for tier 3 users
+    TIER_0_PLOT_RATE_LIMIT_SECOND: str = "1/second"  # Default rate limit for plotting
+    TIER_0_PLOT_RATE_LIMIT_MINUTE: str = "3/minute"  # Default rate limit for plotting
+    TIER_0_PLOT_RATE_LIMIT_HOUR: str = "30/hour"  # Default rate limit for plotting
+    TIER_0_PLOT_RATE_LIMIT_DAY: str = "200/day"  # Default rate limit for plotting
 
 
 settings = Settings()  # type: ignore
