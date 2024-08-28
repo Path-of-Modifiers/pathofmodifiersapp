@@ -74,16 +74,17 @@ async def rate_limit_exceeded_handler(
     request: Request,  # noqa: ARG001
     exc: RateLimitExceeded,
 ):
-    retry_after = getattr(
-        exc, "retry_after", 60
-    )  # Default to 60 seconds if attribute is missing
+    retry_after_seconds = exc.limit.limit.get_expiry()
+    max_amount_of_tries_per_time_period = exc.detail
 
     response_body = {
-        "detail": "Rate limit exceeded. Please try again later.",
-        "retry_after_seconds": retry_after,
+        "detail": "POM API : Rate limit exceeded. Please try again later.",
+        "max_amount_of_tries_per_time_period": max_amount_of_tries_per_time_period,
+        "retry_after_seconds": retry_after_seconds,
     }
+
     return JSONResponse(
         status_code=429,
         content=response_body,
-        headers={"Retry-After": str(retry_after)},
+        headers={"Retry-After-Seconds": str(retry_after_seconds)},
     )
