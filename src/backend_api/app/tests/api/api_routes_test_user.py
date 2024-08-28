@@ -9,6 +9,7 @@ from app.api.api_message_util import (
     get_db_obj_already_exists_msg,
     get_delete_return_msg,
     get_incorrect_psw_msg,
+    get_invalid_token_credentials_msg,
     get_new_psw_not_same_msg,
     get_no_obj_matching_query_msg,
     get_not_active_or_auth_user_error_msg,
@@ -690,3 +691,46 @@ class TestUserRoutes(BaseTest):
             r.json()["detail"]
             == get_not_superuser_auth_msg(username=current_user_username).message
         )
+
+    def test_token_expired_user(self, client: TestClient, db: Session) -> None:
+        with (
+            patch("app.core.config.settings.ACCESS_TOKEN_EXPIRE_MINUTES", 0),
+        ):
+            email = random_email()
+            password = random_lower_string()
+            username = random_lower_string()
+            data = {"email": email, "password": password, "username": username}
+            r = client.post(
+                f"{settings.API_V1_STR}/{user_prefix}/signup",
+                json=data,
+            )
+            assert r.status_code == 200
+            created_user = r.json()
+            assert created_user["email"] == email
+            assert created_user["username"] == username
+
+            user_db = crud.get(db=db, filter={"email": email})
+            assert user_db
+            assert user_db.email == email
+            assert user_db.username == username
+            assert verify_password(password, user_db.hashedPassword)
+            # Test login with expired token
+            login_data = {
+                "email": email,
+                "password": password,
+                "username": username,
+            }
+            r = client.post(
+                f"{settings.API_V1_STR}/login/access-token", data=login_data
+            )
+            token = r.json()["access_token"]
+            headers = {"Authorization": f"Bearer {token}"}
+            r_get_user_me_ok = client.get(
+                f"{settings.API_V1_STR}/{user_prefix}/me",
+                headers=headers,
+            )
+            assert r_get_user_me_ok.status_code == 403
+            assert (
+                r_get_user_me_ok.json()["detail"]
+                == get_invalid_token_credentials_msg().message
+            )
