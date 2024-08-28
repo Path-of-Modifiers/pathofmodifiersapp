@@ -54,3 +54,15 @@ class InvalidHeaderProvidedError(PathOfModifiersAPIError):
             function_name,
             message,
         )
+
+
+class NotAuthenticatedError(PathOfModifiersAPIError):
+    """Exception raised for not authenticated errors."""
+
+    def __init__(self, status_code: int, function_name: str, message: str):
+        message = "Could not authenticate user."
+        super().__init__(
+            status_code,
+            function_name,
+            message,
+        )

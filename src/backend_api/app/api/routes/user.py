@@ -34,7 +34,7 @@ from app.core.schemas import (
 )
 from app.crud import CRUD_user
 from app.limiter import (
-    apply_ip_rate_limits,
+    apply_user_rate_limits,
 )
 from app.utils.user import (
     generate_new_account_email,
@@ -86,7 +86,7 @@ def create(*, db: Session = Depends(get_db), user_in: UserCreate) -> Any:
     response_model=UserPublic,
     dependencies=[Depends(get_current_active_user)],
 )
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     settings.UPDATE_ME_RATE_LIMIT_SECOND,
     settings.UPDATE_ME_RATE_LIMIT_MINUTE,
     settings.UPDATE_ME_RATE_LIMIT_HOUR,
@@ -114,7 +114,7 @@ def update_me(
     response_model=Message,
     dependencies=[Depends(get_current_active_user)],
 )
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     settings.UPDATE_PASSWORD_ME_RATE_LIMIT_SECOND,
     settings.UPDATE_PASSWORD_ME_RATE_LIMIT_MINUTE,
     settings.UPDATE_PASSWORD_ME_RATE_LIMIT_HOUR,
@@ -145,7 +145,7 @@ def update_password_me(
     response_model=UserPublic,
     dependencies=[Depends(get_current_active_user)],
 )
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     settings.DEFAULT_USER_RATE_LIMIT_SECOND,
     settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
     settings.DEFAULT_USER_RATE_LIMIT_HOUR,
@@ -167,7 +167,7 @@ def get_user_me(
     response_model=Message,
     dependencies=[Depends(get_current_active_user)],
 )
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_SECOND,
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE,
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
@@ -197,7 +197,7 @@ def delete_user_me(
 
 
 @router.post("/signup", response_model=UserPublic)
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_SECOND,
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE,
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
@@ -227,7 +227,7 @@ def register_user(
     response_model=UserPublic,
     dependencies=[Depends(get_current_active_user)],
 )
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     settings.DEFAULT_USER_RATE_LIMIT_SECOND,
     settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
     settings.DEFAULT_USER_RATE_LIMIT_HOUR,
@@ -315,7 +315,7 @@ def delete_user(
     "/activate/{user_id}",
     dependencies=[Depends(get_current_active_user)],
 )
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_SECOND,
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE,
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,

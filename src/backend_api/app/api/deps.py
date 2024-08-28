@@ -1,4 +1,3 @@
-import uuid
 from typing import Annotated
 
 import jwt
@@ -85,8 +84,7 @@ def get_current_active_user(current_user: CurrentUser) -> User:
     return current_user
 
 
-def get_current_user_id_by_request(request: Request) -> str:
-    # Currently too slow to use in production.
+def get_user_token_by_request(request: Request) -> str:
     """Get current user id by request.
 
     Args:
@@ -103,24 +101,12 @@ def get_current_user_id_by_request(request: Request) -> str:
     if not header:
         raise InvalidHeaderProvidedError(
             status_code=403,
-            function_name=get_current_user_id_by_request.__name__,
+            function_name=get_user_token_by_request.__name__,
             message=f"No Authorization header provided. Authorization header: {header}",
         )
     token = header.split("Bearer ")[1]
 
-    if isinstance(token, str):
-        current_user = get_current_user(token=token, session=next(get_db()))
-    else:
-        raise InvalidTokenError(
-            function_name=get_current_user_id_by_request.__name__,
-            token=token,
-        )
-
-    if current_user.isSuperuser is True:
-        # Return random string to avoid rate limiting
-        random_identifier = uuid.uuid4().hex
-        return random_identifier
-    return current_user.userId
+    return token
 
 
 def get_limit_for_current_user_plot(current_user: CurrentUser) -> str:

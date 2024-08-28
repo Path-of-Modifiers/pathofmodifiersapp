@@ -16,7 +16,7 @@ from app.api.deps import (
 from app.core.config import settings
 from app.core.models.models import ItemBaseType
 from app.crud import CRUD_itemBaseType
-from app.limiter import apply_ip_rate_limits, apply_rate_limits
+from app.limiter import apply_rate_limits, apply_user_rate_limits
 
 router = APIRouter()
 
@@ -29,7 +29,7 @@ item_base_type_prefix = "itemBaseType"
     response_model=schemas.ItemBaseType,
     dependencies=[Depends(get_current_active_user)],
 )
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     settings.DEFAULT_USER_RATE_LIMIT_SECOND,
     settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
     settings.DEFAULT_USER_RATE_LIMIT_HOUR,
@@ -58,7 +58,7 @@ async def get_item_base_type(
     response_model=schemas.ItemBaseType | list[schemas.ItemBaseType],
     dependencies=[Depends(get_current_active_user)],
 )
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     settings.DEFAULT_USER_RATE_LIMIT_SECOND,
     settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
     settings.DEFAULT_USER_RATE_LIMIT_HOUR,
@@ -85,7 +85,7 @@ async def get_all_item_base_types(
     response_model=schemas.BaseType | list[schemas.BaseType],
     dependencies=[Depends(apply_rate_limits)],
 )
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     settings.DEFAULT_USER_RATE_LIMIT_SECOND,
     settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
     settings.DEFAULT_USER_RATE_LIMIT_HOUR,
@@ -111,7 +111,7 @@ async def get_base_types(
     response_model=schemas.ItemBaseTypeCategory | list[schemas.ItemBaseTypeCategory],
     dependencies=[Depends(get_current_active_user)],
 )
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     settings.DEFAULT_USER_RATE_LIMIT_SECOND,
     settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
     settings.DEFAULT_USER_RATE_LIMIT_HOUR,
@@ -139,7 +139,7 @@ async def get_unique_categories(
     | list[schemas.ItemBaseTypeSubCategory],
     dependencies=[Depends(get_current_active_user)],
 )
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     settings.DEFAULT_USER_RATE_LIMIT_SECOND,
     settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
     settings.DEFAULT_USER_RATE_LIMIT_HOUR,
