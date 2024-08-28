@@ -1,6 +1,5 @@
 # Can be replaced with ./api_message_util.py for better error handling
 
-
 from typing import Any
 
 
@@ -41,6 +40,17 @@ class InvalidTokenError(PathOfModifiersAPIError):
         # Call the parent constructor with a specific status code
         super().__init__(
             403,
+            function_name,
+            message,
+        )
+
+
+class InvalidHeaderProvidedError(PathOfModifiersAPIError):
+    """Exception raised for invalid header errors."""
+
+    def __init__(self, status_code: int, function_name: str, message: str):
+        super().__init__(
+            status_code,
             function_name,
             message,
         )
