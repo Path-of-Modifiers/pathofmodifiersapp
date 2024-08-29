@@ -28,6 +28,28 @@ services:
       timeout: 5s
       retries: 5
 
+  cache:
+    image: redis:7.4.0
+    restart: always
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - default
+    deploy:
+      placement:
+        constraints:
+          - node.labels.${STACK_NAME?Variable not set}.pom-cache-data == true
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD?Variable not set}
+      REDIS_CACHE: ${REDIS_CACHE?Variable not set}
+    volumes:
+      - pom-cache-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD?Variable not set}
+
   backend:
     image: "${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}"
     restart: always
@@ -38,6 +60,8 @@ services:
       - default
     depends_on:
       db:
+        condition: service_healthy
+      cache:
         condition: service_healthy
     env_file:
       - .env
@@ -52,6 +76,8 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER?Variable not set}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+      - REDIS_HOST=cache
+      - REDIS_PASSWORD=${REDIS_PASSWORD?Variable not set}
     build:
       context: ./backend_api
       args:
@@ -155,6 +181,8 @@ services:
 volumes:
   pom-db-data:
     name: "pom-db-data"
+  pom-cache-data:
+    name: "pom-cache-data"
   pgadmin-data:
     name: "pgadmin-data"
 
