@@ -27,7 +27,7 @@ class CRUDUser:
         self.validate_users_public = TypeAdapter(UsersPublic).validate_python
         self.validate_user_create = TypeAdapter(UserCreate).validate_python
 
-    def _check_exists_raise(
+    def check_exists_raise(
         self, db: Session, *, filter: dict[str, str], user_in: User | None = None
     ):
         """Check if object exists, raise an exception if it does
@@ -73,8 +73,8 @@ class CRUDUser:
         get_user_email_filter = {"email": user_create.email}
         get_user_username_filter = {"username": user_create.username}
 
-        self._check_exists_raise(db=db, filter=get_user_email_filter)
-        self._check_exists_raise(db=db, filter=get_user_username_filter)
+        self.check_exists_raise(db=db, filter=get_user_email_filter)
+        self.check_exists_raise(db=db, filter=get_user_username_filter)
 
         # Hash the password
         hashed_password = get_password_hash(user_create.password)
@@ -138,10 +138,10 @@ class CRUDUser:
 
         if user_in.email:
             email_filter = {"email": user_in.email}
-            self._check_exists_raise(db=db, filter=email_filter, user_in=user_in)
+            self.check_exists_raise(db=db, filter=email_filter, user_in=user_in)
         if user_in.username:
             get_user_username_filter = {"username": user_in.username}
-            self._check_exists_raise(db=db, filter=get_user_username_filter)
+            self.check_exists_raise(db=db, filter=get_user_username_filter)
 
         obj_data = db_user.__table__.columns.keys()
 
