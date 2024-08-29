@@ -16,7 +16,7 @@ from app.core.config import settings
 from app.core.security import verify_password
 from app.crud import CRUD_user
 from app.tests.base_test import BaseTest
-from app.utils.user import generate_password_reset_token
+from app.utils.user import generate_user_confirmation_token
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
@@ -135,7 +135,7 @@ class TestLoginRoutes(BaseTest):
         assert verify_password(settings.FIRST_SUPERUSER_PASSWORD, user.hashedPassword)
 
         new_password = "the_new_password"
-        token = generate_password_reset_token(email=settings.FIRST_SUPERUSER)
+        token = generate_user_confirmation_token(email=settings.FIRST_SUPERUSER)
         new_psw_data = {"new_password": new_password, "token": token}
         r = client.post(
             f"{settings.API_V1_STR}/{login_prefix}/reset-password/",
@@ -154,7 +154,7 @@ class TestLoginRoutes(BaseTest):
         assert verify_password(new_password, user.hashedPassword)
 
         # Reset password back to original
-        reset_token = generate_password_reset_token(email=settings.FIRST_SUPERUSER)
+        reset_token = generate_user_confirmation_token(email=settings.FIRST_SUPERUSER)
         old_password = settings.FIRST_SUPERUSER_PASSWORD
         old_psw_data = {"new_password": old_password, "token": reset_token}
         r = client.post(
@@ -178,7 +178,7 @@ class TestLoginRoutes(BaseTest):
         self, client: TestClient, superuser_token_headers: dict[str, str], db: Session
     ) -> None:
         new_password = settings.FIRST_SUPERUSER_PASSWORD
-        token = generate_password_reset_token(email=settings.FIRST_SUPERUSER)
+        token = generate_user_confirmation_token(email=settings.FIRST_SUPERUSER)
         data = {"new_password": new_password, "token": token}
         r = client.post(
             f"{settings.API_V1_STR}/{login_prefix}/reset-password/",
