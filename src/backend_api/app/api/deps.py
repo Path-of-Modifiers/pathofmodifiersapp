@@ -49,6 +49,11 @@ def get_current_user(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=get_invalid_token_credentials_msg().message,
         )
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=get_invalid_token_credentials_msg().message,
+        )
     user = session.get(User, token_data.sub)
     if not user:
         raise HTTPException(
