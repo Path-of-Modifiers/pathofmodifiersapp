@@ -30,7 +30,8 @@ from .turnstile import TurnstileQuery, TurnstileResponse
 from .user import (
     UserCreate,
     UserUpdate,
-    UserRegister,
+    UserRegisterPostEmailConfirmation,
+    UserRegisterPreEmailConfirmation,
     UsersPublic,
     UserPublic,
     UserUpdateMe,
