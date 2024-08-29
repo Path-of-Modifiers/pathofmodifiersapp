@@ -2,13 +2,11 @@
 import uuid
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from sqlalchemy.orm import Session
 
 from app.api.api_message_util import (
-    get_db_obj_already_exists_msg,
     get_delete_return_msg,
-    get_incorrect_psw_msg,
-    get_new_psw_not_same_msg,
     get_no_obj_matching_query_msg,
     get_not_superuser_auth_msg,
     get_superuser_not_allowed_change_active_self_msg,
@@ -18,9 +16,9 @@ from app.api.api_message_util import (
 )
 from app.api.deps import (
     CurrentUser,
-    SessionDep,
     get_current_active_superuser,
     get_current_active_user,
+    get_db,
 )
 from app.core.config import settings
 from app.core.models.models import User
@@ -34,8 +32,10 @@ from app.core.schemas import (
     UserUpdate,
     UserUpdateMe,
 )
-from app.core.security import get_password_hash, verify_password
 from app.crud import CRUD_user
+from app.limiter import (
+    apply_user_rate_limits,
+)
 from app.utils.user import (
     generate_new_account_email,
     send_email,
@@ -51,7 +51,7 @@ user_prefix = "user"
     dependencies=[Depends(get_current_active_superuser)],
     response_model=UsersPublic,
 )
-def get_all(db: SessionDep, skip: int = 0, limit: int = 100) -> Any:
+def get_all(db: Session = Depends(get_db), skip: int = 0, limit: int = 100) -> Any:
     """
     Retrieve all users.
     """
@@ -64,7 +64,7 @@ def get_all(db: SessionDep, skip: int = 0, limit: int = 100) -> Any:
 @router.post(
     "/", dependencies=[Depends(get_current_active_superuser)], response_model=UserPublic
 )
-def create(*, db: SessionDep, user_in: UserCreate) -> Any:
+def create(*, db: Session = Depends(get_db), user_in: UserCreate) -> Any:
     """
     Create new user.
     """
@@ -86,33 +86,26 @@ def create(*, db: SessionDep, user_in: UserCreate) -> Any:
     response_model=UserPublic,
     dependencies=[Depends(get_current_active_user)],
 )
+@apply_user_rate_limits(
+    settings.UPDATE_ME_RATE_LIMIT_SECOND,
+    settings.UPDATE_ME_RATE_LIMIT_MINUTE,
+    settings.UPDATE_ME_RATE_LIMIT_HOUR,
+    settings.UPDATE_ME_RATE_LIMIT_DAY,
+)
 def update_me(
-    *, db: SessionDep, user_in: UserUpdateMe, current_user: CurrentUser
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    *,
+    db: Session = Depends(get_db),
+    user_in: UserUpdateMe,
+    current_user: CurrentUser,
 ) -> Any:
     """
     Update own user.
     """
 
-    if user_in.email:
-        get_user_filter = {"email": user_in.email}
-        existing_user = CRUD_user.get(db=db, filter=get_user_filter)
-        if existing_user and existing_user.userId != current_user.userId:
-            raise HTTPException(
-                status_code=409,
-                detail=get_db_obj_already_exists_msg(
-                    User.__tablename__, {"username": user_in.username}
-                ).message,
-            )
-    user_data = user_in.model_dump(exclude_unset=True)
-    current_user_data = current_user.__table__.columns.keys()
+    CRUD_user.update(db=db, user_id=current_user.userId, user_in=user_in)
 
-    for field in current_user_data:
-        if field in user_data:
-            setattr(current_user, field, user_data[field])
-
-    db.add(current_user)
-    db.commit()
-    db.refresh(current_user)
     return current_user
 
 
@@ -121,20 +114,29 @@ def update_me(
     response_model=Message,
     dependencies=[Depends(get_current_active_user)],
 )
+@apply_user_rate_limits(
+    settings.UPDATE_PASSWORD_ME_RATE_LIMIT_SECOND,
+    settings.UPDATE_PASSWORD_ME_RATE_LIMIT_MINUTE,
+    settings.UPDATE_PASSWORD_ME_RATE_LIMIT_HOUR,
+    settings.UPDATE_PASSWORD_ME_RATE_LIMIT_DAY,
+)
 def update_password_me(
-    *, db: SessionDep, body: UpdatePassword, current_user: CurrentUser
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    *,
+    db: Session = Depends(get_db),
+    body: UpdatePassword,
+    current_user: CurrentUser,
 ) -> Any:
     """
     Update own password.
     """
-    if not verify_password(body.current_password, current_user.hashedPassword):
-        raise HTTPException(status_code=400, detail=get_incorrect_psw_msg().message)
-    if body.current_password == body.new_password:
-        raise HTTPException(status_code=400, detail=get_new_psw_not_same_msg().message)
-    hashed_password = get_password_hash(body.new_password)
-    current_user.hashedPassword = hashed_password
-    db.add(current_user)
-    db.commit()
+    CRUD_user.update_password(
+        db=db,
+        db_user=current_user,
+        body=body,
+    )
+
     return get_user_psw_change_msg(current_user.username)
 
 
@@ -143,7 +145,17 @@ def update_password_me(
     response_model=UserPublic,
     dependencies=[Depends(get_current_active_user)],
 )
-def get_user_me(current_user: CurrentUser) -> Any:
+@apply_user_rate_limits(
+    settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
+def get_user_me(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    current_user: CurrentUser,
+) -> Any:
     """
     Get current user.
     """
@@ -155,7 +167,18 @@ def get_user_me(current_user: CurrentUser) -> Any:
     response_model=Message,
     dependencies=[Depends(get_current_active_user)],
 )
-def delete_user_me(db: SessionDep, current_user: CurrentUser) -> Any:
+@apply_user_rate_limits(
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_DAY,
+)
+def delete_user_me(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    current_user: CurrentUser,
+    db: Session = Depends(get_db),
+) -> Message:
     """
     Delete own user.
     """
@@ -170,11 +193,22 @@ def delete_user_me(db: SessionDep, current_user: CurrentUser) -> Any:
     db.commit()
     return get_delete_return_msg(
         model_table_name=User.__tablename__, filter={"userId": current_user.userId}
-    ).message
+    )
 
 
 @router.post("/signup", response_model=UserPublic)
-def register_user(db: SessionDep, user_in: UserRegister) -> Any:
+@apply_user_rate_limits(
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_DAY,
+)
+def register_user(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    user_in: UserRegister,
+    db: Session = Depends(get_db),
+) -> Any:
     """
     Create new user without the need to be logged in.
     """
@@ -193,13 +227,23 @@ def register_user(db: SessionDep, user_in: UserRegister) -> Any:
     response_model=UserPublic,
     dependencies=[Depends(get_current_active_user)],
 )
+@apply_user_rate_limits(
+    settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
 def get_user_by_id(
-    user_id: uuid.UUID, db: SessionDep, current_user: CurrentUser
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    user_id: uuid.UUID,
+    current_user: CurrentUser,
+    db: Session = Depends(get_db),
 ) -> Any:
     """
     Get a specific user by id.
     """
-    db_user = CRUD_user.get(db, {"userId": user_id})
+    db_user = CRUD_user.get(db, filter={"userId": user_id})
     if not db_user:
         raise HTTPException(
             status_code=404,
@@ -224,7 +268,7 @@ def get_user_by_id(
 )
 def update(
     *,
-    db: SessionDep,
+    db: Session = Depends(get_db),
     user_id: uuid.UUID,
     user_in: UserUpdate,
 ) -> Any:
@@ -238,12 +282,14 @@ def update(
 
 @router.delete("/{user_id}", dependencies=[Depends(get_current_active_superuser)])
 def delete_user(
-    db: SessionDep, current_user: CurrentUser, user_id: uuid.UUID
+    current_user: CurrentUser,
+    user_id: uuid.UUID,
+    db: Session = Depends(get_db),
 ) -> Message:
     """
     Delete a user.
     """
-    db_user = CRUD_user.get(db, {"userId": user_id})
+    db_user = CRUD_user.get(db, filter={"userId": user_id})
     if not db_user:
         raise HTTPException(
             status_code=404,
@@ -262,23 +308,31 @@ def delete_user(
     db.commit()
     return get_delete_return_msg(
         model_table_name=User.__tablename__, filter={"userId": user_id}
-    ).message
+    )
 
 
 @router.patch(
     "/activate/{user_id}",
     dependencies=[Depends(get_current_active_user)],
 )
+@apply_user_rate_limits(
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_DAY,
+)
 def change_activate_user(
-    db: SessionDep,
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
     current_user: CurrentUser,
     user_id: uuid.UUID,
     activate: bool,
+    db: Session = Depends(get_db),
 ) -> Message:
     """
     Change activity to current user.
     """
-    db_user = CRUD_user.get(db, {"userId": user_id})
+    db_user = CRUD_user.get(db, filter={"userId": user_id})
     if db_user == current_user:
         CRUD_user.set_active(db=db, db_user=db_user, active=activate)
         return Message(

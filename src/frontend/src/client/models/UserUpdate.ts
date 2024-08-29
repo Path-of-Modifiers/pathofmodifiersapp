@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type UserUpdate = {
-    username: string;
+    username?: (string | null);
     email?: (string | null);
     isActive?: (boolean | null);
     isSuperuser?: (boolean | null);

@@ -1,19 +1,22 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
 from app.api.api_message_util import (
     get_delete_return_msg,
 )
 from app.api.deps import (
-    SessionDep,
     get_current_active_superuser,
     get_current_active_user,
+    get_db,
 )
+from app.core.config import settings
 from app.core.models.models import Currency
 from app.crud import CRUD_currency
+from app.limiter import apply_user_rate_limits
 
 router = APIRouter()
 
@@ -30,7 +33,7 @@ currency_prefix = "currency"
 )
 async def get_currency(
     currencyId: int,
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Get currency by key and value for "currencyId".
@@ -52,7 +55,7 @@ async def get_currency(
     ],
 )
 async def get_all_currencies(
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Get all currencies.
@@ -73,15 +76,22 @@ async def get_all_currencies(
         Depends(get_current_active_user),
     ],
 )
+@apply_user_rate_limits(
+    settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
 async def get_latest_currency_id(
-    db: SessionDep,
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    db: Session = Depends(get_db),
 ):
     """
     Get the latest currencyId
 
     Can only be used safely on an empty table or directly after an insertion.
     """
-
     result = db.execute(text("""SELECT MAX("currencyId") FROM currency""")).fetchone()
     if result:
         return int(result[0])
@@ -98,7 +108,7 @@ async def get_latest_currency_id(
 )
 async def create_currency(
     currency: schemas.CurrencyCreate | list[schemas.CurrencyCreate],
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Create one or a list of currencies.
@@ -119,7 +129,7 @@ async def create_currency(
 async def update_currency(
     currencyId: int,
     currency_update: schemas.CurrencyUpdate,
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Update a currency by key and value for "currencyId".
@@ -145,7 +155,7 @@ async def update_currency(
 )
 async def delete_currency(
     currencyId: int,
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Delete a currency by key and value for "currencyId".
