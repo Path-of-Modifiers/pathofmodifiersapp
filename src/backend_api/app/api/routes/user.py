@@ -252,7 +252,9 @@ def register_user_send_confirmation(
         html_content=email_data.html_content,
     )
 
-    return get_user_email_confirmation_sent(user=user_pre_confirmed)
+    return get_user_email_confirmation_sent(
+        username=user_pre_confirmed.username, email=user_pre_confirmed.email
+    )
 
 
 @router.post("/signup", response_model=Message)
