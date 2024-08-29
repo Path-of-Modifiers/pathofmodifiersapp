@@ -1,4 +1,10 @@
+from pydantic import EmailStr
+
 from app.core.schemas.message import Message
+from app.core.schemas.user import (
+    UsernameStr,
+    UserRegisterPreEmailConfirmation,
+)
 
 
 def get_delete_return_msg(
@@ -255,4 +261,18 @@ def get_failed_send_challenge_request_error_msg(e: Exception | list[str]) -> Mes
 
     return Message(
         message=f"""Failed to send challenge request to cloudflare turnstile endpoint with error: {e}"""
+    )
+
+
+def get_user_email_confirmation_sent(user: UserRegisterPreEmailConfirmation) -> Message:
+    return Message(
+        message=f"User creation for {user.username} and {user.email} requested. Please check your email for confirmation."
+    )
+
+
+def get_user_successfully_registered_msg(
+    username: UsernameStr, email: EmailStr
+) -> Message:
+    return Message(
+        message=f"User {username} successfully registered with email {email}"
     )
