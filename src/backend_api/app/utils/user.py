@@ -83,9 +83,26 @@ def generate_reset_password_email(
     return EmailData(html_content=html_content, subject=subject)
 
 
-def generate_new_account_email(
-    email_to: EmailStr, username: str, password: str
+def generate_user_registration_email(
+    email_to: EmailStr, username: str, token: str
 ) -> EmailData:
+    project_name = settings.PROJECT_NAME
+    subject = f"{project_name} - Activate account for user {username}"
+    link = f"{settings.server_host}/activate-account?token={token}?email={email_to}?username={username}"
+    html_content = render_email_template(
+        template_name="register_user.html",
+        context={
+            "project_name": settings.PROJECT_NAME,
+            "username": username,
+            "email": email_to,
+            "valid_hours": settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS,
+            "link": link,
+        },
+    )
+    return EmailData(html_content=html_content, subject=subject)
+
+
+def generate_new_account_email(email_to: EmailStr, username: str) -> EmailData:
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - New account for user {username}"
     html_content = render_email_template(
@@ -93,7 +110,6 @@ def generate_new_account_email(
         context={
             "project_name": settings.PROJECT_NAME,
             "username": username,
-            "password": password,
             "email": email_to,
             "link": settings.server_host,
         },
@@ -101,7 +117,7 @@ def generate_new_account_email(
     return EmailData(html_content=html_content, subject=subject)
 
 
-def generate_password_reset_token(email: EmailStr) -> str:
+def generate_user_confirmation_token(email: EmailStr) -> str:
     delta = timedelta(hours=settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
     now = datetime.now(timezone.utc)
     expires = now + delta
@@ -114,7 +130,7 @@ def generate_password_reset_token(email: EmailStr) -> str:
     return encoded_jwt
 
 
-def verify_password_reset_token(token: str) -> str | None:
+def verify_token(token: str) -> str | None:
     try:
         decoded_token = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
         return str(decoded_token["sub"])
