@@ -379,7 +379,7 @@ def delete_user(
 
 @router.patch(
     "/activate/{user_id}",
-    dependencies=[Depends(get_current_active_user)],
+    dependencies=[Depends(get_current_active_superuser)],
 )
 @apply_user_rate_limits(
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_SECOND,
@@ -398,17 +398,7 @@ def change_activate_user(
     """
     Change activity to current user.
     """
-    db_user = CRUD_user.get(db, filter={"userId": user_id})
-    if db_user == current_user and not current_user.isSuperuser:
-        CRUD_user.set_active(db=db, db_user=db_user, active=activate)
-        return Message(
-            message=get_user_active_change_msg(db_user.username, activate),
-        )
-    if not current_user.isSuperuser:
-        raise HTTPException(
-            status_code=403,
-            detail=get_not_superuser_auth_msg(current_user.username).message,
-        )
+    db_user = CRUD_user.get(db, {"userId": user_id})
     if db_user == current_user:
         raise HTTPException(
             status_code=403,
