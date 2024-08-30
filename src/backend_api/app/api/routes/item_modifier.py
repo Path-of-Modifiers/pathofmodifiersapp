@@ -1,14 +1,15 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
 from app.api.api_message_util import (
     get_delete_return_msg,
 )
 from app.api.deps import (
-    SessionDep,
     get_current_active_superuser,
+    get_db,
 )
 from app.core.models.models import ItemModifier
 from app.crud import CRUD_itemModifier
@@ -26,7 +27,7 @@ item_modifier_prefix = "itemModifier"
 )
 async def get_item_modifier(
     itemId: int,
-    db: SessionDep,
+    db: Session = Depends(get_db),
     modifierId: int | None = None,
     position: int | None = None,
 ):
@@ -55,7 +56,7 @@ async def get_item_modifier(
     dependencies=[Depends(get_current_active_superuser)],
 )
 async def get_all_item_modifiers(
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Get all item modifiers.
@@ -75,7 +76,7 @@ async def get_all_item_modifiers(
 )
 async def create_item_modifier(
     itemModifier: schemas.ItemModifierCreate | list[schemas.ItemModifierCreate],
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Create one or a list item modifiers.
@@ -97,7 +98,7 @@ async def update_item_modifier(
     itemId: int,
     modifierId: int,
     itemModifier_update: schemas.ItemModifierUpdate,
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Update an item modifier by key and value for
@@ -128,7 +129,7 @@ async def update_item_modifier(
 )
 async def delete_item_modifier(
     itemId: int,
-    db: SessionDep,
+    db: Session = Depends(get_db),
     modifierId: int | None = None,
 ):
     """

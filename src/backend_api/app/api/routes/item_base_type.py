@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
 from app.api.api_message_util import (
@@ -8,12 +9,14 @@ from app.api.api_message_util import (
     get_delete_return_msg,
 )
 from app.api.deps import (
-    SessionDep,
     get_current_active_superuser,
     get_current_active_user,
+    get_db,
 )
+from app.core.config import settings
 from app.core.models.models import ItemBaseType
 from app.crud import CRUD_itemBaseType
+from app.limiter import apply_rate_limits, apply_user_rate_limits
 
 router = APIRouter()
 
@@ -26,7 +29,18 @@ item_base_type_prefix = "itemBaseType"
     response_model=schemas.ItemBaseType,
     dependencies=[Depends(get_current_active_user)],
 )
-async def get_item_base_type(baseType: str, db: SessionDep):
+@apply_user_rate_limits(
+    settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
+async def get_item_base_type(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    baseType: str,
+    db: Session = Depends(get_db),
+):
     """
     Get item base type by key and value for "baseType".
 
@@ -44,7 +58,17 @@ async def get_item_base_type(baseType: str, db: SessionDep):
     response_model=schemas.ItemBaseType | list[schemas.ItemBaseType],
     dependencies=[Depends(get_current_active_user)],
 )
-async def get_all_item_base_types(db: SessionDep):
+@apply_user_rate_limits(
+    settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
+async def get_all_item_base_types(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    db: Session = Depends(get_db),
+):
     """
     Get all item base types.
 
@@ -59,9 +83,19 @@ async def get_all_item_base_types(db: SessionDep):
 @router.get(
     "/baseTypes/",
     response_model=schemas.BaseType | list[schemas.BaseType],
-    dependencies=[Depends(get_current_active_user)],
+    dependencies=[Depends(apply_rate_limits)],
 )
-async def get_base_types(db: SessionDep):
+@apply_user_rate_limits(
+    settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
+async def get_base_types(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001,
+    db: Session = Depends(get_db),
+):
     """
     Get all base types.
 
@@ -77,8 +111,16 @@ async def get_base_types(db: SessionDep):
     response_model=schemas.ItemBaseTypeCategory | list[schemas.ItemBaseTypeCategory],
     dependencies=[Depends(get_current_active_user)],
 )
+@apply_user_rate_limits(
+    settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
 async def get_unique_categories(
-    db: SessionDep,
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    db: Session = Depends(get_db),
 ):
     """
     Get all unique categories.
@@ -97,7 +139,17 @@ async def get_unique_categories(
     | list[schemas.ItemBaseTypeSubCategory],
     dependencies=[Depends(get_current_active_user)],
 )
-async def get_unique_sub_categories(db: SessionDep):
+@apply_user_rate_limits(
+    settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
+async def get_unique_sub_categories(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001,
+    db: Session = Depends(get_db),
+):
     """
     Get all unique sub categories.
 
@@ -118,7 +170,7 @@ async def get_unique_sub_categories(db: SessionDep):
 )
 async def create_item_base_type(
     itemBaseType: schemas.ItemBaseTypeCreate | list[schemas.ItemBaseTypeCreate],
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Create one or a list of new item base types.
@@ -147,7 +199,7 @@ async def create_item_base_type(
 async def update_item_base_type(
     baseType: str,
     item_base_type_update: schemas.ItemBaseTypeUpdate,
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Update an item base type by key and value for "baseType".
@@ -181,7 +233,7 @@ async def update_item_base_type(
 )
 async def delete_item_base_type(
     baseType: str,
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Delete an item base type by key and value for "baseType".
