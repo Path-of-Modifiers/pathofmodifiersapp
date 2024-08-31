@@ -37,7 +37,7 @@ class TestUserRoutes(BaseTest):
         )
         current_user = r.json()
         assert current_user
-        assert current_user["isActive"] is True
+        assert current_user["isActive"]
         assert current_user["isSuperuser"]
         assert current_user["email"] == settings.FIRST_SUPERUSER
         assert current_user["username"] == settings.FIRST_SUPERUSER_USERNAME
@@ -50,7 +50,7 @@ class TestUserRoutes(BaseTest):
         )
         current_user = r.json()
         assert current_user
-        assert current_user["isActive"] is True
+        assert current_user["isActive"]
         assert current_user["isSuperuser"] is False
         assert current_user["email"] == settings.TEST_USER_EMAIL
         assert current_user["username"] == settings.TEST_USER_USERNAME
@@ -615,7 +615,7 @@ class TestUserRoutes(BaseTest):
         )
         assert r.status_code == 200
         updated_user = r.json()
-        assert updated_user["isActive"] is True
+        assert updated_user["isActive"]
 
     def test_delete_user_super_user(
         self, client: TestClient, superuser_token_headers: dict[str, str], db: Session
