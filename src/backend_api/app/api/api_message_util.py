@@ -241,3 +241,18 @@ def get_password_rec_email_sent_success() -> Message:
     """
 
     return Message(message="Password recovery email sent successfully")
+
+
+def get_failed_send_challenge_request_error_msg(e: Exception | list[str]) -> Message:
+    """Returns a message indicating the challenge request failed to send.
+
+    Args:
+        e (Exception): Exception raised when sending the challenge request.
+
+    Returns:
+        Message: Message indicating the challenge request failed to send.
+    """
+
+    return Message(
+        message=f"""Failed to send challenge request to cloudflare turnstile endpoint with error: {e}"""
+    )
