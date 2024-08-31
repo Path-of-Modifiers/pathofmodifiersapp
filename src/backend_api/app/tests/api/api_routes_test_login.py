@@ -1,7 +1,6 @@
 from unittest.mock import patch
 
 import pytest
-from fastapi import Response
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -21,16 +20,6 @@ from app.utils.user import generate_password_reset_token
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
 class TestLoginRoutes(BaseTest):
-    def _reset_password_client(
-        self,
-        reset_psw_client: TestClient,
-        *,
-        headers: dict[str, str],
-        token: str,
-        new_password: str,
-    ) -> Response:
-        pass
-
     def test_get_access_token_email(self, client: TestClient) -> None:
         login_data = {
             "username": settings.FIRST_SUPERUSER,
@@ -90,6 +79,7 @@ class TestLoginRoutes(BaseTest):
     def test_recovery_password(
         self, client: TestClient, normal_user_token_headers: dict[str, str]
     ) -> None:
+        """No test email yet. Checks internal errors without sending an email"""
         with (
             patch("app.core.config.settings.SMTP_HOST", "smtp.example.com"),
             patch("app.core.config.settings.SMTP_USER", "admin@example.com"),
