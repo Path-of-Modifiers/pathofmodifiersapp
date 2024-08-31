@@ -145,5 +145,5 @@ async def delete_item(
     await CRUD_item.remove(db=db, filter=item_map)
 
     return get_delete_return_msg(
-        model_table_name=Item.__tablename__, mapping=item_map
+        model_table_name=Item.__tablename__, filter=item_map
     ).message
