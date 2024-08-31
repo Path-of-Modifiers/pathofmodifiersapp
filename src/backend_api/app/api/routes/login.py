@@ -96,11 +96,12 @@ def recover_password(session: SessionDep, body: RecoverPassword) -> Message:
             ).message,
         )
 
-    email = ""
     if not body.email:
         email = CRUD_user.get_email_by_username(db=session, username=body.username)
+    else:
+        email = body.email
 
-    password_reset_token = generate_password_reset_token(email=body.email)
+    password_reset_token = generate_password_reset_token(email=email)
     email_data = generate_reset_password_email(
         email_to=user.email, email=email, token=password_reset_token
     )

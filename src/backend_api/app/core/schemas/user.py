@@ -21,7 +21,7 @@ class UsernameValidationError(ValueError):
         exc: Exception | None,
     ) -> Exception:
         return cls(
-            f"The field {field_name} can not contain special symbols.",
+            f"The field {field_name} can not contain special symbols or white/empty space.",
         )
 
 

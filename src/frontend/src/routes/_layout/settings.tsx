@@ -8,10 +8,8 @@ import {
   TabPanels,
   Tabs,
 } from "@chakra-ui/react";
-import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-import type { UserPublic } from "../../client";
 import ChangePassword from "../../components/UserSettings/ChangePassword";
 import DeleteAccount from "../../components/UserSettings/DeleteAccount";
 import UserInformation from "../../components/UserSettings/UserInformation";
@@ -28,11 +26,12 @@ export const Route = createFileRoute("/_layout/settings")({
 });
 
 function UserSettings() {
-  const queryClient = useQueryClient();
-  const currentUser = queryClient.getQueryData<UserPublic>(["currentUser"]);
-  const finalTabs = currentUser?.isSuperuser
-    ? tabsConfig.slice(0, 3)
-    : tabsConfig;
+  // Future reference if Superuser wants more tabs
+  // const queryClient = useQueryClient();
+  // const currentUser = queryClient.getQueryData<UserPublic>(["currentUser"]);
+  // const finalTabs = currentUser?.isSuperuser
+  //   ? tabsConfig
+  //   : tabsConfig.slice(0, 3);
 
   return (
     <Flex
@@ -57,12 +56,12 @@ function UserSettings() {
           borderTopWidth={1}
         >
           <TabList>
-            {finalTabs.map((tab, index) => (
+            {tabsConfig.map((tab, index) => (
               <Tab key={index}>{tab.title}</Tab>
             ))}
           </TabList>
           <TabPanels>
-            {finalTabs.map((tab, index) => (
+            {tabsConfig.map((tab, index) => (
               <TabPanel key={index}>
                 <tab.component />
               </TabPanel>
