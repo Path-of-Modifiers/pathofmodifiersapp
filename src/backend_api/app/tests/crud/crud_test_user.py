@@ -44,7 +44,7 @@ class TestUserCRUD(BaseTest):
         username = random_lower_string()
         user_in = UserCreate(email=email, password=password, username=username)
         user = crud.create(db=db, user_create=user_in)
-        assert user.isActive is True
+        assert user.isActive
 
     def test_check_if_user_is_inactive(self, db: Session) -> None:
         email = random_email()
@@ -64,7 +64,7 @@ class TestUserCRUD(BaseTest):
             email=email, password=password, username=username, isSuperuser=True
         )
         user = crud.create(db=db, user_create=user_in)
-        assert user.isSuperuser is True
+        assert user.isSuperuser
 
     def test_check_if_user_is_superuser_normal_user(self, db: Session) -> None:
         email = random_email()
