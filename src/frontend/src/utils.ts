@@ -7,14 +7,10 @@ export const emailPattern = {
 };
 
 export const usernamePattern = {
-  value: /^(?!\p{Zs})(?!.*\p{Zs}$)[\p{L}\p{M}\p{Zs}]$/u,
+  value: /^[\p{L},.0-9\s-]+$/u,
   message: "Invalid username",
 };
 
-export const namePattern = {
-  value: /^[\p{L}\p{M}\p{N}_.+-]+@[\p{L}\p{M}\p{N}.-]+\.[\p{L}]{2,}$/u,
-  message: "Invalid name",
-};
 
 interface PasswordRules {
   password?: string;
