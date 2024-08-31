@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 
     TURNSTILE_SECRET_KEY: str
 
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 1  # 1 day
     DOMAIN: str
     ENVIRONMENT: Literal["local", "staging", "production"] = "production"
 
@@ -92,7 +92,8 @@ class Settings(BaseSettings):
     def emails_enabled(self) -> bool:
         return bool(self.SMTP_HOST and self.EMAILS_FROM_EMAIL)
 
-    EMAIL_TEST_USER: EmailStr = "test@example.com"
+    TEST_USER_EMAIL: EmailStr = "test@example.com"
+    TEST_USER_USERNAME: str = "testusername"
     TEST_DATABASE_URI: PostgresDsn | None = MultiHostUrl.build(
         scheme="postgresql+psycopg",
         username="test-pom-oltp-user",

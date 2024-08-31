@@ -9,8 +9,9 @@ import { OpenAPI } from "./client"
 import theme from "./theme"
 
 OpenAPI.BASE = import.meta.env.VITE_API_URL
-OpenAPI.USERNAME = import.meta.env.VITE_API_USERNAME
-OpenAPI.PASSWORD = import.meta.env.VITE_API_PASSWORD
+OpenAPI.TOKEN = async () => {
+  return localStorage.getItem("access_token") || ""
+}
 
 const queryClient = new QueryClient()
 
