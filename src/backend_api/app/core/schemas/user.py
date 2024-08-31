@@ -60,6 +60,7 @@ class UserRegister(BaseModel):
 # Properties to receive via API on update, all are optional
 class UserUpdate(_BaseUser):
     email: EmailStr | None = None
+    username: UsernameStr | None = None
     password: str | None = Field(default=None, min_length=8)
 
 
