@@ -5,12 +5,14 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
+from app.core.config import settings
 from app.main import app
 from app.tests.setup_test_database import override_get_db, test_db_engine
 from app.tests.utils.database_utils import (
     clear_all_tables,
     mock_src_database_for_test_db,
 )
+from app.tests.utils.user import authentication_token_from_email
 from app.tests.utils.utils import get_superuser_token_headers
 
 
@@ -42,3 +44,13 @@ def clear_db() -> Generator:
     yield
     # Remove any data from database (even data not created by this session)
     clear_all_tables()
+
+
+@pytest.fixture(scope="module")
+def normal_user_token_headers(client: TestClient, db: Session) -> dict[str, str]:
+    return authentication_token_from_email(
+        client=client,
+        email=settings.TEST_USER_EMAIL,
+        username=settings.TEST_USER_USERNAME,
+        db=db,
+    )
