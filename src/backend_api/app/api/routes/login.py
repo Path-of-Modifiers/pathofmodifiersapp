@@ -28,10 +28,10 @@ from app.core.security import get_password_hash, verify_password
 from app.crud import CRUD_user
 from app.limiter import apply_user_rate_limits
 from app.utils.user import (
-    generate_password_reset_token,
     generate_reset_password_email,
+    generate_user_confirmation_token,
     send_email,
-    verify_password_reset_token,
+    verify_token,
 )
 
 router = APIRouter()
@@ -133,7 +133,7 @@ def recover_password(
     else:
         email = body.email
 
-    password_reset_token = generate_password_reset_token(email=email)
+    password_reset_token = generate_user_confirmation_token(email=email)
     email_data = generate_reset_password_email(
         email_to=user.email, email=email, token=password_reset_token
     )
@@ -161,7 +161,7 @@ def reset_password(
     """
     Reset password
     """
-    email = verify_password_reset_token(token=body.token)
+    email = verify_token(token=body.token)
     if not email:
         raise HTTPException(
             status_code=400, detail=get_invalid_token_credentials_msg().message
@@ -209,7 +209,7 @@ def recover_password_html_content(
             status_code=404,
             detail=get_no_obj_matching_query_msg(filter, User.__tablename__).message,
         )
-    password_reset_token = generate_password_reset_token(email=email)
+    password_reset_token = generate_user_confirmation_token(email=email)
     email_data = generate_reset_password_email(
         email_to=user.email, email=email, token=password_reset_token
     )
