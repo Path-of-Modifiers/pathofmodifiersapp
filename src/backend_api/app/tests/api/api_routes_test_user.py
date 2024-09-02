@@ -15,7 +15,9 @@ from app.api.api_message_util import (
     get_not_active_or_auth_user_error_msg,
     get_not_superuser_auth_msg,
     get_superuser_not_allowed_delete_self_msg,
+    get_user_email_confirmation_sent,
     get_user_psw_change_msg,
+    get_user_successfully_registered_msg,
 )
 from app.api.routes import user_prefix
 from app.core.config import settings
@@ -25,6 +27,7 @@ from app.core.security import verify_password
 from app.crud import CRUD_user as crud
 from app.tests.base_test import BaseTest
 from app.tests.utils.utils import random_email, random_lower_string
+from app.utils.user import generate_user_confirmation_token
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
@@ -386,20 +389,39 @@ class TestUserRoutes(BaseTest):
         password = random_lower_string()
         username = random_lower_string()
         data = {"email": email, "password": password, "username": username}
-        r = client.post(
-            f"{settings.API_V1_STR}/{user_prefix}/signup",
+        r_pre_confirm = client.post(
+            f"{settings.API_V1_STR}/{user_prefix}/signup-send-confirmation",
             json=data,
         )
-        assert r.status_code == 200
-        created_user = r.json()
-        assert created_user["email"] == email
-        assert created_user["username"] == username
+        details_pre_confirm = r_pre_confirm.json()["message"]
+        assert r_pre_confirm.status_code == 200
+        assert (
+            details_pre_confirm
+            == get_user_email_confirmation_sent(username, email).message
+        )
 
-        user_db = crud.get(db=db, filter={"email": email})
-        assert user_db
-        assert user_db.email == email
-        assert user_db.username == username
-        assert verify_password(password, user_db.hashedPassword)
+        user_pre_confirmed_db = crud.get(db=db, filter={"email": email})
+        assert user_pre_confirmed_db.email == email
+        assert user_pre_confirmed_db.username == username
+        assert user_pre_confirmed_db.isActive is False
+        assert verify_password(password, user_pre_confirmed_db.hashedPassword)
+
+        user_register_token = generate_user_confirmation_token(
+            email=user_pre_confirmed_db.email
+        )
+        data_confirm = {"token": user_register_token}
+        r_confirm = client.post(
+            f"{settings.API_V1_STR}/{user_prefix}/signup",
+            json=data_confirm,
+        )
+        details_confirm = r_confirm.json()["message"]
+        assert r_confirm.status_code == 200
+        assert (
+            details_confirm
+            == get_user_successfully_registered_msg(username, email).message
+        )
+        user_after_confirmed_db = crud.get(db=db, filter={"email": email})
+        assert user_after_confirmed_db.isActive
 
     def test_register_user_email_already_exists_error(self, client: TestClient) -> None:
         password = random_lower_string()
@@ -410,7 +432,7 @@ class TestUserRoutes(BaseTest):
             "username": username,
         }
         r = client.post(
-            f"{settings.API_V1_STR}/{user_prefix}/signup",
+            f"{settings.API_V1_STR}/{user_prefix}/signup-send-confirmation",
             json=data,
         )
         assert r.status_code == 409
@@ -432,7 +454,7 @@ class TestUserRoutes(BaseTest):
             "username": settings.FIRST_SUPERUSER_USERNAME,
         }
         r = client.post(
-            f"{settings.API_V1_STR}/{user_prefix}/signup",
+            f"{settings.API_V1_STR}/{user_prefix}/signup-send-confirmation",
             json=data,
         )
         assert r.status_code == 409
@@ -442,6 +464,40 @@ class TestUserRoutes(BaseTest):
                 User.__tablename__, {"username": data["username"]}
             ).message
         )
+
+    def test_register_wrong_token(self, client: TestClient, db: Session) -> None:
+        email = random_email()
+        password = random_lower_string()
+        username = random_lower_string()
+        data = {"email": email, "password": password, "username": username}
+        r_pre_confirm = client.post(
+            f"{settings.API_V1_STR}/{user_prefix}/signup-send-confirmation",
+            json=data,
+        )
+        details_pre_confirm = r_pre_confirm.json()["message"]
+        assert r_pre_confirm.status_code == 200
+        assert (
+            details_pre_confirm
+            == get_user_email_confirmation_sent(username, email).message
+        )
+
+        user_pre_confirmed_db = crud.get(db=db, filter={"email": email})
+        assert user_pre_confirmed_db.email == email
+        assert user_pre_confirmed_db.username == username
+        assert user_pre_confirmed_db.isActive is False
+        assert verify_password(password, user_pre_confirmed_db.hashedPassword)
+
+        user_register_token = generate_user_confirmation_token(
+            email=user_pre_confirmed_db.email
+        )
+        data_confirm = {"token": user_register_token + "wrong"}
+        r_confirm = client.post(
+            f"{settings.API_V1_STR}/{user_prefix}/signup",
+            json=data_confirm,
+        )
+        details_confirm = r_confirm.json()["detail"]
+        assert r_confirm.status_code == 400
+        assert details_confirm == get_invalid_token_credentials_msg().message
 
     def test_update_user(
         self, client: TestClient, superuser_token_headers: dict[str, str], db: Session
@@ -693,28 +749,35 @@ class TestUserRoutes(BaseTest):
         )
 
     def test_token_expired_user(self, client: TestClient, db: Session) -> None:
+        email = random_email()
+        password = random_lower_string()
+        username = random_lower_string()
+        data = {"email": email, "password": password, "username": username}
+        r = client.post(
+            f"{settings.API_V1_STR}/{user_prefix}/signup-send-confirmation",
+            json=data,
+        )
+        assert r.status_code == 200
+        detail = r.json()["message"]
+        assert detail == get_user_email_confirmation_sent(username, email).message
+        assert detail == get_user_email_confirmation_sent(username, email).message
+
+        token = generate_user_confirmation_token(email=email)
+
+        r = client.post(
+            f"{settings.API_V1_STR}/{user_prefix}/signup",
+            json={"token": token},
+        )
+
+        user_db = crud.get(db=db, filter={"email": email})
+        assert user_db
+        assert user_db.email == email
+        assert user_db.username == username
+        assert verify_password(password, user_db.hashedPassword)
+        # Test login with expired token
         with (
             patch("app.core.config.settings.ACCESS_TOKEN_EXPIRE_MINUTES", 0),
         ):
-            email = random_email()
-            password = random_lower_string()
-            username = random_lower_string()
-            data = {"email": email, "password": password, "username": username}
-            r = client.post(
-                f"{settings.API_V1_STR}/{user_prefix}/signup",
-                json=data,
-            )
-            assert r.status_code == 200
-            created_user = r.json()
-            assert created_user["email"] == email
-            assert created_user["username"] == username
-
-            user_db = crud.get(db=db, filter={"email": email})
-            assert user_db
-            assert user_db.email == email
-            assert user_db.username == username
-            assert verify_password(password, user_db.hashedPassword)
-            # Test login with expired token
             login_data = {
                 "email": email,
                 "password": password,
