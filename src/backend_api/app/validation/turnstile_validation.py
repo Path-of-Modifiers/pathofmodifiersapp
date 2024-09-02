@@ -38,6 +38,10 @@ class ValidateTurnstileRequest:
             return self.validate(outcome)
         else:
             raise HTTPException(
-                detail=f'{get_failed_send_challenge_request_error_msg(outcome["error-codes"]).message}',
+                detail={
+                    get_failed_send_challenge_request_error_msg(
+                        outcome["error-codes"]
+                    ).message
+                },
                 status_code=400,
             )
