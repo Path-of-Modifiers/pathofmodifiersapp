@@ -38,6 +38,8 @@ currency_prefix = "currency"
     settings.DEFAULT_USER_RATE_LIMIT_DAY,
 )
 async def get_currency(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
     currencyId: int,
     db: Session = Depends(get_db),
 ):
