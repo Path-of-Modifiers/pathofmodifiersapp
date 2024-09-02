@@ -16,7 +16,7 @@ from app.api.deps import (
 from app.core.config import settings
 from app.core.models.models import ItemBaseType
 from app.crud import CRUD_itemBaseType
-from app.limiter import apply_rate_limits, apply_user_rate_limits
+from app.limiter import apply_user_rate_limits
 
 router = APIRouter()
 
@@ -83,7 +83,7 @@ async def get_all_item_base_types(
 @router.get(
     "/baseTypes/",
     response_model=schemas.BaseType | list[schemas.BaseType],
-    dependencies=[Depends(apply_rate_limits)],
+    dependencies=[Depends(get_current_active_user)],
 )
 @apply_user_rate_limits(
     settings.DEFAULT_USER_RATE_LIMIT_SECOND,
