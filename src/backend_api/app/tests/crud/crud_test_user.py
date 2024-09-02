@@ -15,7 +15,6 @@ class TestUserCRUD(BaseTest):
         email = random_email()
         password = random_lower_string()
         username = random_lower_string()
-        username = random_lower_string()
         user_in = UserCreate(email=email, password=password, username=username)
         user = crud.create(db=db, user_create=user_in)
         assert user.email == email
@@ -45,7 +44,7 @@ class TestUserCRUD(BaseTest):
         username = random_lower_string()
         user_in = UserCreate(email=email, password=password, username=username)
         user = crud.create(db=db, user_create=user_in)
-        assert user.isActive is True
+        assert user.isActive
 
     def test_check_if_user_is_inactive(self, db: Session) -> None:
         email = random_email()
@@ -65,7 +64,7 @@ class TestUserCRUD(BaseTest):
             email=email, password=password, username=username, isSuperuser=True
         )
         user = crud.create(db=db, user_create=user_in)
-        assert user.isSuperuser is True
+        assert user.isSuperuser
 
     def test_check_if_user_is_superuser_normal_user(self, db: Session) -> None:
         email = random_email()
@@ -98,8 +97,8 @@ class TestUserCRUD(BaseTest):
         user = crud.create(db=db, user_create=user_in)
         new_password = random_lower_string()
         user_in_update = UserUpdate(password=new_password, isSuperuser=True)
-        if user.userId is not None:
-            crud.update(db=db, user_id=user.userId, user_in=user_in_update)
+        assert user.email == email
+        crud.update(db=db, user_id=user.userId, user_in=user_in_update)
         user_2 = crud.get(db=db, filter={"userId": user.userId})
         assert user_2
         assert user.email == user_2.email
