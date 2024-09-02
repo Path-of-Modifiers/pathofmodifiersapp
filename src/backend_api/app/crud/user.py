@@ -6,13 +6,14 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql import func, select
 
 from app.api.api_message_util import (
-    get_bad_login_credentials_msg,
     get_db_obj_already_exists_msg,
+    get_incorrect_psw_msg,
+    get_new_psw_not_same_msg,
     get_no_obj_matching_query_msg,
 )
 from app.core.models.models import User as model_User
 from app.core.schemas import User, UserCreate, UserUpdate
-from app.core.schemas.user import UsersPublic
+from app.core.schemas.user import UpdatePassword, UsersPublic
 from app.core.security import get_password_hash, verify_password
 
 
@@ -37,11 +38,10 @@ class CRUDUser:
             user_in (User, optional): User object. Defaults to None.
         """
         existing_user = self.get(db=db, filter=filter)
-        if user_in:
-            if (
-                existing_user
-                and existing_user.username != user_in.username
-                and existing_user.email != user_in.email
+        if user_in is not None:
+            if existing_user and (
+                existing_user.username == user_in.username
+                or existing_user.email == user_in.email
             ):
                 raise HTTPException(
                     status_code=409,
@@ -128,6 +128,14 @@ class CRUDUser:
         user_id_map = {"userId": user_id}
         db_user = self.get(db=db, filter=user_id_map)
 
+        if not db_user:
+            raise HTTPException(
+                status_code=404,
+                detail=get_no_obj_matching_query_msg(
+                    user_id_map, model_User.__tablename__
+                ).message,
+            )
+
         if user_in.email:
             email_filter = {"email": user_in.email}
             self._check_exists_raise(db=db, filter=email_filter, user_in=user_in)
@@ -144,6 +152,7 @@ class CRUDUser:
             hashed_password = get_password_hash(password)
             extra_data["hashedPassword"] = hashed_password
             user_update_data.pop("password")
+            user_update_data.update(extra_data)
         for field in user_update_data:
             if field in obj_data:
                 setattr(db_user, field, user_update_data[field])
@@ -217,10 +226,7 @@ class CRUDUser:
 
         db_user = self.get(db=db, filter=get_user_filter)
         if not db_user or not verify_password(password, db_user.hashedPassword):
-            raise HTTPException(
-                status_code=400,
-                detail=get_bad_login_credentials_msg().message,
-            )
+            return None
         return self.validate(db_user)
 
     def set_active(
@@ -245,6 +251,33 @@ class CRUDUser:
                 ).message,
             )
         db_user.isActive = active
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        self.validate(db_user)
+        return db_user
+
+    def update_password(
+        self, db: Session, *, db_user: model_User, body: UpdatePassword
+    ) -> model_User:
+        """Update user password
+
+        Args:
+            db (Session): DB session
+            db_user (model_User): User object
+            body (UpdatePassword): Password data
+
+        Returns:
+            model_User: Updated user
+        """
+        if not verify_password(body.current_password, db_user.hashedPassword):
+            raise HTTPException(status_code=400, detail=get_incorrect_psw_msg().message)
+        if body.current_password == body.new_password:
+            raise HTTPException(
+                status_code=400, detail=get_new_psw_not_same_msg().message
+            )
+        hashed_password = get_password_hash(body.new_password)
+        db_user.hashedPassword = hashed_password
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
