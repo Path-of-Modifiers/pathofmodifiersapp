@@ -3,7 +3,6 @@ from pydantic import EmailStr
 from app.core.schemas.message import Message
 from app.core.schemas.user import (
     UsernameStr,
-    UserRegisterPreEmailConfirmation,
 )
 
 
@@ -264,9 +263,9 @@ def get_failed_send_challenge_request_error_msg(e: Exception | list[str]) -> Mes
     )
 
 
-def get_user_email_confirmation_sent(user: UserRegisterPreEmailConfirmation) -> Message:
+def get_user_email_confirmation_sent(username: UsernameStr, email: EmailStr) -> Message:
     return Message(
-        message=f"User creation for {user.username} and {user.email} requested. Please check your email for confirmation."
+        message=f"User creation for {username} and {email} requested. Please check your email for confirmation."
     )
 
 
