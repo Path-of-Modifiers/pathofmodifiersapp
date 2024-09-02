@@ -69,6 +69,22 @@ class Settings(BaseSettings):
             path=self.POSTGRES_DB,
         )
 
+    REDIS_PORT: int = 6379
+    REDIS_SERVER: str
+    REDIS_CACHE: str = str(0)
+    REDIS_PASSWORD: str = ""
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def CACHE_URI(self) -> AnyUrl:
+        return MultiHostUrl.build(
+            scheme="redis",
+            password=self.REDIS_PASSWORD,
+            host=self.REDIS_SERVER,
+            port=self.REDIS_PORT,
+            path=self.REDIS_CACHE,
+        )
+
     SMTP_TLS: bool = True
     SMTP_SSL: bool = True
     SMTP_PORT: int = 587
@@ -125,8 +141,66 @@ class Settings(BaseSettings):
         self._check_default_secret(
             "FIRST_SUPERUSER_PASSWORD", self.FIRST_SUPERUSER_PASSWORD
         )
+        self._check_default_secret("TURNSTILE_SECRET_KEY", self.TURNSTILE_SECRET_KEY)
+        self._check_default_secret("REDIS_PASSWORD", self.REDIS_PASSWORD)
+        self._check_default_secret("SMTP_PASSWORD", self.SMTP_PASSWORD)
 
         return self
+
+    # Rate limiting
+    RATE_LIMIT: bool = False
+
+    # Default user rate limits
+    DEFAULT_USER_RATE_LIMIT_SECOND: str = "4/second"  # Default rate limit seconds
+    DEFAULT_USER_RATE_LIMIT_MINUTE: str = "20/minute"  # Default rate limit minutes
+    DEFAULT_USER_RATE_LIMIT_HOUR: str = "200/hour"  # Default rate limit hours
+    DEFAULT_USER_RATE_LIMIT_DAY: str = "1000/day"  # Default rate limit days
+
+    # Stricter default rate limits
+    STRICT_DEFAULT_USER_RATE_LIMIT_SECOND: str = (
+        "1/second"  # Default rate limit seconds
+    )
+    STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE: str = (
+        "5/minute"  # Default rate limit minutes
+    )
+    STRICT_DEFAULT_USER_RATE_LIMIT_HOUR: str = "8/hour"  # Default rate limit hours
+    STRICT_DEFAULT_USER_RATE_LIMIT_DAY: str = "10/day"  # Default rate limit days
+
+    # Login rate limits
+    LOGIN_RATE_LIMIT_SECOND: str = "1/second"  # Default rate limit seconds
+    LOGIN_RATE_LIMIT_MINUTE: str = "7/minute"  # Default rate limit minutes
+    LOGIN_RATE_LIMIT_HOUR: str = "50/hour"  # Default rate limit hours
+    LOGIN_RATE_LIMIT_DAY: str = "1000/day"  # Default rate limit days
+
+    # Recovery password rate limits
+    RECOVERY_PASSWORD_RATE_LIMIT_SECOND: str = "1/second"  # Default rate limit seconds
+    RECOVERY_PASSWORD_RATE_LIMIT_MINUTE: str = "5/minute"  # Default rate limit minutes
+    RECOVERY_PASSWORD_RATE_LIMIT_HOUR: str = "10/hour"  # Default rate limit hours
+    RECOVERY_PASSWORD_RATE_LIMIT_DAY: str = "10/day"  # Default rate limit days
+
+    # Reset password rate limits
+    RESET_PASSWORD_RATE_LIMIT_SECOND: str = "1/second"  # Default rate limit seconds
+    RESET_PASSWORD_RATE_LIMIT_MINUTE: str = "5/minute"  # Default rate limit minutes
+    RESET_PASSWORD_RATE_LIMIT_HOUR: str = "10/hour"  # Default rate limit hours
+    RESET_PASSWORD_RATE_LIMIT_DAY: str = "10/day"  # Default rate limit days
+
+    # Update me rate limits
+    UPDATE_ME_RATE_LIMIT_SECOND: str = "1/second"  # Default rate limit seconds
+    UPDATE_ME_RATE_LIMIT_MINUTE: str = "1/minute"  # Default rate limit minutes
+    UPDATE_ME_RATE_LIMIT_HOUR: str = "2/hour"  # Default rate limit hours
+    UPDATE_ME_RATE_LIMIT_DAY: str = "2/day"  # Default rate limit days
+
+    # Update password me rate limits
+    UPDATE_PASSWORD_ME_RATE_LIMIT_SECOND: str = "1/second"  # Default rate limit seconds
+    UPDATE_PASSWORD_ME_RATE_LIMIT_MINUTE: str = "1/minute"  # Default rate limit minutes
+    UPDATE_PASSWORD_ME_RATE_LIMIT_HOUR: str = "2/hour"  # Default rate limit hours
+    UPDATE_PASSWORD_ME_RATE_LIMIT_DAY: str = "2/day"  # Default rate limit days
+
+    # Plotting rate limits
+    TIER_0_PLOT_RATE_LIMIT_SECOND: str = "1/second"  # Default rate limit for plotting
+    TIER_0_PLOT_RATE_LIMIT_MINUTE: str = "3/minute"  # Default rate limit for plotting
+    TIER_0_PLOT_RATE_LIMIT_HOUR: str = "30/hour"  # Default rate limit for plotting
+    TIER_0_PLOT_RATE_LIMIT_DAY: str = "200/day"  # Default rate limit for plotting
 
 
 settings = Settings()  # type: ignore

@@ -1,9 +1,8 @@
 from typing import Annotated
 
 import jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
-from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
@@ -18,6 +17,7 @@ from app.core import security
 from app.core.config import settings
 from app.core.models.models import User
 from app.core.schemas.token import TokenPayload
+from app.exceptions.exceptions import InvalidHeaderProvidedError, InvalidTokenError
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/login/access-token"
@@ -32,11 +32,13 @@ def get_db():
         db.close()
 
 
-SessionDep = Annotated[Session, Depends(get_db)]
 TokenDep = Annotated[str, Depends(reusable_oauth2)]
 
 
-def get_current_user(session: SessionDep, token: TokenDep) -> User:
+def get_current_user(
+    token: TokenDep,
+    session: Session = Depends(get_db),
+) -> User:
     try:
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
@@ -80,3 +82,54 @@ def get_current_active_user(current_user: CurrentUser) -> User:
             detail=get_not_active_or_auth_user_error_msg(current_user.username).message,
         )
     return current_user
+
+
+def get_user_token_by_request(request: Request) -> str:
+    """Get current user id by request.
+
+    Args:
+        request (Request): The request
+
+    Raises:
+        HTTPException: HTTPException
+        InvalidTokenError: InvalidTokenError
+
+    Returns:
+        str: _description_
+    """
+    header = request.headers.get("Authorization")
+    if not header:
+        raise InvalidHeaderProvidedError(
+            status_code=403,
+            function_name=get_user_token_by_request.__name__,
+            message=f"No Authorization header provided. Authorization header: {header}",
+        )
+    token = header.split("Bearer ")[1]
+
+    return token
+
+
+def get_limit_for_current_user_plot(current_user: CurrentUser) -> str:
+    # Slow api doesn't support user based or request rate limit values,
+    # this is for future use
+    """Rate limit for current user when plotting
+
+    Args:
+        current_user (CurrentUser): The current user
+
+    Returns:F
+        str: Rates for the current user
+    """
+
+    if current_user.isSuperuser:
+        return "99999999999/minute"
+
+    match current_user.rateLimitTier:
+        case 0:
+            return settings.DEFAULT_PLOT_RATE_LIMIT
+        case 1:
+            return settings.TIER_1_PLOT_RATE_LIMIT
+        case 2:
+            return settings.TIER_2_PLOT_RATE_LIMIT
+        case _:
+            return settings.TIER_3_PLOT_RATE_LIMIT

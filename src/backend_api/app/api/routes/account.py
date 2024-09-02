@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
 from app.api.api_message_util import (
@@ -8,8 +9,8 @@ from app.api.api_message_util import (
     get_delete_return_msg,
 )
 from app.api.deps import (
-    SessionDep,
     get_current_active_superuser,
+    get_db,
 )
 from app.core.models.models import Account
 from app.crud import CRUD_account
@@ -27,7 +28,7 @@ account_prefix = "account"
         Depends(get_current_active_superuser),
     ],
 )
-async def get_account(accountName: str, db: SessionDep):
+async def get_account(accountName: str, db: Session = Depends(get_db)):
     """
     Get the account by filter with key and value for "accountName" .
 
@@ -48,7 +49,7 @@ async def get_account(accountName: str, db: SessionDep):
     ],
 )
 async def get_all_accounts(
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Get all accounts.
@@ -69,7 +70,7 @@ async def get_all_accounts(
 )
 async def create_account(
     account: schemas.AccountCreate | list[schemas.AccountCreate],
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Create one or a list of accounts.
@@ -98,7 +99,7 @@ async def create_account(
 async def update_account(
     accountName: str,
     account_update: schemas.AccountUpdate,
-    db: SessionDep,
+    db: Session = Depends(get_db),
 ):
     """
     Update an account by key and value for "accountName".
@@ -130,7 +131,7 @@ async def update_account(
         Depends(get_current_active_superuser),
     ],
 )
-async def delete_account(accountName: str, db: SessionDep):
+async def delete_account(accountName: str, db: Session = Depends(get_db)):
     """
     Delete an account by key and value "accountName".
 

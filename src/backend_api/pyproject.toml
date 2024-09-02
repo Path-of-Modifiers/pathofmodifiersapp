@@ -32,6 +32,8 @@ aiohttp = "^3.9.3"
 git-commit = "^1.2"
 pyjwt = "^2.9.0"
 pytest-asyncio = "^0.23.8"
+slowapi = "^0.1.9"
+redis = "^5.0.8"
 
 
 
