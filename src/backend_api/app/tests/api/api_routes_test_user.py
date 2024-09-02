@@ -420,6 +420,8 @@ class TestUserRoutes(BaseTest):
             details_confirm
             == get_user_successfully_registered_msg(username, email).message
         )
+        user_after_confirmed_db = crud.get(db=db, filter={"email": email})
+        assert user_after_confirmed_db.isActive
 
     def test_register_user_email_already_exists_error(self, client: TestClient) -> None:
         password = random_lower_string()
