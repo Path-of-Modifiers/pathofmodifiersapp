@@ -7,12 +7,15 @@ from sqlalchemy.orm import Session
 
 from app.api.api_message_util import (
     get_delete_return_msg,
+    get_invalid_token_credentials_msg,
     get_no_obj_matching_query_msg,
     get_not_superuser_auth_msg,
     get_superuser_not_allowed_change_active_self_msg,
     get_superuser_not_allowed_delete_self_msg,
     get_user_active_change_msg,
+    get_user_email_confirmation_sent,
     get_user_psw_change_msg,
+    get_user_successfully_registered_msg,
 )
 from app.api.deps import (
     CurrentUser,
@@ -27,18 +30,25 @@ from app.core.schemas import (
     UpdatePassword,
     UserCreate,
     UserPublic,
-    UserRegister,
     UsersPublic,
     UserUpdate,
     UserUpdateMe,
 )
+from app.core.schemas.user import (
+    UserRegisterPostEmailConfirmation,
+    UserRegisterPreEmailConfirmation,
+)
 from app.crud import CRUD_user
 from app.limiter import (
+    apply_ip_rate_limits,
     apply_user_rate_limits,
 )
 from app.utils.user import (
     generate_new_account_email,
+    generate_user_confirmation_token,
+    generate_user_registration_email,
     send_email,
+    verify_token,
 )
 
 router = APIRouter()
@@ -71,7 +81,7 @@ def create(*, db: Session = Depends(get_db), user_in: UserCreate) -> Any:
     user = CRUD_user.create(db=db, user_create=user_in)
     if settings.emails_enabled and user_in.email:
         email_data = generate_new_account_email(
-            email_to=user_in.email, username=user_in.email, password=user_in.password
+            email_to=user_in.email, username=user_in.username
         )
         send_email(
             email_to=user_in.email,
@@ -196,30 +206,84 @@ def delete_user_me(
     )
 
 
-@router.post("/signup", response_model=UserPublic)
-@apply_user_rate_limits(
+@router.post("/signup-send-confirmation", response_model=Message)
+@apply_ip_rate_limits(
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_SECOND,
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE,
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_DAY,
 )
-def register_user(
+def register_user_send_confirmation(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
-    user_in: UserRegister,
+    user_pre_confirmed: UserRegisterPreEmailConfirmation,
     db: Session = Depends(get_db),
 ) -> Any:
     """
-    Create new user without the need to be logged in.
+    Send email confirmation on user register. Account doesn't get created yet.
     """
-    user_create = UserCreate(
-        username=user_in.username,
-        email=user_in.email,
-        password=user_in.password,
+    CRUD_user.check_exists_raise(
+        db, filter={"email": user_pre_confirmed.email}, user_in=user_pre_confirmed
+    )
+    CRUD_user.check_exists_raise(
+        db, filter={"username": user_pre_confirmed.username}, user_in=user_pre_confirmed
     )
 
-    user = CRUD_user.create(db=db, user_create=user_create)
-    return user
+    user_create = UserCreate(
+        username=user_pre_confirmed.username,
+        email=user_pre_confirmed.email,
+        password=user_pre_confirmed.password,
+        isActive=False,
+    )
+
+    CRUD_user.create(db=db, user_create=user_create)
+
+    user_register_token = generate_user_confirmation_token(
+        email=user_pre_confirmed.email
+    )
+    email_data = generate_user_registration_email(
+        email_to=user_pre_confirmed.email,
+        username=user_pre_confirmed.username,
+        token=user_register_token,
+    )
+    send_email(
+        email_to=user_pre_confirmed.email,
+        subject=email_data.subject,
+        html_content=email_data.html_content,
+    )
+
+    return get_user_email_confirmation_sent(user=user_pre_confirmed)
+
+
+@router.post("/signup", response_model=Message)
+@apply_ip_rate_limits(
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_DAY,
+)
+def register_user_confirm(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    user_register_confirmation: UserRegisterPostEmailConfirmation,
+    db: Session = Depends(get_db),
+) -> Any:
+    """
+    Confirm new user without the need to be logged in. Requires email confirmation.
+    """
+    email = verify_token(token=user_register_confirmation.token)
+    if not email:
+        raise HTTPException(
+            status_code=400, detail=get_invalid_token_credentials_msg().message
+        )
+
+    user_db = CRUD_user.get(db, filter={"email": email})
+
+    user = CRUD_user.set_active(db=db, db_user=user_db, active=True)
+
+    return get_user_successfully_registered_msg(
+        username=user.username, email=user.email
+    )
 
 
 @router.get(
@@ -333,7 +397,7 @@ def change_activate_user(
     Change activity to current user.
     """
     db_user = CRUD_user.get(db, filter={"userId": user_id})
-    if db_user == current_user:
+    if db_user == current_user and not current_user.isSuperuser:
         CRUD_user.set_active(db=db, db_user=db_user, active=activate)
         return Message(
             message=get_user_active_change_msg(db_user.username, activate),
