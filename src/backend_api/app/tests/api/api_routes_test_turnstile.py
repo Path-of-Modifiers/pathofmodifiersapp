@@ -51,6 +51,8 @@ class TestTurnstileRoutes:
             response = client.post(
                 f"{settings.API_V1_STR}/{turnstile_prefix}/", json=data
             )
+            assert response.status_code == 400
+
             response_data = response.json()
             assert (
                 response_data["detail"]
