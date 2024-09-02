@@ -262,14 +262,14 @@ def register_user_send_confirmation(
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_DAY,
 )
-def register_user(
+def register_user_confirm(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     user_register_confirmation: UserRegisterPostEmailConfirmation,
     db: Session = Depends(get_db),
 ) -> Any:
     """
-    Create new user without the need to be logged in. Requires email confirmation.
+    Confirm new user without the need to be logged in. Requires email confirmation.
     """
     email = verify_token(token=user_register_confirmation.token)
     if not email:
