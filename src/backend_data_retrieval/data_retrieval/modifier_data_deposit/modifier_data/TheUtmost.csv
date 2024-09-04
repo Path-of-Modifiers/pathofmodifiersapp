@@ -1,4 +1,5 @@
-#Source: https://poedb.tw/The_Utmost
+# Unique Name: The Utmost
+# Source: https://poedb.tw/The_Utmost
 minRoll,maxRoll,position,effect,unique
 0,30,0,"+#% chance to Suppress Spell Damage",True
 0,5,0,"+#% to all maximum Elemental Resistances",True
