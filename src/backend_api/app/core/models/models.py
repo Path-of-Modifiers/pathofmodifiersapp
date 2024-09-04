@@ -107,7 +107,7 @@ class Modifier(Base):
         primary_key=True,
     )
     position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
-    relatedUnique = _sql.Column(_sql.String(), nullable=False)
+    relatedUniques = _sql.Column(_sql.String(), nullable=False)
     minRoll = _sql.Column(_sql.Float(24))
     maxRoll = _sql.Column(_sql.Float(24))
     textRolls = _sql.Column(_sql.String())
