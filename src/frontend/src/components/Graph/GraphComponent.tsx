@@ -15,6 +15,16 @@ import { usePlotSettingsStore } from "../../store/PlotSettingsStore";
 import PlotCustomizationButtons from "../Common/PlotCustomizationButtons";
 import { capitalizeFirstLetter } from "../../hooks/utils";
 
+export interface CurrencyVisuals {
+  stroke: string;
+  name: string;
+  yAxisId: number;
+  datakey: string;
+  buttonColor: string;
+  buttonBorderColor: string;
+  buttonBackground: string;
+}
+
 /**
  * Uses the globally stored plotQuery state to send a request,
  * the response is processed. Returns a spinner while retrieving
@@ -26,10 +36,33 @@ function GraphComponent(props: BoxProps) {
   const plotQuery = useGraphInputStore((state) => state.plotQuery);
   const { result, mostCommonCurrencyUsed, fetchStatus, isError } =
     useGetPlotData(plotQuery);
+
   const render = result && mostCommonCurrencyUsed && !isError;
 
   const showChaos = usePlotSettingsStore((state) => state.showChaos);
   const showSecondary = usePlotSettingsStore((state) => state.showSecondary);
+
+  const chaosVisuals: CurrencyVisuals = {
+    stroke: "#f99619",
+    name: "Chaos value",
+    yAxisId: 0,
+    datakey: "valueInChaos",
+    buttonColor: "#000000",
+    buttonBorderColor: "#000000",
+    buttonBackground: showChaos ? "#f99619" : "ui.lightInput",
+  };
+
+  const secondaryVisuals: CurrencyVisuals = {
+    stroke: "ui.white",
+    name: render
+      ? `${capitalizeFirstLetter(mostCommonCurrencyUsed)} value`
+      : "",
+    yAxisId: 1,
+    datakey: "valueInMostCommonCurrencyUsed",
+    buttonColor: showSecondary ? "#ff0000" : "#000000",
+    buttonBorderColor: showSecondary ? "#ff0000" : "#000000",
+    buttonBackground: showSecondary ? "ui.white" : "ui.lightInput",
+  };
 
   if (fetchStatus === "fetching") {
     return (
@@ -45,6 +78,8 @@ function GraphComponent(props: BoxProps) {
         <PlotCustomizationButtons
           flexProps={undefined}
           mostCommonCurrencyUsed={mostCommonCurrencyUsed}
+          chaosVisuals={chaosVisuals}
+          secondaryVisuals={secondaryVisuals}
         />
         <ResponsiveContainer>
           <LineChart
@@ -63,7 +98,7 @@ function GraphComponent(props: BoxProps) {
             {/* Set Y-axis label */}
             <YAxis
               label={{
-                value: "Chaos value",
+                value: chaosVisuals.name,
                 angle: -90,
                 position: "insideLeft",
               }}
@@ -74,28 +109,29 @@ function GraphComponent(props: BoxProps) {
             {/* Update the Line dataKey to match "Chaos value" */}
             <Line
               type="monotone"
-              dataKey="valueInChaos"
-              name="Chaos value"
-              stroke="#f99619"
+              dataKey={chaosVisuals.datakey}
+              name={chaosVisuals.name}
+              stroke={chaosVisuals.stroke}
+              yAxisId={chaosVisuals.yAxisId}
               hide={!showChaos}
             />
 
             <YAxis
               label={{
-                value: `${capitalizeFirstLetter(mostCommonCurrencyUsed)} value`,
+                value: secondaryVisuals.name,
                 angle: -90,
                 position: "right",
               }}
               orientation="right"
-              yAxisId={1}
+              yAxisId={secondaryVisuals.yAxisId}
               hide={!showSecondary}
             />
             <Line
               type="monotone"
-              dataKey="valueInMostCommonCurrencyUsed"
-              name={`${capitalizeFirstLetter(mostCommonCurrencyUsed)} value`}
-              stroke="ui.white"
-              yAxisId={1}
+              dataKey={secondaryVisuals.datakey}
+              name={secondaryVisuals.name}
+              stroke={secondaryVisuals.stroke}
+              yAxisId={secondaryVisuals.yAxisId}
               hide={!showSecondary}
             />
           </LineChart>
