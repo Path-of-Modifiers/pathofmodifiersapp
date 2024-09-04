@@ -8,6 +8,7 @@ class _BaseModifier(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
     position: int
+    relatedUniques: str
     minRoll: float | None = None
     maxRoll: float | None = None
     textRolls: str | None = None
