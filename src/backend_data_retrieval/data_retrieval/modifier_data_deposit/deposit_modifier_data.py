@@ -67,9 +67,13 @@ class DataDepositer:
                 for line in infile:
                     if "#" == line[0]:
                         self.logger.info(line.rstrip())
+                        if "# Unique Name: " in line:
+                            related_unique = line.rstrip().split(": ")[1]
                     else:
                         self.logger.info("End of attached comments.")
                         break
+
+            df["relatedUniques"] = related_unique
 
             yield df
 
@@ -122,6 +126,8 @@ class DataDepositer:
         ):
             put_update = False
             data = df_to_JSON(row_cur, request_method="put")
+            data["relatedUniques"] += "-" + row_new["relatedUniques"]
+
             position = int(data["position"])
             # if position is higher than 1, we want to store the types of rolls it has
             if position >= 1 and rolls is None:
