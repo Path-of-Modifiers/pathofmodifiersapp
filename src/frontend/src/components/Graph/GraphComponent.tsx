@@ -53,7 +53,7 @@ function GraphComponent(props: BoxProps) {
   };
 
   const secondaryVisuals: CurrencyVisuals = {
-    stroke: "ui.white",
+    stroke: "#ffffff",
     name: render
       ? `${capitalizeFirstLetter(mostCommonCurrencyUsed)} value`
       : "",
