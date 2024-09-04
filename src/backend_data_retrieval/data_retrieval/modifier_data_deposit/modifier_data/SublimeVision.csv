@@ -1,3 +1,4 @@
+# Unique Name: Sublime Vision
 # Source: https://poedb.tw/Sublime_Vision
 minRoll,maxRoll,textRolls,position,effect,static,unique
 20,40,,0,"Auras from your Skills have #% increased Effect on you",,True

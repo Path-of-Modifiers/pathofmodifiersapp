@@ -1,3 +1,4 @@
+# Unique Name: Aul's Uprising
 # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
 minRoll,maxRoll,textRolls,position,effect,static,unique
 20,30,,0,"+# to Intelligence",,True
