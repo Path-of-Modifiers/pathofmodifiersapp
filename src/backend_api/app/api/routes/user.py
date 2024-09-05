@@ -2,9 +2,27 @@
 import uuid
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from sqlalchemy.orm import Session
 
-from app.api.deps import CurrentUser, SessionDep, get_current_active_superuser
+from app.api.api_message_util import (
+    get_delete_return_msg,
+    get_invalid_token_credentials_msg,
+    get_no_obj_matching_query_msg,
+    get_not_superuser_auth_msg,
+    get_superuser_not_allowed_change_active_self_msg,
+    get_superuser_not_allowed_delete_self_msg,
+    get_user_active_change_msg,
+    get_user_email_confirmation_sent,
+    get_user_psw_change_msg,
+    get_user_successfully_registered_msg,
+)
+from app.api.deps import (
+    CurrentUser,
+    get_current_active_superuser,
+    get_current_active_user,
+    get_db,
+)
 from app.core.config import settings
 from app.core.models.models import User
 from app.core.schemas import (
@@ -12,16 +30,25 @@ from app.core.schemas import (
     UpdatePassword,
     UserCreate,
     UserPublic,
-    UserRegister,
     UsersPublic,
     UserUpdate,
     UserUpdateMe,
 )
-from app.core.security import get_password_hash, verify_password
+from app.core.schemas.user import (
+    UserRegisterPostEmailConfirmation,
+    UserRegisterPreEmailConfirmation,
+)
 from app.crud import CRUD_user
+from app.limiter import (
+    apply_ip_rate_limits,
+    apply_user_rate_limits,
+)
 from app.utils.user import (
     generate_new_account_email,
+    generate_user_confirmation_token,
+    generate_user_registration_email,
     send_email,
+    verify_token,
 )
 
 router = APIRouter()
@@ -34,12 +61,12 @@ user_prefix = "user"
     dependencies=[Depends(get_current_active_superuser)],
     response_model=UsersPublic,
 )
-def get_all_users(db: SessionDep, skip: int = 0, limit: int = 100) -> Any:
+def get_all(db: Session = Depends(get_db), skip: int = 0, limit: int = 100) -> Any:
     """
     Retrieve all users.
     """
 
-    users_public = CRUD_user.get_all_users(db, skip=skip, limit=limit)
+    users_public = CRUD_user.get_all(db, skip=skip, limit=limit)
 
     return users_public
 
@@ -47,14 +74,14 @@ def get_all_users(db: SessionDep, skip: int = 0, limit: int = 100) -> Any:
 @router.post(
     "/", dependencies=[Depends(get_current_active_superuser)], response_model=UserPublic
 )
-def create_user(*, db: SessionDep, user_in: UserCreate) -> Any:
+def create(*, db: Session = Depends(get_db), user_in: UserCreate) -> Any:
     """
     Create new user.
     """
-    user = CRUD_user.create_user(db=db, user_create=user_in)
+    user = CRUD_user.create(db=db, user_create=user_in)
     if settings.emails_enabled and user_in.email:
         email_data = generate_new_account_email(
-            email_to=user_in.email, username=user_in.email, password=user_in.password
+            email_to=user_in.email, username=user_in.username
         )
         send_email(
             email_to=user_in.email,
@@ -64,110 +91,238 @@ def create_user(*, db: SessionDep, user_in: UserCreate) -> Any:
     return user
 
 
-@router.patch("/me", response_model=UserPublic)
-def update_user_me(
-    *, db: SessionDep, user_in: UserUpdateMe, current_user: CurrentUser
+@router.patch(
+    "/me",
+    response_model=UserPublic,
+    dependencies=[Depends(get_current_active_user)],
+)
+@apply_user_rate_limits(
+    settings.UPDATE_ME_RATE_LIMIT_SECOND,
+    settings.UPDATE_ME_RATE_LIMIT_MINUTE,
+    settings.UPDATE_ME_RATE_LIMIT_HOUR,
+    settings.UPDATE_ME_RATE_LIMIT_DAY,
+)
+def update_me(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    *,
+    db: Session = Depends(get_db),
+    user_in: UserUpdateMe,
+    current_user: CurrentUser,
 ) -> Any:
     """
     Update own user.
     """
 
-    if user_in.email:
-        get_user_filter = {"email": user_in.email}
-        existing_user = CRUD_user.get(db=db, filter=get_user_filter)
-        if existing_user and existing_user.userId != current_user.userId:
-            raise HTTPException(
-                status_code=409, detail="User with this email already exists"
-            )
-    user_data = user_in.model_dump(exclude_unset=True)
-    current_user_data = current_user.__table__.columns.keys()
+    CRUD_user.update(db=db, user_id=current_user.userId, user_in=user_in)
 
-    for field in current_user_data:
-        if field in user_data:
-            setattr(current_user, field, user_data[field])
-
-    db.add(current_user)
-    db.commit()
-    db.refresh(current_user)
     return current_user
 
 
-@router.patch("/me/password", response_model=Message)
+@router.patch(
+    "/me/password",
+    response_model=Message,
+    dependencies=[Depends(get_current_active_user)],
+)
+@apply_user_rate_limits(
+    settings.UPDATE_PASSWORD_ME_RATE_LIMIT_SECOND,
+    settings.UPDATE_PASSWORD_ME_RATE_LIMIT_MINUTE,
+    settings.UPDATE_PASSWORD_ME_RATE_LIMIT_HOUR,
+    settings.UPDATE_PASSWORD_ME_RATE_LIMIT_DAY,
+)
 def update_password_me(
-    *, db: SessionDep, body: UpdatePassword, current_user: CurrentUser
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    *,
+    db: Session = Depends(get_db),
+    body: UpdatePassword,
+    current_user: CurrentUser,
 ) -> Any:
     """
     Update own password.
     """
-    if not verify_password(body.current_password, current_user.hashedPassword):
-        raise HTTPException(status_code=400, detail="Incorrect password")
-    if body.current_password == body.new_password:
-        raise HTTPException(
-            status_code=400, detail="New password cannot be the same as the current one"
-        )
-    hashed_password = get_password_hash(body.new_password)
-    current_user.hashedPassword = hashed_password
-    db.add(current_user)
-    db.commit()
-    return Message(message="Password updated successfully")
+    CRUD_user.update_password(
+        db=db,
+        db_user=current_user,
+        body=body,
+    )
+
+    return get_user_psw_change_msg(current_user.username)
 
 
-@router.get("/me", response_model=UserPublic)
-def get_user_me(current_user: CurrentUser) -> Any:
+@router.get(
+    "/me",
+    response_model=UserPublic,
+    dependencies=[Depends(get_current_active_user)],
+)
+@apply_user_rate_limits(
+    settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
+def get_user_me(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    current_user: CurrentUser,
+) -> Any:
     """
     Get current user.
     """
     return current_user
 
 
-@router.delete("/me", response_model=Message)
-def delete_user_me(db: SessionDep, current_user: CurrentUser) -> Any:
+@router.delete(
+    "/me",
+    response_model=Message,
+    dependencies=[Depends(get_current_active_user)],
+)
+@apply_user_rate_limits(
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_DAY,
+)
+def delete_user_me(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    current_user: CurrentUser,
+    db: Session = Depends(get_db),
+) -> Message:
     """
     Delete own user.
     """
     if current_user.isSuperuser:
         raise HTTPException(
-            status_code=403, detail="Super users are not allowed to delete themselves"
+            status_code=403,
+            detail=get_superuser_not_allowed_delete_self_msg(
+                current_user.username
+            ).message,
         )
     db.delete(current_user)
     db.commit()
-    return Message(message="User deleted successfully")
-
-
-@router.post("/signup", response_model=UserPublic)
-def register_user(db: SessionDep, user_in: UserRegister) -> Any:
-    """
-    Create new user without the need to be logged in.
-    """
-    user_create = UserCreate(
-        username=user_in.username,
-        email=user_in.email,
-        password=user_in.password,
+    return get_delete_return_msg(
+        model_table_name=User.__tablename__, filter={"userId": current_user.userId}
     )
 
-    user = CRUD_user.create_user(db=db, user_create=user_create)
-    return user
+
+@router.post("/signup-send-confirmation", response_model=Message)
+@apply_ip_rate_limits(
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_DAY,
+)
+def register_user_send_confirmation(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    user_pre_confirmed: UserRegisterPreEmailConfirmation,
+    db: Session = Depends(get_db),
+) -> Any:
+    """
+    Send email confirmation on user register. Account doesn't get created yet.
+    """
+    CRUD_user.check_exists_raise(
+        db, filter={"email": user_pre_confirmed.email}, user_in=user_pre_confirmed
+    )
+    CRUD_user.check_exists_raise(
+        db, filter={"username": user_pre_confirmed.username}, user_in=user_pre_confirmed
+    )
+
+    user_create = UserCreate(
+        username=user_pre_confirmed.username,
+        email=user_pre_confirmed.email,
+        password=user_pre_confirmed.password,
+        isActive=False,
+    )
+
+    CRUD_user.create(db=db, user_create=user_create)
+
+    user_register_token = generate_user_confirmation_token(
+        email=user_pre_confirmed.email
+    )
+    email_data = generate_user_registration_email(
+        email_to=user_pre_confirmed.email,
+        username=user_pre_confirmed.username,
+        token=user_register_token,
+    )
+    send_email(
+        email_to=user_pre_confirmed.email,
+        subject=email_data.subject,
+        html_content=email_data.html_content,
+    )
+
+    return get_user_email_confirmation_sent(
+        username=user_pre_confirmed.username, email=user_pre_confirmed.email
+    )
 
 
-@router.get("/{user_id}", response_model=UserPublic)
+@router.post("/signup", response_model=Message)
+@apply_ip_rate_limits(
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_DAY,
+)
+def register_user_confirm(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    user_register_confirmation: UserRegisterPostEmailConfirmation,
+    db: Session = Depends(get_db),
+) -> Any:
+    """
+    Confirm new user without the need to be logged in. Requires email confirmation.
+    """
+    email = verify_token(token=user_register_confirmation.token)
+    if not email:
+        raise HTTPException(
+            status_code=400, detail=get_invalid_token_credentials_msg().message
+        )
+
+    user_db = CRUD_user.get(db, filter={"email": email})
+
+    user = CRUD_user.set_active(db=db, db_user=user_db, active=True)
+
+    return get_user_successfully_registered_msg(
+        username=user.username, email=user.email
+    )
+
+
+@router.get(
+    "/{user_id}",
+    response_model=UserPublic,
+    dependencies=[Depends(get_current_active_user)],
+)
+@apply_user_rate_limits(
+    settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
 def get_user_by_id(
-    user_id: uuid.UUID, db: SessionDep, current_user: CurrentUser
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    user_id: uuid.UUID,
+    current_user: CurrentUser,
+    db: Session = Depends(get_db),
 ) -> Any:
     """
     Get a specific user by id.
     """
-    db_user = db.get(User, user_id)
+    db_user = CRUD_user.get(db, filter={"userId": user_id})
     if not db_user:
         raise HTTPException(
             status_code=404,
-            detail="The db_user with this id does not exist in the system",
+            detail=get_no_obj_matching_query_msg(
+                {"userId": user_id}, User.__tablename__
+            ).message,
         )
     if db_user == current_user:
         return db_user
     if not current_user.isSuperuser:
         raise HTTPException(
             status_code=403,
-            detail="The db_user does not have enough privileges",
+            detail=get_not_superuser_auth_msg(current_user.username).message,
         )
     return db_user
 
@@ -177,9 +332,9 @@ def get_user_by_id(
     dependencies=[Depends(get_current_active_superuser)],
     response_model=UserPublic,
 )
-def update_user(
+def update(
     *,
-    db: SessionDep,
+    db: Session = Depends(get_db),
     user_id: uuid.UUID,
     user_in: UserUpdate,
 ) -> Any:
@@ -187,60 +342,81 @@ def update_user(
     Update a user.
     """
 
-    db_user = CRUD_user.update_user(db=db, user_id=user_id, user_in=user_in)
+    db_user = CRUD_user.update(db=db, user_id=user_id, user_in=user_in)
     return db_user
 
 
 @router.delete("/{user_id}", dependencies=[Depends(get_current_active_superuser)])
 def delete_user(
-    db: SessionDep, current_user: CurrentUser, user_id: uuid.UUID
+    current_user: CurrentUser,
+    user_id: uuid.UUID,
+    db: Session = Depends(get_db),
 ) -> Message:
     """
     Delete a user.
     """
-    db_user = db.get(User, user_id)
+    db_user = CRUD_user.get(db, filter={"userId": user_id})
     if not db_user:
         raise HTTPException(
-            status_code=404, detail="Could not delete user. User not found"
+            status_code=404,
+            detail=get_no_obj_matching_query_msg(
+                {"userId": user_id}, User.__tablename__
+            ).message,
         )
     if db_user == current_user:
         raise HTTPException(
-            status_code=403, detail="Super users are not allowed to delete themselves"
+            status_code=403,
+            detail=get_superuser_not_allowed_delete_self_msg(
+                current_user.username
+            ).message,
         )
     db.delete(db_user)
     db.commit()
-    return Message(message="User deleted successfully")
+    return get_delete_return_msg(
+        model_table_name=User.__tablename__, filter={"userId": user_id}
+    )
 
 
 @router.patch(
     "/activate/{user_id}",
+    dependencies=[Depends(get_current_active_user)],
+)
+@apply_user_rate_limits(
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.STRICT_DEFAULT_USER_RATE_LIMIT_DAY,
 )
 def change_activate_user(
-    db: SessionDep,
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
     current_user: CurrentUser,
     user_id: uuid.UUID,
     activate: bool,
+    db: Session = Depends(get_db),
 ) -> Message:
     """
     Change activity to current user.
     """
-    db_user = db.get(User, user_id)
-    if db_user == current_user:
+    db_user = CRUD_user.get(db, filter={"userId": user_id})
+    if db_user == current_user and not current_user.isSuperuser:
         CRUD_user.set_active(db=db, db_user=db_user, active=activate)
         return Message(
-            message=f"User {current_user.username} status changed successfully to {activate}"
+            message=get_user_active_change_msg(db_user.username, activate),
         )
     if not current_user.isSuperuser:
         raise HTTPException(
             status_code=403,
-            detail="The user does not have enough privileges",
+            detail=get_not_superuser_auth_msg(current_user.username).message,
         )
     if db_user == current_user:
         raise HTTPException(
             status_code=403,
-            detail="Super users are not allowed to change their own status",
+            detail=get_superuser_not_allowed_change_active_self_msg(
+                current_user.username
+            ).message,
         )
     CRUD_user.set_active(db=db, db_user=db_user, active=activate)
     return Message(
-        message=f"User {db_user.username} status changed successfully to {activate}"
+        message=get_user_active_change_msg(db_user.username, activate),
     )

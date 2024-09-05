@@ -11,11 +11,11 @@
           "accounts"
         ],
         "summary": "Get Account",
-        "description": "Get the account by mapping with key and value for \"accountName\" .\n\nAlways returns one account.",
+        "description": "Get the account by filter with key and value for \"accountName\" .\n\nAlways returns one account.",
         "operationId": "get_account",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -35,18 +35,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Account"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Account"
-                      }
-                    }
-                  ],
-                  "title": "Response Accounts-Get Account"
+                  "$ref": "#/components/schemas/Account"
                 }
               }
             }
@@ -72,7 +61,7 @@
         "operationId": "update_account",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -128,7 +117,7 @@
         "operationId": "delete_account",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -200,7 +189,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       },
@@ -267,7 +256,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -282,7 +271,7 @@
         "operationId": "get_currency",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -302,18 +291,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Currency"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Currency"
-                      }
-                    }
-                  ],
-                  "title": "Response Currencys-Get Currency"
+                  "$ref": "#/components/schemas/Currency"
                 }
               }
             }
@@ -339,7 +317,7 @@
         "operationId": "update_currency",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -395,7 +373,7 @@
         "operationId": "delete_currency",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -467,7 +445,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       },
@@ -534,7 +512,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -563,7 +541,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -578,7 +556,7 @@
         "operationId": "get_item_base_type",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -598,18 +576,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/ItemBaseType"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/ItemBaseType"
-                      }
-                    }
-                  ],
-                  "title": "Response Itembasetypes-Get Item Base Type"
+                  "$ref": "#/components/schemas/ItemBaseType"
                 }
               }
             }
@@ -635,7 +602,7 @@
         "operationId": "update_item_base_type",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -691,7 +658,7 @@
         "operationId": "delete_item_base_type",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -763,7 +730,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       },
@@ -830,7 +797,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -868,7 +835,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -906,7 +873,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -944,7 +911,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -959,7 +926,7 @@
         "operationId": "get_item_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1048,7 +1015,7 @@
         "operationId": "delete_item_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1110,7 +1077,7 @@
         "operationId": "get_all_item_modifiers",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "responses": {
@@ -1146,7 +1113,7 @@
         "operationId": "create_item_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "requestBody": {
@@ -1213,7 +1180,7 @@
         "operationId": "update_item_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1280,7 +1247,7 @@
         "operationId": "get_item",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1300,18 +1267,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Item"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Item"
-                      }
-                    }
-                  ],
-                  "title": "Response Items-Get Item"
+                  "$ref": "#/components/schemas/Item"
                 }
               }
             }
@@ -1337,7 +1293,7 @@
         "operationId": "update_item",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1393,7 +1349,7 @@
         "operationId": "delete_item",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1456,7 +1412,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -1494,7 +1450,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       },
@@ -1561,7 +1517,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -1643,41 +1599,16 @@
         "summary": "Recover Password",
         "description": "Password Recovery",
         "operationId": "recover_password",
-        "parameters": [
-          {
-            "name": "username",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Username"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecoverPassword"
+              }
             }
           },
-          {
-            "name": "email",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "format": "email"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Email"
-            }
-          }
-        ],
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -1803,7 +1734,7 @@
         "operationId": "get_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1860,7 +1791,7 @@
         "operationId": "delete_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -1909,7 +1840,7 @@
         "operationId": "get_all_modifiers",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "responses": {
@@ -1945,7 +1876,7 @@
         "operationId": "create_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "requestBody": {
@@ -2012,7 +1943,7 @@
         "operationId": "update_modifier",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -2093,7 +2024,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -2108,7 +2039,7 @@
         "operationId": "get_stash",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -2128,18 +2059,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Stash"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Stash"
-                      }
-                    }
-                  ],
-                  "title": "Response Stashs-Get Stash"
+                  "$ref": "#/components/schemas/Stash"
                 }
               }
             }
@@ -2165,7 +2085,7 @@
         "operationId": "update_stash",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -2221,7 +2141,7 @@
         "operationId": "delete_stash",
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ],
         "parameters": [
@@ -2293,7 +2213,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       },
@@ -2360,7 +2280,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -2407,345 +2327,7 @@
         },
         "security": [
           {
-            "HTTPBasic": []
-          }
-        ]
-      }
-    },
-    "/api/api_v1/temporary_hashed_user_ip/check/": {
-      "post": {
-        "tags": [
-          "temporary_hashed_user_ips"
-        ],
-        "summary": "Check Temporary Hashed User Ip",
-        "description": "Takes a query based on the 'TemporaryHashedUserIp' schema and retrieves\nwhether the hashed user ip is valid.",
-        "operationId": "check_temporary_hashed_user_ip",
-        "security": [
-          {
-            "HTTPBasic": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "ip",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Ip"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "boolean",
-                  "title": "Response Temporary Hashed User Ips-Check Temporary Hashed User Ip"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/api_v1/temporary_hashed_user_ip/{temporaryHashedUserIp}": {
-      "get": {
-        "tags": [
-          "temporary_hashed_user_ips"
-        ],
-        "summary": "Get Temporary Hashed User Ip",
-        "description": "Get temporary hashed user ip by key and value for \"temporaryHashedUserIp\".",
-        "operationId": "get_temporary_hashed_user_ip",
-        "security": [
-          {
-            "HTTPBasic": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "temporaryHashedUserIp",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Temporaryhasheduserip"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/HashedUserIp"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/HashedUserIp"
-                      }
-                    }
-                  ],
-                  "title": "Response Temporary Hashed User Ips-Get Temporary Hashed User Ip"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "temporary_hashed_user_ips"
-        ],
-        "summary": "Update Temporary Hashed User Ip",
-        "description": "Update temporary hashed user ip by key and value for \"temporaryHashedUserIp\".",
-        "operationId": "update_temporary_hashed_user_ip",
-        "security": [
-          {
-            "HTTPBasic": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "temporaryHashedUserIp",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Temporaryhasheduserip"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/HashedUserIpUpdate"
-                  },
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/HashedUserIpUpdate"
-                    }
-                  }
-                ],
-                "title": "Hashed User Ip Update"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/HashedUserIp"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/HashedUserIp"
-                      }
-                    }
-                  ],
-                  "title": "Response Temporary Hashed User Ips-Update Temporary Hashed User Ip"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "temporary_hashed_user_ips"
-        ],
-        "summary": "Delete Temporary Hashed User Ip",
-        "description": "Delete temporary hashed user ip by key and value for \"temporaryHashedUserIp\".",
-        "operationId": "delete_temporary_hashed_user_ip",
-        "security": [
-          {
-            "HTTPBasic": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "temporaryHashedUserIp",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Temporaryhasheduserip"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "title": "Response Temporary Hashed User Ips-Delete Temporary Hashed User Ip"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/api_v1/temporary_hashed_user_ip/": {
-      "get": {
-        "tags": [
-          "temporary_hashed_user_ips"
-        ],
-        "summary": "Get All Temporary Hashed User Ips",
-        "description": "Get all temporary hashed user ips.",
-        "operationId": "get_all_temporary_hashed_user_ips",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/HashedUserIp"
-                    },
-                    {
-                      "items": {
-                        "$ref": "#/components/schemas/HashedUserIp"
-                      },
-                      "type": "array"
-                    }
-                  ],
-                  "title": "Response Temporary Hashed User Ips-Get All Temporary Hashed User Ips"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "HTTPBasic": []
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "temporary_hashed_user_ips"
-        ],
-        "summary": "Create Temporary Hashed User Ip",
-        "description": "Create temporary hashed user ip.",
-        "operationId": "create_temporary_hashed_user_ip",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/HashedUserIpCreate"
-                  },
-                  {
-                    "items": {
-                      "$ref": "#/components/schemas/HashedUserIpCreate"
-                    },
-                    "type": "array"
-                  }
-                ],
-                "title": "Hashed User Ip"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/HashedUserIpCreate"
-                    },
-                    {
-                      "items": {
-                        "$ref": "#/components/schemas/HashedUserIpCreate"
-                      },
-                      "type": "array"
-                    }
-                  ],
-                  "title": "Response Temporary Hashed User Ips-Create Temporary Hashed User Ip"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "HTTPBasic": []
+            "OAuth2PasswordBearer": []
           }
         ]
       }
@@ -2789,12 +2371,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "HTTPBasic": []
-          }
-        ]
+        }
       }
     },
     "/api/api_v1/user/": {
@@ -2802,9 +2379,9 @@
         "tags": [
           "users"
         ],
-        "summary": "Get All Users",
+        "summary": "Get All",
         "description": "Retrieve all users.",
-        "operationId": "get_all_users",
+        "operationId": "get_all",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -2859,9 +2436,9 @@
         "tags": [
           "users"
         ],
-        "summary": "Create User",
+        "summary": "Create",
         "description": "Create new user.",
-        "operationId": "create_user",
+        "operationId": "create",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -2956,9 +2533,9 @@
         "tags": [
           "users"
         ],
-        "summary": "Update User Me",
+        "summary": "Update Me",
         "description": "Update own user.",
-        "operationId": "update_user_me",
+        "operationId": "update_me",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3139,9 +2716,9 @@
         "tags": [
           "users"
         ],
-        "summary": "Update User",
+        "summary": "Update",
         "description": "Update a user.",
-        "operationId": "update_user",
+        "operationId": "update",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -3681,45 +3258,6 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
-      },
-      "HashedUserIp": {
-        "properties": {
-          "hashedIp": {
-            "type": "string",
-            "title": "Hashedip"
-          }
-        },
-        "type": "object",
-        "required": [
-          "hashedIp"
-        ],
-        "title": "HashedUserIp"
-      },
-      "HashedUserIpCreate": {
-        "properties": {
-          "hashedIp": {
-            "type": "string",
-            "title": "Hashedip"
-          }
-        },
-        "type": "object",
-        "required": [
-          "hashedIp"
-        ],
-        "title": "HashedUserIpCreate"
-      },
-      "HashedUserIpUpdate": {
-        "properties": {
-          "hashedIp": {
-            "type": "string",
-            "title": "Hashedip"
-          }
-        },
-        "type": "object",
-        "required": [
-          "hashedIp"
-        ],
-        "title": "HashedUserIpUpdate"
       },
       "Influences": {
         "properties": {
@@ -5705,6 +5243,34 @@
         ],
         "title": "PlotQuery"
       },
+      "RecoverPassword": {
+        "properties": {
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          }
+        },
+        "type": "object",
+        "title": "RecoverPassword"
+      },
       "Stash": {
         "properties": {
           "accountName": {
@@ -5923,13 +5489,11 @@
         "properties": {
           "current_password": {
             "type": "string",
-            "maxLength": 40,
             "minLength": 8,
             "title": "Current Password"
           },
           "new_password": {
             "type": "string",
-            "maxLength": 40,
             "minLength": 8,
             "title": "New Password"
           }
@@ -5945,12 +5509,11 @@
         "properties": {
           "username": {
             "type": "string",
-            "maxLength": 255,
+            "pattern": "^[\\p{L}\\p{N}_]+$",
             "title": "Username"
           },
           "email": {
             "type": "string",
-            "maxLength": 255,
             "format": "email",
             "title": "Email"
           },
@@ -6004,7 +5567,6 @@
           },
           "password": {
             "type": "string",
-            "maxLength": 40,
             "minLength": 8,
             "title": "Password"
           }
@@ -6021,12 +5583,11 @@
         "properties": {
           "username": {
             "type": "string",
-            "maxLength": 255,
+            "pattern": "^[\\p{L}\\p{N}_]+$",
             "title": "Username"
           },
           "email": {
             "type": "string",
-            "maxLength": 255,
             "format": "email",
             "title": "Email"
           },
@@ -6096,18 +5657,16 @@
         "properties": {
           "username": {
             "type": "string",
-            "maxLength": 255,
+            "pattern": "^[\\p{L}\\p{N}_]+$",
             "title": "Username"
           },
           "email": {
             "type": "string",
-            "maxLength": 255,
             "format": "email",
             "title": "Email"
           },
           "password": {
             "type": "string",
-            "maxLength": 40,
             "minLength": 8,
             "title": "Password"
           }
@@ -6123,15 +5682,21 @@
       "UserUpdate": {
         "properties": {
           "username": {
-            "type": "string",
-            "maxLength": 255,
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[\\p{L}\\p{N}_]+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Username"
           },
           "email": {
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 255,
                 "format": "email"
               },
               {
@@ -6192,7 +5757,6 @@
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 40,
                 "minLength": 8
               },
               {
@@ -6203,9 +5767,6 @@
           }
         },
         "type": "object",
-        "required": [
-          "username"
-        ],
         "title": "UserUpdate"
       },
       "UserUpdateMe": {
@@ -6214,7 +5775,6 @@
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 255,
                 "format": "email"
               },
               {
@@ -6227,7 +5787,7 @@
             "anyOf": [
               {
                 "type": "string",
-                "maxLength": 255
+                "pattern": "^[\\p{L}\\p{N}_]+$"
               },
               {
                 "type": "null"
@@ -6323,10 +5883,6 @@
       }
     },
     "securitySchemes": {
-      "HTTPBasic": {
-        "type": "http",
-        "scheme": "basic"
-      },
       "OAuth2PasswordBearer": {
         "type": "oauth2",
         "flows": {

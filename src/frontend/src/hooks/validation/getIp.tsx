@@ -22,7 +22,7 @@ const useGetIp = () => {
       });
   }, []);
 
-  return ip;
+  return ip.current;
 };
 
 export default useGetIp;

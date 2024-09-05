@@ -8,7 +8,7 @@ from external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_nin
     PoeNinjaCurrencyAPIHandler,
 )
 from modifier_data_deposit.utils import insert_data
-from pom_api_authentication import get_super_authentication
+from pom_api_authentication import get_superuser_token_headers
 
 
 def load_currency_data():
@@ -32,7 +32,7 @@ class TransformPoeNinjaCurrencyAPIData:
             self.url = "http://src-backend-1"
         self.url += "/api/api_v1"
         self.logger = logger_parent.getChild("transform_ninja")
-        self.pom_api_authentication = get_super_authentication()
+        self.pom_api_headers = get_superuser_token_headers(self.url)
 
     def _create_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -78,7 +78,7 @@ class TransformPoeNinjaCurrencyAPIData:
 
     def _get_latest_currency_id_series(self, currency_df: pd.DataFrame) -> pd.Series:
         response = requests.get(
-            self.url + "/currency/latest_currency_id/", auth=self.pom_api_authentication
+            self.url + "/currency/latest_currency_id/", headers=self.pom_api_headers
         )
         response.raise_for_status()
         latest_currency_id = int(response.text)
@@ -97,7 +97,11 @@ class TransformPoeNinjaCurrencyAPIData:
         currency_df = self._transform_currency_table(currency_df)
         currency_df = self._clean_currency_table(currency_df)
         insert_data(
-            currency_df, url=self.url, table_name="currency", logger=self.logger
+            currency_df,
+            url=self.url,
+            table_name="currency",
+            logger=self.logger,
+            headers=self.pom_api_headers,
         )
         currency_id = self._get_latest_currency_id_series(currency_df)
 
