@@ -1,24 +1,26 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-import app.plotting.schemas as schemas
-from app.api.deps import get_db
-from app.core.security import verification
+from app.api.deps import get_current_active_user, get_db
 from app.plotting import plotter_tool
+from app.plotting.schemas.input import PlotQuery
+from app.plotting.schemas.output import PlotData
 
 router = APIRouter()
-
 
 plot_prefix = "plot"
 
 
-@router.post("/", response_model=schemas.PlotData)
+@router.post(
+    "/",
+    response_model=PlotData,
+    dependencies=[Depends(get_current_active_user)],
+)
 async def get_plot_data(
-    query: schemas.PlotQuery,
+    query: PlotQuery,
     db: Session = Depends(get_db),
-    verification: bool = Depends(verification),
 ):
     """
     Takes a query based on the 'PlotQuery' schema and retrieves data
@@ -26,10 +28,5 @@ async def get_plot_data(
 
     The 'PlotQuery' schema allows for modifier restriction and item specifications.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorize API access for {get_plot_data.__name__}",
-        )
 
     return await plotter_tool.plot(db, query=query)

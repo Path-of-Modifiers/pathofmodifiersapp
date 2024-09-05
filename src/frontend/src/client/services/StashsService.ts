@@ -14,14 +14,14 @@ export class StashsService {
      * Get stash by key and value for "stashId".
      *
      * Always returns one stash.
-     * @returns any Successful Response
+     * @returns Stash Successful Response
      * @throws ApiError
      */
     public static getStash({
         stashId,
     }: {
         stashId: string,
-    }): CancelablePromise<(Stash | Array<Stash>)> {
+    }): CancelablePromise<Stash> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/stash/{stashId}',

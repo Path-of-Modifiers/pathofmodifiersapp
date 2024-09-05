@@ -260,11 +260,10 @@ class User(Base):
         onupdate=func.now(),
     )
 
-
-class TemporaryHashedUserIP(Base):
-    __tablename__ = "temporary_hashed_user_ip"
-
-    hashedIp = _sql.Column(
-        _sql.String(80), primary_key=True, index=True, nullable=False
+    # Check contstraint where username can only hold letters and numbers with multiple languages
+    __table_args__ = (
+        _sql.CheckConstraint(
+            "username ~* '^[[:alnum:]]+$'",
+            name="check_username_letters_and_numbers",
+        ),
     )
-    createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)

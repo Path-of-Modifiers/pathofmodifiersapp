@@ -1,6 +1,7 @@
 import logging
 import os
 from collections.abc import Iterator
+from io import StringIO
 
 import pandas as pd
 import requests
@@ -13,7 +14,9 @@ from modifier_data_deposit.modifier_processing_modules import (
     check_for_updated_text_rolls,
 )
 from modifier_data_deposit.utils import df_to_JSON
-from pom_api_authentication import get_basic_authentication, get_super_authentication
+from pom_api_authentication import (
+    get_superuser_token_headers,
+)
 
 logging.basicConfig(
     filename="modifier_data_deposit.log",
@@ -29,12 +32,14 @@ class DataDepositer:
     def __init__(self) -> None:
         self.new_data_location = "modifier_data_deposit/modifier_data"
         if "localhost" not in settings.BASEURL:
-            self.url = f"https://{settings.BASEURL}"
+            self.base_url = f"https://{settings.BASEURL}"
         else:
-            self.url = "http://src-backend-1"
-        self.url += "/api/api_v1/modifier/"
+            self.base_url = "http://src-backend-1"
+        self.modifier_url = self.base_url + "/api/api_v1/modifier/"
         self.update_disabled = not CASCADING_UPDATE
-        self.pom_api_authentication = get_super_authentication()
+        self.pom_auth_headers = get_superuser_token_headers(
+            self.base_url + "/api/api_v1"
+        )
 
         self.modifier_types = [
             "implicit",
@@ -70,8 +75,16 @@ class DataDepositer:
 
     def _get_current_modifiers(self) -> pd.DataFrame:
         self.logger.info("Retrieving previously deposited data.")
-        headers = {"Authorization": get_basic_authentication()}
-        df = pd.read_json(self.url, dtype=str, storage_options=headers)
+
+        response = requests.get(self.modifier_url, headers=self.pom_auth_headers)
+
+        df = pd.DataFrame()
+        # Check if the request was successful
+        if response.status_code == 200:
+            # Load the JSON data into a pandas DataFrame
+            json_io = StringIO(response.content.decode("utf-8"))
+            df = pd.read_json(json_io, dtype=str)
+
         if df.empty:
             self.logger.info("Found no previously deposited data.")
             return None
@@ -99,7 +112,7 @@ class DataDepositer:
             by=["effect", "position"], ascending=False, inplace=True
         )
 
-        update_url = self.url + "?modifierId={}"
+        update_url = self.modifier_url + "?modifierId={}"
 
         rolls = None
         for (_, row_cur), (_, row_new) in zip(
@@ -154,15 +167,16 @@ class DataDepositer:
 
             if put_update:
                 self.logger.info("Pushed updated modifier to the database.")
+                headers = {
+                    "accept": "application/json",
+                    "Content-Type": "application/json",
+                }
+                headers.update(self.pom_auth_headers)
                 response = requests.put(
                     update_url.format(row_cur["modifierId"]),
                     json=data,
-                    headers={
-                        "accept": "application/json",
-                        "Content-Type": "application/json",
-                    },
+                    headers=headers,
                     # add HTTP Basic Auth
-                    auth=self.pom_api_authentication,
                 )
                 response.raise_for_status()
 
@@ -198,11 +212,12 @@ class DataDepositer:
             return None
         df_json = df_to_JSON(df, request_method="post")
         self.logger.info("Inserting data into database.")
+        headers = {"accept": "application/json", "Content-Type": "application/json"}
+        headers.update(self.pom_auth_headers)
         response = requests.post(
-            self.url,
+            self.modifier_url,
             json=df_json,
-            headers={"accept": "application/json", "Content-Type": "application/json"},
-            auth=self.pom_api_authentication,
+            headers=headers,
         )
         response.raise_for_status()
 

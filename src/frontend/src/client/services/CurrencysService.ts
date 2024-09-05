@@ -14,14 +14,14 @@ export class CurrencysService {
      * Get currency by key and value for "currencyId".
      *
      * Always returns one currency.
-     * @returns any Successful Response
+     * @returns Currency Successful Response
      * @throws ApiError
      */
     public static getCurrency({
         currencyId,
     }: {
         currencyId: number,
-    }): CancelablePromise<(Currency | Array<Currency>)> {
+    }): CancelablePromise<Currency> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/currency/{currencyId}',

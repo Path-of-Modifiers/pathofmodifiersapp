@@ -1,11 +1,11 @@
 import logging
+from io import StringIO
 from typing import Any
 
 import pandas as pd
 import requests
-from requests.auth import HTTPBasicAuth
 
-from pom_api_authentication import get_basic_authentication, get_super_authentication
+from pom_api_authentication import get_superuser_token_headers
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -60,22 +60,20 @@ def insert_data(
     *,
     url: str,
     table_name: str,
-    authentication: HTTPBasicAuth = get_super_authentication(),
+    headers: dict[str, str] = None,
     logger: logging.Logger = None,
 ) -> None:
     if df.empty:
         return None
     data = df_to_JSON(df, request_method="post")
-    response = requests.post(url + f"/{table_name}/", json=data, auth=authentication)
+    response = requests.post(url + f"/{table_name}/", json=data, headers=headers)
     if response.status_code == 422:
         logger.warning(
             f"Recieved a 422 response, indicating an unprocessable entity was submitted, while posting a {table_name} table.\nSending smaller batches, trying to locate specific error."
         )
         for data_chunk in _chunks(data, n=15):
             response = requests.post(
-                url + f"/{table_name}/",
-                json=data_chunk,
-                auth=authentication,
+                url + f"/{table_name}/", json=data_chunk, headers=headers
             )
             if response.status_code == 422:
                 logger.warning(
@@ -83,9 +81,7 @@ def insert_data(
                 )
                 for individual_data in data_chunk:
                     response = requests.post(
-                        url + f"/{table_name}/",
-                        json=individual_data,
-                        auth=authentication,
+                        url + f"/{table_name}/", json=individual_data, headers=headers
                     )
                     if response.status_code == 422:
                         logger.warning(
@@ -100,8 +96,21 @@ def insert_data(
 
 
 def retrieve_data(*, url: str, table_name: str) -> pd.DataFrame | None:
-    headers = {"Authorization": get_basic_authentication()}
-    df = pd.read_json(url + f"/{table_name}/", dtype=str, storage_options=headers)
-    if df.empty:
+    headers = get_superuser_token_headers(url)
+    response = requests.get(url + f"/{table_name}/", headers=headers)
+
+    df = pd.DataFrame()
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Load the JSON data into a pandas DataFrame
+        json_io = StringIO(response.content.decode("utf-8"))
+        df = pd.read_json(json_io, dtype=str)
+        if df.empty:
+            logger.info(
+                f"Found no previously deposited data in the {table_name} table."
+            )
+            return None
+
+        return df
+    else:
         return None
-    return df

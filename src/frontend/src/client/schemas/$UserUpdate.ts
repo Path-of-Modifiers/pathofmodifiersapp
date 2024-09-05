@@ -5,16 +5,19 @@
 export const $UserUpdate = {
     properties: {
         username: {
-            type: 'string',
-            isRequired: true,
-            maxLength: 255,
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+                pattern: '^[\\p{L}\\p{N}_]+$',
+            }, {
+                type: 'null',
+            }],
         },
         email: {
             type: 'any-of',
             contains: [{
                 type: 'string',
                 format: 'email',
-                maxLength: 255,
             }, {
                 type: 'null',
             }],
@@ -55,7 +58,6 @@ export const $UserUpdate = {
             type: 'any-of',
             contains: [{
                 type: 'string',
-                maxLength: 40,
                 minLength: 8,
             }, {
                 type: 'null',

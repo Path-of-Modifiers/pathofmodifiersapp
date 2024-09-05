@@ -93,6 +93,22 @@ To revert to the latest changes made by an alembic revision, run:
 alembic downgrade -1
 ```
 
+## Access the Redis cache server
+
+The redis server is used to handle ratelimit on the Path of Modifiers' API. A user's activity to endpoints are stored inside the Redis server to keep track of rates.
+
+### Prerequisite
+
+You need to have [Redis CLI](https://redis.io/docs/latest/develop/connect/cli/) installed on your computer.
+
+### Access Redis Cache server
+
+To access the Redis Cache server, run:
+
+```bash
+redis-cli -h $DOMAIN -p 6379 -a $REDIS_PASSWORD
+```
+
 ## Pre-commits and code linting
 
 We use a tool called [pre-commit](https://pre-commit.com/#intro) for code linting and formatting.

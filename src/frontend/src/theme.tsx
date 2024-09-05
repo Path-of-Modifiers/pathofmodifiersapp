@@ -94,7 +94,7 @@ const theme = extendTheme({
       ultraPlusBox: "80rem",
     },
     bgBoxes: {
-      tinyBox: "20rem",
+      tinyBox: "30rem",
       smallBox: "50rem",
       mediumBox: "70rem",
       mediumPlusBox: "79rem",

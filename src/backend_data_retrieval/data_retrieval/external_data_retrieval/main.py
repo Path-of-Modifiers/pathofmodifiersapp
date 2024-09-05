@@ -6,8 +6,10 @@ from concurrent.futures import (
     ThreadPoolExecutor,
     wait,
 )
+from io import StringIO
 
 import pandas as pd
+import requests
 
 from external_data_retrieval.config import settings
 from external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
@@ -27,7 +29,9 @@ from external_data_retrieval.utils import (
     ProgramRunTooLongException,
     ProgramTooSlowException,
 )
-from pom_api_authentication import get_basic_authentication, get_super_authentication
+from pom_api_authentication import (
+    get_superuser_token_headers,
+)
 
 logger = logging.getLogger("external_data_retrieval")
 logging.basicConfig(
@@ -44,10 +48,11 @@ class ContiniousDataRetrieval:
     url = "https://api.pathofexile.com/public-stash-tabs"
 
     if "localhost" not in settings.BASEURL:
-        base_pom_api_url = f"https://{settings.BASEURL}"
+        base_pom_api_url = f"https://{settings.BASEURL}/api/api_v1"
     else:
-        base_pom_api_url = "http://src-backend-1"
-    modifier_url = base_pom_api_url + "/api/api_v1/modifier/"
+        base_pom_api_url = "http://src-backend-1/api/api_v1"
+    modifier_url = base_pom_api_url + "/modifier/"
+    pom_auth_headers = get_superuser_token_headers(base_pom_api_url)
 
     def __init__(
         self,
@@ -66,7 +71,6 @@ class ContiniousDataRetrieval:
             n_wanted_items=items_per_batch,
             n_unique_wanted_items=10,
         )
-        self.pom_authentication = get_super_authentication()
 
         self.poe_ninja_currency_api_handler = PoeNinjaCurrencyAPIHandler(
             url=f"https://poe.ninja/api/data/currencyoverview?league={self.current_league}&type=Currency"
@@ -78,10 +82,14 @@ class ContiniousDataRetrieval:
         self.logger = logger
 
     def _get_modifiers(self) -> dict[str, pd.DataFrame]:
-        headers = {"Authorization": get_basic_authentication()}
-        modifier_df = pd.read_json(
-            self.modifier_url, dtype=str, storage_options=headers
-        )
+        response = requests.get(self.modifier_url, headers=self.pom_auth_headers)
+        # Check if the request was successful
+        modifier_df = pd.DataFrame()
+        if response.status_code == 200:
+            # Load the JSON data into a pandas DataFrame
+            json_io = StringIO(response.content.decode("utf-8"))
+            modifier_df = pd.read_json(json_io, dtype=str)
+
         modifier_types = [
             "implicit",
             "explicit",
