@@ -183,6 +183,7 @@ def upgrade() -> None:
         sa.Column("itemId", sa.BigInteger(), nullable=False),
         sa.Column("modifierId", sa.BigInteger(), nullable=False),
         sa.Column("position", sa.SmallInteger(), nullable=False),
+        sa.Column("textRollId", sa.SmallInteger(), nullable=False),
         sa.Column("roll", sa.Float(precision=24), nullable=True),
         sa.Column("createdAt", sa.DateTime(), nullable=False),
         sa.Column("updatedAt", sa.DateTime(), nullable=True),
@@ -195,7 +196,7 @@ def upgrade() -> None:
             onupdate="CASCADE",
             ondelete="CASCADE",
         ),
-        sa.PrimaryKeyConstraint("itemId", "modifierId"),
+        sa.PrimaryKeyConstraint("itemId", "modifierId", "textRollId"),
     )
     op.create_index(
         op.f("ix_item_modifier_itemId"), "item_modifier", ["itemId"], unique=False
@@ -208,6 +209,12 @@ def upgrade() -> None:
     )
     op.create_index(
         op.f("ix_item_modifier_position"), "item_modifier", ["position"], unique=False
+    )
+    op.create_index(
+        op.f("ix_item_modifier_textRollId"),
+        "item_modifier",
+        ["textRollId"],
+        unique=False,
     )
     # ### end Alembic commands ###
 
@@ -223,6 +230,7 @@ def downgrade() -> None:
     op.drop_table("item")
     op.drop_index(op.f("ix_stash_stashId"), table_name="stash")
     op.drop_table("stash")
+    op.drop_index(op.f("ix_item_modifier_textRollId"), table_name="modifier")
     op.drop_index(op.f("ix_modifier_position"), table_name="modifier")
     op.drop_index(op.f("ix_modifier_modifierId"), table_name="modifier")
     op.drop_table("modifier")
