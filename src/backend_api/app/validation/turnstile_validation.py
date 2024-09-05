@@ -21,19 +21,22 @@ class ValidateTurnstileRequest:
             "remoteip": request_data.ip,
         }
 
-        try:
-            result = post(
-                self.turnstile_url,
-                json=body,
-                headers={"Content-Type": "application/json"},
-            )
-        except Exception as e:
-            raise HTTPException(
-                detail=get_failed_send_challenge_request_error_msg(e).message,
-                status_code=500,  # Something went wrong on turnstile side
-            )
+        result = post(
+            self.turnstile_url,
+            json=body,
+            headers={"Content-Type": "application/json"},
+        )
 
         outcome = result.json()
+
+        if result.status_code != 200:
+            raise HTTPException(
+                detail=get_failed_send_challenge_request_error_msg(
+                    outcome["error-codes"]
+                ).message,
+                status_code=result.status_code,
+            )
+
         if outcome["success"]:
             return self.validate(outcome)
         else:
@@ -41,5 +44,5 @@ class ValidateTurnstileRequest:
                 detail=get_failed_send_challenge_request_error_msg(
                     outcome["error-codes"]
                 ).message,
-                status_code=400,
+                status_code=result.status_code,
             )
