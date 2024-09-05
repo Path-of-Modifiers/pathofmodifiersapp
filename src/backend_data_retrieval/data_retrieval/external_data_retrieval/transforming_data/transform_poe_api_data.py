@@ -449,7 +449,7 @@ class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
         """
         item_modifer_df.drop(
             item_modifer_df.columns.difference(
-                ["itemId", "modifierId", "position", "roll"]
+                ["itemId", "modifierId", "position", "textRollId", "roll"]
             ),
             axis=1,
             inplace=True,

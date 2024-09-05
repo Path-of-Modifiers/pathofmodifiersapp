@@ -189,6 +189,7 @@ class ItemModifier(Base):
     )
     modifierId = _sql.Column(_sql.BigInteger(), nullable=False, index=True)
     position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
+    textRollId = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
     roll = _sql.Column(_sql.Float(24))
     createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
     updatedAt = _sql.Column(
@@ -197,7 +198,7 @@ class ItemModifier(Base):
     )
 
     __table_args__ = (
-        _sql.PrimaryKeyConstraint(itemId, modifierId),
+        _sql.PrimaryKeyConstraint(itemId, modifierId, textRollId),
         _sql.ForeignKeyConstraint(
             [modifierId, position],
             ["modifier.modifierId", "modifier.position"],
