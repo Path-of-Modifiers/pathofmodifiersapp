@@ -30,7 +30,7 @@ class ValidateTurnstileRequest:
         except Exception as e:
             raise HTTPException(
                 detail=get_failed_send_challenge_request_error_msg(e).message,
-                status_code=406,
+                status_code=500,  # Something went wrong on turnstile side
             )
 
         outcome = result.json()
@@ -38,10 +38,8 @@ class ValidateTurnstileRequest:
             return self.validate(outcome)
         else:
             raise HTTPException(
-                detail={
-                    get_failed_send_challenge_request_error_msg(
-                        outcome["error-codes"]
-                    ).message
-                },
+                detail=get_failed_send_challenge_request_error_msg(
+                    outcome["error-codes"]
+                ).message,
                 status_code=400,
             )
