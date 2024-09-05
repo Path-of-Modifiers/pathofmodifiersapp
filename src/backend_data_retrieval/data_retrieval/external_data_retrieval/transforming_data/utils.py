@@ -189,8 +189,9 @@ def get_rolls(
     merged_static_df["textRollId"] = -1
 
     # Uses the text roll integer if its a text roll, other wise -2 if numeric roll
-    merged_dynamic_df["textRollId"] = merged_dynamic_df["textRolls"].where(
-        merged_dynamic_df["textRolls"] != "None", -2
+    has_text_roll_mask = merged_dynamic_df["textRolls"] != "None"
+    merged_dynamic_df["textRollId"] = merged_dynamic_df["roll"].where(
+        has_text_roll_mask, -2
     )
 
     processed_df = pd.concat(
