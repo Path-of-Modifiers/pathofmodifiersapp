@@ -97,7 +97,11 @@ class TransformPoeNinjaCurrencyAPIData:
         currency_df = self._transform_currency_table(currency_df)
         currency_df = self._clean_currency_table(currency_df)
         insert_data(
-            currency_df, url=self.url, table_name="currency", logger=self.logger
+            currency_df,
+            url=self.url,
+            table_name="currency",
+            logger=self.logger,
+            headers=self.pom_api_headers,
         )
         currency_id = self._get_latest_currency_id_series(currency_df)
 

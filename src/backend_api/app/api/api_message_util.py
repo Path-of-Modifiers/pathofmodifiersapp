@@ -1,4 +1,9 @@
+from pydantic import EmailStr
+
 from app.core.schemas.message import Message
+from app.core.schemas.user import (
+    UsernameStr,
+)
 
 
 def get_delete_return_msg(
@@ -182,7 +187,7 @@ def get_sorting_method_not_supported_msg(
 
 
 def get_no_obj_matching_query_msg(
-    filter: dict[str, str], model_table_name: str
+    filter: dict[str, str] | None, model_table_name: str
 ) -> Message:
     """Returns a message indicating no object matching the query was found.
 
@@ -193,6 +198,10 @@ def get_no_obj_matching_query_msg(
     Returns:
         Message: Message indicating no object matching the query was found.
     """
+    if not filter:
+        return Message(
+            message=f"No object matching the query in the route {model_table_name} was found."
+        )
 
     return Message(
         message=f"No object matching the query ({', '.join([key + ': ' + str(item) for key, item in filter.items()])}) in the route {model_table_name} was found."
@@ -227,3 +236,42 @@ def get_invalid_token_credentials_msg() -> Message:
     """
 
     return Message(message="Could not validate credentials. Invalid token")
+
+
+def get_password_rec_email_sent_success() -> Message:
+    """Returns a message indicating the password recovery email was sent successfully.
+
+    Returns:
+        Message: Message indicating the password recovery email was sent successfully.
+    """
+
+    return Message(message="Password recovery email sent successfully")
+
+
+def get_failed_send_challenge_request_error_msg(e: Exception | list[str]) -> Message:
+    """Returns a message indicating the challenge request failed to send.
+
+    Args:
+        e (Exception): Exception raised when sending the challenge request.
+
+    Returns:
+        Message: Message indicating the challenge request failed to send.
+    """
+
+    return Message(
+        message=f"""Failed to send challenge request to cloudflare turnstile endpoint with error: {e}"""
+    )
+
+
+def get_user_email_confirmation_sent(username: UsernameStr, email: EmailStr) -> Message:
+    return Message(
+        message=f"User creation for {username} and {email} requested. Please check your email for confirmation."
+    )
+
+
+def get_user_successfully_registered_msg(
+    username: UsernameStr, email: EmailStr
+) -> Message:
+    return Message(
+        message=f"User {username} successfully registered with email {email}"
+    )

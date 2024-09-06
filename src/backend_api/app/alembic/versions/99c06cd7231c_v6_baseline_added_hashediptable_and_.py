@@ -1,4 +1,4 @@
-"""v6 Baseline Added HashedIpTable and eventlistener for deleting the rows every 24 hours
+"""v6 Baseline Added Eventlistener for deleting the rows every 24 hours
 
 Revision ID: 99c06cd7231c
 Revises: 
@@ -17,30 +17,6 @@ revision: str = "99c06cd7231c"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
-
-# Placed manually because alembic does not support addin    g triggers
-# From https://stackoverflow.com/questions/26046816/is-there-a-way-to-set-an-expiry-time-after-which-a-data-entry-is-automaticall
-trigger = """
-CREATE FUNCTION temporary_hashed_user_ip_delete_old_rows() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-  DELETE FROM temporary_hashed_user_ip 
-  WHERE temporary_hashed_user_ip."createdAt" < NOW() - INTERVAL '24 hours';
-  RETURN NEW;
-END;
-
-$$;
-
-CREATE TRIGGER temporary_hashed_user_ip_delete_old_rows_trigger
-    AFTER INSERT ON temporary_hashed_user_ip
-    EXECUTE PROCEDURE temporary_hashed_user_ip_delete_old_rows();
-"""
-
-drop_trigger = """
-DROP TRIGGER temporary_hashed_user_ip_delete_old_rows_trigger ON temporary_hashed_user_ip;
-DROP FUNCTION temporary_hashed_user_ip_delete_old_rows();
-"""
 
 
 def upgrade() -> None:
@@ -136,18 +112,6 @@ def upgrade() -> None:
         op.f("ix_modifier_position"), "modifier", ["position"], unique=False
     )
     op.create_table(
-        "temporary_hashed_user_ip",
-        sa.Column("hashedIp", sa.String(length=80), nullable=False),
-        sa.Column("createdAt", sa.DateTime(), nullable=False),
-        sa.PrimaryKeyConstraint("hashedIp"),
-    )
-    op.create_index(
-        op.f("ix_temporary_hashed_user_ip_hashedIp"),
-        "temporary_hashed_user_ip",
-        ["hashedIp"],
-        unique=False,
-    )
-    op.create_table(
         "stash",
         sa.Column("stashId", sa.String(), nullable=False),
         sa.Column("accountName", sa.String(), nullable=False),
@@ -219,6 +183,7 @@ def upgrade() -> None:
         sa.Column("itemId", sa.BigInteger(), nullable=False),
         sa.Column("modifierId", sa.BigInteger(), nullable=False),
         sa.Column("position", sa.SmallInteger(), nullable=False),
+        sa.Column("textRollId", sa.SmallInteger(), nullable=False),
         sa.Column("roll", sa.Float(precision=24), nullable=True),
         sa.Column("createdAt", sa.DateTime(), nullable=False),
         sa.Column("updatedAt", sa.DateTime(), nullable=True),
@@ -231,7 +196,7 @@ def upgrade() -> None:
             onupdate="CASCADE",
             ondelete="CASCADE",
         ),
-        sa.PrimaryKeyConstraint("itemId", "modifierId"),
+        sa.PrimaryKeyConstraint("itemId", "modifierId", "textRollId"),
     )
     op.create_index(
         op.f("ix_item_modifier_itemId"), "item_modifier", ["itemId"], unique=False
@@ -245,7 +210,12 @@ def upgrade() -> None:
     op.create_index(
         op.f("ix_item_modifier_position"), "item_modifier", ["position"], unique=False
     )
-    op.execute(trigger)
+    op.create_index(
+        op.f("ix_item_modifier_textRollId"),
+        "item_modifier",
+        ["textRollId"],
+        unique=False,
+    )
     # ### end Alembic commands ###
 
 
@@ -260,11 +230,7 @@ def downgrade() -> None:
     op.drop_table("item")
     op.drop_index(op.f("ix_stash_stashId"), table_name="stash")
     op.drop_table("stash")
-    op.drop_index(
-        op.f("ix_temporary_hashed_user_ip_hashedIp"),
-        table_name="temporary_hashed_user_ip",
-    )
-    op.drop_table("temporary_hashed_user_ip")
+    op.drop_index(op.f("ix_item_modifier_textRollId"), table_name="modifier")
     op.drop_index(op.f("ix_modifier_position"), table_name="modifier")
     op.drop_index(op.f("ix_modifier_modifierId"), table_name="modifier")
     op.drop_table("modifier")
@@ -275,5 +241,4 @@ def downgrade() -> None:
     op.drop_table("currency")
     op.drop_index(op.f("ix_account_accountName"), table_name="account")
     op.drop_table("account")
-    op.execute(drop_trigger)
     # ### end Alembic commands ###

@@ -55,7 +55,9 @@ function RecoverPassword() {
 
   const recoverPassword = async (data: FormData) => {
     await LoginsService.recoverPassword({
-      email: data.email,
+      requestBody: {
+        email: data.email,
+      },
     });
   };
 
@@ -122,7 +124,13 @@ function RecoverPassword() {
           Continue
         </Button>
         <Text>
-          <Link as={RouterLink} to="/login" color="blue.500">
+          <Link
+            as={RouterLink}
+            to="/login"
+            params={{ from: "recover-password" }}
+            from="recover-password"
+            color="blue.500"
+          >
             Back to Log In Page
           </Link>
         </Text>
