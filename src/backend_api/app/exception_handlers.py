@@ -7,11 +7,13 @@ from fastapi.exception_handlers import (
 )
 from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.responses import JSONResponse, PlainTextResponse, Response
+from slowapi.errors import RateLimitExceeded
 
 from app.logger import logger
 
 """
 Taken from https://medium.com/@roy-pstr/fastapi-server-errors-and-logs-take-back-control-696405437983
+
 """
 
 
@@ -66,3 +68,23 @@ async def unhandled_exception_handler(
         f'{host}:{port} - "{request.method} {url}" 500 Internal Server Error <{exception_name}: {exception_value}>'
     )
     return PlainTextResponse(str(exc), status_code=500)
+
+
+async def rate_limit_exceeded_handler(
+    request: Request,  # noqa: ARG001
+    exc: RateLimitExceeded,
+):
+    retry_after_seconds = exc.limit.limit.get_expiry()
+    max_amount_of_tries_per_time_period = exc.detail
+
+    response_body = {
+        "detail": "POM API : Rate limit exceeded. Please try again later.",
+        "max_amount_of_tries_per_time_period": max_amount_of_tries_per_time_period,
+        "retry_after_seconds": retry_after_seconds,
+    }
+
+    return JSONResponse(
+        status_code=429,
+        content=response_body,
+        headers={"Retry-After-Seconds": str(retry_after_seconds)},
+    )
