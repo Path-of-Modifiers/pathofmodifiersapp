@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 
     TURNSTILE_SECRET_KEY: str
 
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 1  # 1 day
+    ACCESS_SESSION_EXPIRE_SECONDS: int = 60 * 60 * 24 * 1  # 1 day
     DOMAIN: str
     ENVIRONMENT: Literal["local", "staging", "production"] = "production"
 
