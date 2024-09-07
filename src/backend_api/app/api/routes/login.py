@@ -1,5 +1,4 @@
 # From FastAPI Fullstack Template https://github.com/fastapi/full-stack-fastapi-template/blob/master/backend/app/api/routes/login.py
-from datetime import timedelta
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
@@ -19,12 +18,11 @@ from app.api.api_message_util import (
     get_user_psw_change_msg,
 )
 from app.api.deps import CurrentUser, get_current_active_superuser, get_db
-from app.core import security
 from app.core.config import settings
 from app.core.models.models import User
 from app.core.schemas import Message, NewPassword, Token, UserPublic
 from app.core.schemas.token import RecoverPassword
-from app.core.security import get_password_hash, verify_password
+from app.core.security import get_password_hash, user_cache_session, verify_password
 from app.crud import CRUD_user
 from app.limiter import apply_user_rate_limits
 from app.utils.user import (
@@ -46,14 +44,14 @@ login_prefix = "login"
     settings.LOGIN_RATE_LIMIT_HOUR,
     settings.LOGIN_RATE_LIMIT_DAY,
 )
-def login_access_token(
+def login_access_session(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     session: Session = Depends(get_db),
 ) -> Token:
     """
-    OAuth2 compatible token login, get an access token for future requests
+    OAuth2 compatible session login.
     """
     user = CRUD_user.authenticate(
         db=session, email_or_username=form_data.username, password=form_data.password
@@ -67,11 +65,14 @@ def login_access_token(
             status_code=400,
             detail=get_not_active_or_auth_user_error_msg(user.username).message,
         )
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    return Token(
-        access_token=security.create_access_token(
-            user.userId, expires_delta=access_token_expires
+    access_token = str(
+        user_cache_session.create_user_cache_instance(
+            user=user,
+            expire_seconds=settings.ACCESS_SESSION_EXPIRE_SECONDS,
         )
+    )
+    return Token(
+        access_token=access_token,
     )
 
 
