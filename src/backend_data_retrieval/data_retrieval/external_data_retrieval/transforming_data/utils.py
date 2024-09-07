@@ -184,15 +184,16 @@ def get_rolls(
         convert_text_roll_to_index, axis=1
     )  # The `roll` column now contains a number
 
-    # ---- Finishing touches ----
+    # ---- Adding order ID ----
     # Lets you easily identify static modifiers in the item modifier table
-    merged_static_df["textRollId"] = -1
+    merged_static_df["orderId"] = -1
 
-    # Uses the text roll integer if its a text roll, other wise -2 if numeric roll
-    has_text_roll_mask = merged_dynamic_df["textRolls"] != "None"
-    merged_dynamic_df["textRollId"] = merged_dynamic_df["roll"].where(
-        has_text_roll_mask, -2
-    )
+    # Uses cumcount, which is similiar to range(n_duplicate_mods)
+    merged_dynamic_df["orderId"] = merged_dynamic_df.groupby(
+        ["itemId", "modifierId"]
+    ).cumcount()
+
+    # ---- Finishing touches ----
 
     processed_df = pd.concat(
         (merged_dynamic_df, merged_static_df), axis=0, ignore_index=True
