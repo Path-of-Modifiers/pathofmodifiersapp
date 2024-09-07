@@ -78,9 +78,13 @@ class UpdatePassword(BaseModel):
     new_password: str = Field(min_length=8)
 
 
+class UserInCache(_BaseUser):
+    userId: uuid.UUID
+
+
 # Properties to return via API, id is always required
 class UserPublic(_BaseUser):
-    userId: uuid.UUID
+    pass
 
 
 # Properties on multiple users
