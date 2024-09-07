@@ -72,3 +72,7 @@ class ProgramTooSlowException(Exception):
 
 class ProgramRunTooLongException(Exception):
     pass
+
+
+class WrongLeagueSetException(Exception):
+    pass
