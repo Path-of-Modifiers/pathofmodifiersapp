@@ -1,22 +1,18 @@
 from typing import Annotated
 
-import jwt
-from fastapi import Depends, HTTPException, Request, status
+from fastapi import Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordBearer
-from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 import app.core.models.database as _database
 from app.api.api_message_util import (
-    get_invalid_token_credentials_msg,
     get_no_obj_matching_query_msg,
     get_not_active_or_auth_user_error_msg,
     get_not_superuser_auth_msg,
 )
-from app.core import security
 from app.core.config import settings
 from app.core.models.models import User
-from app.core.schemas.token import TokenPayload
+from app.core.security import user_cache_session
 from app.exceptions.exceptions import InvalidHeaderProvidedError, InvalidTokenError
 
 reusable_oauth2 = OAuth2PasswordBearer(
@@ -39,22 +35,18 @@ def get_current_user(
     token: TokenDep,
     session: Session = Depends(get_db),
 ) -> User:
-    try:
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
+    user_sessions = user_cache_session.get_user_cache_instances_by_token(token)
+
+    if not user_sessions:
+        raise InvalidTokenError(
+            function_name=get_current_user.__name__,
+            token=token,
         )
-        token_data = TokenPayload(**payload)
-    except (InvalidTokenError, ValidationError):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail=get_invalid_token_credentials_msg().message,
-        )
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail=get_invalid_token_credentials_msg().message,
-        )
-    user = session.get(User, token_data.sub)
+
+    # Just using the first session. May need to change in the future
+    token_user_data = user_sessions[0]
+
+    user = session.get(User, token_user_data.userId)
     if not user:
         raise HTTPException(
             status_code=404,
