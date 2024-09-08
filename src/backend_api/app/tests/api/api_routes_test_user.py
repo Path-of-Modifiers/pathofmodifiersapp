@@ -20,9 +20,8 @@ from app.api.api_message_util import (
     get_user_psw_change_msg,
     get_user_successfully_registered_msg,
 )
-from app.api.deps import get_current_user
 from app.api.routes import user_prefix
-from app.core.cache import user_cache_register_user
+from app.core.cache import user_cache_register_user, user_cache_session
 from app.core.config import settings
 from app.core.models.models import User
 from app.core.schemas import UserCreate
@@ -819,6 +818,6 @@ class TestUserRoutes(BaseTest):
             assert (
                 r_get_user_me_ok.json()["detail"]
                 == InvalidTokenError(
-                    function_name=get_current_user.__name__, token=token
+                    function_name=user_cache_session.verify_token.__name__, token=token
                 ).detail
             )
