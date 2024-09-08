@@ -1,13 +1,10 @@
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
 import emails  # type: ignore
-import jwt
 from jinja2 import Template
-from jwt.exceptions import InvalidTokenError
 from pydantic import EmailStr
 
 from app.core.config import settings
@@ -76,7 +73,7 @@ def generate_reset_password_email(
             "project_name": settings.PROJECT_NAME,
             "username": email,
             "email": email_to,
-            "valid_hours": settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS,
+            "valid_hours": settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS // 3600,
             "link": link,
         },
     )
@@ -95,7 +92,7 @@ def generate_user_registration_email(
             "project_name": settings.PROJECT_NAME,
             "username": username,
             "email": email_to,
-            "valid_hours": settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS,
+            "valid_hours": settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS // 3600,
             "link": link,
         },
     )
@@ -115,24 +112,3 @@ def generate_new_account_email(email_to: EmailStr, username: str) -> EmailData:
         },
     )
     return EmailData(html_content=html_content, subject=subject)
-
-
-def generate_user_confirmation_token(email: EmailStr) -> str:
-    delta = timedelta(hours=settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
-    now = datetime.now(timezone.utc)
-    expires = now + delta
-    exp = expires.timestamp()
-    encoded_jwt = jwt.encode(
-        {"exp": exp, "nbf": now, "sub": email},
-        settings.SECRET_KEY,
-        algorithm="HS256",
-    )
-    return encoded_jwt
-
-
-def verify_token(token: str) -> str | None:
-    try:
-        decoded_token = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-        return str(decoded_token["sub"])
-    except InvalidTokenError:
-        return None
