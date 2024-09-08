@@ -10,9 +10,9 @@ from app.api.api_message_util import (
     get_not_active_or_auth_user_error_msg,
     get_not_superuser_auth_msg,
 )
+from app.core.cache import user_cache_session
 from app.core.config import settings
 from app.core.models.models import User
-from app.core.security import user_cache_session
 from app.exceptions.exceptions import InvalidHeaderProvidedError, InvalidTokenError
 
 reusable_oauth2 = OAuth2PasswordBearer(
