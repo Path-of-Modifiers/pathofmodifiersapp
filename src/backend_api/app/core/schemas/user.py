@@ -84,7 +84,7 @@ class UserInCache(_BaseUser):
 
 # Properties to return via API, id is always required
 class UserPublic(_BaseUser):
-    pass
+    userId: uuid.UUID
 
 
 # Properties on multiple users
