@@ -5,17 +5,17 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from app.api.api_message_util import (
-    get_invalid_token_credentials_msg,
     get_new_psw_not_same_msg,
     get_password_rec_email_sent_success,
     get_user_psw_change_msg,
 )
 from app.api.routes.login import login_prefix
+from app.core.cache import user_cache_password_reset
 from app.core.config import settings
 from app.core.security import verify_password
 from app.crud import CRUD_user
+from app.exceptions.exceptions import InvalidTokenError
 from app.tests.base_test import BaseTest
-from app.utils.user import generate_user_confirmation_token
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
@@ -125,7 +125,9 @@ class TestLoginRoutes(BaseTest):
         assert verify_password(settings.FIRST_SUPERUSER_PASSWORD, user.hashedPassword)
 
         new_password = "the_new_password"
-        token = generate_user_confirmation_token(email=settings.FIRST_SUPERUSER)
+        token = user_cache_password_reset.generate_user_confirmation_token(
+            user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
+        )
         new_psw_data = {"new_password": new_password, "token": token}
         r = client.post(
             f"{settings.API_V1_STR}/{login_prefix}/reset-password/",
@@ -144,7 +146,9 @@ class TestLoginRoutes(BaseTest):
         assert verify_password(new_password, user.hashedPassword)
 
         # Reset password back to original
-        reset_token = generate_user_confirmation_token(email=settings.FIRST_SUPERUSER)
+        reset_token = user_cache_password_reset.generate_user_confirmation_token(
+            user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
+        )
         old_password = settings.FIRST_SUPERUSER_PASSWORD
         old_psw_data = {"new_password": old_password, "token": reset_token}
         r = client.post(
@@ -168,7 +172,10 @@ class TestLoginRoutes(BaseTest):
         self, client: TestClient, superuser_token_headers: dict[str, str], db: Session
     ) -> None:
         new_password = settings.FIRST_SUPERUSER_PASSWORD
-        token = generate_user_confirmation_token(email=settings.FIRST_SUPERUSER)
+        user = CRUD_user.get(db, filter={"email": settings.FIRST_SUPERUSER})
+        token = user_cache_password_reset.generate_user_confirmation_token(
+            user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
+        )
         data = {"new_password": new_password, "token": token}
         r = client.post(
             f"{settings.API_V1_STR}/{login_prefix}/reset-password/",
@@ -186,7 +193,8 @@ class TestLoginRoutes(BaseTest):
     def test_reset_password_invalid_token(
         self, client: TestClient, superuser_token_headers: dict[str, str], db: Session
     ) -> None:
-        data = {"new_password": "the_new_password", "token": "invalid"}
+        invalid_token = "invalid"
+        data = {"new_password": "the_new_password", "token": invalid_token}
         r = client.post(
             f"{settings.API_V1_STR}/{login_prefix}/reset-password/",
             headers=superuser_token_headers,
@@ -194,5 +202,11 @@ class TestLoginRoutes(BaseTest):
         )
         response = r.json()
         assert "detail" in response
-        assert r.status_code == 400
-        assert response["detail"] == get_invalid_token_credentials_msg().message
+        assert r.status_code == 403
+        assert (
+            response["detail"]
+            == InvalidTokenError(
+                function_name=user_cache_password_reset.verify_token.__name__,
+                token=invalid_token,
+            ).detail
+        )
