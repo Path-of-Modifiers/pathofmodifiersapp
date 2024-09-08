@@ -13,7 +13,7 @@ from app.api.api_message_util import (
 from app.core.cache import user_cache_session
 from app.core.config import settings
 from app.core.models.models import User
-from app.exceptions.exceptions import InvalidHeaderProvidedError, InvalidTokenError
+from app.exceptions.exceptions import InvalidHeaderProvidedError
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/login/access-token"
@@ -35,18 +35,9 @@ def get_current_user(
     token: TokenDep,
     session: Session = Depends(get_db),
 ) -> User:
-    user_sessions = user_cache_session.get_user_cache_instances_by_token(token)
+    user_cached = user_cache_session.verify_token(token)
 
-    if not user_sessions:
-        raise InvalidTokenError(
-            function_name=get_current_user.__name__,
-            token=token,
-        )
-
-    # Just using the first session. May need to change in the future
-    token_user_data = user_sessions[0]
-
-    user = session.get(User, token_user_data.userId)
+    user = session.get(User, user_cached.userId)
     if not user:
         raise HTTPException(
             status_code=404,

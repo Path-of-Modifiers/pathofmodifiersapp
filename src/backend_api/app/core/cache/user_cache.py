@@ -1,7 +1,6 @@
 from enum import StrEnum
 from uuid import UUID, uuid4
 
-from passlib.context import CryptContext
 from pydantic import TypeAdapter
 
 from app.core.cache.cache import cache
@@ -9,11 +8,9 @@ from app.core.models.models import User as model_User
 from app.core.schemas.user import UserInCache
 from app.exceptions.exceptions import InvalidTokenError
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 
 class UserCacheTokenType(StrEnum):
-    SESSION = "session_token"
+    SESSION = "instance_token"
     PASSWORD_RESET = "password_reset_token"
     REGISTER_USER = "register_user_token"
 
@@ -22,23 +19,23 @@ user_cache_adapter = TypeAdapter(UserInCache)
 
 
 class UserCache:
-    def __init__(self, role: UserCacheTokenType) -> None:
-        self.role = role
+    def __init__(self, user_token_type: UserCacheTokenType) -> None:
+        self.user_token_type = user_token_type
 
     def _scan_user_cache_instances(self, pattern: str) -> list[UserInCache]:
-        # Initialize a list to hold the session values
+        # Initialize a list to hold the instance values
         user_cache_instances = []
 
         # Using SCAN to iterate through the keys
         cursor = "0"
         while cursor != 0:
             cursor, keys = cache.scan(cursor=cursor, match=pattern)
-            # Retrieve all session values for the keys found
+            # Retrieve all instance values for the keys found
             if keys:
-                sessions = cache.mget(keys)
-                for session in sessions:
+                instances = cache.mget(keys)
+                for instance in instances:
                     user_cache_instances.append(
-                        user_cache_adapter.validate_json(session)
+                        user_cache_adapter.validate_json(instance)
                     )
 
         return user_cache_instances
@@ -63,7 +60,7 @@ class UserCache:
         access_token = uuid4()
 
         cache.set(
-            name=f"user:{user.userId}:{self.role}:{access_token}",
+            name=f"user:{user.userId}:{self.user_token_type}:{access_token}",
             value=user_public,
             ex=expire_seconds,
         )
@@ -76,8 +73,8 @@ class UserCache:
         """
         Gets all user cache instances for the given token.
         """
-        # Pattern to match all sessions for the given token
-        pattern = f"user:*:{self.role}:{token}"
+        # Pattern to match all instances for the given token
+        pattern = f"user:*:{self.user_token_type}:{token}"
 
         user_cache_instances = self._scan_user_cache_instances(pattern)
 
@@ -90,11 +87,11 @@ class UserCache:
         self, user_id: UUID
     ) -> list[UserInCache] | None:
         """
-        Gets all user cache instances for the given user id and role.
+        Gets all user cache instances for the given user id and user_token_type.
         """
         user_id_str = str(user_id)
-        # Pattern to match all sessions for the given userId
-        pattern = f"user:{user_id_str}:{self.role}:*"
+        # Pattern to match all instances for the given userId
+        pattern = f"user:{user_id_str}:{self.user_token_type}:*"
 
         user_cache_instances = self._scan_user_cache_instances(pattern)
 
@@ -119,7 +116,7 @@ class UserCache:
         """
         Verify token and return the cashed user.
         """
-        # Just using the first session. May need to change in the future
+        # Just using the first instance. May need to change in the future
         user_cache_instances = self.get_user_cache_instances_by_token(token)
 
         if not user_cache_instances:
