@@ -29,7 +29,7 @@ def db() -> Generator:
 
 
 @pytest.fixture(scope="module")
-def get_cache() -> Redis:
+def get_cache() -> Generator[Redis, None, None]:
     yield cache
 
 
