@@ -75,7 +75,6 @@ function Index() {
           bg="ui.secondary"
           justifyContent="center"
           maxWidth={"100%"}
-          width="bgBoxes.defaultBox"
           flexWrap="wrap"
           minHeight="100vh"
           p={3}
@@ -121,6 +120,7 @@ function Index() {
               height={"bgBoxes.smallBox"}
               maxW="98vw"
               mb="10rem"
+              justifyItems={"center"}
             />
             <Footer />
           </VStack>
