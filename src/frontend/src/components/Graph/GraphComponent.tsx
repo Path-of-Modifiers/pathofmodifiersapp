@@ -14,16 +14,7 @@ import { useGraphInputStore } from "../../store/GraphInputStore";
 import { usePlotSettingsStore } from "../../store/PlotSettingsStore";
 import PlotCustomizationButtons from "../Common/PlotCustomizationButtons";
 import { capitalizeFirstLetter } from "../../hooks/utils";
-
-export interface CurrencyVisuals {
-  stroke: string;
-  name: string;
-  yAxisId: number;
-  datakey: string;
-  buttonColor: string;
-  buttonBorderColor: string;
-  buttonBackground: string;
-}
+import { CurrencyVisuals } from "../../schemas/CurrencyVisuals";
 
 /**
  * Uses the globally stored plotQuery state to send a request,
@@ -37,7 +28,7 @@ function GraphComponent(props: BoxProps) {
   const { result, mostCommonCurrencyUsed, fetchStatus, isError } =
     useGetPlotData(plotQuery);
 
-  const render = result && mostCommonCurrencyUsed && !isError;
+  const renderGraph = result && mostCommonCurrencyUsed && !isError;
 
   const showChaos = usePlotSettingsStore((state) => state.showChaos);
   const showSecondary = usePlotSettingsStore((state) => state.showSecondary);
@@ -54,7 +45,7 @@ function GraphComponent(props: BoxProps) {
 
   const secondaryVisuals: CurrencyVisuals = {
     stroke: "#ffffff",
-    name: render
+    name: renderGraph
       ? `${capitalizeFirstLetter(mostCommonCurrencyUsed)} value`
       : "",
     yAxisId: 1,
@@ -73,7 +64,7 @@ function GraphComponent(props: BoxProps) {
   }
 
   return (
-    render && (
+    renderGraph && (
       <Box {...props}>
         <PlotCustomizationButtons
           flexProps={{ justifyContent: "center" }}
