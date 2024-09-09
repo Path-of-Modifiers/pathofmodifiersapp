@@ -255,9 +255,9 @@ class PoeAPIDataTransformer:
                 influence_dict = {}
                 for influence_column in influence_columns:
                     if row[influence_column]:
-                        influence_dict[influence_column.replace("influences.", "")] = (
-                            True
-                        )
+                        influence_dict[
+                            influence_column.replace("influences.", "")
+                        ] = True
                 return influence_dict
 
         influence_columns = [
@@ -449,7 +449,7 @@ class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
         """
         item_modifer_df.drop(
             item_modifer_df.columns.difference(
-                ["itemId", "modifierId", "position", "orderId", "roll"]
+                ["itemId", "modifierId", "orderId", "position", "roll"]
             ),
             axis=1,
             inplace=True,
