@@ -1,7 +1,7 @@
 import { Button, Flex, FlexProps } from "@chakra-ui/react";
 import { capitalizeFirstLetter } from "../../hooks/utils";
 import { usePlotSettingsStore } from "../../store/PlotSettingsStore";
-import { CurrencyVisuals } from "../Graph/GraphComponent";
+import { CurrencyVisuals } from "../../schemas/CurrencyVisuals";
 
 interface PlotCustomizationButtonsProps {
   flexProps: FlexProps | undefined;
