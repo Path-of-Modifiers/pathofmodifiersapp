@@ -77,14 +77,6 @@ async def create_account(
 
     Returns the created account or list of accounts.
     """
-    db_account = db.get(Account, account.accountName)
-    if db_account:
-        raise HTTPException(
-            status_code=400,
-            detail=get_db_obj_already_exists_msg(
-                Account.__tablename__, {"accountName": account.accountName}
-            ).message,
-        )
 
     return await CRUD_account.create(db=db, obj_in=account)
 

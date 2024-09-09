@@ -45,6 +45,11 @@ class DetectorBase:
 
         return df
 
+    def _specialized_filter(self, df: pd.DataFrame) -> pd.DataFrame:
+        raise NotImplementedError(
+            "This method is implemented in child classes. Do not use the base on its own."
+        )
+
     def iterate_stashes(
         self, df: pd.DataFrame
     ) -> tuple[pd.DataFrame, int, int, pd.DataFrame]:
@@ -52,10 +57,9 @@ class DetectorBase:
         TODO
         """
 
-        df_leftover = self._general_filter(df)
+        df = self._general_filter(df)
         df_filtered = self._specialized_filter(df)
-
-        df_leftover = df_leftover.loc[df_leftover.index.isin(df_filtered.index)]
+        df_leftover = df.loc[~df.index.isin(df_filtered.index)]
 
         item_count = len(df_filtered)
         self.n_unique_items_found = len(self.found_items.keys())

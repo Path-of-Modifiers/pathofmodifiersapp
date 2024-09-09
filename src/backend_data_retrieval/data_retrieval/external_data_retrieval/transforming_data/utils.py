@@ -30,9 +30,7 @@ def get_rolls(
 
     The method contains assertions to ensure successful steps.
     """
-    df.loc[:, "modifier"] = df[
-        "modifier"
-    ].replace(
+    df.loc[:, "modifier"] = df["modifier"].replace(
         r"\\n|\n", " ", regex=True
     )  # Replaces newline with a space, so that it does not mess up the regex and matches modifiers in the `modifier` table
 
@@ -186,7 +184,17 @@ def get_rolls(
         convert_text_roll_to_index, axis=1
     )  # The `roll` column now contains a number
 
+    # ---- Adding order ID ----
+    # Lets you easily identify static modifiers in the item modifier table
+    merged_static_df["orderId"] = -1
+
+    # Uses cumcount, which is similiar to range(n_duplicate_mods)
+    merged_dynamic_df["orderId"] = merged_dynamic_df.groupby(
+        ["itemId", "modifierId"]
+    ).cumcount()
+
     # ---- Finishing touches ----
+
     processed_df = pd.concat(
         (merged_dynamic_df, merged_static_df), axis=0, ignore_index=True
     )  # static and dynamic item modifiers are combined into one dataframe again

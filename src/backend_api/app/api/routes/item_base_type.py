@@ -177,15 +177,6 @@ async def create_item_base_type(
 
     Returns the created item base type or list of item base types.
     """
-    db_item_base_type = db.get(ItemBaseType, itemBaseType.baseType)
-    if db_item_base_type:
-        raise HTTPException(
-            status_code=400,
-            detail=get_db_obj_already_exists_msg(
-                ItemBaseType.__tablename__, {"baseType": itemBaseType.baseType}
-            ).message,
-        )
-
     return await CRUD_itemBaseType.create(db=db, obj_in=itemBaseType)
 
 

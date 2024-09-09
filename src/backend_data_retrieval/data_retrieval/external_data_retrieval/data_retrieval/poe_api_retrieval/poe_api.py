@@ -20,6 +20,7 @@ from external_data_retrieval.detectors.unique_detector import (
 from external_data_retrieval.utils import (
     ProgramRunTooLongException,
     ProgramTooSlowException,
+    WrongLeagueSetException,
     sync_timing_tracker,
 )
 
@@ -122,6 +123,8 @@ class APIHandler:
                 df_wanted = pd.concat((df_wanted, df_filtered))
                 n_new_items += item_count
                 n_total_unique_items += n_unique_found_items
+                if df_leftover.empty:
+                    break
 
                 df = df_leftover.copy(deep=True)
         except:
@@ -134,6 +137,9 @@ class APIHandler:
         self.n_found_items += n_new_items
 
         self.n_unique_items_found = n_total_unique_items
+
+        if df_wanted.empty:
+            raise WrongLeagueSetException
 
         return df_wanted.reset_index()
 

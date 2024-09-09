@@ -41,6 +41,7 @@ def mock_src_database_for_test_db():
 
 def clear_all_tables():
     """Clear all tables in the test database."""
+    print("Clearing all tables...")
 
     src_conn = test_db_engine.connect()
     transaction = src_conn.begin()
