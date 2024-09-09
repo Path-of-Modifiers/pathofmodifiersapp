@@ -76,7 +76,7 @@ function GraphComponent(props: BoxProps) {
     render && (
       <Box {...props}>
         <PlotCustomizationButtons
-          flexProps={undefined}
+          flexProps={{ justifyContent: "center" }}
           mostCommonCurrencyUsed={mostCommonCurrencyUsed}
           chaosVisuals={chaosVisuals}
           secondaryVisuals={secondaryVisuals}

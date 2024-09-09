@@ -53,10 +53,14 @@ const QueryButtons = (props: FlexProps) => {
       alignItems="center"
       width="bgBoxes.defaultBox"
       maxW="98vw"
-      mr="2rem"
       flexWrap="wrap"
     >
-      <Box width="10vw" flex={["none", "1"]} mb={[4, 20]} alignContent={"center"}></Box>{" "}
+      <Box
+        width="10vw"
+        flex={["none", "1"]}
+        mb={[4, 20]}
+        alignContent={"center"}
+      ></Box>{" "}
       {/* Empty space for centering the middle item */}
       <Box textAlign="center" mb={[4, 0]}>
         <Button
@@ -73,10 +77,7 @@ const QueryButtons = (props: FlexProps) => {
           Query and Plot
         </Button>
       </Box>
-      <Flex
-        flex={["none", "1"]}
-        justifyContent={["center", "flex-end"]}
-      >
+      <Flex flex={["none", "1"]} justifyContent={["center", "flex-end"]}>
         <Button
           variant="solid"
           bg="ui.input"
