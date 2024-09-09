@@ -188,8 +188,8 @@ class ItemModifier(Base):
         index=True,
     )
     modifierId = _sql.Column(_sql.BigInteger(), nullable=False, index=True)
-    position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
     orderId = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
+    position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
     roll = _sql.Column(_sql.Float(24))
     createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
     updatedAt = _sql.Column(
