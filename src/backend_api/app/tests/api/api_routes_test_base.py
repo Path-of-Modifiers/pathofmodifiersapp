@@ -9,10 +9,12 @@ from sqlalchemy.orm import Session
 
 from app.api.api_message_util import (
     get_delete_return_msg,
-    get_no_obj_matching_query_msg,
 )
 from app.core.config import settings
-from app.crud.base import ModelType
+from app.crud.base import CRUDBase, ModelType
+from app.exceptions import (
+    DbObjectDoesNotExistError,
+)
 from app.tests.base_test import BaseTest
 from app.tests.utils.utils import is_courotine_function
 
@@ -163,6 +165,7 @@ class TestAPI(BaseTest):
     def test_get_instance_not_found(
         self,
         client: TestClient,
+        crud: CRUDBase,
         superuser_token_headers: dict[str, str],
         model_table_name: str,
         route_prefix: str,
@@ -186,10 +189,12 @@ class TestAPI(BaseTest):
         content = response.json()
         assert (
             content["detail"]
-            == get_no_obj_matching_query_msg(
-                filter={unique_identifier: str(not_found_object)},
+            == DbObjectDoesNotExistError(
                 model_table_name=model_table_name,
-            ).message
+                filter={unique_identifier: not_found_object},
+                function_name=crud.get.__name__,
+                class_name=crud.__class__.__name__,
+            ).detail
         )
 
     @pytest.mark.asyncio
@@ -197,6 +202,7 @@ class TestAPI(BaseTest):
         self,
         client: TestClient,
         db: Session,
+        crud: CRUDBase,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         get_high_permissions: bool,
         route_prefix: str,
@@ -340,6 +346,7 @@ class TestAPI(BaseTest):
         self,
         client: TestClient,
         db: Session,
+        crud: CRUDBase,
         superuser_token_headers: dict[str, str],
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         route_prefix: str,
@@ -410,9 +417,12 @@ class TestAPI(BaseTest):
 
         assert (
             content["detail"]
-            == get_no_obj_matching_query_msg(
-                filter=update_obj_out_pk_map, model_table_name=model_table_name
-            ).message
+            == DbObjectDoesNotExistError(
+                model_table_name=model_table_name,
+                filter=update_obj_out_pk_map,
+                function_name=crud.get.__name__,
+                class_name=crud.__class__.__name__,
+            ).detail
         )
 
     @pytest.mark.asyncio
@@ -534,6 +544,7 @@ class TestAPI(BaseTest):
         route_prefix: str,
         model_table_name: str,
         unique_identifier: str,
+        crud: CRUDBase,
     ) -> None:
         """Test delete instance not found
 
@@ -553,10 +564,12 @@ class TestAPI(BaseTest):
         content = response.json()
         assert (
             content["detail"]
-            == get_no_obj_matching_query_msg(
-                filter={unique_identifier: not_found_object},
+            == DbObjectDoesNotExistError(
                 model_table_name=model_table_name,
-            ).message
+                filter={unique_identifier: not_found_object},
+                function_name=crud.remove.__name__,
+                class_name=crud.__class__.__name__,
+            ).detail
         )
 
     @pytest.mark.asyncio
