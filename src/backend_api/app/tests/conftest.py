@@ -2,7 +2,6 @@ from collections.abc import Generator
 
 import pytest
 from fastapi.testclient import TestClient
-from redis import Redis
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
@@ -29,7 +28,7 @@ def db() -> Generator:
 
 
 @pytest.fixture(scope="module")
-def get_cache() -> Redis:
+def get_cache() -> Generator:
     yield cache
 
 
