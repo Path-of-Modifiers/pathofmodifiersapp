@@ -11,6 +11,10 @@ import {
 import { Box, BoxProps, Center, Spinner } from "@chakra-ui/react";
 import useGetPlotData from "../../hooks/graphing/processPlottingData";
 import { useGraphInputStore } from "../../store/GraphInputStore";
+import { usePlotSettingsStore } from "../../store/PlotSettingsStore";
+import PlotCustomizationButtons from "../Common/PlotCustomizationButtons";
+import { capitalizeFirstLetter } from "../../hooks/utils";
+import { CurrencyVisuals } from "../../schemas/CurrencyVisuals";
 
 /**
  * Uses the globally stored plotQuery state to send a request,
@@ -21,8 +25,35 @@ import { useGraphInputStore } from "../../store/GraphInputStore";
  */
 function GraphComponent(props: BoxProps) {
   const plotQuery = useGraphInputStore((state) => state.plotQuery);
-  const { result, fetchStatus, isError } = useGetPlotData(plotQuery);
-  const render = result && !isError;
+  const { result, mostCommonCurrencyUsed, fetchStatus, isError } =
+    useGetPlotData(plotQuery);
+
+  const renderGraph = result && mostCommonCurrencyUsed && !isError;
+
+  const showChaos = usePlotSettingsStore((state) => state.showChaos);
+  const showSecondary = usePlotSettingsStore((state) => state.showSecondary);
+
+  const chaosVisuals: CurrencyVisuals = {
+    stroke: "#f99619",
+    name: "Chaos value",
+    yAxisId: 0,
+    datakey: "valueInChaos",
+    buttonColor: "#000000",
+    buttonBorderColor: "#000000",
+    buttonBackground: showChaos ? "#f99619" : "ui.lightInput",
+  };
+
+  const secondaryVisuals: CurrencyVisuals = {
+    stroke: "#ffffff",
+    name: renderGraph
+      ? `${capitalizeFirstLetter(mostCommonCurrencyUsed)} value`
+      : "",
+    yAxisId: 1,
+    datakey: "valueInMostCommonCurrencyUsed",
+    buttonColor: showSecondary ? "#ff0000" : "#000000",
+    buttonBorderColor: showSecondary ? "#ff0000" : "#000000",
+    buttonBackground: showSecondary ? "ui.white" : "ui.lightInput",
+  };
 
   if (fetchStatus === "fetching") {
     return (
@@ -33,8 +64,14 @@ function GraphComponent(props: BoxProps) {
   }
 
   return (
-    render && (
+    renderGraph && (
       <Box {...props}>
+        <PlotCustomizationButtons
+          flexProps={{ justifyContent: "center" }}
+          mostCommonCurrencyUsed={mostCommonCurrencyUsed}
+          chaosVisuals={chaosVisuals}
+          secondaryVisuals={secondaryVisuals}
+        />
         <ResponsiveContainer>
           <LineChart
             width={500}
@@ -50,15 +87,44 @@ function GraphComponent(props: BoxProps) {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" />
             {/* Set Y-axis label */}
-            <YAxis label={{ value: "Chaos value", angle: -90, position: "insideLeft" }} />
+            <YAxis
+              label={{
+                value: chaosVisuals.name,
+                angle: -90,
+                position: "insideLeft",
+              }}
+              hide={!showChaos}
+            />
             <Tooltip />
             <Legend verticalAlign="top" height={36} />
             {/* Update the Line dataKey to match "Chaos value" */}
-            <Line type="monotone" dataKey="valueInChaos" name="Chaos value" stroke="#bea06a" />
-            {/**
-             * Example for adding more graphs
-             * result[0].yaxis2 !== undefined && <Line type="monotone" dataKey="yaxis2" stroke="#82ca9d" />}
-             */}
+            <Line
+              type="monotone"
+              dataKey={chaosVisuals.datakey}
+              name={chaosVisuals.name}
+              stroke={chaosVisuals.stroke}
+              yAxisId={chaosVisuals.yAxisId}
+              hide={!showChaos}
+            />
+
+            <YAxis
+              label={{
+                value: secondaryVisuals.name,
+                angle: -90,
+                position: "right",
+              }}
+              orientation="right"
+              yAxisId={secondaryVisuals.yAxisId}
+              hide={!showSecondary}
+            />
+            <Line
+              type="monotone"
+              dataKey={secondaryVisuals.datakey}
+              name={secondaryVisuals.name}
+              stroke={secondaryVisuals.stroke}
+              yAxisId={secondaryVisuals.yAxisId}
+              hide={!showSecondary}
+            />
           </LineChart>
         </ResponsiveContainer>
       </Box>
