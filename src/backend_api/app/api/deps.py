@@ -5,15 +5,15 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 import app.core.models.database as _database
-from app.api.api_message_util import (
-    get_no_obj_matching_query_msg,
-    get_not_active_or_auth_user_error_msg,
-    get_not_superuser_auth_msg,
-)
 from app.core.cache import user_cache_session
 from app.core.config import settings
 from app.core.models.models import User
-from app.exceptions.exceptions import InvalidHeaderProvidedError
+from app.exceptions import (
+    DbObjectDoesNotExistError,
+    InvalidHeaderProvidedError,
+    UserIsNotActiveError,
+    UserWithNotEnoughPrivilegesError,
+)
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/login/access-token"
@@ -39,14 +39,15 @@ def get_current_user(
 
     user = session.get(User, user_cached.userId)
     if not user:
-        raise HTTPException(
-            status_code=404,
-            detail=get_no_obj_matching_query_msg(None, User.__tablename__).message,
+        raise DbObjectDoesNotExistError(
+            model_table_name=User.__tablename__,
+            filter={"userId": user_cached.userId},
+            function_name=get_current_user.__name__,
         )
     if not user.isActive:
-        raise HTTPException(
-            status_code=400,
-            detail=get_not_active_or_auth_user_error_msg(user.username).message,
+        raise UserIsNotActiveError(
+            username_or_email=user.username,
+            function_name=get_current_user.__name__,
         )
     return user
 
@@ -58,16 +59,19 @@ def get_current_active_superuser(current_user: CurrentUser) -> User:
     if not current_user.isSuperuser:
         raise HTTPException(
             status_code=403,
-            detail=get_not_superuser_auth_msg(current_user.username).message,
+            detail=UserWithNotEnoughPrivilegesError(
+                username_or_email=current_user.username,
+                function_name=get_current_active_superuser.__name__,
+            ).detail,
         )
     return current_user
 
 
 def get_current_active_user(current_user: CurrentUser) -> User:
     if not current_user.isActive:
-        raise HTTPException(
-            status_code=403,
-            detail=get_not_active_or_auth_user_error_msg(current_user.username).message,
+        raise UserIsNotActiveError(
+            username_or_email=current_user.username,
+            function_name=get_current_active_user.__name__,
         )
     return current_user
 
@@ -88,9 +92,8 @@ def get_user_token_by_request(request: Request) -> str:
     header = request.headers.get("Authorization")
     if not header:
         raise InvalidHeaderProvidedError(
-            status_code=403,
             function_name=get_user_token_by_request.__name__,
-            message=f"No Authorization header provided. Authorization header: {header}",
+            header=header,
         )
     token = header.split("Bearer ")[1]
 

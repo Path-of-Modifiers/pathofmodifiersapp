@@ -1,19 +1,13 @@
 # From FastAPI Fullstack Template https://github.com/fastapi/full-stack-fastapi-template/blob/master/backend/app/api/routes/login.py
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import EmailStr
 from sqlalchemy.orm import Session
 
 from app.api.api_message_util import (
-    get_bad_login_credentials_msg,
-    get_email_or_username_required_msg,
-    get_invalid_token_credentials_msg,
-    get_new_psw_not_same_msg,
-    get_no_obj_matching_query_msg,
-    get_not_active_or_auth_user_error_msg,
     get_password_rec_email_sent_success,
     get_user_psw_change_msg,
 )
@@ -28,6 +22,14 @@ from app.core.security import (
     verify_password,
 )
 from app.crud import CRUD_user
+from app.exceptions import (
+    BadLoginCredentialsError,
+    DbObjectDoesNotExistError,
+    EmailOrUsernameRequiredPasswordRecoveryError,
+    InvalidTokenError,
+    NewPasswordIsSameError,
+    UserIsNotActiveError,
+)
 from app.limiter import apply_user_rate_limits
 from app.utils.user import (
     generate_reset_password_email,
@@ -58,14 +60,15 @@ def login_access_session(
     user = CRUD_user.authenticate(
         db=session, email_or_username=form_data.username, password=form_data.password
     )
+
     if not user:
-        raise HTTPException(
-            status_code=400, detail=get_bad_login_credentials_msg().message
+        raise BadLoginCredentialsError(
+            function_name=login_access_session.__name__,
         )
     elif not user.isActive:
-        raise HTTPException(
-            status_code=400,
-            detail=get_not_active_or_auth_user_error_msg(user.username).message,
+        raise UserIsNotActiveError(
+            username_or_email=user.username,
+            function_name=login_access_session.__name__,
         )
     access_token = str(
         user_cache_session.create_user_cache_instance(
@@ -114,8 +117,8 @@ def recover_password(
     Password Recovery
     """
     if not body.email and not body.username:
-        raise HTTPException(
-            status_code=400, detail=get_email_or_username_required_msg().message
+        raise EmailOrUsernameRequiredPasswordRecoveryError(
+            function_name=recover_password.__name__,
         )
     get_user_filter = {}
     if body.email:
@@ -124,11 +127,10 @@ def recover_password(
         get_user_filter["username"] = body.username
     user = CRUD_user.get(db=session, filter=get_user_filter)
     if not user:
-        raise HTTPException(
-            status_code=404,
-            detail=get_no_obj_matching_query_msg(
-                get_user_filter, User.__tablename__
-            ).message,
+        raise DbObjectDoesNotExistError(
+            model_table_name=User.__tablename__,
+            filter=get_user_filter,
+            function_name=recover_password.__name__,
         )
 
     password_reset_token = user_cache_password_reset.generate_user_confirmation_token(
@@ -170,25 +172,27 @@ def reset_password(
     cached_user = user_cache_password_reset.verify_token(token=body.token)
     email = cached_user.email
     if not email:
-        raise HTTPException(
-            status_code=400, detail=get_invalid_token_credentials_msg().message
+        raise InvalidTokenError(
+            token=body.token,
+            function_name=reset_password.__name__,
         )
     get_user_filter = {"email": email}
     user = CRUD_user.get(db=session, filter=get_user_filter)
     if not user:
-        raise HTTPException(
-            status_code=404,
-            detail=get_no_obj_matching_query_msg(
-                get_user_filter, User.__tablename__
-            ).message,
+        raise DbObjectDoesNotExistError(
+            model_table_name=User.__tablename__,
+            filter=get_user_filter,
+            function_name=reset_password.__name__,
         )
     elif not user.isActive:
-        raise HTTPException(
-            status_code=400,
-            detail=get_not_active_or_auth_user_error_msg(user.username).message,
+        raise UserIsNotActiveError(
+            username_or_email=user.username,
+            function_name=reset_password.__name__,
         )
     if verify_password(body.new_password, user.hashedPassword):
-        raise HTTPException(status_code=400, detail=get_new_psw_not_same_msg().message)
+        raise NewPasswordIsSameError(
+            function_name=reset_password.__name__,
+        )
     hashed_password = get_password_hash(password=body.new_password)
     user.hashedPassword = hashed_password
     session.add(user)
@@ -212,9 +216,10 @@ def recover_password_html_content(
     user = CRUD_user.get(db=session, filter=filter)
 
     if not user:
-        raise HTTPException(
-            status_code=404,
-            detail=get_no_obj_matching_query_msg(filter, User.__tablename__).message,
+        raise DbObjectDoesNotExistError(
+            model_table_name=User.__tablename__,
+            filter=filter,
+            function_name=recover_password_html_content.__name__,
         )
     password_reset_token = user_cache_password_reset.generate_user_confirmation_token(
         user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
