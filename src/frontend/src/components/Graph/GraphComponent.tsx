@@ -44,7 +44,7 @@ function GraphComponent(props: BoxProps) {
   };
 
   const secondaryVisuals: CurrencyVisuals = {
-    stroke: "#ffffff",
+    stroke: "#ff0000",
     name: renderGraph
       ? `${capitalizeFirstLetter(mostCommonCurrencyUsed)} value`
       : "",
