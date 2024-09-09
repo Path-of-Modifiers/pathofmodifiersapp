@@ -44,7 +44,7 @@ function GraphComponent(props: BoxProps) {
   };
 
   const secondaryVisuals: CurrencyVisuals = {
-    stroke: "#ffffff",
+    stroke: "#ff0000",
     name: renderGraph
       ? `${capitalizeFirstLetter(mostCommonCurrencyUsed)} value`
       : "",
@@ -95,6 +95,7 @@ function GraphComponent(props: BoxProps) {
               }}
               hide={!showChaos}
             />
+            {/* <Tooltip contentStyle={{ backgroundColor: "#FF1D1D" }} /> */}
             <Tooltip />
             <Legend verticalAlign="top" height={36} />
             {/* Update the Line dataKey to match "Chaos value" */}
