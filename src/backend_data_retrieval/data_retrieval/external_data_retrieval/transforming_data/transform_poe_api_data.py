@@ -100,7 +100,13 @@ class PoeAPIDataTransformer:
     def _process_stash_table(self, df: pd.DataFrame) -> None:
         stash_df = self._create_stash_table(df)
         stash_df = self._clean_stash_table(stash_df)
-        insert_data(stash_df, url=self.url, table_name="stash", logger=self.logger)
+        insert_data(
+            stash_df,
+            url=self.url,
+            table_name="stash",
+            logger=self.logger,
+            headers=self.pom_auth_headers,
+        )
 
     def _create_item_basetype_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -169,6 +175,7 @@ class PoeAPIDataTransformer:
             url=self.url,
             table_name="itemBaseType",
             logger=self.logger,
+            headers=self.pom_auth_headers,
         )
 
     def _create_item_table(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -248,9 +255,9 @@ class PoeAPIDataTransformer:
                 influence_dict = {}
                 for influence_column in influence_columns:
                     if row[influence_column]:
-                        influence_dict[
-                            influence_column.replace("influences.", "")
-                        ] = True
+                        influence_dict[influence_column.replace("influences.", "")] = (
+                            True
+                        )
                 return influence_dict
 
         influence_columns = [
@@ -330,7 +337,13 @@ class PoeAPIDataTransformer:
         item_df = self._create_item_table(df)
         item_df = self._transform_item_table(item_df, currency_df)
         item_df = self._clean_item_table(item_df)
-        insert_data(item_df, url=self.url, table_name="item", logger=self.logger)
+        insert_data(
+            item_df,
+            url=self.url,
+            table_name="item",
+            logger=self.logger,
+            headers=self.pom_auth_headers,
+        )
         item_id = self._get_latest_item_id_series(item_df)
         return item_id
 
@@ -378,6 +391,7 @@ class PoeAPIDataTransformer:
             url=self.url,
             table_name="itemModifier",
             logger=self.logger,
+            headers=self.pom_auth_headers,
         )
 
     def transform_into_tables(
@@ -435,7 +449,7 @@ class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
         """
         item_modifer_df.drop(
             item_modifer_df.columns.difference(
-                ["itemId", "modifierId", "position", "roll"]
+                ["itemId", "modifierId", "position", "orderId", "roll"]
             ),
             axis=1,
             inplace=True,

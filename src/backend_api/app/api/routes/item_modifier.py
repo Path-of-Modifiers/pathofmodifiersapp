@@ -30,6 +30,7 @@ async def get_item_modifier(
     db: Session = Depends(get_db),
     modifierId: int | None = None,
     position: int | None = None,
+    orderId: int | None = None,
 ):
     """
     Get item modifier or list of item modifiers by key and
@@ -45,6 +46,8 @@ async def get_item_modifier(
         itemModifier_map["modifierId"] = modifierId
     if position is not None:
         itemModifier_map["position"] = position
+    if orderId is not None:
+        itemModifier_map["orderId"] = orderId
 
     itemModifier = await CRUD_itemModifier.get(db=db, filter=itemModifier_map)
     return itemModifier

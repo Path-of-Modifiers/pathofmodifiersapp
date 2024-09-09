@@ -13,7 +13,7 @@ from app.core.models.models import (
 from app.core.schemas.item_modifier import ItemModifierCreate
 from app.tests.utils.model_utils.item import generate_random_item
 from app.tests.utils.model_utils.modifier import generate_random_modifier
-from app.tests.utils.utils import random_float
+from app.tests.utils.utils import random_float, random_int
 
 
 async def create_random_item_modifier_dict(
@@ -48,11 +48,13 @@ async def create_random_item_modifier_dict(
     modifier_dict, modifier = await generate_random_modifier(db)
     modifierId = modifier.modifierId
     position = modifier.position
+    orderId = random_int()
 
     item_modifier_dict = {
         "itemId": itemId,
         "modifierId": modifierId,
         "position": position,
+        "orderId": orderId,
         "roll": roll_value,
     }
     if not retrieve_dependencies:

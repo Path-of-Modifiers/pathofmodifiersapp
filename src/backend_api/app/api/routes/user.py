@@ -23,6 +23,7 @@ from app.api.deps import (
     get_current_active_user,
     get_db,
 )
+from app.core.cache import user_cache_register_user
 from app.core.config import settings
 from app.core.models.models import User
 from app.core.schemas import (
@@ -45,10 +46,8 @@ from app.limiter import (
 )
 from app.utils.user import (
     generate_new_account_email,
-    generate_user_confirmation_token,
     generate_user_registration_email,
     send_email,
-    verify_token,
 )
 
 router = APIRouter()
@@ -236,10 +235,10 @@ def register_user_send_confirmation(
         isActive=False,
     )
 
-    CRUD_user.create(db=db, user_create=user_create)
+    user = CRUD_user.create(db=db, user_create=user_create)
 
-    user_register_token = generate_user_confirmation_token(
-        email=user_pre_confirmed.email
+    user_register_token = user_cache_register_user.generate_user_confirmation_token(
+        user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
     )
     email_data = generate_user_registration_email(
         email_to=user_pre_confirmed.email,
@@ -273,7 +272,10 @@ def register_user_confirm(
     """
     Confirm new user without the need to be logged in. Requires email confirmation.
     """
-    email = verify_token(token=user_register_confirmation.token)
+    cached_user = user_cache_register_user.verify_token(
+        token=user_register_confirmation.token
+    )
+    email = cached_user.email
     if not email:
         raise HTTPException(
             status_code=400, detail=get_invalid_token_credentials_msg().message
