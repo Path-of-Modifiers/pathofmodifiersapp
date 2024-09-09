@@ -34,7 +34,7 @@ async def get_item_modifier(
 ):
     """
     Get item modifier or list of item modifiers by key and
-    value for optional "itemId", optional "modifierId" and optional "position".
+    value for optional "itemId", optional "modifierId" and optional "orderId".
     One key must be provided.
 
     Returns one or a list of item modifiers.
@@ -141,7 +141,7 @@ async def delete_item_modifier(
     db: Session = Depends(get_db),
 ):
     """
-    Delete an item modifier by key and value for "itemId", optional "modifierId" and optional "position".
+    Delete an item modifier by key and value for "itemId", optional "modifierId" and optional "orderId".
 
     Can delete multiple item modifiers one one request if not modifierId or orderId is provided.
 
