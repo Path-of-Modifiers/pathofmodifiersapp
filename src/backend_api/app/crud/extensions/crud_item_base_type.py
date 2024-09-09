@@ -65,7 +65,7 @@ class CRUDItemBaseType(
         statement = (
             select(model_item_base_type.subCategory)
             .distinct()
-            .where(model_item_base_type.subCategory is not None)
+            .where(model_item_base_type.subCategory.isnot(None))
         )
 
         db_obj = db.execute(statement).mappings().all()

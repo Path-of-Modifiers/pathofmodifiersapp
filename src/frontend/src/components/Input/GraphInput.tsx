@@ -44,9 +44,9 @@ export const GraphInput = (props: GraphInputProps) => {
         <WrapItem bg="ui.secondary">
           <Flex
             justifyContent={"space-between"}
+            flexWrap="wrap"
             width={"bgBoxes.mediumPPBox"}
             maxWidth="98vw"
-            flexWrap="wrap"
           >
             <VStack spacing={2} mb={2}>
               <BaseInput

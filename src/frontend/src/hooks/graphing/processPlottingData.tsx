@@ -12,6 +12,7 @@ import { useEffect } from "react";
  */
 function useGetPlotData(plotQuery: PlotQuery): {
   result: Datum[] | undefined;
+  mostCommonCurrencyUsed: string | undefined;
   fetchStatus: string;
   isError: boolean;
 } {
@@ -29,7 +30,12 @@ function useGetPlotData(plotQuery: PlotQuery): {
   }, [isError, isFetched, setResultError]);
 
   if (isError || leagueError || modifiersError) {
-    return { result: undefined, fetchStatus, isError: true };
+    return {
+      result: undefined,
+      mostCommonCurrencyUsed: undefined,
+      fetchStatus,
+      isError: true,
+    };
   } else if (plotData !== undefined) {
     const data: Datum[] = [];
     for (let i = 0; i < plotData?.timeStamp.length; i++) {
@@ -40,9 +46,19 @@ function useGetPlotData(plotQuery: PlotQuery): {
           plotData.valueInMostCommonCurrencyUsed[i],
       });
     }
-    return { result: data, fetchStatus, isError: false };
+    return {
+      result: data,
+      mostCommonCurrencyUsed: plotData.mostCommonCurrencyUsed,
+      fetchStatus,
+      isError: false,
+    };
   } else {
-    return { result: undefined, fetchStatus, isError: true };
+    return {
+      result: undefined,
+      mostCommonCurrencyUsed: undefined,
+      fetchStatus,
+      isError: true,
+    };
   }
 }
 
