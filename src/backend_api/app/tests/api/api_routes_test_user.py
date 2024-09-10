@@ -25,7 +25,7 @@ from app.core.config import settings
 from app.core.models.models import User
 from app.core.schemas import UserCreate
 from app.core.security import verify_password
-from app.crud import CRUD_user as crud
+from app.crud import CRUD_user
 from app.exceptions import (
     DbObjectAlreadyExistsError,
     DbObjectDoesNotExistError,
@@ -88,7 +88,7 @@ class TestUserRoutes(BaseTest):
             )
             assert 200 <= r.status_code < 300
             created_user = r.json()
-            user = crud.get(db=db, filter={"email": email})
+            user = CRUD_user.get(db=db, filter={"email": email})
             assert user
             assert user.email == created_user["email"]
             assert user.username == created_user["username"]
@@ -100,7 +100,7 @@ class TestUserRoutes(BaseTest):
         password = random_lower_string()
         username = random_lower_string()
         user_in = UserCreate(email=email, password=password, username=username)
-        user = crud.create(db=db, user_create=user_in)
+        user = CRUD_user.create(db=db, user_create=user_in)
         user_id = user.userId
         r = client.get(
             f"{settings.API_V1_STR}/{user_prefix}/{user_id}",
@@ -108,7 +108,7 @@ class TestUserRoutes(BaseTest):
         )
         assert 200 <= r.status_code < 300
         api_user = r.json()
-        existing_user = crud.get(db=db, filter={"email": email})
+        existing_user = CRUD_user.get(db=db, filter={"email": email})
         assert existing_user
         assert existing_user.email == api_user["email"]
         assert existing_user.username == api_user["username"]
@@ -120,7 +120,7 @@ class TestUserRoutes(BaseTest):
         password = random_lower_string()
         username = random_lower_string()
         user_in = UserCreate(email=email, password=password, username=username)
-        user = crud.create(db=db, user_create=user_in)
+        user = CRUD_user.create(db=db, user_create=user_in)
         user_id = user.userId
 
         login_data = {
@@ -139,7 +139,7 @@ class TestUserRoutes(BaseTest):
         )
         assert 200 <= r.status_code < 300
         api_user = r.json()
-        existing_user = crud.get(db=db, filter={"email": email})
+        existing_user = CRUD_user.get(db=db, filter={"email": email})
         assert existing_user
         assert existing_user.email == api_user["email"]
         assert existing_user.username == api_user["username"]
@@ -152,7 +152,7 @@ class TestUserRoutes(BaseTest):
         password = random_lower_string()
         username = random_lower_string()
         user_in = UserCreate(email=email, password=password, username=username)
-        user = crud.create(db=db, user_create=user_in)
+        user = CRUD_user.create(db=db, user_create=user_in)
         user_id = user.userId
 
         r = client.get(
@@ -175,7 +175,7 @@ class TestUserRoutes(BaseTest):
         password = random_lower_string()
         username = random_lower_string()
         user_in = UserCreate(email=email, password=password, username=username)
-        crud.create(db=db, user_create=user_in)
+        CRUD_user.create(db=db, user_create=user_in)
         data = {"email": email, "password": password, "username": username}
         r = client.post(
             f"{settings.API_V1_STR}/{user_prefix}/",
@@ -193,7 +193,7 @@ class TestUserRoutes(BaseTest):
         password = random_lower_string()
         username = random_lower_string()
         user_in = UserCreate(email=email, password=password, username=username)
-        crud.create(db=db, user_create=user_in)
+        CRUD_user.create(db=db, user_create=user_in)
         data = {"email": random_email(), "password": password, "username": username}
         r = client.post(
             f"{settings.API_V1_STR}/{user_prefix}/",
@@ -225,13 +225,13 @@ class TestUserRoutes(BaseTest):
         password = random_lower_string()
         username = random_lower_string()
         user_in = UserCreate(email=email, password=password, username=username)
-        crud.create(db=db, user_create=user_in)
+        CRUD_user.create(db=db, user_create=user_in)
 
         email2 = random_email()
         password2 = random_lower_string()
         username2 = random_lower_string()
         user_in2 = UserCreate(email=email2, password=password2, username=username2)
-        crud.create(db=db, user_create=user_in2)
+        CRUD_user.create(db=db, user_create=user_in2)
 
         r = client.get(
             f"{settings.API_V1_STR}/{user_prefix}/", headers=superuser_token_headers
@@ -260,7 +260,7 @@ class TestUserRoutes(BaseTest):
         assert updated_user["email"] == email
         assert updated_user["username"] == username
 
-        user_db = crud.get(db=db, filter={"email": email})
+        user_db = CRUD_user.get(db=db, filter={"email": email})
         assert user_db
         assert user_db.email == email
         assert user_db.username == username
@@ -299,7 +299,7 @@ class TestUserRoutes(BaseTest):
             == get_user_psw_change_msg(settings.FIRST_SUPERUSER_USERNAME).message
         )
 
-        user_db = crud.get(db=db, filter={"email": settings.FIRST_SUPERUSER})
+        user_db = CRUD_user.get(db=db, filter={"email": settings.FIRST_SUPERUSER})
         assert user_db
         assert user_db.email == settings.FIRST_SUPERUSER
         assert user_db.username == settings.FIRST_SUPERUSER_USERNAME
@@ -337,8 +337,8 @@ class TestUserRoutes(BaseTest):
         assert (
             updated_user["detail"]
             == InvalidPasswordError(
-                function_name=crud.update_password.__name__,
-                class_name=crud.__class__.__name__,
+                function_name=CRUD_user.update_password.__name__,
+                class_name=CRUD_user.__class__.__name__,
             ).detail
         )
 
@@ -349,7 +349,7 @@ class TestUserRoutes(BaseTest):
         password = random_lower_string()
         username = random_lower_string()
         user_in = UserCreate(email=email, password=password, username=username)
-        user = crud.create(db=db, user_create=user_in)
+        user = CRUD_user.create(db=db, user_create=user_in)
 
         data = {"email": user.email}
         r = client.patch(
@@ -363,8 +363,8 @@ class TestUserRoutes(BaseTest):
             == DbObjectAlreadyExistsError(
                 model_table_name=User.__tablename__,
                 filter={"email": user.email},
-                function_name=crud.check_exists_raise.__name__,
-                class_name=crud.__class__.__name__,
+                function_name=CRUD_user.check_exists_raise.__name__,
+                class_name=CRUD_user.__class__.__name__,
             ).detail
         )
 
@@ -375,7 +375,7 @@ class TestUserRoutes(BaseTest):
         password = random_lower_string()
         username = random_lower_string()
         user_in = UserCreate(email=email, password=password, username=username)
-        user = crud.create(db=db, user_create=user_in)
+        user = CRUD_user.create(db=db, user_create=user_in)
 
         data = {"username": user.username}
         r = client.patch(
@@ -389,8 +389,8 @@ class TestUserRoutes(BaseTest):
             == DbObjectAlreadyExistsError(
                 model_table_name=User.__tablename__,
                 filter={"username": user.username},
-                function_name=crud.check_exists_raise.__name__,
-                class_name=crud.__class__.__name__,
+                function_name=CRUD_user.check_exists_raise.__name__,
+                class_name=CRUD_user.__class__.__name__,
             ).detail
         )
 
@@ -411,8 +411,8 @@ class TestUserRoutes(BaseTest):
         assert (
             updated_user["detail"]
             == NewPasswordIsSameError(
-                function_name=crud.update_password.__name__,
-                class_name=crud.__class__.__name__,
+                function_name=CRUD_user.update_password.__name__,
+                class_name=CRUD_user.__class__.__name__,
             ).detail
         )
 
@@ -432,7 +432,7 @@ class TestUserRoutes(BaseTest):
             == get_user_email_confirmation_sent(username, email).message
         )
 
-        user_pre_confirmed_db = crud.get(db=db, filter={"email": email})
+        user_pre_confirmed_db = CRUD_user.get(db=db, filter={"email": email})
         assert user_pre_confirmed_db.email == email
         assert user_pre_confirmed_db.username == username
         assert user_pre_confirmed_db.isActive is False
@@ -453,7 +453,7 @@ class TestUserRoutes(BaseTest):
             details_confirm
             == get_user_successfully_registered_msg(username, email).message
         )
-        user_after_confirmed_db = crud.get(db=db, filter={"email": email})
+        user_after_confirmed_db = CRUD_user.get(db=db, filter={"email": email})
         db.refresh(user_after_confirmed_db)
         assert user_after_confirmed_db.isActive
 
@@ -475,8 +475,8 @@ class TestUserRoutes(BaseTest):
             == DbObjectAlreadyExistsError(
                 model_table_name=User.__tablename__,
                 filter={"email": data["email"]},
-                function_name=crud.check_exists_raise.__name__,
-                class_name=crud.__class__.__name__,
+                function_name=CRUD_user.check_exists_raise.__name__,
+                class_name=CRUD_user.__class__.__name__,
             ).detail
         )
 
@@ -500,8 +500,8 @@ class TestUserRoutes(BaseTest):
             == DbObjectAlreadyExistsError(
                 model_table_name=User.__tablename__,
                 filter={"username": data["username"]},
-                function_name=crud.check_exists_raise.__name__,
-                class_name=crud.__class__.__name__,
+                function_name=CRUD_user.check_exists_raise.__name__,
+                class_name=CRUD_user.__class__.__name__,
             ).detail
         )
 
@@ -521,7 +521,7 @@ class TestUserRoutes(BaseTest):
             == get_user_email_confirmation_sent(username, email).message
         )
 
-        user_pre_confirmed_db = crud.get(db=db, filter={"email": email})
+        user_pre_confirmed_db = CRUD_user.get(db=db, filter={"email": email})
         assert user_pre_confirmed_db.email == email
         assert user_pre_confirmed_db.username == username
         assert user_pre_confirmed_db.isActive is False
@@ -555,7 +555,7 @@ class TestUserRoutes(BaseTest):
         password = random_lower_string()
         username = random_lower_string()
         user_in = UserCreate(email=email, password=password, username=username)
-        user = crud.create(db=db, user_create=user_in)
+        user = CRUD_user.create(db=db, user_create=user_in)
         updated_username = random_lower_string()
 
         data = {"username": updated_username}
@@ -569,7 +569,7 @@ class TestUserRoutes(BaseTest):
 
         assert updated_user["username"] == updated_username
 
-        user_db = crud.get(db=db, filter={"email": email})
+        user_db = CRUD_user.get(db=db, filter={"email": email})
         db.refresh(user_db)
         assert user_db
         assert user_db.username == updated_username
@@ -590,8 +590,8 @@ class TestUserRoutes(BaseTest):
             == DbObjectDoesNotExistError(
                 model_table_name=User.__tablename__,
                 filter={"userId": not_found_user_id},
-                function_name=crud.update.__name__,
-                class_name=crud.__class__.__name__,
+                function_name=CRUD_user.update.__name__,
+                class_name=CRUD_user.__class__.__name__,
             ).detail
         )
 
@@ -602,13 +602,13 @@ class TestUserRoutes(BaseTest):
         password = random_lower_string()
         username = random_lower_string()
         user_in = UserCreate(email=email, password=password, username=username)
-        user = crud.create(db=db, user_create=user_in)
+        user = CRUD_user.create(db=db, user_create=user_in)
 
         email2 = random_email()
         password2 = random_lower_string()
         username2 = random_lower_string()
         user_in2 = UserCreate(email=email2, password=password2, username=username2)
-        user2 = crud.create(db=db, user_create=user_in2)
+        user2 = CRUD_user.create(db=db, user_create=user_in2)
 
         data = {"email": user2.email}
         r = client.patch(
@@ -622,8 +622,8 @@ class TestUserRoutes(BaseTest):
             == DbObjectAlreadyExistsError(
                 model_table_name=User.__tablename__,
                 filter=data,
-                function_name=crud.check_exists_raise.__name__,
-                class_name=crud.__class__.__name__,
+                function_name=CRUD_user.check_exists_raise.__name__,
+                class_name=CRUD_user.__class__.__name__,
             ).detail
         )
 
@@ -632,7 +632,7 @@ class TestUserRoutes(BaseTest):
         password = random_lower_string()
         username = random_lower_string()
         user_in = UserCreate(email=email, password=password, username=username)
-        user = crud.create(db=db, user_create=user_in)
+        user = CRUD_user.create(db=db, user_create=user_in)
         user_id = user.userId
 
         login_data = {
@@ -670,7 +670,7 @@ class TestUserRoutes(BaseTest):
                 function_name=get_current_user.__name__,
             ).detail
         )
-        user_db = crud.get(db=db, filter={"userId": user_id})
+        user_db = CRUD_user.get(db=db, filter={"userId": user_id})
         assert user_db is None
 
     def test_delete_user_me_as_superuser(
@@ -698,7 +698,7 @@ class TestUserRoutes(BaseTest):
         normal_user_token_headers: dict[str, str],
         superuser_token_headers: dict[str, str],
     ) -> None:
-        normal_user = crud.get(db=db, filter={"email": settings.TEST_USER_EMAIL})
+        normal_user = CRUD_user.get(db=db, filter={"email": settings.TEST_USER_EMAIL})
         update_is_active_data = {"isActive": False}
         r = client.patch(
             f"{settings.API_V1_STR}/{user_prefix}/{normal_user.userId}",
@@ -742,7 +742,7 @@ class TestUserRoutes(BaseTest):
         password = random_lower_string()
         username = random_lower_string()
         user_in = UserCreate(email=email, password=password, username=username)
-        user = crud.create(db=db, user_create=user_in)
+        user = CRUD_user.create(db=db, user_create=user_in)
         user_id = user.userId
         r = client.delete(
             f"{settings.API_V1_STR}/{user_prefix}/{user_id}",
@@ -754,7 +754,7 @@ class TestUserRoutes(BaseTest):
             deleted_user["message"]
             == get_delete_return_msg(User.__tablename__, {"userId": user_id}).message
         )
-        result = crud.get(db=db, filter={"userId": user_id})
+        result = CRUD_user.get(db=db, filter={"userId": user_id})
         assert result is None
 
     def test_delete_user_not_found(
@@ -778,7 +778,7 @@ class TestUserRoutes(BaseTest):
     def test_delete_user_current_super_user_error(
         self, client: TestClient, superuser_token_headers: dict[str, str], db: Session
     ) -> None:
-        super_user = crud.get(db=db, filter={"email": settings.FIRST_SUPERUSER})
+        super_user = CRUD_user.get(db=db, filter={"email": settings.FIRST_SUPERUSER})
         assert super_user
         user_id = super_user.userId
 
@@ -804,7 +804,7 @@ class TestUserRoutes(BaseTest):
         user_in = UserCreate(
             email=email, password=password, username=username, isActive=True
         )
-        user = crud.create(db=db, user_create=user_in)
+        user = CRUD_user.create(db=db, user_create=user_in)
 
         r = client.delete(
             f"{settings.API_V1_STR}/{user_prefix}/{user.userId}",
@@ -836,7 +836,7 @@ class TestUserRoutes(BaseTest):
         assert detail == get_user_email_confirmation_sent(username, email).message
         assert detail == get_user_email_confirmation_sent(username, email).message
 
-        user_db = crud.get(db=db, filter={"email": email})
+        user_db = CRUD_user.get(db=db, filter={"email": email})
 
         token = user_cache_register_user.generate_user_confirmation_token(
             user=user_db, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
@@ -847,7 +847,7 @@ class TestUserRoutes(BaseTest):
             json={"token": token},
         )
 
-        user_db = crud.get(db=db, filter={"email": email})
+        user_db = CRUD_user.get(db=db, filter={"email": email})
         assert user_db
         assert user_db.email == email
         assert user_db.username == username
