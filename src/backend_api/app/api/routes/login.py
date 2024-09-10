@@ -8,7 +8,7 @@ from pydantic import EmailStr
 from sqlalchemy.orm import Session
 
 from app.api.api_message_util import (
-    get_password_rec_email_sent_success,
+    get_password_rec_email_sent_success_msg,
     get_user_psw_change_msg,
 )
 from app.api.deps import CurrentUser, get_current_active_superuser, get_db
@@ -25,7 +25,7 @@ from app.crud import CRUD_user
 from app.exceptions import (
     BadLoginCredentialsError,
     DbObjectDoesNotExistError,
-    EmailOrUsernameRequiredPasswordRecoveryError,
+    EmailOrUsernameRequiredError,
     InvalidTokenError,
     NewPasswordIsSameError,
     UserIsNotActiveError,
@@ -117,7 +117,7 @@ def recover_password(
     Password Recovery
     """
     if not body.email and not body.username:
-        raise EmailOrUsernameRequiredPasswordRecoveryError(
+        raise EmailOrUsernameRequiredError(
             function_name=recover_password.__name__,
         )
     get_user_filter = {}
@@ -150,7 +150,7 @@ def recover_password(
         subject=email_data.subject,
         html_content=email_data.html_content,
     )
-    return get_password_rec_email_sent_success()
+    return get_password_rec_email_sent_success_msg()
 
 
 @router.post("/reset-password/")
