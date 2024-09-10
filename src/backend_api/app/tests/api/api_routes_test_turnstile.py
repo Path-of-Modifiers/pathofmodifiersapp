@@ -56,7 +56,7 @@ class TestTurnstileRoutes:
             assert (
                 response_data["detail"]
                 == get_failed_send_challenge_request_error_msg(
-                    ["invalid-input-response"]
+                    e=["invalid-input-response"],
                 ).message
             )
 
@@ -78,7 +78,7 @@ class TestTurnstileRoutes:
             assert (
                 response_data["detail"]
                 == get_failed_send_challenge_request_error_msg(
-                    ["timeout-or-duplicate"]
+                    e=["timeout-or-duplicate"],
                 ).message
             )
 
@@ -95,9 +95,10 @@ class TestTurnstileRoutes:
                 f"{settings.API_V1_STR}/{turnstile_prefix}/", json=data
             )
             response_data = response.json()
+
             assert (
                 response_data["detail"]
                 == get_failed_send_challenge_request_error_msg(
-                    ["invalid-input-secret"]
+                    e=["invalid-input-secret"],
                 ).message
             )
