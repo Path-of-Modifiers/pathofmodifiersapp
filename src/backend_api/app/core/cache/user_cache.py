@@ -1,4 +1,5 @@
 from enum import StrEnum
+from typing import Any
 from uuid import UUID, uuid4
 
 from pydantic import TypeAdapter
@@ -6,13 +7,17 @@ from pydantic import TypeAdapter
 from app.core.cache.cache import cache
 from app.core.models.models import User as model_User
 from app.core.schemas.user import UserInCache
-from app.exceptions import InvalidTokenError
+from app.exceptions import (
+    InvalidCacheUpdateParamsError,
+    InvalidTokenError,
+)
 
 
 class UserCacheTokenType(StrEnum):
     SESSION = "instance_token"
     PASSWORD_RESET = "password_reset_token"
     REGISTER_USER = "register_user_token"
+    UPDATE_ME = "update_me_token"
 
 
 user_cache_adapter = TypeAdapter(UserInCache)
@@ -40,14 +45,19 @@ class UserCache:
 
         return user_cache_instances
 
-    def create_user_cache_instance(self, user: model_User, expire_seconds: int) -> UUID:
+    def _create_user_cache_by_user_model(
+        self,
+        user: model_User,
+        *,
+        update_params: dict[str, Any] | None = None,
+    ) -> str:
         """
-        Creates a cache instance for the given user. Returns the access token.
+        Creates a cache instance for the given user. Returns a JSON representation of the model
 
         ``user`` is the user db object.
-        ``expire_seconds`` is the number of seconds until the cache entry expires.
+        ``update_params`` is the user update values.
         """
-        user_public = UserInCache(
+        user_in_cache = UserInCache(
             userId=user.userId,
             username=user.username,
             email=user.email,
@@ -55,13 +65,44 @@ class UserCache:
             isSuperuser=user.isSuperuser,
             rateLimitTier=user.rateLimitTier,
             isBanned=user.isBanned,
-        ).model_dump_json()
+        )
+
+        if update_params:
+            if (
+                update_params.keys() - user_in_cache.__dict__.keys()
+            ):  # Check if update_params has any keys that are not in user_in_cache
+                raise InvalidCacheUpdateParamsError(
+                    update_params=update_params,
+                    object=user_in_cache,
+                    function_name=self._create_user_cache_by_user_model.__name__,
+                    class_name=self.__class__.__name__,
+                )
+            user_in_cache.__dict__.update(update_params)
+        return user_in_cache.model_dump_json()
+
+    def create_user_cache_instance(
+        self,
+        expire_seconds: int,
+        user: model_User,
+        *,
+        update_params: dict[str, Any] | None = None,
+    ) -> UUID:
+        """
+        Creates a cache instance for the given user. Returns the access token.
+
+        ``user`` is the user db object.
+        ``expire_seconds`` is the number of seconds until the cache entry expires.
+        ``update_params`` is the user update values.
+        """
+        user_cache_model = self._create_user_cache_by_user_model(
+            user, update_params=update_params
+        )
 
         access_token = uuid4()
 
         cache.set(
             name=f"user:{user.userId}:{self.user_token_type}:{access_token}",
-            value=user_public,
+            value=user_cache_model,
             ex=expire_seconds,
         )
 
@@ -101,13 +142,17 @@ class UserCache:
         return user_cache_instances
 
     def generate_user_confirmation_token(
-        self, user: model_User, expire_seconds: int
+        self,
+        user: model_User,
+        expire_seconds: int,
+        *,
+        update_params: dict[str, Any] | None = None,
     ) -> str:
         """
         Generate user confirmation token. The token will be sent to the user's email.
         """
         user_confirmation_identifier = self.create_user_cache_instance(
-            user=user, expire_seconds=expire_seconds
+            user=user, expire_seconds=expire_seconds, update_params=update_params
         )
         user_confirmation_token = str(user_confirmation_identifier)
         return user_confirmation_token
