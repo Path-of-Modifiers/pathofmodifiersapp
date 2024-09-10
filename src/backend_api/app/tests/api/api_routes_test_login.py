@@ -1,36 +1,24 @@
 from unittest.mock import patch
 
 import pytest
-from fastapi import Response
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from app.api.api_message_util import (
-    get_invalid_token_credentials_msg,
-    get_new_psw_not_same_msg,
     get_password_rec_email_sent_success,
     get_user_psw_change_msg,
 )
-from app.api.routes.login import login_prefix
+from app.api.routes.login import login_prefix, reset_password
+from app.core.cache import user_cache_password_reset
 from app.core.config import settings
 from app.core.security import verify_password
 from app.crud import CRUD_user
+from app.exceptions import InvalidTokenError, NewPasswordIsSameError
 from app.tests.base_test import BaseTest
-from app.utils.user import generate_user_confirmation_token
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
 class TestLoginRoutes(BaseTest):
-    def _reset_password_client(
-        self,
-        reset_psw_client: TestClient,
-        *,
-        headers: dict[str, str],
-        token: str,
-        new_password: str,
-    ) -> Response:
-        pass
-
     def test_get_access_token_email(self, client: TestClient) -> None:
         login_data = {
             "username": settings.FIRST_SUPERUSER,
@@ -65,7 +53,7 @@ class TestLoginRoutes(BaseTest):
         r = client.post(
             f"{settings.API_V1_STR}/{login_prefix}/access-token", data=login_data
         )
-        assert r.status_code == 400
+        assert r.status_code == 401
 
     def test_get_access_token_incorrect_password_user(self, client: TestClient) -> None:
         login_data = {
@@ -73,7 +61,7 @@ class TestLoginRoutes(BaseTest):
             "password": "incorrect",
         }
         r = client.post(f"{settings.API_V1_STR}/login/access-token", data=login_data)
-        assert r.status_code == 400
+        assert r.status_code == 401
 
     def test_use_access_token(
         self, client: TestClient, superuser_token_headers: dict[str, str]
@@ -90,6 +78,7 @@ class TestLoginRoutes(BaseTest):
     def test_recovery_password(
         self, client: TestClient, normal_user_token_headers: dict[str, str]
     ) -> None:
+        """No test email yet. Checks internal errors without sending an email"""
         with (
             patch("app.core.config.settings.SMTP_HOST", "smtp.example.com"),
             patch("app.core.config.settings.SMTP_USER", "admin@example.com"),
@@ -135,7 +124,9 @@ class TestLoginRoutes(BaseTest):
         assert verify_password(settings.FIRST_SUPERUSER_PASSWORD, user.hashedPassword)
 
         new_password = "the_new_password"
-        token = generate_user_confirmation_token(email=settings.FIRST_SUPERUSER)
+        token = user_cache_password_reset.generate_user_confirmation_token(
+            user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
+        )
         new_psw_data = {"new_password": new_password, "token": token}
         r = client.post(
             f"{settings.API_V1_STR}/{login_prefix}/reset-password/",
@@ -154,7 +145,9 @@ class TestLoginRoutes(BaseTest):
         assert verify_password(new_password, user.hashedPassword)
 
         # Reset password back to original
-        reset_token = generate_user_confirmation_token(email=settings.FIRST_SUPERUSER)
+        reset_token = user_cache_password_reset.generate_user_confirmation_token(
+            user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
+        )
         old_password = settings.FIRST_SUPERUSER_PASSWORD
         old_psw_data = {"new_password": old_password, "token": reset_token}
         r = client.post(
@@ -178,7 +171,10 @@ class TestLoginRoutes(BaseTest):
         self, client: TestClient, superuser_token_headers: dict[str, str], db: Session
     ) -> None:
         new_password = settings.FIRST_SUPERUSER_PASSWORD
-        token = generate_user_confirmation_token(email=settings.FIRST_SUPERUSER)
+        user = CRUD_user.get(db, filter={"email": settings.FIRST_SUPERUSER})
+        token = user_cache_password_reset.generate_user_confirmation_token(
+            user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
+        )
         data = {"new_password": new_password, "token": token}
         r = client.post(
             f"{settings.API_V1_STR}/{login_prefix}/reset-password/",
@@ -186,7 +182,12 @@ class TestLoginRoutes(BaseTest):
             json=data,
         )
         assert r.status_code == 400
-        assert r.json() == {"detail": get_new_psw_not_same_msg().message}
+        assert (
+            r.json()["detail"]
+            == NewPasswordIsSameError(
+                function_name=reset_password.__name__,
+            ).detail
+        )
 
         user = CRUD_user.get(db, filter={"email": settings.FIRST_SUPERUSER})
         db.refresh(user)
@@ -196,7 +197,8 @@ class TestLoginRoutes(BaseTest):
     def test_reset_password_invalid_token(
         self, client: TestClient, superuser_token_headers: dict[str, str], db: Session
     ) -> None:
-        data = {"new_password": "the_new_password", "token": "invalid"}
+        invalid_token = "invalid"
+        data = {"new_password": "the_new_password", "token": invalid_token}
         r = client.post(
             f"{settings.API_V1_STR}/{login_prefix}/reset-password/",
             headers=superuser_token_headers,
@@ -204,5 +206,12 @@ class TestLoginRoutes(BaseTest):
         )
         response = r.json()
         assert "detail" in response
-        assert r.status_code == 400
-        assert response["detail"] == get_invalid_token_credentials_msg().message
+        assert r.status_code == 401
+        assert (
+            response["detail"]
+            == InvalidTokenError(
+                token=invalid_token,
+                function_name=user_cache_password_reset.verify_token.__name__,
+                class_name=user_cache_password_reset.__class__.__name__,
+            ).detail
+        )

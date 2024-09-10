@@ -1,20 +1,19 @@
 from uuid import UUID
 
-from fastapi import HTTPException
 from pydantic import EmailStr, TypeAdapter
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func, select
 
-from app.api.api_message_util import (
-    get_db_obj_already_exists_msg,
-    get_incorrect_psw_msg,
-    get_new_psw_not_same_msg,
-    get_no_obj_matching_query_msg,
-)
 from app.core.models.models import User as model_User
 from app.core.schemas import User, UserCreate, UserUpdate
 from app.core.schemas.user import UpdatePassword, UsersPublic
 from app.core.security import get_password_hash, verify_password
+from app.exceptions import (
+    DbObjectAlreadyExistsError,
+    DbObjectDoesNotExistError,
+    InvalidPasswordError,
+    NewPasswordIsSameError,
+)
 
 
 class CRUDUser:
@@ -43,19 +42,19 @@ class CRUDUser:
                 existing_user.username == user_in.username
                 or existing_user.email == user_in.email
             ):
-                raise HTTPException(
-                    status_code=409,
-                    detail=get_db_obj_already_exists_msg(
-                        model_User.__tablename__, filter
-                    ).message,
+                raise DbObjectAlreadyExistsError(
+                    model_table_name=model_User.__tablename__,
+                    filter=filter,
+                    function_name=self.check_exists_raise.__name__,
+                    class_name=self.__class__.__name__,
                 )
         else:
             if existing_user:
-                raise HTTPException(
-                    status_code=409,
-                    detail=get_db_obj_already_exists_msg(
-                        model_User.__tablename__, filter
-                    ).message,
+                raise DbObjectAlreadyExistsError(
+                    model_table_name=model_User.__tablename__,
+                    filter=filter,
+                    function_name=self.check_exists_raise.__name__,
+                    class_name=self.__class__.__name__,
                 )
 
     def create(self, db: Session, *, user_create: UserCreate) -> model_User:
@@ -129,11 +128,11 @@ class CRUDUser:
         db_user = self.get(db=db, filter=user_id_map)
 
         if not db_user:
-            raise HTTPException(
-                status_code=404,
-                detail=get_no_obj_matching_query_msg(
-                    user_id_map, model_User.__tablename__
-                ).message,
+            raise DbObjectDoesNotExistError(
+                model_table_name=model_User.__tablename__,
+                filter=user_id_map,
+                function_name=self.update.__name__,
+                class_name=self.__class__.__name__,
             )
 
         if user_in.email:
@@ -244,11 +243,11 @@ class CRUDUser:
         """
         db_user = db.query(model_User).filter_by(userId=db_user.userId).first()
         if not db_user:
-            raise HTTPException(
-                status_code=404,
-                detail=get_no_obj_matching_query_msg(
-                    {"userId": db_user.userId}, "user"
-                ).message,
+            raise DbObjectDoesNotExistError(
+                model_table_name=model_User.__tablename__,
+                filter={"userId": db_user.userId},
+                function_name=self.set_active.__name__,
+                class_name=self.__class__.__name__,
             )
         db_user.isActive = active
         db.add(db_user)
@@ -271,10 +270,14 @@ class CRUDUser:
             model_User: Updated user
         """
         if not verify_password(body.current_password, db_user.hashedPassword):
-            raise HTTPException(status_code=400, detail=get_incorrect_psw_msg().message)
+            raise InvalidPasswordError(
+                function_name=self.update_password.__name__,
+                class_name=self.__class__.__name__,
+            )
         if body.current_password == body.new_password:
-            raise HTTPException(
-                status_code=400, detail=get_new_psw_not_same_msg().message
+            raise NewPasswordIsSameError(
+                function_name=self.update_password.__name__,
+                class_name=self.__class__.__name__,
             )
         hashed_password = get_password_hash(body.new_password)
         db_user.hashedPassword = hashed_password

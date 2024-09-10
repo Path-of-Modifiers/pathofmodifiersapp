@@ -4,7 +4,6 @@ from pydantic import BaseModel, Field
 # JSON payload containing access token
 class Token(BaseModel):
     access_token: str
-    token_type: str = "bearer"
 
 
 # Contents of JWT token

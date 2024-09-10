@@ -1,13 +1,13 @@
 from typing import Any, Generic, TypeVar
 
-from fastapi import HTTPException
 from pydantic import BaseModel, TypeAdapter
 from sqlalchemy.orm import Session
 
-from app.api.api_message_util import (
-    get_no_obj_matching_query_msg,
-    get_sorting_method_not_supported_msg,
-    get_too_many_items_delete_msg,
+from app.exceptions import (
+    DbObjectAlreadyExistsError,
+    DbObjectDoesNotExistError,
+    DbTooManyItemsDeleteError,
+    SortingMethodNotSupportedError,
 )
 from app.utils.sort_algorithms import sort_with_reference
 
@@ -23,6 +23,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         model: type[ModelType],
         schema: type[SchemaType],
         create_schema: type[CreateSchemaType],
+        ignore_duplicates: bool = False,
     ):
         """
         CRUD object with default methods to Create, Read, Update, Delete (CRUD).
@@ -35,6 +36,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         self.model = model
         self.schema = schema
         self.create_schema = create_schema
+        self.ignore_duplicates = ignore_duplicates
 
         self.validate = TypeAdapter(SchemaType | list[SchemaType]).validate_python
 
@@ -48,8 +50,11 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         if sort is None:
             return objs
         elif sort not in available_sorting_choices:
-            raise NotImplementedError(
-                get_sorting_method_not_supported_msg(sort, available_sorting_choices)
+            raise SortingMethodNotSupportedError(
+                sort=sort,
+                available_sorting_choices=available_sorting_choices,
+                function_name=self._sort_objects.__name__,
+                class_name=self.__class__.__name__,
             )
         if sort in ["asc", "dec"]:
             unsorted_extracted_column = []
@@ -62,6 +67,30 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
                 return sorted_objs
             else:
                 return sorted_objs[::-1]
+
+    def _map_obj_pks_to_value(
+        self,
+        obj_in: (
+            SchemaType
+            | CreateSchemaType
+            | UpdateSchemaType
+            | list[SchemaType | CreateSchemaType | UpdateSchemaType]
+        ),
+    ) -> list[dict[str, Any]]:
+        """A private method used to map schema objects to the model's primary keys"""
+        self.validate(obj_in)
+
+        if not isinstance(obj_in, list):
+            obj_in = [obj_in]
+
+        obj_pks = [key.name for key in self.model.__table__.primary_key]
+
+        obj_pks_values = []
+        for obj in obj_in:
+            obj_pks_value = {key: getattr(obj, key) for key in obj_pks}
+            obj_pks_values.append(obj_pks_value)
+
+        return obj_pks_values
 
     async def get(
         self,
@@ -78,11 +107,11 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         if not db_obj and not filter:  # Get all objs on an empty db
             pass
         elif not db_obj:
-            raise HTTPException(
-                status_code=404,
-                detail=get_no_obj_matching_query_msg(
-                    filter, self.model.__tablename__
-                ).message,
+            raise DbObjectDoesNotExistError(
+                model_table_name=self.model.__tablename__,
+                filter=filter,
+                function_name=self.get.__name__,
+                class_name=self.__class__.__name__,
             )
         if len(db_obj) == 1 and filter:
             db_obj = db_obj[0]
@@ -91,8 +120,26 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         return self.validate(db_obj)
 
     async def create(
-        self, db: Session, *, obj_in: CreateSchemaType | list[CreateSchemaType]
+        self,
+        db: Session,
+        *,
+        obj_in: CreateSchemaType | list[CreateSchemaType],
     ) -> ModelType:
+        if not self.ignore_duplicates:
+            obj_pks_value_filters = self._map_obj_pks_to_value(obj_in)
+            for obj_in_pks_filter in obj_pks_value_filters:
+                # May need to change self.get handling when obj does not exist
+                try:
+                    existing_db_obj = await self.get(db, filter=obj_in_pks_filter)
+                except DbObjectDoesNotExistError:
+                    existing_db_obj = None
+                if existing_db_obj:
+                    raise DbObjectAlreadyExistsError(
+                        model_table_name=self.model.__tablename__,
+                        filter=obj_in_pks_filter,
+                        function_name=self.create.__name__,
+                        class_name=self.__class__.__name__,
+                    )
         if isinstance(obj_in, list):
             db_obj = [self.model(**obj.model_dump()) for obj in obj_in]
             db.add_all(db_obj)
@@ -139,20 +186,20 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
     ) -> ModelType:
         db_objs = db.query(self.model).filter_by(**filter).all()
         if not db_objs:
-            raise HTTPException(
-                status_code=404,
-                detail=get_no_obj_matching_query_msg(
-                    filter, model_table_name=self.model.__tablename__
-                ).message,
+            raise DbObjectDoesNotExistError(
+                model_table_name=self.model.__tablename__,
+                filter=filter,
+                function_name=self.remove.__name__,
+                class_name=self.__class__.__name__,
             )
         elif (
             len(db_objs) > max_deletion_limit
         ):  # Arbitrary number, not too large, but should allow deleting all modifiers assosiated with an item
-            raise HTTPException(
-                status_code=403,
-                detail=get_too_many_items_delete_msg(
-                    filter, max_deletion_limit
-                ).message,
+            raise DbTooManyItemsDeleteError(
+                model_table_name=self.model.__tablename__,
+                filter=filter,
+                function_name=self.remove.__name__,
+                class_name=self.__class__.__name__,
             )
 
         if len(db_objs) == 1:

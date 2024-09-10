@@ -2,12 +2,15 @@ from collections.abc import Generator
 
 import pytest
 from fastapi.testclient import TestClient
+from redis import Redis
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
+from app.core.cache.cache import cache
 from app.core.config import settings
 from app.main import app
 from app.tests.setup_test_database import override_get_db, test_db_engine
+from app.tests.utils.cache_utils import clear_pom_cache
 from app.tests.utils.database_utils import (
     clear_all_tables,
     mock_src_database_for_test_db,
@@ -26,6 +29,11 @@ def db() -> Generator:
 
 
 @pytest.fixture(scope="module")
+def get_cache() -> Generator[Redis, None, None]:
+    yield cache
+
+
+@pytest.fixture(scope="module")
 def superuser_token_headers(client: TestClient) -> dict[str, str]:
     return get_superuser_token_headers(client)
 
@@ -41,9 +49,15 @@ def client() -> Generator[TestClient, None, None]:
 
 @pytest.fixture(scope="module")
 def clear_db() -> Generator:
-    yield
     # Remove any data from database (even data not created by this session)
     clear_all_tables()
+    yield
+
+
+@pytest.fixture(scope="module")
+def clear_cache() -> Generator:
+    clear_pom_cache()
+    yield
 
 
 @pytest.fixture(scope="module")

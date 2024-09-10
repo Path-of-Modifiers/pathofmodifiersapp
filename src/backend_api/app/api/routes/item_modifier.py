@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from starlette.status import HTTP_400_BAD_REQUEST
 
 import app.core.schemas as schemas
 from app.api.api_message_util import (
@@ -26,25 +27,31 @@ item_modifier_prefix = "itemModifier"
     dependencies=[Depends(get_current_active_superuser)],
 )
 async def get_item_modifier(
-    itemId: int,
-    db: Session = Depends(get_db),
+    itemId: int | None = None,
     modifierId: int | None = None,
-    position: int | None = None,
+    orderId: int | None = None,
+    db: Session = Depends(get_db),
 ):
     """
     Get item modifier or list of item modifiers by key and
-    value for "itemId", optional "modifierId" and optional "position".
-
-    Dominant key is "itemId".
+    value for optional "itemId", optional "modifierId" and optional "orderId".
+    One key must be provided.
 
     Returns one or a list of item modifiers.
     """
 
-    itemModifier_map = {"itemId": itemId}
+    if itemId is None and modifierId is None and orderId is None:
+        # Needs to be changed to custom exception
+        raise HTTPException(
+            status_code=HTTP_400_BAD_REQUEST,
+            detail="Please provide at least one key.",
+        )
+    if itemId is not None:
+        itemModifier_map = {"itemId": itemId}
     if modifierId is not None:
         itemModifier_map["modifierId"] = modifierId
-    if position is not None:
-        itemModifier_map["position"] = position
+    if orderId is not None:
+        itemModifier_map["orderId"] = orderId
 
     itemModifier = await CRUD_itemModifier.get(db=db, filter=itemModifier_map)
     return itemModifier
@@ -97,14 +104,13 @@ async def create_item_modifier(
 async def update_item_modifier(
     itemId: int,
     modifierId: int,
+    orderId: int,
     itemModifier_update: schemas.ItemModifierUpdate,
     db: Session = Depends(get_db),
 ):
     """
     Update an item modifier by key and value for
-    "itemId", optional "modifierId" and optional "position".
-
-    Dominant key is "itemId".
+    "itemId", "modifierId" and "orderId".
 
     Returns the updated item modifier.
     """
@@ -112,6 +118,7 @@ async def update_item_modifier(
     itemModifier_map = {
         "itemId": itemId,
         "modifierId": modifierId,
+        "orderId": orderId,
     }
     itemModifier = await CRUD_itemModifier.get(
         db=db,
@@ -129,22 +136,25 @@ async def update_item_modifier(
 )
 async def delete_item_modifier(
     itemId: int,
-    db: Session = Depends(get_db),
     modifierId: int | None = None,
+    orderId: int | None = None,
+    db: Session = Depends(get_db),
 ):
     """
-    Delete an item modifier by key and value for
-    "itemId", optional "modifierId" and optional "position".
+    Delete an item modifier by key and value for "itemId", optional "modifierId" and optional "orderId".
+
+    Can delete multiple item modifiers one one request if not modifierId or orderId is provided.
 
     Dominant key is "itemId".
 
     Returns a message that the item modifier was deleted successfully.
-    Always deletes one item modifier.
     """
 
     itemModifier_map = {"itemId": itemId}
     if modifierId is not None:
         itemModifier_map["modifierId"] = modifierId
+    if orderId is not None:
+        itemModifier_map["orderId"] = orderId
 
     await CRUD_itemModifier.remove(db=db, filter=itemModifier_map)
 

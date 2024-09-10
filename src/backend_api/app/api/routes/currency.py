@@ -28,10 +28,18 @@ currency_prefix = "currency"
     "/{currencyId}",
     response_model=schemas.Currency,
     dependencies=[
-        Depends(get_current_active_superuser),
+        Depends(get_current_active_user),
     ],
 )
+@apply_user_rate_limits(
+    settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
 async def get_currency(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
     currencyId: int,
     db: Session = Depends(get_db),
 ):
