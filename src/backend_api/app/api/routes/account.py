@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
 from app.api.api_message_util import (
-    get_db_obj_already_exists_msg,
     get_delete_return_msg,
 )
 from app.api.deps import (
@@ -14,6 +13,7 @@ from app.api.deps import (
 )
 from app.core.models.models import Account
 from app.crud import CRUD_account
+from app.exceptions import DbObjectAlreadyExistsError
 
 router = APIRouter()
 
@@ -77,14 +77,6 @@ async def create_account(
 
     Returns the created account or list of accounts.
     """
-    db_account = db.get(Account, account.accountName)
-    if db_account:
-        raise HTTPException(
-            status_code=400,
-            detail=get_db_obj_already_exists_msg(
-                Account.__tablename__, {"accountName": account.accountName}
-            ).message,
-        )
 
     return await CRUD_account.create(db=db, obj_in=account)
 
@@ -107,15 +99,16 @@ async def update_account(
     Returns the updated account.
     """
     db_account_update = db.get(Account, account_update.accountName)
-    if db_account_update and db_account_update.accountName != accountName:
-        raise HTTPException(
-            status_code=400,
-            detail=get_db_obj_already_exists_msg(
-                Account.__tablename__, {"accountName": account_update.accountName}
-            ).message,
-        )
 
     account_map = {"accountName": accountName}
+
+    if db_account_update and db_account_update.accountName != accountName:
+        raise DbObjectAlreadyExistsError(
+            model_table_name=Account.__tablename__,
+            filter=account_map,
+            function_name=update_account.__name__,
+        )
+
     account = await CRUD_account.get(
         db=db,
         filter=account_map,

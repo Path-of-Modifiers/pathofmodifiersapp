@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
 from app.api.api_message_util import (
-    get_db_obj_already_exists_msg,
     get_delete_return_msg,
 )
 from app.api.deps import (
@@ -16,7 +15,8 @@ from app.api.deps import (
 from app.core.config import settings
 from app.core.models.models import ItemBaseType
 from app.crud import CRUD_itemBaseType
-from app.limiter import apply_rate_limits, apply_user_rate_limits
+from app.exceptions import DbObjectAlreadyExistsError
+from app.limiter import apply_user_rate_limits
 
 router = APIRouter()
 
@@ -83,7 +83,7 @@ async def get_all_item_base_types(
 @router.get(
     "/baseTypes/",
     response_model=schemas.BaseType | list[schemas.BaseType],
-    dependencies=[Depends(apply_rate_limits)],
+    dependencies=[Depends(get_current_active_user)],
 )
 @apply_user_rate_limits(
     settings.DEFAULT_USER_RATE_LIMIT_SECOND,
@@ -177,15 +177,6 @@ async def create_item_base_type(
 
     Returns the created item base type or list of item base types.
     """
-    db_item_base_type = db.get(ItemBaseType, itemBaseType.baseType)
-    if db_item_base_type:
-        raise HTTPException(
-            status_code=400,
-            detail=get_db_obj_already_exists_msg(
-                ItemBaseType.__tablename__, {"baseType": itemBaseType.baseType}
-            ).message,
-        )
-
     return await CRUD_itemBaseType.create(db=db, obj_in=itemBaseType)
 
 
@@ -207,15 +198,16 @@ async def update_item_base_type(
     Returns the updated item base type.
     """
     db_item_base_type_update = db.get(ItemBaseType, item_base_type_update.baseType)
-    if db_item_base_type_update and db_item_base_type_update.baseType != baseType:
-        raise HTTPException(
-            status_code=400,
-            detail=get_db_obj_already_exists_msg(
-                ItemBaseType.__tablename__, {"baseType": item_base_type_update.baseType}
-            ).message,
-        )
 
     item_base_type_map = {"baseType": baseType}
+
+    if db_item_base_type_update and db_item_base_type_update.baseType != baseType:
+        raise DbObjectAlreadyExistsError(
+            model_table_name=ItemBaseType.__tablename__,
+            filter=item_base_type_map,
+            function_name=update_item_base_type.__name__,
+        )
+
     itemBaseType = await CRUD_itemBaseType.get(
         db=db,
         filter=item_base_type_map,

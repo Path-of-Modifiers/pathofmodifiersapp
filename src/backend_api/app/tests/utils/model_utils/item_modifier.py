@@ -13,7 +13,7 @@ from app.core.models.models import (
 from app.core.schemas.item_modifier import ItemModifierCreate
 from app.tests.utils.model_utils.item import generate_random_item
 from app.tests.utils.model_utils.modifier import generate_random_modifier
-from app.tests.utils.utils import random_float
+from app.tests.utils.utils import random_float, random_int
 
 
 async def create_random_item_modifier_dict(
@@ -47,11 +47,13 @@ async def create_random_item_modifier_dict(
     itemId = item.itemId
     modifier_dict, modifier = await generate_random_modifier(db)
     modifierId = modifier.modifierId
+    orderId = random_int(small_int=True)
     position = modifier.position
 
     item_modifier_dict = {
         "itemId": itemId,
         "modifierId": modifierId,
+        "orderId": orderId,
         "position": position,
         "roll": roll_value,
     }

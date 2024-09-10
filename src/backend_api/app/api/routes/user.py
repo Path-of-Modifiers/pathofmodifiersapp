@@ -2,16 +2,11 @@
 import uuid
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
 
 from app.api.api_message_util import (
     get_delete_return_msg,
-    get_invalid_token_credentials_msg,
-    get_no_obj_matching_query_msg,
-    get_not_superuser_auth_msg,
-    get_superuser_not_allowed_change_active_self_msg,
-    get_superuser_not_allowed_delete_self_msg,
     get_user_active_change_msg,
     get_user_email_confirmation_sent,
     get_user_psw_change_msg,
@@ -23,6 +18,7 @@ from app.api.deps import (
     get_current_active_user,
     get_db,
 )
+from app.core.cache import user_cache_register_user
 from app.core.config import settings
 from app.core.models.models import User
 from app.core.schemas import (
@@ -39,16 +35,21 @@ from app.core.schemas.user import (
     UserRegisterPreEmailConfirmation,
 )
 from app.crud import CRUD_user
+from app.exceptions import (
+    DbObjectDoesNotExistError,
+    InvalidTokenError,
+    SuperUserNotAllowedToChangeActiveSelfError,
+    SuperUserNotAllowedToDeleteSelfError,
+    UserWithNotEnoughPrivilegesError,
+)
 from app.limiter import (
     apply_ip_rate_limits,
     apply_user_rate_limits,
 )
 from app.utils.user import (
     generate_new_account_email,
-    generate_user_confirmation_token,
     generate_user_registration_email,
     send_email,
-    verify_token,
 )
 
 router = APIRouter()
@@ -193,11 +194,9 @@ def delete_user_me(
     Delete own user.
     """
     if current_user.isSuperuser:
-        raise HTTPException(
-            status_code=403,
-            detail=get_superuser_not_allowed_delete_self_msg(
-                current_user.username
-            ).message,
+        raise SuperUserNotAllowedToDeleteSelfError(
+            username_or_email=current_user.username,
+            function_name=delete_user_me.__name__,
         )
     db.delete(current_user)
     db.commit()
@@ -236,10 +235,10 @@ def register_user_send_confirmation(
         isActive=False,
     )
 
-    CRUD_user.create(db=db, user_create=user_create)
+    user = CRUD_user.create(db=db, user_create=user_create)
 
-    user_register_token = generate_user_confirmation_token(
-        email=user_pre_confirmed.email
+    user_register_token = user_cache_register_user.generate_user_confirmation_token(
+        user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
     )
     email_data = generate_user_registration_email(
         email_to=user_pre_confirmed.email,
@@ -264,19 +263,23 @@ def register_user_send_confirmation(
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_DAY,
 )
-def register_user(
+def register_user_confirm(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     user_register_confirmation: UserRegisterPostEmailConfirmation,
     db: Session = Depends(get_db),
 ) -> Any:
     """
-    Create new user without the need to be logged in. Requires email confirmation.
+    Confirm new user without the need to be logged in. Requires email confirmation.
     """
-    email = verify_token(token=user_register_confirmation.token)
+    cached_user = user_cache_register_user.verify_token(
+        token=user_register_confirmation.token
+    )
+    email = cached_user.email
     if not email:
-        raise HTTPException(
-            status_code=400, detail=get_invalid_token_credentials_msg().message
+        raise InvalidTokenError(
+            token=user_register_confirmation.token,
+            function_name=register_user_confirm.__name__,
         )
 
     user_db = CRUD_user.get(db, filter={"email": email})
@@ -309,20 +312,20 @@ def get_user_by_id(
     """
     Get a specific user by id.
     """
-    db_user = CRUD_user.get(db, filter={"userId": user_id})
+    get_user_filter = {"userId": user_id}
+    db_user = CRUD_user.get(db, filter=get_user_filter)
     if not db_user:
-        raise HTTPException(
-            status_code=404,
-            detail=get_no_obj_matching_query_msg(
-                {"userId": user_id}, User.__tablename__
-            ).message,
+        raise DbObjectDoesNotExistError(
+            model_table_name=User.__tablename__,
+            filter=get_user_filter,
+            function_name=get_user_by_id.__name__,
         )
     if db_user == current_user:
         return db_user
     if not current_user.isSuperuser:
-        raise HTTPException(
-            status_code=403,
-            detail=get_not_superuser_auth_msg(current_user.username).message,
+        raise UserWithNotEnoughPrivilegesError(
+            username_or_email=current_user.username,
+            function_name=get_user_by_id.__name__,
         )
     return db_user
 
@@ -355,25 +358,23 @@ def delete_user(
     """
     Delete a user.
     """
-    db_user = CRUD_user.get(db, filter={"userId": user_id})
+    delete_user_fiter = {"userId": user_id}
+    db_user = CRUD_user.get(db, filter=delete_user_fiter)
     if not db_user:
-        raise HTTPException(
-            status_code=404,
-            detail=get_no_obj_matching_query_msg(
-                {"userId": user_id}, User.__tablename__
-            ).message,
+        raise DbObjectDoesNotExistError(
+            model_table_name=User.__tablename__,
+            filter=delete_user_fiter,
+            function_name=delete_user.__name__,
         )
     if db_user == current_user:
-        raise HTTPException(
-            status_code=403,
-            detail=get_superuser_not_allowed_delete_self_msg(
-                current_user.username
-            ).message,
+        raise SuperUserNotAllowedToDeleteSelfError(
+            username_or_email=current_user.username,
+            function_name=delete_user.__name__,
         )
     db.delete(db_user)
     db.commit()
     return get_delete_return_msg(
-        model_table_name=User.__tablename__, filter={"userId": user_id}
+        model_table_name=User.__tablename__, filter=delete_user_fiter
     )
 
 
@@ -398,13 +399,21 @@ def change_activate_user(
     """
     Change activity to current user.
     """
-    db_user = CRUD_user.get(db, {"userId": user_id})
+    db_user = CRUD_user.get(db, filter={"userId": user_id})
+    if db_user == current_user and not current_user.isSuperuser:
+        CRUD_user.set_active(db=db, db_user=db_user, active=activate)
+        return Message(
+            message=get_user_active_change_msg(db_user.username, activate),
+        )
+    if not current_user.isSuperuser:
+        raise UserWithNotEnoughPrivilegesError(
+            username_or_email=current_user.username,
+            function_name=change_activate_user.__name__,
+        )
     if db_user == current_user:
-        raise HTTPException(
-            status_code=403,
-            detail=get_superuser_not_allowed_change_active_self_msg(
-                current_user.username
-            ).message,
+        raise SuperUserNotAllowedToChangeActiveSelfError(
+            username_or_email=current_user.username,
+            function_name=change_activate_user.__name__,
         )
     CRUD_user.set_active(db=db, db_user=db_user, active=activate)
     return Message(

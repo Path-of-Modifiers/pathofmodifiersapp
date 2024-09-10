@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 import app.tests.api.api_routes_cascade_tests as test_cascade_api
 from app.api.routes import account_prefix, stash_prefix
 from app.core.models.models import Account, Stash
-from app.crud.base import ModelType
+from app.crud import CRUD_stash
+from app.crud.base import CRUDBase, ModelType
 from app.tests.crud.cascade_tests import TestCascade as UtilTestCascadeCRUD
 from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
 from app.tests.utils.model_utils.stash import (
@@ -19,6 +20,11 @@ from app.tests.utils.utils import get_model_table_name, get_model_unique_identif
 @pytest.fixture(scope="module")
 def route_prefix() -> str:
     return stash_prefix
+
+
+@pytest.fixture(scope="module")
+def crud_instance() -> CRUDBase:
+    return CRUD_stash
 
 
 @pytest.fixture(scope="module")
