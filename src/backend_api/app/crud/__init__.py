@@ -41,7 +41,12 @@ CRUD_currency = CRUDBase[
     Currency,
     CurrencyCreate,
     CurrencyUpdate,
-](model=model_Currency, schema=Currency, create_schema=CurrencyCreate)
+](
+    model=model_Currency,
+    schema=Currency,
+    create_schema=CurrencyCreate,
+    ignore_duplicates=True,
+)
 
 
 CRUD_itemBaseType = CRUDItemBaseType(
@@ -54,17 +59,25 @@ CRUD_itemModifier = CRUDBase[
     ItemModifier,
     ItemModifierCreate,
     ItemModifierUpdate,
-](model=model_ItemModifier, schema=ItemModifier, create_schema=ItemModifierCreate)
+](
+    model=model_ItemModifier,
+    schema=ItemModifier,
+    create_schema=ItemModifierCreate,
+    ignore_duplicates=True,
+)
 
 CRUD_item = CRUDBase[
     model_Item,
     Item,
     ItemCreate,
     ItemUpdate,
-](model=model_Item, schema=Item, create_schema=ItemCreate)
+](model=model_Item, schema=Item, create_schema=ItemCreate, ignore_duplicates=True)
 
 CRUD_modifier = CRUDModifier(
-    model=model_Modifier, schema=Modifier, create_schema=ModifierCreate
+    model=model_Modifier,
+    schema=Modifier,
+    create_schema=ModifierCreate,
+    ignore_duplicates=True,
 )
 
 CRUD_stash = CRUDBase[
