@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from app.api.api_message_util import (
-    get_password_rec_email_sent_success,
+    get_password_rec_email_sent_success_msg,
     get_user_psw_change_msg,
 )
 from app.api.routes.login import login_prefix, reset_password
@@ -91,7 +91,7 @@ class TestLoginRoutes(BaseTest):
             )
             assert r.status_code == 200
             assert r.json() == {
-                "message": get_password_rec_email_sent_success().message
+                "message": get_password_rec_email_sent_success_msg().message
             }
 
     def test_recovery_password_user_not_exists_email(
