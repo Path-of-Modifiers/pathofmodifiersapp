@@ -27,7 +27,10 @@ class CRUDUser:
         self.validate_user_create = TypeAdapter(UserCreate).validate_python
 
     def check_exists_raise(
-        self, db: Session, *, filter: dict[str, str], user_in: User | None = None
+        self,
+        db: Session,
+        *,
+        filter: dict[str, str],
     ):
         """Check if object exists, raise an exception if it does
 
@@ -37,25 +40,14 @@ class CRUDUser:
             user_in (User, optional): User object. Defaults to None.
         """
         existing_user = self.get(db=db, filter=filter)
-        if user_in is not None:
-            if existing_user and (
-                existing_user.username == user_in.username
-                or existing_user.email == user_in.email
-            ):
-                raise DbObjectAlreadyExistsError(
-                    model_table_name=model_User.__tablename__,
-                    filter=filter,
-                    function_name=self.check_exists_raise.__name__,
-                    class_name=self.__class__.__name__,
-                )
-        else:
-            if existing_user:
-                raise DbObjectAlreadyExistsError(
-                    model_table_name=model_User.__tablename__,
-                    filter=filter,
-                    function_name=self.check_exists_raise.__name__,
-                    class_name=self.__class__.__name__,
-                )
+
+        if existing_user:
+            raise DbObjectAlreadyExistsError(
+                model_table_name=model_User.__tablename__,
+                filter=filter,
+                function_name=self.check_exists_raise.__name__,
+                class_name=self.__class__.__name__,
+            )
 
     def create(self, db: Session, *, user_create: UserCreate) -> model_User:
         """Create a new user
@@ -137,7 +129,7 @@ class CRUDUser:
 
         if user_in.email:
             email_filter = {"email": user_in.email}
-            self.check_exists_raise(db=db, filter=email_filter, user_in=user_in)
+            self.check_exists_raise(db=db, filter=email_filter)
         if user_in.username:
             get_user_username_filter = {"username": user_in.username}
             self.check_exists_raise(db=db, filter=get_user_username_filter)
