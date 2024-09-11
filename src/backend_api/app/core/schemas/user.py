@@ -51,15 +51,20 @@ class UserCreate(_BaseUser):
     password: str = Field(min_length=8)
 
 
-class UserRegister(BaseModel):
+class UserRegisterPreEmailConfirmation(BaseModel):
     username: UsernameStr
     email: EmailStr
     password: str = Field(min_length=8)
 
 
+class UserRegisterPostEmailConfirmation(BaseModel):
+    token: str
+
+
 # Properties to receive via API on update, all are optional
 class UserUpdate(_BaseUser):
     email: EmailStr | None = None
+    username: UsernameStr | None = None
     password: str | None = Field(default=None, min_length=8)
 
 
@@ -71,6 +76,10 @@ class UserUpdateMe(BaseModel):
 class UpdatePassword(BaseModel):
     current_password: str = Field(min_length=8)
     new_password: str = Field(min_length=8)
+
+
+class UserInCache(_BaseUser):
+    userId: uuid.UUID
 
 
 # Properties to return via API, id is always required

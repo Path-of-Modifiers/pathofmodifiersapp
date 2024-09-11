@@ -5,7 +5,7 @@ description = ""
 authors = ["Admin <admin@example.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 uvicorn = {extras = ["standard"], version = "^0.24.0.post1"}
 fastapi = "^0.109.1"
 python-multipart = "^0.0.7"
@@ -32,6 +32,8 @@ aiohttp = "^3.9.3"
 git-commit = "^1.2"
 pyjwt = "^2.9.0"
 pytest-asyncio = "^0.23.8"
+slowapi = "^0.1.9"
+redis = "^5.0.8"
 
 
 
