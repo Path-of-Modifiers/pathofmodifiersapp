@@ -6,7 +6,7 @@ from pydantic import TypeAdapter
 from app.core.cache.cache import cache
 from app.core.models.models import User as model_User
 from app.core.schemas.user import UserInCache
-from app.exceptions.exceptions import InvalidTokenError
+from app.exceptions import InvalidTokenError
 
 
 class UserCacheTokenType(StrEnum):
@@ -122,6 +122,7 @@ class UserCache:
         if not user_cache_instances:
             raise InvalidTokenError(
                 function_name=self.verify_token.__name__,
+                class_name=self.__class__.__name__,
                 token=token,
             )
 
@@ -129,8 +130,9 @@ class UserCache:
 
         if not token_user_data:
             raise InvalidTokenError(
-                function_name=self.verify_token.__name__,
                 token=token,
+                function_name=self.verify_token.__name__,
+                class_name=self.__class__.__name__,
             )
 
         return token_user_data

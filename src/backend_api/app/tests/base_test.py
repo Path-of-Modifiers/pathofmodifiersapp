@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.core.models.database import insp
 from app.crud.base import (
+    CRUDBase,
     ModelType,
 )
 from app.tests.utils.utils import get_extract_functions
@@ -31,6 +32,22 @@ class BaseTest:
     async def _create_object_crud(
         self,
         db: Session,
+        crud_instance: CRUDBase,
+        create_object: dict,
+    ) -> ModelType:
+        """
+        A private method used to create objects
+        """
+        create_obj = crud_instance.create_schema(
+            **create_object
+        )  # Create object conversion to crud format
+        object_out = await crud_instance.create(db=db, obj_in=create_obj)
+
+        return object_out
+
+    async def _create_random_object_crud(
+        self,
+        db: Session,
         object_generator_func: Callable[[], tuple[dict, ModelType]] | Any,
     ) -> tuple[dict, ModelType]:
         """
@@ -52,7 +69,7 @@ class BaseTest:
         multiple_object_dict, multiple_object_out = zip(
             *await asyncio.gather(
                 *(
-                    self._create_object_crud(db, object_generator_func)
+                    self._create_random_object_crud(db, object_generator_func)
                     for _ in range(count)
                 )
             ),

@@ -5,7 +5,8 @@ import pytest
 import app.tests.api.api_routes_test_base as test_api
 from app.api.routes import item_base_type_prefix
 from app.core.models.models import ItemBaseType
-from app.crud.base import ModelType
+from app.crud import CRUD_itemBaseType
+from app.crud.base import CRUDBase, ModelType
 from app.tests.crud.cascade_tests import TestCRUD as UtilTestCRUD
 from app.tests.utils.model_utils.item_base_type import (
     create_random_item_base_type_dict,
@@ -17,6 +18,11 @@ from app.tests.utils.utils import get_model_table_name, get_model_unique_identif
 @pytest.fixture(scope="module")
 def route_prefix() -> str:
     return item_base_type_prefix
+
+
+@pytest.fixture(scope="module")
+def crud_instance() -> CRUDBase:
+    return CRUD_itemBaseType
 
 
 @pytest.fixture(scope="module")

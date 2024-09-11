@@ -5,16 +5,15 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from app.api.api_message_util import (
-    get_new_psw_not_same_msg,
     get_password_rec_email_sent_success,
     get_user_psw_change_msg,
 )
-from app.api.routes.login import login_prefix
+from app.api.routes.login import login_prefix, reset_password
 from app.core.cache import user_cache_password_reset
 from app.core.config import settings
 from app.core.security import verify_password
 from app.crud import CRUD_user
-from app.exceptions.exceptions import InvalidTokenError
+from app.exceptions import InvalidTokenError, NewPasswordIsSameError
 from app.tests.base_test import BaseTest
 
 
@@ -54,7 +53,7 @@ class TestLoginRoutes(BaseTest):
         r = client.post(
             f"{settings.API_V1_STR}/{login_prefix}/access-token", data=login_data
         )
-        assert r.status_code == 400
+        assert r.status_code == 401
 
     def test_get_access_token_incorrect_password_user(self, client: TestClient) -> None:
         login_data = {
@@ -62,7 +61,7 @@ class TestLoginRoutes(BaseTest):
             "password": "incorrect",
         }
         r = client.post(f"{settings.API_V1_STR}/login/access-token", data=login_data)
-        assert r.status_code == 400
+        assert r.status_code == 401
 
     def test_use_access_token(
         self, client: TestClient, superuser_token_headers: dict[str, str]
@@ -183,7 +182,12 @@ class TestLoginRoutes(BaseTest):
             json=data,
         )
         assert r.status_code == 400
-        assert r.json() == {"detail": get_new_psw_not_same_msg().message}
+        assert (
+            r.json()["detail"]
+            == NewPasswordIsSameError(
+                function_name=reset_password.__name__,
+            ).detail
+        )
 
         user = CRUD_user.get(db, filter={"email": settings.FIRST_SUPERUSER})
         db.refresh(user)
@@ -202,11 +206,12 @@ class TestLoginRoutes(BaseTest):
         )
         response = r.json()
         assert "detail" in response
-        assert r.status_code == 403
+        assert r.status_code == 401
         assert (
             response["detail"]
             == InvalidTokenError(
-                function_name=user_cache_password_reset.verify_token.__name__,
                 token=invalid_token,
+                function_name=user_cache_password_reset.verify_token.__name__,
+                class_name=user_cache_password_reset.__class__.__name__,
             ).detail
         )
