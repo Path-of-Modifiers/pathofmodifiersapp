@@ -1,13 +1,12 @@
 from typing import Any, Generic, TypeVar
 
-from fastapi import HTTPException
 from pydantic import BaseModel, TypeAdapter
 from sqlalchemy.orm import Session
 
-from app.api.api_message_util import (
-    get_no_obj_matching_query_msg,
-    get_sorting_method_not_supported_msg,
-    get_too_many_items_delete_msg,
+from app.exceptions import (
+    DbObjectDoesNotExistError,
+    DbTooManyItemsDeleteError,
+    SortingMethodNotSupportedError,
 )
 from app.utils.sort_algorithms import sort_with_reference
 
@@ -48,8 +47,11 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         if sort is None:
             return objs
         elif sort not in available_sorting_choices:
-            raise NotImplementedError(
-                get_sorting_method_not_supported_msg(sort, available_sorting_choices)
+            raise SortingMethodNotSupportedError(
+                sort=sort,
+                available_sorting_choices=available_sorting_choices,
+                function_name=self._sort_objects.__name__,
+                class_name=self.__class__.__name__,
             )
         if sort in ["asc", "dec"]:
             unsorted_extracted_column = []
@@ -78,11 +80,11 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         if not db_obj and not filter:  # Get all objs on an empty db
             pass
         elif not db_obj:
-            raise HTTPException(
-                status_code=404,
-                detail=get_no_obj_matching_query_msg(
-                    filter, self.model.__tablename__
-                ).message,
+            raise DbObjectDoesNotExistError(
+                model_table_name=self.model.__tablename__,
+                filter=filter,
+                function_name=self.get.__name__,
+                class_name=self.__class__.__name__,
             )
         if len(db_obj) == 1 and filter:
             db_obj = db_obj[0]
@@ -139,20 +141,20 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
     ) -> ModelType:
         db_objs = db.query(self.model).filter_by(**filter).all()
         if not db_objs:
-            raise HTTPException(
-                status_code=404,
-                detail=get_no_obj_matching_query_msg(
-                    filter, model_table_name=self.model.__tablename__
-                ).message,
+            raise DbObjectDoesNotExistError(
+                model_table_name=self.model.__tablename__,
+                filter=filter,
+                function_name=self.remove.__name__,
+                class_name=self.__class__.__name__,
             )
         elif (
             len(db_objs) > max_deletion_limit
         ):  # Arbitrary number, not too large, but should allow deleting all modifiers assosiated with an item
-            raise HTTPException(
-                status_code=403,
-                detail=get_too_many_items_delete_msg(
-                    filter, max_deletion_limit
-                ).message,
+            raise DbTooManyItemsDeleteError(
+                model_table_name=self.model.__tablename__,
+                filter=filter,
+                function_name=self.remove.__name__,
+                class_name=self.__class__.__name__,
             )
 
         if len(db_objs) == 1:

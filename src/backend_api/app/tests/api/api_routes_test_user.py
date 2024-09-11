@@ -8,26 +8,34 @@ from redis import Redis
 from sqlalchemy.orm import Session
 
 from app.api.api_message_util import (
-    get_db_obj_already_exists_msg,
     get_delete_return_msg,
-    get_incorrect_psw_msg,
-    get_new_psw_not_same_msg,
-    get_no_obj_matching_query_msg,
-    get_not_active_or_auth_user_error_msg,
-    get_not_superuser_auth_msg,
-    get_superuser_not_allowed_delete_self_msg,
     get_user_email_confirmation_sent,
     get_user_psw_change_msg,
     get_user_successfully_registered_msg,
 )
+from app.api.deps import get_current_active_superuser, get_current_user
 from app.api.routes import user_prefix
+from app.api.routes.user import (
+    delete_user,
+    delete_user_me,
+    get_user_by_id,
+)
 from app.core.cache import user_cache_register_user, user_cache_session
 from app.core.config import settings
 from app.core.models.models import User
 from app.core.schemas import UserCreate
 from app.core.security import verify_password
 from app.crud import CRUD_user as crud
-from app.exceptions.exceptions import InvalidTokenError
+from app.exceptions import (
+    DbObjectAlreadyExistsError,
+    DbObjectDoesNotExistError,
+    InvalidPasswordError,
+    InvalidTokenError,
+    NewPasswordIsSameError,
+    SuperUserNotAllowedToDeleteSelfError,
+    UserIsNotActiveError,
+    UserWithNotEnoughPrivilegesError,
+)
 from app.tests.base_test import BaseTest
 from app.tests.utils.utils import random_email, random_lower_string
 
@@ -154,7 +162,10 @@ class TestUserRoutes(BaseTest):
         assert r.status_code == 403
         assert (
             r.json()["detail"]
-            == get_not_superuser_auth_msg(username=settings.TEST_USER_USERNAME).message
+            == UserWithNotEnoughPrivilegesError(
+                username_or_email=settings.TEST_USER_USERNAME,
+                function_name=get_user_by_id.__name__,
+            ).detail
         )
 
     def test_create_user_existing_email(
@@ -321,9 +332,15 @@ class TestUserRoutes(BaseTest):
             headers=superuser_token_headers,
             json=data,
         )
-        assert r.status_code == 400
+        assert r.status_code == 401
         updated_user = r.json()
-        assert updated_user["detail"] == get_incorrect_psw_msg().message
+        assert (
+            updated_user["detail"]
+            == InvalidPasswordError(
+                function_name=crud.update_password.__name__,
+                class_name=crud.__class__.__name__,
+            ).detail
+        )
 
     def test_update_user_me_email_exists(
         self, client: TestClient, normal_user_token_headers: dict[str, str], db: Session
@@ -343,9 +360,12 @@ class TestUserRoutes(BaseTest):
         assert r.status_code == 409
         assert (
             r.json()["detail"]
-            == get_db_obj_already_exists_msg(
-                User.__tablename__, {"email": user.email}
-            ).message
+            == DbObjectAlreadyExistsError(
+                model_table_name=User.__tablename__,
+                filter={"email": user.email},
+                function_name=crud.check_exists_raise.__name__,
+                class_name=crud.__class__.__name__,
+            ).detail
         )
 
     def test_update_user_me_username_exists(
@@ -366,9 +386,12 @@ class TestUserRoutes(BaseTest):
         assert r.status_code == 409
         assert (
             r.json()["detail"]
-            == get_db_obj_already_exists_msg(
-                User.__tablename__, {"username": user.username}
-            ).message
+            == DbObjectAlreadyExistsError(
+                model_table_name=User.__tablename__,
+                filter={"username": user.username},
+                function_name=crud.check_exists_raise.__name__,
+                class_name=crud.__class__.__name__,
+            ).detail
         )
 
     def test_update_password_me_same_password_error(
@@ -385,7 +408,13 @@ class TestUserRoutes(BaseTest):
         )
         assert r.status_code == 400
         updated_user = r.json()
-        assert updated_user["detail"] == get_new_psw_not_same_msg().message
+        assert (
+            updated_user["detail"]
+            == NewPasswordIsSameError(
+                function_name=crud.update_password.__name__,
+                class_name=crud.__class__.__name__,
+            ).detail
+        )
 
     def test_register_user(self, client: TestClient, db: Session) -> None:
         email = random_email()
@@ -443,9 +472,12 @@ class TestUserRoutes(BaseTest):
         assert r.status_code == 409
         assert (
             r.json()["detail"]
-            == get_db_obj_already_exists_msg(
-                User.__tablename__, {"email": data["email"]}
-            ).message
+            == DbObjectAlreadyExistsError(
+                model_table_name=User.__tablename__,
+                filter={"email": data["email"]},
+                function_name=crud.check_exists_raise.__name__,
+                class_name=crud.__class__.__name__,
+            ).detail
         )
 
     def test_register_user_username_already_exists_error(
@@ -465,9 +497,12 @@ class TestUserRoutes(BaseTest):
         assert r.status_code == 409
         assert (
             r.json()["detail"]
-            == get_db_obj_already_exists_msg(
-                User.__tablename__, {"username": data["username"]}
-            ).message
+            == DbObjectAlreadyExistsError(
+                model_table_name=User.__tablename__,
+                filter={"username": data["username"]},
+                function_name=crud.check_exists_raise.__name__,
+                class_name=crud.__class__.__name__,
+            ).detail
         )
 
     def test_register_wrong_token(self, client: TestClient, db: Session) -> None:
@@ -496,19 +531,20 @@ class TestUserRoutes(BaseTest):
             user=user_pre_confirmed_db,
             expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
         )
-        wronge_token = user_register_token + "wrong"
-        data_confirm = {"token": wronge_token}
+        wrong_token = user_register_token + "wrong"
+        data_confirm = {"token": wrong_token}
         r_confirm = client.post(
             f"{settings.API_V1_STR}/{user_prefix}/signup",
             json=data_confirm,
         )
         details_confirm = r_confirm.json()["detail"]
-        assert r_confirm.status_code == 403
+        assert r_confirm.status_code == 401
         assert (
             details_confirm
             == InvalidTokenError(
+                token=wrong_token,
                 function_name=user_cache_register_user.verify_token.__name__,
-                token=wronge_token,
+                class_name=user_cache_register_user.__class__.__name__,
             ).detail
         )
 
@@ -551,10 +587,12 @@ class TestUserRoutes(BaseTest):
         assert r.status_code == 404
         assert (
             r.json()["detail"]
-            == get_no_obj_matching_query_msg(
-                filter={"userId": str(not_found_user_id)},
+            == DbObjectDoesNotExistError(
                 model_table_name=User.__tablename__,
-            ).message
+                filter={"userId": not_found_user_id},
+                function_name=crud.update.__name__,
+                class_name=crud.__class__.__name__,
+            ).detail
         )
 
     def test_update_user_email_exists(
@@ -581,9 +619,12 @@ class TestUserRoutes(BaseTest):
         assert r.status_code == 409
         assert (
             r.json()["detail"]
-            == get_db_obj_already_exists_msg(
-                User.__tablename__, {"email": user2.email}
-            ).message
+            == DbObjectAlreadyExistsError(
+                model_table_name=User.__tablename__,
+                filter=data,
+                function_name=crud.check_exists_raise.__name__,
+                class_name=crud.__class__.__name__,
+            ).detail
         )
 
     def test_delete_user_me(self, client: TestClient, db: Session) -> None:
@@ -622,7 +663,12 @@ class TestUserRoutes(BaseTest):
         details = result.json()["detail"]
         assert result.status_code == 404
         assert (
-            details == get_no_obj_matching_query_msg(None, User.__tablename__).message
+            details
+            == DbObjectDoesNotExistError(
+                model_table_name=User.__tablename__,
+                filter={"userId": user_id},
+                function_name=get_current_user.__name__,
+            ).detail
         )
         user_db = crud.get(db=db, filter={"userId": user_id})
         assert user_db is None
@@ -639,9 +685,10 @@ class TestUserRoutes(BaseTest):
         current_user_email = settings.FIRST_SUPERUSER_USERNAME
         assert (
             response["detail"]
-            == get_superuser_not_allowed_delete_self_msg(
-                username=current_user_email
-            ).message
+            == SuperUserNotAllowedToDeleteSelfError(
+                username_or_email=current_user_email,
+                function_name=delete_user_me.__name__,
+            ).detail
         )
 
     def test_delete_user_me_not_active(
@@ -667,13 +714,15 @@ class TestUserRoutes(BaseTest):
             f"{settings.API_V1_STR}/{user_prefix}/me",
             headers=normal_user_token_headers,
         )
-        assert r.status_code == 400
+        assert r.status_code == 403
         response = r.json()
+
         assert (
             response["detail"]
-            == get_not_active_or_auth_user_error_msg(
-                username=settings.TEST_USER_USERNAME
-            ).message
+            == UserIsNotActiveError(
+                username_or_email=normal_user.username,
+                function_name=get_current_user.__name__,
+            ).detail
         )
         # revert to the old active status to keep consistency in test
         update_is_active_data = {"isActive": True}
@@ -719,9 +768,11 @@ class TestUserRoutes(BaseTest):
         assert r.status_code == 404
         assert (
             r.json()["detail"]
-            == get_no_obj_matching_query_msg(
-                {"userId": not_found_user_id}, User.__tablename__
-            ).message
+            == DbObjectDoesNotExistError(
+                model_table_name=User.__tablename__,
+                filter={"userId": not_found_user_id},
+                function_name=delete_user.__name__,
+            ).detail
         )
 
     def test_delete_user_current_super_user_error(
@@ -738,7 +789,10 @@ class TestUserRoutes(BaseTest):
         assert r.status_code == 403
         assert (
             r.json()["detail"]
-            == get_superuser_not_allowed_delete_self_msg(super_user.username).message
+            == SuperUserNotAllowedToDeleteSelfError(
+                username_or_email=super_user.username,
+                function_name=delete_user.__name__,
+            ).detail
         )
 
     def test_delete_user_without_privileges(
@@ -747,7 +801,9 @@ class TestUserRoutes(BaseTest):
         email = random_email()
         password = random_lower_string()
         username = random_lower_string()
-        user_in = UserCreate(email=email, password=password, username=username)
+        user_in = UserCreate(
+            email=email, password=password, username=username, isActive=True
+        )
         user = crud.create(db=db, user_create=user_in)
 
         r = client.delete(
@@ -758,7 +814,10 @@ class TestUserRoutes(BaseTest):
         current_user_username = settings.TEST_USER_USERNAME
         assert (
             r.json()["detail"]
-            == get_not_superuser_auth_msg(username=current_user_username).message
+            == UserWithNotEnoughPrivilegesError(
+                username_or_email=current_user_username,
+                function_name=get_current_active_superuser.__name__,
+            ).detail
         )
 
     def test_token_expired_user(
@@ -814,10 +873,12 @@ class TestUserRoutes(BaseTest):
                 f"{settings.API_V1_STR}/{user_prefix}/me",
                 headers=headers,
             )
-            assert r_get_user_me_ok.status_code == 403
+            assert r_get_user_me_ok.status_code == 401
             assert (
                 r_get_user_me_ok.json()["detail"]
                 == InvalidTokenError(
-                    function_name=user_cache_session.verify_token.__name__, token=token
+                    token=token,
+                    function_name=user_cache_session.verify_token.__name__,
+                    class_name=user_cache_session.__class__.__name__,
                 ).detail
             )
