@@ -3,6 +3,7 @@ from slowapi.util import get_remote_address
 
 from app.api.deps import get_user_token_by_request
 from app.core.config import settings
+from app.rate_limit.plot_rate_limit import PlotRateLimit
 
 
 def default_limit_provider() -> list[str]:
@@ -31,6 +32,8 @@ limiter_ip = Limiter(
     headers_enabled=True,
     enabled=settings.RATE_LIMIT,
 )
+
+limiter_user_plot = PlotRateLimit()
 
 
 def apply_rate_limits(limiter, *limits):
