@@ -5,6 +5,7 @@
 import type { Body_logins_login_access_token } from '../models/Body_logins_login_access_token';
 import type { Message } from '../models/Message';
 import type { NewPassword } from '../models/NewPassword';
+import type { RecoverPassword } from '../models/RecoverPassword';
 import type { Token } from '../models/Token';
 import type { UserPublic } from '../models/UserPublic';
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -51,19 +52,15 @@ export class LoginsService {
      * @throws ApiError
      */
     public static recoverPassword({
-        username,
-        email,
+        requestBody,
     }: {
-        username?: (string | null),
-        email?: (string | null),
+        requestBody: RecoverPassword,
     }): CancelablePromise<Message> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/api_v1/login/password-recovery/',
-            query: {
-                'username': username,
-                'email': email,
-            },
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 422: `Validation Error`,
             },

@@ -24,7 +24,9 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import Logo from "/assets/images/POM_logo_rec.svg";
 import type { Body_logins_login_access_token as AccessToken } from "../client";
 import useAuth, { isLoggedIn } from "../hooks/validation/useAuth";
-import { hasCompletedCaptcha } from "../hooks/validation/turnstileValidation";
+import useTurnstileValidation, {
+  hasCompletedCaptcha,
+} from "../hooks/validation/turnstileValidation";
 
 export const Route = createFileRoute("/login")({
   component: Login,
@@ -34,8 +36,7 @@ export const Route = createFileRoute("/login")({
         to: "/captcha",
         search: () => ({ from: "login" }), // Pass the query parameter using search
       });
-    }
-    if (isLoggedIn()) {
+    } else if (isLoggedIn()) {
       throw redirect({
         to: "/",
       });
@@ -44,6 +45,7 @@ export const Route = createFileRoute("/login")({
 });
 
 function Login() {
+  useTurnstileValidation();
   const [show, setShow] = useBoolean();
   const { loginMutation, error, resetError } = useAuth();
   const {
@@ -135,7 +137,12 @@ function Login() {
           </InputGroup>
           {error && <FormErrorMessage>{error}</FormErrorMessage>}
         </FormControl>
-        <Link as={RouterLink} to="/recover-password" color="blue.500">
+        <Link
+          as={RouterLink}
+          to="/recover-password"
+          params={{ from: "login" }}
+          color="blue.500"
+        >
           Forgot password?
         </Link>
         <Button
@@ -150,7 +157,12 @@ function Login() {
         </Button>
         <Text>
           Don't have an account?{" "}
-          <Link as={RouterLink} to="/signup" color="blue.500">
+          <Link
+            as={RouterLink}
+            to="/signup"
+            params={{ from: "login" }}
+            color="blue.500"
+          >
             Sign up
           </Link>
         </Text>

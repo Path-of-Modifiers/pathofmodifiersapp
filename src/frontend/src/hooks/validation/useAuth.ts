@@ -87,6 +87,7 @@ const useAuth = () => {
   const loginMutation = useMutation({
     mutationFn: login,
     onSuccess: () => {
+      localStorage.removeItem("turnstile_captcha_token");
       navigate({ to: "/" });
     },
     onError: (err: ApiError) => {

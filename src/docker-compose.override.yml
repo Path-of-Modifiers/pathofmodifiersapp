@@ -42,6 +42,11 @@ services:
     ports:
       - 5432:5432
 
+  cache:
+    restart: "no"
+    ports:
+      - "6379:6379"
+
   backend:
     restart: "no"
     ports:
