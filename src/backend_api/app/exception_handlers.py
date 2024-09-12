@@ -78,9 +78,8 @@ async def rate_limit_exceeded_handler(
     max_amount_of_tries_per_time_period = exc.detail
 
     response_body = {
-        "detail": "POM API : Rate limit exceeded. Please try again later.",
-        "max_amount_of_tries_per_time_period": max_amount_of_tries_per_time_period,
-        "retry_after_seconds": retry_after_seconds,
+        "detail": f"POM API : Rate limit exceeded. Please try again later. "
+        f"max_tries: {max_amount_of_tries_per_time_period}s"
     }
 
     return JSONResponse(
