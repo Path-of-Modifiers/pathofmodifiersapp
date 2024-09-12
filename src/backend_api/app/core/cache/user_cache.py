@@ -22,17 +22,17 @@ class UserCache:
     def __init__(self, user_token_type: UserCacheTokenType) -> None:
         self.user_token_type = user_token_type
 
-    def _scan_user_cache_instances(self, pattern: str) -> list[UserInCache]:
+    async def _scan_user_cache_instances(self, pattern: str) -> list[UserInCache]:
         # Initialize a list to hold the instance values
         user_cache_instances = []
 
         # Using SCAN to iterate through the keys
         cursor = "0"
         while cursor != 0:
-            cursor, keys = cache.scan(cursor=cursor, match=pattern)
+            cursor, keys = await cache.scan(cursor=cursor, match=pattern)
             # Retrieve all instance values for the keys found
             if keys:
-                instances = cache.mget(keys)
+                instances = await cache.mget(keys)
                 for instance in instances:
                     user_cache_instances.append(
                         user_cache_adapter.validate_json(instance)
@@ -40,7 +40,9 @@ class UserCache:
 
         return user_cache_instances
 
-    def create_user_cache_instance(self, user: model_User, expire_seconds: int) -> UUID:
+    async def create_user_cache_instance(
+        self, user: model_User, expire_seconds: int
+    ) -> UUID:
         """
         Creates a cache instance for the given user. Returns the access token.
 
@@ -59,7 +61,7 @@ class UserCache:
 
         access_token = uuid4()
 
-        cache.set(
+        await cache.set(
             name=f"user:{user.userId}:{self.user_token_type}:{access_token}",
             value=user_public,
             ex=expire_seconds,
@@ -67,7 +69,7 @@ class UserCache:
 
         return access_token
 
-    def get_user_cache_instances_by_token(
+    async def get_user_cache_instances_by_token(
         self, token: UUID
     ) -> list[UserInCache] | None:
         """
@@ -76,14 +78,14 @@ class UserCache:
         # Pattern to match all instances for the given token
         pattern = f"user:*:{self.user_token_type}:{token}"
 
-        user_cache_instances = self._scan_user_cache_instances(pattern)
+        user_cache_instances = await self._scan_user_cache_instances(pattern)
 
         if not user_cache_instances:
             return None
 
         return user_cache_instances
 
-    def get_user_cache_instances_by_user_id(
+    async def get_user_cache_instances_by_user_id(
         self, user_id: UUID
     ) -> list[UserInCache] | None:
         """
@@ -93,31 +95,31 @@ class UserCache:
         # Pattern to match all instances for the given userId
         pattern = f"user:{user_id_str}:{self.user_token_type}:*"
 
-        user_cache_instances = self._scan_user_cache_instances(pattern)
+        user_cache_instances = await self._scan_user_cache_instances(pattern)
 
         if not user_cache_instances:
             return None
 
         return user_cache_instances
 
-    def generate_user_confirmation_token(
+    async def generate_user_confirmation_token(
         self, user: model_User, expire_seconds: int
     ) -> str:
         """
         Generate user confirmation token. The token will be sent to the user's email.
         """
-        user_confirmation_identifier = self.create_user_cache_instance(
+        user_confirmation_identifier = await self.create_user_cache_instance(
             user=user, expire_seconds=expire_seconds
         )
         user_confirmation_token = str(user_confirmation_identifier)
         return user_confirmation_token
 
-    def verify_token(self, token: str) -> UserInCache | None:
+    async def verify_token(self, token: str) -> UserInCache | None:
         """
         Verify token and return the cashed user.
         """
         # Just using the first instance. May need to change in the future
-        user_cache_instances = self.get_user_cache_instances_by_token(token)
+        user_cache_instances = await self.get_user_cache_instances_by_token(token)
 
         if not user_cache_instances:
             raise InvalidTokenError(
@@ -131,8 +133,8 @@ class UserCache:
         if not token_user_data:
             raise InvalidTokenError(
                 token=token,
-                function_name=self.verify_token.__name__,
                 class_name=self.__class__.__name__,
+                function_name=self.verify_token.__name__,
             )
 
         return token_user_data
