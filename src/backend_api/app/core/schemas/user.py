@@ -57,10 +57,6 @@ class UserRegisterPreEmailConfirmation(BaseModel):
     password: str = Field(min_length=8)
 
 
-class UserRegisterPostEmailConfirmation(BaseModel):
-    token: str
-
-
 # Properties to receive via API on update, all are optional
 class UserUpdate(_BaseUser):
     email: EmailStr | None = None

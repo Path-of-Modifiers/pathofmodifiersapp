@@ -40,7 +40,7 @@ def get_user_active_change_msg(username: str, active: bool) -> Message:
     """
 
     return Message(
-        message=f"User {username} active status changed successfully to {active}"
+        message=f"User '{username}' active status changed successfully to {active}"
     )
 
 
@@ -54,10 +54,10 @@ def get_user_psw_change_msg(username: str) -> Message:
         Message: Message indicating the user's password was changed successfully.
     """
 
-    return Message(message=f"User {username} password changed successfully")
+    return Message(message=f"User '{username}' password changed successfully")
 
 
-def get_password_rec_email_sent_success() -> Message:
+def get_password_rec_email_sent_success_msg() -> Message:
     """Returns a message indicating the password recovery email was sent successfully.
 
     Returns:
@@ -67,9 +67,11 @@ def get_password_rec_email_sent_success() -> Message:
     return Message(message="Password recovery email sent successfully")
 
 
-def get_user_email_confirmation_sent(username: UsernameStr, email: EmailStr) -> Message:
+def get_user_register_confirmation_sent_msg(
+    username: UsernameStr, email: EmailStr
+) -> Message:
     return Message(
-        message=f"User creation for {username} and {email} requested. Please check your email for confirmation."
+        message=f"User registration with username '{username}' and email '{email}' requested. Please check your email for confirmation."
     )
 
 
@@ -77,8 +79,22 @@ def get_user_successfully_registered_msg(
     username: UsernameStr, email: EmailStr
 ) -> Message:
     return Message(
-        message=f"User {username} successfully registered with email {email}"
+        message=f"User '{username}' successfully registered with email '{email}'"
     )
+
+
+def get_user_update_me_confirmation_sent_msg(
+    email_or_username: EmailStr | UsernameStr,
+) -> Message:
+    return Message(
+        message=f"User update with email '{email_or_username}' requested. Please check your email for confirmation."
+    )
+
+
+def get_user_update_me_success_msg(
+    email_or_username: EmailStr | UsernameStr,
+) -> Message:
+    return Message(message=f"User updated successfully field to '{email_or_username}'")
 
 
 def get_failed_send_challenge_request_error_msg(e: Exception | list[str]) -> Message:
