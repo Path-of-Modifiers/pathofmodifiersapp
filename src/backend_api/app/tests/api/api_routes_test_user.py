@@ -9,9 +9,11 @@ from sqlalchemy.orm import Session
 
 from app.api.api_message_util import (
     get_delete_return_msg,
-    get_user_email_confirmation_sent,
     get_user_psw_change_msg,
+    get_user_register_confirmation_sent_msg,
     get_user_successfully_registered_msg,
+    get_user_update_me_confirmation_sent_msg,
+    get_user_update_me_success_msg,
 )
 from app.api.deps import get_current_active_superuser, get_current_user
 from app.api.routes import user_prefix
@@ -20,7 +22,11 @@ from app.api.routes.user import (
     delete_user_me,
     get_user_by_id,
 )
-from app.core.cache import user_cache_register_user, user_cache_session
+from app.core.cache import (
+    user_cache_register_user,
+    user_cache_session,
+    user_cache_update_me,
+)
 from app.core.config import settings
 from app.core.models.models import User
 from app.core.schemas import UserCreate
@@ -43,6 +49,16 @@ from app.tests.utils.utils import random_email, random_lower_string
 @pytest.mark.usefixtures("clear_db", autouse=True)
 @pytest.mark.usefixtures("clear_cache", autouse=True)
 class TestUserRoutes(BaseTest):
+    def _get_current_normal_user(
+        self, client: TestClient, normal_user_token_headers: dict[str, str], db: Session
+    ) -> User:
+        get_normal_user_response_id = client.get(
+            f"{settings.API_V1_STR}/{user_prefix}/me",
+            headers=normal_user_token_headers,
+        ).json()["userId"]
+        normal_user = db.get(User, get_normal_user_response_id)
+        return normal_user
+
     def test_get_users_superuser_me(
         self, client: TestClient, superuser_token_headers: dict[str, str]
     ) -> None:
@@ -244,40 +260,112 @@ class TestUserRoutes(BaseTest):
             assert "email" in item
             assert "username" in item
 
-    def test_update_user_me(
-        self, client: TestClient, normal_user_token_headers: dict[str, str], db: Session
+    def test_update_me_email(
+        self,
+        client: TestClient,
+        normal_user_token_headers: dict[str, str],
+        superuser_token_headers: dict[str, str],
+        db: Session,
     ) -> None:
-        username = "Updated_name"
-        email = random_email()
-        data = {"username": username, "email": email}
-        r = client.patch(
-            f"{settings.API_V1_STR}/{user_prefix}/me",
-            headers=normal_user_token_headers,
-            json=data,
+        normal_user = self._get_current_normal_user(
+            client, normal_user_token_headers, db
         )
-        assert r.status_code == 200
-        updated_user = r.json()
-        assert updated_user["email"] == email
-        assert updated_user["username"] == username
+        update_email = random_email()
+        update_data = {"email": update_email}
+        r_pre_confirm = client.patch(
+            f"{settings.API_V1_STR}/{user_prefix}/update-me-email-pre-confirmation",
+            headers=normal_user_token_headers,
+            json=update_data,
+        )
+        detail_pre_confirm = r_pre_confirm.json()["message"]
+        assert r_pre_confirm.status_code == 200
+        assert (
+            detail_pre_confirm
+            == get_user_update_me_confirmation_sent_msg(update_email).message
+        )
+        assert normal_user.email != update_data["email"]
 
-        user_db = CRUD_user.get(db=db, filter={"email": email})
-        assert user_db
-        assert user_db.email == email
-        assert user_db.username == username
-        # revert to the old email and username to keep consistency in test
-        old_data = {
-            "email": settings.TEST_USER_EMAIL,
-            "username": settings.TEST_USER_USERNAME,
-        }
-        r = client.patch(
-            f"{settings.API_V1_STR}/{user_prefix}/me",
-            headers=normal_user_token_headers,
-            json=old_data,
+        user_update_email_token = user_cache_update_me.generate_user_confirmation_token(
+            user=normal_user,
+            expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
+            update_params=update_data,
         )
-        db.refresh(user_db)
-        assert r.status_code == 200
-        assert old_data["email"] == settings.TEST_USER_EMAIL
-        assert old_data["username"] == settings.TEST_USER_USERNAME
+        data_confirm = {"access_token": user_update_email_token}
+        r_confirm = client.patch(
+            f"{settings.API_V1_STR}/{user_prefix}/update-me-email-confirmation",
+            headers=normal_user_token_headers,
+            json=data_confirm,
+        )
+        details_confirm = r_confirm.json()["message"]
+        assert r_confirm.status_code == 200
+        assert details_confirm == get_user_update_me_success_msg(update_email).message
+        db.refresh(normal_user)
+        assert settings.TEST_USER_EMAIL != normal_user.email
+
+        # turn email back to settings.TEST_USER_EMAIL with superuser headers
+        update_data = {"email": settings.TEST_USER_EMAIL}
+        r_pre_confirm = client.patch(
+            f"{settings.API_V1_STR}/{user_prefix}/{normal_user.userId}",
+            headers=superuser_token_headers,
+            json=update_data,
+        )
+        assert r_pre_confirm.status_code == 200
+
+    def test_update_me_username(
+        self,
+        client: TestClient,
+        normal_user_token_headers: dict[str, str],
+        superuser_token_headers: dict[str, str],
+        db: Session,
+    ) -> None:
+        normal_user = self._get_current_normal_user(
+            client, normal_user_token_headers, db
+        )
+        update_username = random_lower_string()
+        update_data = {"username": update_username}
+        r_pre_confirm = client.patch(
+            f"{settings.API_V1_STR}/{user_prefix}/update-me-username-pre-confirmation",
+            headers=normal_user_token_headers,
+            json=update_data,
+        )
+        detail_pre_confirm = r_pre_confirm.json()["message"]
+        assert r_pre_confirm.status_code == 200
+        assert (
+            detail_pre_confirm
+            == get_user_update_me_confirmation_sent_msg(update_username).message
+        )
+        assert normal_user.username != update_data["username"]
+
+        user_update_username_token = (
+            user_cache_update_me.generate_user_confirmation_token(
+                user=normal_user,
+                expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
+                update_params=update_data,
+            )
+        )
+        data_confirm = {"access_token": user_update_username_token}
+        r_confirm = client.patch(
+            f"{settings.API_V1_STR}/{user_prefix}/update-me-username-confirmation",
+            headers=normal_user_token_headers,
+            json=data_confirm,
+        )
+        details_confirm = r_confirm.json()["message"]
+        assert r_confirm.status_code == 200
+        assert (
+            details_confirm == get_user_update_me_success_msg(update_username).message
+        )
+        db.refresh(normal_user)
+        assert settings.TEST_USER_USERNAME != normal_user.username
+
+        # turn username back to settings.TEST_USER_USERNAME with superuser headers
+        update_data = {"username": settings.TEST_USER_USERNAME}
+        r_pre_confirm = client.patch(
+            f"{settings.API_V1_STR}/{user_prefix}/{normal_user.userId}",
+            headers=superuser_token_headers,
+            json=update_data,
+        )
+        db.refresh(normal_user)
+        assert r_pre_confirm.status_code == 200
 
     def test_update_password_me(
         self, client: TestClient, superuser_token_headers: dict[str, str], db: Session
@@ -353,7 +441,7 @@ class TestUserRoutes(BaseTest):
 
         data = {"email": user.email}
         r = client.patch(
-            f"{settings.API_V1_STR}/{user_prefix}/me",
+            f"{settings.API_V1_STR}/{user_prefix}/update-me-email-pre-confirmation",
             headers=normal_user_token_headers,
             json=data,
         )
@@ -379,7 +467,7 @@ class TestUserRoutes(BaseTest):
 
         data = {"username": user.username}
         r = client.patch(
-            f"{settings.API_V1_STR}/{user_prefix}/me",
+            f"{settings.API_V1_STR}/{user_prefix}/update-me-username-pre-confirmation",
             headers=normal_user_token_headers,
             json=data,
         )
@@ -429,7 +517,7 @@ class TestUserRoutes(BaseTest):
         assert r_pre_confirm.status_code == 200
         assert (
             details_pre_confirm
-            == get_user_email_confirmation_sent(username, email).message
+            == get_user_register_confirmation_sent_msg(username, email).message
         )
 
         user_pre_confirmed_db = CRUD_user.get(db=db, filter={"email": email})
@@ -442,7 +530,7 @@ class TestUserRoutes(BaseTest):
             user=user_pre_confirmed_db,
             expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
         )
-        data_confirm = {"token": user_register_token}
+        data_confirm = {"access_token": user_register_token}
         r_confirm = client.post(
             f"{settings.API_V1_STR}/{user_prefix}/signup",
             json=data_confirm,
@@ -518,7 +606,7 @@ class TestUserRoutes(BaseTest):
         assert r_pre_confirm.status_code == 200
         assert (
             details_pre_confirm
-            == get_user_email_confirmation_sent(username, email).message
+            == get_user_register_confirmation_sent_msg(username, email).message
         )
 
         user_pre_confirmed_db = CRUD_user.get(db=db, filter={"email": email})
@@ -532,7 +620,7 @@ class TestUserRoutes(BaseTest):
             expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
         )
         wrong_token = user_register_token + "wrong"
-        data_confirm = {"token": wrong_token}
+        data_confirm = {"access_token": wrong_token}
         r_confirm = client.post(
             f"{settings.API_V1_STR}/{user_prefix}/signup",
             json=data_confirm,
@@ -698,7 +786,9 @@ class TestUserRoutes(BaseTest):
         normal_user_token_headers: dict[str, str],
         superuser_token_headers: dict[str, str],
     ) -> None:
-        normal_user = CRUD_user.get(db=db, filter={"email": settings.TEST_USER_EMAIL})
+        normal_user = self._get_current_normal_user(
+            client, normal_user_token_headers, db
+        )
         update_is_active_data = {"isActive": False}
         r = client.patch(
             f"{settings.API_V1_STR}/{user_prefix}/{normal_user.userId}",
@@ -833,8 +923,12 @@ class TestUserRoutes(BaseTest):
         )
         assert r.status_code == 200
         detail = r.json()["message"]
-        assert detail == get_user_email_confirmation_sent(username, email).message
-        assert detail == get_user_email_confirmation_sent(username, email).message
+        assert (
+            detail == get_user_register_confirmation_sent_msg(username, email).message
+        )
+        assert (
+            detail == get_user_register_confirmation_sent_msg(username, email).message
+        )
 
         user_db = CRUD_user.get(db=db, filter={"email": email})
 
@@ -844,8 +938,10 @@ class TestUserRoutes(BaseTest):
 
         r = client.post(
             f"{settings.API_V1_STR}/{user_prefix}/signup",
-            json={"token": token},
+            json={"access_token": token},
         )
+
+        assert r.status_code == 200
 
         user_db = CRUD_user.get(db=db, filter={"email": email})
         assert user_db
