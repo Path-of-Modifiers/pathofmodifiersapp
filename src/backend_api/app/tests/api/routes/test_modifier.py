@@ -21,7 +21,7 @@ def route_prefix() -> str:
 
 
 @pytest.fixture(scope="module")
-def crud() -> CRUDBase:
+def crud_instance() -> CRUDBase:
     return CRUD_modifier
 
 
