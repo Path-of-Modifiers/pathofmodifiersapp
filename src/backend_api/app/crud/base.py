@@ -4,6 +4,7 @@ from pydantic import BaseModel, TypeAdapter
 from sqlalchemy.orm import Session
 
 from app.exceptions import (
+    DbObjectAlreadyExistsError,
     DbObjectDoesNotExistError,
     DbTooManyItemsDeleteError,
     SortingMethodNotSupportedError,
@@ -22,6 +23,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         model: type[ModelType],
         schema: type[SchemaType],
         create_schema: type[CreateSchemaType],
+        ignore_duplicates: bool = False,
     ):
         """
         CRUD object with default methods to Create, Read, Update, Delete (CRUD).
@@ -34,6 +36,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         self.model = model
         self.schema = schema
         self.create_schema = create_schema
+        self.ignore_duplicates = ignore_duplicates
 
         self.validate = TypeAdapter(SchemaType | list[SchemaType]).validate_python
 
@@ -65,6 +68,30 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             else:
                 return sorted_objs[::-1]
 
+    def _map_obj_pks_to_value(
+        self,
+        obj_in: (
+            SchemaType
+            | CreateSchemaType
+            | UpdateSchemaType
+            | list[SchemaType | CreateSchemaType | UpdateSchemaType]
+        ),
+    ) -> list[dict[str, Any]]:
+        """A private method used to map schema objects to the model's primary keys"""
+        self.validate(obj_in)
+
+        if not isinstance(obj_in, list):
+            obj_in = [obj_in]
+
+        obj_pks = [key.name for key in self.model.__table__.primary_key]
+
+        obj_pks_values = []
+        for obj in obj_in:
+            obj_pks_value = {key: getattr(obj, key) for key in obj_pks}
+            obj_pks_values.append(obj_pks_value)
+
+        return obj_pks_values
+
     async def get(
         self,
         db: Session,
@@ -93,8 +120,26 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         return self.validate(db_obj)
 
     async def create(
-        self, db: Session, *, obj_in: CreateSchemaType | list[CreateSchemaType]
+        self,
+        db: Session,
+        *,
+        obj_in: CreateSchemaType | list[CreateSchemaType],
     ) -> ModelType:
+        if not self.ignore_duplicates:
+            obj_pks_value_filters = self._map_obj_pks_to_value(obj_in)
+            for obj_in_pks_filter in obj_pks_value_filters:
+                # May need to change self.get handling when obj does not exist
+                try:
+                    existing_db_obj = await self.get(db, filter=obj_in_pks_filter)
+                except DbObjectDoesNotExistError:
+                    existing_db_obj = None
+                if existing_db_obj:
+                    raise DbObjectAlreadyExistsError(
+                        model_table_name=self.model.__tablename__,
+                        filter=obj_in_pks_filter,
+                        function_name=self.create.__name__,
+                        class_name=self.__class__.__name__,
+                    )
         if isinstance(obj_in, list):
             db_obj = [self.model(**obj.model_dump()) for obj in obj_in]
             db.add_all(db_obj)

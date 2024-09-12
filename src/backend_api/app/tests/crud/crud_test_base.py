@@ -7,6 +7,7 @@ from app.crud.base import (
     CRUDBase,
     ModelType,
 )
+from app.exceptions.model_exceptions.db_exception import DbObjectAlreadyExistsError
 from app.tests.base_test import BaseTest
 from app.tests.utils.utils import get_ignore_keys
 
@@ -28,7 +29,7 @@ class TestCRUD(BaseTest):
         3. Uses the get method to retrieve whats in the db
         4. Checks the retrieved object agains the initial
         """
-        object_dict, object_out = await self._create_object_crud(
+        object_dict, object_out = await self._create_random_object_crud(
             db, object_generator_func
         )
         self._test_object(object_out, object_dict)
@@ -50,10 +51,29 @@ class TestCRUD(BaseTest):
         1. Uses the create method to create the objects.
         2. Tests if the initially created objects are valid.
         """
-        object_dict, object_out = await self._create_object_crud(
+        object_dict, object_out = await self._create_random_object_crud(
             db, object_generator_func
         )
         self._test_object(object_out, object_dict)
+
+    @pytest.mark.asyncio
+    async def test_create_found_duplicate_error(
+        self,
+        db: Session,
+        object_generator_func: Callable[[], tuple[dict, ModelType]],
+        crud_instance: CRUDBase,
+    ) -> None:
+        if crud_instance.ignore_duplicates:
+            pytest.skip(
+                f"CRUD test for test_create_found_duplicate in crud {crud_instance.__class__.__name__} does not support ignore_duplicates"
+            )
+
+        object_dict, _ = await self._create_random_object_crud(
+            db, object_generator_func
+        )
+
+        with pytest.raises(DbObjectAlreadyExistsError):
+            await self._create_object_crud(db, crud_instance, object_dict)
 
     @pytest.mark.asyncio
     async def test_create_multiple(
@@ -102,7 +122,7 @@ class TestCRUD(BaseTest):
         4. Deletes the object that matches the filter
         5. Tests that the deleted object is the same as the initial.
         """
-        object_dict, object_out = await self._create_object_crud(
+        object_dict, object_out = await self._create_random_object_crud(
             db, object_generator_func
         )
         self._test_object(object_out, object_dict)
@@ -135,12 +155,12 @@ class TestCRUD(BaseTest):
         7. Updates the values of the initial object.
         8. Tests if the returned updated object has been updated.
         """
-        object_dict, object_out = await self._create_object_crud(
+        object_dict, object_out = await self._create_random_object_crud(
             db, object_generator_func
         )
         self._test_object(object_out, object_dict)
 
-        updated_object_dict, temp_object_out = await self._create_object_crud(
+        updated_object_dict, temp_object_out = await self._create_random_object_crud(
             db, object_generator_func
         )  # Creates a second template
         self._test_object(temp_object_out, updated_object_dict)
