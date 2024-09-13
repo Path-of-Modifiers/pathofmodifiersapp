@@ -1,5 +1,5 @@
-import app.tests.api.api_routes_test_login as test_login_routes
+from app.tests.api.api_routes_test_login import TestLoginRoutes as login_route_tests
 
 
-class TestUser(test_login_routes.TestLoginRoutes):
+class TestLogin(login_route_tests):
     pass

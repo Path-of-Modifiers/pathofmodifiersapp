@@ -3,8 +3,8 @@ import uuid
 from unittest.mock import patch
 
 import pytest
-from fastapi.testclient import TestClient
-from redis import Redis
+from httpx import AsyncClient
+from redis.asyncio import Redis
 from sqlalchemy.orm import Session
 
 from app.api.api_message_util import (
@@ -43,10 +43,11 @@ from app.tests.utils.utils import random_email, random_lower_string
 @pytest.mark.usefixtures("clear_db", autouse=True)
 @pytest.mark.usefixtures("clear_cache", autouse=True)
 class TestUserRoutes(BaseTest):
-    def test_get_users_superuser_me(
-        self, client: TestClient, superuser_token_headers: dict[str, str]
+    @pytest.mark.anyio
+    async def test_get_users_superuser_me(
+        self, async_client: AsyncClient, superuser_token_headers: dict[str, str]
     ) -> None:
-        r = client.get(
+        r = await async_client.get(
             f"{settings.API_V1_STR}/{user_prefix}/me", headers=superuser_token_headers
         )
         current_user = r.json()
@@ -56,10 +57,11 @@ class TestUserRoutes(BaseTest):
         assert current_user["email"] == settings.FIRST_SUPERUSER
         assert current_user["username"] == settings.FIRST_SUPERUSER_USERNAME
 
-    def test_get_users_normal_user_me(
-        self, client: TestClient, normal_user_token_headers: dict[str, str]
+    @pytest.mark.anyio
+    async def test_get_users_normal_user_me(
+        self, async_client: AsyncClient, normal_user_token_headers: dict[str, str]
     ) -> None:
-        r = client.get(
+        r = await async_client.get(
             f"{settings.API_V1_STR}/{user_prefix}/me", headers=normal_user_token_headers
         )
         current_user = r.json()
@@ -69,8 +71,12 @@ class TestUserRoutes(BaseTest):
         assert current_user["email"] == settings.TEST_USER_EMAIL
         assert current_user["username"] == settings.TEST_USER_USERNAME
 
-    def test_create_user_new_email(
-        self, client: TestClient, superuser_token_headers: dict[str, str], db: Session
+    @pytest.mark.anyio
+    async def test_create_user_new_email(
+        self,
+        async_client: AsyncClient,
+        superuser_token_headers: dict[str, str],
+        db: Session,
     ) -> None:
         with (
             patch("app.utils.user.send_email", return_value=None),
@@ -81,7 +87,7 @@ class TestUserRoutes(BaseTest):
             password = random_lower_string()
             username = random_lower_string()
             data = {"email": email, "password": password, "username": username}
-            r = client.post(
+            r = await async_client.post(
                 f"{settings.API_V1_STR}/{user_prefix}/",
                 headers=superuser_token_headers,
                 json=data,
@@ -93,8 +99,12 @@ class TestUserRoutes(BaseTest):
             assert user.email == created_user["email"]
             assert user.username == created_user["username"]
 
-    def test_get_existing_user(
-        self, client: TestClient, superuser_token_headers: dict[str, str], db: Session
+    @pytest.mark.anyio
+    async def test_get_existing_user(
+        self,
+        async_client: AsyncClient,
+        superuser_token_headers: dict[str, str],
+        db: Session,
     ) -> None:
         email = random_email()
         password = random_lower_string()
@@ -102,7 +112,7 @@ class TestUserRoutes(BaseTest):
         user_in = UserCreate(email=email, password=password, username=username)
         user = CRUD_user.create(db=db, user_create=user_in)
         user_id = user.userId
-        r = client.get(
+        r = await async_client.get(
             f"{settings.API_V1_STR}/{user_prefix}/{user_id}",
             headers=superuser_token_headers,
         )
@@ -113,8 +123,9 @@ class TestUserRoutes(BaseTest):
         assert existing_user.email == api_user["email"]
         assert existing_user.username == api_user["username"]
 
-    def test_get_existing_user_current_user(
-        self, client: TestClient, db: Session
+    @pytest.mark.anyio
+    async def test_get_existing_user_current_user(
+        self, async_client: AsyncClient, db: Session
     ) -> None:
         email = random_email()
         password = random_lower_string()
@@ -128,12 +139,14 @@ class TestUserRoutes(BaseTest):
             "password": password,
             "username": username,
         }
-        r = client.post(f"{settings.API_V1_STR}/login/access-token", data=login_data)
+        r = await async_client.post(
+            f"{settings.API_V1_STR}/login/access-token", data=login_data
+        )
         tokens = r.json()
         a_token = tokens["access_token"]
         headers = {"Authorization": f"Bearer {a_token}"}
 
-        r = client.get(
+        r = await async_client.get(
             f"{settings.API_V1_STR}/{user_prefix}/{user_id}",
             headers=headers,
         )
@@ -144,8 +157,12 @@ class TestUserRoutes(BaseTest):
         assert existing_user.email == api_user["email"]
         assert existing_user.username == api_user["username"]
 
-    def test_get_existing_user_permissions_error(
-        self, client: TestClient, normal_user_token_headers: dict[str, str], db: Session
+    @pytest.mark.anyio
+    async def test_get_existing_user_permissions_error(
+        self,
+        async_client: AsyncClient,
+        normal_user_token_headers: dict[str, str],
+        db: Session,
     ) -> None:
         # Create a user
         email = random_email()
@@ -155,7 +172,7 @@ class TestUserRoutes(BaseTest):
         user = CRUD_user.create(db=db, user_create=user_in)
         user_id = user.userId
 
-        r = client.get(
+        r = await async_client.get(
             f"{settings.API_V1_STR}/{user_prefix}/{user_id}",
             headers=normal_user_token_headers,
         )
@@ -168,8 +185,12 @@ class TestUserRoutes(BaseTest):
             ).detail
         )
 
-    def test_create_user_existing_email(
-        self, client: TestClient, superuser_token_headers: dict[str, str], db: Session
+    @pytest.mark.anyio
+    async def test_create_user_existing_email(
+        self,
+        async_client: AsyncClient,
+        superuser_token_headers: dict[str, str],
+        db: Session,
     ) -> None:
         email = random_email()
         password = random_lower_string()
@@ -177,7 +198,7 @@ class TestUserRoutes(BaseTest):
         user_in = UserCreate(email=email, password=password, username=username)
         CRUD_user.create(db=db, user_create=user_in)
         data = {"email": email, "password": password, "username": username}
-        r = client.post(
+        r = await async_client.post(
             f"{settings.API_V1_STR}/{user_prefix}/",
             headers=superuser_token_headers,
             json=data,
@@ -186,8 +207,12 @@ class TestUserRoutes(BaseTest):
         assert r.status_code == 409
         assert "userId" not in created_user
 
-    def test_create_user_existing_username(
-        self, client: TestClient, superuser_token_headers: dict[str, str], db: Session
+    @pytest.mark.anyio
+    async def test_create_user_existing_username(
+        self,
+        async_client: AsyncClient,
+        superuser_token_headers: dict[str, str],
+        db: Session,
     ) -> None:
         email = random_email()
         password = random_lower_string()
@@ -195,7 +220,7 @@ class TestUserRoutes(BaseTest):
         user_in = UserCreate(email=email, password=password, username=username)
         CRUD_user.create(db=db, user_create=user_in)
         data = {"email": random_email(), "password": password, "username": username}
-        r = client.post(
+        r = await async_client.post(
             f"{settings.API_V1_STR}/{user_prefix}/",
             headers=superuser_token_headers,
             json=data,
@@ -204,22 +229,27 @@ class TestUserRoutes(BaseTest):
         assert r.status_code == 409
         assert "userId" not in created_user
 
-    def test_create_user_by_normal_user(
-        self, client: TestClient, normal_user_token_headers: dict[str, str]
+    @pytest.mark.anyio
+    async def test_create_user_by_normal_user(
+        self, async_client: AsyncClient, normal_user_token_headers: dict[str, str]
     ) -> None:
         email = random_email()
         password = random_lower_string()
         username = random_lower_string()
         data = {"email": email, "password": password, "username": username}
-        r = client.post(
+        r = await async_client.post(
             f"{settings.API_V1_STR}/{user_prefix}/",
             headers=normal_user_token_headers,
             json=data,
         )
         assert r.status_code == 403
 
-    def test_retrieve_users(
-        self, client: TestClient, superuser_token_headers: dict[str, str], db: Session
+    @pytest.mark.anyio
+    async def test_retrieve_users(
+        self,
+        async_client: AsyncClient,
+        superuser_token_headers: dict[str, str],
+        db: Session,
     ) -> None:
         email = random_email()
         password = random_lower_string()
@@ -233,7 +263,7 @@ class TestUserRoutes(BaseTest):
         user_in2 = UserCreate(email=email2, password=password2, username=username2)
         CRUD_user.create(db=db, user_create=user_in2)
 
-        r = client.get(
+        r = await async_client.get(
             f"{settings.API_V1_STR}/{user_prefix}/", headers=superuser_token_headers
         )
         all_users = r.json()
@@ -244,13 +274,17 @@ class TestUserRoutes(BaseTest):
             assert "email" in item
             assert "username" in item
 
-    def test_update_user_me(
-        self, client: TestClient, normal_user_token_headers: dict[str, str], db: Session
+    @pytest.mark.anyio
+    async def test_update_user_me(
+        self,
+        async_client: AsyncClient,
+        normal_user_token_headers: dict[str, str],
+        db: Session,
     ) -> None:
         username = "Updated_name"
         email = random_email()
         data = {"username": username, "email": email}
-        r = client.patch(
+        r = await async_client.patch(
             f"{settings.API_V1_STR}/{user_prefix}/me",
             headers=normal_user_token_headers,
             json=data,
@@ -269,7 +303,7 @@ class TestUserRoutes(BaseTest):
             "email": settings.TEST_USER_EMAIL,
             "username": settings.TEST_USER_USERNAME,
         }
-        r = client.patch(
+        r = await async_client.patch(
             f"{settings.API_V1_STR}/{user_prefix}/me",
             headers=normal_user_token_headers,
             json=old_data,
@@ -279,15 +313,19 @@ class TestUserRoutes(BaseTest):
         assert old_data["email"] == settings.TEST_USER_EMAIL
         assert old_data["username"] == settings.TEST_USER_USERNAME
 
-    def test_update_password_me(
-        self, client: TestClient, superuser_token_headers: dict[str, str], db: Session
+    @pytest.mark.anyio
+    async def test_update_password_me(
+        self,
+        async_client: AsyncClient,
+        superuser_token_headers: dict[str, str],
+        db: Session,
     ) -> None:
         new_password = random_lower_string()
         data = {
             "current_password": settings.FIRST_SUPERUSER_PASSWORD,
             "new_password": new_password,
         }
-        r = client.patch(
+        r = await async_client.patch(
             f"{settings.API_V1_STR}/{user_prefix}/me/password",
             headers=superuser_token_headers,
             json=data,
@@ -310,7 +348,7 @@ class TestUserRoutes(BaseTest):
             "current_password": new_password,
             "new_password": settings.FIRST_SUPERUSER_PASSWORD,
         }
-        r = client.patch(
+        r = await async_client.patch(
             f"{settings.API_V1_STR}/{user_prefix}/me/password",
             headers=superuser_token_headers,
             json=old_data,
@@ -322,12 +360,13 @@ class TestUserRoutes(BaseTest):
             settings.FIRST_SUPERUSER_PASSWORD, user_db.hashedPassword
         )
 
-    def test_update_password_me_incorrect_password(
-        self, client: TestClient, superuser_token_headers: dict[str, str]
+    @pytest.mark.anyio
+    async def test_update_password_me_incorrect_password(
+        self, async_client: AsyncClient, superuser_token_headers: dict[str, str]
     ) -> None:
         new_password = random_lower_string()
         data = {"current_password": new_password, "new_password": new_password}
-        r = client.patch(
+        r = await async_client.patch(
             f"{settings.API_V1_STR}/{user_prefix}/me/password",
             headers=superuser_token_headers,
             json=data,
@@ -342,8 +381,12 @@ class TestUserRoutes(BaseTest):
             ).detail
         )
 
-    def test_update_user_me_email_exists(
-        self, client: TestClient, normal_user_token_headers: dict[str, str], db: Session
+    @pytest.mark.anyio
+    async def test_update_user_me_email_exists(
+        self,
+        async_client: AsyncClient,
+        normal_user_token_headers: dict[str, str],
+        db: Session,
     ) -> None:
         email = random_email()
         password = random_lower_string()
@@ -352,7 +395,7 @@ class TestUserRoutes(BaseTest):
         user = CRUD_user.create(db=db, user_create=user_in)
 
         data = {"email": user.email}
-        r = client.patch(
+        r = await async_client.patch(
             f"{settings.API_V1_STR}/{user_prefix}/me",
             headers=normal_user_token_headers,
             json=data,
@@ -368,8 +411,12 @@ class TestUserRoutes(BaseTest):
             ).detail
         )
 
-    def test_update_user_me_username_exists(
-        self, client: TestClient, normal_user_token_headers: dict[str, str], db: Session
+    @pytest.mark.anyio
+    async def test_update_user_me_username_exists(
+        self,
+        async_client: AsyncClient,
+        normal_user_token_headers: dict[str, str],
+        db: Session,
     ) -> None:
         email = random_email()
         password = random_lower_string()
@@ -378,7 +425,7 @@ class TestUserRoutes(BaseTest):
         user = CRUD_user.create(db=db, user_create=user_in)
 
         data = {"username": user.username}
-        r = client.patch(
+        r = await async_client.patch(
             f"{settings.API_V1_STR}/{user_prefix}/me",
             headers=normal_user_token_headers,
             json=data,
@@ -394,14 +441,15 @@ class TestUserRoutes(BaseTest):
             ).detail
         )
 
-    def test_update_password_me_same_password_error(
-        self, client: TestClient, superuser_token_headers: dict[str, str]
+    @pytest.mark.anyio
+    async def test_update_password_me_same_password_error(
+        self, async_client: AsyncClient, superuser_token_headers: dict[str, str]
     ) -> None:
         data = {
             "current_password": settings.FIRST_SUPERUSER_PASSWORD,
             "new_password": settings.FIRST_SUPERUSER_PASSWORD,
         }
-        r = client.patch(
+        r = await async_client.patch(
             f"{settings.API_V1_STR}/{user_prefix}/me/password",
             headers=superuser_token_headers,
             json=data,
@@ -416,12 +464,13 @@ class TestUserRoutes(BaseTest):
             ).detail
         )
 
-    def test_register_user(self, client: TestClient, db: Session) -> None:
+    @pytest.mark.anyio
+    async def test_register_user(self, async_client: AsyncClient, db: Session) -> None:
         email = random_email()
         password = random_lower_string()
         username = random_lower_string()
         data = {"email": email, "password": password, "username": username}
-        r_pre_confirm = client.post(
+        r_pre_confirm = await async_client.post(
             f"{settings.API_V1_STR}/{user_prefix}/signup-send-confirmation",
             json=data,
         )
@@ -438,12 +487,14 @@ class TestUserRoutes(BaseTest):
         assert user_pre_confirmed_db.isActive is False
         assert verify_password(password, user_pre_confirmed_db.hashedPassword)
 
-        user_register_token = user_cache_register_user.generate_user_confirmation_token(
-            user=user_pre_confirmed_db,
-            expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
+        user_register_token = (
+            await user_cache_register_user.generate_user_confirmation_token(
+                user=user_pre_confirmed_db,
+                expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
+            )
         )
         data_confirm = {"token": user_register_token}
-        r_confirm = client.post(
+        r_confirm = await async_client.post(
             f"{settings.API_V1_STR}/{user_prefix}/signup",
             json=data_confirm,
         )
@@ -457,7 +508,10 @@ class TestUserRoutes(BaseTest):
         db.refresh(user_after_confirmed_db)
         assert user_after_confirmed_db.isActive
 
-    def test_register_user_email_already_exists_error(self, client: TestClient) -> None:
+    @pytest.mark.anyio
+    async def test_register_user_email_already_exists_error(
+        self, async_client: AsyncClient
+    ) -> None:
         password = random_lower_string()
         username = random_lower_string()
         data = {
@@ -465,7 +519,7 @@ class TestUserRoutes(BaseTest):
             "password": password,
             "username": username,
         }
-        r = client.post(
+        r = await async_client.post(
             f"{settings.API_V1_STR}/{user_prefix}/signup-send-confirmation",
             json=data,
         )
@@ -480,8 +534,9 @@ class TestUserRoutes(BaseTest):
             ).detail
         )
 
-    def test_register_user_username_already_exists_error(
-        self, client: TestClient
+    @pytest.mark.anyio
+    async def test_register_user_username_already_exists_error(
+        self, async_client: AsyncClient
     ) -> None:
         email = random_email()
         password = random_lower_string()
@@ -490,7 +545,7 @@ class TestUserRoutes(BaseTest):
             "password": password,
             "username": settings.FIRST_SUPERUSER_USERNAME,
         }
-        r = client.post(
+        r = await async_client.post(
             f"{settings.API_V1_STR}/{user_prefix}/signup-send-confirmation",
             json=data,
         )
@@ -505,12 +560,15 @@ class TestUserRoutes(BaseTest):
             ).detail
         )
 
-    def test_register_wrong_token(self, client: TestClient, db: Session) -> None:
+    @pytest.mark.anyio
+    async def test_register_wrong_token(
+        self, async_client: AsyncClient, db: Session
+    ) -> None:
         email = random_email()
         password = random_lower_string()
         username = random_lower_string()
         data = {"email": email, "password": password, "username": username}
-        r_pre_confirm = client.post(
+        r_pre_confirm = await async_client.post(
             f"{settings.API_V1_STR}/{user_prefix}/signup-send-confirmation",
             json=data,
         )
@@ -527,13 +585,16 @@ class TestUserRoutes(BaseTest):
         assert user_pre_confirmed_db.isActive is False
         assert verify_password(password, user_pre_confirmed_db.hashedPassword)
 
-        user_register_token = user_cache_register_user.generate_user_confirmation_token(
-            user=user_pre_confirmed_db,
-            expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
+        user_register_token = (
+            await user_cache_register_user.generate_user_confirmation_token(
+                user=user_pre_confirmed_db,
+                expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
+            )
         )
+
         wrong_token = user_register_token + "wrong"
         data_confirm = {"token": wrong_token}
-        r_confirm = client.post(
+        r_confirm = await async_client.post(
             f"{settings.API_V1_STR}/{user_prefix}/signup",
             json=data_confirm,
         )
@@ -548,8 +609,12 @@ class TestUserRoutes(BaseTest):
             ).detail
         )
 
-    def test_update_user(
-        self, client: TestClient, superuser_token_headers: dict[str, str], db: Session
+    @pytest.mark.anyio
+    async def test_update_user(
+        self,
+        async_client: AsyncClient,
+        superuser_token_headers: dict[str, str],
+        db: Session,
     ) -> None:
         email = random_email()
         password = random_lower_string()
@@ -559,7 +624,7 @@ class TestUserRoutes(BaseTest):
         updated_username = random_lower_string()
 
         data = {"username": updated_username}
-        r = client.patch(
+        r = await async_client.patch(
             f"{settings.API_V1_STR}/{user_prefix}/{user.userId}",
             headers=superuser_token_headers,
             json=data,
@@ -574,12 +639,13 @@ class TestUserRoutes(BaseTest):
         assert user_db
         assert user_db.username == updated_username
 
-    def test_update_user_not_exists(
-        self, client: TestClient, superuser_token_headers: dict[str, str]
+    @pytest.mark.anyio
+    async def test_update_user_not_exists(
+        self, async_client: AsyncClient, superuser_token_headers: dict[str, str]
     ) -> None:
         data = {"username": "Updated_username"}
         not_found_user_id = uuid.uuid4()
-        r = client.patch(
+        r = await async_client.patch(
             f"{settings.API_V1_STR}/{user_prefix}/{not_found_user_id}",
             headers=superuser_token_headers,
             json=data,
@@ -595,8 +661,12 @@ class TestUserRoutes(BaseTest):
             ).detail
         )
 
-    def test_update_user_email_exists(
-        self, client: TestClient, superuser_token_headers: dict[str, str], db: Session
+    @pytest.mark.anyio
+    async def test_update_user_email_exists(
+        self,
+        async_client: AsyncClient,
+        superuser_token_headers: dict[str, str],
+        db: Session,
     ) -> None:
         email = random_email()
         password = random_lower_string()
@@ -611,7 +681,7 @@ class TestUserRoutes(BaseTest):
         user2 = CRUD_user.create(db=db, user_create=user_in2)
 
         data = {"email": user2.email}
-        r = client.patch(
+        r = await async_client.patch(
             f"{settings.API_V1_STR}/{user_prefix}/{user.userId}",
             headers=superuser_token_headers,
             json=data,
@@ -627,7 +697,8 @@ class TestUserRoutes(BaseTest):
             ).detail
         )
 
-    def test_delete_user_me(self, client: TestClient, db: Session) -> None:
+    @pytest.mark.anyio
+    async def test_delete_user_me(self, async_client: AsyncClient, db: Session) -> None:
         email = random_email()
         password = random_lower_string()
         username = random_lower_string()
@@ -640,12 +711,14 @@ class TestUserRoutes(BaseTest):
             "password": password,
             "username": username,
         }
-        r = client.post(f"{settings.API_V1_STR}/login/access-token", data=login_data)
+        r = await async_client.post(
+            f"{settings.API_V1_STR}/login/access-token", data=login_data
+        )
         tokens = r.json()
         a_token = tokens["access_token"]
         headers = {"Authorization": f"Bearer {a_token}"}
 
-        r = client.delete(
+        r = await async_client.delete(
             f"{settings.API_V1_STR}/{user_prefix}/me",
             headers=headers,
         )
@@ -656,7 +729,7 @@ class TestUserRoutes(BaseTest):
             == get_delete_return_msg(User.__tablename__, {"userId": user_id}).message
         )
 
-        result = client.get(
+        result = await async_client.get(
             f"{settings.API_V1_STR}/{user_prefix}/{user_id}",
             headers=headers,
         )
@@ -673,10 +746,11 @@ class TestUserRoutes(BaseTest):
         user_db = CRUD_user.get(db=db, filter={"userId": user_id})
         assert user_db is None
 
-    def test_delete_user_me_as_superuser(
-        self, client: TestClient, superuser_token_headers: dict[str, str]
+    @pytest.mark.anyio
+    async def test_delete_user_me_as_superuser(
+        self, async_client: AsyncClient, superuser_token_headers: dict[str, str]
     ) -> None:
-        r = client.delete(
+        r = await async_client.delete(
             f"{settings.API_V1_STR}/{user_prefix}/me",
             headers=superuser_token_headers,
         )
@@ -691,16 +765,17 @@ class TestUserRoutes(BaseTest):
             ).detail
         )
 
-    def test_delete_user_me_not_active(
+    @pytest.mark.anyio
+    async def test_delete_user_me_not_active(
         self,
-        client: TestClient,
+        async_client: AsyncClient,
         db: Session,
         normal_user_token_headers: dict[str, str],
         superuser_token_headers: dict[str, str],
     ) -> None:
         normal_user = CRUD_user.get(db=db, filter={"email": settings.TEST_USER_EMAIL})
         update_is_active_data = {"isActive": False}
-        r = client.patch(
+        r = await async_client.patch(
             f"{settings.API_V1_STR}/{user_prefix}/{normal_user.userId}",
             headers=superuser_token_headers,
             json=update_is_active_data,
@@ -710,7 +785,7 @@ class TestUserRoutes(BaseTest):
         updated_user = r.json()
         assert updated_user["isActive"] is False
 
-        r = client.delete(
+        r = await async_client.delete(
             f"{settings.API_V1_STR}/{user_prefix}/me",
             headers=normal_user_token_headers,
         )
@@ -726,7 +801,7 @@ class TestUserRoutes(BaseTest):
         )
         # revert to the old active status to keep consistency in test
         update_is_active_data = {"isActive": True}
-        r = client.patch(
+        r = await async_client.patch(
             f"{settings.API_V1_STR}/{user_prefix}/{normal_user.userId}",
             headers=superuser_token_headers,
             json=update_is_active_data,
@@ -735,8 +810,12 @@ class TestUserRoutes(BaseTest):
         updated_user = r.json()
         assert updated_user["isActive"]
 
-    def test_delete_user_super_user(
-        self, client: TestClient, superuser_token_headers: dict[str, str], db: Session
+    @pytest.mark.anyio
+    async def test_delete_user_super_user(
+        self,
+        async_client: AsyncClient,
+        superuser_token_headers: dict[str, str],
+        db: Session,
     ) -> None:
         email = random_email()
         password = random_lower_string()
@@ -744,7 +823,7 @@ class TestUserRoutes(BaseTest):
         user_in = UserCreate(email=email, password=password, username=username)
         user = CRUD_user.create(db=db, user_create=user_in)
         user_id = user.userId
-        r = client.delete(
+        r = await async_client.delete(
             f"{settings.API_V1_STR}/{user_prefix}/{user_id}",
             headers=superuser_token_headers,
         )
@@ -757,11 +836,12 @@ class TestUserRoutes(BaseTest):
         result = CRUD_user.get(db=db, filter={"userId": user_id})
         assert result is None
 
-    def test_delete_user_not_found(
-        self, client: TestClient, superuser_token_headers: dict[str, str]
+    @pytest.mark.anyio
+    async def test_delete_user_not_found(
+        self, async_client: AsyncClient, superuser_token_headers: dict[str, str]
     ) -> None:
         not_found_user_id = uuid.uuid4()
-        r = client.delete(
+        r = await async_client.delete(
             f"{settings.API_V1_STR}/{user_prefix}/{not_found_user_id}",
             headers=superuser_token_headers,
         )
@@ -775,14 +855,18 @@ class TestUserRoutes(BaseTest):
             ).detail
         )
 
-    def test_delete_user_current_super_user_error(
-        self, client: TestClient, superuser_token_headers: dict[str, str], db: Session
+    @pytest.mark.anyio
+    async def test_delete_user_current_super_user_error(
+        self,
+        async_client: AsyncClient,
+        superuser_token_headers: dict[str, str],
+        db: Session,
     ) -> None:
         super_user = CRUD_user.get(db=db, filter={"email": settings.FIRST_SUPERUSER})
         assert super_user
         user_id = super_user.userId
 
-        r = client.delete(
+        r = await async_client.delete(
             f"{settings.API_V1_STR}/{user_prefix}/{user_id}",
             headers=superuser_token_headers,
         )
@@ -795,8 +879,12 @@ class TestUserRoutes(BaseTest):
             ).detail
         )
 
-    def test_delete_user_without_privileges(
-        self, client: TestClient, normal_user_token_headers: dict[str, str], db: Session
+    @pytest.mark.anyio
+    async def test_delete_user_without_privileges(
+        self,
+        async_client: AsyncClient,
+        normal_user_token_headers: dict[str, str],
+        db: Session,
     ) -> None:
         email = random_email()
         password = random_lower_string()
@@ -806,7 +894,7 @@ class TestUserRoutes(BaseTest):
         )
         user = CRUD_user.create(db=db, user_create=user_in)
 
-        r = client.delete(
+        r = await async_client.delete(
             f"{settings.API_V1_STR}/{user_prefix}/{user.userId}",
             headers=normal_user_token_headers,
         )
@@ -820,14 +908,15 @@ class TestUserRoutes(BaseTest):
             ).detail
         )
 
-    def test_token_expired_user(
-        self, client: TestClient, db: Session, get_cache: Redis
+    @pytest.mark.anyio
+    async def test_token_expired_user(
+        self, async_client: AsyncClient, db: Session, get_cache: Redis
     ) -> None:
         email = random_email()
         password = random_lower_string()
         username = random_lower_string()
         data = {"email": email, "password": password, "username": username}
-        r = client.post(
+        r = await async_client.post(
             f"{settings.API_V1_STR}/{user_prefix}/signup-send-confirmation",
             json=data,
         )
@@ -838,11 +927,12 @@ class TestUserRoutes(BaseTest):
 
         user_db = CRUD_user.get(db=db, filter={"email": email})
 
-        token = user_cache_register_user.generate_user_confirmation_token(
-            user=user_db, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
+        token = await user_cache_register_user.generate_user_confirmation_token(
+            user=user_db,
+            expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
         )
 
-        r = client.post(
+        r = await async_client.post(
             f"{settings.API_V1_STR}/{user_prefix}/signup",
             json={"token": token},
         )
@@ -854,7 +944,7 @@ class TestUserRoutes(BaseTest):
         assert verify_password(password, user_db.hashedPassword)
 
         # Test login with expired token
-        get_cache.flushall()
+        await get_cache.flushall()
         with (
             patch("app.core.config.settings.ACCESS_SESSION_EXPIRE_SECONDS", 1),
         ):
@@ -863,13 +953,13 @@ class TestUserRoutes(BaseTest):
                 "password": password,
                 "username": username,
             }
-            r = client.post(
+            r = await async_client.post(
                 f"{settings.API_V1_STR}/login/access-token", data=login_data
             )
             token = r.json()["access_token"]
             headers = {"Authorization": f"Bearer {token}"}
             time.sleep(1.1)  # Wait for token to expire
-            r_get_user_me_ok = client.get(
+            r_get_user_me_ok = await async_client.get(
                 f"{settings.API_V1_STR}/{user_prefix}/me",
                 headers=headers,
             )
