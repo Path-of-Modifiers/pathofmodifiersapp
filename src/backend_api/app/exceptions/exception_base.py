@@ -18,7 +18,6 @@ class PathOfModifiersAPIError(HTTPException):
         function_name: str | None = "Unknown function",
         class_name: str | None = None,
         detail: str | None = "Path of Modifiers service is unavailable",
-        headers: dict[str, str] | None = None,
     ):
         if class_name is not None and function_name is not None:
             function_name = f"{class_name}.{function_name}"
@@ -28,5 +27,4 @@ class PathOfModifiersAPIError(HTTPException):
         super().__init__(
             status_code=status_code,
             detail=detail,
-            headers=headers,
         )
