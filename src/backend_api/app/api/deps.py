@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, Request
+from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
@@ -57,12 +57,9 @@ CurrentUser = Annotated[User, Depends(get_current_user)]
 
 async def get_current_active_superuser(current_user: CurrentUser) -> User:
     if not current_user.isSuperuser:
-        raise HTTPException(
-            status_code=403,
-            detail=UserWithNotEnoughPrivilegesError(
-                username_or_email=current_user.username,
-                function_name=get_current_active_superuser.__name__,
-            ).detail,
+        raise UserWithNotEnoughPrivilegesError(
+            username_or_email=current_user.username,
+            function_name=get_current_active_superuser.__name__,
         )
     return current_user
 
