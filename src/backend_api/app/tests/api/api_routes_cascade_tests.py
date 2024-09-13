@@ -1,7 +1,7 @@
 from copy import deepcopy
 
 import pytest
-from fastapi.testclient import TestClient
+from httpx import AsyncClient
 from sqlalchemy.orm import Session
 
 from app.api.api_message_util import get_delete_return_msg
@@ -12,15 +12,16 @@ from app.tests.utils.utils import random_based_on_type
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
+@pytest.mark.usefixtures("clear_cache", autouse=True)
 class TestCascadeAPI(TestAPI):
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_cascade_delete(
         self,
         db: Session,
         object_generator_func_w_deps: tuple[
             dict, ModelType, list[dict | ModelType] | None
         ],
-        client: TestClient,
+        async_client: AsyncClient,
         route_prefix: str,
         unique_identifier: str,
         ignore_test_columns: list[str],
@@ -43,7 +44,7 @@ class TestCascadeAPI(TestAPI):
             (Tuple[ Dict, ModelType, List[Union[Dict, ModelType]]] ]):
             Object generator function with dependencies
 
-            client (TestClient): FastAPI test client
+            async_client (AsyncClient): Httpx test async_client
             route_prefix (str): Route name
             model_table_name (str): Model table name
             unique_identifier (str): Unique identifier for the object
@@ -74,7 +75,7 @@ class TestCascadeAPI(TestAPI):
 
             obj_out_pk_map = self._create_primary_key_map(object_out)
 
-            response_get_before_deletion = client.get(
+            response_get_before_deletion = await async_client.get(
                 f"{settings.API_V1_STR}/{route_prefix}/{obj_out_pk_map[unique_identifier]}",
                 headers=superuser_token_headers,
             )
@@ -100,7 +101,7 @@ class TestCascadeAPI(TestAPI):
             if dep_unique_identifier not in dep_dict:
                 continue
 
-            response_delete_dep = client.delete(
+            response_delete_dep = await async_client.delete(
                 f"{settings.API_V1_STR}/{dep_route_prefix}/{dep_dict[dep_unique_identifier]}",
                 headers=superuser_token_headers,
             )
@@ -115,20 +116,20 @@ class TestCascadeAPI(TestAPI):
 
             assert response_delete_dep.status_code == 200
 
-            response_get_after_deletion = client.get(
+            response_get_after_deletion = await async_client.get(
                 f"{settings.API_V1_STR}/{route_prefix}/{obj_out_pk_map[unique_identifier]}",
                 headers=superuser_token_headers,
             )
             assert response_get_after_deletion.status_code == 404
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_cascade_update(
         self,
         db: Session,
         object_generator_func_w_deps: tuple[
             dict, ModelType, list[dict | ModelType] | None
         ],
-        client: TestClient,
+        async_client: AsyncClient,
         route_prefix: str,
         unique_identifier: str,
         update_request_params_deps: list[str],
@@ -152,7 +153,7 @@ class TestCascadeAPI(TestAPI):
             (Tuple[ Dict, ModelType, List[Union[Dict, ModelType]]] ]):
             Object generator function with dependencies
 
-            client (TestClient): FastAPI test client
+            async_client (AsyncClient): Httpx test async_client
             route_prefix (str): Route name
             unique_identifier (str): Unique identifier for the object
 
@@ -209,14 +210,14 @@ class TestCascadeAPI(TestAPI):
             dep_obj_out_pk_map = self._create_primary_key_map(dep_model)
 
             if dep_route_prefix in update_request_params_deps:
-                response_update_dep = client.put(
+                response_update_dep = await async_client.put(
                     f"{settings.API_V1_STR}/{dep_route_prefix}/",
                     headers=superuser_token_headers,
                     json=new_dep_dict,
                     params=dep_obj_out_pk_map,
                 )
             else:
-                response_update_dep = client.put(
+                response_update_dep = await async_client.put(
                     f"{settings.API_V1_STR}/{dep_route_prefix}/{dep_obj_out_pk_map[dep_unique_identifier]}",
                     headers=superuser_token_headers,
                     json=new_dep_dict,
@@ -232,7 +233,7 @@ class TestCascadeAPI(TestAPI):
             )
 
             # Get the original model
-            response_get_model = client.get(
+            response_get_model = await async_client.get(
                 f"{settings.API_V1_STR}/{route_prefix}/{obj_out_pk_map[unique_identifier]}",
                 headers=superuser_token_headers,
             )
