@@ -1,5 +1,5 @@
-from redis.asyncio import Redis as AsyncRedis
+import redis.asyncio as Redis
 
 from app.core.config import settings
 
-cache = AsyncRedis.from_url(str(settings.CACHE_URI))
+cache = Redis.from_url(str(settings.CACHE_URI))
