@@ -10,12 +10,14 @@ from sqlalchemy.orm import Session
 from app.api.api_message_util import (
     get_delete_return_msg,
 )
+from app.core.cache.user_cache import UserCache
 from app.core.config import settings
 from app.crud.base import CRUDBase, ModelType
 from app.exceptions import (
     DbObjectDoesNotExistError,
 )
 from app.exceptions.model_exceptions.db_exception import DbObjectAlreadyExistsError
+from app.exceptions.model_exceptions.request_exception import InvalidTokenError
 from app.tests.base_test import BaseTest
 from app.tests.utils.utils import is_courotine_function
 
@@ -263,17 +265,15 @@ class TestAPI(BaseTest):
             f"{settings.API_V1_STR}/{route_prefix}/{not_found_object}",
             headers=superuser_token_headers,
         )
-        assert response.status_code == 404
-        content = response.json()
-        assert (
-            content["detail"]
-            == DbObjectDoesNotExistError(
-                model_table_name=model_table_name,
-                filter={unique_identifier: not_found_object},
-                function_name=crud_instance.get.__name__,
-                class_name=crud_instance.__class__.__name__,
-            ).detail
+        db_obj_does_not_exist_error = DbObjectDoesNotExistError(
+            model_table_name=model_table_name,
+            filter={unique_identifier: not_found_object},
+            function_name=crud_instance.get.__name__,
+            class_name=crud_instance.__class__.__name__,
         )
+        assert response.status_code == db_obj_does_not_exist_error.status_code
+        content = response.json()
+        assert content["detail"] == db_obj_does_not_exist_error.detail
 
     @pytest.mark.anyio
     async def test_get_instance_not_enough_permissions(
@@ -309,8 +309,13 @@ class TestAPI(BaseTest):
             f"{settings.API_V1_STR}/{route_prefix}/{obj_out_pk_map[unique_identifier]}",
         )
         content = response.json()
-        assert response.status_code == 401
-        assert content["detail"] == "Not authenticated"
+        invalid_token_error = InvalidTokenError(
+            token=None,
+            function_name=UserCache.verify_token.__name__,
+            class_name=UserCache.__name__,
+        )
+        assert response.status_code == invalid_token_error.status_code
+        assert content["detail"] == invalid_token_error.detail
 
     @pytest.mark.anyio
     async def test_get_instances(
@@ -566,10 +571,14 @@ class TestAPI(BaseTest):
                 f"{settings.API_V1_STR}/{route_prefix}/{obj_pk_map[unique_identifier]}",
                 json=update_object_dict,
             )
-
-        assert response.status_code == 401
+        invalid_token_error = InvalidTokenError(
+            token=None,
+            function_name=UserCache.verify_token.__name__,
+            class_name=UserCache.__name__,
+        )
+        assert response.status_code == invalid_token_error.status_code
         content = response.json()
-        assert content["detail"] == "Not authenticated"
+        assert content["detail"] == invalid_token_error.detail
 
     @pytest.mark.anyio
     async def test_delete_instance(
@@ -677,6 +686,11 @@ class TestAPI(BaseTest):
         response = await async_client.delete(
             f"{settings.API_V1_STR}/{route_prefix}/{obj_out_pk_map[unique_identifier]}",
         )
-        assert response.status_code == 401
+        invalid_token_error = InvalidTokenError(
+            token=None,
+            function_name=UserCache.verify_token.__name__,
+            class_name=UserCache.__name__,
+        )
+        assert response.status_code == invalid_token_error.status_code
         content = response.json()
-        assert content["detail"] == "Not authenticated"
+        assert content["detail"] == invalid_token_error.detail
