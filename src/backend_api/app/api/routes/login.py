@@ -30,7 +30,7 @@ from app.exceptions import (
     NewPasswordIsSameError,
     UserIsNotActiveError,
 )
-from app.limiter import apply_user_rate_limits
+from app.limiter import apply_ip_rate_limits, apply_user_rate_limits
 from app.utils.user import (
     generate_reset_password_email,
     send_email,
@@ -42,13 +42,13 @@ login_prefix = "login"
 
 
 @router.post("/access-token")
-@apply_user_rate_limits(
+@apply_ip_rate_limits(
     settings.LOGIN_RATE_LIMIT_SECOND,
     settings.LOGIN_RATE_LIMIT_MINUTE,
     settings.LOGIN_RATE_LIMIT_HOUR,
     settings.LOGIN_RATE_LIMIT_DAY,
 )
-def login_access_session(
+async def login_access_session(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
@@ -70,12 +70,14 @@ def login_access_session(
             username_or_email=user.username,
             function_name=login_access_session.__name__,
         )
-    access_token = str(
-        user_cache_session.create_user_cache_instance(
-            user=user,
-            expire_seconds=settings.ACCESS_SESSION_EXPIRE_SECONDS,
-        )
+
+    access_token_uuid = await user_cache_session.create_user_cache_instance(
+        user=user,
+        expire_seconds=settings.ACCESS_SESSION_EXPIRE_SECONDS,
     )
+
+    access_token = str(access_token_uuid)
+
     return Token(
         access_token=access_token,
     )
@@ -88,7 +90,7 @@ def login_access_session(
     settings.LOGIN_RATE_LIMIT_HOUR,
     settings.LOGIN_RATE_LIMIT_DAY,
 )
-def test_token(
+async def test_token(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     current_user: CurrentUser,
@@ -101,13 +103,13 @@ def test_token(
 
 
 @router.post("/password-recovery/")
-@apply_user_rate_limits(
+@apply_ip_rate_limits(
     settings.RECOVERY_PASSWORD_RATE_LIMIT_SECOND,
     settings.RECOVERY_PASSWORD_RATE_LIMIT_MINUTE,
     settings.RECOVERY_PASSWORD_RATE_LIMIT_HOUR,
     settings.RECOVERY_PASSWORD_RATE_LIMIT_DAY,
 )
-def recover_password(
+async def recover_password(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     body: RecoverPassword,
@@ -133,8 +135,10 @@ def recover_password(
             function_name=recover_password.__name__,
         )
 
-    password_reset_token = user_cache_password_reset.generate_user_confirmation_token(
-        user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
+    password_reset_token = (
+        await user_cache_password_reset.generate_user_confirmation_token(
+            user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
+        )
     )
 
     if not body.email:
@@ -154,13 +158,13 @@ def recover_password(
 
 
 @router.post("/reset-password/")
-@apply_user_rate_limits(
+@apply_ip_rate_limits(
     settings.RESET_PASSWORD_RATE_LIMIT_SECOND,
     settings.RESET_PASSWORD_RATE_LIMIT_MINUTE,
     settings.RESET_PASSWORD_RATE_LIMIT_HOUR,
     settings.RESET_PASSWORD_RATE_LIMIT_DAY,
 )
-def reset_password(
+async def reset_password(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     body: NewPassword,
@@ -169,7 +173,8 @@ def reset_password(
     """
     Reset password
     """
-    cached_user = user_cache_password_reset.verify_token(token=body.token)
+    cached_user = await user_cache_password_reset.verify_token(token=body.token)
+
     email = cached_user.email
     if not email:
         raise InvalidTokenError(
@@ -206,7 +211,7 @@ def reset_password(
     dependencies=[Depends(get_current_active_superuser)],
     response_class=HTMLResponse,
 )
-def recover_password_html_content(
+async def recover_password_html_content(
     email: EmailStr, session: Session = Depends(get_db)
 ) -> Any:
     """
@@ -221,9 +226,12 @@ def recover_password_html_content(
             filter=filter,
             function_name=recover_password_html_content.__name__,
         )
-    password_reset_token = user_cache_password_reset.generate_user_confirmation_token(
-        user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
+    password_reset_token = (
+        await user_cache_password_reset.generate_user_confirmation_token(
+            user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
+        )
     )
+
     email_data = generate_reset_password_email(
         email_to=user.email, email=email, token=password_reset_token
     )

@@ -62,7 +62,9 @@ user_prefix = "user"
     dependencies=[Depends(get_current_active_superuser)],
     response_model=UsersPublic,
 )
-def get_all(db: Session = Depends(get_db), skip: int = 0, limit: int = 100) -> Any:
+async def get_all(
+    db: Session = Depends(get_db), skip: int = 0, limit: int = 100
+) -> Any:
     """
     Retrieve all users.
     """
@@ -75,7 +77,7 @@ def get_all(db: Session = Depends(get_db), skip: int = 0, limit: int = 100) -> A
 @router.post(
     "/", dependencies=[Depends(get_current_active_superuser)], response_model=UserPublic
 )
-def create(*, db: Session = Depends(get_db), user_in: UserCreate) -> Any:
+async def create(*, db: Session = Depends(get_db), user_in: UserCreate) -> Any:
     """
     Create new user.
     """
@@ -103,7 +105,7 @@ def create(*, db: Session = Depends(get_db), user_in: UserCreate) -> Any:
     settings.UPDATE_ME_RATE_LIMIT_HOUR,
     settings.UPDATE_ME_RATE_LIMIT_DAY,
 )
-def update_me(
+async def update_me(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     *,
@@ -131,7 +133,7 @@ def update_me(
     settings.UPDATE_PASSWORD_ME_RATE_LIMIT_HOUR,
     settings.UPDATE_PASSWORD_ME_RATE_LIMIT_DAY,
 )
-def update_password_me(
+async def update_password_me(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     *,
@@ -162,7 +164,7 @@ def update_password_me(
     settings.DEFAULT_USER_RATE_LIMIT_HOUR,
     settings.DEFAULT_USER_RATE_LIMIT_DAY,
 )
-def get_user_me(
+async def get_user_me(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     current_user: CurrentUser,
@@ -184,7 +186,7 @@ def get_user_me(
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_DAY,
 )
-def delete_user_me(
+async def delete_user_me(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     current_user: CurrentUser,
@@ -212,7 +214,7 @@ def delete_user_me(
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_DAY,
 )
-def register_user_send_confirmation(
+async def register_user_send_confirmation(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     user_pre_confirmed: UserRegisterPreEmailConfirmation,
@@ -237,9 +239,12 @@ def register_user_send_confirmation(
 
     user = CRUD_user.create(db=db, user_create=user_create)
 
-    user_register_token = user_cache_register_user.generate_user_confirmation_token(
-        user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
+    user_register_token = (
+        await user_cache_register_user.generate_user_confirmation_token(
+            user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
+        )
     )
+
     email_data = generate_user_registration_email(
         email_to=user_pre_confirmed.email,
         username=user_pre_confirmed.username,
@@ -263,7 +268,7 @@ def register_user_send_confirmation(
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_DAY,
 )
-def register_user_confirm(
+async def register_user_confirm(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     user_register_confirmation: UserRegisterPostEmailConfirmation,
@@ -272,7 +277,7 @@ def register_user_confirm(
     """
     Confirm new user without the need to be logged in. Requires email confirmation.
     """
-    cached_user = user_cache_register_user.verify_token(
+    cached_user = await user_cache_register_user.verify_token(
         token=user_register_confirmation.token
     )
     email = cached_user.email
@@ -302,7 +307,7 @@ def register_user_confirm(
     settings.DEFAULT_USER_RATE_LIMIT_HOUR,
     settings.DEFAULT_USER_RATE_LIMIT_DAY,
 )
-def get_user_by_id(
+async def get_user_by_id(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     user_id: uuid.UUID,
@@ -350,7 +355,7 @@ def update(
 
 
 @router.delete("/{user_id}", dependencies=[Depends(get_current_active_superuser)])
-def delete_user(
+async def delete_user(
     current_user: CurrentUser,
     user_id: uuid.UUID,
     db: Session = Depends(get_db),
@@ -388,7 +393,7 @@ def delete_user(
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_DAY,
 )
-def change_activate_user(
+async def change_activate_user(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     current_user: CurrentUser,
