@@ -16,7 +16,8 @@ from app.exceptions import (
 )
 
 reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/login/access-token"
+    tokenUrl=f"{settings.API_V1_STR}/login/access-token",
+    auto_error=False,
 )
 
 
@@ -73,8 +74,8 @@ async def get_current_active_user(current_user: CurrentUser) -> User:
     return current_user
 
 
-def get_user_id_by_request(request: Request) -> str:
-    """Get current user id by request.
+def get_access_token_by_request(request: Request) -> str:
+    """Get access token by request.
 
     Args:
         request (Request): The request
@@ -84,19 +85,19 @@ def get_user_id_by_request(request: Request) -> str:
         InvalidTokenError: InvalidTokenError
 
     Returns:
-        str: The user id extracted from the token.
+        str: The access token extracted from the request.
     """
     header = request.headers.get("Authorization")
     if not header or not header.startswith("Bearer "):
         raise InvalidHeaderProvidedError(
             status_code=403,
-            function_name=get_user_id_by_request.__name__,
+            function_name=get_access_token_by_request.__name__,
             header=header,
         )
 
-    user_id = header[7:]  # Strip "Bearer " prefix (7 characters)
+    access_token = header[7:]  # Strip "Bearer " prefix (7 characters)
 
-    return user_id
+    return access_token
 
 
 def get_rate_limit_amount_by_tier(tier: int) -> int:
@@ -108,7 +109,7 @@ def get_rate_limit_amount_by_tier(tier: int) -> int:
 
 async def get_rate_limit_tier_by_request(request: Request) -> int:
     """Get current user rate limit tier by request."""
-    token = get_user_id_by_request(request)
+    token = get_access_token_by_request(request)
 
     user = await user_cache_session.verify_token(token)
 

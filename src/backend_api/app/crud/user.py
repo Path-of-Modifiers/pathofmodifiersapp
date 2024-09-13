@@ -173,6 +173,7 @@ class CRUDUser:
         if not session_user:
             return None
         self.validate(session_user)
+        print("DONE WITH CRUD")
         return session_user
 
     def get_email_by_username(self, db: Session, *, username: str) -> str | None:
