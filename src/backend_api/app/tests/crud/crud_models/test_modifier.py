@@ -37,7 +37,7 @@ class TestModifierCRUD(test_crud.TestCRUD):
     pass
 
 
-#     @pytest.mark.asyncio
+#
 #     async def test_main_key_get(
 #         self,
 #         db: Session,
@@ -71,7 +71,7 @@ class TestModifierCRUD(test_crud.TestCRUD):
 #         assert len(multiple_object_db) == count
 #         self._test_object(multiple_object_db, multiple_object_dict)
 
-# @pytest.mark.asyncio
+#
 # async def test_main_key_delete(
 #     self,
 #     db: Session,

@@ -27,23 +27,9 @@ class UserCache:
     def __init__(self, user_token_type: UserCacheTokenType) -> None:
         self.user_token_type = user_token_type
 
-    def _scan_user_cache_instances(self, pattern: str) -> list[UserInCache]:
-        # Initialize a list to hold the instance values
-        user_cache_instances = []
-
-        # Using SCAN to iterate through the keys
-        cursor = "0"
-        while cursor != 0:
-            cursor, keys = cache.scan(cursor=cursor, match=pattern)
-            # Retrieve all instance values for the keys found
-            if keys:
-                instances = cache.mget(keys)
-                for instance in instances:
-                    user_cache_instances.append(
-                        user_cache_adapter.validate_json(instance)
-                    )
-
-        return user_cache_instances
+    def _create_key_format(self, token: UUID | str) -> str:
+        """Format for how the key is stored in the cache"""
+        return f"{self.user_token_type.value}:{token}"
 
     def _create_user_cache_by_user_model(
         self,
@@ -75,18 +61,34 @@ class UserCache:
                     update_params=update_params,
                     object=user_in_cache,
                     function_name=self._create_user_cache_by_user_model.__name__,
-                    class_name=self.__class__.__name__,
+                    class_name=self.__,
                 )
             user_in_cache.__dict__.update(update_params)
+
         return user_in_cache.model_dump_json()
 
-    def create_user_cache_instance(
+    async def _get_cache_instance_by_token(self, token: str) -> UserInCache | None:
+        """Get user cache instance in cache"""
+        token_format = self._create_key_format(token)
+
+        session_instance = await cache.get(token_format)
+        await cache.aclose()
+
+        if session_instance:
+            session_instance = session_instance.decode("utf-8")
+            user_cache_instance = user_cache_adapter.validate_json(session_instance)
+        else:
+            user_cache_instance = None
+
+        return user_cache_instance
+
+    async def create_user_cache_instance(
         self,
         expire_seconds: int,
         user: model_User,
         *,
         update_params: dict[str, Any] | None = None,
-    ) -> UUID:
+    ) -> str:
         """
         Creates a cache instance for the given user. Returns the access token.
 
@@ -100,84 +102,26 @@ class UserCache:
 
         access_token = uuid4()
 
-        cache.set(
-            name=f"user:{user.userId}:{self.user_token_type}:{access_token}",
+        await cache.set(
+            name=self._create_key_format(token=access_token),
             value=user_cache_model,
             ex=expire_seconds,
         )
+        await cache.aclose()
 
-        return access_token
+        return str(access_token)
 
-    def get_user_cache_instances_by_token(
-        self, token: UUID
-    ) -> list[UserInCache] | None:
+    async def verify_token(self, token: str) -> UserInCache | None:
         """
-        Gets all user cache instances for the given token.
+        Verify token and return the cached user.
         """
-        # Pattern to match all instances for the given token
-        pattern = f"user:*:{self.user_token_type}:{token}"
+        user_cache_instance = await self._get_cache_instance_by_token(token)
 
-        user_cache_instances = self._scan_user_cache_instances(pattern)
-
-        if not user_cache_instances:
-            return None
-
-        return user_cache_instances
-
-    def get_user_cache_instances_by_user_id(
-        self, user_id: UUID
-    ) -> list[UserInCache] | None:
-        """
-        Gets all user cache instances for the given user id and user_token_type.
-        """
-        user_id_str = str(user_id)
-        # Pattern to match all instances for the given userId
-        pattern = f"user:{user_id_str}:{self.user_token_type}:*"
-
-        user_cache_instances = self._scan_user_cache_instances(pattern)
-
-        if not user_cache_instances:
-            return None
-
-        return user_cache_instances
-
-    def generate_user_confirmation_token(
-        self,
-        user: model_User,
-        expire_seconds: int,
-        *,
-        update_params: dict[str, Any] | None = None,
-    ) -> str:
-        """
-        Generate user confirmation token. The token will be sent to the user's email.
-        """
-        user_confirmation_identifier = self.create_user_cache_instance(
-            user=user, expire_seconds=expire_seconds, update_params=update_params
-        )
-        user_confirmation_token = str(user_confirmation_identifier)
-        return user_confirmation_token
-
-    def verify_token(self, token: str) -> UserInCache | None:
-        """
-        Verify token and return the cashed user.
-        """
-        # Just using the first instance. May need to change in the future
-        user_cache_instances = self.get_user_cache_instances_by_token(token)
-
-        if not user_cache_instances:
+        if not user_cache_instance or not isinstance(user_cache_instance, UserInCache):
             raise InvalidTokenError(
                 function_name=self.verify_token.__name__,
                 class_name=self.__class__.__name__,
                 token=token,
             )
 
-        token_user_data = user_cache_instances[0]
-
-        if not token_user_data:
-            raise InvalidTokenError(
-                token=token,
-                function_name=self.verify_token.__name__,
-                class_name=self.__class__.__name__,
-            )
-
-        return token_user_data
+        return user_cache_instance
