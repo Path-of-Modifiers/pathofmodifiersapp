@@ -55,7 +55,7 @@ async def get_item(
 
 @router.get(
     "/latest_item_id/",
-    response_model=int,
+    response_model=int | None,
     tags=["latest_item_id"],
     dependencies=[Depends(get_current_active_user)],
 )
@@ -77,10 +77,10 @@ async def get_latest_item_id(
     """
 
     result = db.execute(text("""SELECT MAX("itemId") FROM item""")).fetchone()
-    if result:
-        return int(result[0])
-    else:
-        return 1
+    if not result or not result[0]:
+        return None
+
+    return int(result[0])
 
 
 @router.get(
