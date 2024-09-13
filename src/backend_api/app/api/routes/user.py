@@ -8,9 +8,11 @@ from sqlalchemy.orm import Session
 from app.api.api_message_util import (
     get_delete_return_msg,
     get_user_active_change_msg,
-    get_user_email_confirmation_sent,
     get_user_psw_change_msg,
+    get_user_register_confirmation_sent_msg,
     get_user_successfully_registered_msg,
+    get_user_update_me_confirmation_sent_msg,
+    get_user_update_me_success_msg,
 )
 from app.api.deps import (
     CurrentUser,
@@ -18,7 +20,7 @@ from app.api.deps import (
     get_current_active_user,
     get_db,
 )
-from app.core.cache import user_cache_register_user
+from app.core.cache import user_cache_register_user, user_cache_update_me
 from app.core.config import settings
 from app.core.models.models import User
 from app.core.schemas import (
@@ -26,14 +28,12 @@ from app.core.schemas import (
     UpdatePassword,
     UserCreate,
     UserPublic,
+    UserRegisterPreEmailConfirmation,
     UsersPublic,
     UserUpdate,
-    UserUpdateMe,
 )
-from app.core.schemas.user import (
-    UserRegisterPostEmailConfirmation,
-    UserRegisterPreEmailConfirmation,
-)
+from app.core.schemas.token import Token
+from app.core.schemas.user import UserUpdateMe
 from app.crud import CRUD_user
 from app.exceptions import (
     DbObjectDoesNotExistError,
@@ -42,6 +42,11 @@ from app.exceptions import (
     SuperUserNotAllowedToDeleteSelfError,
     UserWithNotEnoughPrivilegesError,
 )
+from app.exceptions.model_exceptions.user_login_exception import (
+    UpdateExisitingMeValuesError,
+    UserEmailRequiredError,
+    UserUsernameRequiredError,
+)
 from app.limiter import (
     apply_ip_rate_limits,
     apply_user_rate_limits,
@@ -49,6 +54,7 @@ from app.limiter import (
 from app.utils.user import (
     generate_new_account_email,
     generate_user_registration_email,
+    generate_user_update,
     send_email,
 )
 
@@ -95,8 +101,8 @@ async def create(*, db: Session = Depends(get_db), user_in: UserCreate) -> Any:
 
 
 @router.patch(
-    "/me",
-    response_model=UserPublic,
+    "/update-me-email-pre-confirmation",
+    response_model=Message,
     dependencies=[Depends(get_current_active_user)],
 )
 @apply_user_rate_limits(
@@ -105,21 +111,211 @@ async def create(*, db: Session = Depends(get_db), user_in: UserCreate) -> Any:
     settings.UPDATE_ME_RATE_LIMIT_HOUR,
     settings.UPDATE_ME_RATE_LIMIT_DAY,
 )
-async def update_me(
+async def update_me_email_send_confirmation(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     *,
     db: Session = Depends(get_db),
-    user_in: UserUpdateMe,
+    user_update_me_email: UserUpdateMe,
     current_user: CurrentUser,
 ) -> Any:
     """
-    Update own user.
+    Send confirmation to update own user.
     """
+    if not user_update_me_email.email:
+        raise UserEmailRequiredError(
+            function_name=update_me_email_send_confirmation.__name__,
+        )
+    if user_update_me_email.email == current_user.email:
+        raise UpdateExisitingMeValuesError(
+            value=user_update_me_email.email,
+            function_name=update_me_email_send_confirmation.__name__,
+        )
+    CRUD_user.check_exists_raise(
+        db,
+        filter={"email": user_update_me_email.email},
+    )
 
-    CRUD_user.update(db=db, user_id=current_user.userId, user_in=user_in)
+    update_user_params = {"email": user_update_me_email.email}
+    user_update_token = await user_cache_update_me.create_user_cache_instance(
+        expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
+        user=current_user,
+        update_params=update_user_params,
+    )
 
-    return current_user
+    email_data = generate_user_update(
+        email_to=user_update_me_email.email,
+        username=current_user.username,
+        token=user_update_token,
+    )
+    send_email(
+        email_to=user_update_me_email.email,
+        subject=email_data.subject,
+        html_content=email_data.html_content,
+    )
+
+    return get_user_update_me_confirmation_sent_msg(
+        email_or_username=user_update_me_email.email,
+    )
+
+
+@router.patch(
+    "/update-me-email-confirmation",
+    response_model=Message,
+    dependencies=[Depends(get_current_active_user)],
+)
+@apply_user_rate_limits(
+    settings.UPDATE_ME_RATE_LIMIT_SECOND,
+    settings.UPDATE_ME_RATE_LIMIT_MINUTE,
+    settings.UPDATE_ME_RATE_LIMIT_HOUR,
+    settings.UPDATE_ME_RATE_LIMIT_DAY,
+)
+async def update_me_email_confirmation(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    token: Token,
+    current_user: CurrentUser,
+    db: Session = Depends(get_db),
+):
+    """
+    Confirm update email.
+    """
+    cached_user_update = await user_cache_update_me.verify_token(
+        token=token.access_token
+    )
+    update_email = cached_user_update.email
+    if not update_email:
+        raise InvalidTokenError(
+            token=token.access_token,
+            function_name=update_me_email_confirmation.__name__,
+        )
+    if update_email == current_user.email:
+        raise UpdateExisitingMeValuesError(
+            value=update_email,
+            function_name=update_me_email_confirmation.__name__,
+        )
+    CRUD_user.check_exists_raise(
+        db,
+        filter={"email": update_email},
+    )
+    CRUD_user.update(
+        db,
+        user_id=current_user.userId,
+        user_in=UserUpdateMe(
+            email=update_email,
+        ),
+    )
+
+    return get_user_update_me_success_msg(email_or_username=update_email)
+
+
+@router.patch(
+    "/update-me-username-pre-confirmation",
+    response_model=Message,
+    dependencies=[Depends(get_current_active_user)],
+)
+@apply_user_rate_limits(
+    settings.UPDATE_ME_RATE_LIMIT_SECOND,
+    settings.UPDATE_ME_RATE_LIMIT_MINUTE,
+    settings.UPDATE_ME_RATE_LIMIT_HOUR,
+    settings.UPDATE_ME_RATE_LIMIT_DAY,
+)
+async def update_me_username_send_confirmation(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    *,
+    db: Session = Depends(get_db),
+    user_update_me_username: UserUpdateMe,
+    current_user: CurrentUser,
+) -> Any:
+    """
+    Send confirmation to update own user.
+    """
+    if not user_update_me_username.username:
+        raise UserUsernameRequiredError(
+            function_name=update_me_username_send_confirmation.__name__,
+        )
+    if user_update_me_username.username == current_user.username:
+        raise UpdateExisitingMeValuesError(
+            value=user_update_me_username.username,
+            function_name=update_me_username_send_confirmation.__name__,
+        )
+    CRUD_user.check_exists_raise(
+        db,
+        filter={"username": user_update_me_username.username},
+    )
+
+    update_user_params = {"username": user_update_me_username.username}
+    user_update_token = await user_cache_update_me.create_user_cache_instance(
+        user=current_user,
+        expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
+        update_params=update_user_params,
+    )
+
+    username_data = generate_user_update(
+        email_to=user_update_me_username.username,
+        username=current_user.username,
+        token=user_update_token,
+    )
+    send_email(
+        email_to=current_user.email,
+        subject=username_data.subject,
+        html_content=username_data.html_content,
+    )
+
+    return get_user_update_me_confirmation_sent_msg(
+        email_or_username=user_update_me_username.username,
+    )
+
+
+@router.patch(
+    "/update-me-username-confirmation",
+    response_model=Message,
+    dependencies=[Depends(get_current_active_user)],
+)
+@apply_user_rate_limits(
+    settings.UPDATE_ME_RATE_LIMIT_SECOND,
+    settings.UPDATE_ME_RATE_LIMIT_MINUTE,
+    settings.UPDATE_ME_RATE_LIMIT_HOUR,
+    settings.UPDATE_ME_RATE_LIMIT_DAY,
+)
+async def update_me_username_confirmation(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    token: Token,
+    current_user: CurrentUser,
+    db: Session = Depends(get_db),
+):
+    """
+    Confirm update username.
+    """
+    cached_user_update = await user_cache_update_me.verify_token(
+        token=token.access_token
+    )
+    update_username = cached_user_update.username
+    if not update_username:
+        raise InvalidTokenError(
+            token=token.access_token,
+            function_name=update_me_username_confirmation.__name__,
+        )
+    if update_username == current_user.username:
+        raise UpdateExisitingMeValuesError(
+            value=update_username,
+            function_name=update_me_username_confirmation.__name__,
+        )
+    CRUD_user.check_exists_raise(
+        db,
+        filter={"username": update_username},
+    )
+    CRUD_user.update(
+        db,
+        user_id=current_user.userId,
+        user_in=UserUpdateMe(
+            username=update_username,
+        ),
+    )
+
+    return get_user_update_me_success_msg(email_or_username=update_username)
 
 
 @router.patch(
@@ -217,47 +413,46 @@ async def delete_user_me(
 async def register_user_send_confirmation(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
-    user_pre_confirmed: UserRegisterPreEmailConfirmation,
+    user_register_pre_confirmed: UserRegisterPreEmailConfirmation,
     db: Session = Depends(get_db),
 ) -> Any:
     """
     Send email confirmation on user register. Account doesn't get created yet.
     """
     CRUD_user.check_exists_raise(
-        db, filter={"email": user_pre_confirmed.email}, user_in=user_pre_confirmed
+        db, filter={"email": user_register_pre_confirmed.email}
     )
     CRUD_user.check_exists_raise(
-        db, filter={"username": user_pre_confirmed.username}, user_in=user_pre_confirmed
+        db, filter={"username": user_register_pre_confirmed.username}
     )
 
     user_create = UserCreate(
-        username=user_pre_confirmed.username,
-        email=user_pre_confirmed.email,
-        password=user_pre_confirmed.password,
+        username=user_register_pre_confirmed.username,
+        email=user_register_pre_confirmed.email,
+        password=user_register_pre_confirmed.password,
         isActive=False,
     )
 
     user = CRUD_user.create(db=db, user_create=user_create)
 
-    user_register_token = (
-        await user_cache_register_user.generate_user_confirmation_token(
-            user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
-        )
+    user_register_token = await user_cache_register_user.create_user_cache_instance(
+        user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
     )
 
     email_data = generate_user_registration_email(
-        email_to=user_pre_confirmed.email,
-        username=user_pre_confirmed.username,
+        email_to=user_register_pre_confirmed.email,
+        username=user_register_pre_confirmed.username,
         token=user_register_token,
     )
     send_email(
-        email_to=user_pre_confirmed.email,
+        email_to=user_register_pre_confirmed.email,
         subject=email_data.subject,
         html_content=email_data.html_content,
     )
 
-    return get_user_email_confirmation_sent(
-        username=user_pre_confirmed.username, email=user_pre_confirmed.email
+    return get_user_register_confirmation_sent_msg(
+        email=user_register_pre_confirmed.email,
+        username=user_register_pre_confirmed.username,
     )
 
 
@@ -271,19 +466,17 @@ async def register_user_send_confirmation(
 async def register_user_confirm(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
-    user_register_confirmation: UserRegisterPostEmailConfirmation,
+    token: Token,
     db: Session = Depends(get_db),
 ) -> Any:
     """
     Confirm new user without the need to be logged in. Requires email confirmation.
     """
-    cached_user = await user_cache_register_user.verify_token(
-        token=user_register_confirmation.token
-    )
+    cached_user = await user_cache_register_user.verify_token(token=token.access_token)
     email = cached_user.email
     if not email:
         raise InvalidTokenError(
-            token=user_register_confirmation.token,
+            token=token.access_token,
             function_name=register_user_confirm.__name__,
         )
 
@@ -385,7 +578,7 @@ async def delete_user(
 
 @router.patch(
     "/activate/{user_id}",
-    dependencies=[Depends(get_current_active_user)],
+    dependencies=[Depends(get_current_active_superuser)],
 )
 @apply_user_rate_limits(
     settings.STRICT_DEFAULT_USER_RATE_LIMIT_SECOND,

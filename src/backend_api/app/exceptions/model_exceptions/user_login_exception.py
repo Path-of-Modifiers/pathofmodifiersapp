@@ -126,6 +126,25 @@ class InvalidPasswordError(PathOfModifiersAPIError):
         )
 
 
+class EmailOrUsernameRequiredError(PathOfModifiersAPIError):
+    """Exception raised for email or username is required for the operation errors."""
+
+    def __init__(
+        self,
+        *,
+        function_name: str | None = "Unknown function",
+        class_name: str | None = None,
+        status_code: int | None = status.HTTP_422_UNPROCESSABLE_ENTITY,
+    ):
+        detail = "Email or username is required for this operation"
+        super().__init__(
+            status_code=status_code,
+            function_name=function_name,
+            class_name=class_name,
+            detail=detail,
+        )
+
+
 class NewPasswordIsSameError(PathOfModifiersAPIError):
     """Exception raised if the new password is the same as the old one."""
 
@@ -145,25 +164,6 @@ class NewPasswordIsSameError(PathOfModifiersAPIError):
         )
 
 
-class EmailOrUsernameRequiredPasswordRecoveryError(PathOfModifiersAPIError):
-    """Exception raised for email or username is required for password recovery errors."""
-
-    def __init__(
-        self,
-        *,
-        function_name: str | None = "Unknown function",
-        class_name: str | None = None,
-        status_code: int | None = status.HTTP_422_UNPROCESSABLE_ENTITY,
-    ):
-        detail = "Could not recover password. Email or username is required for password recovery"
-        super().__init__(
-            status_code=status_code,
-            function_name=function_name,
-            class_name=class_name,
-            detail=detail,
-        )
-
-
 class NotAuthenticatedError(PathOfModifiersAPIError):
     """Exception raised for not authenticated errors."""
 
@@ -175,6 +175,68 @@ class NotAuthenticatedError(PathOfModifiersAPIError):
         class_name: str | None = None,
         status_code: int | None = status.HTTP_401_UNAUTHORIZED,
     ):
+        super().__init__(
+            status_code=status_code,
+            function_name=function_name,
+            class_name=class_name,
+            detail=detail,
+        )
+
+
+class UpdateExisitingMeValuesError(PathOfModifiersAPIError):
+    """
+    Exception raised when user tries to update their own values to
+    be the same as their own existing values.
+    """
+
+    def __init__(
+        self,
+        *,
+        value: str,
+        function_name: str | None = "Unknown function",
+        class_name: str | None = None,
+        status_code: int | None = status.HTTP_400_BAD_REQUEST,
+    ):
+        detail = f"""Cannot update user with value '{value}' to be
+        the same as their own existing values."""
+        super().__init__(
+            status_code=status_code,
+            function_name=function_name,
+            class_name=class_name,
+            detail=detail,
+        )
+
+
+class UserEmailRequiredError(PathOfModifiersAPIError):
+    """Exception raised for email is required for the operation errors."""
+
+    def __init__(
+        self,
+        *,
+        function_name: str | None = "Unknown function",
+        class_name: str | None = None,
+        status_code: int | None = status.HTTP_422_UNPROCESSABLE_ENTITY,
+    ):
+        detail = "Email is required for this operation"
+        super().__init__(
+            status_code=status_code,
+            function_name=function_name,
+            class_name=class_name,
+            detail=detail,
+        )
+
+
+class UserUsernameRequiredError(PathOfModifiersAPIError):
+    """Exception raised for username is required for the operation errors."""
+
+    def __init__(
+        self,
+        *,
+        function_name: str | None = "Unknown function",
+        class_name: str | None = None,
+        status_code: int | None = status.HTTP_422_UNPROCESSABLE_ENTITY,
+    ):
+        detail = "Username is required for this operation"
         super().__init__(
             status_code=status_code,
             function_name=function_name,

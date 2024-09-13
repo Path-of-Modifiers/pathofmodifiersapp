@@ -5,7 +5,7 @@ from httpx import AsyncClient
 from sqlalchemy.orm import Session
 
 from app.api.api_message_util import (
-    get_password_rec_email_sent_success,
+    get_password_rec_email_sent_success_msg,
     get_user_psw_change_msg,
 )
 from app.api.routes.login import login_prefix, reset_password
@@ -104,7 +104,7 @@ class TestLoginRoutes(BaseTest):
             )
             assert r.status_code == 200
             assert r.json() == {
-                "message": get_password_rec_email_sent_success().message
+                "message": get_password_rec_email_sent_success_msg().message
             }
 
     @pytest.mark.anyio
@@ -144,7 +144,7 @@ class TestLoginRoutes(BaseTest):
         assert verify_password(settings.FIRST_SUPERUSER_PASSWORD, user.hashedPassword)
 
         new_password = "the_new_password"
-        token = await get_user_cache_password_reset.generate_user_confirmation_token(
+        token = await get_user_cache_password_reset.create_user_cache_instance(
             user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
         )
         new_psw_data = {"new_password": new_password, "token": token}
@@ -165,10 +165,8 @@ class TestLoginRoutes(BaseTest):
         assert verify_password(new_password, user.hashedPassword)
 
         # Reset password back to original
-        reset_token = (
-            await get_user_cache_password_reset.generate_user_confirmation_token(
-                user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
-            )
+        reset_token = await get_user_cache_password_reset.create_user_cache_instance(
+            user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
         )
         old_password = settings.FIRST_SUPERUSER_PASSWORD
         old_psw_data = {"new_password": old_password, "token": reset_token}
@@ -199,7 +197,7 @@ class TestLoginRoutes(BaseTest):
     ) -> None:
         new_password = settings.FIRST_SUPERUSER_PASSWORD
         user = CRUD_user.get(db, filter={"email": settings.FIRST_SUPERUSER})
-        token = await get_user_cache_password_reset.generate_user_confirmation_token(
+        token = await get_user_cache_password_reset.create_user_cache_instance(
             user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
         )
         data = {"new_password": new_password, "token": token}
