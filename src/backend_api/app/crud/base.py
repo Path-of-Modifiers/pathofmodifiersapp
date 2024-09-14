@@ -1,6 +1,7 @@
 from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, TypeAdapter
+from sqlalchemy import and_, or_, select
 from sqlalchemy.orm import Session
 
 from app.exceptions import (
@@ -8,6 +9,7 @@ from app.exceptions import (
     DbObjectDoesNotExistError,
     DbTooManyItemsDeleteError,
     SortingMethodNotSupportedError,
+    ValueNotSupportedError,
 )
 from app.utils.sort_algorithms import sort_with_reference
 
@@ -70,16 +72,13 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
     def _map_obj_pks_to_value(
         self,
-        obj_in: (
-            SchemaType
-            | CreateSchemaType
-            | UpdateSchemaType
-            | list[SchemaType | CreateSchemaType | UpdateSchemaType]
-        ),
+        obj_in: dict[str, Any] | list[dict[str, Any]] | ModelType | list[ModelType],
     ) -> list[dict[str, Any]]:
-        """A private method used to map schema objects to the model's primary keys"""
-        self.validate(obj_in)
+        """
+        Map objects to the model's primary keys.
 
+        Always returns a list.
+        """
         if not isinstance(obj_in, list):
             obj_in = [obj_in]
 
@@ -87,10 +86,48 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
         obj_pks_values = []
         for obj in obj_in:
-            obj_pks_value = {key: getattr(obj, key) for key in obj_pks}
+            if isinstance(obj, dict):
+                obj_pks_value = {key: obj.get(key) for key in obj_pks}
+            elif isinstance(obj, self.model):
+                obj_pks_value = {key: getattr(obj, key) for key in obj_pks}
+            else:
+                raise ValueNotSupportedError(
+                    value=obj_in,
+                    function_name=self._map_obj_pks_to_value.__name__,
+                    class_name=self.__class__.__name__,
+                )
             obj_pks_values.append(obj_pks_value)
 
         return obj_pks_values
+
+    def _check_obj_duplicates_raises(
+        self,
+        db: Session,
+        obj_in: dict[str, Any] | list[dict[str, Any]],
+    ) -> bool:
+        """Check if the object's primary keys exist in the database"""
+        obj_pks = self._map_obj_pks_to_value(obj_in)
+
+        conditions = []
+        for item in obj_pks:
+            and_conditions = [
+                getattr(self.model, key) == value for key, value in item.items()
+            ]
+            conditions.append(and_(*and_conditions))
+
+        # Combine the AND conditions with OR to create the final query
+        exists_query = select(self.model).where(or_(*conditions))
+
+        # Execute the query and fetch results
+        result = db.execute(exists_query).scalars().all()
+
+        if result:
+            raise DbObjectAlreadyExistsError(
+                model_table_name=self.model.__tablename__,
+                filter=obj_pks,
+                function_name=self._check_obj_duplicates_raises.__name__,
+                class_name=self.__class__.__name__,
+            )
 
     async def get(
         self,
@@ -126,20 +163,8 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         obj_in: CreateSchemaType | list[CreateSchemaType],
     ) -> ModelType:
         if not self.ignore_duplicates:
-            obj_pks_value_filters = self._map_obj_pks_to_value(obj_in)
-            for obj_in_pks_filter in obj_pks_value_filters:
-                # May need to change self.get handling when obj does not exist
-                try:
-                    existing_db_obj = await self.get(db, filter=obj_in_pks_filter)
-                except DbObjectDoesNotExistError:
-                    existing_db_obj = None
-                if existing_db_obj:
-                    raise DbObjectAlreadyExistsError(
-                        model_table_name=self.model.__tablename__,
-                        filter=obj_in_pks_filter,
-                        function_name=self.create.__name__,
-                        class_name=self.__class__.__name__,
-                    )
+            obj_in_dicts = obj_in.model_dump()
+            self._check_obj_duplicates_raises(db, obj_in_dicts)
         if isinstance(obj_in, list):
             db_obj = [self.model(**obj.model_dump()) for obj in obj_in]
             db.add_all(db_obj)
@@ -160,11 +185,23 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         obj_in: UpdateSchemaType | dict[str, Any],
     ) -> ModelType:
         obj_data = db_obj.__table__.columns.keys()
-
         if isinstance(obj_in, dict):
             update_data = obj_in
         else:
             update_data = obj_in.model_dump()
+
+        db_obj_primary_keys = self._map_obj_pks_to_value(db_obj)[0]
+        check_db_obj_exists = (
+            db.query(self.model).filter_by(**db_obj_primary_keys).first()
+        )
+        if not check_db_obj_exists:
+            raise DbObjectDoesNotExistError(
+                model_table_name=self.model.__tablename__,
+                filter=db_obj_primary_keys,
+                function_name=self.update.__name__,
+                class_name=self.__class__.__name__,
+            )
+
         for field in obj_data:
             if field in update_data:
                 # print(field, update_data[field])
