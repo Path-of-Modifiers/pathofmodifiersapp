@@ -52,13 +52,13 @@ async def login_access_session(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-    session: Session = Depends(get_db),
+    db: Session = Depends(get_db),
 ) -> Token:
     """
     OAuth2 compatible session login.
     """
     user = CRUD_user.authenticate(
-        db=session, email_or_username=form_data.username, password=form_data.password
+        db=db, email_or_username=form_data.username, password=form_data.password
     )
 
     if not user:
@@ -71,12 +71,10 @@ async def login_access_session(
             function_name=login_access_session.__name__,
         )
 
-    access_token_uuid = await user_cache_session.create_user_cache_instance(
+    access_token = await user_cache_session.create_user_cache_instance(
         user=user,
         expire_seconds=settings.ACCESS_SESSION_EXPIRE_SECONDS,
     )
-
-    access_token = str(access_token_uuid)
 
     return Token(
         access_token=access_token,
@@ -113,7 +111,7 @@ async def recover_password(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     body: RecoverPassword,
-    session: Session = Depends(get_db),
+    db: Session = Depends(get_db),
 ) -> Message:
     """
     Password Recovery
@@ -127,7 +125,7 @@ async def recover_password(
         get_user_filter["email"] = body.email
     if body.username:
         get_user_filter["username"] = body.username
-    user = CRUD_user.get(db=session, filter=get_user_filter)
+    user = CRUD_user.get(db=db, filter=get_user_filter)
     if not user:
         raise DbObjectDoesNotExistError(
             model_table_name=User.__tablename__,
@@ -140,7 +138,7 @@ async def recover_password(
     )
 
     if not body.email:
-        email = CRUD_user.get_email_by_username(db=session, username=body.username)
+        email = CRUD_user.get_email_by_username(db=db, username=body.username)
     else:
         email = body.email
 
@@ -166,7 +164,7 @@ async def reset_password(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     body: NewPassword,
-    session: Session = Depends(get_db),
+    db: Session = Depends(get_db),
 ) -> Message:
     """
     Reset password
@@ -180,7 +178,7 @@ async def reset_password(
             function_name=reset_password.__name__,
         )
     get_user_filter = {"email": email}
-    user = CRUD_user.get(db=session, filter=get_user_filter)
+    user = CRUD_user.get(db=db, filter=get_user_filter)
     if not user:
         raise DbObjectDoesNotExistError(
             model_table_name=User.__tablename__,
@@ -198,9 +196,9 @@ async def reset_password(
         )
     hashed_password = get_password_hash(password=body.new_password)
     user.hashedPassword = hashed_password
-    session.add(user)
-    session.commit()
-    session.refresh(user)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
     return get_user_psw_change_msg(user.username)
 
 
@@ -210,13 +208,13 @@ async def reset_password(
     response_class=HTMLResponse,
 )
 async def recover_password_html_content(
-    email: EmailStr, session: Session = Depends(get_db)
+    email: EmailStr, db: Session = Depends(get_db)
 ) -> Any:
     """
     HTML Content for Password Recovery
     """
     filter = {"email": email}
-    user = CRUD_user.get(db=session, filter=filter)
+    user = CRUD_user.get(db=db, filter=filter)
 
     if not user:
         raise DbObjectDoesNotExistError(
