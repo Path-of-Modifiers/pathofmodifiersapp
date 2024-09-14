@@ -13,7 +13,6 @@ from app.api.deps import (
 )
 from app.core.models.models import Account
 from app.crud import CRUD_account
-from app.exceptions import DbObjectAlreadyExistsError
 
 router = APIRouter()
 
@@ -98,16 +97,7 @@ async def update_account(
 
     Returns the updated account.
     """
-    db_account_update = db.get(Account, account_update.accountName)
-
     account_map = {"accountName": accountName}
-
-    if db_account_update and db_account_update.accountName != accountName:
-        raise DbObjectAlreadyExistsError(
-            model_table_name=Account.__tablename__,
-            filter=account_map,
-            function_name=update_account.__name__,
-        )
 
     account = await CRUD_account.get(
         db=db,
