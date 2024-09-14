@@ -15,8 +15,10 @@ class SortingMethodNotSupportedError(PathOfModifiersAPIError):
         class_name: str | None = None,
         status_code: int | None = status.HTTP_422_UNPROCESSABLE_ENTITY,
     ):
-        detail = f"""Could not sort. Sorting method '{sort}' is not supported,
-        instead choose one of available sorting methods: {available_sorting_choices}"""
+        detail = (
+            f"Could not sort. Sorting method '{sort}' is not supported, "
+            f"instead choose one of available sorting methods: {available_sorting_choices}"
+        )
 
         super().__init__(
             status_code=status_code,
@@ -37,7 +39,7 @@ class ValueNotSupportedError(PathOfModifiersAPIError):
         class_name: str | None = None,
         status_code: int | None = status.HTTP_422_UNPROCESSABLE_ENTITY,
     ):
-        detail = f"Value '{value}' is not supported. Value type: {type(value)}\n"
+        detail = f"Value '{value}' is not supported. Value type: '{type(value)}'"
 
         super().__init__(
             status_code=status_code,

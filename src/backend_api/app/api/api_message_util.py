@@ -22,9 +22,7 @@ def get_delete_return_msg(
     """
 
     return Message(
-        message=f"""{model_table_name} with filter
-        {filter} was
-        deleted successfully"""
+        message=f"{model_table_name} with filter {filter} was deleted successfully"
     )
 
 
@@ -108,5 +106,8 @@ def get_failed_send_challenge_request_error_msg(e: Exception | list[str]) -> Mes
     """
 
     return Message(
-        message=f"""Failed to send challenge request to cloudflare turnstile endpoint with error: {e}"""
+        message=(
+            f"Failed to send challenge request to cloudflare "
+            f"turnstile endpoint with error: {e}"
+        )
     )

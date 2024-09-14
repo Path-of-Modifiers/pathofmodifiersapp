@@ -56,8 +56,10 @@ class SuperUserNotAllowedToDeleteSelfError(PathOfModifiersAPIError):
         class_name: str | None = None,
         status_code: int | None = status.HTTP_403_FORBIDDEN,
     ):
-        detail = f"""Cannot delete user '{username_or_email}'.
-        Superuser is not allowed to delete themselves"""
+        detail = (
+            f"Cannot delete user '{username_or_email}'. "
+            f"Superuser is not allowed to delete themselves"
+        )
 
         super().__init__(
             status_code=status_code,
@@ -78,8 +80,10 @@ class SuperUserNotAllowedToChangeActiveSelfError(PathOfModifiersAPIError):
         class_name: str | None = None,
         status_code: int | None = status.HTTP_403_FORBIDDEN,
     ):
-        detail = f"""Cannot change user '{username_or_email}' active status.
-        Superuser is not allowed to change their active status"""
+        detail = (
+            f"Cannot change user '{username_or_email}' active status. "
+            f"Superuser is not allowed to change their active status"
+        )
         super().__init__(
             status_code=status_code,
             function_name=function_name,
@@ -198,8 +202,10 @@ class UpdateExisitingMeValuesError(PathOfModifiersAPIError):
         class_name: str | None = None,
         status_code: int | None = status.HTTP_400_BAD_REQUEST,
     ):
-        detail = f"""Cannot update user with value '{value}' to be
-        the same as their own existing values."""
+        detail = (
+            f"Cannot update user with value '{value}' to be "
+            f"the same as their own existing values."
+        )
         super().__init__(
             status_code=status_code,
             function_name=function_name,
