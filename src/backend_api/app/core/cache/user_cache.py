@@ -117,7 +117,7 @@ class UserCache:
         """
         user_cache_instance = await self._get_cache_instance_by_token(token)
 
-        if not user_cache_instance or not isinstance(user_cache_instance, UserInCache):
+        if user_cache_instance is None:
             raise InvalidTokenError(
                 function_name=self.verify_token.__name__,
                 class_name=self.__class__.__name__,

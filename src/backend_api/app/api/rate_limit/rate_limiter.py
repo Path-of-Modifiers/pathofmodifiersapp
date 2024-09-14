@@ -20,11 +20,6 @@ _RateLimiterT = TypeVar("_RateLimiterT", bound="RateLimiter")
 
 
 @final
-class RateLimitError(Exception):
-    """We raise this error when rate limit is hit."""
-
-
-@final
 class RateSpec(NamedTuple):
     """
     Specifies the amount of requests can be made in the time frame in seconds.
@@ -33,7 +28,7 @@ class RateSpec(NamedTuple):
     """
 
     requests: int
-    seconds: _Seconds
+    cooldown_seconds: _Seconds
 
 
 class RateLimiter:
@@ -100,7 +95,7 @@ class RateLimiter:
             # This looks like a coverage error on 3.10:
             if current_rate > self._rate_spec.requests:  # pragma: no cover
                 raise PlotRateLimitExceededError(
-                    retry_after_seconds=self._rate_spec.seconds,
+                    retry_after_seconds=self._rate_spec.cooldown_seconds,
                     max_amount_of_tries_per_time_period=self._rate_spec.requests,
                     function_name=self._acquire.__name__,
                     class_name=self.__class__.__name__,
@@ -115,7 +110,7 @@ class RateLimiter:
         current_rate, _ = await pipeline_expire(
             pipeline.incr(cache_key),
             cache_key,
-            self._rate_spec.seconds,
+            self._rate_spec.cooldown_seconds,
         ).execute()
         return current_rate  # type: ignore[no-any-return]
 
