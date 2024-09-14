@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
 from app.api.deps import (
-    get_access_token_by_request,
     get_current_active_user,
     get_db,
     get_rate_limit_tier_by_request,
+    get_user_token_by_request,
 )
 from app.api.rate_limit.rate_limiter import RateLimiter, RateSpec
 from app.core.cache.cache import cache
@@ -37,11 +37,11 @@ async def get_plot_data(
     """
 
     async with RateLimiter(
-        unique_key=get_access_token_by_request(request),
+        unique_key=get_user_token_by_request(request),
         backend=cache,
         rate_spec=RateSpec(
             requests=await get_rate_limit_tier_by_request(request),
-            seconds=settings.PLOT_RATE_LIMIT_COOLDOWN_SECONDS,
+            cooldown_seconds=settings.PLOT_RATE_LIMIT_COOLDOWN_SECONDS,
         ),
         cache_prefix=plot_prefix,
         enabled=settings.RATE_LIMIT,
