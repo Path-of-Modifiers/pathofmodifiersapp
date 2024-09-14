@@ -180,26 +180,22 @@ class TestAPI(BaseTest):
             route_prefix,
             superuser_token_headers,
         )
-        create_obj_create_schema = crud_instance.create_schema(**create_obj)
-        obj_pks_value_filter = crud_instance._map_obj_pks_to_value(
-            create_obj_create_schema
-        )[0]
+        obj_pks_value_filter = crud_instance._map_obj_pks_to_value(create_obj)
         response = await self._create_object_api(
             async_client,
             create_obj,
             route_prefix,
             superuser_token_headers,
         )
-        assert response.status_code == 409
-        assert (
-            response.json()["detail"]
-            == DbObjectAlreadyExistsError(
-                model_table_name=crud_instance.model.__tablename__,
-                filter=obj_pks_value_filter,
-                function_name=crud_instance.create.__name__,
-                class_name=crud_instance.__class__.__name__,
-            ).detail
+
+        db_obj_already_exist_error = DbObjectAlreadyExistsError(
+            model_table_name=crud_instance.model.__tablename__,
+            filter=obj_pks_value_filter,
+            function_name=crud_instance._check_obj_duplicates_raises.__name__,
+            class_name=crud_instance.__class__.__name__,
         )
+        assert response.status_code == db_obj_already_exist_error.status_code
+        assert response.json()["detail"] == db_obj_already_exist_error.detail
 
     @pytest.mark.anyio
     async def test_get_instance(
@@ -493,19 +489,14 @@ class TestAPI(BaseTest):
                 json=update_object_dict,
             )
 
-        assert response.status_code == 404
-
-        content = response.json()
-
-        assert (
-            content["detail"]
-            == DbObjectDoesNotExistError(
-                model_table_name=model_table_name,
-                filter=update_obj_out_pk_map,
-                function_name=crud_instance.get.__name__,
-                class_name=crud_instance.__class__.__name__,
-            ).detail
+        db_obj_does_not_exist_error = DbObjectDoesNotExistError(
+            model_table_name=model_table_name,
+            filter=update_obj_out_pk_map,
+            function_name=crud_instance.get.__name__,
+            class_name=crud_instance.__class__.__name__,
         )
+        assert response.status_code == db_obj_does_not_exist_error.status_code
+        assert response.json()["detail"] == db_obj_does_not_exist_error.detail
 
     @pytest.mark.anyio
     async def test_update_instance_not_enough_permissions(
@@ -648,17 +639,15 @@ class TestAPI(BaseTest):
             f"{settings.API_V1_STR}/{route_prefix}/{not_found_object}",
             headers=superuser_token_headers,
         )
-        assert response.status_code == 404
-        content = response.json()
-        assert (
-            content["detail"]
-            == DbObjectDoesNotExistError(
-                model_table_name=model_table_name,
-                filter={unique_identifier: not_found_object},
-                function_name=crud_instance.remove.__name__,
-                class_name=crud_instance.__class__.__name__,
-            ).detail
+        db_obj_not_exists_error = DbObjectDoesNotExistError(
+            model_table_name=model_table_name,
+            filter={unique_identifier: not_found_object},
+            function_name=crud_instance.remove.__name__,
+            class_name=crud_instance.__class__.__name__,
         )
+        assert response.status_code == db_obj_not_exists_error.status_code
+        content = response.json()
+        assert content["detail"] == db_obj_not_exists_error.detail
 
     @pytest.mark.anyio
     async def test_delete_instance_not_enough_permissions(
