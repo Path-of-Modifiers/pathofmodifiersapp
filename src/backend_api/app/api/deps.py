@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, Request
+from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
@@ -31,13 +31,13 @@ def get_db():
 TokenDep = Annotated[str, Depends(reusable_oauth2)]
 
 
-def get_current_user(
+async def get_current_user(
     token: TokenDep,
-    session: Session = Depends(get_db),
+    db: Session = Depends(get_db),
 ) -> User:
-    user_cached = user_cache_session.verify_token(token)
+    user_cached = await user_cache_session.verify_token(token)
 
-    user = session.get(User, user_cached.userId)
+    user = db.get(User, user_cached.userId)
     if not user:
         raise DbObjectDoesNotExistError(
             model_table_name=User.__tablename__,
@@ -49,25 +49,23 @@ def get_current_user(
             username_or_email=user.username,
             function_name=get_current_user.__name__,
         )
+    print("user get current", user.username)
     return user
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
-def get_current_active_superuser(current_user: CurrentUser) -> User:
+async def get_current_active_superuser(current_user: CurrentUser) -> User:
     if not current_user.isSuperuser:
-        raise HTTPException(
-            status_code=403,
-            detail=UserWithNotEnoughPrivilegesError(
-                username_or_email=current_user.username,
-                function_name=get_current_active_superuser.__name__,
-            ).detail,
+        raise UserWithNotEnoughPrivilegesError(
+            username_or_email=current_user.username,
+            function_name=get_current_active_superuser.__name__,
         )
     return current_user
 
 
-def get_current_active_user(current_user: CurrentUser) -> User:
+async def get_current_active_user(current_user: CurrentUser) -> User:
     if not current_user.isActive:
         raise UserIsNotActiveError(
             username_or_email=current_user.username,
@@ -77,50 +75,45 @@ def get_current_active_user(current_user: CurrentUser) -> User:
 
 
 def get_user_token_by_request(request: Request) -> str:
-    """Get current user id by request.
+    """Get user token by request.
 
     Args:
         request (Request): The request
 
     Raises:
         HTTPException: HTTPException
-        InvalidTokenError: InvalidTokenError
+        InvalidTokenError: InvalidHeaderProvidedError
 
     Returns:
-        str: _description_
+        str: The user token extracted from the request.
     """
     header = request.headers.get("Authorization")
-    if not header:
+    if not header or not header.startswith("Bearer "):
         raise InvalidHeaderProvidedError(
+            status_code=403,
             function_name=get_user_token_by_request.__name__,
             header=header,
         )
-    token = header.split("Bearer ")[1]
 
-    return token
+    user_token = header[7:]  # Strip "Bearer " prefix (7 characters)
+
+    return user_token
 
 
-def get_limit_for_current_user_plot(current_user: CurrentUser) -> str:
-    # Slow api doesn't support user based or request rate limit values,
-    # this is for future use
-    """Rate limit for current user when plotting
+def get_rate_limit_amount_by_tier(tier: int) -> int:
+    if tier == 0:
+        return settings.TIER_0_PLOT_RATE_LIMIT
+    if tier == 1:
+        return settings.TIER_1_PLOT_RATE_LIMIT
 
-    Args:
-        current_user (CurrentUser): The current user
 
-    Returns:F
-        str: Rates for the current user
-    """
+async def get_rate_limit_tier_by_request(request: Request) -> int:
+    """Get current user rate limit tier by request."""
+    token = get_user_token_by_request(request)
 
-    if current_user.isSuperuser:
-        return "99999999999/minute"
+    user = await user_cache_session.verify_token(token)
 
-    match current_user.rateLimitTier:
-        case 0:
-            return settings.DEFAULT_PLOT_RATE_LIMIT
-        case 1:
-            return settings.TIER_1_PLOT_RATE_LIMIT
-        case 2:
-            return settings.TIER_2_PLOT_RATE_LIMIT
-        case _:
-            return settings.TIER_3_PLOT_RATE_LIMIT
+    if user.isSuperuser:
+        return settings.TIER_SUPERUSER_PLOT_RATE_LIMIT
+
+    return get_rate_limit_amount_by_tier(user.rateLimitTier)

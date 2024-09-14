@@ -4,7 +4,7 @@ from typing import Any
 
 import pytest
 from fastapi import Response
-from fastapi.testclient import TestClient
+from httpx import AsyncClient
 from sqlalchemy.orm import Session
 
 from app.api.api_message_util import (
@@ -21,10 +21,11 @@ from app.tests.utils.utils import is_courotine_function
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
+@pytest.mark.usefixtures("clear_cache", autouse=True)
 class TestAPI(BaseTest):
     async def _create_object_api(
         self,
-        client: TestClient,
+        async_client: AsyncClient,
         create_object: dict,
         route_prefix: str,
         superuser_token_headers: dict[str, str],
@@ -32,7 +33,7 @@ class TestAPI(BaseTest):
         """Try to create an object using the API
 
         Args:
-            client (TestClient): FastAPI test client
+            async_client (AsyncClient): httpx test async client
             create_object (Dict): Create object dictionary
             route_prefix (str): Route name
             superuser_token_headers: (dict[str, str]): Superuser headers
@@ -42,7 +43,7 @@ class TestAPI(BaseTest):
 
         """
 
-        response = client.post(
+        response = await async_client.post(
             f"{settings.API_V1_STR}/{route_prefix}/",
             headers=superuser_token_headers,
             json=create_object,
@@ -54,7 +55,7 @@ class TestAPI(BaseTest):
         self,
         db: Session,
         create_random_object_func: Callable[[], tuple[dict, ModelType, dict]] | Any,
-        client: TestClient,
+        async_client: AsyncClient,
         route_prefix: str,
         superuser_token_headers: dict[str, str],
     ) -> tuple[dict, Response]:
@@ -70,7 +71,7 @@ class TestAPI(BaseTest):
             (Union[Callable[[], Tuple[Dict, ModelType, Dict]], Any]):
             Create random object function
 
-            client (TestClient): FastAPI test client
+            async_client (AsyncClient): httpx test async client
             route_prefix (str): Route name
             superuser_token_headers: (dict[str, str]): Superuser headers
 
@@ -82,7 +83,7 @@ class TestAPI(BaseTest):
             create_obj = await create_random_object_func(db)
         else:
             create_obj = create_random_object_func()
-        response = client.post(
+        response = await async_client.post(
             f"{settings.API_V1_STR}/{route_prefix}/",
             headers=superuser_token_headers,
             json=create_obj,
@@ -123,10 +124,10 @@ class TestAPI(BaseTest):
             else:
                 assert dict1[key] == dict2[key]
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_create_instance(
         self,
-        client: TestClient,
+        async_client: AsyncClient,
         superuser_token_headers: dict[str, str],
         route_prefix: str,
         db: Session,
@@ -137,7 +138,7 @@ class TestAPI(BaseTest):
         """Test create instance
 
         Args:
-            client (TestClient): FastAPI test client
+            async_client (AsyncClient): httpx test async client
             superuser_token_headers: dict[str, str] : Superuser headers
             route_prefix (str): Route name
             db (Session): DB session
@@ -147,13 +148,17 @@ class TestAPI(BaseTest):
             Function to create a random object
         """
         await self._create_random_object_api(
-            db, create_random_object_func, client, route_prefix, superuser_token_headers
+            db,
+            create_random_object_func,
+            async_client,
+            route_prefix,
+            superuser_token_headers,
         )
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_create_found_duplicate(
         self,
-        client: TestClient,
+        async_client: AsyncClient,
         crud_instance: CRUDBase,
         superuser_token_headers: dict[str, str],
         route_prefix: str,
@@ -169,7 +174,7 @@ class TestAPI(BaseTest):
         create_obj, response = await self._create_random_object_api(
             db,
             create_random_object_func,
-            client,
+            async_client,
             route_prefix,
             superuser_token_headers,
         )
@@ -178,7 +183,7 @@ class TestAPI(BaseTest):
             create_obj_create_schema
         )[0]
         response = await self._create_object_api(
-            client,
+            async_client,
             create_obj,
             route_prefix,
             superuser_token_headers,
@@ -194,10 +199,10 @@ class TestAPI(BaseTest):
             ).detail
         )
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_get_instance(
         self,
-        client: TestClient,
+        async_client: AsyncClient,
         superuser_token_headers: dict[str, str],
         db: Session,
         unique_identifier: str,
@@ -208,7 +213,7 @@ class TestAPI(BaseTest):
         """Test get instance
 
         Args:
-            client (TestClient): FastAPI test client
+            async_client (AsyncClient): httpx test async client
             superuser_token_headers: dict[str, str] : Superuser headers
             db (Session): DB session
             unique_identifier (str): Unique identifier
@@ -222,7 +227,7 @@ class TestAPI(BaseTest):
         """
         _, object_out = await self._create_random_object_crud(db, object_generator_func)
         obj_out_pk_map = self._create_primary_key_map(object_out)
-        response = client.get(
+        response = await async_client.get(
             f"{settings.API_V1_STR}/{route_prefix}/{obj_out_pk_map[unique_identifier]}",
             headers=superuser_token_headers,
         )
@@ -234,9 +239,10 @@ class TestAPI(BaseTest):
             ignore=ignore_test_columns,
         )
 
-    def test_get_instance_not_found(
+    @pytest.mark.anyio
+    async def test_get_instance_not_found(
         self,
-        client: TestClient,
+        async_client: AsyncClient,
         crud_instance: CRUDBase,
         superuser_token_headers: dict[str, str],
         model_table_name: str,
@@ -246,14 +252,14 @@ class TestAPI(BaseTest):
         """Test get instance not found
 
         Args:
-            client (TestClient): FastAPI test client
+            async_client (AsyncClient): httpx test async client
             superuser_token_headers: dict[str, str] : Superuser headers
             model_table_name (str): Model name
             route_prefix (str): Route name
             unique_identifier (str): Unique identifier for the model
         """
         not_found_object = 999
-        response = client.get(
+        response = await async_client.get(
             f"{settings.API_V1_STR}/{route_prefix}/{not_found_object}",
             headers=superuser_token_headers,
         )
@@ -269,12 +275,11 @@ class TestAPI(BaseTest):
             ).detail
         )
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_get_instance_not_enough_permissions(
         self,
-        client: TestClient,
+        async_client: AsyncClient,
         db: Session,
-        crud_instance: CRUDBase,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         get_high_permissions: bool,
         route_prefix: str,
@@ -285,7 +290,7 @@ class TestAPI(BaseTest):
         Currently it tests all the routes, but it should be refactored to only test the routes that require high permissions
 
         Args:
-            client (TestClient): FastAPI test client
+            async_client (AsyncClient): httpx test async client
             db (Session): DB session
 
             object_generator_func (Union[Callable[[], Tuple[Dict, ModelType]]]):
@@ -300,17 +305,17 @@ class TestAPI(BaseTest):
 
         _, object_out = await self._create_random_object_crud(db, object_generator_func)
         obj_out_pk_map = self._create_primary_key_map(object_out)
-        response = client.get(
+        response = await async_client.get(
             f"{settings.API_V1_STR}/{route_prefix}/{obj_out_pk_map[unique_identifier]}",
         )
         content = response.json()
         assert response.status_code == 401
         assert content["detail"] == "Not authenticated"
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_get_instances(
         self,
-        client: TestClient,
+        async_client: AsyncClient,
         superuser_token_headers: dict[str, str],
         db: Session,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
@@ -319,7 +324,7 @@ class TestAPI(BaseTest):
         """Test get instances
 
         Args:
-            client (TestClient): FastAPI test client
+            async_client (AsyncClient): httpx test async client
             superuser_token_headers: dict[str, str] : Superuser headers
             db (Session): DB session
 
@@ -332,17 +337,17 @@ class TestAPI(BaseTest):
         await self._create_multiple_objects_crud(
             db, object_generator_func, object_count
         )
-        response = client.get(
+        response = await async_client.get(
             f"{settings.API_V1_STR}/{route_prefix}/", headers=superuser_token_headers
         )
         assert response.status_code == 200
         content = response.json()
         assert len(content) >= object_count
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_update_instance(
         self,
-        client: TestClient,
+        async_client: AsyncClient,
         superuser_token_headers: dict[str, str],
         db: Session,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
@@ -355,7 +360,7 @@ class TestAPI(BaseTest):
         """Test update instance
 
         Args:
-            client (TestClient): FastAPI test client
+            async_client (AsyncClient): httpx test async client
             superuser_token_headers: dict[str, str] : Superuser headers
             db (Session): DB session
             object_generator_func (Union[Callable[[], Tuple[Dict, ModelType]]]): Object generator function
@@ -374,7 +379,7 @@ class TestAPI(BaseTest):
 
         update_obj_pk_map = self._create_primary_key_map(update_object_out)
 
-        delete_response = client.delete(
+        delete_response = await async_client.delete(
             f"{settings.API_V1_STR}/{route_prefix}/{update_obj_pk_map[unique_identifier]}",
             headers=superuser_token_headers,
         )  # delete the object to avoid unique constraint errorspå
@@ -391,14 +396,14 @@ class TestAPI(BaseTest):
 
         if update_request_params:
             obj_out_pk_map = self._create_primary_key_map(object_out)
-            response = client.put(
+            response = await async_client.put(
                 f"{settings.API_V1_STR}/{route_prefix}/",
                 headers=superuser_token_headers,
                 json=update_object_dict,
                 params=obj_out_pk_map,
             )
         else:
-            response = client.put(
+            response = await async_client.put(
                 f"{settings.API_V1_STR}/{route_prefix}/{obj_out_pk_map[unique_identifier]}",
                 headers=superuser_token_headers,
                 json=update_object_dict,
@@ -413,10 +418,10 @@ class TestAPI(BaseTest):
             ignore=ignore_test_columns,
         )
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_update_instance_not_found(
         self,
-        client: TestClient,
+        async_client: AsyncClient,
         db: Session,
         crud_instance: CRUDBase,
         superuser_token_headers: dict[str, str],
@@ -429,7 +434,7 @@ class TestAPI(BaseTest):
         """Test update instance not found
 
         Args:
-            client (TestClient): FastAPI test client
+            async_client (AsyncClient): httpx test async client
             db (Session): DB session
             superuser_token_headers: dict[str, str] : Superuser headers
 
@@ -449,7 +454,7 @@ class TestAPI(BaseTest):
 
         update_obj_out_pk_map = self._create_primary_key_map(update_object_out)
 
-        delete_response = client.delete(
+        delete_response = await async_client.delete(
             f"{settings.API_V1_STR}/{route_prefix}/{update_obj_out_pk_map[unique_identifier]}",
             headers=superuser_token_headers,
         )  # delete the object to avoid unique constraint errors
@@ -470,14 +475,14 @@ class TestAPI(BaseTest):
             update_obj_out_pk_map[key] = not_found_object
 
         if update_request_params:
-            response = client.put(
+            response = await async_client.put(
                 f"{settings.API_V1_STR}/{route_prefix}/",
                 headers=superuser_token_headers,
                 json=update_object_dict,
                 params=update_obj_out_pk_map,
             )
         else:
-            response = client.put(
+            response = await async_client.put(
                 f"{settings.API_V1_STR}/{route_prefix}/{not_found_object}",
                 headers=superuser_token_headers,
                 json=update_object_dict,
@@ -497,10 +502,10 @@ class TestAPI(BaseTest):
             ).detail
         )
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_update_instance_not_enough_permissions(
         self,
-        client: TestClient,
+        async_client: AsyncClient,
         db: Session,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         route_prefix: str,
@@ -512,7 +517,7 @@ class TestAPI(BaseTest):
         """Test update instance not enough permissions
 
         Args:
-            client (TestClient): FastAPI test client
+            async_client (AsyncClient): httpx test async client
             db (Session): DB session
 
             object_generator_func
@@ -534,7 +539,7 @@ class TestAPI(BaseTest):
 
         update_obj_pk_map = self._create_primary_key_map(update_object_out)
 
-        delete_response = client.delete(
+        delete_response = await async_client.delete(
             f"{settings.API_V1_STR}/{route_prefix}/{update_obj_pk_map[unique_identifier]}",
             headers=superuser_token_headers,
         )  # delete the object to avoid unique constraint errors
@@ -551,13 +556,13 @@ class TestAPI(BaseTest):
         )
 
         if update_request_params:
-            response = client.put(
+            response = await async_client.put(
                 f"{settings.API_V1_STR}/{route_prefix}/",
                 json=update_object_dict,
                 params=obj_pk_map,
             )
         else:
-            response = client.put(
+            response = await async_client.put(
                 f"{settings.API_V1_STR}/{route_prefix}/{obj_pk_map[unique_identifier]}",
                 json=update_object_dict,
             )
@@ -566,10 +571,10 @@ class TestAPI(BaseTest):
         content = response.json()
         assert content["detail"] == "Not authenticated"
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_delete_instance(
         self,
-        client: TestClient,
+        async_client: AsyncClient,
         superuser_token_headers: dict[str, str],
         db: Session,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
@@ -580,7 +585,7 @@ class TestAPI(BaseTest):
         """Test delete instance
 
         Args:
-            client (TestClient): FastAPI test client
+            async_client (AsyncClient): httpx test async client
             superuser_token_headers: dict[str, str] : Superuser headers
             db (Session): DB session
 
@@ -595,7 +600,7 @@ class TestAPI(BaseTest):
         )
         update_obj_pk_map = self._create_primary_key_map(update_object_out)
 
-        response = client.delete(
+        response = await async_client.delete(
             f"{settings.API_V1_STR}/{route_prefix}/{update_obj_pk_map[unique_identifier]}",
             headers=superuser_token_headers,
         )
@@ -610,10 +615,10 @@ class TestAPI(BaseTest):
             ).message
         )
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_delete_instance_not_found(
         self,
-        client: TestClient,
+        async_client: AsyncClient,
         superuser_token_headers: dict[str, str],
         route_prefix: str,
         model_table_name: str,
@@ -623,14 +628,14 @@ class TestAPI(BaseTest):
         """Test delete instance not found
 
         Args:
-            client (TestClient): FastAPI test client
+            async_client (AsyncClient): httpx test async client
             superuser_token_headers: dict[str, str] : Superuser headers
             model_table_name (str): Route name
             model_table_name (str): Model table name
             unique_identifier (str): Unique identifier for the model
         """
         not_found_object = 999
-        response = client.delete(
+        response = await async_client.delete(
             f"{settings.API_V1_STR}/{route_prefix}/{not_found_object}",
             headers=superuser_token_headers,
         )
@@ -646,10 +651,10 @@ class TestAPI(BaseTest):
             ).detail
         )
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_delete_instance_not_enough_permissions(
         self,
-        client: TestClient,
+        async_client: AsyncClient,
         db: Session,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         route_prefix: str,
@@ -658,7 +663,7 @@ class TestAPI(BaseTest):
         """Test delete instance not enough permissions
 
         Args:
-            client (TestClient): FastAPI test client
+            async_client (AsyncClient): httpx test async client
             db (Session): DB session
 
             object_generator_func
@@ -669,7 +674,7 @@ class TestAPI(BaseTest):
         """
         _, object_out = await self._create_random_object_crud(db, object_generator_func)
         obj_out_pk_map = self._create_primary_key_map(object_out)
-        response = client.delete(
+        response = await async_client.delete(
             f"{settings.API_V1_STR}/{route_prefix}/{obj_out_pk_map[unique_identifier]}",
         )
         assert response.status_code == 401
