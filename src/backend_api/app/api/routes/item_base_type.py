@@ -15,7 +15,6 @@ from app.api.deps import (
 from app.core.config import settings
 from app.core.models.models import ItemBaseType
 from app.crud import CRUD_itemBaseType
-from app.exceptions import DbObjectAlreadyExistsError
 from app.limiter import apply_user_rate_limits
 
 router = APIRouter()
@@ -197,17 +196,7 @@ async def update_item_base_type(
 
     Returns the updated item base type.
     """
-    db_item_base_type_update = db.get(ItemBaseType, item_base_type_update.baseType)
-
     item_base_type_map = {"baseType": baseType}
-
-    if db_item_base_type_update and db_item_base_type_update.baseType != baseType:
-        raise DbObjectAlreadyExistsError(
-            model_table_name=ItemBaseType.__tablename__,
-            filter=item_base_type_map,
-            function_name=update_item_base_type.__name__,
-        )
-
     itemBaseType = await CRUD_itemBaseType.get(
         db=db,
         filter=item_base_type_map,
