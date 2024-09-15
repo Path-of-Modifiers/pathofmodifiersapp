@@ -1,11 +1,10 @@
 from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, TypeAdapter
-from sqlalchemy import and_, or_, select
+from sqlalchemy import insert
 from sqlalchemy.orm import Session
 
 from app.exceptions import (
-    DbObjectAlreadyExistsError,
     DbObjectDoesNotExistError,
     DbTooManyItemsDeleteError,
     SortingMethodNotSupportedError,
@@ -25,7 +24,6 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         model: type[ModelType],
         schema: type[SchemaType],
         create_schema: type[CreateSchemaType],
-        ignore_duplicates: bool = False,
     ):
         """
         CRUD object with default methods to Create, Read, Update, Delete (CRUD).
@@ -38,7 +36,6 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         self.model = model
         self.schema = schema
         self.create_schema = create_schema
-        self.ignore_duplicates = ignore_duplicates
 
         self.validate = TypeAdapter(SchemaType | list[SchemaType]).validate_python
 
@@ -100,35 +97,6 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
         return obj_pks_values
 
-    def _check_obj_duplicates_raises(
-        self,
-        db: Session,
-        obj_in: dict[str, Any] | list[dict[str, Any]],
-    ) -> bool:
-        """Check if the object's primary keys exist in the database"""
-        obj_pks = self._map_obj_pks_to_value(obj_in)
-
-        conditions = []
-        for item in obj_pks:
-            and_conditions = [
-                getattr(self.model, key) == value for key, value in item.items()
-            ]
-            conditions.append(and_(*and_conditions))
-
-        # Combine the AND conditions with OR to create the final query
-        exists_query = select(self.model).where(or_(*conditions))
-
-        # Execute the query and fetch results
-        result = db.execute(exists_query).scalars().all()
-
-        if result:
-            raise DbObjectAlreadyExistsError(
-                model_table_name=self.model.__tablename__,
-                filter=obj_pks,
-                function_name=self._check_obj_duplicates_raises.__name__,
-                class_name=self.__class__.__name__,
-            )
-
     async def get(
         self,
         db: Session,
@@ -161,21 +129,32 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         db: Session,
         *,
         obj_in: CreateSchemaType | list[CreateSchemaType],
-    ) -> ModelType:
-        if not self.ignore_duplicates:
-            obj_in_dicts = obj_in.model_dump()
-            self._check_obj_duplicates_raises(db, obj_in_dicts)
+    ) -> ModelType | None:
+        # pk_column_names = self.model.__table__.primary_key.columns.keys()
         if isinstance(obj_in, list):
             db_obj = [self.model(**obj.model_dump()) for obj in obj_in]
-            db.add_all(db_obj)
-            db.commit()
-            [db.refresh(obj) for obj in db_obj]
+            create_satement = (
+                insert(self.model)
+                .values(db_obj)
+                .on_conflict_do_nothing(constraint=f"{self.model.__tablename__}_pkey")
+            )
+            db_obj = db.execute(create_satement)
+            if db_obj:
+                self.validate(db_obj)
+                db.commit()
+                [db.refresh(obj) for obj in db_obj]
         else:
-            db_obj = self.model(**obj_in.model_dump())
-            db.add(db_obj)
-            db.commit()
-            db.refresh(db_obj)
-        return self.validate(db_obj)
+            create_satement = (
+                insert(self.model)
+                .values(obj_in.model_dump())
+                .on_conflict_do_nothing(constraint=f"{self.model.__tablename__}_pkey")
+            )
+            db_obj = db.execute(create_satement)
+            if db_obj:
+                self.validate(db_obj)
+                db.commit()
+                db.refresh(db_obj)
+        return db_obj
 
     async def update(
         self,
