@@ -67,13 +67,15 @@ UserCachePasswordResetSession = Annotated[
 ]
 
 
-async def user_cache_update_me_session() -> AsyncGenerator[UserCache, None]:
+async def get_user_cache_update_me_session() -> AsyncGenerator[UserCache, None]:
     """Get user cache update me session."""
     async with UserCache(UserCacheTokenType.UPDATE_ME) as user_cache_update_me_session:
         yield user_cache_update_me_session
 
 
-UserCacheUpdateMeSession = Annotated[UserCache, Depends(user_cache_update_me_session)]
+UserCacheUpdateMeSession = Annotated[
+    UserCache, Depends(get_user_cache_update_me_session)
+]
 
 
 async def get_current_user(

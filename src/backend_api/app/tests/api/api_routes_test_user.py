@@ -298,7 +298,7 @@ class TestUserRoutes(BaseTest):
         normal_user_token_headers: dict[str, str],
         superuser_token_headers: dict[str, str],
         db: Session,
-        get_user_cache_update_me: UserCache,
+        user_cache_update_me: UserCache,
     ) -> None:
         normal_user = await self._get_current_normal_user(
             async_client, normal_user_token_headers, db
@@ -318,12 +318,10 @@ class TestUserRoutes(BaseTest):
         )
         assert normal_user.email != update_data["email"]
 
-        user_update_email_token = (
-            await get_user_cache_update_me.create_user_cache_instance(
-                user=normal_user,
-                expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
-                update_params=update_data,
-            )
+        user_update_email_token = await user_cache_update_me.create_user_cache_instance(
+            user=normal_user,
+            expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
+            update_params=update_data,
         )
         data_confirm = {"access_token": user_update_email_token}
         r_confirm = await async_client.patch(
@@ -353,7 +351,7 @@ class TestUserRoutes(BaseTest):
         normal_user_token_headers: dict[str, str],
         superuser_token_headers: dict[str, str],
         db: Session,
-        get_user_cache_update_me: UserCache,
+        user_cache_update_me: UserCache,
     ) -> None:
         normal_user = await self._get_current_normal_user(
             async_client, normal_user_token_headers, db
@@ -374,7 +372,7 @@ class TestUserRoutes(BaseTest):
         assert normal_user.username != update_data["username"]
 
         user_update_username_token = (
-            await get_user_cache_update_me.create_user_cache_instance(
+            await user_cache_update_me.create_user_cache_instance(
                 user=normal_user,
                 expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
                 update_params=update_data,
@@ -560,7 +558,7 @@ class TestUserRoutes(BaseTest):
         self,
         async_client: AsyncClient,
         db: Session,
-        get_user_cache_register_user: UserCache,
+        user_cache_register_user: UserCache,
     ) -> None:
         email = random_email()
         password = random_lower_string()
@@ -583,11 +581,9 @@ class TestUserRoutes(BaseTest):
         assert user_pre_confirmed_db.isActive is False
         assert verify_password(password, user_pre_confirmed_db.hashedPassword)
 
-        user_register_token = (
-            await get_user_cache_register_user.create_user_cache_instance(
-                user=user_pre_confirmed_db,
-                expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
-            )
+        user_register_token = await user_cache_register_user.create_user_cache_instance(
+            user=user_pre_confirmed_db,
+            expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
         )
         data_confirm = {"access_token": user_register_token}
         r_confirm = await async_client.post(
@@ -661,7 +657,7 @@ class TestUserRoutes(BaseTest):
         self,
         async_client: AsyncClient,
         db: Session,
-        get_user_cache_register_user: UserCache,
+        user_cache_register_user: UserCache,
     ) -> None:
         email = random_email()
         password = random_lower_string()
@@ -684,11 +680,9 @@ class TestUserRoutes(BaseTest):
         assert user_pre_confirmed_db.isActive is False
         assert verify_password(password, user_pre_confirmed_db.hashedPassword)
 
-        user_register_token = (
-            await get_user_cache_register_user.create_user_cache_instance(
-                user=user_pre_confirmed_db,
-                expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
-            )
+        user_register_token = await user_cache_register_user.create_user_cache_instance(
+            user=user_pre_confirmed_db,
+            expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
         )
 
         wrong_token = user_register_token + "wrong"
@@ -703,8 +697,8 @@ class TestUserRoutes(BaseTest):
             details_confirm
             == InvalidTokenError(
                 token=wrong_token,
-                function_name=get_user_cache_register_user.verify_token.__name__,
-                class_name=get_user_cache_register_user.__class__.__name__,
+                function_name=user_cache_register_user.verify_token.__name__,
+                class_name=user_cache_register_user.__class__.__name__,
             ).detail
         )
 
@@ -1015,8 +1009,8 @@ class TestUserRoutes(BaseTest):
         async_client: AsyncClient,
         db: Session,
         get_cache: Redis,
-        get_user_cache_register_user: UserCache,
-        get_user_cache_session: UserCache,
+        user_cache_register_user: UserCache,
+        user_cache_session: UserCache,
     ) -> None:
         email = random_email()
         password = random_lower_string()
@@ -1037,7 +1031,7 @@ class TestUserRoutes(BaseTest):
 
         user_db = CRUD_user.get(db=db, filter={"email": email})
 
-        token = await get_user_cache_register_user.create_user_cache_instance(
+        token = await user_cache_register_user.create_user_cache_instance(
             user=user_db,
             expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
         )
@@ -1080,7 +1074,7 @@ class TestUserRoutes(BaseTest):
                 r_get_user_me_ok.json()["detail"]
                 == InvalidTokenError(
                     token=token,
-                    function_name=get_user_cache_session.verify_token.__name__,
-                    class_name=get_user_cache_session.__class__.__name__,
+                    function_name=user_cache_session.verify_token.__name__,
+                    class_name=user_cache_session.__class__.__name__,
                 ).detail
             )
