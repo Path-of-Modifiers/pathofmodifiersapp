@@ -12,6 +12,7 @@ from app.core.cache import (
     user_cache_password_reset,
     user_cache_register_user,
     user_cache_session,
+    user_cache_update_me,
 )
 from app.core.cache.cache import cache
 from app.core.cache.user_cache import UserCache
@@ -64,18 +65,27 @@ async def get_cache() -> AsyncGenerator[Redis, None]:
 
 
 @pytest_asyncio.fixture
-def get_user_cache_password_reset() -> Generator[UserCache, None, None]:
+async def get_user_cache_password_reset() -> AsyncGenerator[UserCache, None]:
     yield user_cache_password_reset
+    await user_cache_password_reset.close_cache_connection()
 
 
 @pytest_asyncio.fixture
-def get_user_cache_register_user() -> Generator[UserCache, None, None]:
+async def get_user_cache_register_user() -> AsyncGenerator[UserCache, None]:
     yield user_cache_register_user
+    await user_cache_password_reset.close_cache_connection()
 
 
 @pytest_asyncio.fixture
-def get_user_cache_session() -> Generator[UserCache, None, None]:
+async def get_user_cache_session() -> AsyncGenerator[UserCache, None]:
     yield user_cache_session
+    await user_cache_password_reset.close_cache_connection()
+
+
+@pytest_asyncio.fixture
+async def get_user_cache_update_me() -> AsyncGenerator[UserCache, None]:
+    yield user_cache_update_me
+    await user_cache_password_reset.close_cache_connection()
 
 
 @pytest.fixture(scope="module")
