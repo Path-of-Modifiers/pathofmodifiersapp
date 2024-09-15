@@ -8,12 +8,22 @@ from app.api.api_message_util import (
     get_password_rec_email_sent_success_msg,
     get_user_psw_change_msg,
 )
-from app.api.routes.login import login_prefix, reset_password
+from app.api.routes.login import (
+    login_access_session,
+    login_prefix,
+    recover_password,
+    reset_password,
+)
 from app.core.cache.user_cache import UserCache
 from app.core.config import settings
+from app.core.models.models import User
 from app.core.security import verify_password
 from app.crud import CRUD_user
 from app.exceptions import InvalidTokenError, NewPasswordIsSameError
+from app.exceptions.model_exceptions.db_exception import DbObjectDoesNotExistError
+from app.exceptions.model_exceptions.user_login_exception import (
+    BadLoginCredentialsError,
+)
 from app.tests.base_test import BaseTest
 
 
@@ -59,7 +69,11 @@ class TestLoginRoutes(BaseTest):
         r = await async_client.post(
             f"{settings.API_V1_STR}/{login_prefix}/access-token", data=login_data
         )
-        assert r.status_code == 401
+        bad_login_credentials_error = BadLoginCredentialsError(
+            function_name=login_access_session.__name__,
+        )
+        assert r.status_code == bad_login_credentials_error.status_code
+        assert r.json()["detail"] == bad_login_credentials_error.detail
 
     @pytest.mark.anyio
     async def test_get_access_token_incorrect_password_user(
@@ -72,7 +86,11 @@ class TestLoginRoutes(BaseTest):
         r = await async_client.post(
             f"{settings.API_V1_STR}/login/access-token", data=login_data
         )
-        assert r.status_code == 401
+        bad_login_credentials_error = BadLoginCredentialsError(
+            function_name=login_access_session.__name__,
+        )
+        assert r.status_code == bad_login_credentials_error.status_code
+        assert r.json()["detail"] == bad_login_credentials_error.detail
 
     @pytest.mark.anyio
     async def test_use_access_token(
@@ -111,13 +129,19 @@ class TestLoginRoutes(BaseTest):
     async def test_recovery_password_user_not_exists_email(
         self, async_client: AsyncClient, normal_user_token_headers: dict[str, str]
     ) -> None:
-        email = "jVgQr@example.com"
+        email_data = {"email": "jVgQr@example.com"}
         r = await async_client.post(
-            f"{settings.API_V1_STR}/password-recovery/",
+            f"{settings.API_V1_STR}/{login_prefix}/password-recovery/",
             headers=normal_user_token_headers,
-            json={"email": email},
+            json=email_data,
         )
-        assert r.status_code == 404
+        db_obj_not_exist_error = DbObjectDoesNotExistError(
+            model_table_name=User.__tablename__,
+            filter=email_data,
+            function_name=recover_password.__name__,
+        )
+        assert r.status_code == db_obj_not_exist_error.status_code
+        assert r.json()["detail"] == db_obj_not_exist_error.detail
 
     @pytest.mark.anyio
     async def test_recovery_password_user_not_exists_username(
@@ -129,7 +153,13 @@ class TestLoginRoutes(BaseTest):
             headers=normal_user_token_headers,
             json=username_data,
         )
-        assert r.status_code == 404
+        db_obj_not_exist_error = DbObjectDoesNotExistError(
+            model_table_name=User.__tablename__,
+            filter=username_data,
+            function_name=recover_password.__name__,
+        )
+        assert r.status_code == db_obj_not_exist_error.status_code
+        assert r.json()["detail"] == db_obj_not_exist_error.detail
 
     @pytest.mark.anyio
     async def test_reset_password(
@@ -206,13 +236,11 @@ class TestLoginRoutes(BaseTest):
             headers=superuser_token_headers,
             json=data,
         )
-        assert r.status_code == 400
-        assert (
-            r.json()["detail"]
-            == NewPasswordIsSameError(
-                function_name=reset_password.__name__,
-            ).detail
+        new_password_is_same_error = NewPasswordIsSameError(
+            function_name=reset_password.__name__,
         )
+        assert r.status_code == new_password_is_same_error.status_code
+        assert r.json()["detail"] == new_password_is_same_error.detail
 
         user = CRUD_user.get(db, filter={"email": settings.FIRST_SUPERUSER})
         db.refresh(user)
@@ -234,13 +262,12 @@ class TestLoginRoutes(BaseTest):
             json=data,
         )
         response = r.json()
-        assert "detail" in response
-        assert r.status_code == 401
-        assert (
-            response["detail"]
-            == InvalidTokenError(
-                token=invalid_token,
-                function_name=get_user_cache_password_reset.verify_token.__name__,
-                class_name=get_user_cache_password_reset.__class__.__name__,
-            ).detail
+
+        invalid_token_error = InvalidTokenError(
+            token=invalid_token,
+            function_name=get_user_cache_password_reset.verify_token.__name__,
+            class_name=get_user_cache_password_reset.__class__.__name__,
         )
+        assert "detail" in response
+        assert r.status_code == invalid_token_error.status_code
+        assert response["detail"] == invalid_token_error.detail

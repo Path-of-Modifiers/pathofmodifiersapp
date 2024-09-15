@@ -16,7 +16,8 @@ from app.exceptions import (
 )
 
 reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/login/access-token"
+    tokenUrl=f"{settings.API_V1_STR}/login/access-token",
+    auto_error=False,
 )
 
 
@@ -49,7 +50,6 @@ async def get_current_user(
             username_or_email=user.username,
             function_name=get_current_user.__name__,
         )
-    print("user get current", user.username)
     return user
 
 
@@ -75,7 +75,7 @@ async def get_current_active_user(current_user: CurrentUser) -> User:
 
 
 def get_user_token_by_request(request: Request) -> str:
-    """Get user token by request.
+    """Get user access token by request.
 
     Args:
         request (Request): The request
@@ -85,7 +85,7 @@ def get_user_token_by_request(request: Request) -> str:
         InvalidTokenError: InvalidHeaderProvidedError
 
     Returns:
-        str: The user token extracted from the request.
+        str: The access token extracted from the request.
     """
     header = request.headers.get("Authorization")
     if not header or not header.startswith("Bearer "):
@@ -95,9 +95,9 @@ def get_user_token_by_request(request: Request) -> str:
             header=header,
         )
 
-    user_token = header[7:]  # Strip "Bearer " prefix (7 characters)
+    access_token = header[7:]  # Strip "Bearer " prefix (7 characters)
 
-    return user_token
+    return access_token
 
 
 def get_rate_limit_amount_by_tier(tier: int) -> int:
