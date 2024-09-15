@@ -34,11 +34,11 @@ TokenDep = Annotated[str, Depends(reusable_oauth2)]
 
 async def get_current_user(
     token: TokenDep,
-    session: Session = Depends(get_db),
+    db: Session = Depends(get_db),
 ) -> User:
     user_cached = await user_cache_session.verify_token(token)
 
-    user = session.get(User, user_cached.userId)
+    user = db.get(User, user_cached.userId)
     if not user:
         raise DbObjectDoesNotExistError(
             model_table_name=User.__tablename__,
@@ -74,15 +74,15 @@ async def get_current_active_user(current_user: CurrentUser) -> User:
     return current_user
 
 
-def get_access_token_by_request(request: Request) -> str:
-    """Get access token by request.
+def get_user_token_by_request(request: Request) -> str:
+    """Get user access token by request.
 
     Args:
         request (Request): The request
 
     Raises:
         HTTPException: HTTPException
-        InvalidTokenError: InvalidTokenError
+        InvalidTokenError: InvalidHeaderProvidedError
 
     Returns:
         str: The access token extracted from the request.
@@ -91,7 +91,7 @@ def get_access_token_by_request(request: Request) -> str:
     if not header or not header.startswith("Bearer "):
         raise InvalidHeaderProvidedError(
             status_code=403,
-            function_name=get_access_token_by_request.__name__,
+            function_name=get_user_token_by_request.__name__,
             header=header,
         )
 
@@ -109,11 +109,11 @@ def get_rate_limit_amount_by_tier(tier: int) -> int:
 
 async def get_rate_limit_tier_by_request(request: Request) -> int:
     """Get current user rate limit tier by request."""
-    token = get_access_token_by_request(request)
+    token = get_user_token_by_request(request)
 
     user = await user_cache_session.verify_token(token)
 
     if user.isSuperuser:
-        return 30  #
+        return settings.TIER_SUPERUSER_PLOT_RATE_LIMIT
 
     return get_rate_limit_amount_by_tier(user.rateLimitTier)
