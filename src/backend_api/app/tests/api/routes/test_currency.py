@@ -1,12 +1,16 @@
 from collections.abc import Callable
 
 import pytest
+import pytest_asyncio
 
-import app.tests.api.api_routes_test_base as test_api
 from app.api.routes import currency_prefix
+from app.core.config import settings
 from app.core.models.models import Currency
 from app.crud import CRUD_currency
 from app.crud.base import CRUDBase, ModelType
+from app.tests.api.routes.rate_limit.test_currency_rate_limit import (
+    TestCurrencyRateLimit as CurrencyRateLimitTest,
+)
 from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
 from app.tests.utils.model_utils.currency import (
     create_random_currency_dict,
@@ -85,5 +89,26 @@ def create_random_object_func() -> Callable[[], dict]:
     return create_random_currency_dict
 
 
-class TestCurrency(test_api.TestAPI):
+@pytest_asyncio.fixture(scope="module")
+async def get_object_from_api(
+    async_client,
+    route_prefix,
+    normal_user_token_headers,
+    unique_identifier,
+):
+    async def _get_object(obj_out_pk_map):
+        response = await async_client.get(
+            f"{settings.API_V1_STR}/{route_prefix}/{obj_out_pk_map[unique_identifier]}",
+            headers=normal_user_token_headers,
+        )
+        return response
+
+    return _get_object
+
+
+# class TestCurrency(test_api.TestAPI):
+#     pass
+
+
+class TestCurrencyRateLimit(CurrencyRateLimitTest):
     pass
