@@ -22,11 +22,7 @@ from app.api.routes.user import (
     delete_user_me,
     get_user_by_id,
 )
-from app.core.cache import (
-    user_cache_register_user,
-    user_cache_session,
-    user_cache_update_me,
-)
+from app.core.cache.user_cache import UserCache
 from app.core.config import settings
 from app.core.models.models import User
 from app.core.schemas import UserCreate
@@ -302,6 +298,7 @@ class TestUserRoutes(BaseTest):
         normal_user_token_headers: dict[str, str],
         superuser_token_headers: dict[str, str],
         db: Session,
+        get_user_cache_update_me: UserCache,
     ) -> None:
         normal_user = await self._get_current_normal_user(
             async_client, normal_user_token_headers, db
@@ -321,13 +318,14 @@ class TestUserRoutes(BaseTest):
         )
         assert normal_user.email != update_data["email"]
 
-        user_update_email_token = await user_cache_update_me.create_user_cache_instance(
-            user=normal_user,
-            expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
-            update_params=update_data,
+        user_update_email_token = (
+            await get_user_cache_update_me.create_user_cache_instance(
+                user=normal_user,
+                expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
+                update_params=update_data,
+            )
         )
-        user_update_email_token_str = str(user_update_email_token)
-        data_confirm = {"access_token": user_update_email_token_str}
+        data_confirm = {"access_token": user_update_email_token}
         r_confirm = await async_client.patch(
             f"{settings.API_V1_STR}/{user_prefix}/update-me-email-confirmation",
             headers=normal_user_token_headers,
@@ -355,6 +353,7 @@ class TestUserRoutes(BaseTest):
         normal_user_token_headers: dict[str, str],
         superuser_token_headers: dict[str, str],
         db: Session,
+        get_user_cache_update_me: UserCache,
     ) -> None:
         normal_user = await self._get_current_normal_user(
             async_client, normal_user_token_headers, db
@@ -375,7 +374,7 @@ class TestUserRoutes(BaseTest):
         assert normal_user.username != update_data["username"]
 
         user_update_username_token = (
-            await user_cache_update_me.create_user_cache_instance(
+            await get_user_cache_update_me.create_user_cache_instance(
                 user=normal_user,
                 expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
                 update_params=update_data,
@@ -557,7 +556,12 @@ class TestUserRoutes(BaseTest):
         )
 
     @pytest.mark.anyio
-    async def test_register_user(self, async_client: AsyncClient, db: Session) -> None:
+    async def test_register_user(
+        self,
+        async_client: AsyncClient,
+        db: Session,
+        get_user_cache_register_user: UserCache,
+    ) -> None:
         email = random_email()
         password = random_lower_string()
         username = random_lower_string()
@@ -579,9 +583,11 @@ class TestUserRoutes(BaseTest):
         assert user_pre_confirmed_db.isActive is False
         assert verify_password(password, user_pre_confirmed_db.hashedPassword)
 
-        user_register_token = await user_cache_register_user.create_user_cache_instance(
-            user=user_pre_confirmed_db,
-            expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
+        user_register_token = (
+            await get_user_cache_register_user.create_user_cache_instance(
+                user=user_pre_confirmed_db,
+                expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
+            )
         )
         data_confirm = {"access_token": user_register_token}
         r_confirm = await async_client.post(
@@ -652,7 +658,10 @@ class TestUserRoutes(BaseTest):
 
     @pytest.mark.anyio
     async def test_register_wrong_token(
-        self, async_client: AsyncClient, db: Session
+        self,
+        async_client: AsyncClient,
+        db: Session,
+        get_user_cache_register_user: UserCache,
     ) -> None:
         email = random_email()
         password = random_lower_string()
@@ -675,9 +684,11 @@ class TestUserRoutes(BaseTest):
         assert user_pre_confirmed_db.isActive is False
         assert verify_password(password, user_pre_confirmed_db.hashedPassword)
 
-        user_register_token = await user_cache_register_user.create_user_cache_instance(
-            user=user_pre_confirmed_db,
-            expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
+        user_register_token = (
+            await get_user_cache_register_user.create_user_cache_instance(
+                user=user_pre_confirmed_db,
+                expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
+            )
         )
 
         wrong_token = user_register_token + "wrong"
@@ -692,8 +703,8 @@ class TestUserRoutes(BaseTest):
             details_confirm
             == InvalidTokenError(
                 token=wrong_token,
-                function_name=user_cache_register_user.verify_token.__name__,
-                class_name=user_cache_register_user.__class__.__name__,
+                function_name=get_user_cache_register_user.verify_token.__name__,
+                class_name=get_user_cache_register_user.__class__.__name__,
             ).detail
         )
 
@@ -1000,7 +1011,12 @@ class TestUserRoutes(BaseTest):
 
     @pytest.mark.anyio
     async def test_token_expired_user(
-        self, async_client: AsyncClient, db: Session, get_cache: Redis
+        self,
+        async_client: AsyncClient,
+        db: Session,
+        get_cache: Redis,
+        get_user_cache_register_user: UserCache,
+        get_user_cache_session: UserCache,
     ) -> None:
         email = random_email()
         password = random_lower_string()
@@ -1021,7 +1037,7 @@ class TestUserRoutes(BaseTest):
 
         user_db = CRUD_user.get(db=db, filter={"email": email})
 
-        token = await user_cache_register_user.create_user_cache_instance(
+        token = await get_user_cache_register_user.create_user_cache_instance(
             user=user_db,
             expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
         )
@@ -1064,7 +1080,7 @@ class TestUserRoutes(BaseTest):
                 r_get_user_me_ok.json()["detail"]
                 == InvalidTokenError(
                     token=token,
-                    function_name=user_cache_session.verify_token.__name__,
-                    class_name=user_cache_session.__class__.__name__,
+                    function_name=get_user_cache_session.verify_token.__name__,
+                    class_name=get_user_cache_session.__class__.__name__,
                 ).detail
             )
