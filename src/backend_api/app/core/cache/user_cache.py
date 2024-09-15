@@ -72,15 +72,17 @@ class UserCache:
         token_format = self._create_key_format(token)
 
         session_instance = await cache.get(token_format)
-        await cache.aclose()
 
         if session_instance:
-            session_instance = session_instance.decode("utf-8")
             user_cache_instance = user_cache_adapter.validate_json(session_instance)
         else:
             user_cache_instance = None
 
         return user_cache_instance
+
+    async def close_cache_connection(self) -> None:
+        """Close the cache instance"""
+        await cache.aclose()
 
     async def create_user_cache_instance(
         self,
@@ -107,7 +109,6 @@ class UserCache:
             value=user_cache_model,
             ex=expire_seconds,
         )
-        await cache.aclose()
 
         return str(access_token)
 
