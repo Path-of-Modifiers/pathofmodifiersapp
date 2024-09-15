@@ -154,6 +154,7 @@ class NewPasswordIsSameError(PathOfModifiersAPIError):
         function_name: str | None = "Unknown function",
         class_name: str | None = None,
         status_code: int | None = status.HTTP_400_BAD_REQUEST,
+        detail: str | None = None,
     ):
         detail = "Could not authorize. New password is the same as the old one"
         super().__init__(
@@ -171,7 +172,7 @@ class NotAuthenticatedError(PathOfModifiersAPIError):
         self,
         *,
         detail: str,
-        function_name: str | None = "Unknown auth function",
+        function_name: str | None = "Unknown function",
         class_name: str | None = None,
         status_code: int | None = status.HTTP_401_UNAUTHORIZED,
     ):
