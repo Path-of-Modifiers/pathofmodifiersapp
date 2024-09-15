@@ -8,14 +8,8 @@ from redis.asyncio import Redis
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
-from app.core.cache import (
-    user_cache_password_reset,
-    user_cache_register_user,
-    user_cache_session,
-    user_cache_update_me,
-)
 from app.core.cache.cache import cache
-from app.core.cache.user_cache import UserCache
+from app.core.cache.user_cache import UserCache, UserCacheTokenType
 from app.core.config import settings
 from app.main import app
 from app.tests.setup_test_database import override_get_db, test_db_engine
@@ -65,27 +59,29 @@ async def get_cache() -> AsyncGenerator[Redis, None]:
 
 
 @pytest_asyncio.fixture
-async def get_user_cache_password_reset() -> AsyncGenerator[UserCache, None]:
-    yield user_cache_password_reset
-    await user_cache_password_reset.close_cache_connection()
+async def user_cache_password_reset() -> AsyncGenerator[UserCache, None]:
+    async with UserCache(
+        UserCacheTokenType.PASSWORD_RESET
+    ) as user_cache_password_reset:
+        yield user_cache_password_reset
 
 
 @pytest_asyncio.fixture
-async def get_user_cache_register_user() -> AsyncGenerator[UserCache, None]:
-    yield user_cache_register_user
-    await user_cache_password_reset.close_cache_connection()
+async def user_cache_register_user() -> AsyncGenerator[UserCache, None]:
+    async with UserCache(UserCacheTokenType.REGISTER_USER) as user_cache_register_user:
+        yield user_cache_register_user
 
 
 @pytest_asyncio.fixture
-async def get_user_cache_session() -> AsyncGenerator[UserCache, None]:
-    yield user_cache_session
-    await user_cache_password_reset.close_cache_connection()
+async def user_cache_session() -> AsyncGenerator[UserCache, None]:
+    async with UserCache(UserCacheTokenType.SESSION) as user_cache_session:
+        yield user_cache_session
 
 
 @pytest_asyncio.fixture
-async def get_user_cache_update_me() -> AsyncGenerator[UserCache, None]:
-    yield user_cache_update_me
-    await user_cache_password_reset.close_cache_connection()
+async def user_cache_update_me() -> AsyncGenerator[UserCache, None]:
+    async with UserCache(UserCacheTokenType.UPDATE_ME) as user_cache_update_me:
+        yield user_cache_update_me
 
 
 @pytest.fixture(scope="module")
