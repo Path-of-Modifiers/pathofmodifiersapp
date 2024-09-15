@@ -16,11 +16,12 @@ from app.api.api_message_util import (
 )
 from app.api.deps import (
     CurrentUser,
+    UserCacheRegisterSession,
+    UserCacheUpdateMeSession,
     get_current_active_superuser,
     get_current_active_user,
     get_db,
 )
-from app.core.cache import user_cache_register_user, user_cache_update_me
 from app.core.config import settings
 from app.core.models.models import User
 from app.core.schemas import (
@@ -116,6 +117,7 @@ async def update_me_email_send_confirmation(
     response: Response,  # noqa: ARG001
     *,
     db: Session = Depends(get_db),
+    user_cache_update_me: UserCacheUpdateMeSession,
     user_update_me_email: UserUpdateMe,
     current_user: CurrentUser,
 ) -> Any:
@@ -175,6 +177,7 @@ async def update_me_email_confirmation(
     response: Response,  # noqa: ARG001
     token: Token,
     current_user: CurrentUser,
+    user_cache_update_me: UserCacheUpdateMeSession,
     db: Session = Depends(get_db),
 ):
     """
@@ -225,6 +228,7 @@ async def update_me_username_send_confirmation(
     response: Response,  # noqa: ARG001
     *,
     db: Session = Depends(get_db),
+    user_cache_update_me: UserCacheUpdateMeSession,
     user_update_me_username: UserUpdateMe,
     current_user: CurrentUser,
 ) -> Any:
@@ -284,6 +288,7 @@ async def update_me_username_confirmation(
     response: Response,  # noqa: ARG001
     token: Token,
     current_user: CurrentUser,
+    user_cache_update_me: UserCacheUpdateMeSession,
     db: Session = Depends(get_db),
 ):
     """
@@ -414,6 +419,7 @@ async def register_user_send_confirmation(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     user_register_pre_confirmed: UserRegisterPreEmailConfirmation,
+    user_cache_register_user: UserCacheRegisterSession,
     db: Session = Depends(get_db),
 ) -> Any:
     """
@@ -467,6 +473,7 @@ async def register_user_confirm(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     token: Token,
+    user_cache_register_user: UserCacheRegisterSession,
     db: Session = Depends(get_db),
 ) -> Any:
     """
