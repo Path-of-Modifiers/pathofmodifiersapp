@@ -135,7 +135,7 @@ class TestLoginRoutes(BaseTest):
     async def test_reset_password(
         self,
         async_client: AsyncClient,
-        get_user_cache_password_reset: UserCache,
+        user_cache_password_reset: UserCache,
         superuser_token_headers: dict[str, str],
         db: Session,
     ) -> None:
@@ -144,7 +144,7 @@ class TestLoginRoutes(BaseTest):
         assert verify_password(settings.FIRST_SUPERUSER_PASSWORD, user.hashedPassword)
 
         new_password = "the_new_password"
-        token = await get_user_cache_password_reset.create_user_cache_instance(
+        token = await user_cache_password_reset.create_user_cache_instance(
             user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
         )
         new_psw_data = {"new_password": new_password, "token": token}
@@ -165,7 +165,7 @@ class TestLoginRoutes(BaseTest):
         assert verify_password(new_password, user.hashedPassword)
 
         # Reset password back to original
-        reset_token = await get_user_cache_password_reset.create_user_cache_instance(
+        reset_token = await user_cache_password_reset.create_user_cache_instance(
             user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
         )
         old_password = settings.FIRST_SUPERUSER_PASSWORD
@@ -191,13 +191,13 @@ class TestLoginRoutes(BaseTest):
     async def test_reset_same_password(
         self,
         async_client: AsyncClient,
-        get_user_cache_password_reset: UserCache,
+        user_cache_password_reset: UserCache,
         superuser_token_headers: dict[str, str],
         db: Session,
     ) -> None:
         new_password = settings.FIRST_SUPERUSER_PASSWORD
         user = CRUD_user.get(db, filter={"email": settings.FIRST_SUPERUSER})
-        token = await get_user_cache_password_reset.create_user_cache_instance(
+        token = await user_cache_password_reset.create_user_cache_instance(
             user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
         )
         data = {"new_password": new_password, "token": token}
@@ -223,7 +223,7 @@ class TestLoginRoutes(BaseTest):
     async def test_reset_password_invalid_token(
         self,
         async_client: AsyncClient,
-        get_user_cache_password_reset: UserCache,
+        user_cache_password_reset: UserCache,
         superuser_token_headers: dict[str, str],
     ) -> None:
         invalid_token = "invalid"
@@ -240,7 +240,7 @@ class TestLoginRoutes(BaseTest):
             response["detail"]
             == InvalidTokenError(
                 token=invalid_token,
-                function_name=get_user_cache_password_reset.verify_token.__name__,
-                class_name=get_user_cache_password_reset.__class__.__name__,
+                function_name=user_cache_password_reset.verify_token.__name__,
+                class_name=user_cache_password_reset.__class__.__name__,
             ).detail
         )

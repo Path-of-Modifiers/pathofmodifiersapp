@@ -59,7 +59,7 @@ async def get_cache() -> AsyncGenerator[Redis, None]:
 
 
 @pytest_asyncio.fixture
-async def get_user_cache_password_reset() -> AsyncGenerator[UserCache, None]:
+async def user_cache_password_reset() -> AsyncGenerator[UserCache, None]:
     async with UserCache(
         UserCacheTokenType.PASSWORD_RESET
     ) as user_cache_password_reset:
@@ -67,19 +67,19 @@ async def get_user_cache_password_reset() -> AsyncGenerator[UserCache, None]:
 
 
 @pytest_asyncio.fixture
-async def get_user_cache_register_user() -> AsyncGenerator[UserCache, None]:
+async def user_cache_register_user() -> AsyncGenerator[UserCache, None]:
     async with UserCache(UserCacheTokenType.REGISTER_USER) as user_cache_register_user:
         yield user_cache_register_user
 
 
 @pytest_asyncio.fixture
-async def get_user_cache_session() -> AsyncGenerator[UserCache, None]:
+async def user_cache_session() -> AsyncGenerator[UserCache, None]:
     async with UserCache(UserCacheTokenType.SESSION) as user_cache_session:
         yield user_cache_session
 
 
 @pytest_asyncio.fixture
-async def get_user_cache_update_me() -> AsyncGenerator[UserCache, None]:
+async def user_cache_update_me() -> AsyncGenerator[UserCache, None]:
     async with UserCache(UserCacheTokenType.UPDATE_ME) as user_cache_update_me:
         yield user_cache_update_me
 
