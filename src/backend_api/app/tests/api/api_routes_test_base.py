@@ -31,6 +31,7 @@ class TestAPI(BaseTest):
         create_object: dict,
         route_prefix: str,
         superuser_token_headers: dict[str, str],
+        on_duplicate_pkey_do_nothing: bool,
     ) -> Response:
         """Try to create an object using the API
 
@@ -44,12 +45,18 @@ class TestAPI(BaseTest):
             Response: Response from the API
 
         """
-
-        response = await async_client.post(
-            f"{settings.API_V1_STR}/{route_prefix}/",
-            headers=superuser_token_headers,
-            json=create_object,
-        )
+        if on_duplicate_pkey_do_nothing:
+            response = await async_client.post(
+                f"{settings.API_V1_STR}/{route_prefix}/?on_duplicate_pkey_do_nothing={on_duplicate_pkey_do_nothing}",
+                headers=superuser_token_headers,
+                json=create_object,
+            )
+        else:
+            response = await async_client.post(
+                f"{settings.API_V1_STR}/{route_prefix}/",
+                headers=superuser_token_headers,
+                json=create_object,
+            )
 
         return response
 
@@ -158,44 +165,63 @@ class TestAPI(BaseTest):
         )
 
     @pytest.mark.anyio
-    async def test_create_found_duplicate(
+    async def test_create_on_duplicate_pkey(
         self,
         async_client: AsyncClient,
-        crud_instance: CRUDBase,
         superuser_token_headers: dict[str, str],
+        crud_instance: CRUDBase,
         route_prefix: str,
         db: Session,
         create_random_object_func: Callable[[], tuple[dict, ModelType]],
+        on_duplicate_pkey_do_nothing: bool,
     ) -> None:
         """Test create found duplicate instance"""
-        if crud_instance.ignore_duplicates:
+        if not on_duplicate_pkey_do_nothing:
             pytest.skip(
-                f"API test for test_create_found_duplicate in route {route_prefix} does not support ignore_duplicates"
+                f"CRUD test for route {route_prefix} does not support primary key on duplicate create test"
             )
 
         create_obj, response = await self._create_random_object_api(
-            db,
-            create_random_object_func,
-            async_client,
-            route_prefix,
-            superuser_token_headers,
+            db=db,
+            create_random_object_func=create_random_object_func,
+            async_client=async_client,
+            route_prefix=route_prefix,
+            superuser_token_headers=superuser_token_headers,
         )
-        obj_pks_value_filter = crud_instance._map_obj_pks_to_value(create_obj)
-        response = await self._create_object_api(
-            async_client,
-            create_obj,
-            route_prefix,
-            superuser_token_headers,
+        assert response.status_code == 200
+
+        response_create_same_obj_with_dup_pkey = await self._create_object_api(
+            async_client=async_client,
+            create_object=create_obj,
+            route_prefix=route_prefix,
+            superuser_token_headers=superuser_token_headers,
+            on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing,
+        )
+        assert response_create_same_obj_with_dup_pkey.status_code == 200
+
+        response_create_same_obj_without_dup_pkey = await self._create_object_api(
+            async_client=async_client,
+            create_object=create_obj,
+            route_prefix=route_prefix,
+            superuser_token_headers=superuser_token_headers,
+            on_duplicate_pkey_do_nothing=False,
         )
 
+        obj_value_pk_filter = crud_instance._map_obj_pks_to_value(create_obj)
         db_obj_already_exist_error = DbObjectAlreadyExistsError(
             model_table_name=crud_instance.model.__tablename__,
-            filter=obj_pks_value_filter,
-            function_name=crud_instance._check_obj_duplicates_raises.__name__,
+            filter=obj_value_pk_filter,
+            function_name=crud_instance.create.__name__,
             class_name=crud_instance.__class__.__name__,
         )
-        assert response.status_code == db_obj_already_exist_error.status_code
-        assert response.json()["detail"] == db_obj_already_exist_error.detail
+        assert (
+            response_create_same_obj_without_dup_pkey.status_code
+            == db_obj_already_exist_error.status_code
+        )
+        assert (
+            response_create_same_obj_without_dup_pkey.status_code
+            == db_obj_already_exist_error.status_code
+        )
 
     @pytest.mark.anyio
     async def test_get_instance(
@@ -335,7 +361,7 @@ class TestAPI(BaseTest):
             route_prefix (str): Route name
         """
         object_count = 5
-        await self._create_multiple_objects_crud(
+        await self._create_multiple_random_objects_crud(
             db, object_generator_func, object_count
         )
         response = await async_client.get(
