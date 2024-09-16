@@ -78,11 +78,12 @@ async def get_all_item_modifiers(
 
 @router.post(
     "/",
-    response_model=schemas.ItemModifierCreate | list[schemas.ItemModifierCreate],
+    response_model=schemas.ItemModifierCreate | list[schemas.ItemModifierCreate] | None,
     dependencies=[Depends(get_current_active_superuser)],
 )
 async def create_item_modifier(
     itemModifier: schemas.ItemModifierCreate | list[schemas.ItemModifierCreate],
+    on_duplicate_pkey_do_nothing: bool | None = None,
     db: Session = Depends(get_db),
 ):
     """
@@ -91,7 +92,11 @@ async def create_item_modifier(
     Returns the created item modifier or list of item modifiers.
     """
 
-    return await CRUD_itemModifier.create(db=db, obj_in=itemModifier)
+    return await CRUD_itemModifier.create(
+        db=db,
+        obj_in=itemModifier,
+        on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing,
+    )
 
 
 @router.put(

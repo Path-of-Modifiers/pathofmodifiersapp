@@ -60,23 +60,44 @@ class TestCRUD(BaseTest):
         self._test_object(object_out, object_dict)
 
     @pytest.mark.asyncio
-    async def test_create_found_duplicate_error(
+    async def test_create_duplicate_instances(
         self,
         db: Session,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         crud_instance: CRUDBase,
+        on_duplicate_pkey_do_nothing: bool,
     ) -> None:
-        if crud_instance.ignore_duplicates:
+        if not on_duplicate_pkey_do_nothing:
             pytest.skip(
                 f"CRUD test for test_create_found_duplicate in crud {crud_instance.__class__.__name__} does not support ignore_duplicates"
             )
 
+        # Test with one instance
         object_dict, _ = await self._create_random_object_crud(
             db, object_generator_func
         )
+        db_obj = await self._create_object_crud(
+            db, crud_instance, object_dict, on_duplicate_pkey_do_nothing=True
+        )
+        assert db_obj is None
 
         with pytest.raises(DbObjectAlreadyExistsError):
-            await self._create_object_crud(db, crud_instance, object_dict)
+            db_obj = await self._create_object_crud(
+                db, crud_instance, object_dict, on_duplicate_pkey_do_nothing=False
+            )
+
+        # Test with multiple instances
+        multiple_object_dict_tuple, _ = await self._create_multiple_random_objects_crud(
+            db, object_generator_func, count=5
+        )
+        object_dict_list = list(multiple_object_dict_tuple)
+        db_obj = await self._create_multiple_objects_crud(
+            db,
+            crud_instance=crud_instance,
+            create_objects=object_dict_list,
+            on_duplicate_pkey_do_nothing=True,
+        )
+        assert db_obj is None
 
     @pytest.mark.asyncio
     async def test_create_multiple(
@@ -100,7 +121,7 @@ class TestCRUD(BaseTest):
         (
             multiple_object_dict,
             multiple_object_out,
-        ) = await self._create_multiple_objects_crud(
+        ) = await self._create_multiple_random_objects_crud(
             db, object_generator_func, count=count
         )
         self._test_object(multiple_object_out, multiple_object_dict)

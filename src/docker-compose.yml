@@ -48,7 +48,7 @@ services:
       interval: 1s
       timeout: 3s
       retries: 5
-    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD?Variable not set}
+    command: redis-server --save 20 1 --loglevel warning --maxmemory 1000mb --requirepass ${REDIS_PASSWORD?Variable not set}
 
   backend:
     image: "${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}"
