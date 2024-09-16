@@ -1,7 +1,8 @@
 from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, TypeAdapter
-from sqlalchemy import insert
+from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.exceptions import (
@@ -9,6 +10,10 @@ from app.exceptions import (
     DbTooManyItemsDeleteError,
     SortingMethodNotSupportedError,
     ValueNotSupportedError,
+)
+from app.exceptions.model_exceptions.db_exception import (
+    DbObjectAlreadyExistsError,
+    GeneralDBError,
 )
 from app.utils.sort_algorithms import sort_with_reference
 
@@ -38,6 +43,8 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         self.create_schema = create_schema
 
         self.validate = TypeAdapter(SchemaType | list[SchemaType]).validate_python
+
+        self.ignore_update_duplicates = False
 
     def _sort_objects(
         self,
@@ -70,11 +77,11 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
     def _map_obj_pks_to_value(
         self,
         obj_in: dict[str, Any] | list[dict[str, Any]] | ModelType | list[ModelType],
-    ) -> list[dict[str, Any]]:
+    ) -> list[dict[str, Any]] | list[dict[str, None]]:
         """
         Map objects to the model's primary keys.
 
-        Always returns a list.
+        Returns dict[str, None] when `obj_in` doesn't have primary key stated in it.
         """
         if not isinstance(obj_in, list):
             obj_in = [obj_in]
@@ -96,6 +103,12 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             obj_pks_values.append(obj_pks_value)
 
         return obj_pks_values
+
+    def _map_rows_to_model(
+        self,
+        rows: list[dict[str, Any]],
+    ) -> list[ModelType]:
+        return [self.model(**row) for row in rows]
 
     async def get(
         self,
@@ -129,32 +142,84 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         db: Session,
         *,
         obj_in: CreateSchemaType | list[CreateSchemaType],
-    ) -> ModelType | None:
-        # pk_column_names = self.model.__table__.primary_key.columns.keys()
+        on_duplicate_pkey_do_nothing: bool | None = None,
+    ) -> ModelType | list[ModelType] | None:
+        """
+        Create an object in the database.
+
+        **Parameters**
+
+        * `db`: A SQLAlchemy session
+        * `obj_in`: A Pydantic model or list of Pydantic models
+        * `on_duplicate_pkey_do_nothing`: Ignore objects with duplicate primary keys.
+
+        **Returns**
+
+        * A Database object or list of Database objects or None
+        * If `on_duplicate_pkey_do_nothing` is True, the returned objects are the not conflicted objects.
+        Duplicate objects are not returned.
+        """
+        self.validate(obj_in)
+
         if isinstance(obj_in, list):
-            db_obj = [self.model(**obj.model_dump()) for obj in obj_in]
-            create_satement = (
-                insert(self.model)
-                .values(db_obj)
-                .on_conflict_do_nothing(constraint=f"{self.model.__tablename__}_pkey")
-            )
-            db_obj = db.execute(create_satement)
-            if db_obj:
-                self.validate(db_obj)
-                db.commit()
-                [db.refresh(obj) for obj in db_obj]
+            model_dump_list = [obj.model_dump() for obj in obj_in]
         else:
-            create_satement = (
-                insert(self.model)
-                .values(obj_in.model_dump())
-                .on_conflict_do_nothing(constraint=f"{self.model.__tablename__}_pkey")
+            model_dump_list = [obj_in.model_dump()]
+        model_dump_list_filtered = [
+            model_dump
+            for model_dump in (
+                {key: val for key, val in sub.items() if val is not None}
+                for sub in model_dump_list
             )
-            db_obj = db.execute(create_satement)
-            if db_obj:
-                self.validate(db_obj)
-                db.commit()
-                db.refresh(db_obj)
-        return db_obj
+            if model_dump
+        ]
+        if on_duplicate_pkey_do_nothing:
+            create_statement = (
+                insert(self.model)
+                .values(model_dump_list_filtered)
+                .on_conflict_do_nothing(constraint=f"{self.model.__tablename__}_pkey")
+                .returning(self.model.__table__.c)
+            )
+        else:
+            create_statement = (
+                insert(self.model)
+                .values(model_dump_list_filtered)
+                .returning(self.model.__table__.c)
+            )
+        try:
+            rows_returned = db.execute(create_statement).mappings().all()
+        except IntegrityError as e:
+            db.rollback()
+            reason = str(e._message)[:150]
+            model_pks = self._map_obj_pks_to_value(model_dump_list)
+            if "duplicate key value violates unique constraint" in reason:
+                raise DbObjectAlreadyExistsError(
+                    model_table_name=self.model.__tablename__,
+                    filter=model_pks,
+                    function_name=self.create.__name__,
+                    class_name=self.__class__.__name__,
+                )
+            else:
+                raise GeneralDBError(
+                    function_name=self.create.__name__,
+                    class_name=self.__class__.__name__,
+                    exception=e,
+                )
+
+        mapped_objs = self._map_rows_to_model(rows_returned)
+
+        db.commit()
+
+        # Use `merge()` instead of `add()` and `refresh()`
+        db_objs_merged = [db.merge(obj) for obj in mapped_objs]
+
+        if not db_objs_merged:
+            return None
+
+        if len(db_objs_merged) == 1:
+            return db_objs_merged[0]
+
+        return self.validate(db_objs_merged)
 
     async def update(
         self,
