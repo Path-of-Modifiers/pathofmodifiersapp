@@ -62,13 +62,14 @@ async def get_all_accounts(
 
 @router.post(
     "/",
-    response_model=schemas.AccountCreate | list[schemas.AccountCreate],
+    response_model=schemas.AccountCreate | list[schemas.AccountCreate] | None,
     dependencies=[
         Depends(get_current_active_superuser),
     ],
 )
 async def create_account(
     account: schemas.AccountCreate | list[schemas.AccountCreate],
+    on_duplicate_pkey_do_nothing: bool | None = None,
     db: Session = Depends(get_db),
 ):
     """
@@ -77,7 +78,9 @@ async def create_account(
     Returns the created account or list of accounts.
     """
 
-    return await CRUD_account.create(db=db, obj_in=account)
+    return await CRUD_account.create(
+        db=db, obj_in=account, on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing
+    )
 
 
 @router.put(
