@@ -11,8 +11,13 @@ from app.api.api_message_util import (
     get_password_rec_email_sent_success_msg,
     get_user_psw_change_msg,
 )
-from app.api.deps import CurrentUser, get_current_active_superuser, get_db
-from app.core.cache import user_cache_password_reset, user_cache_session
+from app.api.deps import (
+    CurrentUser,
+    UserCachePasswordResetSession,
+    UserCacheSession,
+    get_current_active_superuser,
+    get_db,
+)
 from app.core.config import settings
 from app.core.models.models import User
 from app.core.schemas import Message, NewPassword, Token, UserPublic
@@ -52,6 +57,7 @@ async def login_access_session(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    user_session_cache: UserCacheSession,
     db: Session = Depends(get_db),
 ) -> Token:
     """
@@ -70,8 +76,7 @@ async def login_access_session(
             username_or_email=user.username,
             function_name=login_access_session.__name__,
         )
-
-    access_token = await user_cache_session.create_user_cache_instance(
+    access_token = await user_session_cache.create_user_cache_instance(
         user=user,
         expire_seconds=settings.ACCESS_SESSION_EXPIRE_SECONDS,
     )
@@ -111,6 +116,7 @@ async def recover_password(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     body: RecoverPassword,
+    user_cache_password_reset: UserCachePasswordResetSession,
     db: Session = Depends(get_db),
 ) -> Message:
     """
@@ -164,6 +170,7 @@ async def reset_password(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     body: NewPassword,
+    user_cache_password_reset: UserCachePasswordResetSession,
     db: Session = Depends(get_db),
 ) -> Message:
     """
@@ -208,7 +215,9 @@ async def reset_password(
     response_class=HTMLResponse,
 )
 async def recover_password_html_content(
-    email: EmailStr, db: Session = Depends(get_db)
+    email: EmailStr,
+    user_cache_password_reset: UserCachePasswordResetSession,
+    db: Session = Depends(get_db),
 ) -> Any:
     """
     HTML Content for Password Recovery

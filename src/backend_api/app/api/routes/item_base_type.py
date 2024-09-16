@@ -162,13 +162,14 @@ async def get_unique_sub_categories(
 
 @router.post(
     "/",
-    response_model=schemas.ItemBaseTypeCreate | list[schemas.ItemBaseTypeCreate],
+    response_model=schemas.ItemBaseTypeCreate | list[schemas.ItemBaseTypeCreate] | None,
     dependencies=[
         Depends(get_current_active_superuser),
     ],
 )
 async def create_item_base_type(
     itemBaseType: schemas.ItemBaseTypeCreate | list[schemas.ItemBaseTypeCreate],
+    on_duplicate_pkey_do_nothing: bool | None = None,
     db: Session = Depends(get_db),
 ):
     """
@@ -176,7 +177,11 @@ async def create_item_base_type(
 
     Returns the created item base type or list of item base types.
     """
-    return await CRUD_itemBaseType.create(db=db, obj_in=itemBaseType)
+    return await CRUD_itemBaseType.create(
+        db=db,
+        obj_in=itemBaseType,
+        on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing,
+    )
 
 
 @router.put(

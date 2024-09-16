@@ -36,6 +36,7 @@ slowapi = "^0.1.9"
 redis = "^5.0.8"
 asyncio-redis-rate-limit = "^1.0.0"
 pytest-trio = "^0.8.0"
+sqlalchemy = "^2.0.34"
 
 
 

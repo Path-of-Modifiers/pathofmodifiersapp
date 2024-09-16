@@ -34,6 +34,7 @@ class BaseTest:
         db: Session,
         crud_instance: CRUDBase,
         create_object: dict,
+        on_duplicate_pkey_do_nothing: bool | None = None,
     ) -> ModelType:
         """
         A private method used to create objects
@@ -41,7 +42,33 @@ class BaseTest:
         create_obj = crud_instance.create_schema(
             **create_object
         )  # Create object conversion to crud format
-        object_out = await crud_instance.create(db=db, obj_in=create_obj)
+        object_out = await crud_instance.create(
+            db=db,
+            obj_in=create_obj,
+            on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing,
+        )
+
+        return object_out
+
+    async def _create_multiple_objects_crud(
+        self,
+        db: Session,
+        crud_instance: CRUDBase,
+        create_objects: list[dict],
+        on_duplicate_pkey_do_nothing: bool | None = None,
+    ) -> list[ModelType]:
+        """
+        A private method used to create multiple objects
+        """
+        create_objs = [
+            crud_instance.create_schema(**create_object)
+            for create_object in create_objects
+        ]
+        object_out = await crud_instance.create(
+            db=db,
+            obj_in=create_objs,
+            on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing,
+        )
 
         return object_out
 
@@ -51,20 +78,20 @@ class BaseTest:
         object_generator_func: Callable[[], tuple[dict, ModelType]] | Any,
     ) -> tuple[dict, ModelType]:
         """
-        A private method used to create objects
+        A private method used to create a random object
         """
         object_dict, object_out = await object_generator_func(db)
 
         return object_dict, object_out
 
-    async def _create_multiple_objects_crud(
+    async def _create_multiple_random_objects_crud(
         self,
         db: Session,
         object_generator_func: Callable[[], tuple[dict, ModelType]] | Any,
         count: int,
     ) -> tuple[tuple[dict], tuple[ModelType]]:
         """
-        A private method used to create multiple objects
+        A private method used to create multiple random objects
         """
         multiple_object_dict, multiple_object_out = zip(
             *await asyncio.gather(

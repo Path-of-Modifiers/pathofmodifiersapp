@@ -2,7 +2,7 @@
 import uuid
 from typing import Any
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, BackgroundTasks, Depends, Request, Response
 from sqlalchemy.orm import Session
 
 from app.api.api_message_util import (
@@ -16,11 +16,12 @@ from app.api.api_message_util import (
 )
 from app.api.deps import (
     CurrentUser,
+    UserCacheRegisterSession,
+    UserCacheUpdateMeSession,
     get_current_active_superuser,
     get_current_active_user,
     get_db,
 )
-from app.core.cache import user_cache_register_user, user_cache_update_me
 from app.core.config import settings
 from app.core.models.models import User
 from app.core.schemas import (
@@ -83,7 +84,12 @@ async def get_all(
 @router.post(
     "/", dependencies=[Depends(get_current_active_superuser)], response_model=UserPublic
 )
-async def create(*, db: Session = Depends(get_db), user_in: UserCreate) -> Any:
+async def create(
+    *,
+    db: Session = Depends(get_db),
+    user_in: UserCreate,
+    background_tasks: BackgroundTasks,
+) -> Any:
     """
     Create new user.
     """
@@ -92,7 +98,8 @@ async def create(*, db: Session = Depends(get_db), user_in: UserCreate) -> Any:
         email_data = generate_new_account_email(
             email_to=user_in.email, username=user_in.username
         )
-        send_email(
+        background_tasks.add_task(
+            send_email,
             email_to=user_in.email,
             subject=email_data.subject,
             html_content=email_data.html_content,
@@ -116,8 +123,10 @@ async def update_me_email_send_confirmation(
     response: Response,  # noqa: ARG001
     *,
     db: Session = Depends(get_db),
+    user_cache_update_me: UserCacheUpdateMeSession,
     user_update_me_email: UserUpdateMe,
     current_user: CurrentUser,
+    background_tasks: BackgroundTasks,
 ) -> Any:
     """
     Send confirmation to update own user.
@@ -142,17 +151,18 @@ async def update_me_email_send_confirmation(
         user=current_user,
         update_params=update_user_params,
     )
-
-    email_data = generate_user_update(
-        email_to=user_update_me_email.email,
-        username=current_user.username,
-        token=user_update_token,
-    )
-    send_email(
-        email_to=user_update_me_email.email,
-        subject=email_data.subject,
-        html_content=email_data.html_content,
-    )
+    if settings.emails_enabled:
+        email_data = generate_user_update(
+            email_to=user_update_me_email.email,
+            username=current_user.username,
+            token=user_update_token,
+        )
+        background_tasks.add_task(
+            send_email,
+            email_to=user_update_me_email.email,
+            subject=email_data.subject,
+            html_content=email_data.html_content,
+        )
 
     return get_user_update_me_confirmation_sent_msg(
         email_or_username=user_update_me_email.email,
@@ -175,6 +185,7 @@ async def update_me_email_confirmation(
     response: Response,  # noqa: ARG001
     token: Token,
     current_user: CurrentUser,
+    user_cache_update_me: UserCacheUpdateMeSession,
     db: Session = Depends(get_db),
 ):
     """
@@ -225,8 +236,10 @@ async def update_me_username_send_confirmation(
     response: Response,  # noqa: ARG001
     *,
     db: Session = Depends(get_db),
+    user_cache_update_me: UserCacheUpdateMeSession,
     user_update_me_username: UserUpdateMe,
     current_user: CurrentUser,
+    background_tasks: BackgroundTasks,
 ) -> Any:
     """
     Send confirmation to update own user.
@@ -251,17 +264,18 @@ async def update_me_username_send_confirmation(
         expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
         update_params=update_user_params,
     )
-
-    username_data = generate_user_update(
-        email_to=user_update_me_username.username,
-        username=current_user.username,
-        token=user_update_token,
-    )
-    send_email(
-        email_to=current_user.email,
-        subject=username_data.subject,
-        html_content=username_data.html_content,
-    )
+    if settings.emails_enabled:
+        username_data = generate_user_update(
+            email_to=user_update_me_username.username,
+            username=current_user.username,
+            token=user_update_token,
+        )
+        background_tasks.add_task(
+            send_email,
+            email_to=current_user.email,
+            subject=username_data.subject,
+            html_content=username_data.html_content,
+        )
 
     return get_user_update_me_confirmation_sent_msg(
         email_or_username=user_update_me_username.username,
@@ -284,6 +298,7 @@ async def update_me_username_confirmation(
     response: Response,  # noqa: ARG001
     token: Token,
     current_user: CurrentUser,
+    user_cache_update_me: UserCacheUpdateMeSession,
     db: Session = Depends(get_db),
 ):
     """
@@ -414,6 +429,8 @@ async def register_user_send_confirmation(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     user_register_pre_confirmed: UserRegisterPreEmailConfirmation,
+    user_cache_register_user: UserCacheRegisterSession,
+    background_task: BackgroundTasks,
     db: Session = Depends(get_db),
 ) -> Any:
     """
@@ -438,17 +455,18 @@ async def register_user_send_confirmation(
     user_register_token = await user_cache_register_user.create_user_cache_instance(
         user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
     )
-
-    email_data = generate_user_registration_email(
-        email_to=user_register_pre_confirmed.email,
-        username=user_register_pre_confirmed.username,
-        token=user_register_token,
-    )
-    send_email(
-        email_to=user_register_pre_confirmed.email,
-        subject=email_data.subject,
-        html_content=email_data.html_content,
-    )
+    if settings.emails_enabled:
+        email_data = generate_user_registration_email(
+            email_to=user_register_pre_confirmed.email,
+            username=user_register_pre_confirmed.username,
+            token=user_register_token,
+        )
+        background_task.add_task(
+            send_email,
+            email_to=user_register_pre_confirmed.email,
+            subject=email_data.subject,
+            html_content=email_data.html_content,
+        )
 
     return get_user_register_confirmation_sent_msg(
         email=user_register_pre_confirmed.email,
@@ -467,6 +485,7 @@ async def register_user_confirm(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     token: Token,
+    user_cache_register_user: UserCacheRegisterSession,
     db: Session = Depends(get_db),
 ) -> Any:
     """

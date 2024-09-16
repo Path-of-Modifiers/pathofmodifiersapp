@@ -27,6 +27,12 @@ class UserCache:
     def __init__(self, user_token_type: UserCacheTokenType) -> None:
         self.user_token_type = user_token_type
 
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await cache.aclose()
+
     def _create_key_format(self, token: UUID | str) -> str:
         """Format for how the key is stored in the cache"""
         return f"{self.user_token_type.value}:{token}"
@@ -72,10 +78,8 @@ class UserCache:
         token_format = self._create_key_format(token)
 
         session_instance = await cache.get(token_format)
-        await cache.aclose()
 
         if session_instance:
-            session_instance = session_instance.decode("utf-8")
             user_cache_instance = user_cache_adapter.validate_json(session_instance)
         else:
             user_cache_instance = None
@@ -107,7 +111,6 @@ class UserCache:
             value=user_cache_model,
             ex=expire_seconds,
         )
-        await cache.aclose()
 
         return str(access_token)
 
