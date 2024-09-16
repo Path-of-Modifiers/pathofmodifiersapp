@@ -34,6 +34,11 @@ def crud_instance() -> CRUDBase:
 
 
 @pytest.fixture(scope="module")
+def on_duplicate_pkey_do_nothing() -> bool:
+    return False
+
+
+@pytest.fixture(scope="module")
 def model_table_name() -> str:
     return get_model_table_name(Item)
 
