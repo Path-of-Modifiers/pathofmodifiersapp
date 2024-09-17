@@ -61,19 +61,14 @@ class TestRateLimitBase(BaseTest):
                         response = await api_function(**kwargs)
                     assert response.status_code == 200 if i < request_amount else 429
                     time.sleep(skip_time)
+
                     # print(
-                    #     response.status_code,
-                    #     " | ",
-                    #     i,
-                    #     " | ",
-                    #     request_amount,
-                    #     "| ResponseJson: ",
-                    #     response.json(),
+                    #     f"{response.status_code} | {i} | {request_amount} | ResponseJson: {response.json()}"
                     # )
                     # if i >= request_amount:
                     #     print(
-                    #         "Rate limit reached, waiting for reset, response:: ",
-                    #         response.status_code,
+                    #         f"Rate limit reached, waiting for reset... response code: {response.status_code}",
                     #     )
+
                 time.sleep(2)  # Wait for rate to reset after seconds rate limit
                 last_rate_limit_count = rate
