@@ -1,8 +1,10 @@
 import time
 import uuid
+from collections.abc import Awaitable
 from unittest.mock import patch
 
 import pytest
+from fastapi import Response
 from httpx import AsyncClient
 from redis.asyncio import Redis
 from sqlalchemy.orm import Session
@@ -21,6 +23,7 @@ from app.api.routes.user import (
     delete_user,
     delete_user_me,
     get_user_by_id,
+    register_user_send_confirmation,
 )
 from app.core.cache import (
     user_cache_register_user,
@@ -42,13 +45,17 @@ from app.exceptions import (
     UserIsNotActiveError,
     UserWithNotEnoughPrivilegesError,
 )
+from app.tests.api.api_test_rate_limit_base import TestRateLimitBase
 from app.tests.base_test import BaseTest
+from app.tests.utils.rate_limit import (
+    get_function_decorator_rate_limit_per_time_interval,
+)
 from app.tests.utils.utils import random_email, random_lower_string
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
 @pytest.mark.usefixtures("clear_cache", autouse=True)
-class TestUserRoutes(BaseTest):
+class TestUserAPI(BaseTest):
     @pytest.mark.anyio
     async def _get_current_normal_user(
         self,
@@ -1038,3 +1045,54 @@ class TestUserRoutes(BaseTest):
             )
             assert r_get_user_me_ok.status_code == invalid_token_error.status_code
             assert r_get_user_me_ok.json()["detail"] == invalid_token_error.detail
+
+
+@pytest.mark.usefixtures("clear_db", autouse=True)
+@pytest.mark.usefixtures("clear_cache", autouse=True)
+@pytest.mark.skipif(
+    settings.SKIP_RATE_LIMIT_TEST is True or settings.SKIP_RATE_LIMIT_TEST == "True",
+    reason="Rate limit test is disabled",
+)
+class TestUserRateLimitAPI(TestRateLimitBase):
+    @pytest.mark.anyio
+    async def test_pre_register_user_rate_limit(
+        self,
+        async_client: AsyncClient,
+        ip_rate_limiter,  # noqa: ARG001 # Do not remove, used to enable ip rate limiter
+    ) -> None:
+        """
+        Perform rate limit test for pre register user endpoint.
+        """
+
+        # Create API function to test
+        def post_plot_query_from_api_normal_user(
+            register_data: dict[str, str],
+        ) -> Awaitable[Response]:
+            return async_client.post(
+                f"{settings.API_V1_STR}/{user_prefix}/signup-send-confirmation",
+                json=register_data,
+            )
+
+        # Get rate limit per time interval from register_user_send_confirmation API function
+        rate_limits_per_interval_format = (
+            get_function_decorator_rate_limit_per_time_interval(
+                register_user_send_confirmation
+            )
+        )
+
+        # Create object generator function to generate new users for each rate limit test
+        def create_register_user_object() -> dict[str, str]:
+            email = random_email()
+            password = random_lower_string()
+            username = random_lower_string()
+            return {
+                "email": email,
+                "password": password,
+                "username": username,
+            }
+
+        await self.perform_time_interval_requests_with_api_function(
+            api_function=post_plot_query_from_api_normal_user,
+            all_rate_limits_per_interval=rate_limits_per_interval_format,
+            create_object_dict_func=create_register_user_object,
+        )

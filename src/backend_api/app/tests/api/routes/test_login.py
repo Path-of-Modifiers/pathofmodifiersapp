@@ -1,6 +1,8 @@
+from collections.abc import Awaitable
 from unittest.mock import patch
 
 import pytest
+from fastapi import Response
 from httpx import AsyncClient
 from sqlalchemy.orm import Session
 
@@ -24,7 +26,11 @@ from app.exceptions.model_exceptions.db_exception import DbObjectDoesNotExistErr
 from app.exceptions.model_exceptions.user_login_exception import (
     BadLoginCredentialsError,
 )
+from app.tests.api.api_test_rate_limit_base import TestRateLimitBase
 from app.tests.base_test import BaseTest
+from app.tests.utils.rate_limit import (
+    get_function_decorator_rate_limit_per_time_interval,
+)
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
@@ -271,3 +277,45 @@ class TestLoginRoutes(BaseTest):
         assert "detail" in response
         assert r.status_code == invalid_token_error.status_code
         assert response["detail"] == invalid_token_error.detail
+
+
+@pytest.mark.usefixtures("clear_db", autouse=True)
+@pytest.mark.usefixtures("clear_cache", autouse=True)
+@pytest.mark.skipif(
+    settings.SKIP_RATE_LIMIT_TEST is True or settings.SKIP_RATE_LIMIT_TEST == "True",
+    reason="Rate limit test is disabled",
+)
+class TestLoginRateLimitAPI(TestRateLimitBase):
+    @pytest.mark.anyio
+    async def test_login_access_token_rate_limit(
+        self,
+        async_client: AsyncClient,
+        ip_rate_limiter,  # noqa: ARG001 # Do not remove, used to enable ip rate limiter
+    ) -> None:
+        """
+        Test login access token rate limit.
+        """
+
+        # Create api function to test
+        def post_plot_query_from_api_normal_user(
+            login_data: dict[str, str],
+        ) -> Awaitable[Response]:
+            return async_client.post(
+                f"{settings.API_V1_STR}/{login_prefix}/access-token", data=login_data
+            )
+
+        # Get function decorator rate limit per time interval
+        rate_limits_per_interval_format = (
+            get_function_decorator_rate_limit_per_time_interval(login_access_session)
+        )
+
+        login_data = {
+            "username": settings.FIRST_SUPERUSER,
+            "password": settings.FIRST_SUPERUSER_PASSWORD,
+        }
+
+        await self.perform_time_interval_requests_with_api_function(
+            api_function=post_plot_query_from_api_normal_user,
+            all_rate_limits_per_interval=rate_limits_per_interval_format,
+            login_data=login_data,
+        )

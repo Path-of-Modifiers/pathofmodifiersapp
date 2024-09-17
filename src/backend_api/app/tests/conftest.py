@@ -5,6 +5,7 @@ import pytest_asyncio
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
 from redis.asyncio import Redis
+from slowapi import Limiter
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
@@ -17,6 +18,7 @@ from app.core.cache import (
 from app.core.cache.cache import cache
 from app.core.cache.user_cache import UserCache
 from app.core.config import settings
+from app.limiter import limiter_ip, limiter_user
 from app.main import app
 from app.tests.setup_test_database import override_get_db, test_db_engine
 from app.tests.utils.database_utils import (
@@ -43,6 +45,28 @@ def client() -> Generator[TestClient, None, None]:
         app  # For the warning DeprecationWarning: The 'app' ..., check https://github.com/tiangolo/fastapi/discussions/6211.
     ) as c:
         yield c
+
+
+@pytest.fixture
+def user_rate_limiter() -> Generator[Limiter, None, None]:
+    """
+    Fixture that enables user rate limiter for tests.
+    Only need to be set as test function param
+    """
+    limiter_user.enabled = True
+    yield limiter_user
+    limiter_user.enabled = False
+
+
+@pytest.fixture
+def ip_rate_limiter() -> Generator[Limiter, None, None]:
+    """
+    Fixture that enables ip rate limiter for tests.
+    Only need to be set as test function param
+    """
+    limiter_ip.enabled = True
+    yield limiter_ip
+    limiter_ip.enabled = False
 
 
 @pytest_asyncio.fixture(scope="session")

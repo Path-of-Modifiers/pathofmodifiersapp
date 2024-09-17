@@ -1,22 +1,34 @@
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
+from typing import Any
 
 import pytest
 import pytest_asyncio
+from fastapi import Response
+from httpx import AsyncClient
 
+import app.tests.api.api_routes_test_base as test_api
 from app.api.routes import currency_prefix
+from app.api.routes.currency import get_currency
 from app.core.config import settings
 from app.core.models.models import Currency
 from app.crud import CRUD_currency
 from app.crud.base import CRUDBase, ModelType
-from app.tests.api.routes.rate_limit.test_currency_rate_limit import (
-    TestCurrencyRateLimit as CurrencyRateLimitTest,
+from app.tests.api.api_routes_test_slowapi_rate_limit import (
+    TestRateLimitSlowAPI as RateLimitSlowAPITestClass,
 )
 from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
 from app.tests.utils.model_utils.currency import (
     create_random_currency_dict,
     generate_random_currency,
 )
-from app.tests.utils.utils import get_model_table_name, get_model_unique_identifier
+from app.tests.utils.rate_limit import (
+    RateLimitPerTimeInterval,
+    get_function_decorator_rate_limit_per_time_interval,
+)
+from app.tests.utils.utils import (
+    get_model_table_name,
+    get_model_unique_identifier,
+)
 
 
 @pytest.fixture(scope="module")
@@ -89,16 +101,16 @@ def create_random_object_func() -> Callable[[], dict]:
     return create_random_currency_dict
 
 
-@pytest_asyncio.fixture(scope="module")
-async def get_object_from_api(
-    async_client,
-    route_prefix,
-    normal_user_token_headers,
-    unique_identifier,
-):
-    async def _get_object(obj_out_pk_map):
+@pytest_asyncio.fixture
+async def get_object_from_api_normal_user(
+    async_client: AsyncClient,
+    route_prefix: str,
+    unique_identifier: str,
+    normal_user_token_headers: dict[str, str],
+) -> Callable[[Any, Any], Awaitable[Any]]:
+    async def _get_object(object_pk_map: dict[str, Any]) -> Response:
         response = await async_client.get(
-            f"{settings.API_V1_STR}/{route_prefix}/{obj_out_pk_map[unique_identifier]}",
+            f"{settings.API_V1_STR}/{route_prefix}/{object_pk_map[unique_identifier]}",
             headers=normal_user_token_headers,
         )
         return response
@@ -106,9 +118,14 @@ async def get_object_from_api(
     return _get_object
 
 
-# class TestCurrency(test_api.TestAPI):
-#     pass
+@pytest.fixture
+def get_request_all_rate_limits_per_interval() -> list[RateLimitPerTimeInterval]:
+    return get_function_decorator_rate_limit_per_time_interval(get_currency)
 
 
-class TestCurrencyRateLimit(CurrencyRateLimitTest):
+class TestCurrency(test_api.TestAPI):
+    pass
+
+
+class TestCurrencyRateLimit(RateLimitSlowAPITestClass):
     pass
