@@ -35,6 +35,8 @@ limiter_ip = Limiter(
 
 def apply_rate_limits(limiter, *limits):
     def decorator(func):
+        func._rate_limits = limits
+
         for limit in limits:
             func = limiter.limit(limit)(func)
         return func
