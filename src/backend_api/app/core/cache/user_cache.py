@@ -27,6 +27,12 @@ class UserCache:
     def __init__(self, user_token_type: UserCacheTokenType) -> None:
         self.user_token_type = user_token_type
 
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await cache.aclose()
+
     def _create_key_format(self, token: UUID | str) -> str:
         """Format for how the key is stored in the cache"""
         return f"{self.user_token_type.value}:{token}"
@@ -79,10 +85,6 @@ class UserCache:
             user_cache_instance = None
 
         return user_cache_instance
-
-    async def close_cache_connection(self) -> None:
-        """Close the cache instance"""
-        await cache.aclose()
 
     async def create_user_cache_instance(
         self,

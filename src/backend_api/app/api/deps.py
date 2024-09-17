@@ -6,13 +6,7 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 import app.core.models.database as _database
-from app.core.cache import (
-    user_cache_password_reset,
-    user_cache_register_user,
-    user_cache_session,
-    user_cache_update_me,
-)
-from app.core.cache.user_cache import UserCache
+from app.core.cache.user_cache import UserCache, UserCacheTokenType
 from app.core.config import settings
 from app.core.models.models import User
 from app.exceptions import (
@@ -41,10 +35,8 @@ def get_db():
 
 async def get_user_cache_session() -> AsyncGenerator[UserCache, None]:
     """Get user cache session."""
-    try:
+    async with UserCache(UserCacheTokenType.SESSION) as user_cache_session:
         yield user_cache_session
-    finally:
-        await user_cache_register_user.close_cache_connection()
 
 
 UserCacheSession = Annotated[UserCache, Depends(get_user_cache_session)]
@@ -52,10 +44,10 @@ UserCacheSession = Annotated[UserCache, Depends(get_user_cache_session)]
 
 async def get_user_cache_register_session() -> AsyncGenerator[UserCache, None]:
     """Get user cache register session."""
-    try:
-        yield user_cache_register_user
-    finally:
-        await user_cache_register_user.close_cache_connection()
+    async with UserCache(
+        UserCacheTokenType.REGISTER_USER
+    ) as user_cache_register_session:
+        yield user_cache_register_session
 
 
 UserCacheRegisterSession = Annotated[
@@ -65,10 +57,10 @@ UserCacheRegisterSession = Annotated[
 
 async def get_user_cache_password_reset_session() -> AsyncGenerator[UserCache, None]:
     """Get user cache password reset session."""
-    try:
-        yield user_cache_password_reset
-    finally:
-        await user_cache_password_reset.close_cache_connection()
+    async with UserCache(
+        UserCacheTokenType.PASSWORD_RESET
+    ) as user_cache_password_reset_session:
+        yield user_cache_password_reset_session
 
 
 UserCachePasswordResetSession = Annotated[
@@ -76,15 +68,15 @@ UserCachePasswordResetSession = Annotated[
 ]
 
 
-async def user_cache_update_me_session() -> AsyncGenerator[UserCache, None]:
+async def get_user_cache_update_me_session() -> AsyncGenerator[UserCache, None]:
     """Get user cache update me session."""
-    try:
-        yield user_cache_update_me
-    finally:
-        await user_cache_update_me.close_cache_connection()
+    async with UserCache(UserCacheTokenType.UPDATE_ME) as user_cache_update_me_session:
+        yield user_cache_update_me_session
 
 
-UserCacheUpdateMeSession = Annotated[UserCache, Depends(user_cache_update_me_session)]
+UserCacheUpdateMeSession = Annotated[
+    UserCache, Depends(get_user_cache_update_me_session)
+]
 
 
 async def get_current_user(
@@ -131,7 +123,7 @@ async def get_current_active_user(current_user: CurrentUser) -> User:
 
 
 def get_user_token_by_request(request: Request) -> str:
-    """Get user token by request.
+    """Get user access token by request.
 
     Args:
         request (Request): The request
@@ -151,9 +143,9 @@ def get_user_token_by_request(request: Request) -> str:
             header=header,
         )
 
-    user_token = header[7:]  # Strip "Bearer " prefix (7 characters)
+    access_token = header[7:]  # Strip "Bearer " prefix (7 characters)
 
-    return user_token
+    return access_token
 
 
 def get_rate_limit_amount_by_tier(tier: int) -> int:
