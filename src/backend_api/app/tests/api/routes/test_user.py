@@ -25,11 +25,7 @@ from app.api.routes.user import (
     get_user_by_id,
     register_user_send_confirmation,
 )
-from app.core.cache import (
-    user_cache_register_user,
-    user_cache_session,
-    user_cache_update_me,
-)
+from app.core.cache.user_cache import UserCache
 from app.core.config import settings
 from app.core.models.models import User
 from app.core.schemas import UserCreate
@@ -309,6 +305,7 @@ class TestUserAPI(BaseTest):
         normal_user_token_headers: dict[str, str],
         superuser_token_headers: dict[str, str],
         db: Session,
+        user_cache_update_me: UserCache,
     ) -> None:
         normal_user = await self._get_current_normal_user(
             async_client, normal_user_token_headers, db
@@ -333,8 +330,7 @@ class TestUserAPI(BaseTest):
             expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
             update_params=update_data,
         )
-        user_update_email_token_str = str(user_update_email_token)
-        data_confirm = {"access_token": user_update_email_token_str}
+        data_confirm = {"access_token": user_update_email_token}
         r_confirm = await async_client.patch(
             f"{settings.API_V1_STR}/{user_prefix}/update-me-email-confirmation",
             headers=normal_user_token_headers,
@@ -362,6 +358,7 @@ class TestUserAPI(BaseTest):
         normal_user_token_headers: dict[str, str],
         superuser_token_headers: dict[str, str],
         db: Session,
+        user_cache_update_me: UserCache,
     ) -> None:
         normal_user = await self._get_current_normal_user(
             async_client, normal_user_token_headers, db
@@ -499,14 +496,16 @@ class TestUserAPI(BaseTest):
             headers=normal_user_token_headers,
             json=data,
         )
-        db_obj_already_exists_error = DbObjectAlreadyExistsError(
-            model_table_name=User.__tablename__,
-            filter={"email": user.email},
-            function_name=CRUD_user.check_exists_raise.__name__,
-            class_name=CRUD_user.__class__.__name__,
+        assert r.status_code == 409
+        assert (
+            r.json()["detail"]
+            == DbObjectAlreadyExistsError(
+                model_table_name=User.__tablename__,
+                filter={"email": user.email},
+                function_name=CRUD_user.check_exists_raise.__name__,
+                class_name=CRUD_user.__class__.__name__,
+            ).detail
         )
-        assert r.status_code == db_obj_already_exists_error.status_code
-        assert r.json()["detail"] == db_obj_already_exists_error.detail
 
     @pytest.mark.anyio
     async def test_update_user_me_username_exists(
@@ -527,14 +526,16 @@ class TestUserAPI(BaseTest):
             headers=normal_user_token_headers,
             json=data,
         )
-        db_obj_already_exists_error = DbObjectAlreadyExistsError(
-            model_table_name=User.__tablename__,
-            filter={"username": user.username},
-            function_name=CRUD_user.check_exists_raise.__name__,
-            class_name=CRUD_user.__class__.__name__,
+        assert r.status_code == 409
+        assert (
+            r.json()["detail"]
+            == DbObjectAlreadyExistsError(
+                model_table_name=User.__tablename__,
+                filter={"username": user.username},
+                function_name=CRUD_user.check_exists_raise.__name__,
+                class_name=CRUD_user.__class__.__name__,
+            ).detail
         )
-        assert r.status_code == db_obj_already_exists_error.status_code
-        assert r.json()["detail"] == db_obj_already_exists_error.detail
 
     @pytest.mark.anyio
     async def test_update_password_me_same_password_error(
@@ -549,16 +550,23 @@ class TestUserAPI(BaseTest):
             headers=superuser_token_headers,
             json=data,
         )
-        new_password_is_same_error = NewPasswordIsSameError(
-            function_name=CRUD_user.update_password.__name__,
-            class_name=CRUD_user.__class__.__name__,
-        )
-        assert r.status_code == new_password_is_same_error.status_code
+        assert r.status_code == 400
         updated_user = r.json()
-        assert updated_user["detail"] == new_password_is_same_error.detail
+        assert (
+            updated_user["detail"]
+            == NewPasswordIsSameError(
+                function_name=CRUD_user.update_password.__name__,
+                class_name=CRUD_user.__class__.__name__,
+            ).detail
+        )
 
     @pytest.mark.anyio
-    async def test_register_user(self, async_client: AsyncClient, db: Session) -> None:
+    async def test_register_user(
+        self,
+        async_client: AsyncClient,
+        db: Session,
+        user_cache_register_user: UserCache,
+    ) -> None:
         email = random_email()
         password = random_lower_string()
         username = random_lower_string()
@@ -614,14 +622,16 @@ class TestUserAPI(BaseTest):
             f"{settings.API_V1_STR}/{user_prefix}/signup-send-confirmation",
             json=data,
         )
-        db_obj_already_exist_error = DbObjectAlreadyExistsError(
-            model_table_name=User.__tablename__,
-            filter={"email": data["email"]},
-            function_name=CRUD_user.check_exists_raise.__name__,
-            class_name=CRUD_user.__class__.__name__,
+        assert r.status_code == 409
+        assert (
+            r.json()["detail"]
+            == DbObjectAlreadyExistsError(
+                model_table_name=User.__tablename__,
+                filter={"email": data["email"]},
+                function_name=CRUD_user.check_exists_raise.__name__,
+                class_name=CRUD_user.__class__.__name__,
+            ).detail
         )
-        assert r.status_code == db_obj_already_exist_error.status_code
-        assert r.json()["detail"] == db_obj_already_exist_error.detail
 
     @pytest.mark.anyio
     async def test_register_user_username_already_exists_error(
@@ -638,18 +648,23 @@ class TestUserAPI(BaseTest):
             f"{settings.API_V1_STR}/{user_prefix}/signup-send-confirmation",
             json=data,
         )
-        db_obj_already_exist_error = DbObjectAlreadyExistsError(
-            model_table_name=User.__tablename__,
-            filter={"username": data["username"]},
-            function_name=CRUD_user.check_exists_raise.__name__,
-            class_name=CRUD_user.__class__.__name__,
+        assert r.status_code == 409
+        assert (
+            r.json()["detail"]
+            == DbObjectAlreadyExistsError(
+                model_table_name=User.__tablename__,
+                filter={"username": data["username"]},
+                function_name=CRUD_user.check_exists_raise.__name__,
+                class_name=CRUD_user.__class__.__name__,
+            ).detail
         )
-        assert r.status_code == db_obj_already_exist_error.status_code
-        assert r.json()["detail"] == db_obj_already_exist_error.detail
 
     @pytest.mark.anyio
     async def test_register_wrong_token(
-        self, async_client: AsyncClient, db: Session
+        self,
+        async_client: AsyncClient,
+        db: Session,
+        user_cache_register_user: UserCache,
     ) -> None:
         email = random_email()
         password = random_lower_string()
@@ -684,13 +699,15 @@ class TestUserAPI(BaseTest):
             json=data_confirm,
         )
         details_confirm = r_confirm.json()["detail"]
-        invalid_token_error = InvalidTokenError(
-            token=wrong_token,
-            function_name=user_cache_register_user.verify_token.__name__,
-            class_name=user_cache_register_user.__class__.__name__,
+        assert r_confirm.status_code == 401
+        assert (
+            details_confirm
+            == InvalidTokenError(
+                token=wrong_token,
+                function_name=user_cache_register_user.verify_token.__name__,
+                class_name=user_cache_register_user.__class__.__name__,
+            ).detail
         )
-        assert r_confirm.status_code == invalid_token_error.status_code
-        assert details_confirm == invalid_token_error.detail
 
     @pytest.mark.anyio
     async def test_update_user(
@@ -733,14 +750,16 @@ class TestUserAPI(BaseTest):
             headers=superuser_token_headers,
             json=data,
         )
-        db_obj_already_exist_error = DbObjectDoesNotExistError(
-            model_table_name=User.__tablename__,
-            filter={"userId": not_found_user_id},
-            function_name=CRUD_user.update.__name__,
-            class_name=CRUD_user.__class__.__name__,
+        assert r.status_code == 404
+        assert (
+            r.json()["detail"]
+            == DbObjectDoesNotExistError(
+                model_table_name=User.__tablename__,
+                filter={"userId": not_found_user_id},
+                function_name=CRUD_user.update.__name__,
+                class_name=CRUD_user.__class__.__name__,
+            ).detail
         )
-        assert r.status_code == db_obj_already_exist_error.status_code
-        assert r.json()["detail"] == db_obj_already_exist_error.detail
 
     @pytest.mark.anyio
     async def test_update_user_email_exists(
@@ -767,14 +786,16 @@ class TestUserAPI(BaseTest):
             headers=superuser_token_headers,
             json=data,
         )
-        db_obj_already_exist_error = DbObjectAlreadyExistsError(
-            model_table_name=User.__tablename__,
-            filter=data,
-            function_name=CRUD_user.check_exists_raise.__name__,
-            class_name=CRUD_user.__class__.__name__,
+        assert r.status_code == 409
+        assert (
+            r.json()["detail"]
+            == DbObjectAlreadyExistsError(
+                model_table_name=User.__tablename__,
+                filter=data,
+                function_name=CRUD_user.check_exists_raise.__name__,
+                class_name=CRUD_user.__class__.__name__,
+            ).detail
         )
-        assert r.status_code == db_obj_already_exist_error.status_code
-        assert r.json()["detail"] == db_obj_already_exist_error.detail
 
     @pytest.mark.anyio
     async def test_delete_user_me(self, async_client: AsyncClient, db: Session) -> None:
@@ -813,13 +834,15 @@ class TestUserAPI(BaseTest):
             headers=headers,
         )
         details = result.json()["detail"]
-        db_obj_does_not_exist_error = DbObjectDoesNotExistError(
-            model_table_name=User.__tablename__,
-            filter={"userId": user_id},
-            function_name=get_current_user.__name__,
+        assert result.status_code == 404
+        assert (
+            details
+            == DbObjectDoesNotExistError(
+                model_table_name=User.__tablename__,
+                filter={"userId": user_id},
+                function_name=get_current_user.__name__,
+            ).detail
         )
-        assert result.status_code == db_obj_does_not_exist_error.status_code
-        assert details == db_obj_does_not_exist_error.detail
         user_db = CRUD_user.get(db=db, filter={"userId": user_id})
         assert user_db is None
 
@@ -831,14 +854,16 @@ class TestUserAPI(BaseTest):
             f"{settings.API_V1_STR}/{user_prefix}/me",
             headers=superuser_token_headers,
         )
-        current_user_email = settings.FIRST_SUPERUSER_USERNAME
-        super_user_not_allowed_to_delete_error = SuperUserNotAllowedToDeleteSelfError(
-            username_or_email=current_user_email,
-            function_name=delete_user_me.__name__,
-        )
-        assert r.status_code == super_user_not_allowed_to_delete_error.status_code
+        assert r.status_code == 403
         response = r.json()
-        assert response["detail"] == super_user_not_allowed_to_delete_error.detail
+        current_user_email = settings.FIRST_SUPERUSER_USERNAME
+        assert (
+            response["detail"]
+            == SuperUserNotAllowedToDeleteSelfError(
+                username_or_email=current_user_email,
+                function_name=delete_user_me.__name__,
+            ).detail
+        )
 
     @pytest.mark.anyio
     async def test_delete_user_me_not_active(
@@ -866,14 +891,16 @@ class TestUserAPI(BaseTest):
             f"{settings.API_V1_STR}/{user_prefix}/me",
             headers=normal_user_token_headers,
         )
-        user_not_active_error = UserIsNotActiveError(
-            username_or_email=normal_user.username,
-            function_name=get_current_user.__name__,
-        )
-        assert r.status_code == user_not_active_error.status_code
+        assert r.status_code == 403
         response = r.json()
-        assert response["detail"] == user_not_active_error.detail
 
+        assert (
+            response["detail"]
+            == UserIsNotActiveError(
+                username_or_email=normal_user.username,
+                function_name=get_current_user.__name__,
+            ).detail
+        )
         # revert to the old active status to keep consistency in test
         update_is_active_data = {"isActive": True}
         r = await async_client.patch(
@@ -920,13 +947,15 @@ class TestUserAPI(BaseTest):
             f"{settings.API_V1_STR}/{user_prefix}/{not_found_user_id}",
             headers=superuser_token_headers,
         )
-        db_obj_not_exist_error = DbObjectDoesNotExistError(
-            model_table_name=User.__tablename__,
-            filter={"userId": not_found_user_id},
-            function_name=delete_user.__name__,
+        assert r.status_code == 404
+        assert (
+            r.json()["detail"]
+            == DbObjectDoesNotExistError(
+                model_table_name=User.__tablename__,
+                filter={"userId": not_found_user_id},
+                function_name=delete_user.__name__,
+            ).detail
         )
-        assert r.status_code == db_obj_not_exist_error.status_code
-        assert r.json()["detail"] == db_obj_not_exist_error.detail
 
     @pytest.mark.anyio
     async def test_delete_user_current_super_user_error(
@@ -943,12 +972,14 @@ class TestUserAPI(BaseTest):
             f"{settings.API_V1_STR}/{user_prefix}/{user_id}",
             headers=superuser_token_headers,
         )
-        super_user_not_allowed_delete_self_error = SuperUserNotAllowedToDeleteSelfError(
-            username_or_email=super_user.username,
-            function_name=delete_user.__name__,
+        assert r.status_code == 403
+        assert (
+            r.json()["detail"]
+            == SuperUserNotAllowedToDeleteSelfError(
+                username_or_email=super_user.username,
+                function_name=delete_user.__name__,
+            ).detail
         )
-        assert r.status_code == super_user_not_allowed_delete_self_error.status_code
-        assert r.json()["detail"] == super_user_not_allowed_delete_self_error.detail
 
     @pytest.mark.anyio
     async def test_delete_user_without_privileges(
@@ -969,17 +1000,24 @@ class TestUserAPI(BaseTest):
             f"{settings.API_V1_STR}/{user_prefix}/{user.userId}",
             headers=normal_user_token_headers,
         )
+        assert r.status_code == 403
         current_user_username = settings.TEST_USER_USERNAME
-        user_not_enough_priveleges_error = UserWithNotEnoughPrivilegesError(
-            username_or_email=current_user_username,
-            function_name=get_current_active_superuser.__name__,
+        assert (
+            r.json()["detail"]
+            == UserWithNotEnoughPrivilegesError(
+                username_or_email=current_user_username,
+                function_name=get_current_active_superuser.__name__,
+            ).detail
         )
-        assert r.status_code == user_not_enough_priveleges_error.status_code
-        assert r.json()["detail"] == user_not_enough_priveleges_error.detail
 
     @pytest.mark.anyio
     async def test_token_expired_user(
-        self, async_client: AsyncClient, db: Session, get_cache: Redis
+        self,
+        async_client: AsyncClient,
+        db: Session,
+        get_cache: Redis,
+        user_cache_register_user: UserCache,
+        user_cache_session: UserCache,
     ) -> None:
         email = random_email()
         password = random_lower_string()
