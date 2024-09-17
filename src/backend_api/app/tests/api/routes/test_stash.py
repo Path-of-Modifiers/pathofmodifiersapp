@@ -1,18 +1,31 @@
 from collections.abc import Awaitable, Callable
+from typing import Any
 
 import pytest
+import pytest_asyncio
+from fastapi import Response
+from httpx import AsyncClient
 from sqlalchemy.orm import Session
 
 import app.tests.api.api_routes_cascade_tests as test_cascade_api
 from app.api.routes import account_prefix, stash_prefix
+from app.api.routes.stash import get_stash
+from app.core.config import settings
 from app.core.models.models import Account, Stash
 from app.crud import CRUD_stash
 from app.crud.base import CRUDBase, ModelType
+from app.tests.api.api_routes_test_slowapi_rate_limit import (
+    TestRateLimitSlowAPI as RateLimitSlowAPITestClass,
+)
 from app.tests.crud.cascade_tests import TestCascade as UtilTestCascadeCRUD
 from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
 from app.tests.utils.model_utils.stash import (
     create_random_stash_dict,
     generate_random_stash,
+)
+from app.tests.utils.rate_limit import (
+    RateLimitPerTimeInterval,
+    get_function_decorator_rate_limit_per_time_interval,
 )
 from app.tests.utils.utils import get_model_table_name, get_model_unique_identifier
 
@@ -126,10 +139,36 @@ def api_deps_instances() -> list[list[str]]:
     ]
 
 
+@pytest_asyncio.fixture
+async def get_object_from_api_normal_user(
+    async_client: AsyncClient,
+    route_prefix: str,
+    unique_identifier: str,
+    normal_user_token_headers: dict[str, str],
+) -> Callable[[Any, Any], Awaitable[Any]]:
+    async def _get_object(object_pk_map: dict[str, Any]) -> Response:
+        response = await async_client.get(
+            f"{settings.API_V1_STR}/{route_prefix}/{object_pk_map[unique_identifier]}",
+            headers=normal_user_token_headers,
+        )
+        return response
+
+    return _get_object
+
+
+@pytest.fixture
+def get_request_all_rate_limits_per_interval() -> list[RateLimitPerTimeInterval]:
+    return get_function_decorator_rate_limit_per_time_interval(get_stash)
+
+
 @pytest.fixture(scope="module")
 def update_request_params_deps() -> list[str]:
     return []
 
 
 class TestStash(test_cascade_api.TestCascadeAPI):
+    pass
+
+
+class TestStashRateLimit(RateLimitSlowAPITestClass):
     pass
