@@ -70,5 +70,7 @@ class TestRateLimitBase(BaseTest):
                     #         f"Rate limit reached, waiting for reset... response code: {response.status_code}",
                     #     )
 
-                time.sleep(2)  # Wait for rate to reset after seconds rate limit
+                time.sleep(
+                    int(response.headers["Retry-After-Seconds"])
+                )  # Wait for rate to reset after seconds rate limit
                 last_rate_limit_count = rate
