@@ -7,11 +7,12 @@ from fastapi.testclient import TestClient
 from app.api.api_message_util import get_failed_send_challenge_request_error_msg
 from app.api.routes import turnstile_prefix
 from app.core.config import settings
+from app.tests.base_test import BaseTest
 from app.tests.utils.utils import create_random_ip
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
-class TestTurnstileRoutes:
+class TestTurnstileAPI(BaseTest):
     def test_success_turnstile_validation_always_passes(
         self, client: TestClient
     ) -> None:
