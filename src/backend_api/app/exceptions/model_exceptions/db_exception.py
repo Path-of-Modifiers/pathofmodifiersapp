@@ -44,7 +44,9 @@ class DbObjectAlreadyExistsError(PathOfModifiersAPIError):
         status_code: int | None = status.HTTP_409_CONFLICT,
     ):
         if isinstance(filter, list):
-            detail = f"""Object(s) try to be created in '{model_table_name}' already exists"""
+            detail = (
+                f"Object(s) try to be created in '{model_table_name}' already exists"
+            )
         else:
             detail = f"""Query in table '{model_table_name}' with filter
             ({', '.join([key + ': ' + str(item) for key, item in filter.items()])})
