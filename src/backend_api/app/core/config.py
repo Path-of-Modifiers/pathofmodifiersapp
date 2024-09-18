@@ -147,6 +147,8 @@ class Settings(BaseSettings):
 
         return self
 
+    SKIP_RATE_LIMIT_TEST: bool = False
+
     # Rate limiting
     RATE_LIMIT: bool = False
 
@@ -161,10 +163,10 @@ class Settings(BaseSettings):
         "1/second"  # Default rate limit seconds
     )
     STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE: str = (
-        "5/minute"  # Default rate limit minutes
+        "1/minute"  # Default rate limit minutes
     )
-    STRICT_DEFAULT_USER_RATE_LIMIT_HOUR: str = "8/hour"  # Default rate limit hours
-    STRICT_DEFAULT_USER_RATE_LIMIT_DAY: str = "10/day"  # Default rate limit days
+    STRICT_DEFAULT_USER_RATE_LIMIT_HOUR: str = "3/hour"  # Default rate limit hours
+    STRICT_DEFAULT_USER_RATE_LIMIT_DAY: str = "5/day"  # Default rate limit days
 
     # Login rate limits
     LOGIN_RATE_LIMIT_SECOND: str = "1/second"  # Default rate limit seconds
@@ -193,8 +195,8 @@ class Settings(BaseSettings):
     # Update password me rate limits
     UPDATE_PASSWORD_ME_RATE_LIMIT_SECOND: str = "1/second"  # Default rate limit seconds
     UPDATE_PASSWORD_ME_RATE_LIMIT_MINUTE: str = "1/minute"  # Default rate limit minutes
-    UPDATE_PASSWORD_ME_RATE_LIMIT_HOUR: str = "2/hour"  # Default rate limit hours
-    UPDATE_PASSWORD_ME_RATE_LIMIT_DAY: str = "2/day"  # Default rate limit days
+    UPDATE_PASSWORD_ME_RATE_LIMIT_HOUR: str = "3/hour"  # Default rate limit hours
+    UPDATE_PASSWORD_ME_RATE_LIMIT_DAY: str = "5/day"  # Default rate limit days
 
     # Plotting rate limits
     PLOT_RATE_LIMIT_COOLDOWN_SECONDS: int = (

@@ -133,7 +133,7 @@ def get_user_token_by_request(request: Request) -> str:
         InvalidTokenError: InvalidHeaderProvidedError
 
     Returns:
-        str: The access token extracted from the request.
+        str: The user token extracted from the request.
     """
     header = request.headers.get("Authorization")
     if not header or not header.startswith("Bearer "):

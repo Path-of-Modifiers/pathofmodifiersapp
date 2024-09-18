@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
 from app.api.deps import (
+    UserCacheSession,
     get_current_active_user,
     get_db,
     get_rate_limit_tier_by_request,
@@ -27,6 +28,7 @@ plot_prefix = "plot"
 async def get_plot_data(
     request: Request,
     query: PlotQuery,
+    user_cache_session: UserCacheSession,
     db: Session = Depends(get_db),
 ):
     """
@@ -40,7 +42,7 @@ async def get_plot_data(
         unique_key=get_user_token_by_request(request),
         backend=cache,
         rate_spec=RateSpec(
-            requests=await get_rate_limit_tier_by_request(request),
+            requests=await get_rate_limit_tier_by_request(request, user_cache_session),
             cooldown_seconds=settings.PLOT_RATE_LIMIT_COOLDOWN_SECONDS,
         ),
         cache_prefix=plot_prefix,
