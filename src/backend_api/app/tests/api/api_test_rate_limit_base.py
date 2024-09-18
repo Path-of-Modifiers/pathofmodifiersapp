@@ -53,7 +53,9 @@ class TestRateLimitBase(BaseTest):
                 skip_time = abs(rate - interval_seconds) // rate
 
                 request_amount = rate - last_rate_limit_count
-                for i in range(request_amount + 1):
+                for i in range(
+                    request_amount + 2
+                ):  # + 2 for guaranteeing getting 429 response
                     if create_object_dict_func is not None:
                         object_dict = create_object_dict_func()
                         response = await api_function(object_dict)
@@ -69,8 +71,8 @@ class TestRateLimitBase(BaseTest):
                     #     print(
                     #         f"Rate limit reached, waiting for reset... response code: {response.status_code}",
                     #     )
-
-                time.sleep(
-                    int(response.headers["Retry-After-Seconds"])
-                )  # Wait for rate to reset after seconds rate limit
+                if response.status_code == 429:
+                    time.sleep(
+                        int(response.headers["Retry-After-Seconds"])
+                    )  # Wait for rate to reset after seconds rate limit
                 last_rate_limit_count = rate
