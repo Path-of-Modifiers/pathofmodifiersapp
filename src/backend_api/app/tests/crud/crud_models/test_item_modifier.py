@@ -62,6 +62,11 @@ def crud_instance() -> CRUDBase:
 
 
 @pytest.fixture(scope="module")
+def on_duplicate_pkey_do_nothing() -> bool:
+    return False
+
+
+@pytest.fixture(scope="module")
 def crud_deps_instances() -> list[CRUDBase]:
     """Fixture for CRUD dependencies instances.
 

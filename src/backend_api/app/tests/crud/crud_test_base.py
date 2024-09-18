@@ -7,7 +7,10 @@ from app.crud.base import (
     CRUDBase,
     ModelType,
 )
-from app.exceptions.model_exceptions.db_exception import DbObjectAlreadyExistsError
+from app.exceptions.model_exceptions.db_exception import (
+    DbObjectAlreadyExistsError,
+    DbObjectDoesNotExistError,
+)
 from app.tests.base_test import BaseTest
 from app.tests.utils.utils import get_ignore_keys
 
@@ -57,25 +60,6 @@ class TestCRUD(BaseTest):
         self._test_object(object_out, object_dict)
 
     @pytest.mark.asyncio
-    async def test_create_found_duplicate_error(
-        self,
-        db: Session,
-        object_generator_func: Callable[[], tuple[dict, ModelType]],
-        crud_instance: CRUDBase,
-    ) -> None:
-        if crud_instance.ignore_duplicates:
-            pytest.skip(
-                f"CRUD test for test_create_found_duplicate in crud {crud_instance.__class__.__name__} does not support ignore_duplicates"
-            )
-
-        object_dict, _ = await self._create_random_object_crud(
-            db, object_generator_func
-        )
-
-        with pytest.raises(DbObjectAlreadyExistsError):
-            await self._create_object_crud(db, crud_instance, object_dict)
-
-    @pytest.mark.asyncio
     async def test_create_multiple(
         self,
         db: Session,
@@ -97,7 +81,7 @@ class TestCRUD(BaseTest):
         (
             multiple_object_dict,
             multiple_object_out,
-        ) = await self._create_multiple_objects_crud(
+        ) = await self._create_multiple_random_objects_crud(
             db, object_generator_func, count=count
         )
         self._test_object(multiple_object_out, multiple_object_dict)
@@ -105,6 +89,64 @@ class TestCRUD(BaseTest):
         final_object_count = len(await crud_instance.get(db))
 
         assert final_object_count == initial_object_count + count
+
+    @pytest.mark.asyncio
+    async def test_create_duplicate_one_instance(
+        self,
+        db: Session,
+        object_generator_func: Callable[[], tuple[dict, ModelType]],
+        crud_instance: CRUDBase,
+        on_duplicate_pkey_do_nothing: bool,
+    ) -> None:
+        if not on_duplicate_pkey_do_nothing:
+            pytest.skip(
+                f"CRUD test for test_create_found_duplicate in crud {crud_instance.__class__.__name__} does not support ignore_duplicates"
+            )
+
+        # Test with on_duplicate_pkey_do_nothing is False
+        object_dict, _ = await self._create_random_object_crud(
+            db, object_generator_func
+        )
+        db_obj = await self._create_object_crud(
+            db, crud_instance, object_dict, on_duplicate_pkey_do_nothing=True
+        )
+        assert db_obj is None
+
+        with pytest.raises(DbObjectAlreadyExistsError):
+            db_obj = await self._create_object_crud(
+                db, crud_instance, object_dict, on_duplicate_pkey_do_nothing=False
+            )
+
+    @pytest.mark.asyncio
+    async def test_create_duplicate_multiple_instances(
+        self,
+        db: Session,
+        object_generator_func: Callable[[], tuple[dict, ModelType]],
+        crud_instance: CRUDBase,
+        on_duplicate_pkey_do_nothing: bool,
+    ) -> None:
+        if not on_duplicate_pkey_do_nothing:
+            pytest.skip(
+                f"CRUD test for test_create_found_duplicate in crud {crud_instance.__class__.__name__} does not support ignore_duplicates"
+            )
+
+        # Test with on_duplicate_pkey_do_nothing is True
+        multiple_object_dict_tuple, _ = await self._create_multiple_random_objects_crud(
+            db, object_generator_func, count=5
+        )
+        object_dict_list = list(multiple_object_dict_tuple)
+        db_obj = await self._create_multiple_objects_crud(
+            db,
+            crud_instance=crud_instance,
+            create_objects=object_dict_list,
+            on_duplicate_pkey_do_nothing=True,
+        )
+        assert db_obj is None
+
+        with pytest.raises(DbObjectAlreadyExistsError):
+            db_obj = await self._create_multiple_objects_crud(
+                db, crud_instance, object_dict_list, on_duplicate_pkey_do_nothing=False
+            )
 
     @pytest.mark.asyncio
     async def test_delete(
@@ -180,3 +222,26 @@ class TestCRUD(BaseTest):
         )
         assert updated_object
         self._test_object(updated_object, updated_object_dict, ignore=ignore)
+
+    @pytest.mark.asyncio
+    async def test_update_not_exists(
+        self,
+        db: Session,
+        crud_instance: CRUDBase,
+        object_generator_func: Callable[[], tuple[dict, ModelType]],
+    ) -> None:
+        """
+        A test function. Tests if updating an object that does not exist raises
+        an error.
+        """
+        object_dict, object_out = await self._create_random_object_crud(
+            db, object_generator_func
+        )
+        self._test_object(object_out, object_dict)
+
+        object_map = self._create_primary_key_map(object_out)
+
+        await crud_instance.remove(db, filter=self._create_primary_key_map(object_out))
+
+        with pytest.raises(DbObjectDoesNotExistError):
+            await crud_instance.update(db, db_obj=object_out, obj_in=object_map)

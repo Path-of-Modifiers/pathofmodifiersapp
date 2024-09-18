@@ -19,6 +19,11 @@ def main_key() -> str:
 
 
 @pytest.fixture(scope="module")
+def on_duplicate_pkey_do_nothing() -> bool:
+    return True
+
+
+@pytest.fixture(scope="module")
 def crud_instance() -> CRUDBase:
     return CRUD_account
 

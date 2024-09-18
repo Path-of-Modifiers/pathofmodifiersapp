@@ -91,7 +91,10 @@ async def create_item_modifier(
     Returns the created item modifier or list of item modifiers.
     """
 
-    return await CRUD_itemModifier.create(db=db, obj_in=itemModifier)
+    return await CRUD_itemModifier.create(
+        db=db,
+        obj_in=itemModifier,
+    )
 
 
 @router.put(

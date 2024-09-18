@@ -13,7 +13,6 @@ from app.api.deps import (
 )
 from app.core.models.models import Account
 from app.crud import CRUD_account
-from app.exceptions import DbObjectAlreadyExistsError
 
 router = APIRouter()
 
@@ -63,13 +62,14 @@ async def get_all_accounts(
 
 @router.post(
     "/",
-    response_model=schemas.AccountCreate | list[schemas.AccountCreate],
+    response_model=schemas.AccountCreate | list[schemas.AccountCreate] | None,
     dependencies=[
         Depends(get_current_active_superuser),
     ],
 )
 async def create_account(
     account: schemas.AccountCreate | list[schemas.AccountCreate],
+    on_duplicate_pkey_do_nothing: bool | None = None,
     db: Session = Depends(get_db),
 ):
     """
@@ -78,7 +78,9 @@ async def create_account(
     Returns the created account or list of accounts.
     """
 
-    return await CRUD_account.create(db=db, obj_in=account)
+    return await CRUD_account.create(
+        db=db, obj_in=account, on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing
+    )
 
 
 @router.put(
@@ -98,16 +100,7 @@ async def update_account(
 
     Returns the updated account.
     """
-    db_account_update = db.get(Account, account_update.accountName)
-
     account_map = {"accountName": accountName}
-
-    if db_account_update and db_account_update.accountName != accountName:
-        raise DbObjectAlreadyExistsError(
-            model_table_name=Account.__tablename__,
-            filter=account_map,
-            function_name=update_account.__name__,
-        )
 
     account = await CRUD_account.get(
         db=db,
