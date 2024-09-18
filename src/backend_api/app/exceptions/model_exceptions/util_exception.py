@@ -28,7 +28,7 @@ class SortingMethodNotSupportedError(PathOfModifiersAPIError):
         )
 
 
-class ValueNotSupportedError(PathOfModifiersAPIError):
+class ArgValueNotSupportedError(PathOfModifiersAPIError):
     """Exception raised for when value is not supported errors."""
 
     def __init__(
