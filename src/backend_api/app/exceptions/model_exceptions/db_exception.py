@@ -48,9 +48,11 @@ class DbObjectAlreadyExistsError(PathOfModifiersAPIError):
                 f"Object(s) try to be created in '{model_table_name}' already exists"
             )
         else:
-            detail = f"""Query in table '{model_table_name}' with filter
-            ({', '.join([key + ': ' + str(item) for key, item in filter.items()])})
-            already exists"""
+            detail = (
+                f"Query in table '{model_table_name}' with filter "
+                f"({', '.join([key + ': ' + str(item) for key, item in filter.items()])}) "
+                f"already exists"
+            )
         super().__init__(
             status_code=status_code,
             function_name=function_name,
@@ -77,9 +79,11 @@ class DbObjectDoesNotExistError(PathOfModifiersAPIError):
         if filter is None:
             detail = f"No object matching the query in the table {model_table_name} was found."
         else:
-            detail = f"""No object matching the query with filter
-            ({', '.join([key + ': ' + str(item) for key, item in filter.items()])})
-            in the table '{model_table_name}' was found."""
+            detail = (
+                f"No object matching the query with filter "
+                f"({', '.join([key + ': ' + str(item) for key, item in filter.items()])}) "
+                f"in the table '{model_table_name}' was found."
+            )
 
         super().__init__(
             status_code=status_code,
@@ -105,10 +109,12 @@ class DbTooManyItemsDeleteError(PathOfModifiersAPIError):
         class_name: str | None = None,
         status_code: int | None = status.HTTP_409_CONFLICT,
     ):
-        detail = f"""Too many objects matching the query
-        ({', '.join([key + ': ' + str(item) for key, item in filter.items()])}),
-        cannot delete and guarantee safety in the table '{model_table_name}'.
-        Maximum of {max_deletion_number} deletions allowed in one query."""
+        detail = (
+            f"Too many objects matching the query "
+            f"({', '.join([key + ': ' + str(item) for key, item in filter.items()])}), "
+            f"cannot delete and guarantee safety in the table '{model_table_name}'. "
+            f"Maximum of {max_deletion_number} deletions allowed in one query."
+        )
         super().__init__(
             status_code=status_code,
             function_name=function_name,
