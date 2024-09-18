@@ -47,7 +47,8 @@ class TestAPI(BaseTest):
         """
         if on_duplicate_pkey_do_nothing:
             response = await async_client.post(
-                f"{settings.API_V1_STR}/{route_prefix}/?on_duplicate_pkey_do_nothing={on_duplicate_pkey_do_nothing}",
+                f"{settings.API_V1_STR}/{route_prefix}/",
+                params={"on_duplicate_pkey_do_nothing": on_duplicate_pkey_do_nothing},
                 headers=superuser_token_headers,
                 json=create_object,
             )
