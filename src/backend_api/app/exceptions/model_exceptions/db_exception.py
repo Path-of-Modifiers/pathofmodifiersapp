@@ -1,6 +1,34 @@
+from typing import Any
+
 import starlette.status as status
 
 from app.exceptions.exception_base import PathOfModifiersAPIError
+
+
+class GeneralDBError(PathOfModifiersAPIError):
+    """Exception raised for general db errors."""
+
+    def __init__(
+        self,
+        *,
+        function_name: str | None = "Unknown function",
+        class_name: str | None = None,
+        status_code: int | None = status.HTTP_500_INTERNAL_SERVER_ERROR,
+        exception: Exception | None = None,
+        headers: dict[str, str] | None = None,
+    ):
+        if exception is None:
+            detail = "Unknown error"
+        else:
+            detail = str(exception)
+
+        super().__init__(
+            status_code=status_code,
+            function_name=function_name,
+            class_name=class_name,
+            detail=detail,
+            headers=headers,
+        )
 
 
 class DbObjectAlreadyExistsError(PathOfModifiersAPIError):
@@ -10,14 +38,19 @@ class DbObjectAlreadyExistsError(PathOfModifiersAPIError):
         self,
         *,
         model_table_name: str,
-        filter: dict[str, str],
+        filter: dict[str, Any] | list[dict[str, Any]],
         function_name: str | None = "Unknown function",
         class_name: str | None = None,
         status_code: int | None = status.HTTP_409_CONFLICT,
     ):
-        detail = f"""Query in table '{model_table_name}' with filter
-        ({', '.join([key + ': ' + str(item) for key, item in filter.items()])})
-        already exists"""
+        if isinstance(filter, list):
+            detail = (
+                f"Object(s) try to be created in '{model_table_name}' already exists"
+            )
+        else:
+            detail = f"""Query in table '{model_table_name}' with filter
+            ({', '.join([key + ': ' + str(item) for key, item in filter.items()])})
+            already exists"""
         super().__init__(
             status_code=status_code,
             function_name=function_name,

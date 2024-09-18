@@ -15,7 +15,6 @@ from app.api.deps import (
 from app.core.config import settings
 from app.core.models.models import ItemBaseType
 from app.crud import CRUD_itemBaseType
-from app.exceptions import DbObjectAlreadyExistsError
 from app.limiter import apply_user_rate_limits
 
 router = APIRouter()
@@ -163,13 +162,14 @@ async def get_unique_sub_categories(
 
 @router.post(
     "/",
-    response_model=schemas.ItemBaseTypeCreate | list[schemas.ItemBaseTypeCreate],
+    response_model=schemas.ItemBaseTypeCreate | list[schemas.ItemBaseTypeCreate] | None,
     dependencies=[
         Depends(get_current_active_superuser),
     ],
 )
 async def create_item_base_type(
     itemBaseType: schemas.ItemBaseTypeCreate | list[schemas.ItemBaseTypeCreate],
+    on_duplicate_pkey_do_nothing: bool | None = None,
     db: Session = Depends(get_db),
 ):
     """
@@ -177,7 +177,11 @@ async def create_item_base_type(
 
     Returns the created item base type or list of item base types.
     """
-    return await CRUD_itemBaseType.create(db=db, obj_in=itemBaseType)
+    return await CRUD_itemBaseType.create(
+        db=db,
+        obj_in=itemBaseType,
+        on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing,
+    )
 
 
 @router.put(
@@ -197,17 +201,7 @@ async def update_item_base_type(
 
     Returns the updated item base type.
     """
-    db_item_base_type_update = db.get(ItemBaseType, item_base_type_update.baseType)
-
     item_base_type_map = {"baseType": baseType}
-
-    if db_item_base_type_update and db_item_base_type_update.baseType != baseType:
-        raise DbObjectAlreadyExistsError(
-            model_table_name=ItemBaseType.__tablename__,
-            filter=item_base_type_map,
-            function_name=update_item_base_type.__name__,
-        )
-
     itemBaseType = await CRUD_itemBaseType.get(
         db=db,
         filter=item_base_type_map,

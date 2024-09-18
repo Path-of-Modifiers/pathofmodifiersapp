@@ -1,13 +1,19 @@
 from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, TypeAdapter
+from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.exceptions import (
-    DbObjectAlreadyExistsError,
+    ArgValueNotSupportedError,
     DbObjectDoesNotExistError,
     DbTooManyItemsDeleteError,
     SortingMethodNotSupportedError,
+)
+from app.exceptions.model_exceptions.db_exception import (
+    DbObjectAlreadyExistsError,
+    GeneralDBError,
 )
 from app.utils.sort_algorithms import sort_with_reference
 
@@ -23,7 +29,6 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         model: type[ModelType],
         schema: type[SchemaType],
         create_schema: type[CreateSchemaType],
-        ignore_duplicates: bool = False,
     ):
         """
         CRUD object with default methods to Create, Read, Update, Delete (CRUD).
@@ -36,9 +41,10 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         self.model = model
         self.schema = schema
         self.create_schema = create_schema
-        self.ignore_duplicates = ignore_duplicates
 
         self.validate = TypeAdapter(SchemaType | list[SchemaType]).validate_python
+
+        self.ignore_update_duplicates = False
 
     def _sort_objects(
         self,
@@ -70,16 +76,13 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
     def _map_obj_pks_to_value(
         self,
-        obj_in: (
-            SchemaType
-            | CreateSchemaType
-            | UpdateSchemaType
-            | list[SchemaType | CreateSchemaType | UpdateSchemaType]
-        ),
-    ) -> list[dict[str, Any]]:
-        """A private method used to map schema objects to the model's primary keys"""
-        self.validate(obj_in)
+        obj_in: dict[str, Any] | list[dict[str, Any]] | ModelType | list[ModelType],
+    ) -> list[dict[str, Any]] | list[dict[str, None]]:
+        """
+        Map objects to the model's primary keys.
 
+        Returns dict[str, None] when `obj_in` doesn't have primary key stated in it.
+        """
         if not isinstance(obj_in, list):
             obj_in = [obj_in]
 
@@ -87,10 +90,28 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
         obj_pks_values = []
         for obj in obj_in:
-            obj_pks_value = {key: getattr(obj, key) for key in obj_pks}
+            if isinstance(obj, dict):
+                obj_pks_value = {key: obj.get(key) for key in obj_pks}
+            elif isinstance(obj, self.model):
+                obj_pks_value = {key: getattr(obj, key) for key in obj_pks}
+            else:
+                raise ArgValueNotSupportedError(
+                    value=obj_in,
+                    function_name=self._map_obj_pks_to_value.__name__,
+                    class_name=self.__class__.__name__,
+                )
             obj_pks_values.append(obj_pks_value)
 
         return obj_pks_values
+
+    def _map_rows_to_model(
+        self,
+        rows: list[dict[str, Any]],
+    ) -> list[ModelType]:
+        """
+        Used to convert the rows to a model object
+        """
+        return [self.model(**row) for row in rows]
 
     async def get(
         self,
@@ -124,33 +145,71 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         db: Session,
         *,
         obj_in: CreateSchemaType | list[CreateSchemaType],
-    ) -> ModelType:
-        if not self.ignore_duplicates:
-            obj_pks_value_filters = self._map_obj_pks_to_value(obj_in)
-            for obj_in_pks_filter in obj_pks_value_filters:
-                # May need to change self.get handling when obj does not exist
-                try:
-                    existing_db_obj = await self.get(db, filter=obj_in_pks_filter)
-                except DbObjectDoesNotExistError:
-                    existing_db_obj = None
-                if existing_db_obj:
-                    raise DbObjectAlreadyExistsError(
-                        model_table_name=self.model.__tablename__,
-                        filter=obj_in_pks_filter,
-                        function_name=self.create.__name__,
-                        class_name=self.__class__.__name__,
-                    )
+        on_duplicate_pkey_do_nothing: bool | None = None,
+    ) -> ModelType | list[ModelType] | None:
+        """
+        Create an object in the database.
+
+        **Parameters**
+
+        * `db`: A SQLAlchemy session
+        * `obj_in`: A Pydantic model or list of Pydantic models
+        * `on_duplicate_pkey_do_nothing`: Ignore objects with duplicate primary keys.
+
+        **Returns**
+
+        * A Database object or list of Database objects or None
+        * If `on_duplicate_pkey_do_nothing` is True, the returned objects are the not conflicted objects.
+        Duplicate objects are not returned.
+        """
+        self.validate(obj_in)
+
         if isinstance(obj_in, list):
-            db_obj = [self.model(**obj.model_dump()) for obj in obj_in]
-            db.add_all(db_obj)
-            db.commit()
-            [db.refresh(obj) for obj in db_obj]
+            model_dict_list = [obj.model_dump(exclude_none=True) for obj in obj_in]
         else:
-            db_obj = self.model(**obj_in.model_dump())
-            db.add(db_obj)
-            db.commit()
-            db.refresh(db_obj)
-        return self.validate(db_obj)
+            model_dict_list = [obj_in.model_dump(exclude_none=True)]
+
+        create_statement = insert(self.model).values(model_dict_list)
+        if on_duplicate_pkey_do_nothing:
+            create_statement = create_statement.on_conflict_do_nothing(
+                constraint=f"{self.model.__tablename__}_pkey"
+            )
+        create_statement = create_statement.returning(self.model.__table__.c)
+
+        try:
+            rows_returned = db.execute(create_statement).mappings().all()
+        except IntegrityError as e:
+            db.rollback()
+            reason = str(e.args[0])
+            model_pks = self._map_obj_pks_to_value(model_dict_list)
+            if "duplicate key value violates unique constraint" in reason:
+                raise DbObjectAlreadyExistsError(
+                    model_table_name=self.model.__tablename__,
+                    filter=model_pks,
+                    function_name=self.create.__name__,
+                    class_name=self.__class__.__name__,
+                )
+        except Exception as e:
+            raise GeneralDBError(
+                function_name=self.create.__name__,
+                class_name=self.__class__.__name__,
+                exception=e,
+            )
+
+        mapped_objs = self._map_rows_to_model(rows_returned)
+
+        db.commit()
+
+        # Use `merge()` instead of `add()` and `refresh()`
+        db_objs_merged = [db.merge(obj) for obj in mapped_objs]
+
+        if not db_objs_merged:
+            return None
+
+        if len(db_objs_merged) == 1:
+            return db_objs_merged[0]
+
+        return self.validate(db_objs_merged)
 
     async def update(
         self,
@@ -160,11 +219,24 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         obj_in: UpdateSchemaType | dict[str, Any],
     ) -> ModelType:
         obj_data = db_obj.__table__.columns.keys()
-
         if isinstance(obj_in, dict):
             update_data = obj_in
         else:
             update_data = obj_in.model_dump()
+
+        # [0] because update can only update 1
+        db_obj_primary_keys = self._map_obj_pks_to_value(db_obj)[0]
+        check_db_obj_exists = (
+            db.query(self.model).filter_by(**db_obj_primary_keys).first()
+        )
+        if not check_db_obj_exists:
+            raise DbObjectDoesNotExistError(
+                model_table_name=self.model.__tablename__,
+                filter=db_obj_primary_keys,
+                function_name=self.update.__name__,
+                class_name=self.__class__.__name__,
+            )
+
         for field in obj_data:
             if field in update_data:
                 # print(field, update_data[field])

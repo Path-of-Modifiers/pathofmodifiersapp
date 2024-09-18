@@ -19,6 +19,11 @@ def db() -> Generator:
 
 
 @pytest.fixture(scope="module")
+def on_duplicate_pkey_do_nothing() -> bool:
+    return False
+
+
+@pytest.fixture(scope="module")
 def object_generator_func() -> Callable[[], dict]:
     return generate_random_currency
 
