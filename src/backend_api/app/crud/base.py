@@ -6,10 +6,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.exceptions import (
+    ArgValueNotSupportedError,
     DbObjectDoesNotExistError,
     DbTooManyItemsDeleteError,
     SortingMethodNotSupportedError,
-    ValueNotSupportedError,
 )
 from app.exceptions.model_exceptions.db_exception import (
     DbObjectAlreadyExistsError,
@@ -95,7 +95,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             elif isinstance(obj, self.model):
                 obj_pks_value = {key: getattr(obj, key) for key in obj_pks}
             else:
-                raise ValueNotSupportedError(
+                raise ArgValueNotSupportedError(
                     value=obj_in,
                     function_name=self._map_obj_pks_to_value.__name__,
                     class_name=self.__class__.__name__,
@@ -108,6 +108,9 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         self,
         rows: list[dict[str, Any]],
     ) -> list[ModelType]:
+        """
+        Used to convert the rows to a model object
+        """
         return [self.model(**row) for row in rows]
 
     async def get(
@@ -162,36 +165,23 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         self.validate(obj_in)
 
         if isinstance(obj_in, list):
-            model_dump_list = [obj.model_dump() for obj in obj_in]
+            model_dict_list = [obj.model_dump(exclude_none=True) for obj in obj_in]
         else:
-            model_dump_list = [obj_in.model_dump()]
-        model_dump_list_filtered = [
-            model_dump
-            for model_dump in (
-                {key: val for key, val in sub.items() if val is not None}
-                for sub in model_dump_list
-            )
-            if model_dump
-        ]
+            model_dict_list = [obj_in.model_dump(exclude_none=True)]
+
+        create_statement = insert(self.model).values(model_dict_list)
         if on_duplicate_pkey_do_nothing:
-            create_statement = (
-                insert(self.model)
-                .values(model_dump_list_filtered)
-                .on_conflict_do_nothing(constraint=f"{self.model.__tablename__}_pkey")
-                .returning(self.model.__table__.c)
+            create_statement = create_statement.on_conflict_do_nothing(
+                constraint=f"{self.model.__tablename__}_pkey"
             )
-        else:
-            create_statement = (
-                insert(self.model)
-                .values(model_dump_list_filtered)
-                .returning(self.model.__table__.c)
-            )
+        create_statement = create_statement.returning(self.model.__table__.c)
+
         try:
             rows_returned = db.execute(create_statement).mappings().all()
         except IntegrityError as e:
             db.rollback()
-            reason = str(e._message)[:150]
-            model_pks = self._map_obj_pks_to_value(model_dump_list)
+            reason = str(e.args[0])
+            model_pks = self._map_obj_pks_to_value(model_dict_list)
             if "duplicate key value violates unique constraint" in reason:
                 raise DbObjectAlreadyExistsError(
                     model_table_name=self.model.__tablename__,
@@ -199,12 +189,12 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
                     function_name=self.create.__name__,
                     class_name=self.__class__.__name__,
                 )
-            else:
-                raise GeneralDBError(
-                    function_name=self.create.__name__,
-                    class_name=self.__class__.__name__,
-                    exception=e,
-                )
+        except Exception as e:
+            raise GeneralDBError(
+                function_name=self.create.__name__,
+                class_name=self.__class__.__name__,
+                exception=e,
+            )
 
         mapped_objs = self._map_rows_to_model(rows_returned)
 
@@ -234,6 +224,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         else:
             update_data = obj_in.model_dump()
 
+        # [0] because update can only update 1
         db_obj_primary_keys = self._map_obj_pks_to_value(db_obj)[0]
         check_db_obj_exists = (
             db.query(self.model).filter_by(**db_obj_primary_keys).first()
