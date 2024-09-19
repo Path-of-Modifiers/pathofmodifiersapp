@@ -164,8 +164,14 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         """
         self.validate(obj_in)
 
+        primary_keys = [
+            field
+            for field in self.model.__table__.primary_key
+            if field in self.create_schema.model_fields
+        ]
+
         if isinstance(obj_in, list):
-            model_dict_list = [obj.model_dump(exclude_none=True) for obj in obj_in]
+            model_dict_list = [obj.model_dump(exclude=primary_keys) for obj in obj_in]
         else:
             model_dict_list = [obj_in.model_dump(exclude_none=True)]
 
@@ -189,12 +195,12 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
                     function_name=self.create.__name__,
                     class_name=self.__class__.__name__,
                 )
-        except Exception as e:
-            raise GeneralDBError(
-                function_name=self.create.__name__,
-                class_name=self.__class__.__name__,
-                exception=e,
-            )
+            else:
+                raise GeneralDBError(
+                    function_name=self.create.__name__,
+                    class_name=self.__class__.__name__,
+                    exception=e,
+                )
 
         mapped_objs = self._map_rows_to_model(rows_returned)
 
