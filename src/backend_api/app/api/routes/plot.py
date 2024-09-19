@@ -6,7 +6,7 @@ from app.api.deps import (
     get_current_active_user,
     get_db,
     get_rate_limit_tier_by_request,
-    get_user_token_by_request,
+    get_username_by_request,
 )
 from app.api.rate_limit.rate_limiter import RateLimiter, RateSpec
 from app.core.cache.cache import cache
@@ -39,7 +39,7 @@ async def get_plot_data(
     """
 
     async with RateLimiter(
-        unique_key=get_user_token_by_request(request),
+        unique_key=get_username_by_request(request),
         backend=cache,
         rate_spec=RateSpec(
             requests=await get_rate_limit_tier_by_request(request, user_cache_session),
