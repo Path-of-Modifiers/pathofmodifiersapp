@@ -192,6 +192,13 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
                     class_name=self.__class__.__name__,
                     exception=e,
                 )
+        except Exception as e:
+            db.rollback()
+            raise GeneralDBError(
+                function_name=self.create.__name__,
+                class_name=self.__class__.__name__,
+                exception=e,
+            )
 
         db.commit()
 
