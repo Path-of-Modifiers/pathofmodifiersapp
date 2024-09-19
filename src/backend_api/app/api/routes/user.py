@@ -191,9 +191,7 @@ async def update_me_email_confirmation(
     """
     Confirm update email.
     """
-    cached_user_update = await user_cache_update_me.verify_token(
-        token=token.access_token
-    )
+    cached_user_update = await user_cache_update_me.verify_token(token.access_token)
     update_email = cached_user_update.email
     if not update_email:
         raise InvalidTokenError(
@@ -305,7 +303,7 @@ async def update_me_username_confirmation(
     Confirm update username.
     """
     cached_user_update = await user_cache_update_me.verify_token(
-        token=token.access_token
+        token.access_token, updating_user=True
     )
     update_username = cached_user_update.username
     if not update_username:
@@ -491,7 +489,7 @@ async def register_user_confirm(
     """
     Confirm new user without the need to be logged in. Requires email confirmation.
     """
-    cached_user = await user_cache_register_user.verify_token(token=token.access_token)
+    cached_user = await user_cache_register_user.verify_token(token.access_token)
     email = cached_user.email
     if not email:
         raise InvalidTokenError(
