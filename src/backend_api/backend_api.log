@@ -1,3 +1,0 @@
-INFO:uvicorn:Initializing service
-INFO:uvicorn:Starting call to '__main__.init', this is the 1st time calling it.
-INFO:uvicorn:Service finished initializing
