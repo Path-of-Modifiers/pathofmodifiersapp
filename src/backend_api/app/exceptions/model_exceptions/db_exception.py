@@ -6,6 +6,13 @@ from app.exceptions.exception_base import PathOfModifiersAPIError
 from app.logger import logger
 
 
+def sanitize_detail(detail: str) -> str:
+    sensitive_keywords = ["hashedPassword", "password", "secret", "token"]
+    if any(keyword in detail.lower() for keyword in sensitive_keywords):
+        return "Sensitive information not logged"
+    return detail
+
+
 class _DBErrorBase(PathOfModifiersAPIError):
     def __init__(
         self,
@@ -16,7 +23,8 @@ class _DBErrorBase(PathOfModifiersAPIError):
         detail: str | None = "Unknown error in the database",
         class_name: str | None = None,
     ):
-        logger.error(detail)
+        sanitized_detail = sanitize_detail(detail)
+        logger.error(sanitized_detail)
 
         super().__init__(
             status_code=status_code,
