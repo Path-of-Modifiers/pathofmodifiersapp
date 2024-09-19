@@ -2,6 +2,7 @@
 
 
 from fastapi import HTTPException
+from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
 
 class PathOfModifiersAPIError(HTTPException):
@@ -14,7 +15,7 @@ class PathOfModifiersAPIError(HTTPException):
     def __init__(
         self,
         *,
-        status_code: int | None = 500,
+        status_code: int | None = HTTP_500_INTERNAL_SERVER_ERROR,
         function_name: str | None = "Unknown function",
         class_name: str | None = None,
         detail: str | None = "Path of Modifiers service is unavailable",
