@@ -4,6 +4,7 @@ from typing import Annotated
 from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
+from starlette.datastructures import Headers
 
 import app.core.models.database as _database
 from app.core.cache.user_cache import UserCache, UserCacheTokenType
@@ -35,7 +36,7 @@ def get_db():
 
 async def get_user_cache_session() -> AsyncGenerator[UserCache, None]:
     """Get user cache session."""
-    async with UserCache(UserCacheTokenType.SESSION) as user_cache_session:
+    async with UserCache(UserCacheTokenType.ACCESS_SESSION) as user_cache_session:
         yield user_cache_session
 
 
@@ -122,30 +123,41 @@ async def get_current_active_user(current_user: CurrentUser) -> User:
     return current_user
 
 
-def get_user_token_by_request(request: Request) -> str:
-    """Get user access token by request.
+def get_token_from_headers(headers: Headers) -> str:
+    """Get access token from header.
 
     Args:
-        request (Request): The request
+        headers (Headers): The headers
 
     Raises:
-        HTTPException: HTTPException
         InvalidTokenError: InvalidHeaderProvidedError
 
     Returns:
-        str: The user token extracted from the request.
+        str: The access token extracted from the header.
     """
-    header = request.headers.get("Authorization")
+    header = headers.get("Authorization")
     if not header or not header.startswith("Bearer "):
         raise InvalidHeaderProvidedError(
             status_code=403,
-            function_name=get_user_token_by_request.__name__,
+            function_name=get_token_from_headers.__name__,
             header=header,
         )
 
-    access_token = header[7:]  # Strip "Bearer " prefix (7 characters)
+    token = header[7:]  # Strip "Bearer " prefix (7 characters)
 
-    return access_token
+    return token
+
+
+def get_user_token_by_request(request: Request) -> str:
+    """Get user access token by request."""
+    return get_token_from_headers(request.headers)
+
+
+def get_username_by_request(request: Request) -> str:
+    """Get username by request."""
+    token = get_token_from_headers(request.headers)
+
+    return UserCache.extract_username_from_token(token=token)
 
 
 def get_rate_limit_amount_by_tier(tier: int) -> int:
