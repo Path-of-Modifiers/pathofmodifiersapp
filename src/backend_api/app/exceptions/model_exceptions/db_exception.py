@@ -6,10 +6,23 @@ from app.exceptions.exception_base import PathOfModifiersAPIError
 from app.logger import logger
 
 
+import re
+
 def sanitize_detail(detail: str) -> str:
-    sensitive_keywords = ["hashedPassword", "password", "secret", "token"]
-    if any(keyword in detail.lower() for keyword in sensitive_keywords):
-        return "Sensitive information not logged"
+    sensitive_patterns = [
+        r'\b(?:\d[ -]*?){13,16}\b',  # Credit card numbers
+        r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',  # Email addresses
+        r'\b(?:[A-Fa-f0-9]{64})\b',  # SHA-256 hashes
+        r'\b(?:[A-Fa-f0-9]{40})\b',  # SHA-1 hashes
+        r'\b(?:[A-Fa-f0-9]{32})\b',  # MD5 hashes
+        r'\b(?:\d{3}-\d{2}-\d{4})\b',  # US Social Security numbers
+        r'\b(?:\d{4}-\d{4}-\d{4}-\d{4})\b',  # Generic 16-digit numbers
+        r'\b(?:\d{3}-\d{3}-\d{4})\b',  # US phone numbers
+        r'\b(?:\d{5}-\d{5})\b',  # Generic 10-digit numbers
+    ]
+    for pattern in sensitive_patterns:
+        if re.search(pattern, detail):
+            return "Sensitive information not logged"
     return detail
 
 
