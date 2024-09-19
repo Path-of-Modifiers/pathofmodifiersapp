@@ -3,6 +3,7 @@ from io import StringIO
 
 import pandas as pd
 import requests
+from requests.exceptions import HTTPError
 
 from external_data_retrieval.config import settings
 from external_data_retrieval.transforming_data.utils import (
@@ -44,18 +45,6 @@ class PoeAPIDataTransformer:
         account_df.drop_duplicates("accountName", inplace=True)
 
         account_df["isBanned"] = None
-        account_response = requests.get(
-            self.url + "/account/", headers=self.pom_auth_headers
-        )
-        account_json = account_response.json()
-        db_account_df = pd.json_normalize(account_json)
-
-        if db_account_df.empty:
-            return account_df
-
-        account_df = account_df.loc[
-            ~account_df["accountName"].isin(db_account_df["accountName"])
-        ]
 
         return account_df
 
@@ -66,6 +55,7 @@ class PoeAPIDataTransformer:
             account_df,
             url=self.url,
             table_name="account",
+            on_duplicate_pk_do_nothing=True,
             logger=self.logger,
             headers=self.pom_auth_headers,
         )
@@ -81,20 +71,8 @@ class PoeAPIDataTransformer:
         return stash_df
 
     def _clean_stash_table(self, stash_df: pd.DataFrame) -> pd.DataFrame:
-        stash_df = stash_df.drop_duplicates(["stashId"])  # , "accountName", "league"])
+        stash_df = stash_df.drop_duplicates(["stashId"])
 
-        response = requests.get(self.url + "/stash/", headers=self.pom_auth_headers)
-        db_stash_df = pd.DataFrame()
-        # Check if the request was successful
-        if response.status_code == 200:
-            # Load the JSON data into a pandas DataFrame
-            json_io = StringIO(response.content.decode("utf-8"))
-            db_stash_df = pd.read_json(json_io, dtype=str)
-
-        if db_stash_df.empty:
-            return stash_df
-
-        stash_df = stash_df.loc[~stash_df["stashId"].isin(db_stash_df["stashId"])]
         return stash_df
 
     def _process_stash_table(self, df: pd.DataFrame) -> None:
@@ -104,6 +82,7 @@ class PoeAPIDataTransformer:
             stash_df,
             url=self.url,
             table_name="stash",
+            on_duplicate_pk_do_nothing=True,
             logger=self.logger,
             headers=self.pom_auth_headers,
         )
@@ -147,23 +126,6 @@ class PoeAPIDataTransformer:
     ) -> pd.DataFrame:
         item_basetype_df = item_basetype_df.drop_duplicates(["baseType"])
 
-        response = requests.get(
-            self.url + "/itemBaseType/", headers=self.pom_auth_headers
-        )
-
-        db_item_basetype_df = pd.DataFrame()
-        # Check if the request was successful
-        if response.status_code == 200:
-            # Load the JSON data into a pandas DataFrame
-            json_io = StringIO(response.content.decode("utf-8"))
-            db_item_basetype_df = pd.read_json(json_io, dtype=str)
-
-        if db_item_basetype_df.empty:
-            return item_basetype_df
-
-        item_basetype_df = item_basetype_df.loc[
-            ~item_basetype_df["baseType"].isin(db_item_basetype_df["baseType"])
-        ]
         return item_basetype_df
 
     def _process_item_basetype_table(self, df: pd.DataFrame) -> None:
@@ -174,6 +136,7 @@ class PoeAPIDataTransformer:
             item_basetype_df,
             url=self.url,
             table_name="itemBaseType",
+            on_duplicate_pk_do_nothing=True,
             logger=self.logger,
             headers=self.pom_auth_headers,
         )
@@ -255,9 +218,9 @@ class PoeAPIDataTransformer:
                 influence_dict = {}
                 for influence_column in influence_columns:
                     if row[influence_column]:
-                        influence_dict[
-                            influence_column.replace("influences.", "")
-                        ] = True
+                        influence_dict[influence_column.replace("influences.", "")] = (
+                            True
+                        )
                 return influence_dict
 
         influence_columns = [
@@ -410,7 +373,7 @@ class PoeAPIDataTransformer:
             self._process_item_modifier_table(
                 df.copy(deep=True), item_id=item_id, modifier_df=modifier_df
             )
-        except requests.exceptions.HTTPError as e:
+        except HTTPError as e:
             self.logger.exception(f"Something went wrong:\n{repr(e)}")
             raise e
 

@@ -60,13 +60,19 @@ def insert_data(
     *,
     url: str,
     table_name: str,
+    on_duplicate_pk_do_nothing: bool = False,
     headers: dict[str, str] = None,
     logger: logging.Logger = None,
 ) -> None:
     if df.empty:
         return None
     data = df_to_JSON(df, request_method="post")
-    response = requests.post(url + f"/{table_name}/", json=data, headers=headers)
+    params = {}
+    if on_duplicate_pk_do_nothing:
+        params["on_duplicate_pk_do_nothing"] = True
+    response = requests.post(
+        url + f"/{table_name}/", json=data, headers=headers, params=params
+    )
     if response.status_code == 422:
         logger.warning(
             f"Recieved a 422 response, indicating an unprocessable entity was submitted, while posting a {table_name} table.\nSending smaller batches, trying to locate specific error."
