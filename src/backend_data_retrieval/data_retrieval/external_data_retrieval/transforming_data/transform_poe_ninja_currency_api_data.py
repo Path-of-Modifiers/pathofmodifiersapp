@@ -1,5 +1,3 @@
-import logging
-
 import pandas as pd
 import requests
 
@@ -9,6 +7,9 @@ from external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_nin
 )
 from modifier_data_deposit.utils import insert_data
 from pom_api_authentication import get_superuser_token_headers
+
+# This module may need to log something in the future:
+# from logs.logger import transform_poe_api_logger as logger
 
 
 def load_currency_data():
@@ -25,13 +26,12 @@ def load_currency_data():
 
 
 class TransformPoeNinjaCurrencyAPIData:
-    def __init__(self, logger_parent: logging.Logger):
+    def __init__(self):
         if "localhost" not in settings.BASEURL:
             self.url = f"https://{settings.BASEURL}"
         else:
             self.url = "http://src-backend-1"
         self.url += "/api/api_v1"
-        self.logger = logger_parent.getChild("transform_ninja")
         self.pom_api_headers = get_superuser_token_headers(self.url)
 
     def _create_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
@@ -100,7 +100,6 @@ class TransformPoeNinjaCurrencyAPIData:
             currency_df,
             url=self.url,
             table_name="currency",
-            logger=self.logger,
             headers=self.pom_api_headers,
         )
         currency_id = self._get_latest_currency_id_series(currency_df)
