@@ -1,14 +1,12 @@
-import logging
-
 import pandas as pd
+
+from logs.logger import transform_poe_api_logger as logger
 
 pd.options.mode.chained_assignment = None  # default='warn'
 pd.set_option("display.max_colwidth", None)
 
 
-def get_rolls(
-    df: pd.DataFrame, modifier_df: pd.DataFrame, logger: logging.Logger
-) -> pd.DataFrame:
+def get_rolls(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
     """
     A very complex function for extracting the roll out of the `modifier` field.
 
@@ -30,7 +28,9 @@ def get_rolls(
 
     The method contains assertions to ensure successful steps.
     """
-    df.loc[:, "modifier"] = df["modifier"].replace(
+    df.loc[:, "modifier"] = df[
+        "modifier"
+    ].replace(
         r"\\n|\n", " ", regex=True
     )  # Replaces newline with a space, so that it does not mess up the regex and matches modifiers in the `modifier` table
 
