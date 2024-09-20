@@ -4,13 +4,8 @@ import requests
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 
 from external_data_retrieval.config import settings
+from logs.logger import main_logger as logger
 from pom_api_authentication import get_superuser_token_headers
-
-logger = logging.getLogger(__name__)
-logging.basicConfig(
-    filename="backend_data_retrieval.log", encoding="utf-8", level=logging.INFO
-)
-
 
 max_tries = 60 * 5  # 5 minutes
 wait_seconds = 1
