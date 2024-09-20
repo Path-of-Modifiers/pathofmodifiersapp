@@ -2,7 +2,7 @@ import starlette.status as status
 
 from app.core.config import settings
 from app.exceptions.exception_base import PathOfModifiersAPIError
-from app.logger import logger
+from app.logs.logger import logger
 
 
 class PlotQueryToDBError(PathOfModifiersAPIError):
