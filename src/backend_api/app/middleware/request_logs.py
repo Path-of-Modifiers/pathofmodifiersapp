@@ -3,7 +3,7 @@ import time
 
 from fastapi import Request
 
-from app.logger import logger
+from app.logs.logger import logger
 
 """
 Taken from https://medium.com/@roy-pstr/fastapi-server-errors-and-logs-take-back-control-696405437983

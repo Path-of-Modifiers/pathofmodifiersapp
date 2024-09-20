@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse, PlainTextResponse, Response
 from slowapi.errors import RateLimitExceeded
 
 from app.exceptions.model_exceptions.plot_exception import PlotRateLimitExceededError
-from app.logger import logger
+from app.logs.logger import logger
 
 """
 Taken from https://medium.com/@roy-pstr/fastapi-server-errors-and-logs-take-back-control-696405437983
