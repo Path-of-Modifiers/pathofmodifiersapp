@@ -98,7 +98,7 @@ async def user_cache_register_user() -> AsyncGenerator[UserCache, None]:
 
 @pytest_asyncio.fixture
 async def user_cache_session() -> AsyncGenerator[UserCache, None]:
-    async with UserCache(UserCacheTokenType.SESSION) as user_cache_session:
+    async with UserCache(UserCacheTokenType.ACCESS_SESSION) as user_cache_session:
         yield user_cache_session
 
 
