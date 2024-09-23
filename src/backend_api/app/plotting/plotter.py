@@ -1,7 +1,7 @@
 import pandas as pd
 from pydantic import TypeAdapter
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import Select
 
 from app.core.models.models import Currency as model_Currency
@@ -184,23 +184,23 @@ class Plotter:
 
         return plot_data
 
-    async def plot(self, db: Session, *, query: PlotQuery) -> PlotData:
+    async def plot(self, db: AsyncSession, *, query: PlotQuery) -> PlotData:
         statement = self._init_query(query)
         statement = self._item_spec_query(statement, query=query)
         statement = self._base_spec_query(statement, query=query)
         statement = self._wanted_modifier_query(statement, query=query)
 
         try:
-            result = db.execute(statement).mappings().all()
+            result = await db.execute(statement)
+            mapped_result = result.mappings().all()
         except Exception as e:
-            db.rollback()
             raise PlotQueryToDBError(
                 exception=e,
                 function_name=self.plot.__name__,
                 class_name=self.__class__.__name__,
             )
 
-        df = pd.DataFrame(result)
+        df = pd.DataFrame(mapped_result)
 
         if df.empty:
             raise PlotQueryDataNotFoundError(

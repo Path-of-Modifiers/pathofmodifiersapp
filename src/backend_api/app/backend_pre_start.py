@@ -1,9 +1,10 @@
+import asyncio
 import logging
 
 from sqlalchemy import select
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 
-from app.core.models.database import SessionLocal
+from app.core.models.database import sessionmanager
 from app.logs.logger import logger
 
 max_tries = 60 * 5  # 5 minutes
@@ -16,11 +17,11 @@ wait_seconds = 1
     before=before_log(logger, logging.INFO),
     after=after_log(logger, logging.WARN),
 )
-def init() -> None:
+async def init() -> None:
     try:
-        # Try to create session to check if DB is awake
-        db = SessionLocal()
-        db.execute(select(1))
+        # Try to create an async session to check if DB is awake
+        async with sessionmanager.session() as db:
+            await db.execute(select(1))
     except Exception as e:
         logger.error(e)
         raise e
@@ -28,7 +29,7 @@ def init() -> None:
 
 def main() -> None:
     logger.info("Initializing service")
-    init()
+    asyncio.run(init())  # Run the async init function
     logger.info("Service finished initializing")
 
 

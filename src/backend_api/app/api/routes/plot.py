@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Request
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import (
     UserCacheSession,
@@ -29,7 +29,7 @@ async def get_plot_data(
     request: Request,
     query: PlotQuery,
     user_cache_session: UserCacheSession,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Takes a query based on the 'PlotQuery' schema and retrieves data

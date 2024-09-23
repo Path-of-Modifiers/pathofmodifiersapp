@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import EmailStr
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.api_message_util import (
     get_password_rec_email_sent_success_msg,
@@ -58,12 +58,12 @@ async def login_access_session(
     response: Response,  # noqa: ARG001
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     user_session_cache: UserCacheSession,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ) -> Token:
     """
     OAuth2 compatible session login.
     """
-    user = CRUD_user.authenticate(
+    user = await CRUD_user.authenticate(
         db=db, email_or_username=form_data.username, password=form_data.password
     )
 
@@ -118,7 +118,7 @@ async def recover_password(
     response: Response,  # noqa: ARG001
     body: RecoverPassword,
     user_cache_password_reset: UserCachePasswordResetSession,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ) -> Message:
     """
     Password Recovery
@@ -132,7 +132,7 @@ async def recover_password(
         get_user_filter["email"] = body.email
     if body.username:
         get_user_filter["username"] = body.username
-    user = CRUD_user.get(db=db, filter=get_user_filter)
+    user = await CRUD_user.get(db=db, filter=get_user_filter)
     if not user:
         raise DbObjectDoesNotExistError(
             model_table_name=User.__tablename__,
@@ -145,7 +145,7 @@ async def recover_password(
     )
 
     if not body.email:
-        email = CRUD_user.get_email_by_username(db=db, username=body.username)
+        email = await CRUD_user.get_email_by_username(db=db, username=body.username)
     else:
         email = body.email
 
@@ -172,7 +172,7 @@ async def reset_password(
     response: Response,  # noqa: ARG001
     body: NewPassword,
     user_cache_password_reset: UserCachePasswordResetSession,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ) -> Message:
     """
     Reset password
@@ -186,7 +186,7 @@ async def reset_password(
             function_name=reset_password.__name__,
         )
     get_user_filter = {"email": email}
-    user = CRUD_user.get(db=db, filter=get_user_filter)
+    user = await CRUD_user.get(db=db, filter=get_user_filter)
     if not user:
         raise DbObjectDoesNotExistError(
             model_table_name=User.__tablename__,
@@ -205,8 +205,6 @@ async def reset_password(
     hashed_password = get_password_hash(password=body.new_password)
     user.hashedPassword = hashed_password
     db.add(user)
-    db.commit()
-    db.refresh(user)
     return get_user_psw_change_msg(user.username)
 
 
@@ -218,13 +216,13 @@ async def reset_password(
 async def recover_password_html_content(
     email: EmailStr,
     user_cache_password_reset: UserCachePasswordResetSession,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ) -> Any:
     """
     HTML Content for Password Recovery
     """
     filter = {"email": email}
-    user = CRUD_user.get(db=db, filter=filter)
+    user = await CRUD_user.get(db=db, filter=filter)
 
     if not user:
         raise DbObjectDoesNotExistError(

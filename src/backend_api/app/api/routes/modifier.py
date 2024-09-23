@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Request, Response
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 import app.core.schemas as schemas
 from app.api.api_message_util import (
@@ -14,6 +14,7 @@ from app.api.deps import (
 )
 from app.core.config import settings
 from app.core.models.models import Modifier
+from app.core.schemas.modifier import GroupedModifierByEffect
 from app.crud import CRUD_modifier
 from app.limiter import apply_user_rate_limits
 
@@ -38,7 +39,7 @@ async def get_modifier(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     modifierId: int,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Get modifier or list of modifiers by key and
@@ -69,7 +70,7 @@ async def get_modifier(
 async def get_all_modifiers(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Get all modifiers.
@@ -97,8 +98,8 @@ async def get_all_modifiers(
 async def get_grouped_modifier_by_effect(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
-    db: Session = Depends(get_db),
-):
+    db: AsyncSession = Depends(get_db),
+) -> GroupedModifierByEffect:
     """
     Get all grouped modifiers by effect.
 
@@ -119,7 +120,7 @@ async def get_grouped_modifier_by_effect(
 )
 async def create_modifier(
     modifier: schemas.ModifierCreate | list[schemas.ModifierCreate],
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Create one or a list of new modifiers.
@@ -138,7 +139,7 @@ async def create_modifier(
 async def update_modifier(
     modifierId: int,
     modifier_update: schemas.ModifierUpdate,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Update a modifier by key and value for "modifierId"
@@ -165,7 +166,7 @@ async def update_modifier(
 )
 async def delete_modifier(
     modifierId: int,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Delete a modifier by key and value for "modifierId"

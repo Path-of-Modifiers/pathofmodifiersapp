@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_400_BAD_REQUEST
 
 import app.core.schemas as schemas
@@ -30,7 +30,7 @@ async def get_item_modifier(
     itemId: int | None = None,
     modifierId: int | None = None,
     orderId: int | None = None,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Get item modifier or list of item modifiers by key and
@@ -63,7 +63,7 @@ async def get_item_modifier(
     dependencies=[Depends(get_current_active_superuser)],
 )
 async def get_all_item_modifiers(
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Get all item modifiers.
@@ -83,7 +83,7 @@ async def get_all_item_modifiers(
 )
 async def create_item_modifier(
     itemModifier: schemas.ItemModifierCreate | list[schemas.ItemModifierCreate],
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Create one or a list item modifiers.
@@ -109,7 +109,7 @@ async def update_item_modifier(
     modifierId: int,
     orderId: int,
     itemModifier_update: schemas.ItemModifierUpdate,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Update an item modifier by key and value for
@@ -141,7 +141,7 @@ async def delete_item_modifier(
     itemId: int,
     modifierId: int | None = None,
     orderId: int | None = None,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Delete an item modifier by key and value for "itemId", optional "modifierId" and optional "orderId".

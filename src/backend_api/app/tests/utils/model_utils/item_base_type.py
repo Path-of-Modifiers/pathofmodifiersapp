@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import crud
 from app.core.models.models import ItemBaseType
@@ -25,11 +25,11 @@ def create_random_item_base_type_dict() -> dict:
     return item_base_type
 
 
-async def generate_random_item_base_type(db: Session) -> tuple[dict, ItemBaseType]:
+async def generate_random_item_base_type(db: AsyncSession) -> tuple[dict, ItemBaseType]:
     """Generate a random item base type.
 
     Args:
-        db (Session): DB session.
+        db (AsyncSession): DB session.
 
     Returns:
         Tuple[Dict, ItemBaseType]: Random item base type dict and ItemBaseType db object.

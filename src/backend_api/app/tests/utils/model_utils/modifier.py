@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import crud
 from app.core.models.models import Modifier
@@ -74,13 +74,13 @@ def create_random_modifier_dict() -> dict:
 
 
 async def generate_random_modifier(
-    db: Session,
+    db: AsyncSession,
     # main_key: int = None
 ) -> tuple[dict, Modifier]:
     """Create a random modifier.
 
     Args:
-        db (Session): DB session.
+        db (AsyncSession): DB session.
 
     Returns:
         Tuple[Dict, Modifier]: Random modifier dictionary and Modifier db object.

@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import crud
 from app.core.models.models import (
@@ -17,7 +17,7 @@ from app.tests.utils.utils import random_float, random_int
 
 
 async def create_random_item_modifier_dict(
-    db: Session, retrieve_dependencies: bool | None = False
+    db: AsyncSession, retrieve_dependencies: bool | None = False
 ) -> (
     dict
     | tuple[
@@ -28,7 +28,7 @@ async def create_random_item_modifier_dict(
     """Create a random item modifier dictionary.
 
     Args:
-        db (Session): DB session.
+        db (AsyncSession): DB session.
         retrieve_dependencies (bool | None): Whether to retrieve dependencies. Defaults to False.
 
 
@@ -65,7 +65,7 @@ async def create_random_item_modifier_dict(
 
 
 async def generate_random_item_modifier(
-    db: Session, retrieve_dependencies: bool | None = False
+    db: AsyncSession, retrieve_dependencies: bool | None = False
 ) -> tuple[
     dict,
     ItemModifier,
@@ -74,7 +74,7 @@ async def generate_random_item_modifier(
     """Generate a random item modifier.
 
     Args:
-        db (Session): DB session.
+        db (AsyncSession): DB session.
         retrieve_dependencies (bool, optional): Whether to retrieve dependencies. Defaults to False.
 
     Returns:

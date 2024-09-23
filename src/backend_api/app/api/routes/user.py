@@ -3,7 +3,7 @@ import uuid
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Request, Response
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.api_message_util import (
     get_delete_return_msg,
@@ -70,13 +70,13 @@ user_prefix = "user"
     response_model=UsersPublic,
 )
 async def get_all(
-    db: Session = Depends(get_db), skip: int = 0, limit: int = 100
+    db: AsyncSession = Depends(get_db), skip: int = 0, limit: int = 100
 ) -> Any:
     """
     Retrieve all users.
     """
 
-    users_public = CRUD_user.get_all(db, skip=skip, limit=limit)
+    users_public = await CRUD_user.get_all(db, skip=skip, limit=limit)
 
     return users_public
 
@@ -86,14 +86,14 @@ async def get_all(
 )
 async def create(
     *,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     user_in: UserCreate,
     background_tasks: BackgroundTasks,
 ) -> Any:
     """
     Create new user.
     """
-    user = CRUD_user.create(db=db, user_create=user_in)
+    user = await CRUD_user.create(db=db, user_create=user_in)
     if settings.emails_enabled and user_in.email:
         email_data = generate_new_account_email(
             email_to=user_in.email, username=user_in.username
@@ -122,7 +122,7 @@ async def update_me_email_send_confirmation(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     *,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     user_cache_update_me: UserCacheUpdateMeSession,
     user_update_me_email: UserUpdateMe,
     current_user: CurrentUser,
@@ -140,7 +140,7 @@ async def update_me_email_send_confirmation(
             value=user_update_me_email.email,
             function_name=update_me_email_send_confirmation.__name__,
         )
-    CRUD_user.check_exists_raise(
+    await CRUD_user.check_exists_raise(
         db,
         filter={"email": user_update_me_email.email},
     )
@@ -186,7 +186,7 @@ async def update_me_email_confirmation(
     token: Token,
     current_user: CurrentUser,
     user_cache_update_me: UserCacheUpdateMeSession,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Confirm update email.
@@ -203,11 +203,11 @@ async def update_me_email_confirmation(
             value=update_email,
             function_name=update_me_email_confirmation.__name__,
         )
-    CRUD_user.check_exists_raise(
+    await CRUD_user.check_exists_raise(
         db,
         filter={"email": update_email},
     )
-    CRUD_user.update(
+    await CRUD_user.update(
         db,
         user_id=current_user.userId,
         user_in=UserUpdateMe(
@@ -233,7 +233,7 @@ async def update_me_username_send_confirmation(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     *,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     user_cache_update_me: UserCacheUpdateMeSession,
     user_update_me_username: UserUpdateMe,
     current_user: CurrentUser,
@@ -251,7 +251,7 @@ async def update_me_username_send_confirmation(
             value=user_update_me_username.username,
             function_name=update_me_username_send_confirmation.__name__,
         )
-    CRUD_user.check_exists_raise(
+    await CRUD_user.check_exists_raise(
         db,
         filter={"username": user_update_me_username.username},
     )
@@ -297,7 +297,7 @@ async def update_me_username_confirmation(
     token: Token,
     current_user: CurrentUser,
     user_cache_update_me: UserCacheUpdateMeSession,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Confirm update username.
@@ -316,11 +316,11 @@ async def update_me_username_confirmation(
             value=update_username,
             function_name=update_me_username_confirmation.__name__,
         )
-    CRUD_user.check_exists_raise(
+    await CRUD_user.check_exists_raise(
         db,
         filter={"username": update_username},
     )
-    CRUD_user.update(
+    await CRUD_user.update(
         db,
         user_id=current_user.userId,
         user_in=UserUpdateMe(
@@ -346,14 +346,14 @@ async def update_password_me(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     *,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     body: UpdatePassword,
     current_user: CurrentUser,
 ) -> Any:
     """
     Update own password.
     """
-    CRUD_user.update_password(
+    await CRUD_user.update_password(
         db=db,
         db_user=current_user,
         body=body,
@@ -399,7 +399,7 @@ async def delete_user_me(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     current_user: CurrentUser,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ) -> Message:
     """
     Delete own user.
@@ -409,8 +409,7 @@ async def delete_user_me(
             username_or_email=current_user.username,
             function_name=delete_user_me.__name__,
         )
-    db.delete(current_user)
-    db.commit()
+    await db.delete(current_user)
     return get_delete_return_msg(
         model_table_name=User.__tablename__, filter={"userId": current_user.userId}
     )
@@ -429,15 +428,15 @@ async def register_user_send_confirmation(
     user_register_pre_confirmed: UserRegisterPreEmailConfirmation,
     user_cache_register_user: UserCacheRegisterSession,
     background_task: BackgroundTasks,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ) -> Any:
     """
     Send email confirmation on user register. Account doesn't get created yet.
     """
-    CRUD_user.check_exists_raise(
+    await CRUD_user.check_exists_raise(
         db, filter={"email": user_register_pre_confirmed.email}
     )
-    CRUD_user.check_exists_raise(
+    await CRUD_user.check_exists_raise(
         db, filter={"username": user_register_pre_confirmed.username}
     )
 
@@ -448,7 +447,7 @@ async def register_user_send_confirmation(
         isActive=False,
     )
 
-    user = CRUD_user.create(db=db, user_create=user_create)
+    user = await CRUD_user.create(db=db, user_create=user_create)
 
     user_register_token = await user_cache_register_user.create_user_cache_instance(
         user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
@@ -484,7 +483,7 @@ async def register_user_confirm(
     response: Response,  # noqa: ARG001
     token: Token,
     user_cache_register_user: UserCacheRegisterSession,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ) -> Any:
     """
     Confirm new user without the need to be logged in. Requires email confirmation.
@@ -497,9 +496,9 @@ async def register_user_confirm(
             function_name=register_user_confirm.__name__,
         )
 
-    user_db = CRUD_user.get(db, filter={"email": email})
+    user_db = await CRUD_user.get(db, filter={"email": email})
 
-    user = CRUD_user.set_active(db=db, db_user=user_db, active=True)
+    user = await CRUD_user.set_active(db=db, db_user=user_db, active=True)
 
     return get_user_successfully_registered_msg(
         username=user.username, email=user.email
@@ -522,13 +521,13 @@ async def get_user_by_id(
     response: Response,  # noqa: ARG001
     user_id: uuid.UUID,
     current_user: CurrentUser,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ) -> Any:
     """
     Get a specific user by id.
     """
     get_user_filter = {"userId": user_id}
-    db_user = CRUD_user.get(db, filter=get_user_filter)
+    db_user = await CRUD_user.get(db, filter=get_user_filter)
     if not db_user:
         raise DbObjectDoesNotExistError(
             model_table_name=User.__tablename__,
@@ -550,9 +549,9 @@ async def get_user_by_id(
     dependencies=[Depends(get_current_active_superuser)],
     response_model=UserPublic,
 )
-def update(
+async def update(
     *,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     user_id: uuid.UUID,
     user_in: UserUpdate,
 ) -> Any:
@@ -560,7 +559,7 @@ def update(
     Update a user.
     """
 
-    db_user = CRUD_user.update(db=db, user_id=user_id, user_in=user_in)
+    db_user = await CRUD_user.update(db=db, user_id=user_id, user_in=user_in)
     return db_user
 
 
@@ -568,13 +567,13 @@ def update(
 async def delete_user(
     current_user: CurrentUser,
     user_id: uuid.UUID,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ) -> Message:
     """
     Delete a user.
     """
     delete_user_fiter = {"userId": user_id}
-    db_user = CRUD_user.get(db, filter=delete_user_fiter)
+    db_user = await CRUD_user.get(db, filter=delete_user_fiter)
     if not db_user:
         raise DbObjectDoesNotExistError(
             model_table_name=User.__tablename__,
@@ -586,8 +585,8 @@ async def delete_user(
             username_or_email=current_user.username,
             function_name=delete_user.__name__,
         )
-    db.delete(db_user)
-    db.commit()
+    await db.delete(db_user)
+    await db.commit()
     return get_delete_return_msg(
         model_table_name=User.__tablename__, filter=delete_user_fiter
     )
@@ -609,14 +608,14 @@ async def change_activate_user(
     current_user: CurrentUser,
     user_id: uuid.UUID,
     activate: bool,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ) -> Message:
     """
     Change activity to current user.
     """
-    db_user = CRUD_user.get(db, filter={"userId": user_id})
+    db_user = await CRUD_user.get(db, filter={"userId": user_id})
     if db_user == current_user and not current_user.isSuperuser:
-        CRUD_user.set_active(db=db, db_user=db_user, active=activate)
+        await CRUD_user.set_active(db=db, db_user=db_user, active=activate)
         return Message(
             message=get_user_active_change_msg(db_user.username, activate),
         )
@@ -630,7 +629,7 @@ async def change_activate_user(
             username_or_email=current_user.username,
             function_name=change_activate_user.__name__,
         )
-    CRUD_user.set_active(db=db, db_user=db_user, active=activate)
+    await CRUD_user.set_active(db=db, db_user=db_user, active=activate)
     return Message(
         message=get_user_active_change_msg(db_user.username, activate),
     )

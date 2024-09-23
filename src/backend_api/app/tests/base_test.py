@@ -3,10 +3,10 @@ import math
 from collections.abc import Callable
 from typing import Any
 
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.inspection import inspect
-from sqlalchemy.orm import Session
 
-from app.core.models.database import insp
+from app.core.models.database import get_foreign_keys
 from app.crud.base import (
     CRUDBase,
     ModelType,
@@ -31,7 +31,7 @@ class BaseTest:
 
     async def _create_object_crud(
         self,
-        db: Session,
+        db: AsyncSession,
         crud_instance: CRUDBase,
         create_object: dict,
         on_duplicate_pkey_do_nothing: bool | None = None,
@@ -43,7 +43,7 @@ class BaseTest:
             **create_object
         )  # Create object conversion to crud format
         object_out = await crud_instance.create(
-            db=db,
+            db,
             obj_in=create_obj,
             on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing,
         )
@@ -52,7 +52,7 @@ class BaseTest:
 
     async def _create_multiple_objects_crud(
         self,
-        db: Session,
+        db: AsyncSession,
         crud_instance: CRUDBase,
         create_objects: list[dict],
         on_duplicate_pkey_do_nothing: bool | None = None,
@@ -65,7 +65,7 @@ class BaseTest:
             for create_object in create_objects
         ]
         object_out = await crud_instance.create(
-            db=db,
+            db,
             obj_in=create_objs,
             on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing,
         )
@@ -74,7 +74,7 @@ class BaseTest:
 
     async def _create_random_object_crud(
         self,
-        db: Session,
+        db: AsyncSession,
         object_generator_func: Callable[[], tuple[dict, ModelType]] | Any,
     ) -> tuple[dict, ModelType]:
         """
@@ -86,7 +86,7 @@ class BaseTest:
 
     async def _create_multiple_random_objects_crud(
         self,
-        db: Session,
+        db: AsyncSession,
         object_generator_func: Callable[[], tuple[dict, ModelType]] | Any,
         count: int,
     ) -> tuple[tuple[dict], tuple[ModelType]]:
@@ -168,14 +168,14 @@ class BaseTest:
 
     async def _create_object_cascade_crud(
         self,
-        db: Session,
+        db: AsyncSession,
         object_generator_func: tuple[dict, ModelType, list[dict | ModelType] | None],
         retrieve_dependencies: bool | None = False,
     ) -> tuple[dict, ModelType, list[dict | ModelType] | None]:
         """A private method used to create objects, with option to retrieve dependencies
 
         Args:
-            db (Session): Database session
+            db (AsyncSession): Database session
             object_generator_func (tuple[ dict, ModelType, list[dict | ModelType]]]): A tuple containing the object dictionary, the object model and optionally a list of dependencies
             retrieve_dependencies (bool, optional): whether to retrieve dependencies. Defaults to False.
 
@@ -184,30 +184,28 @@ class BaseTest:
         """
         if retrieve_dependencies:
             object_dict, object_out, deps = await object_generator_func(db)
-
             return object_dict, object_out, deps
 
         else:
             object_dict, object_out = await object_generator_func(db)
-
             return object_dict, object_out
 
-    def _get_foreign_keys(self, model: ModelType) -> list[dict]:
+    async def _get_foreign_keys(self, model: ModelType) -> list[dict]:
         """
         Uses a database inspector to learn more about the foreign keys related to the given model.
         The returned object is a list of dictionaries, where each element represents a relation to
         another table. One related table may have multiple foreign keys.
         """
-        foreign_keys = insp.get_foreign_keys(model.__tablename__)
+        foreign_keys = await get_foreign_keys(model)
         return foreign_keys
 
-    def _find_restricted_delete(
+    async def _find_restricted_delete(
         self, model: ModelType, deps: list[dict | ModelType]
     ) -> list[str]:
         """
         Retrieves all tables related to model, which are not allowed to be deleted
         """
-        foreign_keys = self._get_foreign_keys(model)
+        foreign_keys = await self._get_foreign_keys(model)
         restricted_tables = []
         for key in foreign_keys:
             if key["options"]["ondelete"] == "RESTRICT":
@@ -217,20 +215,20 @@ class BaseTest:
         for dep in deps[
             1::2
         ]:  # every other element is a model, starting from the 2nd element
-            foreign_keys = self._get_foreign_keys(dep)
+            foreign_keys = await self._get_foreign_keys(dep)
             for key in foreign_keys:
                 if key["options"]["ondelete"] == "RESTRICT":
                     restricted_tables.append(key["referred_table"])
 
         return restricted_tables
 
-    def _find_cascading_update(
+    async def _find_cascading_update(
         self, model: ModelType, deps: list[dict | ModelType]
     ) -> dict[str, str]:
         """
         Retrieves all tables related to model, which delete all dependent entries
         """
-        foreign_keys = self._get_foreign_keys(model)
+        foreign_keys = await self._get_foreign_keys(model)
         cascading_tables = {}
         for key in foreign_keys:
             if "onupdate" in key["options"]:
@@ -241,7 +239,7 @@ class BaseTest:
         for dep in deps[
             1::2
         ]:  # every other element is a model, starting from the 2nd element
-            foreign_keys = self._get_foreign_keys(dep)
+            foreign_keys = await self._get_foreign_keys(dep)
             for key in foreign_keys:
                 if "onupdate" in key["options"]:
                     if key["options"]["onupdate"] == "CASCADE":

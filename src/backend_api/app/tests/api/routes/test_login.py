@@ -27,12 +27,12 @@ from app.tests.utils.rate_limit import (
 @pytest.mark.usefixtures("clear_cache", autouse=True)
 class TestLoginRoutes(BaseTest):
     @pytest.mark.anyio
-    async def test_get_access_token_email(self, async_client: AsyncClient) -> None:
+    async def test_get_access_token_email(self, client: AsyncClient) -> None:
         login_data = {
             "username": settings.FIRST_SUPERUSER,
             "password": settings.FIRST_SUPERUSER_PASSWORD,
         }
-        r = await async_client.post(
+        r = await client.post(
             f"{settings.API_V1_STR}/{login_prefix}/access-token", data=login_data
         )
         tokens = r.json()
@@ -41,12 +41,12 @@ class TestLoginRoutes(BaseTest):
         assert tokens["access_token"]
 
     @pytest.mark.anyio
-    async def test_get_access_token_username(self, async_client: AsyncClient) -> None:
+    async def test_get_access_token_username(self, client: AsyncClient) -> None:
         login_data = {
             "username": settings.FIRST_SUPERUSER_USERNAME,
             "password": settings.FIRST_SUPERUSER_PASSWORD,
         }
-        r = await async_client.post(
+        r = await client.post(
             f"{settings.API_V1_STR}/login/access-token", data=login_data
         )
         tokens = r.json()
@@ -56,35 +56,35 @@ class TestLoginRoutes(BaseTest):
 
     @pytest.mark.anyio
     async def test_get_access_token_incorrect_password_email(
-        self, async_client: AsyncClient
+        self, client: AsyncClient
     ) -> None:
         login_data = {
             "username": settings.FIRST_SUPERUSER,
             "password": "incorrect",
         }
-        r = await async_client.post(
+        r = await client.post(
             f"{settings.API_V1_STR}/{login_prefix}/access-token", data=login_data
         )
         assert r.status_code == 401
 
     @pytest.mark.anyio
     async def test_get_access_token_incorrect_password_user(
-        self, async_client: AsyncClient
+        self, client: AsyncClient
     ) -> None:
         login_data = {
             "username": settings.FIRST_SUPERUSER_USERNAME,
             "password": "incorrect",
         }
-        r = await async_client.post(
+        r = await client.post(
             f"{settings.API_V1_STR}/login/access-token", data=login_data
         )
         assert r.status_code == 401
 
     @pytest.mark.anyio
     async def test_use_access_token(
-        self, async_client: AsyncClient, superuser_token_headers: dict[str, str]
+        self, client: AsyncClient, superuser_token_headers: dict[str, str]
     ) -> None:
-        r = await async_client.post(
+        r = await client.post(
             f"{settings.API_V1_STR}/{login_prefix}/test-token",
             headers=superuser_token_headers,
         )
@@ -95,7 +95,7 @@ class TestLoginRoutes(BaseTest):
 
     @pytest.mark.anyio
     async def test_recovery_password(
-        self, async_client: AsyncClient, normal_user_token_headers: dict[str, str]
+        self, client: AsyncClient, normal_user_token_headers: dict[str, str]
     ) -> None:
         """No test email yet. Checks internal errors without sending an email"""
         with (
@@ -103,7 +103,7 @@ class TestLoginRoutes(BaseTest):
             patch("app.core.config.settings.SMTP_USER", "admin@example.com"),
         ):
             email_data = {"email": "test@example.com"}
-            r = await async_client.post(
+            r = await client.post(
                 f"{settings.API_V1_STR}/{login_prefix}/password-recovery/",
                 headers=normal_user_token_headers,
                 json=email_data,
@@ -115,10 +115,10 @@ class TestLoginRoutes(BaseTest):
 
     @pytest.mark.anyio
     async def test_recovery_password_user_not_exists_email(
-        self, async_client: AsyncClient, normal_user_token_headers: dict[str, str]
+        self, client: AsyncClient, normal_user_token_headers: dict[str, str]
     ) -> None:
         email = "jVgQr@example.com"
-        r = await async_client.post(
+        r = await client.post(
             f"{settings.API_V1_STR}/password-recovery/",
             headers=normal_user_token_headers,
             json={"email": email},
@@ -127,10 +127,10 @@ class TestLoginRoutes(BaseTest):
 
     @pytest.mark.anyio
     async def test_recovery_password_user_not_exists_username(
-        self, async_client: AsyncClient, normal_user_token_headers: dict[str, str]
+        self, client: AsyncClient, normal_user_token_headers: dict[str, str]
     ) -> None:
         username_data = {"username": "jVgQr"}
-        r = await async_client.post(
+        r = await client.post(
             f"{settings.API_V1_STR}/{login_prefix}/password-recovery/",
             headers=normal_user_token_headers,
             json=username_data,
@@ -140,7 +140,7 @@ class TestLoginRoutes(BaseTest):
     @pytest.mark.anyio
     async def test_reset_password(
         self,
-        async_client: AsyncClient,
+        client: AsyncClient,
         user_cache_password_reset: UserCache,
         superuser_token_headers: dict[str, str],
         db: Session,
@@ -154,7 +154,7 @@ class TestLoginRoutes(BaseTest):
             user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
         )
         new_psw_data = {"new_password": new_password, "token": token}
-        r = await async_client.post(
+        r = await client.post(
             f"{settings.API_V1_STR}/{login_prefix}/reset-password/",
             headers=superuser_token_headers,
             json=new_psw_data,
@@ -176,7 +176,7 @@ class TestLoginRoutes(BaseTest):
         )
         old_password = settings.FIRST_SUPERUSER_PASSWORD
         old_psw_data = {"new_password": old_password, "token": reset_token}
-        r = await async_client.post(
+        r = await client.post(
             f"{settings.API_V1_STR}/{login_prefix}/reset-password/",
             headers=superuser_token_headers,
             json=old_psw_data,
@@ -196,7 +196,7 @@ class TestLoginRoutes(BaseTest):
     @pytest.mark.anyio
     async def test_reset_same_password(
         self,
-        async_client: AsyncClient,
+        client: AsyncClient,
         user_cache_password_reset: UserCache,
         superuser_token_headers: dict[str, str],
         db: Session,
@@ -207,7 +207,7 @@ class TestLoginRoutes(BaseTest):
             user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
         )
         data = {"new_password": new_password, "token": token}
-        r = await async_client.post(
+        r = await client.post(
             f"{settings.API_V1_STR}/{login_prefix}/reset-password/",
             headers=superuser_token_headers,
             json=data,
@@ -228,13 +228,13 @@ class TestLoginRoutes(BaseTest):
     @pytest.mark.anyio
     async def test_reset_password_invalid_token(
         self,
-        async_client: AsyncClient,
+        client: AsyncClient,
         user_cache_password_reset: UserCache,
         superuser_token_headers: dict[str, str],
     ) -> None:
         invalid_token = "invalid"
         data = {"new_password": "the_new_password", "token": invalid_token}
-        r = await async_client.post(
+        r = await client.post(
             f"{settings.API_V1_STR}/{login_prefix}/reset-password/",
             headers=superuser_token_headers,
             json=data,
@@ -262,7 +262,7 @@ class TestLoginRateLimitAPI(TestRateLimitBase):
     @pytest.mark.anyio
     async def test_login_access_token_rate_limit(
         self,
-        async_client: AsyncClient,
+        client: AsyncClient,
         ip_rate_limiter,  # noqa: ARG001 # Do not remove, used to enable ip rate limiter
     ) -> None:
         """
@@ -273,7 +273,7 @@ class TestLoginRateLimitAPI(TestRateLimitBase):
         def post_plot_query_from_api_normal_user(
             login_data: dict[str, str],
         ) -> Awaitable[Response]:
-            return async_client.post(
+            return client.post(
                 f"{settings.API_V1_STR}/{login_prefix}/access-token", data=login_data
             )
 

@@ -1,44 +1,101 @@
 from collections.abc import AsyncGenerator, Generator
+from contextlib import ExitStack
 
 import pytest
 import pytest_asyncio
-from fastapi.testclient import TestClient
+from alembic.config import Config
+from alembic.migration import MigrationContext
+from alembic.operations import Operations
+from alembic.script import ScriptDirectory
+from asyncpg import Connection
 from httpx import AsyncClient
 from redis.asyncio import Redis
 from slowapi import Limiter
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.api.deps import get_db
 from app.core.cache.cache import cache
 from app.core.cache.user_cache import UserCache, UserCacheTokenType
 from app.core.config import settings
+from app.core.models.database import Base
 from app.limiter import limiter_ip, limiter_user
-from app.main import app
-from app.tests.setup_test_database import override_get_db, test_db_engine
-from app.tests.utils.database_utils import (
-    clear_all_tables,
-    mock_src_database_for_test_db,
-)
+from app.main import app as actual_app
 from app.tests.utils.user import authentication_token_from_email
 from app.tests.utils.utils import get_superuser_token_headers
 
+TEST_DATABASE_URL: str | None = str(settings.TEST_DATABASE_URI)
 
-@pytest.fixture(scope="session", autouse=True)
-def db() -> Generator:
-    mock_src_database_for_test_db()
-    with Session(test_db_engine) as session:
-        yield session
-        session.rollback()
-        session.close()
+if not TEST_DATABASE_URL:
+    raise ValueError("TEST_DATABASE_URL environment variable is not set")
+
+
+def run_migrations(connection: Connection):
+    config = Config("app/alembic.ini")
+    config.set_main_option("script_location", "app/alembic")
+    config.set_main_option("sqlalchemy.url", str(settings.TEST_DATABASE_URI))
+    script = ScriptDirectory.from_config(config)
+
+    def upgrade(rev, context):  # noqa: ARG001
+        return script._upgrade_revs("head", rev)
+
+    context = MigrationContext.configure(
+        connection, opts={"target_metadata": Base.metadata, "fn": upgrade}
+    )
+
+    with context.begin_transaction():
+        with Operations.context(context):
+            context.run_migrations()
 
 
 @pytest.fixture(scope="session")
-def client() -> Generator[TestClient, None, None]:
-    app.dependency_overrides[get_db] = override_get_db
-    with TestClient(
-        app  # For the warning DeprecationWarning: The 'app' ..., check https://github.com/tiangolo/fastapi/discussions/6211.
-    ) as c:
+def engine():
+    engine = create_async_engine(
+        str(settings.TEST_DATABASE_URI), pool_size=300, max_overflow=0
+    )
+    yield engine
+    engine.sync_engine.dispose()
+
+
+@pytest_asyncio.fixture
+async def setup_database(engine):
+    # Run alembic migrations on test DB
+    async with engine.begin() as connection:
+        await connection.run_sync(run_migrations)
+
+    yield
+
+    # Teardown
+    await engine.dispose()
+
+
+@pytest_asyncio.fixture(scope="function")
+async def db(engine, setup_database):  # noqa: ARG001
+    AsyncSessionLocal = async_sessionmaker(
+        autocommit=False, bind=engine, expire_on_commit=False
+    )
+    db = AsyncSessionLocal()
+
+    yield db
+
+
+@pytest.fixture(autouse=True)
+def app():
+    with ExitStack():
+        yield actual_app
+
+
+@pytest_asyncio.fixture
+async def client(app) -> AsyncGenerator[AsyncClient, None]:
+    async with AsyncClient(app=app, base_url="http://testserver-asyncio") as c:
         yield c
+
+
+@pytest_asyncio.fixture(scope="function", autouse=True)
+async def session_override(app, db):
+    async def get_db_session_override():
+        yield db[0]
+
+    app.dependency_overrides[get_db] = get_db_session_override
 
 
 @pytest.fixture
@@ -63,16 +120,15 @@ def ip_rate_limiter() -> Generator[Limiter, None, None]:
     limiter_ip.enabled = False
 
 
-@pytest_asyncio.fixture(scope="session")
-async def async_client() -> AsyncGenerator[AsyncClient, None]:
-    app.dependency_overrides[get_db] = override_get_db
-    async with AsyncClient(app=app, base_url="http://testserver-asyncio") as c:
-        yield c
-
-
 @pytest.fixture
 def anyio_backend():
     return "asyncio"
+
+
+# @pytest.fixture(scope="session")
+# async def connection(anyio_backend) -> AsyncGenerator[AsyncConnection, None]:
+#     async with test_sessionmanager.connect() as connection:
+#         yield connection
 
 
 @pytest_asyncio.fixture
@@ -108,11 +164,12 @@ async def user_cache_update_me() -> AsyncGenerator[UserCache, None]:
         yield user_cache_update_me
 
 
-@pytest.fixture(scope="module")
-def clear_db() -> Generator:
-    # Remove any data from database (even data not created by this session)
-    clear_all_tables()
-    yield
+# @pytest_asyncio.fixture
+# async def clear_db() -> AsyncGenerator:
+# """Fixture to clear the test database before running tests."""
+# Remove any data from the database (even data not created by this session)
+# await clear_all_tables()
+# yield
 
 
 @pytest_asyncio.fixture
@@ -125,17 +182,17 @@ async def clear_cache(get_cache: Redis) -> AsyncGenerator:
 
 @pytest_asyncio.fixture
 async def superuser_token_headers(
-    async_client: AsyncClient,
+    client: AsyncClient,
 ) -> dict[str, str]:
-    return await get_superuser_token_headers(async_client)
+    return await get_superuser_token_headers(client)
 
 
 @pytest_asyncio.fixture
 async def normal_user_token_headers(
-    async_client: AsyncClient, db: Session
+    client: AsyncClient, db: AsyncSession
 ) -> dict[str, str]:
     return await authentication_token_from_email(
-        async_client=async_client,
+        client=client,
         email=settings.TEST_USER_EMAIL,
         username=settings.TEST_USER_USERNAME,
         db=db,

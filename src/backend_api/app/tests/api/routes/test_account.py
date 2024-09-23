@@ -1,12 +1,13 @@
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 
 import pytest
+import pytest_asyncio
 
 import app.tests.api.api_routes_test_base as test_api
 from app.api.routes import account_prefix
 from app.core.models.models import Account
 from app.crud import CRUD_account
-from app.crud.base import CRUDBase, ModelType
+from app.crud.base import CRUDBase
 from app.tests.crud.crud_test_base import TestCRUD as UtilTestCRUD
 from app.tests.utils.model_utils.account import (
     create_random_account_dict,
@@ -80,9 +81,9 @@ def ignore_test_columns() -> list[str]:
     return ["updatedAt", "createdAt"]
 
 
-@pytest.fixture(scope="module")
-def object_generator_func() -> Callable[[], tuple[dict, ModelType]]:
-    return generate_random_account
+@pytest_asyncio.fixture
+async def object_generator_func() -> Callable[[], Awaitable[tuple[dict, Account]]]:
+    return lambda: generate_random_account()
 
 
 @pytest.fixture(scope="module")

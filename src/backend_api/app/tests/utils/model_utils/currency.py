@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import crud
 from app.core.models.models import Currency
@@ -25,11 +25,11 @@ def create_random_currency_dict() -> dict:
     return currency
 
 
-async def generate_random_currency(db: Session) -> tuple[dict, Currency]:
+async def generate_random_currency(db: AsyncSession) -> tuple[dict, Currency]:
     """Generates a random currency.
 
     Args:
-        db (Session): DB session.
+        db (AsyncSession): DB session.
 
     Returns:
         Tuple[Dict, Currency]: Random currency dict and Currency db object.

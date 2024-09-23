@@ -215,14 +215,12 @@ def get_model_table_name(model: ModelType) -> str:
     return model.__tablename__
 
 
-async def get_superuser_token_headers(async_client: AsyncClient) -> dict[str, str]:
+async def get_superuser_token_headers(client: AsyncClient) -> dict[str, str]:
     login_data = {
         "username": settings.FIRST_SUPERUSER,
         "password": settings.FIRST_SUPERUSER_PASSWORD,
     }
-    r = await async_client.post(
-        f"{settings.API_V1_STR}/login/access-token", data=login_data
-    )
+    r = await client.post(f"{settings.API_V1_STR}/login/access-token", data=login_data)
     tokens = r.json()
     a_token = tokens["access_token"]
     headers = {"Authorization": f"Bearer {a_token}"}

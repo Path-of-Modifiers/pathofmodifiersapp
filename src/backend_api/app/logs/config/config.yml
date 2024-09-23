@@ -2,7 +2,7 @@ version: 1
 disable_existing_loggers: false
 formatters:
   simple:
-    format: "[%(levelname)s|%(module)s|L%(lineno)d]: %(asctime)s: %(message)s"
+    format: "[%(levelname)s|%(module)s]: [File:%(filename)s|Func:%(funcName)s|L:%(lineno)d]: %(asctime)s: %(message)s"
     datefmt: "%Y-%m-%dT%H:%M:%S%z"
   json:
     (): app.logs.config.JSONFormatter
@@ -25,7 +25,7 @@ handlers:
     class: logging.StreamHandler
     level: DEBUG
     filters: [sensitive_data_filter]
-    formatter: json
+    formatter: simple
     stream: "ext://sys.stdout"
   file:
     class: logging.handlers.RotatingFileHandler
@@ -34,7 +34,7 @@ handlers:
     filename: "app/logs/backendapi.log.jsonl"
     maxBytes: 504857600 # 500 MB
     backupCount: 2
-    formatter: json
+    formatter: simple
   stdout-uvicorn-access:
     class: logging.StreamHandler
     level: DEBUG
@@ -64,6 +64,12 @@ loggers:
     propagate: no
   slowapi:
     level: ERROR
+    handlers:
+      - stdout
+      - file
+    propagate: no
+  asyncio:
+    level: DEBUG
     handlers:
       - stdout
       - file

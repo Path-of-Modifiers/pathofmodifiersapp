@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import crud
 from app.core.models.models import Account
@@ -24,11 +24,11 @@ def create_random_account_dict() -> dict:
     return account
 
 
-async def generate_random_account(db: Session) -> tuple[dict, Account]:
+async def generate_random_account(db: AsyncSession) -> tuple[dict, Account]:
     """Generates a random account.
 
     Args:
-        db (Session): DB session.
+        db (AsyncSession): DB session.
 
     Returns:
         Tuple[Dict, Account]: Random account dictionary and Account db object.

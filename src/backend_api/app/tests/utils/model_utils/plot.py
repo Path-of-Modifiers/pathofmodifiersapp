@@ -1,6 +1,6 @@
 from typing import Any
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.models.models import (
     Item as model_Item,
@@ -13,7 +13,7 @@ from app.tests.utils.model_utils.item_modifier import (
 )
 
 
-async def create_minimal_random_plot_query_dict(db: Session) -> dict[str, Any]:
+async def create_minimal_random_plot_query_dict(db: AsyncSession) -> dict[str, Any]:
     """
     Create a random plot query dictionary.
 

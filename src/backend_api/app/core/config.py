@@ -56,12 +56,13 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str = ""
     POSTGRES_DB: str = ""
+    ECHO_SQL: bool = False
 
     @computed_field  # type: ignore[prop-decorator]
     @property
     def DATABASE_URI(self) -> PostgresDsn:
         return MultiHostUrl.build(
-            scheme="postgresql+psycopg",
+            scheme="postgresql+asyncpg",
             username=self.POSTGRES_USER,
             password=self.POSTGRES_PASSWORD,
             host=self.POSTGRES_SERVER,
@@ -111,7 +112,7 @@ class Settings(BaseSettings):
     TEST_USER_EMAIL: EmailStr = "test@example.com"
     TEST_USER_USERNAME: str = "testusername"
     TEST_DATABASE_URI: PostgresDsn | None = MultiHostUrl.build(
-        scheme="postgresql+psycopg",
+        scheme="postgresql+asyncpg",
         username="test-pom-oltp-user",
         password="test-pom-oltp-password",
         host="test-db",
@@ -211,6 +212,9 @@ class Settings(BaseSettings):
     TIER_1_PLOT_RATE_LIMIT: int = (
         3  # Default plots every PLOT_RATE_LIMIT_COOLDOWN_SECONDS
     )
+
+    # Logs
+    DISABLE_LOGS_FILTER: bool = True
 
 
 settings = Settings()  # type: ignore
