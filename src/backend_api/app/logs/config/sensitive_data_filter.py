@@ -2,6 +2,10 @@ import re
 from logging import Filter, LogRecord
 from typing import Any
 
+from app.core.config import settings
+
+DISABLE_LOGS_FILTER = settings.DISABLE_LOGS_FILTER
+
 
 class SensitiveDataFilter(Filter):
     sensitive_patterns = [
@@ -51,6 +55,8 @@ class SensitiveDataFilter(Filter):
 
     def mask_sensitive_data(self, message: Any):
         message = self._check_message_type(message)
+        if DISABLE_LOGS_FILTER:
+            return message
         for pattern in self.sensitive_patterns:
             if re.search(pattern, message):
                 message = "Details contains sensitive information."

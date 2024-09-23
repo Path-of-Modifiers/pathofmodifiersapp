@@ -3,7 +3,7 @@ from typing import Any
 
 import pytest
 from slowapi import Limiter
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.tests.api.api_test_rate_limit_base import TestRateLimitBase
@@ -24,7 +24,7 @@ class TestRateLimitSlowAPI(TestRateLimitBase):
     @pytest.mark.anyio
     async def test_user_get_rate_limit(
         self,
-        db: Session,
+        db: AsyncSession,
         get_object_from_api_normal_user: Callable[[Any, Any], Awaitable[Any]],
         get_request_all_rate_limits_per_interval: (
             RateLimitPerTimeInterval | list[RateLimitPerTimeInterval]

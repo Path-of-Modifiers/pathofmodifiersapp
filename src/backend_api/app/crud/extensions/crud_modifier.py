@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from pydantic import TypeAdapter
 from sqlalchemy import Boolean, Column, Float, Integer, String, func, select
 from sqlalchemy.dialects.postgresql import ARRAY, aggregate_order_by
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.models.models import Modifier as model_Modifier
 from app.core.schemas.modifier import (
@@ -24,16 +24,18 @@ class CRUDModifier(
         ModifierUpdate,
     ]
 ):
-    def _create_array_agg(self, column: Column[Any], type_: ARRAY):
+    def _create_array_agg(self, column: Column[Any], type_: ARRAY) -> Column[Any]:
         return func.array_agg(column, type_=type_).label(column.name)
 
-    def _create_array_agg_position(self):
+    def _create_array_agg_position(self) -> Column[Any]:
         return func.array_agg(
             aggregate_order_by(model_Modifier.position, model_Modifier.position.asc()),
             type_=ARRAY(Integer),
         ).label(model_Modifier.position.name)
 
-    async def get_grouped_modifier_by_effect(self, db: Session):
+    async def get_grouped_modifier_by_effect(
+        self, db: AsyncSession
+    ) -> GroupedModifierByEffect:
         modifier_agg = self._create_array_agg(
             model_Modifier.modifierId, type_=ARRAY(Integer)
         )
@@ -61,19 +63,20 @@ class CRUDModifier(
             )
         )
 
-        db_obj = db.execute(statement).mappings().all()
+        result = await db.execute(statement)
+        mapped_result = result.mappings().all()
 
-        if not db_obj:
+        if not mapped_result:
             raise HTTPException(
                 status_code=404,
                 detail=f"No objects found in the table {self.model.__tablename__}.",
             )
 
-        if len(db_obj) == 1:
-            db_obj = db_obj[0]
+        if len(mapped_result) == 1:
+            mapped_result = mapped_result[0]
 
         validate = TypeAdapter(
             GroupedModifierByEffect | list[GroupedModifierByEffect]
         ).validate_python
 
-        return validate(db_obj)
+        return validate(mapped_result)

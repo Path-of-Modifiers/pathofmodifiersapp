@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import crud
 from app.core.models.models import Account, Currency, Item, ItemBaseType, Stash
@@ -17,12 +17,12 @@ from app.tests.utils.utils import (
 
 
 async def create_random_item_dict(
-    db: Session, retrieve_dependencies: bool | None = False
+    db: AsyncSession, retrieve_dependencies: bool | None = False
 ) -> dict | tuple[dict, list[dict | Account | Stash | ItemBaseType | Currency]]:
     """Create a random item dictionary.
 
     Args:
-        db (Session): DB session.
+        db (AsyncSession): DB session.
         retrieve_dependencies (bool, optional): Whether to retrieve dependencies. Defaults to False.
 
     Returns:
@@ -115,7 +115,7 @@ async def create_random_item_dict(
 
 
 async def generate_random_item(
-    db: Session, retrieve_dependencies: bool | None = False
+    db: AsyncSession, retrieve_dependencies: bool | None = False
 ) -> tuple[
     dict,
     Item,
@@ -124,7 +124,7 @@ async def generate_random_item(
     """Generate a random item.
 
     Args:
-        db (Session): DB session.
+        db (AsyncSession): DB session.
         retrieve_dependencies (bool, optional): Whether to retrieve dependencies. Defaults to False.
 
     Returns:

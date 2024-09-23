@@ -1,7 +1,7 @@
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 
 import pytest
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.base import (
     CRUDBase,
@@ -15,12 +15,12 @@ from app.tests.base_test import BaseTest
 from app.tests.utils.utils import get_ignore_keys
 
 
-@pytest.mark.usefixtures("clear_db", autouse=True)
+# @pytest.mark.usefixtures("clear_db", autouse=True)
 class TestCRUD(BaseTest):
     @pytest.mark.asyncio
     async def test_get(
         self,
-        db: Session,
+        db: AsyncSession,
         crud_instance: CRUDBase,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
     ) -> None:
@@ -38,14 +38,14 @@ class TestCRUD(BaseTest):
         self._test_object(object_out, object_dict)
 
         object_map = self._create_primary_key_map(object_out)
-        stored_get_object = await crud_instance.get(db=db, filter=object_map)
+        stored_get_object = await crud_instance.get(db, filter=object_map)
 
         self._test_object(stored_get_object, object_dict)
 
     @pytest.mark.asyncio
     async def test_create(
         self,
-        db: Session,
+        db: AsyncSession,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
     ) -> None:
         """
@@ -62,7 +62,7 @@ class TestCRUD(BaseTest):
     @pytest.mark.asyncio
     async def test_create_multiple(
         self,
-        db: Session,
+        db: AsyncSession,
         crud_instance: CRUDBase,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         count: int = 5,
@@ -93,7 +93,7 @@ class TestCRUD(BaseTest):
     @pytest.mark.asyncio
     async def test_create_duplicate_one_instance(
         self,
-        db: Session,
+        db: AsyncSession,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         crud_instance: CRUDBase,
         on_duplicate_pkey_do_nothing: bool,
@@ -120,7 +120,7 @@ class TestCRUD(BaseTest):
     @pytest.mark.asyncio
     async def test_create_duplicate_multiple_instances(
         self,
-        db: Session,
+        db: AsyncSession,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         crud_instance: CRUDBase,
         on_duplicate_pkey_do_nothing: bool,
@@ -145,13 +145,16 @@ class TestCRUD(BaseTest):
 
         with pytest.raises(DbObjectAlreadyExistsError):
             db_obj = await self._create_multiple_objects_crud(
-                db, crud_instance, object_dict_list, on_duplicate_pkey_do_nothing=False
+                db,
+                crud_instance,
+                object_dict_list,
+                on_duplicate_pkey_do_nothing=False,
             )
 
     @pytest.mark.asyncio
     async def test_delete(
         self,
-        db: Session,
+        db: AsyncSession,
         crud_instance: CRUDBase,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
     ) -> None:
@@ -171,7 +174,7 @@ class TestCRUD(BaseTest):
 
         object_map = self._create_primary_key_map(object_out)
         deleted_object = await crud_instance.remove(
-            db=db,
+            db,
             filter=object_map,
         )
         assert deleted_object
@@ -180,9 +183,9 @@ class TestCRUD(BaseTest):
     @pytest.mark.asyncio
     async def test_update(
         self,
-        db: Session,
+        db: AsyncSession,
         crud_instance: CRUDBase,
-        object_generator_func: Callable[[], tuple[dict, ModelType]],
+        object_generator_func: Callable[[], Awaitable[tuple[dict, ModelType]]],
     ) -> None:
         """
         A test function.
@@ -209,7 +212,7 @@ class TestCRUD(BaseTest):
 
         object_map = self._create_primary_key_map(temp_object_out)
         deleted_object = await crud_instance.remove(
-            db=db,
+            db,
             filter=object_map,
         )  # Delete the template from the db
         assert deleted_object
@@ -226,7 +229,7 @@ class TestCRUD(BaseTest):
     @pytest.mark.asyncio
     async def test_update_not_exists(
         self,
-        db: Session,
+        db: AsyncSession,
         crud_instance: CRUDBase,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
     ) -> None:

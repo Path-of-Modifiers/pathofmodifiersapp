@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Request, Response
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 import app.core.schemas as schemas
 from app.api.api_message_util import (
@@ -38,7 +38,7 @@ async def get_stash(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     stashId: str,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Get stash by key and value for "stashId".
@@ -58,7 +58,7 @@ async def get_stash(
     dependencies=[Depends(get_current_active_superuser)],
 )
 async def get_all_stashes(
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Get all stashes.
@@ -79,7 +79,7 @@ async def get_all_stashes(
 async def create_stash(
     stash: schemas.StashCreate | list[schemas.StashCreate],
     on_duplicate_pkey_do_nothing: bool | None = None,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Create one or a list of new stashes.
@@ -100,7 +100,7 @@ async def create_stash(
 async def update_stash(
     stashId: str,
     stash_update: schemas.StashUpdate,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Update a stash by key and value for "stashId".
@@ -124,7 +124,7 @@ async def update_stash(
 )
 async def delete_stash(
     stashId: str,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Delete a stash by key and value for "stashId".

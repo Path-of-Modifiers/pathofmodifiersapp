@@ -1,6 +1,6 @@
+import httpx
 from fastapi import HTTPException
 from pydantic import TypeAdapter
-from requests import post
 
 from app.api.api_message_util import get_failed_send_challenge_request_error_msg
 from app.core.config import settings
@@ -21,11 +21,12 @@ class ValidateTurnstileRequest:
             "remoteip": request_data.ip,
         }
 
-        result = post(
-            self.turnstile_url,
-            json=body,
-            headers={"Content-Type": "application/json"},
-        )
+        async with httpx.AsyncClient() as client:
+            result = await client.post(
+                self.turnstile_url,
+                json=body,
+                headers={"Content-Type": "application/json"},
+            )
 
         outcome = result.json()
 

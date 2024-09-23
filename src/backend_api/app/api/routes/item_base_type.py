@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Request, Response
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 import app.core.schemas as schemas
 from app.api.api_message_util import (
@@ -38,7 +38,7 @@ async def get_item_base_type(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     baseType: str,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Get item base type by key and value for "baseType".
@@ -66,7 +66,7 @@ async def get_item_base_type(
 async def get_all_item_base_types(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Get all item base types.
@@ -93,7 +93,7 @@ async def get_all_item_base_types(
 async def get_base_types(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Get all base types.
@@ -119,7 +119,7 @@ async def get_base_types(
 async def get_unique_categories(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Get all unique categories.
@@ -147,7 +147,7 @@ async def get_unique_categories(
 async def get_unique_sub_categories(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Get all unique sub categories.
@@ -170,7 +170,7 @@ async def get_unique_sub_categories(
 async def create_item_base_type(
     itemBaseType: schemas.ItemBaseTypeCreate | list[schemas.ItemBaseTypeCreate],
     on_duplicate_pkey_do_nothing: bool | None = None,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Create one or a list of new item base types.
@@ -194,7 +194,7 @@ async def create_item_base_type(
 async def update_item_base_type(
     baseType: str,
     item_base_type_update: schemas.ItemBaseTypeUpdate,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Update an item base type by key and value for "baseType".
@@ -219,7 +219,7 @@ async def update_item_base_type(
 )
 async def delete_item_base_type(
     baseType: str,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Delete an item base type by key and value for "baseType".

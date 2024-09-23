@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy import text
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 import app.core.schemas as schemas
 from app.api.api_message_util import (
@@ -39,7 +39,7 @@ async def get_item(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     itemId: int,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Get item by key and value for "itemId".
@@ -68,7 +68,7 @@ async def get_item(
 async def get_latest_item_id(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Get the latest "itemId"
@@ -76,11 +76,12 @@ async def get_latest_item_id(
     Can only be used safely on an empty table or directly after an insertion.
     """
 
-    result = db.execute(text("""SELECT MAX("itemId") FROM item""")).fetchone()
-    if not result or not result[0]:
+    result = await db.execute(text("""SELECT MAX("itemId") FROM item"""))
+    item_id = result.fetchone()
+    if not item_id or not item_id[0]:
         return None
 
-    return int(result[0])
+    return int(item_id[0])
 
 
 @router.get(
@@ -89,7 +90,7 @@ async def get_latest_item_id(
     dependencies=[Depends(get_current_active_superuser)],
 )
 async def get_all_items(
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Get all items.
@@ -109,7 +110,7 @@ async def get_all_items(
 )
 async def create_item(
     item: schemas.ItemCreate | list[schemas.ItemCreate],
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Create one or a list of new items.
@@ -128,7 +129,7 @@ async def create_item(
 async def update_item(
     itemId: int,
     item_update: schemas.ItemUpdate,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Update an item by key and value for "itemId".
@@ -152,7 +153,7 @@ async def update_item(
 )
 async def delete_item(
     itemId: int,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Delete an item by key and value for "itemId".

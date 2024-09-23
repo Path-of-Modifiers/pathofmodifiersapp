@@ -3,7 +3,7 @@ from copy import deepcopy
 
 import pytest
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.base import (
     CRUDBase,
@@ -18,7 +18,7 @@ class TestCascade(TestCRUD):
     @pytest.mark.asyncio
     async def test_cascade_delete(
         self,
-        db: Session,
+        db: AsyncSession,
         crud_instance: CRUDBase,
         crud_deps_instances: list[CRUDBase],
         object_generator_func_w_deps: Callable[
@@ -77,7 +77,7 @@ class TestCascade(TestCRUD):
     @pytest.mark.asyncio
     async def test_cascade_update(
         self,
-        db: Session,
+        db: AsyncSession,
         crud_instance: CRUDBase,
         crud_deps_instances: list[CRUDBase],
         object_generator_func_w_deps: Callable[

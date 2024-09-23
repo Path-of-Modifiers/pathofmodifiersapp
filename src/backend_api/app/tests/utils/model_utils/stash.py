@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import crud
 from app.core.models.models import Account, Stash
@@ -8,12 +8,12 @@ from app.tests.utils.utils import random_bool, random_lower_string
 
 
 async def create_random_stash_dict(
-    db: Session, retrieve_dependencies: bool | None = False
+    db: AsyncSession, retrieve_dependencies: bool | None = False
 ) -> dict | tuple[dict, list[dict | Account]]:
     """Create a random stash dictionary.
 
     Args:
-        db (Session): DB session.
+        db (AsyncSession): DB session.
         retrieve_dependencies (bool, optional): Whether to retrieve dependencies. Defaults to False.
 
     Returns:
@@ -44,12 +44,12 @@ async def create_random_stash_dict(
 
 
 async def generate_random_stash(
-    db: Session, retrieve_dependencies: bool | None = False
+    db: AsyncSession, retrieve_dependencies: bool | None = False
 ) -> tuple[dict, Stash, list[dict | Account] | None]:
     """Generates a random stash.
 
     Args:
-        db (Session): DB session.
+        db (AsyncSession): DB session.
         retrieve_dependencies (bool, optional): Whether to retrieve dependencies. Defaults to False.
 
     Returns:

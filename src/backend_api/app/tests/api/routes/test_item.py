@@ -170,13 +170,13 @@ def api_deps_instances() -> list[list[str]]:
 
 @pytest_asyncio.fixture
 async def get_object_from_api_normal_user(
-    async_client: AsyncClient,
+    client: AsyncClient,
     route_prefix: str,
     unique_identifier: str,
     normal_user_token_headers: dict[str, str],
 ) -> Callable[[Any, Any], Awaitable[Any]]:
     async def _get_object(object_pk_map: dict[str, Any]) -> Response:
-        response = await async_client.get(
+        response = await client.get(
             f"{settings.API_V1_STR}/{route_prefix}/{object_pk_map[unique_identifier]}",
             headers=normal_user_token_headers,
         )

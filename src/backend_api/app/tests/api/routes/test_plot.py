@@ -24,7 +24,7 @@ class TestPlotRateLimitAPI(TestRateLimitBase):
     async def test_post_plot_rate_limit(
         self,
         db: Session,
-        async_client: AsyncClient,
+        client: AsyncClient,
         normal_user_token_headers: dict[str, str],
     ) -> None:
         """
@@ -36,7 +36,7 @@ class TestPlotRateLimitAPI(TestRateLimitBase):
         def post_plot_query_from_api_normal_user(
             query: dict[str, Any],
         ) -> Awaitable[Response]:
-            return async_client.post(
+            return client.post(
                 f"{settings.API_V1_STR}/{plot_prefix}/",
                 headers=normal_user_token_headers,
                 json=query,
