@@ -1,45 +1,54 @@
 import uuid
+from datetime import datetime
 
-import sqlalchemy as _sql
-from sqlalchemy import func
+from sqlalchemy import (
+    BigInteger,
+    Boolean,
+    CheckConstraint,
+    DateTime,
+    Float,
+    ForeignKey,
+    ForeignKeyConstraint,
+    Identity,
+    PrimaryKeyConstraint,
+    SmallInteger,
+    String,
+    UniqueConstraint,
+    func,
+)
 from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.models.database import Base
-
-
-def update(self, **new_data):
-    for field, value in new_data.items():
-        setattr(self, field, value)
-
-
-Base.update = update
 
 
 class Currency(Base):
     __tablename__ = "currency"
 
-    currencyId = _sql.Column(
-        _sql.BigInteger,
-        _sql.Identity(start=1, increment=1, cycle=True),
-        primary_key=True,
-        index=True,
-        nullable=False,
+    currencyId: Mapped[int] = mapped_column(
+        BigInteger, Identity(), primary_key=True, index=True, nullable=False
     )
-    tradeName = _sql.Column(_sql.String(), index=True, nullable=False)
-    valueInChaos = _sql.Column(_sql.Float(), nullable=False)
-    iconUrl = _sql.Column(_sql.String(), nullable=False)
-    createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
+    tradeName: Mapped[str] = mapped_column(String, index=True, nullable=False)
+    valueInChaos: Mapped[float] = mapped_column(Float(), nullable=False)
+    iconUrl: Mapped[str] = mapped_column(String, nullable=False)
+    createdAt: Mapped[datetime] = mapped_column(
+        DateTime(), default=func.now(), nullable=False
+    )
 
 
 class ItemBaseType(Base):
     __tablename__ = "item_base_type"
 
-    baseType = _sql.Column(_sql.String(), nullable=False, primary_key=True, index=True)
-    category = _sql.Column(_sql.String(), nullable=False)
-    subCategory = _sql.Column(_sql.String())
-    createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
-    updatedAt = _sql.Column(
-        _sql.DateTime(),
+    baseType: Mapped[str] = mapped_column(
+        String, nullable=False, primary_key=True, index=True
+    )
+    category: Mapped[str] = mapped_column(String, nullable=False)
+    subCategory: Mapped[str | None] = mapped_column(String)
+    createdAt: Mapped[datetime] = mapped_column(
+        DateTime(), default=func.now(), nullable=False
+    )
+    updatedAt: Mapped[datetime | None] = mapped_column(
+        DateTime(),
         onupdate=func.now(),
     )
 
@@ -47,89 +56,87 @@ class ItemBaseType(Base):
 class Item(Base):
     __tablename__ = "item"
 
-    itemId = _sql.Column(
-        _sql.BigInteger,
-        _sql.Identity(start=1, increment=1, cycle=True),
-        primary_key=True,
-        index=True,
+    itemId: Mapped[int] = mapped_column(
+        BigInteger, Identity(), primary_key=True, index=True, nullable=False
+    )
+    gameItemId: Mapped[str] = mapped_column(String, index=True, nullable=False)
+    stashId: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("stash.stashId", ondelete="CASCADE"),
         nullable=False,
     )
-    gameItemId = _sql.Column(_sql.String(), index=True, nullable=False)
-    stashId = _sql.Column(
-        _sql.String(),
-        _sql.ForeignKey("stash.stashId", ondelete="CASCADE"),
+    name: Mapped[str | None] = mapped_column(String)
+    iconUrl: Mapped[str | None] = mapped_column(String)
+    league: Mapped[str] = mapped_column(String, nullable=False)
+    typeLine: Mapped[str] = mapped_column(String, nullable=False)
+    baseType: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("item_base_type.baseType", ondelete="RESTRICT", onupdate="CASCADE"),
         nullable=False,
     )
-    name = _sql.Column(_sql.String())
-    iconUrl = _sql.Column(_sql.String())
-    league = _sql.Column(_sql.String(), nullable=False)
-    typeLine = _sql.Column(_sql.String(), nullable=False)
-    baseType = _sql.Column(
-        _sql.String(),
-        _sql.ForeignKey(
-            "item_base_type.baseType", ondelete="RESTRICT", onupdate="CASCADE"
-        ),
-        nullable=False,
+    ilvl: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    rarity: Mapped[str] = mapped_column(String, nullable=False)
+    identified: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    forumNote: Mapped[str | None] = mapped_column(String)
+    currencyAmount: Mapped[float | None] = mapped_column(Float(24))
+    currencyId: Mapped[int | None] = mapped_column(
+        BigInteger, ForeignKey("currency.currencyId", ondelete="RESTRICT")
     )
-    ilvl = _sql.Column(_sql.SmallInteger(), nullable=False)
-    rarity = _sql.Column(_sql.String(), nullable=False)
-    identified = _sql.Column(_sql.Boolean(), nullable=False)
-    forumNote = _sql.Column(_sql.String())
-    currencyAmount = _sql.Column(_sql.Float(24))
-    currencyId = _sql.Column(
-        _sql.BigInteger(), _sql.ForeignKey("currency.currencyId", ondelete="RESTRICT")
+    corrupted: Mapped[bool | None] = mapped_column(Boolean)
+    delve: Mapped[bool | None] = mapped_column(Boolean)
+    fractured: Mapped[bool | None] = mapped_column(Boolean)
+    synthesized: Mapped[bool | None] = mapped_column(Boolean)
+    replica: Mapped[bool | None] = mapped_column(Boolean)
+    elder: Mapped[bool | None] = mapped_column(Boolean)
+    shaper: Mapped[bool | None] = mapped_column(Boolean)
+    influences: Mapped[dict | None] = mapped_column(JSONB)
+    searing: Mapped[bool | None] = mapped_column(Boolean)
+    tangled: Mapped[bool | None] = mapped_column(Boolean)
+    isRelic: Mapped[bool | None] = mapped_column(Boolean)
+    prefixes: Mapped[int | None] = mapped_column(SmallInteger)
+    suffixes: Mapped[int | None] = mapped_column(SmallInteger)
+    foilVariation: Mapped[int | None] = mapped_column(SmallInteger)
+    createdAt: Mapped[datetime] = mapped_column(
+        DateTime(), default=func.now(), nullable=False
     )
-    corrupted = _sql.Column(_sql.Boolean())
-    delve = _sql.Column(_sql.Boolean())
-    fractured = _sql.Column(_sql.Boolean())
-    synthesized = _sql.Column(_sql.Boolean())
-    replica = _sql.Column(_sql.Boolean())
-    elder = _sql.Column(_sql.Boolean())
-    shaper = _sql.Column(_sql.Boolean())
-    influences = _sql.Column(JSONB())
-    searing = _sql.Column(_sql.Boolean())
-    tangled = _sql.Column(_sql.Boolean())
-    isRelic = _sql.Column(_sql.Boolean())
-    prefixes = _sql.Column(_sql.SmallInteger())
-    suffixes = _sql.Column(_sql.SmallInteger())
-    foilVariation = _sql.Column(_sql.SmallInteger())
-    createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
 
 
 class Modifier(Base):
     __tablename__ = "modifier"
 
-    modifierId = _sql.Column(
-        _sql.BigInteger,
-        _sql.Identity(start=1, increment=1, cycle=True),
+    modifierId: Mapped[int] = mapped_column(
+        BigInteger,
+        Identity(start=1, increment=1, cycle=True),
         nullable=False,
         index=True,
         primary_key=True,
     )
-    position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
-    minRoll = _sql.Column(_sql.Float(24))
-    maxRoll = _sql.Column(_sql.Float(24))
-    textRolls = _sql.Column(_sql.String())
-    static = _sql.Column(_sql.Boolean())
-    effect = _sql.Column(_sql.String(), nullable=False)
-    regex = _sql.Column(_sql.String())
-    implicit = _sql.Column(_sql.Boolean())
-    explicit = _sql.Column(_sql.Boolean())
-    delve = _sql.Column(_sql.Boolean())
-    fractured = _sql.Column(_sql.Boolean())
-    synthesized = _sql.Column(_sql.Boolean())
-    unique = _sql.Column(_sql.Boolean())
-    corrupted = _sql.Column(_sql.Boolean())
-    enchanted = _sql.Column(_sql.Boolean())
-    veiled = _sql.Column(_sql.Boolean())
-    createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
-    updatedAt = _sql.Column(
-        _sql.DateTime(),
+    position: Mapped[int] = mapped_column(SmallInteger, nullable=False, index=True)
+    minRoll: Mapped[float | None] = mapped_column(Float(24))
+    maxRoll: Mapped[float | None] = mapped_column(Float(24))
+    textRolls: Mapped[str | None] = mapped_column(String)
+    static: Mapped[bool | None] = mapped_column(Boolean)
+    effect: Mapped[str] = mapped_column(String, nullable=False)
+    regex: Mapped[str | None] = mapped_column(String)
+    implicit: Mapped[bool | None] = mapped_column(Boolean)
+    explicit: Mapped[bool | None] = mapped_column(Boolean)
+    delve: Mapped[bool | None] = mapped_column(Boolean)
+    fractured: Mapped[bool | None] = mapped_column(Boolean)
+    synthesized: Mapped[bool | None] = mapped_column(Boolean)
+    unique: Mapped[bool | None] = mapped_column(Boolean)
+    corrupted: Mapped[bool | None] = mapped_column(Boolean)
+    enchanted: Mapped[bool | None] = mapped_column(Boolean)
+    veiled: Mapped[bool | None] = mapped_column(Boolean)
+    createdAt: Mapped[datetime] = mapped_column(
+        DateTime(), default=func.now(), nullable=False
+    )
+    updatedAt: Mapped[datetime | None] = mapped_column(
+        DateTime(),
         onupdate=func.now(),
     )
 
     __table_args__ = (
-        _sql.CheckConstraint(
+        CheckConstraint(
             """
             CASE
                 WHEN (modifier.static = TRUE)
@@ -156,7 +163,7 @@ class Modifier(Base):
             """,
             name="check_modifier_if_static_else_check_rolls_and_regex",
         ),
-        _sql.CheckConstraint(
+        CheckConstraint(
             """
             CASE
                 WHEN modifier.static = TRUE
@@ -170,36 +177,68 @@ class Modifier(Base):
             """,
             name="check_modifier_if_not_static_then_modifier_contains_hashtag",
         ),
-        _sql.CheckConstraint(
+        CheckConstraint(
             """ modifier."maxRoll" >= modifier."minRoll" """,
             name="check_modifier_maxRoll_greaterThan_minRoll",
         ),
-        _sql.UniqueConstraint(modifierId, position),
+        UniqueConstraint(modifierId, position),
     )
+
+
+# class ItemModifier(Base):
+#     __tablename__ = "item_modifier"
+
+#     itemId = _sql.Column(
+#         _sql.BigInteger(),
+#         _sql.ForeignKey("item.itemId", ondelete="CASCADE", onupdate="CASCADE"),
+#         nullable=False,
+#         index=True,
+#     )
+#     modifierId = _sql.Column(_sql.BigInteger(), nullable=False, index=True)
+#     orderId = _sql.Column(_sql.SmallInteger, nullable=False, index=True)
+#     position = _sql.Column(_sql.SmallInteger, nullable=False, index=True)
+#     roll = _sql.Column(_sql.Float(24))
+#     createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
+#     updatedAt = _sql.Column(
+#         _sql.DateTime(),
+#         onupdate=func.now(),
+#     )
+
+#     __table_args__ = (
+#         _sql.PrimaryKeyConstraint(itemId, modifierId, orderId),
+#         _sql.ForeignKeyConstraint(
+#             [modifierId, position],
+#             ["modifier.modifierId", "modifier.position"],
+#             ondelete="CASCADE",
+#             onupdate="CASCADE",
+#         ),
+#     )
 
 
 class ItemModifier(Base):
     __tablename__ = "item_modifier"
 
-    itemId = _sql.Column(
-        _sql.BigInteger(),
-        _sql.ForeignKey("item.itemId", ondelete="CASCADE", onupdate="CASCADE"),
+    itemId: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("item.itemId", ondelete="CASCADE", onupdate="CASCADE"),
         nullable=False,
         index=True,
     )
-    modifierId = _sql.Column(_sql.BigInteger(), nullable=False, index=True)
-    orderId = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
-    position = _sql.Column(_sql.SmallInteger(), nullable=False, index=True)
-    roll = _sql.Column(_sql.Float(24))
-    createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
-    updatedAt = _sql.Column(
-        _sql.DateTime(),
+    modifierId: Mapped[int] = mapped_column(BigInteger, nullable=False, index=True)
+    orderId: Mapped[int] = mapped_column(SmallInteger, nullable=False, index=True)
+    position: Mapped[int] = mapped_column(SmallInteger, nullable=False, index=True)
+    roll: Mapped[float | None] = mapped_column(Float(24))
+    createdAt: Mapped[datetime] = mapped_column(
+        DateTime(), default=func.now(), nullable=False
+    )
+    updatedAt: Mapped[datetime | None] = mapped_column(
+        DateTime(),
         onupdate=func.now(),
     )
 
     __table_args__ = (
-        _sql.PrimaryKeyConstraint(itemId, modifierId, orderId),
-        _sql.ForeignKeyConstraint(
+        PrimaryKeyConstraint(itemId, modifierId, orderId),
+        ForeignKeyConstraint(
             [modifierId, position],
             ["modifier.modifierId", "modifier.position"],
             ondelete="CASCADE",
@@ -211,59 +250,73 @@ class ItemModifier(Base):
 class Stash(Base):
     __tablename__ = "stash"
 
-    stashId = _sql.Column(_sql.String(), primary_key=True, index=True, nullable=False)
-    accountName = _sql.Column(
-        _sql.String(),
-        _sql.ForeignKey("account.accountName", ondelete="CASCADE", onupdate="CASCADE"),
+    stashId: Mapped[str] = mapped_column(
+        String, primary_key=True, index=True, nullable=False
+    )
+    accountName: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("account.accountName", ondelete="CASCADE", onupdate="CASCADE"),
         nullable=False,
     )
-    public = _sql.Column(_sql.Boolean(), nullable=False)
-    league = _sql.Column(_sql.String(), nullable=False)
-    createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
-    updatedAt = _sql.Column(
-        _sql.DateTime(),
+    public: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    league: Mapped[str] = mapped_column(String, nullable=False)
+    createdAt: Mapped[datetime] = mapped_column(
+        DateTime(), default=func.now(), nullable=False
+    )
+    updatedAt: Mapped[datetime | None] = mapped_column(
+        DateTime(),
         onupdate=func.now(),
     )
 
 
-# POE account API model
 class Account(Base):
     __tablename__ = "account"
 
-    accountName = _sql.Column(
-        _sql.String(), primary_key=True, index=True, nullable=False
+    accountName: Mapped[str] = mapped_column(
+        String, primary_key=True, index=True, nullable=False
     )
-    isBanned = _sql.Column(_sql.Boolean())
-    createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
-    updatedAt = _sql.Column(
-        _sql.DateTime(),
+    isBanned: Mapped[bool | None] = mapped_column(Boolean)
+    createdAt: Mapped[datetime] = mapped_column(
+        DateTime(), default=func.now(), nullable=False
+    )
+    updatedAt: Mapped[datetime | None] = mapped_column(
+        DateTime(),
         onupdate=func.now(),
     )
 
 
-# User model, a user that uses the application
 class User(Base):
     __tablename__ = "pom_user"
 
-    userId = _sql.Column(
-        UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4
+    userId: Mapped[UUID] = mapped_column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        index=True,
+        default=uuid.uuid4,
+        nullable=False,
     )
-    username = _sql.Column(_sql.String(), unique=True, index=True, nullable=False)
-    hashedPassword = _sql.Column(_sql.String(), nullable=False)
-    email = _sql.Column(_sql.String(), unique=True, index=True, nullable=False)
-    isActive = _sql.Column(_sql.Boolean(), default=True)
-    isSuperuser = _sql.Column(_sql.Boolean(), default=False)
-    rateLimitTier = _sql.Column(_sql.SmallInteger(), default=0)  # 0 = basic limit usage
-    isBanned = _sql.Column(_sql.Boolean(), default=False)
-    createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
-    updatedAt = _sql.Column(
-        _sql.DateTime(),
+    username: Mapped[str] = mapped_column(
+        String, unique=True, index=True, nullable=False
+    )
+    hashedPassword: Mapped[str] = mapped_column(String, nullable=False)
+    email: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=False)
+    isActive: Mapped[bool | None] = mapped_column(Boolean)
+    isSuperuser: Mapped[bool | None] = mapped_column(Boolean)
+    rateLimitTier: Mapped[int | None] = mapped_column(
+        SmallInteger
+    )  # 0 = basic limit usage
+    isBanned: Mapped[bool | None] = mapped_column(Boolean)
+    createdAt: Mapped[datetime] = mapped_column(
+        DateTime(), default=func.now(), nullable=False
+    )
+    updatedAt: Mapped[datetime | None] = mapped_column(
+        DateTime(),
         onupdate=func.now(),
     )
 
     # Check contstraint where username can only hold letters and numbers with multiple languages
     __table_args__ = (
-        _sql.CheckConstraint(
+        CheckConstraint(
             "username ~* '^[[:alnum:]]+$'",
             name="check_username_letters_and_numbers",
         ),
