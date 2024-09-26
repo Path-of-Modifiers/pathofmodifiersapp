@@ -8,7 +8,7 @@ from external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_nin
 from modifier_data_deposit.utils import insert_data
 from pom_api_authentication import get_superuser_token_headers
 
-# This module may need to log something in the future:
+# TODO This module may need to log something in the future:
 # from logs.logger import transform_poe_api_logger as logger
 
 
