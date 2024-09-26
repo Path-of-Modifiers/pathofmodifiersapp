@@ -1,0 +1,76 @@
+version: 1
+disable_existing_loggers: false
+formatters:
+  simple:
+    format: "%(name)s: [%(levelname)s|%(module)s|%(funcName)s|L%(lineno)d]: %(asctime)s: %(message)s"
+    datefmt: "%Y-%m-%dT%H:%M:%S%z"
+  json:
+    (): logs.config.JSONFormatter
+    fmt_keys:
+      logger: name
+      module: module
+      func: funcName
+      lineno: lineno
+      level: levelname
+      message: message
+      timestamp: timestamp
+filters:
+  sensitive_data_filter:
+    (): logs.config.SensitiveDataFilter
+handlers:
+  stdout:
+    class: logging.StreamHandler
+    level: INFO
+    filters: [sensitive_data_filter]
+    formatter: simple
+    stream: "ext://sys.stdout"
+  file:
+    class: logging.handlers.RotatingFileHandler
+    level: DEBUG
+    filters: [sensitive_data_filter]
+    filename: "logs/external_data_retrieval.log"
+    maxBytes: 504857600 # 500 MB
+    backupCount: 2
+    formatter: simple
+loggers:
+  data-retrieval:
+    level: DEBUG
+    handlers:
+      - stdout
+      - file
+    propagate: no
+  data-retrieval.external-data-retrieval:
+    level: DEBUG
+    handlers:
+      - stdout
+      - file
+    propagate: no
+  data-retrieval.external-data-retrieval.transform-poe-api:
+    level: DEBUG
+    handlers:
+      - stdout
+      - file
+    propagate: no
+  data-retrieval.external-data-retrieval.transform-poe-ninja-currency:
+    level: DEBUG
+    handlers:
+      - stdout
+      - file
+    propagate: no
+  data-retrieval.external-data-retrieval.data-retrieval:
+    level: DEBUG
+    handlers:
+      - stdout
+      - file
+    propagate: no
+  data-retrieval.modifier-data-deposit:
+    level: DEBUG
+    handlers:
+      - stdout
+      - file
+    propagate: no
+root:
+  level: INFO
+  handlers:
+    - stdout
+    - file

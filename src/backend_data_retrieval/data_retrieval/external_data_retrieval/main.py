@@ -1,4 +1,3 @@
-import logging
 from concurrent.futures import (
     ALL_COMPLETED,
     FIRST_EXCEPTION,
@@ -29,16 +28,10 @@ from external_data_retrieval.utils import (
     ProgramRunTooLongException,
     ProgramTooSlowException,
 )
+from logs.logger import external_data_retrieval_logger as logger
+from logs.logger import setup_logging
 from pom_api_authentication import (
     get_superuser_token_headers,
-)
-
-logger = logging.getLogger("external_data_retrieval")
-logging.basicConfig(
-    filename="external_data_retrieval.log",
-    level=logging.INFO,
-    format="%(asctime)s:%(levelname)-8s:%(name)s: %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
 )
 
 
@@ -58,16 +51,15 @@ class ContiniousDataRetrieval:
         self,
         items_per_batch: int,
         data_transformers: dict[str, PoeAPIDataTransformer],
-        logger: logging.Logger,
     ):
         self.data_transformers = {
-            key: data_transformers[key](main_logger=logger) for key in data_transformers
+            key: data_transformer()
+            for data_transformer, key in data_transformers.items()
         }
 
         self.poe_api_handler = APIHandler(
             url=self.url,
             auth_token=self.auth_token,
-            logger_parent=logger,
             n_wanted_items=items_per_batch,
             n_unique_wanted_items=10,
         )
@@ -75,11 +67,7 @@ class ContiniousDataRetrieval:
         self.poe_ninja_currency_api_handler = PoeNinjaCurrencyAPIHandler(
             url=f"https://poe.ninja/api/data/currencyoverview?league={self.current_league}&type=Currency"
         )
-        self.poe_ninja_transformer = TransformPoeNinjaCurrencyAPIData(
-            logger_parent=logger
-        )
-
-        self.logger = logger
+        self.poe_ninja_transformer = TransformPoeNinjaCurrencyAPIData()
 
     def _get_modifiers(self) -> dict[str, pd.DataFrame]:
         response = requests.get(self.modifier_url, headers=self.pom_auth_headers)
@@ -151,7 +139,7 @@ class ContiniousDataRetrieval:
 
     def _follow_data_dump_stream(self):
         try:
-            self.logger.info("Retrieving modifiers from db.")
+            logger.info("Retrieving modifiers from db.")
             modifier_dfs = self._get_modifiers()
             get_df = self.poe_api_handler.dump_stream()
             for i, df in enumerate(get_df):
@@ -165,14 +153,14 @@ class ContiniousDataRetrieval:
                         currency_df=currency_df.copy(deep=True),
                     )
         except Exception:
-            self.logger.exception(
+            logger.exception(
                 "The following exception occured during '_follow_data_dump_stream'"
             )
             raise
 
     def retrieve_data(self):
-        self.logger.info("Program starting up.")
-        self.logger.info("Initiating data stream.")
+        logger.info("Program starting up.")
+        logger.info("Initiating data stream.")
         max_workers = 3
         listeners = max_workers - 1  # minus one because of transformation threa
         try:
@@ -223,25 +211,23 @@ class ContiniousDataRetrieval:
                         )
                         futures[new_future] = "listener"
         except ProgramTooSlowException:
-            self.logger.critical("Program was too slow. Restarting.")
+            logger.critical("Program was too slow. Restarting.")
         except ProgramRunTooLongException:
-            self.logger.critical("Program has run too long. Restarting")
+            logger.critical("Program has run too long. Restarting")
         except Exception:
-            self.logger.exception(
-                "The following exception occured during 'retrieve_data'"
-            )
+            logger.exception("The following exception occured during 'retrieve_data'")
             raise
 
 
 def main():
     print("Starting the program.")
+    setup_logging()
     items_per_batch = 300
     data_transformers = {"unique": UniquePoeAPIDataTransformer}
 
     data_retriever = ContiniousDataRetrieval(
         items_per_batch=items_per_batch,
         data_transformers=data_transformers,
-        logger=logger,
     )
     data_retriever.retrieve_data()
 
