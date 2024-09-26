@@ -9,6 +9,7 @@ from io import StringIO
 
 import pandas as pd
 import requests
+from app.logs.logger import setup_logging
 
 from external_data_retrieval.config import settings
 from external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
@@ -52,7 +53,8 @@ class ContiniousDataRetrieval:
         data_transformers: dict[str, PoeAPIDataTransformer],
     ):
         self.data_transformers = {
-            key: data_transformers[key] for key in data_transformers
+            key: data_transformer()
+            for data_transformer, key in data_transformers.items()
         }
 
         self.poe_api_handler = APIHandler(
@@ -219,6 +221,7 @@ class ContiniousDataRetrieval:
 
 def main():
     print("Starting the program.")
+    setup_logging()
     items_per_batch = 300
     data_transformers = {"unique": UniquePoeAPIDataTransformer}
 
