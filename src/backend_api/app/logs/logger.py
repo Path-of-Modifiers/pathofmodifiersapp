@@ -17,13 +17,4 @@ def setup_logging():
     logging.config.dictConfig(config)
 
 
-uvicorn_access = logging.getLogger("uvicorn.access")
-uvicorn_access.disabled = True
-
-logger = logging.getLogger("uvicorn")
-
-setup_logging()
-
-logging.basicConfig(level="INFO")
-
-logger.setLevel(logging.INFO)
+logger = logging.getLogger("pom_app")

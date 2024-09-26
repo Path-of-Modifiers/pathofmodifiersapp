@@ -193,7 +193,6 @@ class Plotter:
         try:
             result = db.execute(statement).mappings().all()
         except Exception as e:
-            db.rollback()
             raise PlotQueryToDBError(
                 exception=e,
                 function_name=self.plot.__name__,
