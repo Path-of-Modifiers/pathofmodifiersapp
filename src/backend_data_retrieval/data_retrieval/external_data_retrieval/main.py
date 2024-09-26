@@ -9,7 +9,6 @@ from io import StringIO
 
 import pandas as pd
 import requests
-from app.logs.logger import setup_logging
 
 from external_data_retrieval.config import settings
 from external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
@@ -30,6 +29,7 @@ from external_data_retrieval.utils import (
     ProgramTooSlowException,
 )
 from logs.logger import external_data_retrieval_logger as logger
+from logs.logger import setup_logging
 from pom_api_authentication import (
     get_superuser_token_headers,
 )
