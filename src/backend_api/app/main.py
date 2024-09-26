@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
@@ -9,10 +11,13 @@ from app.api.api import api_router
 from app.core.config import settings
 from app.exception_handlers import (
     http_exception_handler,
-    rate_limit_exceeded_handler,
+    plotter_api_rate_limit_exceeded_handler,
     request_validation_exception_handler,
+    slow_api_rate_limit_exceeded_handler,
     unhandled_exception_handler,
 )
+from app.exceptions.model_exceptions.plot_exception import PlotRateLimitExceededError
+from app.logs.logger import setup_logging
 from app.middleware.request_logs import log_request_middleware
 
 
@@ -20,10 +25,18 @@ def custom_generate_unique_id(route: APIRoute) -> str:
     return f"{route.tags[0]}-{route.name}"
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):  # noqa: ARG001
+    # Load the ML model
+    setup_logging()
+    yield
+
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     generate_unique_id_function=custom_generate_unique_id,
+    lifespan=lifespan,
 )
 
 # Set all CORS enabled origins
@@ -47,4 +60,7 @@ app.middleware("http")(log_request_middleware)
 app.add_exception_handler(RequestValidationError, request_validation_exception_handler)
 app.add_exception_handler(HTTPException, http_exception_handler)
 app.add_exception_handler(Exception, unhandled_exception_handler)
-app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
+app.add_exception_handler(RateLimitExceeded, slow_api_rate_limit_exceeded_handler)
+app.add_exception_handler(
+    PlotRateLimitExceededError, plotter_api_rate_limit_exceeded_handler
+)

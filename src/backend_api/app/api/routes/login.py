@@ -76,6 +76,7 @@ async def login_access_session(
             username_or_email=user.username,
             function_name=login_access_session.__name__,
         )
+
     access_token = await user_session_cache.create_user_cache_instance(
         user=user,
         expire_seconds=settings.ACCESS_SESSION_EXPIRE_SECONDS,
