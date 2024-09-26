@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from app.core.models.database import sessionmanager
+from app.core.models.database import AsyncSessionFactory
 from app.core.models.init_db import init_db
 
 logging.basicConfig(level=logging.INFO)
@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 async def init() -> None:
-    async with sessionmanager.session() as db:  # Use the session method from sessionmanager
+    async with AsyncSessionFactory() as db:  # Use the session method from sessionmanager
         await init_db(db)
 
 

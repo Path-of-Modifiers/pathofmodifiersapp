@@ -10,7 +10,6 @@ from app.tests.api.api_test_rate_limit_base import TestRateLimitBase
 from app.tests.utils.rate_limit import RateLimitPerTimeInterval
 
 
-@pytest.mark.usefixtures("clear_db", autouse=True)
 @pytest.mark.usefixtures("clear_cache", autouse=True)
 @pytest.mark.skipif(
     settings.SKIP_RATE_LIMIT_TEST is True or settings.SKIP_RATE_LIMIT_TEST == "True",

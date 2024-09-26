@@ -1,4 +1,3 @@
-import asyncio
 import math
 from collections.abc import Callable
 from typing import Any
@@ -93,15 +92,16 @@ class BaseTest:
         """
         A private method used to create multiple random objects
         """
-        multiple_object_dict, multiple_object_out = zip(
-            *await asyncio.gather(
-                *(
-                    self._create_random_object_crud(db, object_generator_func)
-                    for _ in range(count)
-                )
-            ),
-            strict=False,
-        )  # Create multiple objects
+        multiple_object_dict = []
+        multiple_object_out = []
+
+        for _ in range(count):
+            obj_dict, obj_out = await self._create_random_object_crud(
+                db, object_generator_func
+            )
+            multiple_object_dict.append(obj_dict)
+            multiple_object_out.append(obj_out)
+
         return multiple_object_dict, multiple_object_out
 
     def _test_object(
@@ -183,7 +183,8 @@ class BaseTest:
             tuple[dict, ModelType, list[dict | ModelType]]]: A tuple containing the object dictionary, the object model and optionally a list of dependencies
         """
         if retrieve_dependencies:
-            object_dict, object_out, deps = await object_generator_func(db)
+            async with db.begin():
+                object_dict, object_out, deps = await object_generator_func(db)
             return object_dict, object_out, deps
 
         else:

@@ -32,6 +32,7 @@ async def get_account(accountName: str, db: AsyncSession = Depends(get_db)):
     """
 
     account_map = {"accountName": accountName}
+
     account = await CRUD_account.get(db=db, filter=account_map)
 
     return account
@@ -74,9 +75,10 @@ async def create_account(
 
     Returns the created account or list of accounts.
     """
-
     return await CRUD_account.create(
-        db=db, obj_in=account, on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing
+        db=db,
+        obj_in=account,
+        on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing,
     )
 
 
@@ -125,7 +127,6 @@ async def delete_account(accountName: str, db: AsyncSession = Depends(get_db)):
     Returns a message indicating the account was deleted.
     Always deletes one account.
     """
-
     account_map = {"accountName": accountName}
     await CRUD_account.remove(db=db, filter=account_map)
 

@@ -3,7 +3,7 @@ from copy import deepcopy
 
 import pytest
 from fastapi import HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
 from app.crud.base import (
     CRUDBase,
@@ -13,12 +13,13 @@ from app.tests.crud.crud_test_base import TestCRUD
 from app.tests.utils.utils import random_based_on_type
 
 
-@pytest.mark.usefixtures("clear_db", autouse=True)
+# @pytest.mark.usefixtures("clear_db")
 class TestCascade(TestCRUD):
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_cascade_delete(
         self,
         db: AsyncSession,
+        engine: AsyncEngine,
         crud_instance: CRUDBase,
         crud_deps_instances: list[CRUDBase],
         object_generator_func_w_deps: Callable[
@@ -42,12 +43,14 @@ class TestCascade(TestCRUD):
         # We cannot rely on errors to tell us if a table has restricted deletes,
         # this is because the item is already deleted by the time we are notified
         # that it was not allowed.
-        restricted_tables = self._find_restricted_delete(obj, deps)
+        restricted_tables = await self._find_restricted_delete(engine, obj, deps)
 
         n_deps = len(deps) // 2
         for i in range(n_deps):
             object_dict, object_out, deps = await self._create_object_cascade_crud(
-                db, object_generator_func_w_deps, retrieve_dependencies=True
+                db,
+                object_generator_func_w_deps,
+                retrieve_dependencies=True,
             )  # New objects have to be created for every test, since they are constantly being deleted
             self._test_object(object_out, object_dict)
             obj_map = self._create_primary_key_map(object_out)
@@ -74,10 +77,11 @@ class TestCascade(TestCRUD):
                 )
             assert excinfo.value.status_code == 404
 
-    @pytest.mark.asyncio
+    @pytest.mark.anyio
     async def test_cascade_update(
         self,
         db: AsyncSession,
+        engine: AsyncEngine,
         crud_instance: CRUDBase,
         crud_deps_instances: list[CRUDBase],
         object_generator_func_w_deps: Callable[
@@ -97,12 +101,13 @@ class TestCascade(TestCRUD):
         _, obj, deps = await self._create_object_cascade_crud(
             db, object_generator_func_w_deps, retrieve_dependencies=True
         )
-
-        cascading_tables = self._find_cascading_update(obj, deps)
+        cascading_tables = await self._find_cascading_update(engine, obj, deps)
         n_deps = len(deps) // 2
         for i in range(n_deps):
             object_dict, object_out, deps = await self._create_object_cascade_crud(
-                db, object_generator_func_w_deps, retrieve_dependencies=True
+                db,
+                object_generator_func_w_deps,
+                retrieve_dependencies=True,
             )
             self._test_object(object_out, object_dict)
             obj_map = self._create_primary_key_map(object_out)
@@ -128,6 +133,9 @@ class TestCascade(TestCRUD):
             )
             self._test_object(updated_dep_model, new_dep_dict)
 
+            # async with db.begin() as db:
+            #     await db.refresh(object_out)
+
             new_updated_object = await crud_instance.get(db, filter=obj_map)
 
-            self._test_object(new_updated_object, object_dict)
+        self._test_object(new_updated_object, object_dict)

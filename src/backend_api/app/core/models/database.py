@@ -1,7 +1,5 @@
 from sqlalchemy import inspect
-from sqlalchemy.ext.asyncio import (
-    create_async_engine,
-)
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
 from app.core.config import settings
@@ -15,6 +13,8 @@ class Base(DeclarativeBase):
 DATABASE_URI = str(settings.DATABASE_URI)
 
 engine = create_async_engine(DATABASE_URI, pool_size=300, max_overflow=0)
+
+AsyncSessionFactory = async_sessionmaker(engine, expire_on_commit=False)
 
 
 def inspect_foreign_keys(conn, model):

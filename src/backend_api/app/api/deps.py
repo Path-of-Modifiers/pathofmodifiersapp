@@ -3,12 +3,12 @@ from typing import Annotated
 
 from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.datastructures import Headers
 
 from app.core.cache.user_cache import UserCache, UserCacheTokenType
 from app.core.config import settings
-from app.core.models.database import engine
+from app.core.models.database import AsyncSessionFactory
 from app.core.models.models import User
 from app.exceptions import (
     DbObjectDoesNotExistError,
@@ -27,12 +27,8 @@ TokenDep = Annotated[str, Depends(reusable_oauth2)]
 
 
 async def get_db():
-    AsyncSessionLocal = async_sessionmaker(
-        autocommit=False, bind=engine, expire_on_commit=False
-    )
-
-    db = AsyncSessionLocal()
-    yield db
+    async with AsyncSessionFactory() as db:
+        yield db
 
 
 async def get_user_cache_session() -> AsyncGenerator[UserCache, None]:
@@ -88,7 +84,8 @@ async def get_current_user(
 ) -> User:
     user_cached = await user_cache_session.verify_token(token)
 
-    user = await db.get(User, user_cached.userId)
+    async with db.begin():
+        user = await db.get(User, user_cached.userId)
     if not user:
         raise DbObjectDoesNotExistError(
             model_table_name=User.__tablename__,

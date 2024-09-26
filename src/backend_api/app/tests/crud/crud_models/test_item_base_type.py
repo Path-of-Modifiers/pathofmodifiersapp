@@ -8,7 +8,7 @@ from app.crud.base import CRUDBase
 from app.tests.utils.model_utils.item_base_type import generate_random_item_base_type
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def object_generator_func() -> Callable[[], dict]:
     return generate_random_item_base_type
 

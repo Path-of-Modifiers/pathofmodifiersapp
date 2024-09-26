@@ -81,9 +81,8 @@ class CRUDUser:
 
         # Create the database object with the modified data
         db_obj = model_User(**user_data)
-        async with db.begin():
+        async with db.begin_nested():
             db.add(db_obj)
-            await db.commit()
         return self.validate(db_obj)
 
     async def get_all(
@@ -99,14 +98,14 @@ class CRUDUser:
         Returns:
             List[model_User]: List of users
         """
-        count_statement = select(func.count()).select_from(model_User)
-        result_count = await db.execute(count_statement)
-        count = result_count.one()[0]
+        async with db.begin_nested():
+            count_statement = select(func.count()).select_from(model_User)
+            result_count = await db.execute(count_statement)
+            count = result_count.one()[0]
 
-        async with db.begin():
             users_stmt = select(model_User).offset(skip).limit(limit)
             result_users = await db.execute(users_stmt)
-            users = result_users.scalars().all()
+        users = result_users.scalars().all()
 
         users_public = UsersPublic(data=users, count=count)
         return self.validate_users_public(users_public)
@@ -155,9 +154,8 @@ class CRUDUser:
         for field in user_update_data:
             if field in obj_data:
                 setattr(db_user, field, user_update_data[field])
-        async with db.begin():
+        async with db.begin_nested():
             db.add(db_user)
-            await db.commit()
             await db.refresh(db_user)
         return self.validate(db_user)
 
@@ -176,10 +174,10 @@ class CRUDUser:
         Returns:
             model_User | None: model_User object or None
         """
-        async with db.begin():
+        async with db.begin_nested():
             user_filter_stmt = select(model_User).filter_by(**filter)
             result = await db.execute(user_filter_stmt)
-            session_user = result.scalars().all()
+        session_user = result.scalars().all()
         if not session_user:
             return None
         if len(session_user) == 1 and filter:
@@ -221,6 +219,9 @@ class CRUDUser:
 
         Returns:
             model_User | None: model_User object or None
+
+        Use explisit with db.begin() to optimize closing of the session before request is done.
+        See docs for more on this matter.
         """
         get_user_filter = {}
         if email_or_username is not None:

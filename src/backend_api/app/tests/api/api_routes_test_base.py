@@ -1,4 +1,5 @@
 import math
+from asyncio import AbstractEventLoop
 from collections.abc import Awaitable, Callable
 from typing import Any
 
@@ -22,7 +23,6 @@ from app.tests.base_test import BaseTest
 from app.tests.utils.utils import is_courotine_function
 
 
-@pytest.mark.usefixtures("clear_db", autouse=True)
 @pytest.mark.usefixtures("clear_cache", autouse=True)
 class TestAPI(BaseTest):
     async def _create_object_api(
@@ -32,6 +32,7 @@ class TestAPI(BaseTest):
         route_prefix: str,
         superuser_token_headers: dict[str, str],
         on_duplicate_pkey_do_nothing: bool,
+        event_loop: AbstractEventLoop,
     ) -> Response:
         """Try to create an object using the API
 

@@ -63,9 +63,10 @@ async def login_access_session(
     """
     OAuth2 compatible session login.
     """
-    user = await CRUD_user.authenticate(
-        db=db, email_or_username=form_data.username, password=form_data.password
-    )
+    async with db.begin():
+        user = await CRUD_user.authenticate(
+            db=db, email_or_username=form_data.username, password=form_data.password
+        )
 
     if not user:
         raise BadLoginCredentialsError(
