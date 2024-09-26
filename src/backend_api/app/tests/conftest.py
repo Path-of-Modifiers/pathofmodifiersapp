@@ -1,5 +1,4 @@
 from collections.abc import AsyncGenerator, Generator
-from contextlib import ExitStack
 
 import pytest
 import pytest_asyncio
@@ -19,7 +18,7 @@ from app.core.cache.user_cache import UserCache, UserCacheTokenType
 from app.core.config import settings
 from app.core.models.database import Base
 from app.limiter import limiter_ip, limiter_user
-from app.main import app as actual_app
+from app.main import app
 from app.tests.utils.user import authentication_token_from_email
 from app.tests.utils.utils import get_superuser_token_headers
 
@@ -56,7 +55,23 @@ def engine():
     engine.sync_engine.dispose()
 
 
-@pytest_asyncio.fixture
+@pytest.fixture(scope="session")
+def async_session_maker(engine):
+    AsyncSessionLocal = async_sessionmaker(
+        autocommit=False, bind=engine, expire_on_commit=False
+    )
+
+    return AsyncSessionLocal
+
+
+# @pytest.fixture(scope="session")
+# def event_loop(request):
+#     loop = asyncio.get_event_loop_policy().new_event_loop()
+#     yield loop
+#     loop.close()
+
+
+@pytest_asyncio.fixture()
 async def setup_database(engine):
     # Run alembic migrations on test DB
     async with engine.begin() as connection:
@@ -68,34 +83,21 @@ async def setup_database(engine):
     await engine.dispose()
 
 
-@pytest_asyncio.fixture(scope="function")
-async def db(engine, setup_database):  # noqa: ARG001
-    AsyncSessionLocal = async_sessionmaker(
-        autocommit=False, bind=engine, expire_on_commit=False
-    )
-    db = AsyncSessionLocal()
-
-    yield db
-
-
-@pytest.fixture(autouse=True)
-def app():
-    with ExitStack():
-        yield actual_app
-
-
-@pytest_asyncio.fixture
-async def client(app) -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(app=app, base_url="http://testserver-asyncio") as c:
-        yield c
+@pytest_asyncio.fixture(scope="function", autouse=True)
+async def db(async_session_maker, setup_database):  # noqa: ARG001
+    async with async_session_maker() as session:
+        yield session
+        await session.rollback()
 
 
 @pytest_asyncio.fixture(scope="function", autouse=True)
-async def session_override(app, db):
+async def client(db: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     async def get_db_session_override():
-        yield db[0]
+        yield db
 
     app.dependency_overrides[get_db] = get_db_session_override
+    async with AsyncClient(app=app, base_url="http://testserver-asyncio") as c:
+        yield c
 
 
 @pytest.fixture
@@ -126,9 +128,10 @@ def anyio_backend():
 
 
 # @pytest.fixture(scope="session")
-# async def connection(anyio_backend) -> AsyncGenerator[AsyncConnection, None]:
-#     async with test_sessionmanager.connect() as connection:
-#         yield connection
+# def event_loop(request):
+#     loop = asyncio.get_event_loop_policy().new_event_loop()
+#     yield loop
+#     loop.close()
 
 
 @pytest_asyncio.fixture

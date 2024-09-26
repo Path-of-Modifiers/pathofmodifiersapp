@@ -13,7 +13,7 @@ def on_duplicate_pkey_do_nothing() -> bool:
     return False
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def object_generator_func() -> Callable[[], dict]:
     return generate_random_currency
 

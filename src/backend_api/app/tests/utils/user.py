@@ -25,7 +25,8 @@ async def create_random_user(db: AsyncSession) -> User:
     password = random_lower_string()
     username = random_lower_string()
     user_in = UserCreate(email=email, password=password, username=username)
-    user = await CRUD_user.create(db, user_create=user_in)
+    async with db.begin():
+        user = await CRUD_user.create(db, user_create=user_in)
     return user
 
 
@@ -42,15 +43,20 @@ async def authentication_token_from_email(
     If the user doesn't exist it is created first.
     """
     password = random_lower_string()
-    user = await CRUD_user.get(db, filter={"email": email})
-    if not user:
-        user_in_create = UserCreate(email=email, password=password, username=username)
-        user = await CRUD_user.create(db, user_create=user_in_create)
-    else:
-        user_in_update = UserUpdate(password=password)
-        if not user.userId:
-            raise Exception("User id not set")
-        user = await CRUD_user.update(db, user_id=user.userId, user_in=user_in_update)
+    async with db.begin():
+        user = await CRUD_user.get(db, filter={"email": email})
+        if not user:
+            user_in_create = UserCreate(
+                email=email, password=password, username=username
+            )
+            user = await CRUD_user.create(db, user_create=user_in_create)
+        else:
+            user_in_update = UserUpdate(password=password)
+            if not user.userId:
+                raise Exception("User id not set")
+            user = await CRUD_user.update(
+                db, user_id=user.userId, user_in=user_in_update
+            )
 
     return await user_authentication_headers(
         client=client, email=email, password=password

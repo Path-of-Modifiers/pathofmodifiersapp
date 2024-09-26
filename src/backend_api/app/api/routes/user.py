@@ -75,8 +75,8 @@ async def get_all(
     """
     Retrieve all users.
     """
-
-    users_public = await CRUD_user.get_all(db, skip=skip, limit=limit)
+    async with db.begin():
+        users_public = await CRUD_user.get_all(db, skip=skip, limit=limit)
 
     return users_public
 
@@ -93,7 +93,8 @@ async def create(
     """
     Create new user.
     """
-    user = await CRUD_user.create(db=db, user_create=user_in)
+    async with db.begin():
+        user = await CRUD_user.create(db=db, user_create=user_in)
     if settings.emails_enabled and user_in.email:
         email_data = generate_new_account_email(
             email_to=user_in.email, username=user_in.username
@@ -140,10 +141,11 @@ async def update_me_email_send_confirmation(
             value=user_update_me_email.email,
             function_name=update_me_email_send_confirmation.__name__,
         )
-    await CRUD_user.check_exists_raise(
-        db,
-        filter={"email": user_update_me_email.email},
-    )
+    async with db.begin():
+        await CRUD_user.check_exists_raise(
+            db,
+            filter={"email": user_update_me_email.email},
+        )
 
     update_user_params = {"email": user_update_me_email.email}
     user_update_token = await user_cache_update_me.create_user_cache_instance(
@@ -447,7 +449,8 @@ async def register_user_send_confirmation(
         isActive=False,
     )
 
-    user = await CRUD_user.create(db=db, user_create=user_create)
+    async with db.begin():
+        user = await CRUD_user.create(db=db, user_create=user_create)
 
     user_register_token = await user_cache_register_user.create_user_cache_instance(
         user=user, expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS
@@ -495,10 +498,10 @@ async def register_user_confirm(
             token=token.access_token,
             function_name=register_user_confirm.__name__,
         )
+    async with db.begin():
+        user_db = await CRUD_user.get(db, filter={"email": email})
 
-    user_db = await CRUD_user.get(db, filter={"email": email})
-
-    user = await CRUD_user.set_active(db=db, db_user=user_db, active=True)
+        user = await CRUD_user.set_active(db=db, db_user=user_db, active=True)
 
     return get_user_successfully_registered_msg(
         username=user.username, email=user.email
@@ -527,7 +530,8 @@ async def get_user_by_id(
     Get a specific user by id.
     """
     get_user_filter = {"userId": user_id}
-    db_user = await CRUD_user.get(db, filter=get_user_filter)
+    async with db.begin():
+        db_user = await CRUD_user.get(db, filter=get_user_filter)
     if not db_user:
         raise DbObjectDoesNotExistError(
             model_table_name=User.__tablename__,
@@ -585,8 +589,8 @@ async def delete_user(
             username_or_email=current_user.username,
             function_name=delete_user.__name__,
         )
-    await db.delete(db_user)
-    await db.commit()
+    async with db.begin_nested():
+        await db.delete(db_user)
     return get_delete_return_msg(
         model_table_name=User.__tablename__, filter=delete_user_fiter
     )

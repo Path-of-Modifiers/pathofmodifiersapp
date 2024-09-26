@@ -23,6 +23,7 @@ class TestCRUD(BaseTest):
         db: AsyncSession,
         crud_instance: CRUDBase,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
+        # event_loop: AbstractEventLoop = None,
     ) -> None:
         """
         A test function.
@@ -47,6 +48,7 @@ class TestCRUD(BaseTest):
         self,
         db: AsyncSession,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
+        # event_loop: AbstractEventLoop = None,
     ) -> None:
         """
         A test function.
@@ -66,6 +68,7 @@ class TestCRUD(BaseTest):
         crud_instance: CRUDBase,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         count: int = 5,
+        # event_loop: AbstractEventLoop = None,
     ) -> None:
         """
         A test function.
@@ -97,6 +100,7 @@ class TestCRUD(BaseTest):
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         crud_instance: CRUDBase,
         on_duplicate_pkey_do_nothing: bool,
+        # event_loop: AbstractEventLoop = None,
     ) -> None:
         if not on_duplicate_pkey_do_nothing:
             pytest.skip(
@@ -124,6 +128,7 @@ class TestCRUD(BaseTest):
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         crud_instance: CRUDBase,
         on_duplicate_pkey_do_nothing: bool,
+        # event_loop: AbstractEventLoop = None,
     ) -> None:
         if not on_duplicate_pkey_do_nothing:
             pytest.skip(
@@ -157,6 +162,7 @@ class TestCRUD(BaseTest):
         db: AsyncSession,
         crud_instance: CRUDBase,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
+        # event_loop: AbstractEventLoop = None,
     ) -> None:
         """
         A test function.
@@ -186,6 +192,7 @@ class TestCRUD(BaseTest):
         db: AsyncSession,
         crud_instance: CRUDBase,
         object_generator_func: Callable[[], Awaitable[tuple[dict, ModelType]]],
+        # event_loop: AbstractEventLoop = None,
     ) -> None:
         """
         A test function.
@@ -232,6 +239,7 @@ class TestCRUD(BaseTest):
         db: AsyncSession,
         crud_instance: CRUDBase,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
+        # event_loop: AbstractEventLoop = None,
     ) -> None:
         """
         A test function. Tests if updating an object that does not exist raises
@@ -243,8 +251,7 @@ class TestCRUD(BaseTest):
         self._test_object(object_out, object_dict)
 
         object_map = self._create_primary_key_map(object_out)
-
         await crud_instance.remove(db, filter=self._create_primary_key_map(object_out))
 
         with pytest.raises(DbObjectDoesNotExistError):
-            await crud_instance.update(db, db_obj=object_out, obj_in=object_map)
+            await crud_instance.get(db, filter=object_map)

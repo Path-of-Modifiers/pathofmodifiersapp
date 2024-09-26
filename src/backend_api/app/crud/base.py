@@ -3,7 +3,6 @@ from typing import Any, Generic, TypeVar
 from pydantic import BaseModel, TypeAdapter
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.exceptions import (
@@ -113,12 +112,16 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         sort_key: str | None = None,
         sort: str | None = None,
     ) -> ModelType | list[ModelType] | None:
-        stmt = select(self.model)
-        if filter is None:
-            pass
-        else:
-            stmt = stmt.filter_by(**filter)
-        result = await db.execute(stmt)
+        """
+        Get object(s) from the database.
+        """
+        async with db.begin_nested():
+            stmt = select(self.model)
+            if filter is None:
+                pass
+            else:
+                stmt = stmt.filter_by(**filter)
+            result = await db.execute(stmt)
         db_obj = result.scalars().all()
         if not db_obj and not filter:  # Empty table in database with get_all operation
             return []
@@ -179,10 +182,10 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             async with db.begin_nested():
                 create_statement = create_statement.returning(self.model)
                 result = await db.execute(create_statement)
-                db_obj = result.scalars().all()
-                print("idsnfasiuhfsaf", db_obj)
-                db_obj_merged = [await db.merge(obj) for obj in db_obj]
-        except IntegrityError as e:
+                await db.commit()
+            db_obj = result.scalars().all()
+            db_obj_merged = [await db.merge(obj) for obj in db_obj]
+        except Exception as e:
             reason = str(e.args[0])
             if "duplicate key value violates unique constraint" in reason:
                 raise DbObjectAlreadyExistsError(
@@ -197,12 +200,6 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
                     class_name=self.__class__.__name__,
                     exception=e,
                 )
-        except Exception as e:
-            raise GeneralDBError(
-                function_name=self.create.__name__,
-                class_name=self.__class__.__name__,
-                exception=e,
-            )
 
         if len(db_obj_merged) == 1:
             return db_obj_merged[0]
@@ -216,37 +213,40 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         db_obj: ModelType,
         obj_in: UpdateSchemaType | dict[str, Any],
     ) -> ModelType:
-        obj_data = db_obj.__table__.columns.keys()
+        """
+        Update an object in the database.
+        """
+        db_obj_data = db_obj.__table__.columns.keys()
+
         if isinstance(obj_in, dict):
             update_data = obj_in
         else:
             update_data = obj_in.model_dump()
 
-        # [0] because update can only update 1
-        db_obj_primary_keys = self._map_obj_pks_to_value(db_obj)[0]
-        async with db.begin():
-            check_db_obj_exists_stmt = select(self.model).filter_by(
-                **db_obj_primary_keys
-            )
-            result = await db.execute(check_db_obj_exists_stmt)
-            check_db_obj_exists = result.scalars().first()
-        if not check_db_obj_exists:
-            raise DbObjectDoesNotExistError(
-                model_table_name=self.model.__tablename__,
-                filter=db_obj_primary_keys,
-                function_name=self.update.__name__,
-                class_name=self.__class__.__name__,
-            )
-
-        for field in obj_data:
+        for field in db_obj_data:
             if field in update_data:
                 # print(field, update_data[field])
                 setattr(db_obj, field, update_data[field])
-
-        async with db.begin():
-            db.add(db_obj)
-            await db.commit()
-            await db.refresh(db_obj)
+        try:
+            async with db.begin_nested():
+                db.add(db_obj)
+                await db.refresh(db_obj)
+                await db.commit()
+        except Exception as e:
+            reason = str(e.args[0])
+            if "duplicate key value violates unique constraint" in reason:
+                raise DbObjectAlreadyExistsError(
+                    model_table_name=self.model.__tablename__,
+                    filter=db_obj_data,
+                    function_name=self.create.__name__,
+                    class_name=self.__class__.__name__,
+                )
+            else:
+                raise GeneralDBError(
+                    function_name=self.create.__name__,
+                    class_name=self.__class__.__name__,
+                    exception=e,
+                )
 
         return self.validate(db_obj)
 
@@ -254,38 +254,39 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         self,
         db: AsyncSession,
         *,
-        filter: Any,
+        filter: dict[str, Any],
         sort_key: str | None = None,
         sort: str | None = None,
         max_deletion_limit: int | None = 12,
     ) -> ModelType:
-        async with db.begin():
+        """
+        Remove items from the database.
+        """
+        async with db.begin_nested():
             filter_stmt = select(self.model).filter_by(**filter)
             result = await db.execute(filter_stmt)
             db_objs = result.scalars().all()
-        if not db_objs:
-            raise DbObjectDoesNotExistError(
-                model_table_name=self.model.__tablename__,
-                filter=filter,
-                function_name=self.remove.__name__,
-                class_name=self.__class__.__name__,
-            )
-        elif len(db_objs) > max_deletion_limit:
-            raise DbTooManyItemsDeleteError(
-                model_table_name=self.model.__tablename__,
-                filter=filter,
-                function_name=self.remove.__name__,
-                class_name=self.__class__.__name__,
-            )
+            if not db_objs:
+                raise DbObjectDoesNotExistError(
+                    model_table_name=self.model.__tablename__,
+                    filter=filter,
+                    function_name=self.remove.__name__,
+                    class_name=self.__class__.__name__,
+                )
+            elif len(db_objs) > max_deletion_limit:
+                raise DbTooManyItemsDeleteError(
+                    model_table_name=self.model.__tablename__,
+                    filter=filter,
+                    function_name=self.remove.__name__,
+                    class_name=self.__class__.__name__,
+                )
 
-        if len(db_objs) == 1:
-            db_objs = db_objs[0]
-            async with db.begin():
+            if len(db_objs) == 1:
+                db_objs = db_objs[0]
                 await db.delete(db_objs)
-                await db.commit()
-        else:
-            db_objs = self._sort_objects(db_objs, key=sort_key, sort=sort)
-            async with db.begin():
-                [await db.delete(obj) for obj in db_objs]
-                await db.commit()
+            else:
+                db_objs = self._sort_objects(db_objs, key=sort_key, sort=sort)
+                for obj in db_objs:
+                    await db.delete(obj)
+            await db.commit()
         return self.validate(db_objs)

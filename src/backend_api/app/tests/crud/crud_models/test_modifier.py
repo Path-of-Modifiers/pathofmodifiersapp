@@ -6,7 +6,7 @@ from app.crud.base import CRUDBase
 from app.tests.utils.model_utils.modifier import generate_random_modifier
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def object_generator_func():
     return generate_random_modifier
 

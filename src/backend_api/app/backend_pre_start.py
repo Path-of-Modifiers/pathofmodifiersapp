@@ -4,7 +4,7 @@ import logging
 from sqlalchemy import select
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 
-from app.core.models.database import sessionmanager
+from app.core.models.database import AsyncSessionFactory
 from app.logs.logger import logger
 
 max_tries = 60 * 5  # 5 minutes
@@ -19,9 +19,8 @@ wait_seconds = 1
 )
 async def init() -> None:
     try:
-        # Try to create an async session to check if DB is awake
-        async with sessionmanager.session() as db:
-            await db.execute(select(1))
+        async with AsyncSessionFactory.begin() as conn:
+            await conn.execute(select(1))  # Check if DB is awake
     except Exception as e:
         logger.error(e)
         raise e

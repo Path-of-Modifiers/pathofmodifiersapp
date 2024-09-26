@@ -12,7 +12,7 @@ from app.crud.base import CRUDBase
 from app.tests.utils.model_utils.stash import generate_random_stash
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def object_generator_func() -> Callable[[], dict]:
     return generate_random_stash
 
@@ -22,7 +22,7 @@ def on_duplicate_pkey_do_nothing() -> bool:
     return True
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def object_generator_func_w_deps() -> (
     Callable[[], tuple[dict, Stash, list[dict | Account]]]
 ):
@@ -34,12 +34,12 @@ def object_generator_func_w_deps() -> (
     return generate_random_stash_w_deps
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def crud_instance() -> CRUDBase:
     return CRUD_stash
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def crud_deps_instances() -> CRUDBase:
     """Fixture for CRUD dependencies instances.
 
