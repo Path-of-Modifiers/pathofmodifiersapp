@@ -52,7 +52,7 @@ class GeneralDBError(_DBErrorBase):
         )
 
 
-class DbObjectAlreadyExistsError(PathOfModifiersAPIError):
+class DbObjectAlreadyExistsError(_DBErrorBase):
     """Exception raised for db object already exists errors."""
 
     def __init__(
