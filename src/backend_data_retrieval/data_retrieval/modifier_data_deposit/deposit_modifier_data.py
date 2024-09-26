@@ -5,10 +5,10 @@ from io import StringIO
 
 import pandas as pd
 import requests
-from app.logs.logger import setup_logging
 
 from external_data_retrieval.config import settings
 from logs.logger import modifier_data_deposit_logger as logger
+from logs.logger import setup_logging
 from modifier_data_deposit.modifier_processing_modules import (
     add_regex,
     check_for_additional_modifier_types,
