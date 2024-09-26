@@ -7,6 +7,8 @@ from app.logs.logger import logger
 
 
 class _DBErrorBase(PathOfModifiersAPIError):
+    """If you want DB error to be logged, inherit from this class."""
+
     def __init__(
         self,
         *,
@@ -50,7 +52,7 @@ class GeneralDBError(_DBErrorBase):
         )
 
 
-class DbObjectAlreadyExistsError(_DBErrorBase):
+class DbObjectAlreadyExistsError(PathOfModifiersAPIError):
     """Exception raised for db object already exists errors."""
 
     def __init__(
@@ -80,7 +82,7 @@ class DbObjectAlreadyExistsError(_DBErrorBase):
         )
 
 
-class DbObjectDoesNotExistError(_DBErrorBase):
+class DbObjectDoesNotExistError(PathOfModifiersAPIError):
     """Exception raised for db object does not exist errors.
 
     ``class_name`` is only valid if ``function_name`` is provided.

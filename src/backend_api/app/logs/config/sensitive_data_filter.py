@@ -36,6 +36,7 @@ class SensitiveDataFilter(Filter):
         r"OAUTH_CLIENT_ID",  # Matches 'OAUTH_CLIENT_ID'
         r"REDIS_PASSWORD",  # Matches 'REDIS_PASSWORD'
     ]
+    compile_sensitive_patterns = "|".join(sensitive_patterns)
 
     def _check_message_type(self, message: Any) -> str:
         if not isinstance(message, str):
@@ -51,7 +52,6 @@ class SensitiveDataFilter(Filter):
 
     def mask_sensitive_data(self, message: Any):
         message = self._check_message_type(message)
-        for pattern in self.sensitive_patterns:
-            if re.search(pattern, message):
-                message = "Details contains sensitive information."
+        if re.search(self.compile_sensitive_patterns, message) is not None:
+            message = "Details contains sensitive information."
         return message
