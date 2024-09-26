@@ -1,5 +1,4 @@
 import asyncio
-import logging
 import threading
 import time
 from collections.abc import Iterator
@@ -23,6 +22,7 @@ from external_data_retrieval.utils import (
     WrongLeagueSetException,
     sync_timing_tracker,
 )
+from logs.logger import data_retrieval_logger as logger
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
@@ -42,7 +42,6 @@ class APIHandler:
         url: str,
         auth_token: str,
         *,
-        logger_parent: logging.Logger,
         n_wanted_items: int = 100,
         n_unique_wanted_items: int = 5,
         item_detectors: list[UniqueDetector] | None = None,
@@ -73,8 +72,6 @@ class APIHandler:
 
         self.n_unique_items_found = 0
         self.n_unique_wanted_items = n_unique_wanted_items
-
-        self.logger = logger_parent.getChild("API_handler")
 
         self._program_too_slow = False
         self.time_of_launch = time.perf_counter()
@@ -128,7 +125,7 @@ class APIHandler:
 
                 df = df_leftover.copy(deep=True)
         except:
-            self.logger.exception(
+            logger.exception(
                 f"While checking stashes (detector: {item_detector}), the exception below occured:"
             )
             raise
@@ -201,7 +198,7 @@ class APIHandler:
                 headers = response.headers
                 if response.status >= 300:
                     if response.status == 429:
-                        self.logger.critical("Recieved a 429 (ratelimited) response")
+                        logger.critical("Recieved a 429 (ratelimited) response")
                         print(headers)
                         time.sleep(int(headers["Retry-After"]))
                         waiting_for_next_id_lock.release()
@@ -210,18 +207,16 @@ class APIHandler:
                         )
                     else:
                         waiting_for_next_id_lock.release()
-                        self.logger.critical(
-                            f"Recieved the response code {response.status}"
-                        )
+                        logger.critical(f"Recieved the response code {response.status}")
                         response.raise_for_status()
-                        self.logger.critical(
+                        logger.critical(
                             "The above response code did not result in an error, discarding the response for safety"
                         )
                         return []
 
                 new_next_change_id = headers["X-Next-Change-Id"]
                 if new_next_change_id == self.next_change_id:
-                    self.logger.info("We sucessfully caught up to the stream!")
+                    logger.info("We sucessfully caught up to the stream!")
                     time.sleep(
                         30
                     )  # We have caught up to the stream, sleep for 30 seconds to fall behind.
@@ -253,12 +248,12 @@ class APIHandler:
                 return stashes
         except:
             print("Exiting '_send_n_recursion_requests' gracefully")
-            self.logger.exception(
+            logger.exception(
                 "The following exception occured during '_send_n_recursion_requests'"
             )
-            self.logger.info("Exiting '_send_n_recursion_requests' gracefully")
+            logger.info("Exiting '_send_n_recursion_requests' gracefully")
             if waiting_for_next_id_lock.locked():
-                self.logger.info("Released lock after crash")
+                logger.info("Released lock after crash")
                 if headers is not None:
                     if (
                         "X-Rate-Limit-Ip" in headers.keys()
@@ -305,12 +300,10 @@ class APIHandler:
                 stashes_ready_event.set()
                 time.sleep(1)
         except:
-            self.logger.exception(
-                "The following exception occured during '_follow_stream'"
-            )
+            logger.exception("The following exception occured during '_follow_stream'")
             raise
         finally:
-            self.logger.info("Exiting '_follow_stream' gracefully.")
+            logger.info("Exiting '_follow_stream' gracefully.")
             print("Exiting '_follow_stream' gracefully.")
 
             await session.close()

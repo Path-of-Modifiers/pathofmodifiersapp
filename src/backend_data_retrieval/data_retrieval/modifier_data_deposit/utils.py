@@ -1,19 +1,11 @@
-import logging
 from io import StringIO
 from typing import Any
 
 import pandas as pd
 import requests
 
+from logs.logger import modifier_data_deposit_logger as logger
 from pom_api_authentication import get_superuser_token_headers
-
-logger = logging.getLogger(__name__)
-logging.basicConfig(
-    filename="modifier_data_deposit.log",
-    level=logging.INFO,
-    format="%(asctime)s:%(levelname)-8s:%(name)s: %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
 
 
 def _chunks(lst, n):
@@ -62,7 +54,6 @@ def insert_data(
     table_name: str,
     on_duplicate_pk_do_nothing: bool = False,
     headers: dict[str, str] = None,
-    logger: logging.Logger = None,
 ) -> None:
     if df.empty:
         return None
