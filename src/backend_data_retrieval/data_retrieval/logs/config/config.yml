@@ -2,13 +2,14 @@ version: 1
 disable_existing_loggers: false
 formatters:
   simple:
-    format: "[%(levelname)s|%(module)s|L%(lineno)d]: %(asctime)s: %(message)s"
+    format: "%(name)s: [%(levelname)s|%(module)s|%(funcName)s|L%(lineno)d]: %(asctime)s: %(message)s"
     datefmt: "%Y-%m-%dT%H:%M:%S%z"
   json:
     (): logs.config.JSONFormatter
     fmt_keys:
       logger: name
       module: module
+      func: funcName
       lineno: lineno
       level: levelname
       message: message
@@ -19,18 +20,18 @@ filters:
 handlers:
   stdout:
     class: logging.StreamHandler
-    level: DEBUG
+    level: INFO
     filters: [sensitive_data_filter]
-    formatter: json
+    formatter: simple
     stream: "ext://sys.stdout"
   file:
     class: logging.handlers.RotatingFileHandler
-    level: INFO
+    level: DEBUG
     filters: [sensitive_data_filter]
-    filename: "logs/external_data_retrieval.log.jsonl"
+    filename: "logs/external_data_retrieval.log"
     maxBytes: 504857600 # 500 MB
     backupCount: 2
-    formatter: json
+    formatter: simple
 loggers:
   data-retrieval:
     level: DEBUG
@@ -38,7 +39,7 @@ loggers:
       - stdout
       - file
     propagate: no
-  external-data-retrieval:
+  data-retrieval.external-data-retrieval:
     level: DEBUG
     handlers:
       - stdout
@@ -69,7 +70,7 @@ loggers:
       - file
     propagate: no
 root:
-  level: DEBUG
+  level: INFO
   handlers:
     - stdout
     - file

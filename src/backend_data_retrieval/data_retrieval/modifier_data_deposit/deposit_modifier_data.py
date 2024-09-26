@@ -5,6 +5,7 @@ from io import StringIO
 
 import pandas as pd
 import requests
+from app.logs.logger import setup_logging
 
 from external_data_retrieval.config import settings
 from logs.logger import modifier_data_deposit_logger as logger
@@ -228,6 +229,7 @@ class DataDepositer:
 
 
 def main():
+    setup_logging()
     data_depositer = DataDepositer()
     data_depositer.deposit_data()
     return 0
