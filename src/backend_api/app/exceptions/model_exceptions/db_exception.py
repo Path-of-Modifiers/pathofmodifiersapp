@@ -3,27 +3,48 @@ from typing import Any
 import starlette.status as status
 
 from app.exceptions.exception_base import PathOfModifiersAPIError
+from app.logs.logger import logger
 
 
-class GeneralDBError(PathOfModifiersAPIError):
+class _DBErrorBase(PathOfModifiersAPIError):
+    """If you want DB error to be logged, inherit from this class."""
+
+    def __init__(
+        self,
+        *,
+        status_code: int | None = status.HTTP_500_INTERNAL_SERVER_ERROR,
+        headers: dict[str, str] | None = None,
+        function_name: str | None = "Unknown function",
+        detail: str | None = "Unknown error in the database",
+        class_name: str | None = None,
+    ):
+        logger.error(detail)
+
+        super().__init__(
+            status_code=status_code,
+            headers=headers,
+            function_name=function_name,
+            class_name=class_name,
+            detail=detail,
+        )
+
+
+class GeneralDBError(_DBErrorBase):
     """Exception raised for general db errors."""
 
     def __init__(
         self,
         *,
-        function_name: str | None = "Unknown function",
-        class_name: str | None = None,
-        status_code: int | None = status.HTTP_500_INTERNAL_SERVER_ERROR,
-        exception: Exception | None = None,
         headers: dict[str, str] | None = None,
+        function_name: str | None = None,
+        class_name: str | None = None,
+        detail: str | None = None,
+        exception: Exception | None = None,
     ):
-        if exception is None:
-            detail = "Unknown error"
-        else:
+        if exception is not None and detail is None:
             detail = str(exception)
 
         super().__init__(
-            status_code=status_code,
             function_name=function_name,
             class_name=class_name,
             detail=detail,
@@ -31,7 +52,7 @@ class GeneralDBError(PathOfModifiersAPIError):
         )
 
 
-class DbObjectAlreadyExistsError(PathOfModifiersAPIError):
+class DbObjectAlreadyExistsError(_DBErrorBase):
     """Exception raised for db object already exists errors."""
 
     def __init__(
@@ -93,7 +114,7 @@ class DbObjectDoesNotExistError(PathOfModifiersAPIError):
         )
 
 
-class DbTooManyItemsDeleteError(PathOfModifiersAPIError):
+class DbTooManyItemsDeleteError(_DBErrorBase):
     """
     Exception raised for db when too many items are trying to get deleted on one query errors.
 

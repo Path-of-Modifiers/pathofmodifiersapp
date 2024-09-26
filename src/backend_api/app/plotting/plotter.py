@@ -11,6 +11,7 @@ from app.core.models.models import ItemModifier as model_ItemModifier
 from app.exceptions.model_exceptions.plot_exception import (
     PlotNoModifiersProvidedError,
     PlotQueryDataNotFoundError,
+    PlotQueryToDBError,
 )
 from app.plotting.utils import find_conversion_value, summarize_function
 
@@ -189,7 +190,15 @@ class Plotter:
         statement = self._base_spec_query(statement, query=query)
         statement = self._wanted_modifier_query(statement, query=query)
 
-        result = db.execute(statement).mappings().all()
+        try:
+            result = db.execute(statement).mappings().all()
+        except Exception as e:
+            raise PlotQueryToDBError(
+                exception=e,
+                function_name=self.plot.__name__,
+                class_name=self.__class__.__name__,
+            )
+
         df = pd.DataFrame(result)
 
         if df.empty:
