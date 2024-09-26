@@ -1,6 +1,3 @@
-import logging
-from io import StringIO
-
 import pandas as pd
 import requests
 from requests.exceptions import HTTPError
@@ -9,6 +6,7 @@ from external_data_retrieval.config import settings
 from external_data_retrieval.transforming_data.utils import (
     get_rolls,
 )
+from logs.logger import transform_poe_api_logger as logger
 from modifier_data_deposit.utils import insert_data
 from pom_api_authentication import get_superuser_token_headers
 
@@ -16,14 +14,13 @@ pd.options.mode.chained_assignment = None  # default="warn"
 
 
 class PoeAPIDataTransformer:
-    def __init__(self, main_logger: logging.Logger):
+    def __init__(self):
         if "localhost" not in settings.BASEURL:
             self.url = f"https://{settings.BASEURL}"
         else:
             self.url = "http://src-backend-1"
         self.url += "/api/api_v1"
 
-        self.logger = main_logger.getChild("transform_poe")
         self.pom_auth_headers = get_superuser_token_headers(self.url)
 
     def _create_account_table(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -56,7 +53,6 @@ class PoeAPIDataTransformer:
             url=self.url,
             table_name="account",
             on_duplicate_pk_do_nothing=True,
-            logger=self.logger,
             headers=self.pom_auth_headers,
         )
 
@@ -83,7 +79,6 @@ class PoeAPIDataTransformer:
             url=self.url,
             table_name="stash",
             on_duplicate_pk_do_nothing=True,
-            logger=self.logger,
             headers=self.pom_auth_headers,
         )
 
@@ -137,7 +132,6 @@ class PoeAPIDataTransformer:
             url=self.url,
             table_name="itemBaseType",
             on_duplicate_pk_do_nothing=True,
-            logger=self.logger,
             headers=self.pom_auth_headers,
         )
 
@@ -218,9 +212,9 @@ class PoeAPIDataTransformer:
                 influence_dict = {}
                 for influence_column in influence_columns:
                     if row[influence_column]:
-                        influence_dict[influence_column.replace("influences.", "")] = (
-                            True
-                        )
+                        influence_dict[
+                            influence_column.replace("influences.", "")
+                        ] = True
                 return influence_dict
 
         influence_columns = [
@@ -304,7 +298,6 @@ class PoeAPIDataTransformer:
             item_df,
             url=self.url,
             table_name="item",
-            logger=self.logger,
             headers=self.pom_auth_headers,
         )
         item_id = self._get_latest_item_id_series(item_df)
@@ -353,7 +346,6 @@ class PoeAPIDataTransformer:
             item_modifier_df,
             url=self.url,
             table_name="itemModifier",
-            logger=self.logger,
             headers=self.pom_auth_headers,
         )
 
@@ -374,7 +366,7 @@ class PoeAPIDataTransformer:
                 df.copy(deep=True), item_id=item_id, modifier_df=modifier_df
             )
         except HTTPError as e:
-            self.logger.exception(f"Something went wrong:\n{repr(e)}")
+            logger.exception(f"Something went wrong:\n{repr(e)}")
             raise e
 
 
@@ -400,9 +392,7 @@ class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
     def _transform_item_modifier_table(
         self, item_modifier_df: pd.DataFrame, modifier_df: pd.DataFrame
     ) -> pd.DataFrame:
-        item_modifier_df = get_rolls(
-            df=item_modifier_df, modifier_df=modifier_df, logger=self.logger
-        )
+        item_modifier_df = get_rolls(df=item_modifier_df, modifier_df=modifier_df)
 
         return item_modifier_df
 
