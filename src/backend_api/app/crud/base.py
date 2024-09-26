@@ -104,15 +104,6 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
         return obj_pks_values
 
-    def _map_rows_to_model(
-        self,
-        rows: list[dict[str, Any]],
-    ) -> list[ModelType]:
-        """
-        Used to convert the rows to a model object
-        """
-        return [self.model(**row) for row in rows]
-
     async def get(
         self,
         db: Session,
@@ -180,10 +171,10 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             create_statement = create_statement.on_conflict_do_nothing(
                 constraint=f"{self.model.__tablename__}_pkey"
             )
-        create_statement = create_statement.returning(self.model.__table__.c)
+        create_statement = create_statement.returning(self.model)
 
         try:
-            rows_returned = db.execute(create_statement).mappings().all()
+            objs_returned = db.execute(create_statement).scalars().all()
         except IntegrityError as e:
             db.rollback()
             reason = str(e.args[0])
@@ -202,12 +193,10 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
                     exception=e,
                 )
 
-        mapped_objs = self._map_rows_to_model(rows_returned)
-
         db.commit()
 
         # Use `merge()` instead of `add()` and `refresh()`
-        db_objs_merged = [db.merge(obj) for obj in mapped_objs]
+        db_objs_merged = [db.merge(obj) for obj in objs_returned]
 
         if not db_objs_merged:
             return None
