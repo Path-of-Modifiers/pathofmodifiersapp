@@ -289,6 +289,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         db_obj: ModelType,
         obj_in: UpdateSchemaType | dict[str, Any],
     ) -> ModelType:
+        logger.debug(f"Updating db object '{db_obj}' with object '{obj_in}'")
         obj_data = db_obj.__table__.columns.keys()
         if isinstance(obj_in, dict):
             update_data = obj_in
@@ -310,7 +311,9 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
         for field in obj_data:
             if field in update_data:
-                # print(field, update_data[field])
+                logger.debug(
+                    f"Update field:{field}:Update data field:{update_data[field]}"
+                )
                 setattr(db_obj, field, update_data[field])
         db.add(db_obj)
         db.commit()
