@@ -1,14 +1,15 @@
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, Generator
 from typing import Annotated
 
 from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 from starlette.datastructures import Headers
 
-import app.core.models.database as _database
 from app.core.cache.user_cache import UserCache, UserCacheTokenType
 from app.core.config import settings
+from app.core.models.database import AsyncSessionLocal, SessionLocal
 from app.core.models.models import User
 from app.exceptions import (
     DbObjectDoesNotExistError,
@@ -26,12 +27,17 @@ reusable_oauth2 = OAuth2PasswordBearer(
 TokenDep = Annotated[str, Depends(reusable_oauth2)]
 
 
-def get_db():
-    db = _database.SessionLocal()
+def get_db() -> Generator[Session, None, None]:
+    db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
+
+
+async def get_async_db() -> AsyncGenerator[AsyncSession, None]:
+    async with AsyncSessionLocal() as db:
+        yield db
 
 
 async def get_user_cache_session() -> AsyncGenerator[UserCache, None]:
@@ -102,7 +108,30 @@ async def get_current_user(
     return user
 
 
+async def async_get_current_user(
+    token: TokenDep,
+    user_cache_session: UserCacheSession,
+    db: AsyncSession = Depends(get_async_db),
+) -> User:
+    user_cached = await user_cache_session.verify_token(token)
+
+    user = await db.get(User, user_cached.userId)
+    if not user:
+        raise DbObjectDoesNotExistError(
+            model_table_name=User.__tablename__,
+            filter={"userId": user_cached.userId},
+            function_name=get_current_user.__name__,
+        )
+    if not user.isActive:
+        raise UserIsNotActiveError(
+            username_or_email=user.username,
+            function_name=get_current_user.__name__,
+        )
+    return user
+
+
 CurrentUser = Annotated[User, Depends(get_current_user)]
+AsyncCurrentUser = Annotated[User, Depends(async_get_current_user)]
 
 
 async def get_current_active_superuser(current_user: CurrentUser) -> User:
@@ -115,6 +144,15 @@ async def get_current_active_superuser(current_user: CurrentUser) -> User:
 
 
 async def get_current_active_user(current_user: CurrentUser) -> User:
+    if not current_user.isActive:
+        raise UserIsNotActiveError(
+            username_or_email=current_user.username,
+            function_name=get_current_active_user.__name__,
+        )
+    return current_user
+
+
+async def async_get_current_active_user(current_user: AsyncCurrentUser) -> User:
     if not current_user.isActive:
         raise UserIsNotActiveError(
             username_or_email=current_user.username,
