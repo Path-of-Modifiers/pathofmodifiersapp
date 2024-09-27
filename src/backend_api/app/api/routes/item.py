@@ -104,11 +104,12 @@ async def get_all_items(
 
 @router.post(
     "/",
-    response_model=schemas.ItemCreate | list[schemas.ItemCreate],
+    response_model=schemas.ItemCreate | list[schemas.ItemCreate] | None,
     dependencies=[Depends(get_current_active_superuser)],
 )
 async def create_item(
     item: schemas.ItemCreate | list[schemas.ItemCreate],
+    return_nothing: bool | None = None,
     db: Session = Depends(get_db),
 ):
     """
@@ -117,7 +118,7 @@ async def create_item(
     Returns the created item or list of items.
     """
 
-    return await CRUD_item.create(db=db, obj_in=item)
+    return await CRUD_item.create(db=db, obj_in=item, return_nothing=return_nothing)
 
 
 @router.put(
