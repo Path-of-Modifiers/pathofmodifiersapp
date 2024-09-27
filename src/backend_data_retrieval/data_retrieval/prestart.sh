@@ -9,7 +9,6 @@ else
     echo "Data deposit failed. Exiting..."
     exit 1
 fi
-exit 0
 
 # Variables that need to be set before running container.
 # Check if exists or value = changethis
