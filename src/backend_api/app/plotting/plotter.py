@@ -1,21 +1,19 @@
 import pandas as pd
 from pydantic import TypeAdapter
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import Select
 
 from app.core.models.models import Currency as model_Currency
 from app.core.models.models import Item as model_Item
 from app.core.models.models import ItemBaseType as model_ItemBaseType
 from app.core.models.models import ItemModifier as model_ItemModifier
+from app.core.schemas.plot import PlotData, PlotQuery
 from app.exceptions.model_exceptions.plot_exception import (
     PlotNoModifiersProvidedError,
     PlotQueryDataNotFoundError,
-    PlotQueryToDBError,
 )
 from app.plotting.utils import find_conversion_value, summarize_function
-
-from .schemas import PlotData, PlotQuery
 
 
 class Plotter:
@@ -184,22 +182,16 @@ class Plotter:
 
         return plot_data
 
-    async def plot(self, db: Session, *, query: PlotQuery) -> PlotData:
+    async def plot(self, db: AsyncSession, *, query: PlotQuery) -> PlotData:
         statement = self._init_query(query)
         statement = self._item_spec_query(statement, query=query)
         statement = self._base_spec_query(statement, query=query)
         statement = self._wanted_modifier_query(statement, query=query)
 
-        try:
-            result = db.execute(statement).mappings().all()
-        except Exception as e:
-            raise PlotQueryToDBError(
-                exception=e,
-                function_name=self.plot.__name__,
-                class_name=self.__class__.__name__,
-            )
-
-        df = pd.DataFrame(result)
+        result = await db.execute(statement)
+        rows = result.mappings().all()
+        await db.close()  # Close session as soon as possible is important
+        df = pd.DataFrame(rows)
 
         if df.empty:
             raise PlotQueryDataNotFoundError(
