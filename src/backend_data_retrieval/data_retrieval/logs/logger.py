@@ -21,10 +21,8 @@ main_logger = logging.getLogger("data-retrieval")
 
 external_data_retrieval_logger = main_logger.getChild("external-data-retrieval")
 
-transform_poe_api_logger = external_data_retrieval_logger.getChild("transform-poe-api")
-transform_poe_ninja_currency_logger = external_data_retrieval_logger.getChild(
-    "transform-poe-ninja-currency"
-)
+transform_logger = external_data_retrieval_logger.getChild("transform")
+
 data_retrieval_logger = external_data_retrieval_logger.getChild("data-retrieval")
 
 modifier_data_deposit_logger = main_logger.getChild("modifier-data-deposit")
