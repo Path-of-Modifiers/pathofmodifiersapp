@@ -1,0 +1,18 @@
+# Source: https://www.poewiki.net/wiki/Synthesis_league#Unique_items
+minRoll,maxRoll,textRolls,position,effect,static,unique
+10,20,,0,"+# to all Attributes",,True
+15,20,,0,"Adds # to # Chaos Damage",,True
+21,30,,1,"Adds # to # Chaos Damage",,True
+17,23,,0,"+#% to Chaos Resistance",,True
+30,40,,0,"Herald of # has #% increased Mana Reservation Efficiency",,True
+,,"Thunder-Ash-Ice-Purity-Agony",1,"Herald of # has #% increased Mana Reservation Efficiency",,True
+40,60,,0,"#% increased # Damage while affected by Herald of #",,True
+,,"Lightning-Fire-Cold-Physical-Chaos",1,"#% increased # Damage while affected by Herald of #",,True
+,,"Thunder-Ash-Ice-Purity-Agony",2,"#% increased # Damage while affected by Herald of #",,True
+,,"Thunder-Ash-Ice-Purity-Agony",0,"Herald of # has #% increased Buff Effect",,True
+40,60,,1,"Herald of # has #% increased Buff Effect",,True
+,,"Sentinels of Purity-Agony Crawler",0,"# deal #% increased Damage",,True
+70,100,,1,"# deals #% increased Damage",,True
+31,60,,0,"+#% to # Resistance while affected by Herald of #",,True
+,,"Lightning-Fire-Cold-Chaos",1,"+#% to # Resistance while affected by Herald of #",,True
+,,"Thunder-Ash-Ice-Agony",2,"+#% to # Resistance while affected by Herald of #",,True

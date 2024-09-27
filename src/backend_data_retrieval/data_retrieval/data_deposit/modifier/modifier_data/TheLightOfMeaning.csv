@@ -1,0 +1,15 @@
+# Source: https://poedb.tw/The_Light_of_Meaning
+position,effect,static,unique
+0,"Passive Skills in Radius also grant +5 to maximum Life",True,True
+0,"Passive Skills in Radius also grant +5 to maximum Mana",True,True
+0,"Passive Skills in Radius also grant 5% increased Global Critical Strike Chance",True,True
+0,"Passive Skills in Radius also grant +2 to all Attributes",True,True
+0,"Passive Skills in Radius also grant +4% to Chaos Resistance",True,True
+0,"Passive Skills in Radius also grant 6% increased Physical Damage",True,True
+0,"Passive Skills in Radius also grant 6% increased Fire Damage",True,True
+0,"Passive Skills in Radius also grant 6% increased Cold Damage",True,True
+0,"Passive Skills in Radius also grant 6% increased Lightning Damage",True,True
+0,"Passive Skills in Radius also grant 6% increased Chaos Damage",True,True
+0,"Passive Skills in Radius also grant 7% increased Armour",True,True
+0,"Passive Skills in Radius also grant 7% increased Evasion Rating",True,True
+0,"Passive Skills in Radius also grant 3% increased Energy Shield",True,True
