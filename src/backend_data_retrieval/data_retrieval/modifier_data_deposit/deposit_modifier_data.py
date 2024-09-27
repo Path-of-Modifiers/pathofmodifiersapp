@@ -1,4 +1,3 @@
-import logging
 import os
 from collections.abc import Iterator
 from io import StringIO
@@ -18,13 +17,6 @@ from modifier_data_deposit.modifier_processing_modules import (
 from modifier_data_deposit.utils import df_to_JSON
 from pom_api_authentication import (
     get_superuser_token_headers,
-)
-
-logging.basicConfig(
-    filename="modifier_data_deposit.log",
-    level=logging.INFO,
-    format="%(asctime)s:%(levelname)-8s:%(name)s: %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
 )
 
 CASCADING_UPDATE = True
@@ -225,6 +217,8 @@ class DataDepositer:
     def deposit_data(self) -> None:
         for df in self._load_data():
             df = self._process_data(df)
+            effect_in_df = df["effect"]
+            logger.info(f"PROCESS EFFECT DATA:\n {effect_in_df} \n")
             self._insert_data(df)
 
 
