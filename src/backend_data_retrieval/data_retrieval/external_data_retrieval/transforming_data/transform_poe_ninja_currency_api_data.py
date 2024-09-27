@@ -5,6 +5,7 @@ from external_data_retrieval.config import settings
 from external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_ninja_currency_api import (
     PoeNinjaCurrencyAPIHandler,
 )
+from logs.logger import transform_logger as logger
 from modifier_data_deposit.utils import insert_data
 from pom_api_authentication import get_superuser_token_headers
 
@@ -27,12 +28,20 @@ def load_currency_data():
 
 class TransformPoeNinjaCurrencyAPIData:
     def __init__(self):
+        logger.debug(
+            f"Initializing {TransformPoeNinjaCurrencyAPIData.__class__.__name__}."
+        )
         if "localhost" not in settings.BASEURL:
             self.url = f"https://{settings.BASEURL}"
         else:
             self.url = "http://src-backend-1"
         self.url += "/api/api_v1"
+        logger.debug("Url set to: " + self.url)
         self.pom_api_headers = get_superuser_token_headers(self.url)
+        logger.debug("Headers set to: " + str(self.pom_api_headers))
+        logger.debug(
+            f"Initializing {TransformPoeNinjaCurrencyAPIData.__class__.__name__} done."
+        )
 
     def _create_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -93,18 +102,29 @@ class TransformPoeNinjaCurrencyAPIData:
         """
         Transforms the data into tables and transforms with help functions.
         """
+        logger.debug("Transforming data into tables.")
         currency_df = self._create_currency_table(currency_df)
         currency_df = self._transform_currency_table(currency_df)
+        logger.debug("Successfully transformed data into tables.")
+
+        logger.debug("Cleaning currency table data.")
         currency_df = self._clean_currency_table(currency_df)
+        logger.debug("Successfully cleaned currency table data.")
+
+        logger.debug("Inserting currency data into database.")
         insert_data(
             currency_df,
             url=self.url,
             table_name="currency",
             headers=self.pom_api_headers,
         )
+        logger.debug("Successfully inserted currency data into database.")
+
         currency_id = self._get_latest_currency_id_series(currency_df)
+        logger.debug("Latest currency id found: " + str(currency_id))
 
         currency_df = currency_df.assign(currencyId=currency_id)
+        logger.debug("Successfully transformed data into tables.")
         return currency_df
 
 
@@ -114,7 +134,7 @@ def main():
 
     currency_table = currency_data_transformed.transform_into_tables()
 
-    print(currency_table.head())
+    logger.info(currency_table.head())
 
     return 0
 
