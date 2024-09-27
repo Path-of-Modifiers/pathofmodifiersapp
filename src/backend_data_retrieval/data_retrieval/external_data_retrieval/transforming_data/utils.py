@@ -138,10 +138,10 @@ def get_rolls(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
             "Failed to add rolls to listed modifiers, this likely means the modifier is legacy."
         )
         logger.critical(
-            f"These items have missing modifiers: {failed_df['name'].unique().tolist()}"
+            f"Some of these items have missing modifiers: {failed_df['name'].unique().tolist()}"
         )
         logger.critical(
-            f"These modifiers were not present in the database: {failed_df['effect'].unique().tolist()}"
+            f"Some of these modifiers were not present in the database: {failed_df['effect'].unique().tolist()}"
         )
         dynamic_df = dynamic_df.loc[dynamic_df["roll"].str.len() != 0]
 
