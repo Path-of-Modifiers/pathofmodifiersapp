@@ -53,15 +53,15 @@ def insert_data(
     url: str,
     table_name: str,
     logger: logging.Logger,
-    on_duplicate_pk_do_nothing: bool = False,
+    on_duplicate_pkey_do_nothing: bool = False,
     headers: dict[str, str] = None,
 ) -> None:
     if df.empty:
         return None
     data = df_to_JSON(df, request_method="post")
     params = {}
-    if on_duplicate_pk_do_nothing:
-        params["on_duplicate_pk_do_nothing"] = True
+    if on_duplicate_pkey_do_nothing:
+        params["on_duplicate_pkey_do_nothing"] = True
     response = requests.post(
         url + f"/{table_name}/", json=data, headers=headers, params=params
     )
