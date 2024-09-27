@@ -1,10 +1,10 @@
 from io import StringIO
+import logging
 from typing import Any
 
 import pandas as pd
 import requests
 
-from logs.logger import modifier_data_deposit_logger as logger
 from pom_api_authentication import get_superuser_token_headers
 
 
@@ -52,6 +52,7 @@ def insert_data(
     *,
     url: str,
     table_name: str,
+    logger: logging.Logger,
     on_duplicate_pk_do_nothing: bool = False,
     headers: dict[str, str] = None,
 ) -> None:
@@ -90,24 +91,3 @@ def insert_data(
 
     elif response.status_code >= 300:
         response.raise_for_status()
-
-
-def retrieve_data(*, url: str, table_name: str) -> pd.DataFrame | None:
-    headers = get_superuser_token_headers(url)
-    response = requests.get(url + f"/{table_name}/", headers=headers)
-
-    df = pd.DataFrame()
-    # Check if the request was successful
-    if response.status_code == 200:
-        # Load the JSON data into a pandas DataFrame
-        json_io = StringIO(response.content.decode("utf-8"))
-        df = pd.read_json(json_io, dtype=str)
-        if df.empty:
-            logger.info(
-                f"Found no previously deposited data in the {table_name} table."
-            )
-            return None
-
-        return df
-    else:
-        return None

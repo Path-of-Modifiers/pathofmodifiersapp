@@ -27,4 +27,4 @@ transform_poe_ninja_currency_logger = external_data_retrieval_logger.getChild(
 )
 data_retrieval_logger = external_data_retrieval_logger.getChild("data-retrieval")
 
-modifier_data_deposit_logger = main_logger.getChild("modifier-data-deposit")
+data_deposit_logger = main_logger.getChild("data-deposit")
