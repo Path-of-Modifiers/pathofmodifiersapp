@@ -1,9 +1,9 @@
+from collections.abc import Generator, Iterable
 from itertools import islice
 from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, TypeAdapter
 from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.exceptions import (
@@ -46,7 +46,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
         self.validate = TypeAdapter(SchemaType | list[SchemaType]).validate_python
 
-        self.ignore_update_duplicates = False
+        self.create_batch_size = 2047  # 33 columns. Optimize according to query parameter limit and max number of columns used, see https://www.postgresql.org/docs/current/limits.html
 
     def _sort_objects(
         self,
@@ -106,7 +106,9 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
         return obj_pks_values
 
-    def _batch_iterable(self, iterable, batch_size):
+    def _batch_iterable(
+        self, iterable: Iterable[Any], batch_size: int
+    ) -> Generator[list[Any], None, None]:
         iterable = iter(iterable)
         while True:
             batch = list(islice(iterable, batch_size))
@@ -147,7 +149,6 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         *,
         obj_in: CreateSchemaType | list[CreateSchemaType],
         on_duplicate_pkey_do_nothing: bool | None = None,
-        batch_size: int = 2047,  # Adding batch_size parameter to control batch size (optimized for plot query)
     ) -> ModelType | list[ModelType] | None:
         """
         Create an object in the database.
@@ -157,6 +158,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         * db: A SQLAlchemy session
         * obj_in: A Pydantic model or list of Pydantic models
         * on_duplicate_pkey_do_nothing: Ignore objects with duplicate primary keys.
+        * batch_size: The number of objects to insert in a single batch. Optimize number to max number of columns per query on insert.
 
         **Returns**
 
@@ -179,8 +181,8 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
         created_objects = []
 
-        # Break the model_dict_list into batches
-        for batch in self._batch_iterable(model_dict_list, batch_size):
+        #
+        for batch in self._batch_iterable(model_dict_list, self.create_batch_size):
             create_statement = insert(self.model).values(batch)
             if on_duplicate_pkey_do_nothing:
                 create_statement = create_statement.on_conflict_do_nothing(
@@ -191,7 +193,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             try:
                 logger.info(f"Total objects to create: {len(model_dict_list)}")
                 objs_returned = db.execute(create_statement).scalars().all()
-            except IntegrityError as e:
+            except Exception as e:
                 db.rollback()
                 reason = str(e.args[0])
                 model_pks = self._map_obj_pks_to_value(model_dict_list)
@@ -208,13 +210,6 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
                         class_name=self.__class__.__name__,
                         exception=e,
                     )
-            except Exception as e:
-                db.rollback()
-                raise GeneralDBError(
-                    function_name=self.create.__name__,
-                    class_name=self.__class__.__name__,
-                    exception=e,
-                )
 
             db.commit()
 
