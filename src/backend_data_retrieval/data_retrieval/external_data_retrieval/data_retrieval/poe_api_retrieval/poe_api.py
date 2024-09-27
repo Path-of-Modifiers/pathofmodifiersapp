@@ -54,7 +54,7 @@ class APIHandler:
             :param n_unique_wanted_items: (int) The number of different type of items the program should search for before quitin.
             :param item_detectors: (list[ItemDetector]) A list of `ItemDetector` instances.
         """
-        logger.debug(f"Initializing {APIHandler.__class__.__name__}.")
+        logger.debug("Initializing APIHandler.")
         if item_detectors is None:
             item_detectors = [
                 UniqueArmourDetector(),
@@ -82,9 +82,7 @@ class APIHandler:
 
         self._program_too_slow = False
         self.time_of_launch = time.perf_counter()
-        logger.info(
-            f"{APIHandler.__class__.__name__} launched at {self.time_of_launch}"
-        )
+        logger.info("APIHandler successfully initialized.")
 
     def _json_to_df(self, stashes: list) -> pd.DataFrame:
         df_temp = pd.json_normalize(stashes)

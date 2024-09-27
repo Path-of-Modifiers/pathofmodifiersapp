@@ -9,9 +9,6 @@ from logs.logger import transform_logger as logger
 from modifier_data_deposit.utils import insert_data
 from pom_api_authentication import get_superuser_token_headers
 
-# TODO This module may need to log something in the future:
-# from logs.logger import transform_poe_api_logger as logger
-
 
 def load_currency_data():
     """

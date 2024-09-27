@@ -15,7 +15,7 @@ pd.options.mode.chained_assignment = None  # default="warn"
 
 class PoeAPIDataTransformer:
     def __init__(self):
-        logger.debug(f"Initializing {PoeAPIDataTransformer.__class__.__name__}")
+        logger.debug("Initializing PoeAPIDataTransformer")
         if "localhost" not in settings.BASEURL:
             self.url = f"https://{settings.BASEURL}"
         else:
@@ -25,7 +25,7 @@ class PoeAPIDataTransformer:
 
         self.pom_auth_headers = get_superuser_token_headers(self.url)
         logger.debug("Headers set to: " + str(self.pom_auth_headers))
-        logger.debug(f"Initializing {PoeAPIDataTransformer.__class__.__name__} done.")
+        logger.debug("Initializing PoeAPIDataTransformer done.")
 
     def _create_account_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
