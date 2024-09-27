@@ -54,13 +54,13 @@ class DataDepositer:
             logger.info(f"Loading new data from '{filename}'.")
             df = pd.read_csv(filepath, dtype=str, comment="#", index_col=False)
             logger.info("Successfully loaded new data.")
-            logger.info("Recording attached comments:")
+            logger.debug("Recording attached comments:")
             with open(filepath) as infile:
                 for line in infile:
                     if "#" == line[0]:
-                        logger.info(line.rstrip())
+                        logger.debug(line.rstrip())
                     else:
-                        logger.info("End of attached comments.")
+                        logger.debug("End of attached comments.")
                         break
 
             yield df
@@ -78,10 +78,10 @@ class DataDepositer:
             df = pd.read_json(json_io, dtype=str)
 
         if df.empty:
-            logger.info("Found no previously deposited data.")
+            logger.debug("Found no previously deposited data.")
             return None
         else:
-            logger.info("Successfully retrieved previously deposited data.")
+            logger.debug("Successfully retrieved previously deposited data.")
             return df
 
     def _update_duplicates(
@@ -89,7 +89,7 @@ class DataDepositer:
     ) -> None:
         if self.update_disabled:
             return None
-        logger.info("Checking if duplicates contain updated information.")
+        logger.debug("Checking if duplicates contain updated information.")
 
         current_duplicate_modifiers_df = current_modifiers_df.loc[
             current_modifiers_df["effect"].isin(duplicate_df["effect"])
@@ -157,7 +157,7 @@ class DataDepositer:
             )
 
             if put_update:
-                logger.info("Pushed updated modifier to the database.")
+                logger.debug("Pushed updated modifier to the database.")
                 headers = {
                     "accept": "application/json",
                     "Content-Type": "application/json",
@@ -181,10 +181,10 @@ class DataDepositer:
         new_modifiers_df.drop_duplicates(inplace=True)
 
         if current_modifiers_df is None:
-            logger.info("Skipping duplicate removing due to no previous data")
+            logger.debug("Skipping duplicate removing due to no previous data")
             return new_modifiers_df
 
-        logger.info("Removing duplicate modifiers")
+        logger.debug("Removing duplicate modifiers")
         duplicate_mask = new_modifiers_df["effect"].isin(current_modifiers_df["effect"])
 
         duplicate_df = new_modifiers_df.loc[duplicate_mask].copy()
@@ -218,8 +218,6 @@ class DataDepositer:
     def deposit_data(self) -> None:
         for df in self._load_data():
             df = self._process_data(df)
-            effect_in_df = df["effect"]
-            logger.info(f"PROCESS EFFECT DATA:\n {effect_in_df} \n")
             self._insert_data(df)
 
 
