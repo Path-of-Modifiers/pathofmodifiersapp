@@ -1,0 +1,5 @@
+# Source: https://poedb.tw/Voices
+textRolls,position,effect,static,unique
+"3-5-7",0,"Adds # Small Passive Skills which grant nothing",,True
+,0,"Adds 1 Small Passive Skill which grants nothing",True,True
+,0,"Adds 3 Jewel Socket Passive Skills",True,True

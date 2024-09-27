@@ -1,0 +1,50 @@
+# Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
+minRoll,maxRoll,textRolls,position,effect,static,unique
+20,20,,0,"+# to Strength",,True
+20,20,,0,"+# to Dexterity",,True
+20,20,,0,"+# to Intelligence",,True
+20,20,,0,"+# to all Attributes",,True
+20,20,,0,"+# to Dexterity and Intelligence",,True
+20,20,,0,"+# to Strength and Dexterity",,True
+20,20,,0,"+# to Strength and Intelligence",,True
+5,5,,0,"#% increased maximum Energy Shield",,True
+5,5,,0,"#% increased maximum Life",,True
+,,,0,"10% increased Accuracy Rating per Frenzy Charge",True,True
+6,8,,0,"# to # Added Cold Damage per Frenzy Charge",,True
+12,13,,1,"# to # Added Cold Damage per Frenzy Charge",,True
+7,9,,0,"# to # Fire Damage per Endurance Charge",,True
+13,14,,1,"# to # Fire Damage per Endurance Charge",,True
+1,2,,0,"# to # Lightning Damage per Power Charge",,True
+18,20,,1,"# to # Lightning Damage per Power Charge",,True
+,,,0,"You can apply an additional Curse while at maximum Power Charges",True,True
+,,,0,"Gain Arcane Surge on Hit with Spells while at maximum Power Charges",True,True
+,,,0,"6% increased Armour per Endurance Charge",True,True
+,,"Endurance-Power",0,"1% increased Attack and Cast Speed per # Charge",,True
+,,"Endurance-Frenzy-Power",0,"+1% Chance to Block Attack Damage per # Charge",,True
+,,,0,"You cannot be Stunned while at maximum Endurance Charges",True,True
+,,"Endurance-Frenzy-Power",0,"15% chance that if you would gain # Charges, you instead gain up to maximum # Charges",,True
+,,"Endurance-Frenzy-Power",1,"15% chance that if you would gain # Charges, you instead gain up to maximum # Charges",,True
+,,,0,"+4% to Chaos Resistance per Endurance Charge",True,True
+,,"Endurance-Frenzy",0,"6% increased Critical Strike Chance per # Charge",,True
+,,,0,"+3% to Critical Strike Multiplier per Power Charge",True,True
+,,"Endurance-Frenzy-Power",0,"5% increased Damage per # Charge",,True
+,,"Endurance-Frenzy-Power",0,"+1% chance to Suppress Spell Damage per # Charge",,True
+20,40,,0,"#% increased Endurance Charge Duration",,True
+,,"Endurance-Frenzy-Power",0,"#% increased # Charge Duration",,True
+,,,0,"Gain 1 Endurance Charge every second if you've been Hit Recently",True,True
+,,,0,"3% increased Energy Shield per Power Charge",True,True
+,,,0,"8% increased Evasion Rating per Frenzy Charge",True,True
+,,"Fire-Cold-Lightning",0,"Gain 1% of # Damage as Extra Chaos Damage per # Charge",,True
+,,"Endurance-Frenzy-Power",1,"Gain 1% of # Damage as Extra Chaos Damage per # Charge",,True
+,,,0,"Gain a Flask Charge when you deal a Critical Strike while at maximum Frenzy Charges",True,True
+,,,0,"10% chance to gain a Frenzy Charge on Hit",True,True
+,,,0,"Intimidate Enemies for 4 seconds on Hit with Attacks while at maximum Endurance Charges",True,True
+,,"Endurance-Frenzy-Power",0,"Regenerate 0.3% of Life per second per # Charge",,True
+,,"Endurance-Frenzy-Power",0,"+1 to Maximum # Charges",,True
+,,"Endurance-Frenzy-Power",0,"1% increased Movement Speed per # Charge",,True
+,,,0,"Gain Onslaught for 4 seconds on Hit while at maximum Frenzy Charges",True,True
+,,"Frenzy-Power",0,"1% additional Physical Damage Reduction per # Charge",,True
+,,,0,"20% chance to gain a Power Charge on Critical Strike",True,True
+,,"Endurance-Frenzy-Power",0,"10% chance to gain a # Charge on Kill",,True
+,,"Vaal Pact-Iron Reflexes-Mind over Matter",0,"You have # while at maximum # Charges",,True
+,,"Endurance-Frenzy-Power",1,"You have # while at maximum # Charges",,True
