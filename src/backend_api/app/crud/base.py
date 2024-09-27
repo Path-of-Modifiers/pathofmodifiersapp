@@ -46,7 +46,8 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
         self.validate = TypeAdapter(SchemaType | list[SchemaType]).validate_python
 
-        self.create_batch_size = 2047  # 33 columns. Optimize according to query parameter limit and max number of columns used, see https://www.postgresql.org/docs/current/limits.html
+        # 9500 is for ~6.2 columns. Optimize according to max number of columns used in on-conflict-do-nothing tables, see https://www.postgresql.org/docs/current/limits.html
+        self.create_batch_size_on_conflict = 10500
 
     def _sort_objects(
         self,
@@ -116,6 +117,88 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
                 break
             yield batch
 
+    def _create_bulk_insert(
+        self,
+        db: Session,
+        *,
+        model_dict_list,
+        return_nothing: bool | None = None,
+    ) -> list[ModelType] | None:
+        """
+        Create objects with bulk_insert.
+
+        Approx. 3 times faster with `return_nothing=True`.
+        """
+        logger.info(f"Total objects to create: {len(model_dict_list)}")
+        create_stmt = insert(self.model).returning(self.model)
+        try:
+            if return_nothing:
+                db.execute(create_stmt, model_dict_list)
+            else:
+                created_objects = db.scalars(create_stmt, model_dict_list).all()
+        except Exception as e:
+            db.rollback()
+            reason = str(e.args[0])
+            model_pks = self._map_obj_pks_to_value(model_dict_list)
+            if "duplicate key value violates unique constraint" in reason:
+                raise DbObjectAlreadyExistsError(
+                    model_table_name=self.model.__tablename__,
+                    filter=model_pks,
+                    function_name=self.create.__name__,
+                    class_name=self.__class__.__name__,
+                )
+            else:
+                raise GeneralDBError(
+                    function_name=self.create.__name__,
+                    class_name=self.__class__.__name__,
+                    exception=e,
+                )
+        if not return_nothing:
+            return created_objects
+
+    def _create_with_on_conflict_do_nothing(
+        self,
+        db: Session,
+        *,
+        model_dict_list: list[dict[str, Any]],
+        return_nothing: bool | None = None,
+    ) -> list[ModelType] | None:
+        """
+        Create objects with on_conflict_do_nothing and batching.
+        """
+        created_objects = []
+        logger.info(f"Total objects to create: {len(model_dict_list)}")
+
+        for batch in self._batch_iterable(
+            model_dict_list, self.create_batch_size_on_conflict
+        ):
+            try:
+                create_stmt = (
+                    insert(self.model)
+                    .values(batch)
+                    .on_conflict_do_nothing(
+                        constraint=f"{self.model.__tablename__}_pkey"
+                    )
+                )
+                if return_nothing:
+                    db.execute(create_stmt)
+                else:
+                    create_stmt = create_stmt.returning(self.model)
+                    objs_returned = db.execute(create_stmt).scalars().all()
+            except Exception as e:
+                db.rollback()
+                raise GeneralDBError(
+                    function_name=self.create.__name__,
+                    class_name=self.__class__.__name__,
+                    exception=e,
+                )
+
+            if not return_nothing:
+                created_objects.extend(objs_returned)
+
+        if not return_nothing:
+            return created_objects
+
     async def get(
         self,
         db: Session,
@@ -149,6 +232,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         *,
         obj_in: CreateSchemaType | list[CreateSchemaType],
         on_duplicate_pkey_do_nothing: bool | None = None,
+        return_nothing: bool | None = None,
     ) -> ModelType | list[ModelType] | None:
         """
         Create an object in the database.
@@ -179,43 +263,20 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         else:
             model_dict_list = [obj_in.model_dump(exclude=primary_keys)]
 
-        created_objects = []
+        if on_duplicate_pkey_do_nothing:
+            created_objects = self._create_with_on_conflict_do_nothing(
+                db, model_dict_list=model_dict_list, return_nothing=return_nothing
+            )
+        else:
+            created_objects = self._create_bulk_insert(
+                db, model_dict_list=model_dict_list, return_nothing=return_nothing
+            )
 
-        #
-        for batch in self._batch_iterable(model_dict_list, self.create_batch_size):
-            create_statement = insert(self.model).values(batch)
-            if on_duplicate_pkey_do_nothing:
-                create_statement = create_statement.on_conflict_do_nothing(
-                    constraint=f"{self.model.__tablename__}_pkey"
-                )
-            create_statement = create_statement.returning(self.model)
+        # created_objects = [db.merge(obj) for obj in created_objects]
 
-            try:
-                logger.info(f"Total objects to create: {len(model_dict_list)}")
-                objs_returned = db.execute(create_statement).scalars().all()
-            except Exception as e:
-                db.rollback()
-                reason = str(e.args[0])
-                model_pks = self._map_obj_pks_to_value(model_dict_list)
-                if "duplicate key value violates unique constraint" in reason:
-                    raise DbObjectAlreadyExistsError(
-                        model_table_name=self.model.__tablename__,
-                        filter=model_pks,
-                        function_name=self.create.__name__,
-                        class_name=self.__class__.__name__,
-                    )
-                else:
-                    raise GeneralDBError(
-                        function_name=self.create.__name__,
-                        class_name=self.__class__.__name__,
-                        exception=e,
-                    )
+        db.commit()
 
-            db.commit()
-
-            # Use `merge()` instead of `add()` and `refresh()`
-            db_objs_merged = [db.merge(obj) for obj in objs_returned]
-            created_objects.extend(db_objs_merged)
+        # Use `merge()` instead of `add()` and `refresh()`
 
         if not created_objects:
             return None
