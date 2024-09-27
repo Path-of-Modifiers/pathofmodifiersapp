@@ -52,7 +52,7 @@ class PoeAPIDataTransformer:
             account_df,
             url=self.url,
             table_name="account",
-            on_duplicate_pk_do_nothing=True,
+            on_duplicate_pkey_do_nothing=True,
             headers=self.pom_auth_headers,
         )
 
@@ -78,7 +78,7 @@ class PoeAPIDataTransformer:
             stash_df,
             url=self.url,
             table_name="stash",
-            on_duplicate_pk_do_nothing=True,
+            on_duplicate_pkey_do_nothing=True,
             headers=self.pom_auth_headers,
         )
 
@@ -131,7 +131,7 @@ class PoeAPIDataTransformer:
             item_basetype_df,
             url=self.url,
             table_name="itemBaseType",
-            on_duplicate_pk_do_nothing=True,
+            on_duplicate_pkey_do_nothing=True,
             headers=self.pom_auth_headers,
         )
 

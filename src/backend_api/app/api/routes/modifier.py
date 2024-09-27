@@ -114,11 +114,12 @@ async def get_grouped_modifier_by_effect(
 
 @router.post(
     "/",
-    response_model=schemas.ModifierCreate | list[schemas.ModifierCreate],
+    response_model=schemas.ModifierCreate | list[schemas.ModifierCreate] | None,
     dependencies=[Depends(get_current_active_superuser)],
 )
 async def create_modifier(
     modifier: schemas.ModifierCreate | list[schemas.ModifierCreate],
+    return_nothing: bool | None = None,
     db: Session = Depends(get_db),
 ):
     """
@@ -127,7 +128,9 @@ async def create_modifier(
     Returns the created modifier or list of modifiers.
     """
 
-    return await CRUD_modifier.create(db=db, obj_in=modifier)
+    return await CRUD_modifier.create(
+        db=db, obj_in=modifier, return_nothing=return_nothing
+    )
 
 
 @router.put(

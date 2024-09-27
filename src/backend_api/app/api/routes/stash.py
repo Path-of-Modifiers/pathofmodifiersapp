@@ -79,6 +79,7 @@ async def get_all_stashes(
 async def create_stash(
     stash: schemas.StashCreate | list[schemas.StashCreate],
     on_duplicate_pkey_do_nothing: bool | None = None,
+    return_nothing: bool | None = None,
     db: Session = Depends(get_db),
 ):
     """
@@ -88,7 +89,10 @@ async def create_stash(
     """
 
     return await CRUD_stash.create(
-        db=db, obj_in=stash, on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing
+        db=db,
+        obj_in=stash,
+        on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing,
+        return_nothing=return_nothing,
     )
 
 
