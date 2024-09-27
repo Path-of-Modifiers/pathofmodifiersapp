@@ -1,8 +1,7 @@
+import logging
 from typing import Any
 
 import pandas as pd
-
-from logs.logger import modifier_data_deposit_logger as logger
 
 
 def divide_modifiers_into_dynamic_static(
@@ -153,7 +152,7 @@ def combine_dynamic_static(
     return final_df
 
 
-def add_regex(modifier_df: pd.DataFrame) -> pd.DataFrame:
+def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame:
     modifier_df_required_columns = [
         "minRoll",
         "maxRoll",
@@ -213,6 +212,7 @@ def check_for_updated_text_rolls(
     data: dict[str, Any],
     row_new: pd.DataFrame,
     rolls: list[int | str],
+    logger: logging.Logger,
 ) -> tuple[dict[str, Any], bool]:
     if data["textRolls"] != row_new["textRolls"]:
         logger.info(
@@ -242,8 +242,7 @@ def check_for_updated_text_rolls(
 
 
 def check_for_updated_numerical_rolls(
-    data: dict[str, Any],
-    row_new: pd.DataFrame,
+    data: dict[str, Any], row_new: pd.DataFrame, logger: logging.Logger
 ) -> tuple[dict[str, Any], bool]:
     min_roll = data["minRoll"]
     max_roll = data["maxRoll"]
@@ -277,6 +276,7 @@ def check_for_additional_modifier_types(
     row_new: pd.Series,
     put_update: bool,
     modifier_types: list[str],
+    logger: logging.Logger,
 ) -> tuple[dict[str, Any], bool]:
     for modifier_type in modifier_types:
         if modifier_type in row_new.index and modifier_type not in data:

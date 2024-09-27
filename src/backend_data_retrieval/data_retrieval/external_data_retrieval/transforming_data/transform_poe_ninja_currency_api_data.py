@@ -5,7 +5,8 @@ from external_data_retrieval.config import settings
 from external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_ninja_currency_api import (
     PoeNinjaCurrencyAPIHandler,
 )
-from modifier_data_deposit.utils import insert_data
+from logs.logger import transform_poe_api_logger as logger
+from data_deposit.utils import insert_data
 from pom_api_authentication import get_superuser_token_headers
 
 # TODO This module may need to log something in the future:
@@ -100,6 +101,7 @@ class TransformPoeNinjaCurrencyAPIData:
             currency_df,
             url=self.url,
             table_name="currency",
+            logger=logger,
             headers=self.pom_api_headers,
         )
         currency_id = self._get_latest_currency_id_series(currency_df)
