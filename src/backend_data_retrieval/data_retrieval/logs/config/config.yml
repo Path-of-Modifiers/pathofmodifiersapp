@@ -33,31 +33,31 @@ handlers:
     backupCount: 2
     formatter: simple
 loggers:
-  data-retrieval:
+  dataret:
     level: INFO
     handlers:
       - stdout
       - file
     propagate: no
-  data-retrieval.external-data-retrieval:
+  dataret.ext:
     level: INFO
     handlers:
       - stdout
       - file
     propagate: no
-  data-retrieval.external-data-retrieval.transform:
+  dataret.ext.transform:
     level: INFO
     handlers:
       - stdout
       - file
     propagate: no
-  data-retrieval.external-data-retrieval.data-retrieval:
+  dataret.ext.dataret:
     level: INFO
     handlers:
       - stdout
       - file
     propagate: no
-  data-retrieval.modifier-data-deposit:
+  dataret.modifier-depo:
     level: INFO
     handlers:
       - stdout

@@ -169,42 +169,44 @@ def add_regex(modifier_df: pd.DataFrame) -> pd.DataFrame:
     ]
     modifier_df = modifier_df.reindex(columns=modifier_df_columns)
 
-    logger.info("Dividing modifier dataframe into dynamic and static modifiers.")
+    logger.debug("Dividing modifier dataframe into dynamic and static modifiers.")
     dynamic_modifier_df, static_modifier_df = divide_modifiers_into_dynamic_static(
         modifier_df=modifier_df
     )
     if dynamic_modifier_df.empty:
-        logger.info("No regex needed.")
+        logger.debug("No regex needed.")
         return static_modifier_df
-    logger.info("Successfully divided modifier dataframe.")
-    logger.info("Preparing dynamic modifier dataframe for regex conversion.")
+    logger.debug("Successfully divided modifier dataframe.")
+    logger.debug("Preparing dynamic modifier dataframe for regex conversion.")
     dynamic_modifier_df = prepare_df_for_regex(dynamic_modifier_df=dynamic_modifier_df)
-    logger.info("Successfully prepared dynamic modifier dataframe.")
+    logger.debug("Successfully prepared dynamic modifier dataframe.")
 
-    logger.info("Grouping dynamic modifier dataframe per modifier.")
+    logger.debug("Grouping dynamic modifier dataframe per modifier.")
     grouped_dynamic_modifier_df = group_df(dynamic_modifier_df=dynamic_modifier_df)
-    logger.info("Successfully grouped dynamic modifier dataframe.")
+    logger.debug("Successfully grouped dynamic modifier dataframe.")
 
-    logger.info("Adding regex column to grouped dynamic modifer dataframe.")
+    logger.debug("Adding regex column to grouped dynamic modifer dataframe.")
     grouped_dynamic_modifier_df = add_regex_column(
         grouped_dynamic_modifier_df=grouped_dynamic_modifier_df
     )
-    logger.info("Successfully added regex column to grouped dynamic modifer dataframe.")
+    logger.debug(
+        "Successfully added regex column to grouped dynamic modifer dataframe."
+    )
 
-    logger.info("Converting grouped dynamic modifer dataframe to normal.")
+    logger.debug("Converting grouped dynamic modifer dataframe to normal.")
     dynamic_modifier_df = grouped_df_to_normal(
         dynamic_modifier_df=dynamic_modifier_df,
         grouped_dynamic_modifier_df=grouped_dynamic_modifier_df,
     )
-    logger.info("Successfully converted grouped dynamic modifer dataframe.")
+    logger.debug("Successfully converted grouped dynamic modifer dataframe.")
 
-    logger.info("Combining dynamic and static modifers into final modifier dataframe.")
+    logger.debug("Combining dynamic and static modifers into final modifier dataframe.")
     final_df = combine_dynamic_static(
         dynamic_modifier_df=dynamic_modifier_df, static_modifier_df=static_modifier_df
     )
-    logger.info("Successfully combined dynamic and static modifers.")
+    logger.debug("Successfully combined dynamic and static modifers.")
 
-    logger.info("Completed process of adding regex")
+    logger.debug("Completed process of adding regex")
 
     return final_df
 
@@ -252,7 +254,7 @@ def check_for_updated_numerical_rolls(
     new_max_roll = row_new["maxRoll"]
 
     if float(min_roll) > float(new_min_roll):
-        logger.info(
+        logger.debug(
             f"Found a modifier with a lower 'minRoll'. Modifier: {data['effect']}"
         )
         data["minRoll"] = new_min_roll
@@ -264,7 +266,7 @@ def check_for_updated_numerical_rolls(
         data["maxRoll"] = new_max_roll
 
     if min_roll != new_min_roll or max_roll != new_max_roll:
-        logger.info("Updating modifier to bring numerical roll range up-to-date.")
+        logger.debug("Updating modifier to bring numerical roll range up-to-date.")
         put_update = True
     else:
         put_update = False

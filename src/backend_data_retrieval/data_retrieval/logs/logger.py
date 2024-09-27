@@ -17,12 +17,12 @@ def setup_logging():
     logging.config.dictConfig(config)
 
 
-main_logger = logging.getLogger("data-retrieval")
+main_logger = logging.getLogger("dataret")
 
-external_data_retrieval_logger = main_logger.getChild("external-data-retrieval")
+external_data_retrieval_logger = main_logger.getChild("ext")
 
 transform_logger = external_data_retrieval_logger.getChild("transform")
 
-data_retrieval_logger = external_data_retrieval_logger.getChild("data-retrieval")
+data_retrieval_logger = external_data_retrieval_logger.getChild("dataret")
 
-modifier_data_deposit_logger = main_logger.getChild("modifier-data-deposit")
+modifier_data_deposit_logger = main_logger.getChild("modifier-depo")
