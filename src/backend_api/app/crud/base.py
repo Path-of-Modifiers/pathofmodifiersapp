@@ -46,7 +46,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
         self.validate = TypeAdapter(SchemaType | list[SchemaType]).validate_python
 
-        # 9500 is for ~6.2 columns. Optimize according to max number of columns used in on-conflict-do-nothing tables, see https://www.postgresql.org/docs/current/limits.html
+        # 10500 is for ~6.2 columns. Optimize according to max number of columns used in on-conflict-do-nothing tables, see https://www.postgresql.org/docs/current/limits.html
         self.create_batch_size_on_conflict = 10500
 
     def _sort_objects(
@@ -272,11 +272,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
                 db, model_dict_list=model_dict_list, return_nothing=return_nothing
             )
 
-        # created_objects = [db.merge(obj) for obj in created_objects]
-
         db.commit()
-
-        # Use `merge()` instead of `add()` and `refresh()`
 
         if not created_objects:
             return None
