@@ -1,4 +1,7 @@
+import asyncio
+import logging
 from collections.abc import AsyncGenerator, Generator
+from logging import Logger
 
 import pytest
 import pytest_asyncio
@@ -6,15 +9,21 @@ from fastapi.testclient import TestClient
 from httpx import AsyncClient
 from redis.asyncio import Redis
 from slowapi import Limiter
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_db
+from app.api.deps import get_async_db, get_db
 from app.core.cache.cache import cache
 from app.core.cache.user_cache import UserCache, UserCacheTokenType
 from app.core.config import settings
 from app.limiter import limiter_ip, limiter_user
 from app.main import app
-from app.tests.setup_test_database import override_get_db, test_db_engine
+from app.tests.setup_test_database import (
+    override_get_async_db,
+    override_get_db,
+    test_async_db_engine,
+    test_db_engine,
+)
 from app.tests.utils.database_utils import (
     clear_all_tables,
     mock_src_database_for_test_db,
@@ -32,9 +41,18 @@ def db() -> Generator:
         session.close()
 
 
+@pytest_asyncio.fixture(scope="session", autouse=True)
+async def async_db() -> AsyncGenerator[AsyncSession, None]:
+    async with AsyncSession(test_async_db_engine) as session:
+        yield session
+        await session.rollback()
+        await session.close()
+
+
 @pytest.fixture(scope="session")
 def client() -> Generator[TestClient, None, None]:
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_async_db] = override_get_async_db
     with TestClient(
         app  # For the warning DeprecationWarning: The 'app' ..., check https://github.com/tiangolo/fastapi/discussions/6211.
     ) as c:
@@ -66,6 +84,7 @@ def ip_rate_limiter() -> Generator[Limiter, None, None]:
 @pytest_asyncio.fixture(scope="session")
 async def async_client() -> AsyncGenerator[AsyncClient, None]:
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_async_db] = override_get_async_db
     async with AsyncClient(app=app, base_url="http://testserver-asyncio") as c:
         yield c
 
@@ -140,3 +159,38 @@ async def normal_user_token_headers(
         username=settings.TEST_USER_USERNAME,
         db=db,
     )
+
+
+@pytest_asyncio.fixture
+async def multiple_async_normal_user_token_headers(
+    async_client: AsyncClient,
+) -> list[dict[str, str]]:
+    """Used to perform multiple requests with different users in parallel"""
+
+    mock_src_database_for_test_db()
+
+    number_of_headers = 20
+    headers = []
+    with Session(test_db_engine) as db:
+        for i in range(number_of_headers):
+            header = await authentication_token_from_email(
+                async_client=async_client,
+                email=str(i) + settings.TEST_USER_EMAIL,
+                username=str(i) + settings.TEST_USER_USERNAME,
+                db=db,
+            )
+        headers.append(header)
+    return headers
+
+
+@pytest.fixture(scope="session")
+def event_loop():
+    """Create an instance of the default event loop for each test case."""
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
+
+
+@pytest.fixture(scope="session")
+def test_logger() -> Generator[Logger, None, None]:
+    yield logging.getLogger(__name__)
