@@ -30,7 +30,6 @@ class TestPlotAPI(TestRateLimitBase):
         """
         Perform multiple POST requests with different users in parallel.
         """
-        await asyncio.sleep(0.5)
         plot_query = await create_minimal_random_plot_query_dict(db)
 
         loop_time = time.time()
