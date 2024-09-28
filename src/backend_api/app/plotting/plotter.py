@@ -183,12 +183,13 @@ class Plotter:
         return plot_data
 
     async def plot(self, db: AsyncSession, *, query: PlotQuery) -> PlotData:
-        statement = self._init_query(query)
-        statement = self._item_spec_query(statement, query=query)
-        statement = self._base_spec_query(statement, query=query)
-        statement = self._wanted_modifier_query(statement, query=query)
+        async with db.begin():
+            statement = self._init_query(query)
+            statement = self._item_spec_query(statement, query=query)
+            statement = self._base_spec_query(statement, query=query)
+            statement = self._wanted_modifier_query(statement, query=query)
 
-        result = await db.execute(statement)
+            result = await db.execute(statement)
         await db.close()
         rows = result.mappings().all()
         df = pd.DataFrame(rows)

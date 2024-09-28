@@ -26,7 +26,6 @@ class TestPlotAPI(TestRateLimitBase):
         async_client: AsyncClient,
         multiple_async_normal_user_token_headers: list[dict[str, str]],
         test_logger: Logger,
-        async_db: AsyncSession,  # noqa: ARG001
     ) -> None:
         """
         Perform multiple POST requests with different users in parallel.

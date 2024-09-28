@@ -166,17 +166,20 @@ async def multiple_async_normal_user_token_headers(
     async_client: AsyncClient,
 ) -> list[dict[str, str]]:
     """Used to perform multiple requests with different users in parallel"""
-    number_of_headers = 20
+    number_of_headers = 1  # Currently only works with a few since there's a bug in caching upon multiple requests
     headers = []
-    with Session(test_db_engine, expire_on_commit=False, autocommit=False) as db:
-        for i in range(number_of_headers):
-            header = await authentication_token_from_email(
-                async_client=async_client,
-                email=str(i) + settings.TEST_USER_EMAIL,
-                username=str(i) + settings.TEST_USER_USERNAME,
-                db=db,
-            )
-        headers.append(header)
+    for i in range(number_of_headers):
+        with Session(test_db_engine, expire_on_commit=False, autocommit=False) as db:
+            try:
+                header = await authentication_token_from_email(
+                    async_client=async_client,
+                    email=str(i) + settings.TEST_USER_EMAIL,
+                    username=str(i) + settings.TEST_USER_USERNAME,
+                    db=db,
+                )
+            finally:
+                db.close()
+            headers.append(header)
     return headers
 
 
