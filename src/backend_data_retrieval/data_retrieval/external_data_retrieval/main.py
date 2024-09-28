@@ -54,7 +54,7 @@ class ContiniousDataRetrieval:
     ):
         self.data_transformers = {
             key: data_transformer()
-            for data_transformer, key in data_transformers.items()
+            for key, data_transformer in data_transformers.items()
         }
 
         self.poe_api_handler = APIHandler(
