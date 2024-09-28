@@ -17,40 +17,43 @@ from app.tests.utils.model_utils.plot import create_minimal_random_plot_query_di
 from app.tests.utils.rate_limit import RateLimitPerTimeInterval
 
 
-@pytest.mark.usefixtures("clear_db", autouse=True)
-@pytest.mark.anyio
-async def test_post_twenty_plots_with_different_users(
-    db: Session,
-    async_client: AsyncClient,
-    multiple_async_normal_user_token_headers: list[dict[str, str]],
-    test_logger: Logger,
-    async_db: AsyncSession,  # noqa: ARG001
-) -> None:
-    """
-    Perform multiple POST requests with different users in parallel.
-    """
-    plot_query = await create_minimal_random_plot_query_dict(db)
+@pytest.mark.usefixtures("clear_cache", autouse=True)
+class TestPlotAPI(TestRateLimitBase):
+    @pytest.mark.anyio
+    async def test_post_multiple_plots_with_different_users(
+        self,
+        db: Session,
+        async_client: AsyncClient,
+        multiple_async_normal_user_token_headers: list[dict[str, str]],
+        test_logger: Logger,
+        async_db: AsyncSession,  # noqa: ARG001
+    ) -> None:
+        """
+        Perform multiple POST requests with different users in parallel.
+        """
+        await asyncio.sleep(0.5)
+        plot_query = await create_minimal_random_plot_query_dict(db)
 
-    loop_time = time.time()
-    # Create API function for POST plot request
-    responses = []
-    for i in range(len(multiple_async_normal_user_token_headers)):
-        response = async_client.post(
-            f"{settings.API_V1_STR}/{plot_prefix}/",
-            headers=multiple_async_normal_user_token_headers[i],
-            json=plot_query,
+        loop_time = time.time()
+        # Create API function for POST plot request
+        responses = []
+        for i in range(len(multiple_async_normal_user_token_headers)):
+            response = async_client.post(
+                f"{settings.API_V1_STR}/{plot_prefix}/",
+                headers=multiple_async_normal_user_token_headers[i],
+                json=plot_query,
+            )
+            responses.append(response)
+
+        responses = await asyncio.gather(*responses)
+
+        for response in responses:
+            assert response.status_code == 200
+
+        total_time = time.time() - loop_time
+        test_logger.info(
+            f"Total time used on plotting with {len(multiple_async_normal_user_token_headers)} users: {total_time}"
         )
-        responses.append(response)
-
-    responses = await asyncio.gather(*responses)
-
-    for response in responses:
-        assert response.status_code == 200
-
-    total_time = time.time() - loop_time
-    test_logger.info(
-        f"Total time used on plotting with {len(multiple_async_normal_user_token_headers)} users: {total_time}"
-    )
 
 
 @pytest.mark.usefixtures("clear_cache", autouse=True)

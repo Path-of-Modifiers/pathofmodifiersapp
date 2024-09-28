@@ -166,12 +166,9 @@ async def multiple_async_normal_user_token_headers(
     async_client: AsyncClient,
 ) -> list[dict[str, str]]:
     """Used to perform multiple requests with different users in parallel"""
-
-    mock_src_database_for_test_db()
-
     number_of_headers = 20
     headers = []
-    with Session(test_db_engine) as db:
+    with Session(test_db_engine, expire_on_commit=False, autocommit=False) as db:
         for i in range(number_of_headers):
             header = await authentication_token_from_email(
                 async_client=async_client,
