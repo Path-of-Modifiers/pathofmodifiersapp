@@ -37,7 +37,10 @@ def get_db() -> Generator[Session, None, None]:
 
 async def get_async_db() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as db:
-        yield db
+        try:
+            yield db
+        finally:
+            await db.close()
 
 
 async def get_user_cache_session() -> AsyncGenerator[UserCache, None]:
@@ -108,13 +111,12 @@ async def get_current_user(
     return user
 
 
-async def async_get_current_user(
+async def get_async_current_user(
     token: TokenDep,
     user_cache_session: UserCacheSession,
     db: AsyncSession = Depends(get_async_db),
 ) -> User:
     user_cached = await user_cache_session.verify_token(token)
-
     user = await db.get(User, user_cached.userId)
     if not user:
         raise DbObjectDoesNotExistError(
@@ -131,7 +133,7 @@ async def async_get_current_user(
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
-AsyncCurrentUser = Annotated[User, Depends(async_get_current_user)]
+AsyncCurrentUser = Annotated[User, Depends(get_async_current_user)]
 
 
 async def get_current_active_superuser(current_user: CurrentUser) -> User:
@@ -152,7 +154,7 @@ async def get_current_active_user(current_user: CurrentUser) -> User:
     return current_user
 
 
-async def async_get_current_active_user(current_user: AsyncCurrentUser) -> User:
+async def get_async_current_active_user(current_user: AsyncCurrentUser) -> User:
     if not current_user.isActive:
         raise UserIsNotActiveError(
             username_or_email=current_user.username,
