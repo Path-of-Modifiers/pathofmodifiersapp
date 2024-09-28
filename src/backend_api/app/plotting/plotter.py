@@ -190,7 +190,6 @@ class Plotter:
 
         result = await db.execute(statement)
         rows = result.mappings().all()
-        await db.close()  # Close session as soon as possible is important
         df = pd.DataFrame(rows)
 
         if df.empty:

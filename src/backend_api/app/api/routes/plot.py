@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import (
     UserCacheSession,
-    async_get_current_active_user,
+    get_async_current_active_user,
     get_async_db,
     get_rate_limit_tier_by_request,
     get_username_by_request,
@@ -22,7 +22,7 @@ plot_prefix = "plot"
 @router.post(
     "/",
     response_model=PlotData,
-    dependencies=[Depends(async_get_current_active_user)],
+    dependencies=[Depends(get_async_current_active_user)],
 )
 async def get_plot_data(
     request: Request,
