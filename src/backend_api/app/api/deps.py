@@ -117,18 +117,19 @@ async def get_async_current_user(
     db: AsyncSession = Depends(get_async_db),
 ) -> User:
     user_cached = await user_cache_session.verify_token(token)
-    user = await db.get(User, user_cached.userId)
-    if not user:
-        raise DbObjectDoesNotExistError(
-            model_table_name=User.__tablename__,
-            filter={"userId": user_cached.userId},
-            function_name=get_current_user.__name__,
-        )
-    if not user.isActive:
-        raise UserIsNotActiveError(
-            username_or_email=user.username,
-            function_name=get_current_user.__name__,
-        )
+    async with db.begin():
+        user = await db.get(User, user_cached.userId)
+        if not user:
+            raise DbObjectDoesNotExistError(
+                model_table_name=User.__tablename__,
+                filter={"userId": user_cached.userId},
+                function_name=get_current_user.__name__,
+            )
+        if not await user.awaitable_attrs.isActive:
+            raise UserIsNotActiveError(
+                username_or_email=user.username,
+                function_name=get_current_user.__name__,
+            )
     return user
 
 
@@ -146,20 +147,10 @@ async def get_current_active_superuser(current_user: CurrentUser) -> User:
 
 
 async def get_current_active_user(current_user: CurrentUser) -> User:
-    if not current_user.isActive:
-        raise UserIsNotActiveError(
-            username_or_email=current_user.username,
-            function_name=get_current_active_user.__name__,
-        )
     return current_user
 
 
 async def get_async_current_active_user(current_user: AsyncCurrentUser) -> User:
-    if not current_user.isActive:
-        raise UserIsNotActiveError(
-            username_or_email=current_user.username,
-            function_name=get_current_active_user.__name__,
-        )
     return current_user
 
 
