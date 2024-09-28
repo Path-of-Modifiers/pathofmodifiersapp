@@ -212,9 +212,9 @@ class PoeAPIDataTransformer:
                 influence_dict = {}
                 for influence_column in influence_columns:
                     if row[influence_column]:
-                        influence_dict[
-                            influence_column.replace("influences.", "")
-                        ] = True
+                        influence_dict[influence_column.replace("influences.", "")] = (
+                            True
+                        )
                 return influence_dict
 
         influence_columns = [
@@ -304,7 +304,7 @@ class PoeAPIDataTransformer:
         return item_id
 
     def _create_item_modifier_table(
-        self, df: pd.DataFrame, *, item_id: pd.Series, modifier_df: pd.DataFrame
+        self, df: pd.DataFrame, *, item_id: pd.Series
     ) -> pd.DataFrame:
         """
         The `item_modifier` table heavily relies on what type of item the modifiers
@@ -335,9 +335,7 @@ class PoeAPIDataTransformer:
     def _process_item_modifier_table(
         self, df: pd.DataFrame, modifier_df: pd.DataFrame, item_id: pd.Series
     ) -> None:
-        item_modifier_df = self._create_item_modifier_table(
-            df, item_id=item_id, modifier_df=modifier_df
-        )
+        item_modifier_df = self._create_item_modifier_table(df, item_id=item_id)
         item_modifier_df = self._transform_item_modifier_table(
             item_modifier_df, modifier_df
         )
@@ -372,7 +370,7 @@ class PoeAPIDataTransformer:
 
 class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
     def _create_item_modifier_table(
-        self, df: pd.DataFrame, *, item_id: pd.Series, modifier_df: pd.DataFrame
+        self, df: pd.DataFrame, *, item_id: pd.Series
     ) -> pd.DataFrame:
         """
         A similiar process to creating the item table, only this time the
