@@ -129,7 +129,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
         Approx. 3 times faster with `return_nothing=True`.
         """
-        logger.info(f"Total objects to create: {len(model_dict_list)}")
+        logger.debug(f"Total objects to create: {len(model_dict_list)}")
         create_stmt = insert(self.model).returning(self.model)
         try:
             if return_nothing:
@@ -167,7 +167,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         Create objects with on_conflict_do_nothing and batching.
         """
         created_objects = []
-        logger.info(f"Total objects to create: {len(model_dict_list)}")
+        logger.debug(f"Total objects to create: {len(model_dict_list)}")
 
         for batch in self._batch_iterable(
             model_dict_list, self.create_batch_size_on_conflict
