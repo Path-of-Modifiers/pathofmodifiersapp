@@ -185,36 +185,6 @@ class Modifier(Base):
     )
 
 
-# class ItemModifier(Base):
-#     __tablename__ = "item_modifier"
-
-#     itemId = _sql.Column(
-#         _sql.BigInteger(),
-#         _sql.ForeignKey("item.itemId", ondelete="CASCADE", onupdate="CASCADE"),
-#         nullable=False,
-#         index=True,
-#     )
-#     modifierId = _sql.Column(_sql.BigInteger(), nullable=False, index=True)
-#     orderId = _sql.Column(_sql.SmallInteger, nullable=False, index=True)
-#     position = _sql.Column(_sql.SmallInteger, nullable=False, index=True)
-#     roll = _sql.Column(_sql.Float(24))
-#     createdAt = _sql.Column(_sql.DateTime(), default=func.now(), nullable=False)
-#     updatedAt = _sql.Column(
-#         _sql.DateTime(),
-#         onupdate=func.now(),
-#     )
-
-#     __table_args__ = (
-#         _sql.PrimaryKeyConstraint(itemId, modifierId, orderId),
-#         _sql.ForeignKeyConstraint(
-#             [modifierId, position],
-#             ["modifier.modifierId", "modifier.position"],
-#             ondelete="CASCADE",
-#             onupdate="CASCADE",
-#         ),
-#     )
-
-
 class ItemModifier(Base):
     __tablename__ = "item_modifier"
 
