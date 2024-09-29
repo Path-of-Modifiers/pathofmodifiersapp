@@ -1,8 +1,9 @@
+from collections.abc import Generator, Iterable
+from itertools import islice
 from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, TypeAdapter
 from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.exceptions import (
@@ -15,6 +16,7 @@ from app.exceptions.model_exceptions.db_exception import (
     DbObjectAlreadyExistsError,
     GeneralDBError,
 )
+from app.logs.logger import logger
 from app.utils.sort_algorithms import sort_with_reference
 
 ModelType = TypeVar("ModelType", bound=Any)
@@ -44,7 +46,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
         self.validate = TypeAdapter(SchemaType | list[SchemaType]).validate_python
 
-        self.ignore_update_duplicates = False
+        self.create_batch_size = 2047  # 33 columns. Optimize according to query parameter limit and max number of columns used, see https://www.postgresql.org/docs/current/limits.html
 
     def _sort_objects(
         self,
@@ -104,6 +106,16 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
         return obj_pks_values
 
+    def _batch_iterable(
+        self, iterable: Iterable[Any], batch_size: int
+    ) -> Generator[list[Any], None, None]:
+        iterable = iter(iterable)
+        while True:
+            batch = list(islice(iterable, batch_size))
+            if not batch:
+                break
+            yield batch
+
     async def get(
         self,
         db: Session,
@@ -143,14 +155,15 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
         **Parameters**
 
-        * `db`: A SQLAlchemy session
-        * `obj_in`: A Pydantic model or list of Pydantic models
-        * `on_duplicate_pkey_do_nothing`: Ignore objects with duplicate primary keys.
+        * db: A SQLAlchemy session
+        * obj_in: A Pydantic model or list of Pydantic models
+        * on_duplicate_pkey_do_nothing: Ignore objects with duplicate primary keys.
+        * batch_size: The number of objects to insert in a single batch. Optimize number to max number of columns per query on insert.
 
         **Returns**
 
         * A Database object or list of Database objects or None
-        * If `on_duplicate_pkey_do_nothing` is True, the returned objects are the not conflicted objects.
+        * If on_duplicate_pkey_do_nothing is True, the returned objects are the non-conflicted objects.
         Duplicate objects are not returned.
         """
         self.validate(obj_in)
@@ -164,54 +177,53 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         if isinstance(obj_in, list):
             model_dict_list = [obj.model_dump(exclude=primary_keys) for obj in obj_in]
         else:
-            model_dict_list = [obj_in.model_dump(exclude_none=True)]
+            model_dict_list = [obj_in.model_dump(exclude=primary_keys)]
 
-        create_statement = insert(self.model).values(model_dict_list)
-        if on_duplicate_pkey_do_nothing:
-            create_statement = create_statement.on_conflict_do_nothing(
-                constraint=f"{self.model.__tablename__}_pkey"
-            )
-        create_statement = create_statement.returning(self.model)
+        created_objects = []
 
-        try:
-            objs_returned = db.execute(create_statement).scalars().all()
-        except IntegrityError as e:
-            db.rollback()
-            reason = str(e.args[0])
-            model_pks = self._map_obj_pks_to_value(model_dict_list)
-            if "duplicate key value violates unique constraint" in reason:
-                raise DbObjectAlreadyExistsError(
-                    model_table_name=self.model.__tablename__,
-                    filter=model_pks,
-                    function_name=self.create.__name__,
-                    class_name=self.__class__.__name__,
+        #
+        for batch in self._batch_iterable(model_dict_list, self.create_batch_size):
+            create_statement = insert(self.model).values(batch)
+            if on_duplicate_pkey_do_nothing:
+                create_statement = create_statement.on_conflict_do_nothing(
+                    constraint=f"{self.model.__tablename__}_pkey"
                 )
-            else:
-                raise GeneralDBError(
-                    function_name=self.create.__name__,
-                    class_name=self.__class__.__name__,
-                    exception=e,
-                )
-        except Exception as e:
-            db.rollback()
-            raise GeneralDBError(
-                function_name=self.create.__name__,
-                class_name=self.__class__.__name__,
-                exception=e,
-            )
+            create_statement = create_statement.returning(self.model)
 
-        db.commit()
+            try:
+                logger.info(f"Total objects to create: {len(model_dict_list)}")
+                objs_returned = db.execute(create_statement).scalars().all()
+            except Exception as e:
+                db.rollback()
+                reason = str(e.args[0])
+                model_pks = self._map_obj_pks_to_value(model_dict_list)
+                if "duplicate key value violates unique constraint" in reason:
+                    raise DbObjectAlreadyExistsError(
+                        model_table_name=self.model.__tablename__,
+                        filter=model_pks,
+                        function_name=self.create.__name__,
+                        class_name=self.__class__.__name__,
+                    )
+                else:
+                    raise GeneralDBError(
+                        function_name=self.create.__name__,
+                        class_name=self.__class__.__name__,
+                        exception=e,
+                    )
 
-        # Use `merge()` instead of `add()` and `refresh()`
-        db_objs_merged = [db.merge(obj) for obj in objs_returned]
+            db.commit()
 
-        if not db_objs_merged:
+            # Use `merge()` instead of `add()` and `refresh()`
+            db_objs_merged = [db.merge(obj) for obj in objs_returned]
+            created_objects.extend(db_objs_merged)
+
+        if not created_objects:
             return None
 
-        if len(db_objs_merged) == 1:
-            return db_objs_merged[0]
+        if len(created_objects) == 1:
+            return created_objects[0]
 
-        return self.validate(db_objs_merged)
+        return self.validate(created_objects)
 
     async def update(
         self,
