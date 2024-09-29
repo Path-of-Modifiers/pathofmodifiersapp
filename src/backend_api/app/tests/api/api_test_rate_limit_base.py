@@ -58,8 +58,10 @@ class TestRateLimitBase(BaseTest):
                 ):  # + 2 for guaranteeing getting 429 response
                     if create_object_dict_func is not None:
                         object_dict = create_object_dict_func()
+                        print("THIS IS THE i TIMES: ", i)
                         response = await api_function(object_dict)
                     else:
+                        print("THIS IS THE i TIMES: ", i)
                         response = await api_function(**kwargs)
                     print(
                         f"{response.status_code} | {i} | {request_amount} | ResponseJson: {response.json()}"

@@ -1,16 +1,15 @@
-from sqlalchemy import MetaData, delete
+from sqlalchemy import Engine, MetaData, delete
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.core.config import settings
 from app.core.models.database import engine as src_db_engine
 from app.core.models.models import User
-from app.tests.setup_test_database import test_db_engine
 
 src_db_metadata = MetaData()
 test_db_metadata = MetaData()
 
 
-def mock_src_database_for_test_db():
+def mock_src_database_for_test_db(test_db_engine: Engine):
     """Mock the source database to create the test database schema."""
 
     src_conn = src_db_engine.connect()
@@ -39,7 +38,7 @@ def mock_src_database_for_test_db():
     tgt_conn.close()
 
 
-def clear_all_tables():
+def clear_all_tables(test_db_engine: Engine):
     """Clear all tables in the test database."""
     print("Clearing all tables...")
 
