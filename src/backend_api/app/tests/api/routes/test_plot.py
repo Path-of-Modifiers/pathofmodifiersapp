@@ -7,7 +7,6 @@ from typing import Any
 import pytest
 from fastapi import Response
 from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
 from app.api.routes.plot import plot_prefix
@@ -17,6 +16,7 @@ from app.tests.utils.model_utils.plot import create_minimal_random_plot_query_di
 from app.tests.utils.rate_limit import RateLimitPerTimeInterval
 
 
+@pytest.mark.usefixtures("clear_db", autouse=True)
 @pytest.mark.usefixtures("clear_cache", autouse=True)
 class TestPlotAPI(TestRateLimitBase):
     @pytest.mark.anyio
@@ -26,6 +26,7 @@ class TestPlotAPI(TestRateLimitBase):
         async_client: AsyncClient,
         multiple_async_normal_user_token_headers: list[dict[str, str]],
         test_logger: Logger,
+        async_engine,
     ) -> None:
         """
         Perform multiple POST requests with different users in parallel.
@@ -52,8 +53,10 @@ class TestPlotAPI(TestRateLimitBase):
         test_logger.info(
             f"Total time used on plotting with {len(multiple_async_normal_user_token_headers)} users: {total_time}"
         )
+        await async_engine.dispose()  # Needs better solution
 
 
+@pytest.mark.usefixtures("clear_db", autouse=True)
 @pytest.mark.usefixtures("clear_cache", autouse=True)
 @pytest.mark.skipif(
     settings.SKIP_RATE_LIMIT_TEST is True or settings.SKIP_RATE_LIMIT_TEST == "True",
@@ -66,7 +69,6 @@ class TestPlotRateLimitAPI(TestRateLimitBase):
         db: Session,
         async_client: AsyncClient,
         superuser_token_headers: dict[str, str],
-        async_db: AsyncSession,  # noqa: ARG001
     ) -> None:
         """
         Perform rate limit test for POST plot endpoint.
