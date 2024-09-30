@@ -206,7 +206,7 @@ class APIHandler:
                 headers = response.headers
                 if response.status >= 300:
                     if response.status == 429:
-                        logger.critical(
+                        logger.exception(
                             f"Received a 429 with the response  {response.text}"
                         )
                         logger.debug(
@@ -219,7 +219,7 @@ class APIHandler:
                         )
                     else:
                         waiting_for_next_id_lock.release()
-                        logger.critical(
+                        logger.exception(
                             f"Recieved the following response: status:'{response.status}' '{response.reason}' text:'{response.text}'"
                         )
                         response.raise_for_status()
