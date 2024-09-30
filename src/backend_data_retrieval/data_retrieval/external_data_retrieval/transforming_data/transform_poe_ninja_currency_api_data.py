@@ -25,9 +25,7 @@ def load_currency_data():
 
 class TransformPoeNinjaCurrencyAPIData:
     def __init__(self):
-        logger.debug(
-            f"Initializing {TransformPoeNinjaCurrencyAPIData.__class__.__name__}."
-        )
+        logger.debug("Initializing TransformPoeNinjaCurrencyAPIData.")
         if "localhost" not in settings.BASEURL:
             self.url = f"https://{settings.BASEURL}"
         else:
@@ -36,9 +34,7 @@ class TransformPoeNinjaCurrencyAPIData:
         logger.debug("Url set to: " + self.url)
         self.pom_api_headers = get_superuser_token_headers(self.url)
         logger.debug("Headers set to: " + str(self.pom_api_headers))
-        logger.debug(
-            f"Initializing {TransformPoeNinjaCurrencyAPIData.__class__.__name__} done."
-        )
+        logger.debug("Initializing TransformPoeNinjaCurrencyAPIData done.")
 
     def _create_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -124,18 +120,3 @@ class TransformPoeNinjaCurrencyAPIData:
         currency_df = currency_df.assign(currencyId=currency_id)
         logger.debug("Successfully transformed data into tables.")
         return currency_df
-
-
-def main():
-    currency = load_currency_data()
-    currency_data_transformed = TransformPoeNinjaCurrencyAPIData(currencies_df=currency)
-
-    currency_table = currency_data_transformed.transform_into_tables()
-
-    logger.info(currency_table.head())
-
-    return 0
-
-
-if __name__ == "__main__":
-    main()

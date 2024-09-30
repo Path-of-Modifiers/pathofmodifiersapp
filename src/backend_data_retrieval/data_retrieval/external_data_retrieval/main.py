@@ -218,9 +218,9 @@ class ContiniousDataRetrieval:
                         )
                         futures[new_future] = "listener"
         except ProgramTooSlowException:
-            logger.critical("Program was too slow. Restarting...")
+            logger.info("Program was too slow. Restarting...")
         except ProgramRunTooLongException:
-            logger.critical("Program has run too long. Restarting...")
+            logger.info("Program has run too long. Restarting...")
         except Exception as e:
             logger.exception(f"The following exception occured: {e}")
             raise e

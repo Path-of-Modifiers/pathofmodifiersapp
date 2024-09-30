@@ -93,7 +93,7 @@ def insert_data(
                             "Located the unprocessable entity:\n", individual_data
                         )
     elif response.status_code == 500:
-        logger.critical(
+        logger.exception(
             f"Recieved a 500 response, indicating client side error. Error msg: {response.text[:10000]}"
         )
         response.raise_for_status()
