@@ -7,7 +7,7 @@ from external_data_retrieval.config import settings
 from external_data_retrieval.transforming_data.utils import (
     get_rolls,
 )
-from logs.logger import transform_poe_api_logger as logger
+from logs.logger import transform_logger as logger
 from pom_api_authentication import get_superuser_token_headers
 
 pd.options.mode.chained_assignment = None  # default="warn"
@@ -15,13 +15,17 @@ pd.options.mode.chained_assignment = None  # default="warn"
 
 class PoeAPIDataTransformer:
     def __init__(self):
+        logger.debug("Initializing PoeAPIDataTransformer")
         if "localhost" not in settings.BASEURL:
             self.url = f"https://{settings.BASEURL}"
         else:
             self.url = "http://src-backend-1"
         self.url += "/api/api_v1"
+        logger.debug("Url set to: " + self.url)
 
         self.pom_auth_headers = get_superuser_token_headers(self.url)
+        logger.debug("Headers set to: " + str(self.pom_auth_headers))
+        logger.debug("Initializing PoeAPIDataTransformer done.")
 
     def _create_account_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -251,6 +255,7 @@ class PoeAPIDataTransformer:
             headers=self.pom_auth_headers,
         )
         item_id = self._get_latest_item_id_series(item_df)
+        logger.debug("Latest item id found: " + str(item_id))
         return item_id
 
     def _create_item_modifier_table(
@@ -288,10 +293,13 @@ class PoeAPIDataTransformer:
         item_modifier_df = self._create_item_modifier_table(
             df, item_id=item_id, modifier_df=modifier_df
         )
+
         item_modifier_df = self._transform_item_modifier_table(
             item_modifier_df, modifier_df
         )
+
         item_modifier_df = self._clean_item_modifier_table(item_modifier_df)
+
         insert_data(
             item_modifier_df,
             url=self.url,
@@ -307,6 +315,8 @@ class PoeAPIDataTransformer:
         currency_df: pd.DataFrame,
     ) -> None:
         try:
+            logger.debug("Transforming data into tables.")
+            logger.debug("Processing data tables.")
             self._process_account_table(df.copy(deep=True))
             self._process_stash_table(df.copy(deep=True))
             item_id = self._process_item_table(
@@ -315,6 +325,8 @@ class PoeAPIDataTransformer:
             self._process_item_modifier_table(
                 df.copy(deep=True), item_id=item_id, modifier_df=modifier_df
             )
+            logger.debug("Successfully transformed data into tables.")
+
         except HTTPError as e:
             logger.exception(f"Something went wrong:\n{repr(e)}")
             raise e

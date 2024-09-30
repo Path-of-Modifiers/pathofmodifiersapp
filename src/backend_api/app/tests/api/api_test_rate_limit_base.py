@@ -1,4 +1,4 @@
-import time
+import asyncio
 from collections.abc import Awaitable, Callable
 from typing import Any
 from unittest.mock import patch
@@ -65,14 +65,14 @@ class TestRateLimitBase(BaseTest):
                     #     f"{response.status_code} | {i} | {request_amount} | ResponseJson: {response.json()}"
                     # )
                     assert response.status_code == 200 if i < request_amount else 429
-                    time.sleep(skip_time)
+                    await asyncio.sleep(skip_time)
 
                     # if i >= request_amount:
                     #     print(
                     #         f"Rate limit reached, waiting for reset... response code: {response.status_code}",
                     #     )
                 if response.status_code == 429:
-                    time.sleep(
+                    await asyncio.sleep(
                         int(response.headers["Retry-After-Seconds"])
                     )  # Wait for rate to reset after seconds rate limit
                 last_rate_limit_count = rate

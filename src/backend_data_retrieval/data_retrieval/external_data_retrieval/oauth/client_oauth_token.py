@@ -1,13 +1,7 @@
 import requests
 
 from external_data_retrieval.config import settings
-
-
-def error_reason(response):
-    print(response.status_code)
-    print(response.reason)
-    print(response.text)
-    quit()
+from logs.logger import external_data_retrieval_logger as logger
 
 
 def get_access_token(
@@ -37,7 +31,9 @@ def get_access_token(
     if (
         response.status_code >= 300
     ):  # Prints relevant information in case of bad response
-        error_reason(response)
+        logger.exception(
+            f"Error during get access token: {response.status_code} - {response.reason} - {response.text}"
+        )
     return response.json()["access_token"]
 
 
@@ -52,7 +48,8 @@ def main():
         client_secret=client_secret,
         contact_email=contact_email,
     )
-    print(f"Generated a new token:\n {token}")
+    logger.info("Successfully generated token. Token is printed below")
+    print("Token generated: " + token)
     return 0
 
 

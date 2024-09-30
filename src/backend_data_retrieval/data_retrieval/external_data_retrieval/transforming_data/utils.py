@@ -1,6 +1,6 @@
 import pandas as pd
 
-from logs.logger import transform_poe_api_logger as logger
+from logs.logger import transform_logger as logger
 
 pd.options.mode.chained_assignment = None  # default='warn'
 pd.set_option("display.max_colwidth", None)

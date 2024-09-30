@@ -170,15 +170,15 @@ class ContiniousDataRetrieval:
                 )
                 follow_future = executor.submit(self._follow_data_dump_stream)
                 futures[follow_future] = "data_processing"
-                print("Waiting for futures to crash.")
+                logger.info("Waiting for futures to crash.")
                 while True:
                     done_futures, not_done_futures = wait(
                         futures, return_when=FIRST_EXCEPTION
                     )
                     crashed_future = list(done_futures)[0]
                     future_job = futures.pop(crashed_future)
-                    print(
-                        f"Some future crashed, rebooting it ({future_job}).",
+                    logger.info(
+                        f"The future '{future_job}' has crashed. Finding exception...",
                         done_futures,
                     )
                     if future_job == "data_processing":
@@ -186,19 +186,26 @@ class ContiniousDataRetrieval:
                         try:
                             raise crashed_future_exception
                         except ProgramTooSlowException:
-                            print("Program was too slow. Restarting")
+                            logger.info(
+                                f"The job '{future_job}' was too slow. Restarting..."
+                            )
                             self.poe_api_handler.set_program_too_slow()
 
                             wait(futures, return_when=ALL_COMPLETED)
 
                             raise ProgramTooSlowException
                         except ProgramRunTooLongException:
-                            print("Program has been running too long. Restarting.")
+                            logger.info(
+                                f"The job '{future_job}' has been running too long. Restarting..."
+                            )
                             self.poe_api_handler.set_program_too_slow()
 
                             wait(futures, return_when=ALL_COMPLETED)
                             raise ProgramRunTooLongException
                         except Exception:
+                            logger.exception(
+                                f"The following exception occured in job '{future_job}': {crashed_future_exception}"
+                            )
                             follow_future = executor.submit(
                                 self._follow_data_dump_stream
                             )
@@ -211,16 +218,16 @@ class ContiniousDataRetrieval:
                         )
                         futures[new_future] = "listener"
         except ProgramTooSlowException:
-            logger.critical("Program was too slow. Restarting.")
+            logger.info("Program was too slow. Restarting...")
         except ProgramRunTooLongException:
-            logger.critical("Program has run too long. Restarting")
-        except Exception:
-            logger.exception("The following exception occured during 'retrieve_data'")
-            raise
+            logger.info("Program has run too long. Restarting...")
+        except Exception as e:
+            logger.exception(f"The following exception occured: {e}")
+            raise e
 
 
 def main():
-    print("Starting the program.")
+    logger.info("Starting the program...")
     setup_logging()
     items_per_batch = 300
     data_transformers = {"unique": UniquePoeAPIDataTransformer}
