@@ -1,19 +1,18 @@
 from fastapi import APIRouter, Depends, Request
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import (
     UserCacheSession,
-    get_current_active_user,
-    get_db,
+    get_async_current_active_user,
+    get_async_db,
     get_rate_limit_tier_by_request,
     get_username_by_request,
 )
 from app.api.rate_limit.rate_limiter import RateLimiter, RateSpec
 from app.core.cache.cache import cache
 from app.core.config import settings
+from app.core.schemas.plot import PlotData, PlotQuery
 from app.plotting import plotter_tool
-from app.plotting.schemas.input import PlotQuery
-from app.plotting.schemas.output import PlotData
 
 router = APIRouter()
 
@@ -23,13 +22,13 @@ plot_prefix = "plot"
 @router.post(
     "/",
     response_model=PlotData,
-    dependencies=[Depends(get_current_active_user)],
+    dependencies=[Depends(get_async_current_active_user)],
 )
 async def get_plot_data(
     request: Request,
     query: PlotQuery,
     user_cache_session: UserCacheSession,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_async_db),
 ):
     """
     Takes a query based on the 'PlotQuery' schema and retrieves data
