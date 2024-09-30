@@ -2,12 +2,12 @@ import pandas as pd
 import requests
 from requests.exceptions import HTTPError
 
+from data_deposit.utils import insert_data
 from external_data_retrieval.config import settings
 from external_data_retrieval.transforming_data.utils import (
     get_rolls,
 )
 from logs.logger import transform_logger as logger
-from modifier_data_deposit.utils import insert_data
 from pom_api_authentication import get_superuser_token_headers
 
 pd.options.mode.chained_assignment = None  # default="warn"
@@ -56,6 +56,7 @@ class PoeAPIDataTransformer:
             account_df,
             url=self.url,
             table_name="account",
+            logger=logger,
             on_duplicate_pkey_do_nothing=True,
             headers=self.pom_auth_headers,
         )
@@ -82,59 +83,7 @@ class PoeAPIDataTransformer:
             stash_df,
             url=self.url,
             table_name="stash",
-            on_duplicate_pkey_do_nothing=True,
-            headers=self.pom_auth_headers,
-        )
-
-    def _create_item_basetype_table(self, df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Creates the basis of the `item_basetype` table.
-        It is not immediately processed in order to save compute power later.
-        """
-        self.item_basetype_columns = [
-            "baseType",
-            "extended.category",
-            "extended.subcategories",
-        ]
-
-        item_basetype_df = df.loc[
-            :, [column for column in self.item_basetype_columns if column in df.columns]
-        ]  # Can't guarantee all columns are present
-
-        return item_basetype_df
-
-    def _transform_item_basetype_table(
-        self, item_basetype_df: pd.DataFrame
-    ) -> pd.DataFrame:
-        item_basetype_df.rename(
-            {
-                "extended.category": "category",
-                "extended.subcategories": "subCategory",
-            },
-            axis=1,
-            inplace=True,
-        )
-        if "subCategory" in item_basetype_df.columns:
-            item_basetype_df["subCategory"] = item_basetype_df["subCategory"].str.join(
-                "-"
-            )
-        return item_basetype_df
-
-    def _clean_item_basetype_table(
-        self, item_basetype_df: pd.DataFrame
-    ) -> pd.DataFrame:
-        item_basetype_df = item_basetype_df.drop_duplicates(["baseType"])
-
-        return item_basetype_df
-
-    def _process_item_basetype_table(self, df: pd.DataFrame) -> None:
-        item_basetype_df = self._create_item_basetype_table(df)
-        item_basetype_df = self._transform_item_basetype_table(item_basetype_df)
-        item_basetype_df = self._clean_item_basetype_table(item_basetype_df)
-        insert_data(
-            item_basetype_df,
-            url=self.url,
-            table_name="itemBaseType",
+            logger=logger,
             on_duplicate_pkey_do_nothing=True,
             headers=self.pom_auth_headers,
         )
@@ -302,6 +251,7 @@ class PoeAPIDataTransformer:
             item_df,
             url=self.url,
             table_name="item",
+            logger=logger,
             headers=self.pom_auth_headers,
         )
         item_id = self._get_latest_item_id_series(item_df)
@@ -354,6 +304,7 @@ class PoeAPIDataTransformer:
             item_modifier_df,
             url=self.url,
             table_name="itemModifier",
+            logger=logger,
             headers=self.pom_auth_headers,
         )
 
@@ -368,7 +319,6 @@ class PoeAPIDataTransformer:
             logger.debug("Processing data tables.")
             self._process_account_table(df.copy(deep=True))
             self._process_stash_table(df.copy(deep=True))
-            self._process_item_basetype_table(df.copy(deep=True))
             item_id = self._process_item_table(
                 df.copy(deep=True), currency_df=currency_df
             )

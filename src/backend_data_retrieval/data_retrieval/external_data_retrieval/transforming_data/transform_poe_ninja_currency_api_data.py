@@ -1,12 +1,12 @@
 import pandas as pd
 import requests
 
+from data_deposit.utils import insert_data
 from external_data_retrieval.config import settings
 from external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_ninja_currency_api import (
     PoeNinjaCurrencyAPIHandler,
 )
 from logs.logger import transform_logger as logger
-from modifier_data_deposit.utils import insert_data
 from pom_api_authentication import get_superuser_token_headers
 
 
@@ -113,6 +113,7 @@ class TransformPoeNinjaCurrencyAPIData:
             currency_df,
             url=self.url,
             table_name="currency",
+            logger=logger,
             headers=self.pom_api_headers,
         )
         logger.debug("Successfully inserted currency data into database.")

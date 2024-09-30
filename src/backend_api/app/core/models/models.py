@@ -44,13 +44,6 @@ class ItemBaseType(Base):
     )
     category: Mapped[str] = mapped_column(String, nullable=False)
     subCategory: Mapped[str | None] = mapped_column(String)
-    createdAt: Mapped[datetime] = mapped_column(
-        DateTime(), default=func.now(), nullable=False
-    )
-    updatedAt: Mapped[datetime | None] = mapped_column(
-        DateTime(),
-        onupdate=func.now(),
-    )
 
 
 class Item(Base):
