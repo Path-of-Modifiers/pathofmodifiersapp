@@ -360,7 +360,7 @@ class APIHandler:
         self,
         stashes_ready_event: threading.Event,
         stash_lock: threading.Lock,
-        n: int = 1,
+        n: int = 10,
     ) -> pd.DataFrame:
         """
         The data collecting is divided into mini batches and batches.

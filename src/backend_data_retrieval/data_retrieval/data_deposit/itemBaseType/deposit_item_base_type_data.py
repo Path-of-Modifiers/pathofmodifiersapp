@@ -1,14 +1,8 @@
 import logging
 
 from pandas import DataFrame
-from data_deposit.deposit_base import DataDepositerBase
 
-logging.basicConfig(
-    filename="modifier_data_deposit.log",
-    level=logging.INFO,
-    format="%(asctime)s:%(levelname)-8s:%(name)s: %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
+from data_deposit.deposit_base import DataDepositerBase
 
 
 class ItemBaseTypeDataDepositer(DataDepositerBase):
