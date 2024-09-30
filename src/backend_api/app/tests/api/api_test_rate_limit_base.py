@@ -61,12 +61,12 @@ class TestRateLimitBase(BaseTest):
                         response = await api_function(object_dict)
                     else:
                         response = await api_function(**kwargs)
-                    assert response.status_code == 200 if i < request_amount else 429
-                    time.sleep(skip_time)
-
                     # print(
                     #     f"{response.status_code} | {i} | {request_amount} | ResponseJson: {response.json()}"
                     # )
+                    assert response.status_code == 200 if i < request_amount else 429
+                    time.sleep(skip_time)
+
                     # if i >= request_amount:
                     #     print(
                     #         f"Rate limit reached, waiting for reset... response code: {response.status_code}",

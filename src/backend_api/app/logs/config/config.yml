@@ -68,8 +68,14 @@ loggers:
       - stdout
       - file
     propagate: no
+  pom_app.test:
+    level: INFO
+    handlers:
+      - stdout
+      - file
+    propagate: no
 root:
-  level: DEBUG
+  level: INFO
   handlers:
     - stdout
     - file
