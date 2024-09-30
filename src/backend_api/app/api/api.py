@@ -19,6 +19,8 @@ from app.api.routes import (
     plot_prefix,
     stash,
     stash_prefix,
+    test,
+    test_prefix,
     turnstile,
     turnstile_prefix,
     user,
@@ -64,4 +66,7 @@ api_router.include_router(
 )
 api_router.include_router(
     user.router, prefix=f"/{user_prefix}", tags=[f"{user_prefix}s"]
+)
+api_router.include_router(
+    test.router, prefix=f"/{test_prefix}", tags=[f"{test_prefix}s"]
 )
