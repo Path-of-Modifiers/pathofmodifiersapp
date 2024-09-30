@@ -243,7 +243,6 @@ class PoeAPIDataTransformer:
         item_df = self._create_item_table(df)
         item_df = self._transform_item_table(item_df, currency_df)
         item_df = self._clean_item_table(item_df)
-        print(item_df["baseType"].unique())
         insert_data(
             item_df,
             url=self.url,

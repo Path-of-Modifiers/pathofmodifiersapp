@@ -63,7 +63,7 @@ loggers:
       - stdout
       - file
     propagate: no
-  data-retrieval.modifier-data-deposit:
+  data-retrieval.datadepo:
     level: DEBUG
     handlers:
       - stdout
