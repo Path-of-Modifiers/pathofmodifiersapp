@@ -58,7 +58,7 @@ def insert_data(
     if df.empty:
         return None
     data = df_to_JSON(df, request_method="post")
-    params = {}
+    params = {"return_nothing": True}
     if on_duplicate_pkey_do_nothing:
         params["on_duplicate_pkey_do_nothing"] = True
     response = requests.post(

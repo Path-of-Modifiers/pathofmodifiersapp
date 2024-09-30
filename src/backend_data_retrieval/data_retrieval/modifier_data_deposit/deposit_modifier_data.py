@@ -209,6 +209,7 @@ class DataDepositer:
             self.modifier_url,
             json=df_json,
             headers=headers,
+            params={"return_nothing": True},
         )
         response.raise_for_status()
 
