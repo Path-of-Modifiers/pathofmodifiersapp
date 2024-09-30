@@ -57,7 +57,7 @@ loggers:
       - stdout
       - file
     propagate: no
-  dataret.modifier-depo:
+  dataret.datadepo:
     level: INFO
     handlers:
       - stdout
