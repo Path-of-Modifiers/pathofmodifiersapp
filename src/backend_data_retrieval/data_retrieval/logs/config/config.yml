@@ -33,38 +33,32 @@ handlers:
     backupCount: 2
     formatter: simple
 loggers:
-  data-retrieval:
-    level: DEBUG
+  dataret:
+    level: INFO
     handlers:
       - stdout
       - file
     propagate: no
-  data-retrieval.external-data-retrieval:
-    level: DEBUG
+  dataret.ext:
+    level: INFO
     handlers:
       - stdout
       - file
     propagate: no
-  data-retrieval.external-data-retrieval.transform-poe-api:
-    level: DEBUG
+  dataret.ext.transform:
+    level: INFO
     handlers:
       - stdout
       - file
     propagate: no
-  data-retrieval.external-data-retrieval.transform-poe-ninja-currency:
-    level: DEBUG
+  dataret.ext.dataret:
+    level: INFO
     handlers:
       - stdout
       - file
     propagate: no
-  data-retrieval.external-data-retrieval.data-retrieval:
-    level: DEBUG
-    handlers:
-      - stdout
-      - file
-    propagate: no
-  data-retrieval.datadepo:
-    level: DEBUG
+  dataret.datadepo:
+    level: INFO
     handlers:
       - stdout
       - file

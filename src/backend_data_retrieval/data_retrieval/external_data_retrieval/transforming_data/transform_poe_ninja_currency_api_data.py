@@ -1,16 +1,13 @@
 import pandas as pd
 import requests
 
+from data_deposit.utils import insert_data
 from external_data_retrieval.config import settings
 from external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_ninja_currency_api import (
     PoeNinjaCurrencyAPIHandler,
 )
-from logs.logger import transform_poe_api_logger as logger
-from data_deposit.utils import insert_data
+from logs.logger import transform_logger as logger
 from pom_api_authentication import get_superuser_token_headers
-
-# TODO This module may need to log something in the future:
-# from logs.logger import transform_poe_api_logger as logger
 
 
 def load_currency_data():
@@ -28,12 +25,16 @@ def load_currency_data():
 
 class TransformPoeNinjaCurrencyAPIData:
     def __init__(self):
+        logger.debug("Initializing TransformPoeNinjaCurrencyAPIData.")
         if "localhost" not in settings.BASEURL:
             self.url = f"https://{settings.BASEURL}"
         else:
             self.url = "http://src-backend-1"
         self.url += "/api/api_v1"
+        logger.debug("Url set to: " + self.url)
         self.pom_api_headers = get_superuser_token_headers(self.url)
+        logger.debug("Headers set to: " + str(self.pom_api_headers))
+        logger.debug("Initializing TransformPoeNinjaCurrencyAPIData done.")
 
     def _create_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -94,9 +95,16 @@ class TransformPoeNinjaCurrencyAPIData:
         """
         Transforms the data into tables and transforms with help functions.
         """
+        logger.debug("Transforming data into tables.")
         currency_df = self._create_currency_table(currency_df)
         currency_df = self._transform_currency_table(currency_df)
+        logger.debug("Successfully transformed data into tables.")
+
+        logger.debug("Cleaning currency table data.")
         currency_df = self._clean_currency_table(currency_df)
+        logger.debug("Successfully cleaned currency table data.")
+
+        logger.debug("Inserting currency data into database.")
         insert_data(
             currency_df,
             url=self.url,
@@ -104,22 +112,11 @@ class TransformPoeNinjaCurrencyAPIData:
             logger=logger,
             headers=self.pom_api_headers,
         )
+        logger.debug("Successfully inserted currency data into database.")
+
         currency_id = self._get_latest_currency_id_series(currency_df)
+        logger.debug("Latest currency id found: " + str(currency_id))
 
         currency_df = currency_df.assign(currencyId=currency_id)
+        logger.debug("Successfully transformed data into tables.")
         return currency_df
-
-
-def main():
-    currency = load_currency_data()
-    currency_data_transformed = TransformPoeNinjaCurrencyAPIData(currencies_df=currency)
-
-    currency_table = currency_data_transformed.transform_into_tables()
-
-    print(currency_table.head())
-
-    return 0
-
-
-if __name__ == "__main__":
-    main()
