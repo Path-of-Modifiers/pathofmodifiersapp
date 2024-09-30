@@ -50,6 +50,7 @@ class TestRateLimitBase(BaseTest):
                 )
                 if interval_seconds > 60:  # Skips test because it takes too long
                     continue
+                skip_time = abs(rate - interval_seconds) // rate
 
                 request_amount = rate - last_rate_limit_count
                 for i in range(
@@ -64,6 +65,7 @@ class TestRateLimitBase(BaseTest):
                     #     f"{response.status_code} | {i} | {request_amount} | ResponseJson: {response.json()}"
                     # )
                     assert response.status_code == 200 if i < request_amount else 429
+                    await asyncio.sleep(skip_time)
 
                     # if i >= request_amount:
                     #     print(
