@@ -190,7 +190,6 @@ class Plotter:
             statement = self._wanted_modifier_query(statement, query=query)
 
             result = await db.execute(statement)
-        # await db.close() # Assume db is not interacted with later in session
         rows = result.mappings().all()
         df = pd.DataFrame(rows)
 

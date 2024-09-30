@@ -114,7 +114,6 @@ async def get_async_current_user(
     db: AsyncSession = Depends(get_async_db),
 ) -> User:
     user_cached = await user_cache_session.verify_token(token)
-    print("DB SESSION WHAT???: ", db)
     async with db.begin():
         user = await db.get(User, user_cached.userId)
         if not user:
