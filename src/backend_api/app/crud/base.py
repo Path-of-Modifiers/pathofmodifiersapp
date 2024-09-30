@@ -47,6 +47,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         self.validate = TypeAdapter(SchemaType | list[SchemaType]).validate_python
 
         # 10500 is for ~6.2 columns. Optimize according to max number of columns used in on-conflict-do-nothing tables, see https://www.postgresql.org/docs/current/limits.html
+        # Formula: Query params limit (65535) / (max(len(on_conflict_dn_model_columns)) * 1.2) = ~10500
         self.create_batch_size_on_conflict = 10500
 
     def _sort_objects(
@@ -129,12 +130,13 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
         Approx. 3 times faster with `return_nothing=True`.
         """
-        logger.info(f"Total objects to create: {len(model_dict_list)}")
-        create_stmt = insert(self.model).returning(self.model)
+        logger.debug(f"Total objects to create: {len(model_dict_list)}")
+        create_stmt = insert(self.model)
         try:
             if return_nothing:
                 db.execute(create_stmt, model_dict_list)
             else:
+                create_stmt = create_stmt.returning(self.model)
                 created_objects = db.scalars(create_stmt, model_dict_list).all()
         except Exception as e:
             db.rollback()
@@ -167,7 +169,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         Create objects with on_conflict_do_nothing and batching.
         """
         created_objects = []
-        logger.info(f"Total objects to create: {len(model_dict_list)}")
+        logger.debug(f"Total objects to create: {len(model_dict_list)}")
 
         for batch in self._batch_iterable(
             model_dict_list, self.create_batch_size_on_conflict
@@ -185,6 +187,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
                 else:
                     create_stmt = create_stmt.returning(self.model)
                     objs_returned = db.execute(create_stmt).scalars().all()
+                    created_objects.extend(objs_returned)
             except Exception as e:
                 db.rollback()
                 raise GeneralDBError(
@@ -192,9 +195,6 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
                     class_name=self.__class__.__name__,
                     exception=e,
                 )
-
-            if not return_nothing:
-                created_objects.extend(objs_returned)
 
         if not return_nothing:
             return created_objects

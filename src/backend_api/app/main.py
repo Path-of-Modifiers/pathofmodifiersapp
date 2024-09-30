@@ -9,6 +9,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app.api.api import api_router
 from app.core.config import settings
+from app.core.models.database import async_engine
 from app.exception_handlers import (
     http_exception_handler,
     plotter_api_rate_limit_exceeded_handler,
@@ -30,6 +31,7 @@ async def lifespan(app: FastAPI):  # noqa: ARG001
     # Load the ML model
     setup_logging()
     yield
+    await async_engine.dispose()
 
 
 app = FastAPI(
