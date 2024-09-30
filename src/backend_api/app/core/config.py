@@ -69,6 +69,18 @@ class Settings(BaseSettings):
             path=self.POSTGRES_DB,
         )
 
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def ASYNC_DATABASE_URI(self) -> PostgresDsn:
+        return MultiHostUrl.build(
+            scheme="postgresql+asyncpg",
+            username=self.POSTGRES_USER,
+            password=self.POSTGRES_PASSWORD,
+            host=self.POSTGRES_SERVER,
+            port=self.POSTGRES_PORT,
+            path=self.POSTGRES_DB,
+        )
+
     REDIS_PORT: int = 6379
     REDIS_SERVER: str
     REDIS_CACHE: str = str(0)
@@ -112,6 +124,14 @@ class Settings(BaseSettings):
     TEST_USER_USERNAME: str = "testusername"
     TEST_DATABASE_URI: PostgresDsn | None = MultiHostUrl.build(
         scheme="postgresql+psycopg",
+        username="test-pom-oltp-user",
+        password="test-pom-oltp-password",
+        host="test-db",
+        port=5432,
+        path="test-pom-oltp-db",
+    )
+    ASYNC_TEST_DATABASE_URI: PostgresDsn | None = MultiHostUrl.build(
+        scheme="postgresql+asyncpg",
         username="test-pom-oltp-user",
         password="test-pom-oltp-password",
         host="test-db",

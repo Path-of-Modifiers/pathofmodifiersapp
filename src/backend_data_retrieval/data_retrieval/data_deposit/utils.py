@@ -1,11 +1,8 @@
-from io import StringIO
 import logging
 from typing import Any
 
 import pandas as pd
 import requests
-
-from pom_api_authentication import get_superuser_token_headers
 
 
 def _chunks(lst, n):
@@ -59,7 +56,7 @@ def insert_data(
     if df.empty:
         return None
     data = df_to_JSON(df, request_method="post")
-    params = {}
+    params = {"return_nothing": True}
     if on_duplicate_pkey_do_nothing:
         params["on_duplicate_pkey_do_nothing"] = True
     response = requests.post(
@@ -86,7 +83,9 @@ def insert_data(
                             "Located the unprocessable entity:\n", individual_data
                         )
     elif response.status_code == 500:
-        logger.critical("Recieved a 500 response, indicating client side error.")
+        logger.critical(
+            f"Recieved a 500 response, indicating client side error. Error msg: {response.text[:10000]}"
+        )
         response.raise_for_status()
 
     elif response.status_code >= 300:

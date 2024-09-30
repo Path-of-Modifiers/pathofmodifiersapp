@@ -2,12 +2,12 @@ import pandas as pd
 import requests
 from requests.exceptions import HTTPError
 
+from data_deposit.utils import insert_data
 from external_data_retrieval.config import settings
 from external_data_retrieval.transforming_data.utils import (
     get_rolls,
 )
 from logs.logger import transform_poe_api_logger as logger
-from data_deposit.utils import insert_data
 from pom_api_authentication import get_superuser_token_headers
 
 pd.options.mode.chained_assignment = None  # default="warn"
@@ -161,9 +161,9 @@ class PoeAPIDataTransformer:
                 influence_dict = {}
                 for influence_column in influence_columns:
                     if row[influence_column]:
-                        influence_dict[influence_column.replace("influences.", "")] = (
-                            True
-                        )
+                        influence_dict[
+                            influence_column.replace("influences.", "")
+                        ] = True
                 return influence_dict
 
         influence_columns = [
