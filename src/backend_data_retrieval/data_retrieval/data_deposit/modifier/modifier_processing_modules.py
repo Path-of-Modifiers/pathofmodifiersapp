@@ -119,7 +119,7 @@ class ModifierRegexCreator:
         regex = effect.replace(r"\+", r"[+-]")
         regex = re.sub(r"increased|reduced", "(increased|reduced)", regex)
 
-        return regex
+        return rf"^{regex}$"
 
     def _unnest_df(
         self,
@@ -153,11 +153,15 @@ class ModifierRegexCreator:
         grouped_dynamic_modifier_df["regex"] = grouped_dynamic_modifier_df.apply(
             self.create_regex_from_row, axis=1
         )
-        logger.debug("Successfully added regex row by row")
 
         dynamic_modifier_df = self._unnest_df(
             dynamic_modifier_df.copy(), grouped_dynamic_modifier_df.copy()
         )
+        failed_df = dynamic_modifier_df.loc[dynamic_modifier_df["regex"].isna()]
+        if not failed_df.empty:
+            logger.critical("Some modifiers did not get a regex.")
+            raise AssertionError("Some modifiers did not get a regex.")
+        logger.debug("Successfully added regex row by row")
 
         return dynamic_modifier_df
 
