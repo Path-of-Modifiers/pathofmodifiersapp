@@ -1,202 +1,197 @@
+import re
+
 import pandas as pd
 
 from logs.logger import transform_logger as logger
 
-pd.options.mode.chained_assignment = None  # default='warn'
 pd.set_option("display.max_colwidth", None)
 
 
-def get_rolls(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
-    """
-    A very complex function for extracting the roll out of the `modifier` field.
+class RollProcessor:
+    def add_modifier_df(self, modifier_df: pd.DataFrame):
+        try:
+            modifier_df = self.modifier_df
+        except AttributeError:
+            self.modifier_df = modifier_df
 
-    Modifiers can be split into two categories: static and dynamic. A static modifier
-    has no roll, while a dynamic modifier has one or more rolls.
+            static_modifier_mask = modifier_df["static"] == "True"
+            self.static_modifier_df = modifier_df.loc[static_modifier_mask]
 
-    Using regex, we can link item modifiers to the already-prepared `modifier` table.
-    From there we extract the roll based on `minRoll` and `maxRoll` or just `textRolls`
-    if the roll is not numerical.
+            dynamic_modifier_df = modifier_df.loc[~static_modifier_mask]
 
-    The formula for calculating the roll:
-        roll = (roll - minRoll)/(maxRoll - minRoll)
+            # sort based on length of effect
+            sorted_index_mask = (
+                dynamic_modifier_df["effect"]
+                .str.len()
+                .sort_values(ascending=False)
+                .index
+            )
+            self.dynamic_modifier_df = dynamic_modifier_df.reindex(sorted_index_mask)
 
-    Where:
-        `roll` is extracted from the `modifier` field
-
-        For text rolls, `roll` is the index of roll in a stored list. In this case
-        `maxRoll` is the length of the list and `minRoll` is zero
-
-    The method contains assertions to ensure successful steps.
-    """
-    df.loc[:, "modifier"] = df[
-        "modifier"
-    ].replace(
-        r"\\n|\n", " ", regex=True
-    )  # Replaces newline with a space, so that it does not mess up the regex and matches modifiers in the `modifier` table
-
-    # We divide the modifier into the two categories
-    static_modifier_mask = modifier_df["static"] == "True"
-
-    dynamic_modifier_df = modifier_df.loc[~static_modifier_mask]
-    static_modifier_df = modifier_df.loc[static_modifier_mask]
-
-    # ---- Static modifier processing ----
-    # Static modifiers must be processed first, to reduce the amount of modifiers
-    # processed by the much more expensive dynamic modifier processing
-    static_df = df.loc[df["modifier"].isin(static_modifier_df["effect"])]
-    static_df.loc[:, "position"] = "0"
-    static_df.loc[:, "effect"] = static_df.loc[:, "modifier"]
-
-    merged_static_df = static_df.merge(
-        static_modifier_df, on=["effect", "position"], how="left"
-    )
-    failed_df = merged_static_df.loc[merged_static_df["static"].isna()]
-
-    # Should never fail, by the nature of the process
-    try:
-        assert failed_df.empty
-    except AssertionError:
-        logger.info(
-            f"Failed to merge static modifier with modifier in DB.\n{failed_df}"
-        )
-        merged_static_df = merged_static_df.loc[~merged_static_df["static"].isna()]
-
-    # ---- Dynamic modifier processing ----
-    # A much more expensive process
-    dynamic_df = df.loc[
-        ~df["modifier"].isin(static_modifier_df["effect"])
-    ]  # Everything not static is dynamic
-
-    dynamic_df.loc[:, "effect"] = dynamic_df.loc[:, "modifier"]
-
-    dynamic_modifier_df.sort_values(
-        "effect", key=lambda x: x.str.len(), ascending=False, inplace=True
-    )
-    # The process must be broken down into a for-loop as the replacement is unique
-    for regex, effect in dynamic_modifier_df[["regex", "effect"]].itertuples(
-        index=False
-    ):
-        dynamic_df.loc[:, "effect"] = dynamic_df.loc[:, "effect"].str.replace(
-            regex, effect, regex=True
-        )
-
-    def add_alternate_effect(df):
-        """
-        Alternate effect is the wording of an effect when the roll is negative
-
-        This assumes all modifiers in the `modifier` table are stored with only
-        positive elements.
-        """
-        df.loc[:, "alternateEffect"] = df["effect"]
-        df.loc[:, "alternateEffect"] = df["alternateEffect"].str.replace("+#", "-#")
-        df.loc[:, "alternateEffect"] = df["alternateEffect"].str.replace(
-            "increased", "reduced"
-        )
-        df.loc[
-            df["alternateEffect"] == df["effect"],
-            "alternateEffect",
-        ] = pd.NA  # Gets rid of unneccesary alternate effects
+    def _pre_processing(self, df: pd.DataFrame) -> pd.DataFrame:
+        df.loc[:, "modifier"] = df[
+            "modifier"
+        ].replace(
+            r"\\n|\n", " ", regex=True
+        )  # Replaces newline with a space, so that it does not mess up the regex and matches modifiers in the `modifier` table
 
         return df
 
-    dynamic_df = add_alternate_effect(df=dynamic_df)
-
-    def add_roll(row):
+    def _process_static(
+        self, df: pd.DataFrame, static_modifers_mask: pd.Series
+    ) -> pd.DataFrame:
         """
-        The main part of this method.
-
-        The `effect` modifier contains `#` as a placeholder for the `roll`.
-        By replacing one part of the `effect` at a time, we end up with
-        only the roll and `---`. We then split this into a list, which is
-        the filtered to only return elements which are not empty strings.
+        Static modifiers must be processed first, to reduce the amount of modifiers
+        processed by the much more expensive dynamic modifier processing.
         """
-        modifier = row["modifier"]
-        effect = row["effect"]
-        effect_parts = [part for part in effect.split("#") if part]
+        static_modifier_df = self.static_modifier_df
 
-        if not pd.isna(row["alternateEffect"]):
-            alternate_effect = row["alternateEffect"]
-            effect_parts += [part for part in alternate_effect.split("#") if part]
+        static_df = df.loc[static_modifers_mask]
+        static_df.loc[:, "position"] = "0"
+        static_df.loc[:, "effect"] = static_df.loc[:, "modifier"]
 
-        for part in effect_parts:
-            modifier = modifier.replace(part, "---")
-
-        rolls = modifier.split("---")
-
-        return [roll for roll in rolls if roll]
-
-    dynamic_df.loc[:, "roll"] = dynamic_df.apply(
-        add_roll, axis=1
-    )  # the `roll` modifier is stored in the `range` field temporarily
-
-    # If there are rows in the dataframe which contain empty lists, something has failed
-    failed_df = dynamic_df.loc[dynamic_df["roll"].str.len() == 0]
-    try:
-        assert failed_df.empty
-    except AssertionError:
-        logger.critical(
-            "Failed to add rolls to listed modifiers, this likely means the modifier is legacy."
+        merged_static_df = static_df.merge(
+            static_modifier_df, on=["effect", "position"], how="left"
         )
-        logger.critical(
-            f"Some of these items have missing modifiers: {failed_df['name'].unique().tolist()}"
+        failed_df = merged_static_df.loc[merged_static_df["static"].isna()]
+
+        if not failed_df.empty:
+            logger.debug(
+                f"Failed to merge static modifier with modifier in DB.\n{failed_df}"
+            )
+            # remove all modifiers that failed to merge
+            # NOTE this should never happen
+            merged_static_df = merged_static_df.loc[~merged_static_df["static"].isna()]
+
+        return merged_static_df
+
+    def _process_dynamic(
+        self, df: pd.DataFrame, static_modifers_mask: pd.Series
+    ) -> pd.DataFrame:
+        """
+        A much more expensive operation
+        """
+        dynamic_modifier_df = self.dynamic_modifier_df
+        dynamic_df = df.loc[~static_modifers_mask]  # Everything not static is dynamic
+
+        dynamic_df.loc[:, "effect"] = dynamic_df.loc[:, "modifier"]
+
+        def extract_rolls(matchobj: re.Match) -> str:
+            rolls = [
+                roll
+                for roll in matchobj.groups()
+                if roll not in ["reduced", "increased"]  # because of alternate spelling
+            ]
+
+            return "matched" + ":-:".join(rolls)
+
+        # The process must be broken down into a for-loop as the replacement is unique
+
+        dynamic_w_rolls_df = dynamic_df.copy()
+        for effect, regex in dynamic_modifier_df[["effect", "regex"]].itertuples(
+            index=False
+        ):
+            matched_modifiers = dynamic_df["modifier"].str.replace(
+                regex, extract_rolls, regex=True
+            )
+            matched_modifiers_mask = matched_modifiers.str.contains("matched", na=False)
+
+            dynamic_w_rolls_df.loc[matched_modifiers_mask, "effect"] = effect
+            # dynamic_w_rolls_df.loc[matched_modifiers_mask, "position"] = position
+            # dynamic_w_rolls_df.loc[matched_modifiers_mask, "textRolls"] = textRolls
+            dynamic_w_rolls_df.loc[
+                matched_modifiers_mask, "roll"
+            ] = matched_modifiers.loc[matched_modifiers_mask]
+
+            dynamic_df.loc[matched_modifiers_mask, "modifier"] = pd.NA
+
+        dynamic_w_rolls_df.loc[:, "roll"] = (
+            dynamic_w_rolls_df["roll"].str.removeprefix("matched").str.split(":-:")
         )
-        logger.critical(
-            f"Some of these modifiers were not present in the database: {failed_df['effect'].unique().tolist()}"
+        del dynamic_df
+        dynamic_df = dynamic_w_rolls_df
+
+        # If there are rows in the dataframe which contain empty lists, something has failed
+        failed_df = dynamic_df.loc[dynamic_df["roll"].isna()]
+        if not failed_df.empty:
+            logger.critical(
+                "Failed to add rolls to listed modifiers, this likely means"
+                " the modifier is legacy or there was a new expansion."
+            )
+            logger.critical(
+                f"These items have missing modifiers: {failed_df['name'].unique().tolist()}"
+            )
+            logger.critical(
+                f"These modifiers were not present in the database: {failed_df['effect'].unique().tolist()}"
+            )
+            dynamic_df = dynamic_df.loc[~dynamic_df["roll"].isna()]
+
+        # Creates a column for position, which contains a list of numerical strings
+        dynamic_df.loc[:, "position"] = dynamic_df.loc[:, "roll"].apply(
+            lambda x: [str(i) for i in range(len(x))]
         )
-        dynamic_df = dynamic_df.loc[dynamic_df["roll"].str.len() != 0]
 
-    # Creates a column for position, which contains a list of numerical strings
-    dynamic_df.loc[:, "position"] = dynamic_df.loc[:, "roll"].apply(
-        lambda x: [str(i) for i in range(len(x))]
-    )
+        # Each row describes one roll
+        dynamic_df = dynamic_df.explode(["roll", "position"])
 
-    # Each row describes one range
-    dynamic_df = dynamic_df.explode(["roll", "position"])
-    merged_dynamic_df = dynamic_df.merge(
-        dynamic_modifier_df, on=["effect", "position"], how="left"
-    )
-
-    # If all of these fields are still NA, it means that modifier was not matched with a modifier in our DB
-    failed_df = merged_dynamic_df.loc[
-        merged_dynamic_df[["minRoll", "maxRoll", "textRolls"]].isna().all(axis=1)
-    ]
-
-    try:
-        assert failed_df.empty
-    except AssertionError:
-        logger.info(
-            f"Some modifiers did not find their counterpart in the database. This likely means the modifier is new or has been reworded.\n{failed_df[['effect', 'minRoll', 'maxRoll', 'textRolls']]}"
+        merged_dynamic_df = dynamic_df.merge(
+            dynamic_modifier_df, on=["effect", "position"], how="left"
         )
-        merged_dynamic_df = merged_dynamic_df.loc[
-            ~merged_dynamic_df[["minRoll", "maxRoll", "textRolls"]].isna().all(axis=1)
-        ]
 
-    def convert_text_roll_to_index(row):
-        if row["textRolls"] != "None":
-            text_rolls = row["textRolls"].split("-")
-            roll = text_rolls.index(row["roll"])
-        else:
-            roll = row["roll"]
+        # If all of these fields are still NA, it means that modifier was not matched with a modifier in our DB
+        failed_df = merged_dynamic_df.loc[merged_dynamic_df["roll"].isna()]
+        if not failed_df.empty:
+            logger.exception(
+                "Some modifiers did not find their counterpart in the database."
+                " This likely means the modifier is new or has been reworded.\n"
+                f"{failed_df[['effect', 'roll']].to_string()}"
+            )
+            merged_dynamic_df = merged_dynamic_df.loc[~merged_dynamic_df["roll"].isna()]
 
-        return roll
+        def convert_text_roll_to_index(row: pd.DataFrame) -> int:
+            text_rolls: str = row["textRolls"]
+            if text_rolls != "None":
+                text_rolls = text_rolls.split("|")
+                roll = text_rolls.index(row["roll"])
+            else:
+                roll = row["roll"]
 
-    merged_dynamic_df["roll"] = merged_dynamic_df.apply(
-        convert_text_roll_to_index, axis=1
-    )  # The `roll` column now contains a number
+            return roll
 
-    # ---- Adding order ID ----
-    # Lets you easily identify static modifiers in the item modifier table
-    merged_static_df["orderId"] = -1
+        merged_dynamic_df.loc[:, "roll"] = merged_dynamic_df.apply(
+            convert_text_roll_to_index, axis=1
+        )  # The `roll` column now contains a number
 
-    # Uses cumcount, which is similiar to range(n_duplicate_mods)
-    merged_dynamic_df["orderId"] = merged_dynamic_df.groupby(
-        ["itemId", "modifierId"]
-    ).cumcount()
+        return merged_dynamic_df
 
-    # ---- Finishing touches ----
+    def _add_order_id(
+        self, ready_static_df: pd.DataFrame, ready_dynamic_df: pd.DataFrame
+    ) -> tuple[pd.DataFrame]:
+        # Lets you easily identify static modifiers in the item modifier table
+        ready_static_df["orderId"] = -1
 
-    processed_df = pd.concat(
-        (merged_dynamic_df, merged_static_df), axis=0, ignore_index=True
-    )  # static and dynamic item modifiers are combined into one dataframe again
+        # Uses cumcount, which is similiar to range(n_duplicate_mods)
+        ready_dynamic_df["orderId"] = ready_dynamic_df.groupby(
+            ["itemId", "modifierId"]
+        ).cumcount()
 
-    return processed_df
+        return ready_static_df, ready_dynamic_df
+
+    def add_rolls(self, df: pd.DataFrame) -> pd.DataFrame:
+        df = self._pre_processing(df.copy())
+
+        static_modifers_mask = df["modifier"].isin(self.static_modifier_df["effect"])
+
+        ready_static_df = self._process_static(df.copy(), static_modifers_mask)
+        ready_dynamic_df = self._process_dynamic(df.copy(), static_modifers_mask)
+
+        ready_static_df, ready_dynamic_df = self._add_order_id(
+            ready_static_df.copy(), ready_dynamic_df.copy()
+        )
+
+        processed_df = pd.concat(
+            (ready_static_df, ready_dynamic_df), axis=0, ignore_index=True
+        )  # static and dynamic item modifiers are combined into one dataframe again
+
+        processed_df.to_csv("test.csv", index=False, encoding="utf-8")
+        return processed_df
