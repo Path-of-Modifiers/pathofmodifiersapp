@@ -1,3 +1,5 @@
+import time
+
 import pandas as pd
 from pydantic import TypeAdapter
 from sqlalchemy import select
@@ -13,6 +15,7 @@ from app.exceptions.model_exceptions.plot_exception import (
     PlotNoModifiersProvidedError,
     PlotQueryDataNotFoundError,
 )
+from app.logs.logger import logger
 from app.plotting.utils import find_conversion_value, summarize_function
 
 
@@ -183,6 +186,8 @@ class Plotter:
         return plot_data
 
     async def plot(self, db: AsyncSession, *, query: PlotQuery) -> PlotData:
+        logger.debug("Performing plot db request...")
+        db_start_time = time.perf_counter()
         async with db.begin():
             statement = self._init_query(query)
             statement = self._item_spec_query(statement, query=query)
@@ -190,8 +195,15 @@ class Plotter:
             statement = self._wanted_modifier_query(statement, query=query)
 
             result = await db.execute(statement)
+        plot_db_time = time.perf_counter() - db_start_time
+        logger.debug(f"Plot db request took {plot_db_time} seconds")
+
+        logger.debug("Mapping results to dataframe...")
+        mapping_start_time = time.perf_counter()
         rows = result.mappings().all()
         df = pd.DataFrame(rows)
+        end_mapping_time = time.perf_counter() - mapping_start_time
+        logger.debug(f"Mapping results took {end_mapping_time} seconds")
 
         if df.empty:
             raise PlotQueryDataNotFoundError(
@@ -207,11 +219,15 @@ class Plotter:
                 mostCommonCurrencyUsed,
             ) = self._create_plot_data(df)
 
+        logger.debug("Summarizing plot data...")
+        summarize_start_time = time.perf_counter()
         plot_data = self._summarize_plot_data(
             value_in_chaos,
             time_stamps,
             value_in_most_common_currency_used,
             mostCommonCurrencyUsed,
         )
+        summarize_time = time.perf_counter() - summarize_start_time
+        logger.debug(f"Summarizing plot data took {summarize_time} seconds")
 
         return self.validate(plot_data)
