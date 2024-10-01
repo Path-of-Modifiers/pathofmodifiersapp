@@ -4,9 +4,7 @@ from requests.exceptions import HTTPError
 
 from data_deposit.utils import insert_data
 from external_data_retrieval.config import settings
-from external_data_retrieval.transforming_data.utils import (
-    get_rolls,
-)
+from external_data_retrieval.transforming_data.utils import RollProcessor
 from logs.logger import transform_logger as logger
 from pom_api_authentication import get_superuser_token_headers
 
@@ -26,6 +24,8 @@ class PoeAPIDataTransformer:
         self.pom_auth_headers = get_superuser_token_headers(self.url)
         logger.debug("Headers set to: " + str(self.pom_auth_headers))
         logger.debug("Initializing PoeAPIDataTransformer done.")
+
+        self.roll_processor = RollProcessor()
 
     def _create_account_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -268,7 +268,7 @@ class PoeAPIDataTransformer:
         raise NotImplementedError("Only available in child classes")
 
     def _transform_item_modifier_table(
-        self, item_modifier_df: pd.DataFrame, *, modifier_df: pd.DataFrame
+        self, item_modifier_df: pd.DataFrame
     ) -> pd.DataFrame:
         """
         The `item_modifier` table heavily relies on what type of item the modifiers
@@ -288,13 +288,10 @@ class PoeAPIDataTransformer:
         raise NotImplementedError("Only available in child classes")
 
     def _process_item_modifier_table(
-        self, df: pd.DataFrame, modifier_df: pd.DataFrame, item_id: pd.Series
+        self, df: pd.DataFrame, item_id: pd.Series
     ) -> None:
         item_modifier_df = self._create_item_modifier_table(df, item_id=item_id)
-        item_modifier_df = self._transform_item_modifier_table(
-            item_modifier_df, modifier_df
-        )
-
+        item_modifier_df = self._transform_item_modifier_table(item_modifier_df)
         item_modifier_df = self._clean_item_modifier_table(item_modifier_df)
 
         insert_data(
@@ -311,6 +308,7 @@ class PoeAPIDataTransformer:
         modifier_df: pd.DataFrame,
         currency_df: pd.DataFrame,
     ) -> None:
+        self.roll_processor.add_modifier_df(modifier_df)
         try:
             logger.debug("Transforming data into tables.")
             logger.debug("Processing data tables.")
@@ -319,9 +317,7 @@ class PoeAPIDataTransformer:
             item_id = self._process_item_table(
                 df.copy(deep=True), currency_df=currency_df
             )
-            self._process_item_modifier_table(
-                df.copy(deep=True), item_id=item_id, modifier_df=modifier_df
-            )
+            self._process_item_modifier_table(df.copy(deep=True), item_id=item_id)
             logger.debug("Successfully transformed data into tables.")
 
         except HTTPError as e:
@@ -349,9 +345,9 @@ class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
         return item_modifier_df
 
     def _transform_item_modifier_table(
-        self, item_modifier_df: pd.DataFrame, modifier_df: pd.DataFrame
+        self, item_modifier_df: pd.DataFrame
     ) -> pd.DataFrame:
-        item_modifier_df = get_rolls(df=item_modifier_df, modifier_df=modifier_df)
+        item_modifier_df = self.roll_processor.add_rolls(df=item_modifier_df)
 
         return item_modifier_df
 

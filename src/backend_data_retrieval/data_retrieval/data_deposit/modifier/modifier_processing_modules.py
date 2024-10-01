@@ -112,7 +112,7 @@ class ModifierRegexCreator:
 
         for text_roll in text_rolls:
             if text_roll is not None:
-                effect = effect.replace("#", f"({text_roll.replace('-','|')})", 1)
+                effect = effect.replace("#", f"({text_roll})", 1)
             else:
                 effect = effect.replace("#", r"([0-9]*[.]?[0-9]+)", 1)
 

@@ -198,7 +198,9 @@ class APIHandler:
             return []
         if self._program_too_slow:
             raise ProgramTooSlowException
+
         waiting_for_next_id_lock.acquire()
+
         try:
             async with session.get(
                 self.url, params={"id": self.next_change_id}
@@ -469,7 +471,7 @@ class APIHandler:
         else:
             time.sleep(5)  # Waits for the listening threads to have time to start up.
             while True:
-                logger.info("Begining processing the stream")
+                logger.info("Waiting for data from the stream")
                 df = self._gather_n_checkpoints(stashes_ready_event, stash_lock)
                 logger.info(
                     "Finished processing the stream, entering transformation phase"
