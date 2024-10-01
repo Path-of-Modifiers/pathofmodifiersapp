@@ -1,4 +1,3 @@
-import logging
 from io import StringIO
 
 import pandas as pd
@@ -6,19 +5,20 @@ import requests
 
 from data_deposit.deposit_base import DataDepositerBase
 from data_deposit.modifier.modifier_processing_modules import (
-    add_regex,
+    ModifierRegexCreator,
     check_for_additional_modifier_types,
     check_for_updated_numerical_rolls,
     check_for_updated_text_rolls,
 )
 from data_deposit.utils import df_to_JSON
+from logs.logger import data_deposit_logger as logger
 
 CASCADING_UPDATE = True
 
 
 class ModifierDataDepositer(DataDepositerBase):
-    def __init__(self, logger: logging.Logger) -> None:
-        super().__init__(data_type="modifier", logger=logger)
+    def __init__(self) -> None:
+        super().__init__(data_type="modifier")
 
         self.modifier_types = [
             "implicit",
@@ -31,11 +31,12 @@ class ModifierDataDepositer(DataDepositerBase):
             "enchanted",
             "veiled",
         ]
+        self.regex_creator = ModifierRegexCreator()
 
         self.update_disabled = not CASCADING_UPDATE
 
     def _get_current_modifiers(self) -> pd.DataFrame:
-        self.logger.info("Retrieving previously deposited data.")
+        logger.info("Retrieving previously deposited data.")
 
         response = requests.get(self.data_url, headers=self.pom_auth_headers)
 
@@ -47,10 +48,10 @@ class ModifierDataDepositer(DataDepositerBase):
             df = pd.read_json(json_io, dtype=str)
 
         if df.empty:
-            self.logger.info("Found no previously deposited data.")
+            logger.info("Found no previously deposited data.")
             return None
         else:
-            self.logger.info("Successfully retrieved previously deposited data.")
+            logger.info("Successfully retrieved previously deposited data.")
             return df
 
     def _update_duplicates(
@@ -58,7 +59,7 @@ class ModifierDataDepositer(DataDepositerBase):
     ) -> None:
         if self.update_disabled:
             return None
-        self.logger.info("Checking if duplicates contain updated information.")
+        logger.info("Checking if duplicates contain updated information.")
 
         current_duplicate_modifiers_df = current_modifiers_df.loc[
             current_modifiers_df["effect"].isin(duplicate_df["effect"])
@@ -111,11 +112,14 @@ class ModifierDataDepositer(DataDepositerBase):
                 pass
             elif not pd.isna(row_new["textRolls"]):
                 data, put_update = check_for_updated_text_rolls(
-                    data=data, row_new=row_new, rolls=rolls, logger=self.logger
+                    data=data,
+                    row_new=row_new,
+                    rolls=rolls,
+                    regex_creator=self.regex_creator,
                 )
             else:
                 data, put_update = check_for_updated_numerical_rolls(
-                    data=data, row_new=row_new, logger=self.logger
+                    data=data, row_new=row_new
                 )
 
             data, put_update = check_for_additional_modifier_types(
@@ -123,11 +127,10 @@ class ModifierDataDepositer(DataDepositerBase):
                 put_update=put_update,
                 row_new=row_new,
                 modifier_types=self.modifier_types,
-                logger=self.logger,
             )
 
             if put_update:
-                self.logger.info("Pushed updated modifier to the database.")
+                logger.info("Pushed updated modifier to the database.")
                 headers = {
                     "accept": "application/json",
                     "Content-Type": "application/json",
@@ -148,13 +151,13 @@ class ModifierDataDepositer(DataDepositerBase):
     def _remove_duplicates(self, new_modifiers_df: pd.DataFrame) -> pd.DataFrame:
         current_modifiers_df = self._get_current_modifiers()
 
-        new_modifiers_df.drop_duplicates(inplace=True)
+        new_modifiers_df = new_modifiers_df.drop_duplicates()
 
         if current_modifiers_df is None:
-            self.logger.info("Skipping duplicate removing due to no previous data")
+            logger.info("Skipping duplicate removing due to no previous data")
             return new_modifiers_df
 
-        self.logger.info("Removing duplicate modifiers")
+        logger.info("Removing duplicate modifiers")
         duplicate_mask = new_modifiers_df["effect"].isin(current_modifiers_df["effect"])
 
         duplicate_df = new_modifiers_df.loc[duplicate_mask].copy()
@@ -164,6 +167,6 @@ class ModifierDataDepositer(DataDepositerBase):
         return non_duplicate_df
 
     def _process_data(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = add_regex(df, logger=self.logger)
+        df = self.regex_creator.add_regex(df)
         df = self._remove_duplicates(df.copy(deep=True))
         return df

@@ -1,218 +1,211 @@
-import logging
+import re
 from typing import Any
 
 import pandas as pd
 
-
-def divide_modifiers_into_dynamic_static(
-    modifier_df: pd.DataFrame,
-) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """
-    Simply filters the modifier df based on if the modifier is static or not
-    """
-    static_modifier_mask = modifier_df["static"] == "True"
-
-    dynamic_modifier_df = modifier_df.loc[~static_modifier_mask].copy()
-    static_modifier_df = modifier_df.loc[static_modifier_mask].copy()
-
-    return dynamic_modifier_df, static_modifier_df
+from logs.logger import data_deposit_logger as logger
 
 
-def prepare_df_for_regex(dynamic_modifier_df: pd.DataFrame) -> pd.DataFrame:
-    r"""
-    The newline symbol continues to be a pain and is easier to just remove. `+` is a regex flag and must therefor
-    be replaced by `\+` to distinguish it as a regular charachter
-    """
-    dynamic_modifier_df.loc[:, "effect"] = dynamic_modifier_df["effect"].replace(
-        r"\\n|\n", " ", regex=True
-    )
-    dynamic_modifier_df.loc[:, "effect"] = dynamic_modifier_df["effect"].str.replace(
-        "+", r"\+"
-    )  # Do we need to do the same for `-`? Can other regex flags occur?
+class ModifierRegexCreator:
+    def __init__(self):
+        self.modifier_df_required_columns = [
+            "minRoll",
+            "maxRoll",
+            "textRolls",
+            "position",
+            "effect",
+            "static",
+        ]
 
-    return dynamic_modifier_df
+    def _divide_into_dynamic_static(
+        self, modifier_df: pd.DataFrame
+    ) -> tuple[pd.DataFrame, pd.DataFrame]:
+        """
+        Divides the modifier dataframe based on the `static` attribute.
+        """
+        logger.debug("Dividing modifier dataframe into dynamic and static modifiers")
 
+        static_modifier_mask = modifier_df["static"] == "True"
 
-def group_df(dynamic_modifier_df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Groups the df by `effect`
+        dynamic_modifier_df = (
+            modifier_df.loc[~static_modifier_mask].copy().reset_index()
+        )
+        static_modifier_df = modifier_df.loc[static_modifier_mask].copy().reset_index()
 
-    The relevant columns are aggregated by combining into a list, which contains only unique positions,
-    and no NA rolls.
-    """
-    agg_dict = {
-        "position": lambda positions: list(set(positions)),
-        "minRoll": lambda rolls: [roll for roll in rolls if not pd.isna(roll)],
-        "textRolls": lambda rolls: [roll for roll in rolls if not pd.isna(roll)],
-    }
-    grouped_dynamic_modifier_df = dynamic_modifier_df.groupby(
-        "effect", as_index=False
-    ).agg(agg_dict)
-    return grouped_dynamic_modifier_df
+        logger.debug("Successfully divided modifier dataframe")
 
+        return dynamic_modifier_df, static_modifier_df
 
-def create_regex_string_from_row(row: pd.DataFrame):
-    """
-    row["rolls] is a concatenated list of `minRoll` and `textRolls`. Its length describes
-    how many positions the `effect` has.
-    The zip function iterates through the arguments until one of them has reached the end.
-    Originally the `positions` argument was necessary as `rolls` could contain the `minRoll`
-    of two different tiers.
+    def _prepare_df(self, dynamic_modifier_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Escapes the `+`, as it is a regex quantifier.
+        """
+        dynamic_modifier_df["effect"] = dynamic_modifier_df["effect"].str.replace(
+            "+", r"\+"
+        )  # Do we need to do the same for `-`? Can other regex symbols occur?
 
-    "([+-]?([0-9]*[.])?[0-9]+)" matches any floats in base 10 and below. This may be replaced by
-    a regex matching only numbers within the range.
-    f"({row["textRolls"][0].replace("-","|")})" matches all possible text rolls.
-    """
-    effect = row["effect"]
-    rolls = row["rolls"]
-    effect_parts = effect.split("#")
-    final_effect = ""
-    length_min = min(len(rolls), len(effect_parts))
-    for _, (roll, part) in enumerate(zip(rolls, effect_parts, strict=False)):
-        final_effect += part
-        try:
-            float(roll)
-            final_effect += "([+-]?([0-9]*[.])?[0-9]+)"  # catches all floats
+        return dynamic_modifier_df
 
-        except ValueError:
-            final_effect += f"({roll.replace('-','|')})"
-        # if roll.isnumeric():
-        #     final_effect += "([+-]?([0-9]*[.])?[0-9]+)"  # catches all floats
-        # else:
-        #     try:
-        #         final_effect += f"({row['textRolls'][0].replace('-','|')})"
-        #     except IndexError:  # In cases of roll is a float
-        #         final_effect += "([+-]?([0-9]*[.])?[0-9]+)"
+    def _pre_process(
+        self, modifier_df: pd.DataFrame
+    ) -> tuple[pd.DataFrame, pd.DataFrame]:
+        """
+        Performs pre-process steps:
+        1. The program assumes certain columns are present to work. These
+           columns are filled with `pd.NA` if not present.
+        2a. Divides the modifiers based on their `static` attribute.
+        2b. Returns only the static modifier df if no dyamic modifiers
+            are found.
+        3. Prepares the dynamic modifier df for regex steps.
+        """
+        modifier_df = modifier_df.reindex(
+            columns=modifier_df.columns.union(self.modifier_df_required_columns)
+        )
 
-    final_effect += "".join(
-        effect_parts[length_min:]
-    )  # adds the final part of the effect if there is one
-    return final_effect
+        dynamic_modifier_df, static_modifier_df = self._divide_into_dynamic_static(
+            modifier_df=modifier_df
+        )
+        if dynamic_modifier_df.empty:
+            logger.debug("Only static modifiers present")
+            return None, static_modifier_df
 
+        dynamic_modifier_df = self._prepare_df(dynamic_modifier_df.copy())
+        logger.debug("Finished pre-processing steps")
 
-def add_regex_column(grouped_dynamic_modifier_df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Creats the `rolls` column temporarily, which is a concatenated list of `minRoll` and `textRolls`.
-    `maxRoll` is not needed, as we only need to check one of the float rolls if it is numerical or not.
+        return dynamic_modifier_df, static_modifier_df
 
-    Then a regex string replaces the `#` depending on the roll which can appear there.
-    Additionally, according to an assumption we made (any modifier with a +/- or increased/reduced can have an opposite),
-    these signs/words are replaced by a regex which can pick up on both alternatives.
+    def _group_df(self, dynamic_modifier_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Groups the dynamic modifier based on effect.
+        `position` and `textRolls` are combined into lists of
+        equal length.
+        """
+        logger.debug(
+            "Preparing dynamic modifier dataframe for regex conversion, by grouping by effect"
+        )
+        agg_dict = {
+            "position": lambda positions: list(set(positions)),
+            "textRolls": lambda rolls: [
+                roll if not pd.isna(roll) else None for roll in rolls
+            ],
+        }
+        grouped_dynamic_modifier_df = dynamic_modifier_df.groupby(
+            "effect", as_index=False, sort=False
+        ).agg(agg_dict)
+        logger.debug("Successfully grouped modifiers by effect")
 
-    """
-    grouped_dynamic_modifier_df["rolls"] = (
-        grouped_dynamic_modifier_df["minRoll"]
-        + grouped_dynamic_modifier_df["textRolls"]
-    )
-    grouped_dynamic_modifier_df["regex"] = grouped_dynamic_modifier_df.apply(
-        create_regex_string_from_row, axis=1
-    )
-    grouped_dynamic_modifier_df["regex"] = grouped_dynamic_modifier_df[
-        "regex"
-    ].str.replace("increased|reduced", r"(increased|reduced)", regex=True)
-    grouped_dynamic_modifier_df["regex"] = grouped_dynamic_modifier_df[
-        "regex"
-    ].str.replace(r"\+", r"(\+|\-)")
+        return grouped_dynamic_modifier_df
 
-    return grouped_dynamic_modifier_df
+    def create_regex_from_row(self, row: pd.DataFrame | dict) -> pd.DataFrame:
+        """
+        A method available for both internal and external use.
 
+        Uses the aggregated `textRolls` field to determine wether
+        the corresponding position has a numerical (textRoll is None),
+        or a text roll.
 
-def grouped_df_to_normal(
-    dynamic_modifier_df: pd.DataFrame, grouped_dynamic_modifier_df: pd.DataFrame
-) -> pd.DataFrame:
-    """
-    The grouped df containing the regex is merged with the pre group dynamic modifier df.
-    The merge is based on "left" meaning `dynamic_modifier_df` and on the column `effect`.
-    The columns only showing up in both dataframes, except `effect`, are given the suffix `_drop`,
-    so that they can easily be removed.
-    After this `dynamic_modifier_df` only gets a single more column.
-    The `effect` column can then return to normal with `+` instead of `-`
-    """
-    dynamic_modifier_df = dynamic_modifier_df.merge(
-        grouped_dynamic_modifier_df, how="left", on="effect", suffixes=["", "_drop"]
-    )
-    dynamic_modifier_df.drop(
-        columns=["position_drop", "minRoll_drop", "textRolls_drop", "rolls"],
-        inplace=True,
-    )
-    dynamic_modifier_df.loc[:, "effect"] = dynamic_modifier_df["effect"].str.replace(
-        r"\+", "+"
-    )
+        Then it accounts for alternative spelling (eg. `-` instead of `+` or
+         `reduced` instead of `increased`)
+        """
+        effect: str = row["effect"]
+        text_rolls: list[str] = row["textRolls"]
 
-    return dynamic_modifier_df
+        for text_roll in text_rolls:
+            if text_roll is not None:
+                effect = effect.replace("#", f"({text_roll.replace('-','|')})", 1)
+            else:
+                effect = effect.replace("#", r"([0-9]*[.]?[0-9]+)", 1)
 
+        regex = effect.replace(r"\+", r"[+-]")
+        regex = re.sub(r"increased|reduced", "(increased|reduced)", regex)
 
-def combine_dynamic_static(
-    dynamic_modifier_df: pd.DataFrame, static_modifier_df: pd.DataFrame
-) -> pd.DataFrame:
-    """
-    Combines the dynamic_modifier_df and the static modifier_df
-    """
-    final_df = pd.concat((dynamic_modifier_df, static_modifier_df))
-    return final_df
+        return regex
 
+    def _unnest_df(
+        self,
+        dynamic_modifier_df: pd.DataFrame,
+        grouped_dynamic_modifier_df: pd.DataFrame,
+    ) -> pd.DataFrame:
+        """
+        Unnests the grouped modfifier dataframe to original shape.
+        """
+        logger.debug("Reverting the grouped dynamic modifier group to original shape")
+        exploded_grouped_dynamic_modifier_df = grouped_dynamic_modifier_df.explode(
+            "position", ignore_index=True
+        )
 
-def add_regex(modifier_df: pd.DataFrame, logger: logging.Logger) -> pd.DataFrame:
-    modifier_df_required_columns = [
-        "minRoll",
-        "maxRoll",
-        "textRolls",
-        "position",
-        "effect",
-        "static",
-    ]
-    modifier_df_columns = modifier_df_required_columns + [
-        column
-        for column in modifier_df.columns
-        if column not in modifier_df_required_columns
-    ]
-    modifier_df = modifier_df.reindex(columns=modifier_df_columns)
+        dynamic_modifier_df["regex"] = exploded_grouped_dynamic_modifier_df["regex"]
+        logger.debug("Reverted to original shape")
 
-    logger.info("Dividing modifier dataframe into dynamic and static modifiers.")
-    dynamic_modifier_df, static_modifier_df = divide_modifiers_into_dynamic_static(
-        modifier_df=modifier_df
-    )
-    if dynamic_modifier_df.empty:
-        logger.info("No regex needed.")
-        return static_modifier_df
-    logger.info("Successfully divided modifier dataframe.")
-    logger.info("Preparing dynamic modifier dataframe for regex conversion.")
-    dynamic_modifier_df = prepare_df_for_regex(dynamic_modifier_df=dynamic_modifier_df)
-    logger.info("Successfully prepared dynamic modifier dataframe.")
+        return dynamic_modifier_df
 
-    logger.info("Grouping dynamic modifier dataframe per modifier.")
-    grouped_dynamic_modifier_df = group_df(dynamic_modifier_df=dynamic_modifier_df)
-    logger.info("Successfully grouped dynamic modifier dataframe.")
+    def _add_regex(self, dynamic_modifier_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Performs the actual steps of adding regex:
+        1. Groups the modifiers for easier processing.
+        2. Creates the regex by iterating over each row.
+        3. Accounts for alternative wording.
+        4. Unnests the grouped modfifier dataframe to original shape.
+        """
+        grouped_dynamic_modifier_df = self._group_df(dynamic_modifier_df.copy())
 
-    logger.info("Adding regex column to grouped dynamic modifer dataframe.")
-    grouped_dynamic_modifier_df = add_regex_column(
-        grouped_dynamic_modifier_df=grouped_dynamic_modifier_df
-    )
-    logger.info("Successfully added regex column to grouped dynamic modifer dataframe.")
+        logger.debug("Adding regex row by row")
+        grouped_dynamic_modifier_df["regex"] = grouped_dynamic_modifier_df.apply(
+            self.create_regex_from_row, axis=1
+        )
+        logger.debug("Successfully added regex row by row")
 
-    logger.info("Converting grouped dynamic modifer dataframe to normal.")
-    dynamic_modifier_df = grouped_df_to_normal(
-        dynamic_modifier_df=dynamic_modifier_df,
-        grouped_dynamic_modifier_df=grouped_dynamic_modifier_df,
-    )
-    logger.info("Successfully converted grouped dynamic modifer dataframe.")
+        dynamic_modifier_df = self._unnest_df(
+            dynamic_modifier_df.copy(), grouped_dynamic_modifier_df.copy()
+        )
 
-    logger.info("Combining dynamic and static modifers into final modifier dataframe.")
-    final_df = combine_dynamic_static(
-        dynamic_modifier_df=dynamic_modifier_df, static_modifier_df=static_modifier_df
-    )
-    logger.info("Successfully combined dynamic and static modifers.")
+        return dynamic_modifier_df
 
-    logger.info("Completed process of adding regex")
+    def _post_process(
+        self, dynamic_modifier_df: pd.DataFrame, static_modifier_df: pd.DataFrame
+    ) -> pd.DataFrame:
+        """
+        Undos temporary changes.
 
-    return final_df
+        Combines dynamic and static modifiers to one modifier dataframe again.
+        """
+        dynamic_modifier_df.loc[:, "effect"] = dynamic_modifier_df[
+            "effect"
+        ].str.replace(r"\+", "+")
+
+        final_df = pd.concat(
+            (dynamic_modifier_df, static_modifier_df), ignore_index=True
+        )
+
+        return final_df
+
+    def add_regex(self, modifier_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Processes the incoming dataframe, making it ready for adding regex.
+        If no dynamic modifiers are present, it returns early.
+        Otherwise, regex is added and post processing steps are applied
+        to convert the dataframe back to original shape.
+        """
+        dynamic_modifier_df, static_modifier_df = self._pre_process(modifier_df.copy())
+        if dynamic_modifier_df is None:
+            return static_modifier_df
+
+        dynamic_modifier_df = self._add_regex(dynamic_modifier_df.copy())
+
+        logger.debug("Finishing up the regex addition step")
+        final_df = self._post_process(
+            dynamic_modifier_df.copy(), static_modifier_df.copy()
+        )
+        logger.debug("Finished adding regex.")
+
+        return final_df
 
 
 def check_for_updated_text_rolls(
     data: dict[str, Any],
     row_new: pd.DataFrame,
     rolls: list[int | str],
-    logger: logging.Logger,
+    regex_creator: ModifierRegexCreator,
 ) -> tuple[dict[str, Any], bool]:
     if data["textRolls"] != row_new["textRolls"]:
         logger.info(
@@ -221,17 +214,10 @@ def check_for_updated_text_rolls(
         data["textRolls"] = row_new["textRolls"]
         if rolls is not None:
             data["rolls"] = rolls
-            data["effect"] = data["effect"].replace("+", r"(\+|\-)")
-            data["regex"] = create_regex_string_from_row(data)
+            data["effect"] = data["effect"].replace("+", r"\+")
+            data["regex"] = regex_creator.create_regex_from_row(data)
 
-            if "increased" in data["regex"]:
-                data["regex"] = data["regex"].replace(
-                    "increased", r"(increased|reduced)"
-                )
-            elif "reduced" in data["regex"]:
-                data["regex"] = data["regex"].replace("reduced", r"(increased|reduced)")
-
-            data["effect"] = data["effect"].replace(r"(\+|\-)", "+")
+            data["effect"] = data["effect"].replace(r"\+", "+")
             data.pop("rolls")
 
         put_update = True
@@ -242,7 +228,7 @@ def check_for_updated_text_rolls(
 
 
 def check_for_updated_numerical_rolls(
-    data: dict[str, Any], row_new: pd.DataFrame, logger: logging.Logger
+    data: dict[str, Any], row_new: pd.DataFrame
 ) -> tuple[dict[str, Any], bool]:
     min_roll = data["minRoll"]
     max_roll = data["maxRoll"]
@@ -276,7 +262,6 @@ def check_for_additional_modifier_types(
     row_new: pd.Series,
     put_update: bool,
     modifier_types: list[str],
-    logger: logging.Logger,
 ) -> tuple[dict[str, Any], bool]:
     for modifier_type in modifier_types:
         if modifier_type in row_new.index and modifier_type not in data:
