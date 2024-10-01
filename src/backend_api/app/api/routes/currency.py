@@ -109,13 +109,14 @@ async def get_latest_currency_id(
 
 @router.post(
     "/",
-    response_model=schemas.CurrencyCreate | list[schemas.CurrencyCreate],
+    response_model=schemas.CurrencyCreate | list[schemas.CurrencyCreate] | None,
     dependencies=[
         Depends(get_current_active_superuser),
     ],
 )
 async def create_currency(
     currency: schemas.CurrencyCreate | list[schemas.CurrencyCreate],
+    return_nothing: bool | None = None,
     db: Session = Depends(get_db),
 ):
     """
@@ -124,7 +125,9 @@ async def create_currency(
     Returns the created currency or list of currencies.
     """
 
-    return await CRUD_currency.create(db=db, obj_in=currency)
+    return await CRUD_currency.create(
+        db=db, obj_in=currency, return_nothing=return_nothing
+    )
 
 
 @router.put(

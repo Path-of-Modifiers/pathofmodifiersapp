@@ -170,6 +170,7 @@ async def get_unique_sub_categories(
 async def create_item_base_type(
     itemBaseType: schemas.ItemBaseTypeCreate | list[schemas.ItemBaseTypeCreate],
     on_duplicate_pkey_do_nothing: bool | None = None,
+    return_nothing: bool | None = None,
     db: Session = Depends(get_db),
 ):
     """
@@ -181,6 +182,7 @@ async def create_item_base_type(
         db=db,
         obj_in=itemBaseType,
         on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing,
+        return_nothing=return_nothing,
     )
 
 

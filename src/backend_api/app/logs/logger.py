@@ -18,3 +18,5 @@ def setup_logging():
 
 
 logger = logging.getLogger("pom_app")
+
+test_logger = logging.getLogger("pom_app.test")

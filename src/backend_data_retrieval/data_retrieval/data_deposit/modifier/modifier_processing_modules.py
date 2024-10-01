@@ -237,7 +237,7 @@ def check_for_updated_numerical_rolls(
     new_max_roll = row_new["maxRoll"]
 
     if float(min_roll) > float(new_min_roll):
-        logger.info(
+        logger.debug(
             f"Found a modifier with a lower 'minRoll'. Modifier: {data['effect']}"
         )
         data["minRoll"] = new_min_roll
@@ -249,7 +249,7 @@ def check_for_updated_numerical_rolls(
         data["maxRoll"] = new_max_roll
 
     if min_roll != new_min_roll or max_roll != new_max_roll:
-        logger.info("Updating modifier to bring numerical roll range up-to-date.")
+        logger.debug("Updating modifier to bring numerical roll range up-to-date.")
         put_update = True
     else:
         put_update = False
