@@ -45,6 +45,6 @@ minRoll,maxRoll,textRolls,position,effect,static,unique
 ,,,0,"Gain Onslaught for 4 seconds on Hit while at maximum Frenzy Charges",True,True
 ,,"Frenzy-Power",0,"1% additional Physical Damage Reduction per # Charge",,True
 ,,,0,"20% chance to gain a Power Charge on Critical Strike",True,True
-,,"Endurance-Frenzy-Power",0,"10% chance to gain a # Charge on Kill",,True
+,,"Endurance-Frenzy-Power",0,"10% chance to gain an? # Charge on Kill",,True
 ,,"Vaal Pact-Iron Reflexes-Mind over Matter",0,"You have # while at maximum # Charges",,True
 ,,"Endurance-Frenzy-Power",1,"You have # while at maximum # Charges",,True
