@@ -2,6 +2,7 @@ from io import StringIO
 
 import pandas as pd
 import requests
+from utils import df_to_JSON
 
 from data_deposit.deposit_base import DataDepositerBase
 from data_deposit.modifier.modifier_processing_modules import (
@@ -10,7 +11,6 @@ from data_deposit.modifier.modifier_processing_modules import (
     check_for_updated_numerical_rolls,
     check_for_updated_text_rolls,
 )
-from data_deposit.utils import df_to_JSON
 from logs.logger import data_deposit_logger as logger
 
 CASCADING_UPDATE = True

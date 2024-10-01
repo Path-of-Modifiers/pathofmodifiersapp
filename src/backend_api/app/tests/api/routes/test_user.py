@@ -1,4 +1,4 @@
-import time
+import asyncio
 import uuid
 from collections.abc import Awaitable
 from unittest.mock import patch
@@ -1071,7 +1071,7 @@ class TestUserAPI(BaseTest):
             )
             token = r.json()["access_token"]
             headers = {"Authorization": f"Bearer {token}"}
-            time.sleep(1.1)  # Wait for token to expire
+            await asyncio.sleep(1.1)  # Wait for token to expire
             r_get_user_me_ok = await async_client.get(
                 f"{settings.API_V1_STR}/{user_prefix}/me",
                 headers=headers,

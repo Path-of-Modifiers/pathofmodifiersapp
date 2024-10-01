@@ -17,14 +17,12 @@ def setup_logging():
     logging.config.dictConfig(config)
 
 
-main_logger = logging.getLogger("data-retrieval")
+main_logger = logging.getLogger("dataret")
 
-external_data_retrieval_logger = main_logger.getChild("external-data-retrieval")
+external_data_retrieval_logger = main_logger.getChild("ext")
 
-transform_poe_api_logger = external_data_retrieval_logger.getChild("transform-poe-api")
-transform_poe_ninja_currency_logger = external_data_retrieval_logger.getChild(
-    "transform-poe-ninja-currency"
-)
-data_retrieval_logger = external_data_retrieval_logger.getChild("data-retrieval")
+transform_logger = external_data_retrieval_logger.getChild("transform")
 
-data_deposit_logger = main_logger.getChild("data-deposit")
+data_retrieval_logger = external_data_retrieval_logger.getChild("dataret")
+
+data_deposit_logger = main_logger.getChild("datadepo")

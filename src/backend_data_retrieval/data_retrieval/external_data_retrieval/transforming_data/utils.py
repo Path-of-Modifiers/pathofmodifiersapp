@@ -1,6 +1,6 @@
 import pandas as pd
 
-from logs.logger import transform_poe_api_logger as logger
+from logs.logger import transform_logger as logger
 
 pd.options.mode.chained_assignment = None  # default='warn'
 pd.set_option("display.max_colwidth", None)
@@ -28,7 +28,9 @@ def get_rolls(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
 
     The method contains assertions to ensure successful steps.
     """
-    df.loc[:, "modifier"] = df["modifier"].replace(
+    df.loc[:, "modifier"] = df[
+        "modifier"
+    ].replace(
         r"\\n|\n", " ", regex=True
     )  # Replaces newline with a space, so that it does not mess up the regex and matches modifiers in the `modifier` table
 
@@ -136,10 +138,10 @@ def get_rolls(df: pd.DataFrame, modifier_df: pd.DataFrame) -> pd.DataFrame:
             "Failed to add rolls to listed modifiers, this likely means the modifier is legacy."
         )
         logger.critical(
-            f"These items have missing modifiers: {failed_df['name'].unique().tolist()}"
+            f"Some of these items have missing modifiers: {failed_df['name'].unique().tolist()}"
         )
         logger.critical(
-            f"These modifiers were not present in the database: {failed_df['effect'].unique().tolist()}"
+            f"Some of these modifiers were not present in the database: {failed_df['effect'].unique().tolist()}"
         )
         dynamic_df = dynamic_df.loc[dynamic_df["roll"].str.len() != 0]
 
