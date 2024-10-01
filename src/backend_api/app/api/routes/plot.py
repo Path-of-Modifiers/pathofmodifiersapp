@@ -1,3 +1,5 @@
+import time
+
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,6 +14,7 @@ from app.api.rate_limit.rate_limiter import RateLimiter, RateSpec
 from app.core.cache.cache import cache
 from app.core.config import settings
 from app.core.schemas.plot import PlotData, PlotQuery
+from app.logs.logger import plot_logger as logger
 from app.plotting import plotter_tool
 
 router = APIRouter()
@@ -36,6 +39,8 @@ async def get_plot_data(
 
     The 'PlotQuery' schema allows for modifier restriction and item specifications.
     """
+    logger.debug("Getting plot data...")
+    start_time = time.perf_counter()
 
     async with RateLimiter(
         unique_key=get_username_by_request(request),
@@ -47,7 +52,10 @@ async def get_plot_data(
         cache_prefix=plot_prefix,
         enabled=settings.RATE_LIMIT,
     ):
-        return await plotter_tool.plot(
+        plot_data = await plotter_tool.plot(
             db,
             query=query,
         )
+        run_time = time.perf_counter() - start_time
+        logger.debug(f"Plotting took {run_time} seconds.")
+        return plot_data
