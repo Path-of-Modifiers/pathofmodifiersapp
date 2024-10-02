@@ -110,12 +110,17 @@ export class CurrencysService {
      */
     public static createCurrency({
         requestBody,
+        returnNothing,
     }: {
         requestBody: (CurrencyCreate | Array<CurrencyCreate>),
-    }): CancelablePromise<(CurrencyCreate | Array<CurrencyCreate>)> {
+        returnNothing?: (boolean | null),
+    }): CancelablePromise<(CurrencyCreate | Array<CurrencyCreate> | null)> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/api_v1/currency/',
+            query: {
+                'return_nothing': returnNothing,
+            },
             body: requestBody,
             mediaType: 'application/json',
             errors: {

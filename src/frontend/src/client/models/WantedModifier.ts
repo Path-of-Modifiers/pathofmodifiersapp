@@ -5,7 +5,6 @@
 import type { ModifierLimitations } from './ModifierLimitations';
 export type WantedModifier = {
     modifierId: number;
-    position: number;
     modifierLimitations?: (ModifierLimitations | null);
 };
 

@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export const $UserRegister = {
+export const $UserRegisterPreEmailConfirmation = {
     properties: {
         username: {
             type: 'string',

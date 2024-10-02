@@ -86,12 +86,17 @@ export class ModifiersService {
      */
     public static createModifier({
         requestBody,
+        returnNothing,
     }: {
         requestBody: (ModifierCreate | Array<ModifierCreate>),
-    }): CancelablePromise<(ModifierCreate | Array<ModifierCreate>)> {
+        returnNothing?: (boolean | null),
+    }): CancelablePromise<(ModifierCreate | Array<ModifierCreate> | null)> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/api_v1/modifier/',
+            query: {
+                'return_nothing': returnNothing,
+            },
             body: requestBody,
             mediaType: 'application/json',
             errors: {

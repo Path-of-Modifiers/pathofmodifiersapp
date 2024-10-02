@@ -5,6 +5,7 @@
 export type ItemModifier = {
     itemId: number;
     modifierId: number;
+    orderId: number;
     position: number;
     roll?: (number | null);
     createdAt: string;

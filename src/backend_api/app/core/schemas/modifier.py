@@ -28,10 +28,8 @@ class _BaseModifier(_pydantic.BaseModel):
 
 class GroupedModifierByEffect(_pydantic.BaseModel):
     modifierId: list[int]
-    position: list[int]
-    minRoll: list[float | None]
-    maxRoll: list[float | None]
     textRolls: list[str | None]
+    relatedUniques: list[str]
     effect: str
     static: list[bool | None]
 
