@@ -6,8 +6,8 @@ from typing import Literal
 import pandas as pd
 import requests
 
-from external_data_retrieval.config import settings
 from data_deposit.utils import df_to_JSON
+from external_data_retrieval.config import settings
 from pom_api_authentication import (
     get_superuser_token_headers,
 )
@@ -35,6 +35,8 @@ class DataDepositerBase:
         for filename in os.listdir(self.new_data_location):
             filepath = os.path.join(self.new_data_location, filename)
 
+            self.logged_info = {}
+
             self.logger.info(f"Loading new data from '{filename}'.")
             df = pd.read_csv(filepath, dtype=str, comment="#", index_col=False)
             self.logger.info("Successfully loaded new data.")
@@ -43,6 +45,8 @@ class DataDepositerBase:
                 for line in infile:
                     if "#" == line[0]:
                         self.logger.info(line.rstrip())
+                        split_line = line[1:].split(":")
+                        self.logged_info[split_line[0].strip()] = split_line[1].strip()
                     else:
                         self.logger.info("End of attached comments.")
                         break
