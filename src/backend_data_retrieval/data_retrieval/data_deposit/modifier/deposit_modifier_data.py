@@ -164,6 +164,7 @@ class ModifierDataDepositer(DataDepositerBase):
         return non_duplicate_df
 
     def _process_data(self, df: pd.DataFrame) -> pd.DataFrame:
+        df["relatedUniques"] = self.logged_info["Unique Name"]
         df = add_regex(df, logger=self.logger)
         df = self._remove_duplicates(df.copy(deep=True))
         return df
