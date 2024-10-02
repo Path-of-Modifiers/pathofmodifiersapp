@@ -280,7 +280,7 @@ class User(Base):
     # Check contstraint where username can only hold letters and numbers with multiple languages
     __table_args__ = (
         CheckConstraint(
-            "username ~* '^[[:alnum:]]+$'",
-            name="check_username_letters_and_numbers",
+            "username ~* '^[[:alnum:]_]+$'",  # Allow letters, numbers, and underscore
+            name="check_username_letters_numbers_and_underscores",
         ),
     )
