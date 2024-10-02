@@ -64,6 +64,8 @@ async def bulk_insert_test(
     db: Session = Depends(get_db),
 ):
     """
+    Can only be used in `local` environment.
+
     Test route for bulk inserting records.
 
     Returns a success message once the insertion is complete.
@@ -88,6 +90,8 @@ async def bulk_insert_test(
 )
 async def bulk_insert_users_and_verify(count: int, db: Session = Depends(get_db)):
     """
+    Can only be used in `local` environment.
+
     Test route for bulk inserting users and verifying them.
 
     Returns the access tokens for the created users.
