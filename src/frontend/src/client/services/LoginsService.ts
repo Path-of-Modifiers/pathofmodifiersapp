@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { Body_logins_login_access_token } from '../models/Body_logins_login_access_token';
+import type { Body_logins_login_access_session } from '../models/Body_logins_login_access_session';
 import type { Message } from '../models/Message';
 import type { NewPassword } from '../models/NewPassword';
 import type { RecoverPassword } from '../models/RecoverPassword';
@@ -13,15 +13,15 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class LoginsService {
     /**
-     * Login Access Token
-     * OAuth2 compatible token login, get an access token for future requests
+     * Login Access Session
+     * OAuth2 compatible session login.
      * @returns Token Successful Response
      * @throws ApiError
      */
-    public static loginAccessToken({
+    public static loginAccessSession({
         formData,
     }: {
-        formData: Body_logins_login_access_token,
+        formData: Body_logins_login_access_session,
     }): CancelablePromise<Token> {
         return __request(OpenAPI, {
             method: 'POST',

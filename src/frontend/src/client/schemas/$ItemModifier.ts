@@ -12,6 +12,10 @@ export const $ItemModifier = {
             type: 'number',
             isRequired: true,
         },
+        orderId: {
+            type: 'number',
+            isRequired: true,
+        },
         position: {
             type: 'number',
             isRequired: true,
