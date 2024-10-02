@@ -12,8 +12,8 @@ def main():
     setup_logging()
     logger.info("Starting deposit phase.")
     data_depositers: dict[Literal["modifier", "itemBaseType"], DataDepositerBase] = {
-        "modifer": ModifierDataDepositer(logger),
-        "itemBaseType": ItemBaseTypeDataDepositer(logger),
+        "modifer": ModifierDataDepositer(),
+        "itemBaseType": ItemBaseTypeDataDepositer(),
     }
     for key, data_depositer in data_depositers.items():
         logger.info(f"Depositing {key} data.")
