@@ -6,7 +6,7 @@ from app.exceptions.exception_base import PathOfModifiersAPIError
 from app.logs.logger import logger
 
 
-class _DBErrorBase(PathOfModifiersAPIError):
+class _DBErrorLogBase(PathOfModifiersAPIError):
     """If you want DB error to be logged, inherit from this class."""
 
     def __init__(
@@ -29,7 +29,7 @@ class _DBErrorBase(PathOfModifiersAPIError):
         )
 
 
-class GeneralDBError(_DBErrorBase):
+class GeneralDBError(_DBErrorLogBase):
     """Exception raised for general db errors."""
 
     def __init__(
@@ -52,7 +52,7 @@ class GeneralDBError(_DBErrorBase):
         )
 
 
-class DbObjectAlreadyExistsError(_DBErrorBase):
+class DbObjectAlreadyExistsError(_DBErrorLogBase):
     """Exception raised for db object already exists errors."""
 
     def __init__(
@@ -114,7 +114,7 @@ class DbObjectDoesNotExistError(PathOfModifiersAPIError):
         )
 
 
-class DbTooManyItemsDeleteError(_DBErrorBase):
+class DbTooManyItemsDeleteError(_DBErrorLogBase):
     """
     Exception raised for db when too many items are trying to get deleted on one query errors.
 

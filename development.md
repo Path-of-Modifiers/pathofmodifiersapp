@@ -40,23 +40,41 @@ This will trigger the containers in `docker-compose.override.yml` file.
 5. Tables can be found under:
    - `'custom name'>Databases>${POSTGRES_DB}>Schemas>public>Tables`
 
-### Run tests
+### How to run tests in backend API
 
-To run tests, you must have docker container `backend` running.
+Describes how to run the tests in backend API.
 
-Also, run the command for starting docker test container:
+For information about the api tests, please check out [Test module documentation](https://github.com/Path-of-Modifiers/pathofmodifiersapp/blob/main/src/backend_api/app/tests/README.md).
+
+#### Backend API test prerequisites
+
+Development docker containers must be running:
+
+```bash
+docker compose up -d
+```
+
+Start docker test containers:
 
 ```bash
 docker compose -f docker-compose.test.yml up -d
 ```
 
-To run the tests, run this command:
+#### Run simulated automated tests backend API
+
+To run all of the tests backend container, run this command:
 
 ```bash
 docker compose exec -T backend pytest
 ```
 
-Tests should now be completed.
+#### Run real environment tests backend API
+
+To run tests to the real environment backend API, perform this command:
+
+```bash
+docker compose exec -T backend sh scripts/test_scripts/{test_script_name}.sh
+```
 
 ## Alembic migrations
 
