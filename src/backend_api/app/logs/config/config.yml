@@ -24,11 +24,13 @@ handlers:
   stdout:
     class: logging.StreamHandler
     level: DEBUG
+    filters: [sensitive_data_filter]
     formatter: simple
     stream: "ext://sys.stdout"
   file:
     class: logging.handlers.RotatingFileHandler
     level: DEBUG
+    filters: [sensitive_data_filter]
     formatter: simple
     filename: "app/logs/backendapi.log"
     maxBytes: 504857600 # 500 MB
@@ -47,7 +49,13 @@ loggers:
       - file
     propagate: no
   pom_app:
-    level: INFO
+    level: DEBUG
+    handlers:
+      - stdout
+      - file
+    propagate: no
+  pom_app.plot:
+    level: DEBUG
     handlers:
       - stdout
       - file

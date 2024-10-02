@@ -4,9 +4,9 @@ This document describes tests, how to run them and what the different modules ar
 
 ## Main test modules
 
-The tests are layed two seperate main modules: `test_real_env` and `test_simulating_env`. The `test_real_env` module tests the api environment and database that's currently in use. The `test_simulating_env` tests a simulated api and environment that are copies of the real api environment.
+The tests separated in two main modules: `test_real_env` and `test_simulating_env`. The `test_real_env` module tests the api environment and database that's currently in use. The `test_simulating_env` tests a simulated api and environment that are copies of the real api environment.
 
-The purpose of `test_real_env` is to perform tests on accumulated data gathered in a more similar to production scenario. In routes you will find a `test` route that this module uses to insert dummy data. These tests are scripts that the tester has to run in python traditionally.
+The purpose of `test_real_env` is to perform tests on accumulated data gathered in a more similar to production scenario. In `backend_api/app/api/routes` you will find a `test` route that this module uses to insert dummy data.
 
 The purpose of `test_simulating_env` is to check if base case usage of all the routes are correct. These are fully automatic tests done with [pytest](https://docs.pytest.org/en/stable/).
 

@@ -64,7 +64,7 @@ async def bulk_insert_test(
     db: Session = Depends(get_db),
 ):
     """
-    Can only be used in `local` environment.
+    Can only be used in `settings.ENVIRONMENT=local` environment.
 
     Test route for bulk inserting records.
 
@@ -90,7 +90,7 @@ async def bulk_insert_test(
 )
 async def bulk_insert_users_and_verify(count: int, db: Session = Depends(get_db)):
     """
-    Can only be used in `local` environment.
+    Can only be used in `settings.ENVIRONMENT=local` environment.
 
     Test route for bulk inserting users and verifying them.
 
