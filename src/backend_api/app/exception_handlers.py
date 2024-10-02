@@ -9,7 +9,8 @@ from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.responses import JSONResponse, PlainTextResponse, Response
 from slowapi.errors import RateLimitExceeded
 
-from app.logger import logger
+from app.exceptions.model_exceptions.plot_exception import PlotRateLimitExceededError
+from app.logs.logger import logger
 
 """
 Taken from https://medium.com/@roy-pstr/fastapi-server-errors-and-logs-take-back-control-696405437983
@@ -70,7 +71,7 @@ async def unhandled_exception_handler(
     return PlainTextResponse(str(exc), status_code=500)
 
 
-async def rate_limit_exceeded_handler(
+async def slow_api_rate_limit_exceeded_handler(
     request: Request,  # noqa: ARG001
     exc: RateLimitExceeded,
 ):
@@ -78,13 +79,27 @@ async def rate_limit_exceeded_handler(
     max_amount_of_tries_per_time_period = exc.detail
 
     response_body = {
-        "detail": "POM API : Rate limit exceeded. Please try again later.",
-        "max_amount_of_tries_per_time_period": max_amount_of_tries_per_time_period,
-        "retry_after_seconds": retry_after_seconds,
+        "detail": f"POM API : Rate limit exceeded. Please try again later. "
+        f"max_tries: {max_amount_of_tries_per_time_period}s"
     }
 
     return JSONResponse(
         status_code=429,
+        content=response_body,
+        headers={"Retry-After-Seconds": str(retry_after_seconds)},
+    )
+
+
+async def plotter_api_rate_limit_exceeded_handler(
+    request: Request,  # noqa: ARG001
+    exc: PlotRateLimitExceededError,
+):
+    retry_after_seconds = exc.headers["Retry-After-Seconds"]
+
+    response_body = {"detail": exc.detail}
+
+    return JSONResponse(
+        status_code=exc.status_code,
         content=response_body,
         headers={"Retry-After-Seconds": str(retry_after_seconds)},
     )

@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
 from app.api.api_message_util import (
-    get_db_obj_already_exists_msg,
     get_delete_return_msg,
 )
 from app.api.deps import (
@@ -163,13 +162,15 @@ async def get_unique_sub_categories(
 
 @router.post(
     "/",
-    response_model=schemas.ItemBaseTypeCreate | list[schemas.ItemBaseTypeCreate],
+    response_model=schemas.ItemBaseTypeCreate | list[schemas.ItemBaseTypeCreate] | None,
     dependencies=[
         Depends(get_current_active_superuser),
     ],
 )
 async def create_item_base_type(
     itemBaseType: schemas.ItemBaseTypeCreate | list[schemas.ItemBaseTypeCreate],
+    on_duplicate_pkey_do_nothing: bool | None = None,
+    return_nothing: bool | None = None,
     db: Session = Depends(get_db),
 ):
     """
@@ -177,7 +178,12 @@ async def create_item_base_type(
 
     Returns the created item base type or list of item base types.
     """
-    return await CRUD_itemBaseType.create(db=db, obj_in=itemBaseType)
+    return await CRUD_itemBaseType.create(
+        db=db,
+        obj_in=itemBaseType,
+        on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing,
+        return_nothing=return_nothing,
+    )
 
 
 @router.put(
@@ -197,15 +203,6 @@ async def update_item_base_type(
 
     Returns the updated item base type.
     """
-    db_item_base_type_update = db.get(ItemBaseType, item_base_type_update.baseType)
-    if db_item_base_type_update and db_item_base_type_update.baseType != baseType:
-        raise HTTPException(
-            status_code=400,
-            detail=get_db_obj_already_exists_msg(
-                ItemBaseType.__tablename__, {"baseType": item_base_type_update.baseType}
-            ).message,
-        )
-
     item_base_type_map = {"baseType": baseType}
     itemBaseType = await CRUD_itemBaseType.get(
         db=db,

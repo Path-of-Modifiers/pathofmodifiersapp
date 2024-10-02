@@ -1,4 +1,4 @@
-from fastapi.testclient import TestClient
+from httpx import AsyncClient
 from pydantic import EmailStr
 from sqlalchemy.orm import Session
 
@@ -8,12 +8,12 @@ from app.crud import CRUD_user
 from app.tests.utils.utils import random_email, random_lower_string
 
 
-def user_authentication_headers(
-    *, client: TestClient, email: str, password: str
+async def user_authentication_headers(
+    *, async_client: AsyncClient, email: str, password: str
 ) -> dict[str, str]:
     data = {"username": email, "password": password}
 
-    r = client.post(f"{settings.API_V1_STR}/login/access-token", data=data)
+    r = await async_client.post(f"{settings.API_V1_STR}/login/access-token", data=data)
     response = r.json()
     auth_token = response["access_token"]
     headers = {"Authorization": f"Bearer {auth_token}"}
@@ -29,8 +29,8 @@ def create_random_user(db: Session) -> User:
     return user
 
 
-def authentication_token_from_email(
-    *, client: TestClient, email: EmailStr, username: str, db: Session
+async def authentication_token_from_email(
+    *, async_client: AsyncClient, email: EmailStr, username: str, db: Session
 ) -> dict[str, str]:
     """
     Return a valid token for the user with given email.
@@ -46,6 +46,8 @@ def authentication_token_from_email(
         user_in_update = UserUpdate(password=password)
         if not user.userId:
             raise Exception("User id not set")
-        user = CRUD_user.update_user(db=db, db_user=user, user_in=user_in_update)
+        user = CRUD_user.update(db=db, user_id=user.userId, user_in=user_in_update)
 
-    return user_authentication_headers(client=client, email=email, password=password)
+    return await user_authentication_headers(
+        async_client=async_client, email=email, password=password
+    )

@@ -18,6 +18,11 @@ def object_generator_func() -> Callable[[], dict]:
 
 
 @pytest.fixture(scope="module")
+def on_duplicate_pkey_do_nothing() -> bool:
+    return True
+
+
+@pytest.fixture(scope="module")
 def object_generator_func_w_deps() -> (
     Callable[[], tuple[dict, Stash, list[dict | Account]]]
 ):

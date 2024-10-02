@@ -69,6 +69,18 @@ class Settings(BaseSettings):
             path=self.POSTGRES_DB,
         )
 
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def ASYNC_DATABASE_URI(self) -> PostgresDsn:
+        return MultiHostUrl.build(
+            scheme="postgresql+asyncpg",
+            username=self.POSTGRES_USER,
+            password=self.POSTGRES_PASSWORD,
+            host=self.POSTGRES_SERVER,
+            port=self.POSTGRES_PORT,
+            path=self.POSTGRES_DB,
+        )
+
     REDIS_PORT: int = 6379
     REDIS_SERVER: str
     REDIS_CACHE: str = str(0)
@@ -118,6 +130,14 @@ class Settings(BaseSettings):
         port=5432,
         path="test-pom-oltp-db",
     )
+    ASYNC_TEST_DATABASE_URI: PostgresDsn | None = MultiHostUrl.build(
+        scheme="postgresql+asyncpg",
+        username="test-pom-oltp-user",
+        password="test-pom-oltp-password",
+        host="test-db",
+        port=5432,
+        path="test-pom-oltp-db",
+    )
 
     FIRST_SUPERUSER: EmailStr
     FIRST_SUPERUSER_USERNAME: str
@@ -147,6 +167,8 @@ class Settings(BaseSettings):
 
         return self
 
+    SKIP_RATE_LIMIT_TEST: bool = False
+
     # Rate limiting
     RATE_LIMIT: bool = False
 
@@ -161,10 +183,10 @@ class Settings(BaseSettings):
         "1/second"  # Default rate limit seconds
     )
     STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE: str = (
-        "5/minute"  # Default rate limit minutes
+        "1/minute"  # Default rate limit minutes
     )
-    STRICT_DEFAULT_USER_RATE_LIMIT_HOUR: str = "8/hour"  # Default rate limit hours
-    STRICT_DEFAULT_USER_RATE_LIMIT_DAY: str = "10/day"  # Default rate limit days
+    STRICT_DEFAULT_USER_RATE_LIMIT_HOUR: str = "3/hour"  # Default rate limit hours
+    STRICT_DEFAULT_USER_RATE_LIMIT_DAY: str = "5/day"  # Default rate limit days
 
     # Login rate limits
     LOGIN_RATE_LIMIT_SECOND: str = "1/second"  # Default rate limit seconds
@@ -193,14 +215,22 @@ class Settings(BaseSettings):
     # Update password me rate limits
     UPDATE_PASSWORD_ME_RATE_LIMIT_SECOND: str = "1/second"  # Default rate limit seconds
     UPDATE_PASSWORD_ME_RATE_LIMIT_MINUTE: str = "1/minute"  # Default rate limit minutes
-    UPDATE_PASSWORD_ME_RATE_LIMIT_HOUR: str = "2/hour"  # Default rate limit hours
-    UPDATE_PASSWORD_ME_RATE_LIMIT_DAY: str = "2/day"  # Default rate limit days
+    UPDATE_PASSWORD_ME_RATE_LIMIT_HOUR: str = "3/hour"  # Default rate limit hours
+    UPDATE_PASSWORD_ME_RATE_LIMIT_DAY: str = "5/day"  # Default rate limit days
 
     # Plotting rate limits
-    TIER_0_PLOT_RATE_LIMIT_SECOND: str = "1/second"  # Default rate limit for plotting
-    TIER_0_PLOT_RATE_LIMIT_MINUTE: str = "3/minute"  # Default rate limit for plotting
-    TIER_0_PLOT_RATE_LIMIT_HOUR: str = "30/hour"  # Default rate limit for plotting
-    TIER_0_PLOT_RATE_LIMIT_DAY: str = "200/day"  # Default rate limit for plotting
+    PLOT_RATE_LIMIT_COOLDOWN_SECONDS: int = (
+        30  # Cooldown amount for requests in seconds
+    )
+    TIER_SUPERUSER_PLOT_RATE_LIMIT: int = (
+        30  # Superuser plots every PLOT_RATE_LIMIT_COOLDOWN_SECONDS
+    )
+    TIER_0_PLOT_RATE_LIMIT: int = (
+        2  # Default plots every PLOT_RATE_LIMIT_COOLDOWN_SECONDS
+    )
+    TIER_1_PLOT_RATE_LIMIT: int = (
+        3  # Default plots every PLOT_RATE_LIMIT_COOLDOWN_SECONDS
+    )
 
 
 settings = Settings()  # type: ignore
