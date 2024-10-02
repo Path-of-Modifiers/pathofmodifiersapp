@@ -1,0 +1,6 @@
+# Source: https://www.poewiki.net/wiki/Armour_(equipment)
+# Additional note: Only contains bases relevant to the uniques we are tracking
+baseType,category,subCategory
+"Great Crown","any armour",helmet
+"Carnal Armour","any armour","body armour"
+"Simple Robe","any armour","body armour"

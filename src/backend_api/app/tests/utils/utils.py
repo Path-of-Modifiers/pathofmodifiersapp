@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from inspect import iscoroutinefunction
 from typing import Any
 
-from fastapi.testclient import TestClient
+from httpx import AsyncClient
 from sqlalchemy import inspect
 
 from app.core.config import settings
@@ -215,12 +215,14 @@ def get_model_table_name(model: ModelType) -> str:
     return model.__tablename__
 
 
-def get_superuser_token_headers(client: TestClient) -> dict[str, str]:
+async def get_superuser_token_headers(async_client: AsyncClient) -> dict[str, str]:
     login_data = {
         "username": settings.FIRST_SUPERUSER,
         "password": settings.FIRST_SUPERUSER_PASSWORD,
     }
-    r = client.post(f"{settings.API_V1_STR}/login/access-token", data=login_data)
+    r = await async_client.post(
+        f"{settings.API_V1_STR}/login/access-token", data=login_data
+    )
     tokens = r.json()
     a_token = tokens["access_token"]
     headers = {"Authorization": f"Bearer {a_token}"}

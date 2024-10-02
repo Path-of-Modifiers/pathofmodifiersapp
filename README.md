@@ -28,6 +28,7 @@ Not officially released, but currently testing in production :smiley:
 - Comprehensive application testing end-to-end
 - Rate limit security for the API
 - Secure user account storage for tracking rates
+- Improving the data stream consumer
 
 ## :checkered_flag: Future goals:
 
@@ -55,6 +56,6 @@ Not officially released, but currently testing in production :smiley:
 
 Path of Modifiers uses a continous data retrieval system consuming [Path of Exile's Public Stashes Endpoint](https://www.pathofexile.com/developer/docs/reference#publicstashes), submitting new data to the database every ~10-15 minutes.
 
-The data is stored with its parameters used for querying. When queried, the data is aggregated and uses several methods to calculate the exchange rates between currencies, items and their modifiers. Secret methods are used to calculate the prizes to counteract price checking. Currently prices are displayed for every 10 minutes.
+The data is stored with its parameters used for querying. When queried, the data is aggregated and uses several methods to calculate the exchange rates between currencies, items and their modifiers. Secret methods are used to calculate the prizes to counteract price manipulation. Currently prices are displayed for every 10 minutes.
 
 User are able to query items with their specified interest through the user interface. A graph gets generated based on the user's specifications.

@@ -1,29 +1,31 @@
-import logging
-from io import StringIO
-
 import pandas as pd
 import requests
+from requests.exceptions import HTTPError
 
+from data_deposit.utils import insert_data
 from external_data_retrieval.config import settings
 from external_data_retrieval.transforming_data.utils import (
     get_rolls,
 )
-from modifier_data_deposit.utils import insert_data
+from logs.logger import transform_logger as logger
 from pom_api_authentication import get_superuser_token_headers
 
 pd.options.mode.chained_assignment = None  # default="warn"
 
 
 class PoeAPIDataTransformer:
-    def __init__(self, main_logger: logging.Logger):
+    def __init__(self):
+        logger.debug("Initializing PoeAPIDataTransformer")
         if "localhost" not in settings.BASEURL:
             self.url = f"https://{settings.BASEURL}"
         else:
             self.url = "http://src-backend-1"
         self.url += "/api/api_v1"
+        logger.debug("Url set to: " + self.url)
 
-        self.logger = main_logger.getChild("transform_poe")
         self.pom_auth_headers = get_superuser_token_headers(self.url)
+        logger.debug("Headers set to: " + str(self.pom_auth_headers))
+        logger.debug("Initializing PoeAPIDataTransformer done.")
 
     def _create_account_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -44,18 +46,6 @@ class PoeAPIDataTransformer:
         account_df.drop_duplicates("accountName", inplace=True)
 
         account_df["isBanned"] = None
-        account_response = requests.get(
-            self.url + "/account/", headers=self.pom_auth_headers
-        )
-        account_json = account_response.json()
-        db_account_df = pd.json_normalize(account_json)
-
-        if db_account_df.empty:
-            return account_df
-
-        account_df = account_df.loc[
-            ~account_df["accountName"].isin(db_account_df["accountName"])
-        ]
 
         return account_df
 
@@ -66,7 +56,8 @@ class PoeAPIDataTransformer:
             account_df,
             url=self.url,
             table_name="account",
-            logger=self.logger,
+            logger=logger,
+            on_duplicate_pkey_do_nothing=True,
             headers=self.pom_auth_headers,
         )
 
@@ -81,20 +72,8 @@ class PoeAPIDataTransformer:
         return stash_df
 
     def _clean_stash_table(self, stash_df: pd.DataFrame) -> pd.DataFrame:
-        stash_df = stash_df.drop_duplicates(["stashId"])  # , "accountName", "league"])
+        stash_df = stash_df.drop_duplicates(["stashId"])
 
-        response = requests.get(self.url + "/stash/", headers=self.pom_auth_headers)
-        db_stash_df = pd.DataFrame()
-        # Check if the request was successful
-        if response.status_code == 200:
-            # Load the JSON data into a pandas DataFrame
-            json_io = StringIO(response.content.decode("utf-8"))
-            db_stash_df = pd.read_json(json_io, dtype=str)
-
-        if db_stash_df.empty:
-            return stash_df
-
-        stash_df = stash_df.loc[~stash_df["stashId"].isin(db_stash_df["stashId"])]
         return stash_df
 
     def _process_stash_table(self, df: pd.DataFrame) -> None:
@@ -104,77 +83,8 @@ class PoeAPIDataTransformer:
             stash_df,
             url=self.url,
             table_name="stash",
-            logger=self.logger,
-            headers=self.pom_auth_headers,
-        )
-
-    def _create_item_basetype_table(self, df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Creates the basis of the `item_basetype` table.
-        It is not immediately processed in order to save compute power later.
-        """
-        self.item_basetype_columns = [
-            "baseType",
-            "extended.category",
-            "extended.subcategories",
-        ]
-
-        item_basetype_df = df.loc[
-            :, [column for column in self.item_basetype_columns if column in df.columns]
-        ]  # Can't guarantee all columns are present
-
-        return item_basetype_df
-
-    def _transform_item_basetype_table(
-        self, item_basetype_df: pd.DataFrame
-    ) -> pd.DataFrame:
-        item_basetype_df.rename(
-            {
-                "extended.category": "category",
-                "extended.subcategories": "subCategory",
-            },
-            axis=1,
-            inplace=True,
-        )
-        if "subCategory" in item_basetype_df.columns:
-            item_basetype_df["subCategory"] = item_basetype_df["subCategory"].str.join(
-                "-"
-            )
-        return item_basetype_df
-
-    def _clean_item_basetype_table(
-        self, item_basetype_df: pd.DataFrame
-    ) -> pd.DataFrame:
-        item_basetype_df = item_basetype_df.drop_duplicates(["baseType"])
-
-        response = requests.get(
-            self.url + "/itemBaseType/", headers=self.pom_auth_headers
-        )
-
-        db_item_basetype_df = pd.DataFrame()
-        # Check if the request was successful
-        if response.status_code == 200:
-            # Load the JSON data into a pandas DataFrame
-            json_io = StringIO(response.content.decode("utf-8"))
-            db_item_basetype_df = pd.read_json(json_io, dtype=str)
-
-        if db_item_basetype_df.empty:
-            return item_basetype_df
-
-        item_basetype_df = item_basetype_df.loc[
-            ~item_basetype_df["baseType"].isin(db_item_basetype_df["baseType"])
-        ]
-        return item_basetype_df
-
-    def _process_item_basetype_table(self, df: pd.DataFrame) -> None:
-        item_basetype_df = self._create_item_basetype_table(df)
-        item_basetype_df = self._transform_item_basetype_table(item_basetype_df)
-        item_basetype_df = self._clean_item_basetype_table(item_basetype_df)
-        insert_data(
-            item_basetype_df,
-            url=self.url,
-            table_name="itemBaseType",
-            logger=self.logger,
+            logger=logger,
+            on_duplicate_pkey_do_nothing=True,
             headers=self.pom_auth_headers,
         )
 
@@ -341,10 +251,11 @@ class PoeAPIDataTransformer:
             item_df,
             url=self.url,
             table_name="item",
-            logger=self.logger,
+            logger=logger,
             headers=self.pom_auth_headers,
         )
         item_id = self._get_latest_item_id_series(item_df)
+        logger.debug("Latest item id found: " + str(item_id))
         return item_id
 
     def _create_item_modifier_table(
@@ -382,15 +293,18 @@ class PoeAPIDataTransformer:
         item_modifier_df = self._create_item_modifier_table(
             df, item_id=item_id, modifier_df=modifier_df
         )
+
         item_modifier_df = self._transform_item_modifier_table(
             item_modifier_df, modifier_df
         )
+
         item_modifier_df = self._clean_item_modifier_table(item_modifier_df)
+
         insert_data(
             item_modifier_df,
             url=self.url,
             table_name="itemModifier",
-            logger=self.logger,
+            logger=logger,
             headers=self.pom_auth_headers,
         )
 
@@ -401,17 +315,20 @@ class PoeAPIDataTransformer:
         currency_df: pd.DataFrame,
     ) -> None:
         try:
+            logger.debug("Transforming data into tables.")
+            logger.debug("Processing data tables.")
             self._process_account_table(df.copy(deep=True))
             self._process_stash_table(df.copy(deep=True))
-            self._process_item_basetype_table(df.copy(deep=True))
             item_id = self._process_item_table(
                 df.copy(deep=True), currency_df=currency_df
             )
             self._process_item_modifier_table(
                 df.copy(deep=True), item_id=item_id, modifier_df=modifier_df
             )
-        except requests.exceptions.HTTPError as e:
-            self.logger.exception(f"Something went wrong:\n{repr(e)}")
+            logger.debug("Successfully transformed data into tables.")
+
+        except HTTPError as e:
+            logger.exception(f"Something went wrong:\n{repr(e)}")
             raise e
 
 
@@ -437,9 +354,7 @@ class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
     def _transform_item_modifier_table(
         self, item_modifier_df: pd.DataFrame, modifier_df: pd.DataFrame
     ) -> pd.DataFrame:
-        item_modifier_df = get_rolls(
-            df=item_modifier_df, modifier_df=modifier_df, logger=self.logger
-        )
+        item_modifier_df = get_rolls(df=item_modifier_df, modifier_df=modifier_df)
 
         return item_modifier_df
 

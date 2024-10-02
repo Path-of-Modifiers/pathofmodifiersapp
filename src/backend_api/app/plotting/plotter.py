@@ -1,17 +1,19 @@
 import pandas as pd
-from fastapi import HTTPException
 from pydantic import TypeAdapter
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import Select
 
 from app.core.models.models import Currency as model_Currency
 from app.core.models.models import Item as model_Item
 from app.core.models.models import ItemBaseType as model_ItemBaseType
 from app.core.models.models import ItemModifier as model_ItemModifier
+from app.core.schemas.plot import PlotData, PlotQuery
+from app.exceptions.model_exceptions.plot_exception import (
+    PlotNoModifiersProvidedError,
+    PlotQueryDataNotFoundError,
+)
 from app.plotting.utils import find_conversion_value, summarize_function
-
-from .schemas import PlotData, PlotQuery
 
 
 class Plotter:
@@ -36,9 +38,10 @@ class Plotter:
             .where(model_Item.league == league)
         )
         if len(query.wantedModifiers) == 0:
-            raise HTTPException(
-                status_code=406,
-                detail="The plotting tool requires you to select at least one modifier",
+            raise PlotNoModifiersProvidedError(
+                query_data=query,
+                function_name=self._init_query.__name__,
+                class_name=self.__class__.__name__,
             )
         return statement
 
@@ -179,18 +182,22 @@ class Plotter:
 
         return plot_data
 
-    async def plot(self, db: Session, *, query: PlotQuery) -> PlotData:
-        statement = self._init_query(query)
-        statement = self._item_spec_query(statement, query=query)
-        statement = self._base_spec_query(statement, query=query)
-        statement = self._wanted_modifier_query(statement, query=query)
+    async def plot(self, db: AsyncSession, *, query: PlotQuery) -> PlotData:
+        async with db.begin():
+            statement = self._init_query(query)
+            statement = self._item_spec_query(statement, query=query)
+            statement = self._base_spec_query(statement, query=query)
+            statement = self._wanted_modifier_query(statement, query=query)
 
-        result = db.execute(statement).mappings().all()
-        df = pd.DataFrame(result)
+            result = await db.execute(statement)
+        rows = result.mappings().all()
+        df = pd.DataFrame(rows)
 
         if df.empty:
-            raise HTTPException(
-                status_code=404, detail="No data matching criteria found."
+            raise PlotQueryDataNotFoundError(
+                query_data=query,
+                function_name=self.plot.__name__,
+                class_name=self.__class__.__name__,
             )
         else:
             (

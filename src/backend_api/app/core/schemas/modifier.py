@@ -38,7 +38,7 @@ class GroupedModifierByEffect(_pydantic.BaseModel):
 
 # Properties to receive on modifier creation
 class ModifierCreate(_BaseModifier):
-    modifierId: int | None = None
+    pass
 
 
 # Properties to receive on update

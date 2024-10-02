@@ -109,6 +109,28 @@ To access the Redis Cache server, run:
 redis-cli -h $DOMAIN -p 6379 -a $REDIS_PASSWORD
 ```
 
+### Redis Container Errors and Warnings
+
+These are errors that may show up when creating a Redis container in our application.
+
+#### Memory overcommit
+
+```
+WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition...
+```
+
+This warning can be fixed by enabling overcommit on reboot:
+
+```bash
+echo "vm.overcommit_memory = 1" | sudo tee /etc/sysctl.d/nextcloud-aio-memory-overcommit.conf
+```
+
+Enable it temporarily and immediately:
+
+```bash
+sysctl "vm.overcommit_memory=1"
+```
+
 ## Pre-commits and code linting
 
 We use a tool called [pre-commit](https://pre-commit.com/#intro) for code linting and formatting.

@@ -1,5 +1,4 @@
 import asyncio
-import logging
 import threading
 import time
 from collections.abc import Iterator
@@ -23,6 +22,7 @@ from external_data_retrieval.utils import (
     WrongLeagueSetException,
     sync_timing_tracker,
 )
+from logs.logger import data_retrieval_logger as logger
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
@@ -42,7 +42,6 @@ class APIHandler:
         url: str,
         auth_token: str,
         *,
-        logger_parent: logging.Logger,
         n_wanted_items: int = 100,
         n_unique_wanted_items: int = 5,
         item_detectors: list[UniqueDetector] | None = None,
@@ -55,6 +54,7 @@ class APIHandler:
             :param n_unique_wanted_items: (int) The number of different type of items the program should search for before quitin.
             :param item_detectors: (list[ItemDetector]) A list of `ItemDetector` instances.
         """
+        logger.debug("Initializing APIHandler.")
         if item_detectors is None:
             item_detectors = [
                 UniqueArmourDetector(),
@@ -62,22 +62,27 @@ class APIHandler:
                 UniqueJewelleryDetector(),
                 UniqueWeaponDetector(),
             ]
+        logger.debug("Item detectors set to: " + str(item_detectors))
         self.url = url
+        logger.debug("Url set to: " + self.url)
         self.auth_token = auth_token
         self.headers["Authorization"] = "Bearer " + auth_token
+        logger.debug("Headers set to: " + str(self.headers))
 
         self.item_detectors = item_detectors
+        logger.debug("Item detectors set to: " + str(self.item_detectors))
 
         self.n_found_items = 0
         self.n_wanted_items = n_wanted_items
+        logger.debug("Wanted items set to: " + str(self.n_wanted_items))
 
         self.n_unique_items_found = 0
         self.n_unique_wanted_items = n_unique_wanted_items
-
-        self.logger = logger_parent.getChild("API_handler")
+        logger.debug("Unique items wanted set to: " + str(self.n_unique_wanted_items))
 
         self._program_too_slow = False
         self.time_of_launch = time.perf_counter()
+        logger.info("APIHandler successfully initialized.")
 
     def _json_to_df(self, stashes: list) -> pd.DataFrame:
         df_temp = pd.json_normalize(stashes)
@@ -128,7 +133,7 @@ class APIHandler:
 
                 df = df_leftover.copy(deep=True)
         except:
-            self.logger.exception(
+            logger.exception(
                 f"While checking stashes (detector: {item_detector}), the exception below occured:"
             )
             raise
@@ -201,46 +206,50 @@ class APIHandler:
                 headers = response.headers
                 if response.status >= 300:
                     if response.status == 429:
-                        self.logger.critical("Recieved a 429 (ratelimited) response")
-                        print(headers)
-                        time.sleep(int(headers["Retry-After"]))
+                        logger.exception(
+                            f"Received a 429 with the response  {response.text}"
+                        )
+                        logger.debug(
+                            f"During the 429 response, these are the headers: {headers}"
+                        )
+                        await asyncio.sleep(int(headers["Retry-After"]))
                         waiting_for_next_id_lock.release()
                         return await self._send_n_recursion_requests(
                             n, session, waiting_for_next_id_lock, mini_batch_size
                         )
                     else:
                         waiting_for_next_id_lock.release()
-                        self.logger.critical(
-                            f"Recieved the response code {response.status}"
+                        logger.exception(
+                            f"Recieved the following response: status:'{response.status}' '{response.reason}' text:'{response.text}'"
                         )
                         response.raise_for_status()
-                        self.logger.critical(
+                        logger.warning(
                             "The above response code did not result in an error, discarding the response for safety"
                         )
                         return []
 
                 new_next_change_id = headers["X-Next-Change-Id"]
                 if new_next_change_id == self.next_change_id:
-                    self.logger.info("We sucessfully caught up to the stream!")
-                    time.sleep(
+                    logger.info("We sucessfully caught up to the stream!")
+                    await asyncio.sleep(
                         30
                     )  # We have caught up to the stream, sleep for 30 seconds to fall behind.
-                # print(
-                #     f"Thread {threading.get_ident()} acquired lock. Current id={self.next_change_id}, next id={new_next_change_id}"
-                # )
+                logger.debug(
+                    f"Thread {threading.get_ident()} acquired lock. Current id={self.next_change_id}, next id={new_next_change_id}"
+                )
                 self.next_change_id = new_next_change_id
 
                 self.requests_since_last_checkpoint += 1
                 n -= 1
-                # print(
-                #     f"New id ready, releasing lock. Current request count = {self.requests_since_last_checkpoint}"
-                # )
+                logger.debug(
+                    f"New id ready, releasing lock. Current request count = {self.requests_since_last_checkpoint}"
+                )
                 if (
                     headers["X-Rate-Limit-Ip"].split(":")[0]
                     == headers["X-Rate-Limit-Ip-State"].split(":")[0]
                 ):
-                    print("Hit ratelimit, cooling down for one test period.")
-                    time.sleep(int(headers["X-Rate-Limit-Ip"].split(":")[1]))
+                    logger.info("Hit ratelimit, cooling down for one test period")
+                    await asyncio.sleep(int(headers["X-Rate-Limit-Ip"].split(":")[1]))
                 waiting_for_next_id_lock.release()
 
                 stashes = await self._send_n_recursion_requests(
@@ -252,13 +261,14 @@ class APIHandler:
                 del response_json
                 return stashes
         except:
-            print("Exiting '_send_n_recursion_requests' gracefully")
-            self.logger.exception(
-                "The following exception occured during '_send_n_recursion_requests'"
+            logger.info(
+                f"Exiting {self._send_n_recursion_requests.__name__} gracefully"
             )
-            self.logger.info("Exiting '_send_n_recursion_requests' gracefully")
+            logger.exception(
+                f"The following exception occured during {self._send_n_recursion_requests.__name__}"
+            )
             if waiting_for_next_id_lock.locked():
-                self.logger.info("Released lock after crash")
+                logger.info("Released lock after crash")
                 if headers is not None:
                     if (
                         "X-Rate-Limit-Ip" in headers.keys()
@@ -268,8 +278,12 @@ class APIHandler:
                             headers["X-Rate-Limit-Ip"].split(":")[0]
                             == headers["X-Rate-Limit-Ip-State"].split(":")[0]
                         ):
-                            print("Hit ratelimit, cooling down for one test period.")
-                            time.sleep(int(headers["X-Rate-Limit-Ip"].split(":")[1]))
+                            logger.info(
+                                "Hit ratelimit, cooling down for one test period"
+                            )
+                            await asyncio.sleep(
+                                int(headers["X-Rate-Limit-Ip"].split(":")[1])
+                            )
 
                 waiting_for_next_id_lock.release()
             raise
@@ -295,7 +309,7 @@ class APIHandler:
                     stashes = await self._send_n_recursion_requests(
                         5, session, waiting_for_next_id_lock, mini_batch_size
                     )
-                    # print(f"Thread {threading.get_ident()} finished 5 requests")
+                    logger.debug(f"Thread {threading.get_ident()} finished 5 requests")
                     stash_lock.acquire()
                     self.stashes += stashes
                     stash_lock.release()
@@ -303,15 +317,14 @@ class APIHandler:
 
                 stashes = []
                 stashes_ready_event.set()
-                time.sleep(1)
+                await asyncio.sleep(1)
         except:
-            self.logger.exception(
-                "The following exception occured during '_follow_stream'"
+            logger.exception(
+                f"The following exception occured during {self._follow_stream}"
             )
             raise
         finally:
-            self.logger.info("Exiting '_follow_stream' gracefully.")
-            print("Exiting '_follow_stream' gracefully.")
+            logger.info(f"Exiting {self._follow_stream} gracefully")
 
             await session.close()
 
@@ -348,7 +361,7 @@ class APIHandler:
         stashes_ready_event.wait()
         stash_lock.acquire()
 
-        print("Stashes are ready for processing.")
+        logger.info("Stashes are ready for processing")
         stashes_local = self.stashes
         del self.stashes
         self.stashes = []
@@ -357,10 +370,10 @@ class APIHandler:
         stash_lock.release()
         stashes_ready_event.clear()
 
-        # print("Copied stashes locally and reset the event.")
+        logger.debug("Copied stashes locally and reset the event")
         wandted_df = self._check_stashes(stashes_local)
         df = pd.concat((df, wandted_df))
-        print("Finished processing the data, waiting for more.")
+        logger.info("Finished processing the data, waiting for more")
         return df
 
     def _gather_n_checkpoints(
@@ -420,7 +433,7 @@ class APIHandler:
             waiting_for_next_id_lock = self.waiting_for_next_id_lock
             stash_lock = self.stash_lock
 
-        print("Initializing follow stream threads")
+        logger.info("Initializing follow stream threads")
         futures = {}
         for _ in range(listeners):
             future = executor.submit(
@@ -430,6 +443,7 @@ class APIHandler:
                 stash_lock,
             )
             futures[future] = "listener"
+            logger.debug(f"Initialized listener {future}")
 
         if has_crashed:
             if len(futures) == 1:
@@ -455,12 +469,14 @@ class APIHandler:
         else:
             time.sleep(5)  # Waits for the listening threads to have time to start up.
             while True:
-                print("Begining processing the stream")
+                logger.info("Begining processing the stream")
                 df = self._gather_n_checkpoints(stashes_ready_event, stash_lock)
-                print("Finished processing the stream, entering transformation phase")
+                logger.info(
+                    "Finished processing the stream, entering transformation phase"
+                )
                 yield df.reset_index()
                 del df
-                print("Finished transformation phase.")
+                logger.info("Finished transformation phase")
                 current_time = time.perf_counter()
                 time_since_launch = current_time - self.time_of_launch
                 if time_since_launch > 3600:

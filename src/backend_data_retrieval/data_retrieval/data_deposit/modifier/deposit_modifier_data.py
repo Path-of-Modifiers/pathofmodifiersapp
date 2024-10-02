@@ -1,45 +1,24 @@
 import logging
-import os
-from collections.abc import Iterator
 from io import StringIO
 
 import pandas as pd
 import requests
+from utils import df_to_JSON
 
-from external_data_retrieval.config import settings
-from modifier_data_deposit.modifier_processing_modules import (
+from data_deposit.deposit_base import DataDepositerBase
+from data_deposit.modifier.modifier_processing_modules import (
     add_regex,
     check_for_additional_modifier_types,
     check_for_updated_numerical_rolls,
     check_for_updated_text_rolls,
 )
-from modifier_data_deposit.utils import df_to_JSON
-from pom_api_authentication import (
-    get_superuser_token_headers,
-)
-
-logging.basicConfig(
-    filename="modifier_data_deposit.log",
-    level=logging.INFO,
-    format="%(asctime)s:%(levelname)-8s:%(name)s: %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
 
 CASCADING_UPDATE = True
 
 
-class DataDepositer:
-    def __init__(self) -> None:
-        self.new_data_location = "modifier_data_deposit/modifier_data"
-        if "localhost" not in settings.BASEURL:
-            self.base_url = f"https://{settings.BASEURL}"
-        else:
-            self.base_url = "http://src-backend-1"
-        self.modifier_url = self.base_url + "/api/api_v1/modifier/"
-        self.update_disabled = not CASCADING_UPDATE
-        self.pom_auth_headers = get_superuser_token_headers(
-            self.base_url + "/api/api_v1"
-        )
+class ModifierDataDepositer(DataDepositerBase):
+    def __init__(self, logger: logging.Logger) -> None:
+        super().__init__(data_type="modifier", logger=logger)
 
         self.modifier_types = [
             "implicit",
@@ -53,34 +32,12 @@ class DataDepositer:
             "veiled",
         ]
 
-        self.logger = logging.getLogger("modifier_data_deposit")
-
-    def _load_data(self) -> Iterator[pd.DataFrame]:
-        for filename in os.listdir(self.new_data_location):
-            filepath = os.path.join(self.new_data_location, filename)
-
-            self.logger.info(f"Loading new data from '{filename}'.")
-            df = pd.read_csv(filepath, dtype=str, comment="#", index_col=False)
-            self.logger.info("Successfully loaded new data.")
-            self.logger.info("Recording attached comments:")
-            with open(filepath) as infile:
-                for line in infile:
-                    if "#" == line[0]:
-                        self.logger.info(line.rstrip())
-                        if "# Unique Name: " in line:
-                            related_unique = line.rstrip().split(": ")[1]
-                    else:
-                        self.logger.info("End of attached comments.")
-                        break
-
-            df["relatedUniques"] = related_unique
-
-            yield df
+        self.update_disabled = not CASCADING_UPDATE
 
     def _get_current_modifiers(self) -> pd.DataFrame:
         self.logger.info("Retrieving previously deposited data.")
 
-        response = requests.get(self.modifier_url, headers=self.pom_auth_headers)
+        response = requests.get(self.data_url, headers=self.pom_auth_headers)
 
         df = pd.DataFrame()
         # Check if the request was successful
@@ -116,7 +73,7 @@ class DataDepositer:
             by=["effect", "position"], ascending=False, inplace=True
         )
 
-        update_url = self.modifier_url + "?modifierId={}"
+        update_url = self.data_url + "?modifierId={}"
 
         rolls = None
         for (_, row_cur), (_, row_new) in zip(
@@ -126,8 +83,6 @@ class DataDepositer:
         ):
             put_update = False
             data = df_to_JSON(row_cur, request_method="put")
-            data["relatedUniques"] += "-" + row_new["relatedUniques"]
-
             position = int(data["position"])
             # if position is higher than 1, we want to store the types of rolls it has
             if position >= 1 and rolls is None:
@@ -212,34 +167,3 @@ class DataDepositer:
         df = add_regex(df, logger=self.logger)
         df = self._remove_duplicates(df.copy(deep=True))
         return df
-
-    def _insert_data(self, df: pd.DataFrame) -> None:
-        if df.empty:
-            return None
-        df_json = df_to_JSON(df, request_method="post")
-        self.logger.info("Inserting data into database.")
-        headers = {"accept": "application/json", "Content-Type": "application/json"}
-        headers.update(self.pom_auth_headers)
-        response = requests.post(
-            self.modifier_url,
-            json=df_json,
-            headers=headers,
-        )
-        response.raise_for_status()
-
-        self.logger.info("Successfully inserted data into database.")
-
-    def deposit_data(self) -> None:
-        for df in self._load_data():
-            df = self._process_data(df)
-            self._insert_data(df)
-
-
-def main():
-    data_depositer = DataDepositer()
-    data_depositer.deposit_data()
-    return 0
-
-
-if __name__ == "__main__":
-    main()
