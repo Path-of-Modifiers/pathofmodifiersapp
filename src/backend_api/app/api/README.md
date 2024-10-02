@@ -1,3 +1,5 @@
+# Currently outdated. Check out $DOMAIN/docs for updated contents
+
 ## Table of contents
 - [API documentation for POM](#api-documentation-for-pom)
   - [/account](#account)
