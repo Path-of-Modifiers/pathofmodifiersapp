@@ -1,7 +1,7 @@
 """Added related unique tracking for modifiers
 
 Revision ID: 3d51a9d54735
-Revises: 59a1d9f18849
+Revises: 6d9ebe48cb1e
 Create Date: 2024-09-04 14:02:23.900216
 
 """
@@ -14,7 +14,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = "3d51a9d54735"
-down_revision: Union[str, None] = "59a1d9f18849"
+down_revision: Union[str, None] = "6d9ebe48cb1e"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
