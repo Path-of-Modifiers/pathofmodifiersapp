@@ -14,8 +14,7 @@ from data_retrieval_app.utils import df_to_JSON
 
 
 class DataDepositerBase:
-    def __init__(self, data_type: Literal["modifier", "itemBaseType"]) -> None:
-        # TODO: Change the way urls are setup with file names
+    def __init__(self, data_type: Literal["modifier", "item_base_type"]) -> None:
         if "localhost" not in settings.BASEURL:
             self.base_url = f"https://{settings.BASEURL}"
         else:
@@ -24,10 +23,15 @@ class DataDepositerBase:
         self.base_url += "/api/api_v1"
         self.pom_auth_headers = get_superuser_token_headers(self.base_url)
 
-        self.data_type = data_type
         self.new_data_location = (
             f"data_retrieval_app/data_deposit/{data_type}/{data_type}_data"
         )
+
+        data_type_parts = data_type.split("_")
+        data_type = data_type_parts.pop()
+        while data_type_parts:
+            data_type += data_type_parts.pop().capitalize()
+        self.data_type = data_type
         self.data_url = f"{self.base_url}/{data_type}/"
 
     def _load_data(self) -> Iterator[pd.DataFrame]:
