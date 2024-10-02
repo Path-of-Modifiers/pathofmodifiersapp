@@ -107,7 +107,7 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.middlewares=${STACK_NAME?Variable not set}-www-redirect
 
   backend-data-retrieval:
-    image: backend_data_retrieval:1.0.0
+    image: "${DOCKER_IMAGE_BACKEND_DATA_RETRIEVAL?Variable not set}:${TAG-latest}"
     depends_on:
       db:
         condition: service_healthy
