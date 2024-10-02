@@ -16,6 +16,7 @@ from app.core.models.models import Item as model_Item
 from app.core.models.models import User as model_User
 from app.core.schemas import ItemCreate, User
 from app.crud import CRUD_user
+from app.exceptions.model_exceptions.test_exception import OnlyAvailableInLocalEnvError
 from app.logs.logger import test_logger as logger
 
 router = APIRouter()
@@ -67,6 +68,11 @@ async def bulk_insert_test(
 
     Returns a success message once the insertion is complete.
     """
+    if not settings.ENVIRONMENT == "local":
+        raise OnlyAvailableInLocalEnvError(
+            function_name=bulk_insert_test.__name__,
+        )
+
     try:
         # Perform the bulk insert
         bulk_insert_raw_sql(db, count)
@@ -78,14 +84,19 @@ async def bulk_insert_test(
 @router.post(
     "/bulk-insert-users-and-verify",
     dependencies=[Depends(get_current_active_superuser)],
-    response_model=dict,
+    response_model=list[str],
 )
 async def bulk_insert_users_and_verify(count: int, db: Session = Depends(get_db)):
     """
     Test route for bulk inserting users and verifying them.
 
-    Returns a success message once the insertion is complete.
+    Returns the access tokens for the created users.
     """
+    if not settings.ENVIRONMENT == "local":
+        raise OnlyAvailableInLocalEnvError(
+            function_name=bulk_insert_users_and_verify.__name__,
+        )
+
     logger.debug(f"Inserting {count} users")
     users_create = [
         User(
@@ -126,6 +137,7 @@ async def bulk_insert_users_and_verify(count: int, db: Session = Depends(get_db)
     # Verify users by making an internal request to the login route
     from app.main import app
 
+    tokens = []
     async with AsyncClient(
         app=app,
         base_url="http://localhost"
@@ -137,12 +149,13 @@ async def bulk_insert_users_and_verify(count: int, db: Session = Depends(get_db)
                 "password": "testpassword",  # The password used during creation
             }
             response = await client.post("/login/access-token", data=login_data)
-            logger.debug("verify response: " + str(response.status_code))
             if response.status_code != 200:
                 raise HTTPException(
                     status_code=500,
                     detail=f"User verification failed for {user.username}",
                 )
+
+            tokens.append(response.json()["access_token"])
             logger.debug(f"User {user.username} verified successfully.")
 
-    return {"message": f"Successfully inserted and verified {count} users"}
+    return tokens
