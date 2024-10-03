@@ -8,25 +8,24 @@ pd.set_option("display.max_colwidth", None)
 
 
 class RollProcessor:
+    @property
+    def modifier_df(self) -> pd.DataFrame:
+        return self._modifier_df
+
+    @modifier_df.setter
+    def modifier_df(self, modifier_df: pd.DataFrame):
+        self._modifier_df = modifier_df
+
+        static_modifier_mask = modifier_df["static"] == "True"
+        self.static_modifier_df = modifier_df.loc[static_modifier_mask]
+
+        self.dynamic_modifier_df = modifier_df.loc[~static_modifier_mask]
+
     def add_modifier_df(self, modifier_df: pd.DataFrame):
         try:
             modifier_df = self.modifier_df
         except AttributeError:
             self.modifier_df = modifier_df
-
-            static_modifier_mask = modifier_df["static"] == "True"
-            self.static_modifier_df = modifier_df.loc[static_modifier_mask]
-
-            dynamic_modifier_df = modifier_df.loc[~static_modifier_mask]
-
-            # sort based on length of effect
-            sorted_index_mask = (
-                dynamic_modifier_df["effect"]
-                .str.len()
-                .sort_values(ascending=False)
-                .index
-            )
-            self.dynamic_modifier_df = dynamic_modifier_df.reindex(sorted_index_mask)
 
     def _pre_processing(self, df: pd.DataFrame) -> pd.DataFrame:
         df.loc[:, "modifier"] = df[
@@ -65,16 +64,11 @@ class RollProcessor:
 
         return merged_static_df
 
-    def _process_dynamic(
-        self, df: pd.DataFrame, static_modifers_mask: pd.Series
-    ) -> pd.DataFrame:
+    def _get_rolls(self, dynamic_df: pd.DataFrame) -> pd.DataFrame:
         """
-        A much more expensive operation
+        Uses regex matching groups to extract the rolls and adds
+        the correct effect.
         """
-        dynamic_modifier_df = self.dynamic_modifier_df
-        dynamic_df = df.loc[~static_modifers_mask]  # Everything not static is dynamic
-
-        dynamic_df.loc[:, "effect"] = dynamic_df.loc[:, "modifier"]
 
         def extract_rolls(matchobj: re.Match) -> str:
             rolls = [
@@ -84,6 +78,8 @@ class RollProcessor:
             ]
 
             return "matched" + ":-:".join(rolls)
+
+        dynamic_modifier_df = self.dynamic_modifier_df
 
         # The process must be broken down into a for-loop as the replacement is unique
 
@@ -97,8 +93,6 @@ class RollProcessor:
             matched_modifiers_mask = matched_modifiers.str.contains("matched", na=False)
 
             dynamic_w_rolls_df.loc[matched_modifiers_mask, "effect"] = effect
-            # dynamic_w_rolls_df.loc[matched_modifiers_mask, "position"] = position
-            # dynamic_w_rolls_df.loc[matched_modifiers_mask, "textRolls"] = textRolls
             dynamic_w_rolls_df.loc[
                 matched_modifiers_mask, "roll"
             ] = matched_modifiers.loc[matched_modifiers_mask]
@@ -125,6 +119,23 @@ class RollProcessor:
                 f"These modifiers were not present in the database: {failed_df['effect'].unique().tolist()}"
             )
             dynamic_df = dynamic_df.loc[~dynamic_df["roll"].isna()]
+
+        return dynamic_df
+
+    def _process_dynamic(
+        self, df: pd.DataFrame, static_modifers_mask: pd.Series
+    ) -> pd.DataFrame:
+        """
+        A much more expensive operation
+
+        Uses the regex column to match incoming modifiers to modifiers in the db.
+        """
+        dynamic_modifier_df = self.dynamic_modifier_df
+        dynamic_df = df.loc[~static_modifers_mask]  # Everything not static is dynamic
+
+        dynamic_df.loc[:, "effect"] = dynamic_df.loc[:, "modifier"]
+
+        dynamic_df = self._get_rolls(dynamic_df.copy())
 
         # Creates a column for position, which contains a list of numerical strings
         dynamic_df.loc[:, "position"] = dynamic_df.loc[:, "roll"].apply(

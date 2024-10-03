@@ -28,9 +28,9 @@ class DataDepositerBase:
         )
 
         data_type_parts = data_type.split("_")
-        data_type = data_type_parts.pop()
+        data_type = data_type_parts.pop(0)
         while data_type_parts:
-            data_type += data_type_parts.pop().capitalize()
+            data_type += data_type_parts.pop(0).capitalize()
         self.data_type = data_type
         self.data_url = f"{self.base_url}/{data_type}/"
 

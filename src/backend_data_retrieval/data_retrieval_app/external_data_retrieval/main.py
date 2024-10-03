@@ -18,7 +18,7 @@ from data_retrieval_app.external_data_retrieval.data_retrieval.poe_ninja_currenc
     PoeNinjaCurrencyAPIHandler,
 )
 from data_retrieval_app.external_data_retrieval.transforming_data.transform_poe_api_data import (
-    PoeAPIDataTransformer,
+    PoeAPIDataTransformerBase,
     UniquePoeAPIDataTransformer,
 )
 from data_retrieval_app.external_data_retrieval.transforming_data.transform_poe_ninja_currency_api_data import (
@@ -50,7 +50,7 @@ class ContiniousDataRetrieval:
     def __init__(
         self,
         items_per_batch: int,
-        data_transformers: dict[str, PoeAPIDataTransformer],
+        data_transformers: dict[str, PoeAPIDataTransformerBase],
     ):
         self.data_transformers = {
             key: data_transformer()
