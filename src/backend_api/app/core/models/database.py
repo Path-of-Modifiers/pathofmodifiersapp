@@ -7,7 +7,7 @@ from app.core.config import settings
 
 engine = create_engine(str(settings.DATABASE_URI))
 async_engine = create_async_engine(  # This engine is used for plotting queries
-    str(settings.ASYNC_DATABASE_URI), echo=True
+    str(settings.ASYNC_DATABASE_URI)
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
