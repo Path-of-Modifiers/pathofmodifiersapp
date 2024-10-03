@@ -1,4 +1,3 @@
-import logging
 import os
 from collections.abc import Iterator
 from typing import Literal
@@ -6,19 +5,16 @@ from typing import Literal
 import pandas as pd
 import requests
 
-from external_data_retrieval.config import settings
 from data_deposit.utils import df_to_JSON
+from external_data_retrieval.config import settings
+from logs.logger import data_deposit_logger as logger
 from pom_api_authentication import (
     get_superuser_token_headers,
 )
 
 
 class DataDepositerBase:
-    def __init__(
-        self, data_type: Literal["modifier", "itemBaseType"], *, logger: logging.Logger
-    ) -> None:
-        self.logger = logger
-
+    def __init__(self, data_type: Literal["modifier", "itemBaseType"]) -> None:
         if "localhost" not in settings.BASEURL:
             self.base_url = f"https://{settings.BASEURL}"
         else:
@@ -35,16 +31,16 @@ class DataDepositerBase:
         for filename in os.listdir(self.new_data_location):
             filepath = os.path.join(self.new_data_location, filename)
 
-            self.logger.info(f"Loading new data from '{filename}'.")
+            logger.info(f"Loading new data from '{filename}'.")
             df = pd.read_csv(filepath, dtype=str, comment="#", index_col=False)
-            self.logger.info("Successfully loaded new data.")
-            self.logger.info("Recording attached comments:")
+            logger.info("Successfully loaded new data.")
+            logger.info("Recording attached comments:")
             with open(filepath) as infile:
                 for line in infile:
                     if "#" == line[0]:
-                        self.logger.info(line.rstrip())
+                        logger.info(line.rstrip())
                     else:
-                        self.logger.info("End of attached comments.")
+                        logger.info("End of attached comments.")
                         break
 
             yield df
@@ -56,7 +52,7 @@ class DataDepositerBase:
         if df.empty:
             return None
         df_json = df_to_JSON(df, request_method="post")
-        self.logger.info("Inserting data into database.")
+        logger.info("Inserting data into database.")
         headers = {"accept": "application/json", "Content-Type": "application/json"}
         headers.update(self.pom_auth_headers)
         response = requests.post(
@@ -66,7 +62,7 @@ class DataDepositerBase:
         )
         response.raise_for_status()
 
-        self.logger.info("Successfully inserted data into database.")
+        logger.info("Successfully inserted data into database.")
 
     def deposit_data(self) -> None:
         for df in self._load_data():
