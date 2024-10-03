@@ -11,6 +11,8 @@ from sqlalchemy.orm import Session
 
 from app.api.api_message_util import (
     get_delete_return_msg,
+    get_set_rate_limit_tier_success_msg,
+    get_user_active_change_msg,
     get_user_psw_change_msg,
     get_user_register_confirmation_sent_msg,
     get_user_successfully_registered_msg,
@@ -1083,6 +1085,78 @@ class TestUserAPI(BaseTest):
             )
             assert r_get_user_me_ok.status_code == invalid_token_error.status_code
             assert r_get_user_me_ok.json()["detail"] == invalid_token_error.detail
+
+    @pytest.mark.anyio
+    async def test_change_is_active_user(
+        self,
+        async_client: AsyncClient,
+        db: Session,
+        superuser_token_headers: dict[str, str],
+    ) -> None:
+        email = random_email()
+        password = random_lower_string()
+        username = random_lower_string()
+        user_create = UserCreate(
+            email=email, password=password, username=username, isActive=True
+        )
+        user = CRUD_user.create(db=db, user_create=user_create)
+        active_user_db = CRUD_user.get(db=db, filter={"email": email})
+        assert active_user_db
+        assert active_user_db.isActive is True
+        update_is_active_data = {"user_id": str(user.userId), "is_active": False}
+        r = await async_client.patch(
+            f"{settings.API_V1_STR}/{user_prefix}/is_active/{user.userId}",
+            headers=superuser_token_headers,
+            params=update_is_active_data,
+        )
+        assert r.status_code == 200
+        assert (
+            r.json()["message"]
+            == get_user_active_change_msg(user.username, active=False).message
+        )
+
+        updated_user_db = CRUD_user.get(db=db, filter={"email": email})
+        db.refresh(updated_user_db)
+        assert updated_user_db.isActive is False
+
+    @pytest.mark.anyio
+    async def test_change_rate_limit_tier_user(
+        self,
+        async_client: AsyncClient,
+        db: Session,
+        superuser_token_headers: dict[str, str],
+    ) -> None:
+        email = random_email()
+        password = random_lower_string()
+        username = random_lower_string()
+        user_create = UserCreate(
+            email=email, password=password, username=username, rateLimitTier=0
+        )
+        user = CRUD_user.create(db=db, user_create=user_create)
+        active_user_db = CRUD_user.get(db=db, filter={"email": email})
+        assert active_user_db
+        assert active_user_db.rateLimitTier == 0
+        new_rate_limit_tier = 1
+        update_rate_limit_tier_data = {
+            "user_id": str(user.userId),
+            "rate_limit_tier": new_rate_limit_tier,
+        }
+        r = await async_client.patch(
+            f"{settings.API_V1_STR}/{user_prefix}/rate_limit_tier/{user.userId}",
+            headers=superuser_token_headers,
+            params=update_rate_limit_tier_data,
+        )
+        assert r.status_code == 200
+        assert (
+            r.json()["message"]
+            == get_set_rate_limit_tier_success_msg(
+                user.username, rate_limit_tier=new_rate_limit_tier
+            ).message
+        )
+
+        updated_user_db = CRUD_user.get(db=db, filter={"email": email})
+        db.refresh(updated_user_db)
+        assert updated_user_db.rateLimitTier == new_rate_limit_tier
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)

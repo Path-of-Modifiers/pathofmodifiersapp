@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.api.api_message_util import (
     get_delete_return_msg,
+    get_set_rate_limit_tier_success_msg,
     get_user_active_change_msg,
     get_user_psw_change_msg,
     get_user_register_confirmation_sent_msg,
@@ -499,7 +500,7 @@ async def register_user_confirm(
 
     user_db = CRUD_user.get(db, filter={"email": email})
 
-    user = CRUD_user.set_active(db=db, db_user=user_db, active=True)
+    user = CRUD_user.set_active(db=db, user_id=user_db.userId, active=True)
 
     return get_user_successfully_registered_msg(
         username=user.username, email=user.email
@@ -550,7 +551,7 @@ async def get_user_by_id(
     dependencies=[Depends(get_current_active_superuser)],
     response_model=UserPublic,
 )
-def update(
+def update_user(
     *,
     db: Session = Depends(get_db),
     user_id: uuid.UUID,
@@ -564,7 +565,11 @@ def update(
     return db_user
 
 
-@router.delete("/{user_id}", dependencies=[Depends(get_current_active_superuser)])
+@router.delete(
+    "/{user_id}",
+    dependencies=[Depends(get_current_active_superuser)],
+    response_model=Message,
+)
 async def delete_user(
     current_user: CurrentUser,
     user_id: uuid.UUID,
@@ -594,43 +599,59 @@ async def delete_user(
 
 
 @router.patch(
-    "/activate/{user_id}",
+    "/is_active/{user_id}",
     dependencies=[Depends(get_current_active_superuser)],
+    response_model=Message,
 )
-@apply_user_rate_limits(
-    settings.STRICT_DEFAULT_USER_RATE_LIMIT_SECOND,
-    settings.STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE,
-    settings.STRICT_DEFAULT_USER_RATE_LIMIT_HOUR,
-    settings.STRICT_DEFAULT_USER_RATE_LIMIT_DAY,
-)
-async def change_activate_user(
+async def change_is_active_user(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     current_user: CurrentUser,
     user_id: uuid.UUID,
-    activate: bool,
+    is_active: bool,
     db: Session = Depends(get_db),
 ) -> Message:
     """
     Change activity to current user.
     """
     db_user = CRUD_user.get(db, filter={"userId": user_id})
-    if db_user == current_user and not current_user.isSuperuser:
-        CRUD_user.set_active(db=db, db_user=db_user, active=activate)
-        return Message(
-            message=get_user_active_change_msg(db_user.username, activate),
-        )
-    if not current_user.isSuperuser:
-        raise UserWithNotEnoughPrivilegesError(
-            username_or_email=current_user.username,
-            function_name=change_activate_user.__name__,
+    if not db_user:
+        raise DbObjectDoesNotExistError(
+            model_table_name=User.__tablename__,
+            filter={"userId": user_id},
+            function_name=change_is_active_user.__name__,
         )
     if db_user == current_user:
         raise SuperUserNotAllowedToChangeActiveSelfError(
             username_or_email=current_user.username,
-            function_name=change_activate_user.__name__,
+            function_name=change_is_active_user.__name__,
         )
-    CRUD_user.set_active(db=db, db_user=db_user, active=activate)
-    return Message(
-        message=get_user_active_change_msg(db_user.username, activate),
-    )
+    CRUD_user.set_active(db, user_id=user_id, active=is_active)
+    return get_user_active_change_msg(db_user.username, is_active)
+
+
+@router.patch(
+    "/rate_limit_tier/{user_id}",
+    dependencies=[Depends(get_current_active_superuser)],
+    response_model=Message,
+)
+async def set_rate_limit_tier_user(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    user_id: uuid.UUID,
+    rate_limit_tier: int,
+    db: Session = Depends(get_db),
+) -> Message:
+    """
+    Set rate limit tier to current user.
+    """
+    db_user = CRUD_user.get(db, filter={"userId": user_id})
+    if not db_user:
+        raise DbObjectDoesNotExistError(
+            model_table_name=User.__tablename__,
+            filter={"userId": user_id},
+            function_name=set_rate_limit_tier_user.__name__,
+        )
+    user_update = UserUpdate(rateLimitTier=rate_limit_tier)
+    CRUD_user.update(db=db, user_id=user_id, user_in=user_update)
+    return get_set_rate_limit_tier_success_msg(db_user.username, rate_limit_tier)
