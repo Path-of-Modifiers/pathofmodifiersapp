@@ -13,7 +13,7 @@ from data_retrieval_app.utils import insert_data
 pd.options.mode.chained_assignment = None  # default="warn"
 
 
-class PoeAPIDataTransformer:
+class PoeAPIDataTransformerBase:
     def __init__(self):
         logger.debug("Initializing PoeAPIDataTransformer")
         if "localhost" not in settings.BASEURL:
@@ -327,7 +327,7 @@ class PoeAPIDataTransformer:
             raise e
 
 
-class UniquePoeAPIDataTransformer(PoeAPIDataTransformer):
+class UniquePoeAPIDataTransformer(PoeAPIDataTransformerBase):
     def _create_item_modifier_table(
         self, df: pd.DataFrame, *, item_id: pd.Series
     ) -> pd.DataFrame:
