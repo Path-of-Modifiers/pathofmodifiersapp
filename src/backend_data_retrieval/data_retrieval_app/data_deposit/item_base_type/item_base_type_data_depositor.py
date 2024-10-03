@@ -1,9 +1,9 @@
 from pandas import DataFrame
 
-from data_retrieval_app.data_deposit.deposit_base import DataDepositerBase
+from data_retrieval_app.data_deposit.data_depositor_base import DataDepositorBase
 
 
-class ItemBaseTypeDataDepositer(DataDepositerBase):
+class ItemBaseTypeDataDepositor(DataDepositorBase):
     def __init__(self) -> None:
         super().__init__(data_type="item_base_type")
 
