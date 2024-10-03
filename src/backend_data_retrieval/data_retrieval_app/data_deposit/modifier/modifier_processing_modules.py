@@ -102,7 +102,8 @@ class ModifierRegexCreator:
 
         Uses the aggregated `textRolls` field to determine wether
         the corresponding position has a numerical (textRoll is None),
-        or a text roll.
+        or a text roll which determines the regex pattern to insert in
+         place of the `#`.
 
         Then it accounts for alternative spelling (eg. `-` instead of `+` or
          `reduced` instead of `increased`)
