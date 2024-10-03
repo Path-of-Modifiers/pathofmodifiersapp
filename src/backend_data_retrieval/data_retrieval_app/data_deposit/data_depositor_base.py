@@ -13,7 +13,7 @@ from data_retrieval_app.pom_api_authentication import (
 from data_retrieval_app.utils import df_to_JSON
 
 
-class DataDepositerBase:
+class DataDepositorBase:
     def __init__(self, data_type: Literal["modifier", "item_base_type"]) -> None:
         if "localhost" not in settings.BASEURL:
             self.base_url = f"https://{settings.BASEURL}"
@@ -53,7 +53,7 @@ class DataDepositerBase:
             yield df
 
     def _process_data(self, df: pd.DataFrame) -> pd.DataFrame:
-        raise NotImplementedError("DataDepositerBase is not supposed to be used alone.")
+        raise NotImplementedError("DataDepositorBase is not supposed to be used alone.")
 
     def _insert_data(self, df: pd.DataFrame) -> None:
         if df.empty:
