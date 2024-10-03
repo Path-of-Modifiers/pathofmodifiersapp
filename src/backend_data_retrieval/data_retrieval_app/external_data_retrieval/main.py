@@ -11,18 +11,18 @@ import pandas as pd
 import requests
 
 from data_retrieval_app.external_data_retrieval.config import settings
-from data_retrieval_app.external_data_retrieval.data_retrieval.poe_api_retrieval.poe_api import (
-    APIHandler,
+from data_retrieval_app.external_data_retrieval.data_retrieval.poe_api_handler import (
+    PoEAPIHandler,
 )
-from data_retrieval_app.external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_ninja_currency_api import (
-    PoeNinjaCurrencyAPIHandler,
+from data_retrieval_app.external_data_retrieval.data_retrieval.poe_ninja_currency_api_handler import (
+    PoENinjaCurrencyAPIHandler,
 )
 from data_retrieval_app.external_data_retrieval.transforming_data.transform_poe_api_data import (
-    PoeAPIDataTransformerBase,
-    UniquePoeAPIDataTransformer,
+    PoEAPIDataTransformerBase,
+    UniquePoEAPIDataTransformer,
 )
 from data_retrieval_app.external_data_retrieval.transforming_data.transform_poe_ninja_currency_api_data import (
-    TransformPoeNinjaCurrencyAPIData,
+    TransformPoENinjaCurrencyAPIData,
 )
 from data_retrieval_app.external_data_retrieval.utils import (
     ProgramRunTooLongException,
@@ -35,7 +35,7 @@ from data_retrieval_app.pom_api_authentication import (
 )
 
 
-class ContiniousDataRetrieval:
+class ContinuousDataRetrieval:
     auth_token = settings.POE_PUBLIC_STASHES_AUTH_TOKEN
     current_league = settings.CURRENT_SOFTCORE_LEAGUE
     url = "https://api.pathofexile.com/public-stash-tabs"
@@ -50,24 +50,24 @@ class ContiniousDataRetrieval:
     def __init__(
         self,
         items_per_batch: int,
-        data_transformers: dict[str, PoeAPIDataTransformerBase],
+        data_transformers: dict[str, PoEAPIDataTransformerBase],
     ):
         self.data_transformers = {
             key: data_transformer()
             for key, data_transformer in data_transformers.items()
         }
 
-        self.poe_api_handler = APIHandler(
+        self.poe_api_handler = PoEAPIHandler(
             url=self.url,
             auth_token=self.auth_token,
             n_wanted_items=items_per_batch,
             n_unique_wanted_items=10,
         )
 
-        self.poe_ninja_currency_api_handler = PoeNinjaCurrencyAPIHandler(
+        self.poe_ninja_currency_api_handler = PoENinjaCurrencyAPIHandler(
             url=f"https://poe.ninja/api/data/currencyoverview?league={self.current_league}&type=Currency"
         )
-        self.poe_ninja_transformer = TransformPoeNinjaCurrencyAPIData()
+        self.poe_ninja_transformer = TransformPoENinjaCurrencyAPIData()
 
     def _get_modifiers(self) -> dict[str, pd.DataFrame]:
         response = requests.get(self.modifier_url, headers=self.pom_auth_headers)
@@ -230,9 +230,9 @@ def main():
     logger.info("Starting the program...")
     setup_logging()
     items_per_batch = 300
-    data_transformers = {"unique": UniquePoeAPIDataTransformer}
+    data_transformers = {"unique": UniquePoEAPIDataTransformer}
 
-    data_retriever = ContiniousDataRetrieval(
+    data_retriever = ContinuousDataRetrieval(
         items_per_batch=items_per_batch,
         data_transformers=data_transformers,
     )
