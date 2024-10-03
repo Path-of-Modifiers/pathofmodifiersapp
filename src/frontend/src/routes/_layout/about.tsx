@@ -47,7 +47,7 @@ The data is updated live with a 5 minute delay. The data is fetched from the off
         <VStack width="100%" align="left">
           <Box width="100%">
             <TextWithUnderline
-              text="Data Analysis Tool for POE Item Prices and Modifiers"
+              text="Data Analysis Tool for PoE Item Prices and Modifiers"
               textProps={{ fontSize: "2xl", marginBottom: "1rem" }}
             />
             <Text whiteSpace="pre-line">{aboutDescription}</Text>

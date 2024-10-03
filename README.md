@@ -11,7 +11,7 @@ Not officially released, but currently testing in production :smiley:
 - [Pydantic](https://docs.pydantic.dev/latest/) for data validation and settings management.
 - [PostgreSQL](https://www.postgresql.org/) as the SQL database.
 - [Alembic](https://alembic.sqlalchemy.org/en/latest/front.html) to automate migrations to database
-- Continous stream requests to official [POE API endpoints](https://www.pathofexile.com/developer/docs) written in threaded Python
+- Continous stream requests to official [PoE API endpoints](https://www.pathofexile.com/developer/docs) written in threaded Python
 - [React](https://react.dev/) for the frontend.
 - Using TypeScript, hooks, Vite, Tanstack and other tools for the frontend stack.
 - [Chakra UI](https://v2.chakra-ui.com/) for the frontend components.
@@ -24,7 +24,7 @@ Not officially released, but currently testing in production :smiley:
 
 ## :bike: Current goals we are working towards:
 
-- Production testing through the Settlers POE league
+- Production testing through the Settlers PoE league
 - Comprehensive application testing end-to-end
 - Rate limit security for the API
 - Secure user account storage for tracking rates
