@@ -3,7 +3,7 @@ import requests
 from requests.exceptions import HTTPError
 
 from data_retrieval_app.external_data_retrieval.config import settings
-from data_retrieval_app.external_data_retrieval.transforming_data.utils import (
+from data_retrieval_app.external_data_retrieval.transforming_data.roll_processor import (
     RollProcessor,
 )
 from data_retrieval_app.logs.logger import transform_logger as logger
@@ -13,9 +13,9 @@ from data_retrieval_app.utils import insert_data
 pd.options.mode.chained_assignment = None  # default="warn"
 
 
-class PoeAPIDataTransformerBase:
+class PoEAPIDataTransformerBase:
     def __init__(self):
-        logger.debug("Initializing PoeAPIDataTransformer")
+        logger.debug("Initializing PoEAPIDataTransformer")
         if "localhost" not in settings.BASEURL:
             self.url = f"https://{settings.BASEURL}"
         else:
@@ -25,7 +25,7 @@ class PoeAPIDataTransformerBase:
 
         self.pom_auth_headers = get_superuser_token_headers(self.url)
         logger.debug("Headers set to: " + str(self.pom_auth_headers))
-        logger.debug("Initializing PoeAPIDataTransformer done.")
+        logger.debug("Initializing PoEAPIDataTransformer done.")
 
         self.roll_processor = RollProcessor()
 
@@ -142,7 +142,7 @@ class PoeAPIDataTransformerBase:
         Everything related to the price of the item is stored in the `node`
         attribute.
 
-        There are two types of listings in POE, exact price and asking price which are
+        There are two types of listings in PoE, exact price and asking price which are
         represented by `price` and `b/o` respectively.
         """
 
@@ -327,7 +327,7 @@ class PoeAPIDataTransformerBase:
             raise e
 
 
-class UniquePoeAPIDataTransformer(PoeAPIDataTransformerBase):
+class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
     def _create_item_modifier_table(
         self, df: pd.DataFrame, *, item_id: pd.Series
     ) -> pd.DataFrame:
