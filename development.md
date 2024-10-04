@@ -40,6 +40,10 @@ This will trigger the containers in `docker-compose.override.yml` file.
 5. Tables can be found under:
    - `'custom name'>Databases>${POSTGRES_DB}>Schemas>public>Tables`
 
+## How to run tests
+
+This section describes how to run the various tests in this application.
+
 ### How to run tests in backend API
 
 Describes how to run the tests in backend API.
@@ -74,6 +78,34 @@ To run tests to the real environment backend API, perform this command:
 
 ```bash
 docker compose exec -T backend sh scripts/test_scripts/{test_script_name}.sh
+```
+
+### How to run tests in backend data retrieval
+
+Describes how to run tests in backend data retrieval.
+
+#### Backend data retrieval test prerequisites
+
+You need to build `Dockerfile.test` within module `backend_data_retrieval` root.
+
+To build the container, perform this command:
+
+```bash
+docker build -t backend_data_retrieval_test -f backend_data_retrieval/Dockerfile.test backend_data_retrieval
+```
+
+#### Run tests in backend data retrieval
+
+To run all tests in backend data retrieval, perform this command:
+
+```bash
+docker run --rm backend_data_retrieval_test
+```
+
+If you want to specify a test file, run it like this for example:
+
+```bash
+docker run --rm backend_data_retrieval_test data_retrieval_app/tests/external_data_retrieval/test_continuous_data_retrieval.py
 ```
 
 ## Alembic migrations

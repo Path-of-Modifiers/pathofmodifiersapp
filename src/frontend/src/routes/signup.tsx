@@ -18,7 +18,7 @@ import {
 import { type SubmitHandler, useForm } from "react-hook-form";
 
 import Logo from "/assets/images/POM_logo_rec.svg";
-import type { UserRegister } from "../client";
+import type { UserRegisterPreEmailConfirmation } from "../client";
 import useAuth, { isLoggedIn } from "../hooks/validation/useAuth";
 import {
   confirmPasswordRules,
@@ -45,7 +45,8 @@ export const Route = createFileRoute("/signup")({
   },
 });
 
-interface UserRegisterForm extends UserRegister {
+// TODO: Fix UserRegisterPreEmailConfirmation() here
+interface UserRegisterForm extends UserRegisterPreEmailConfirmation {
   confirm_password: string;
 }
 

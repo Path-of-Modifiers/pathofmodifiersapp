@@ -2,7 +2,7 @@ import pandas as pd
 import requests
 
 
-class PoeNinjaCurrencyAPIHandler:
+class PoENinjaCurrencyAPIHandler:
     def __init__(self, url: str) -> None:
         self.url = url
 

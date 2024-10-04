@@ -2,8 +2,8 @@ import pandas as pd
 import requests
 
 from data_retrieval_app.external_data_retrieval.config import settings
-from data_retrieval_app.external_data_retrieval.data_retrieval.poe_ninja_currency_retrieval.poe_ninja_currency_api import (
-    PoeNinjaCurrencyAPIHandler,
+from data_retrieval_app.external_data_retrieval.data_retrieval.poe_ninja_currency_api_handler import (
+    PoENinjaCurrencyAPIHandler,
 )
 from data_retrieval_app.logs.logger import transform_logger as logger
 from data_retrieval_app.pom_api_authentication import get_superuser_token_headers
@@ -14,7 +14,7 @@ def load_currency_data():
     """
     Loads data from the poe.ninja currency API.
     """
-    poe_ninja_currency_api_handler = PoeNinjaCurrencyAPIHandler(
+    poe_ninja_currency_api_handler = PoENinjaCurrencyAPIHandler(
         url=f"https://poe.ninja/api/data/currencyoverview?league={settings.CURRENT_SOFTCORE_LEAGUE}&type=Currency"
     )
 
@@ -23,9 +23,9 @@ def load_currency_data():
     return currencies_df
 
 
-class TransformPoeNinjaCurrencyAPIData:
+class TransformPoENinjaCurrencyAPIData:
     def __init__(self):
-        logger.debug("Initializing TransformPoeNinjaCurrencyAPIData.")
+        logger.debug("Initializing TransformPoENinjaCurrencyAPIData.")
         if "localhost" not in settings.BASEURL:
             self.url = f"https://{settings.BASEURL}"
         else:
@@ -34,7 +34,7 @@ class TransformPoeNinjaCurrencyAPIData:
         logger.debug("Url set to: " + self.url)
         self.pom_api_headers = get_superuser_token_headers(self.url)
         logger.debug("Headers set to: " + str(self.pom_api_headers))
-        logger.debug("Initializing TransformPoeNinjaCurrencyAPIData done.")
+        logger.debug("Initializing TransformPoENinjaCurrencyAPIData done.")
 
     def _create_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
         """

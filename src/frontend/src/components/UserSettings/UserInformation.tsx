@@ -50,9 +50,10 @@ const UserInformation = () => {
     setEditMode(!editMode);
   };
 
+  // TODO: Fix updateMeEmailSendConfirmation() here
   const mutation = useMutation({
     mutationFn: (data: UserUpdateMe) =>
-      UsersService.updateMe({ requestBody: data }),
+      UsersService.updateMeEmailSendConfirmation({ requestBody: data }),
     onSuccess: () => {
       showToast("Success!", "User updated successfully.", "success");
     },
