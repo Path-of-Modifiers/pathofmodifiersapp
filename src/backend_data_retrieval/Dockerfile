@@ -1,5 +1,6 @@
 FROM python:3.11
 
+RUN useradd -ms /bin/bash admin
 WORKDIR /data_retrieval_app/
 
 # Install Poetry
@@ -21,6 +22,11 @@ RUN bash -c "if [ $INSTALL_DEV == 'true' ] ; then poetry install --no-root ; els
 
 ENV PYTHONPATH=/data_retrieval_app
 
+
 COPY ./prestart.sh /data_retrieval_app/
 
 COPY ./data_retrieval_app /data_retrieval_app/data_retrieval_app
+
+RUN chown -R admin:admin /data_retrieval_app
+RUN chmod 755 /data_retrieval_app
+USER admin
