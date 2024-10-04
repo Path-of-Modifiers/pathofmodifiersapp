@@ -110,12 +110,20 @@ export class AccountsService {
      */
     public static createAccount({
         requestBody,
+        onDuplicatePkeyDoNothing,
+        returnNothing,
     }: {
         requestBody: (AccountCreate | Array<AccountCreate>),
-    }): CancelablePromise<(AccountCreate | Array<AccountCreate>)> {
+        onDuplicatePkeyDoNothing?: (boolean | null),
+        returnNothing?: (boolean | null),
+    }): CancelablePromise<(AccountCreate | Array<AccountCreate> | null)> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/api_v1/account/',
+            query: {
+                'on_duplicate_pkey_do_nothing': onDuplicatePkeyDoNothing,
+                'return_nothing': returnNothing,
+            },
             body: requestBody,
             mediaType: 'application/json',
             errors: {

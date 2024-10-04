@@ -8,8 +8,5 @@ export const $Token = {
             type: 'string',
             isRequired: true,
         },
-        token_type: {
-            type: 'string',
-        },
     },
 } as const;
