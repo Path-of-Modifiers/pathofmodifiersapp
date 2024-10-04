@@ -6,7 +6,5 @@ export type ItemBaseType = {
     baseType: string;
     category: string;
     subCategory?: (string | null);
-    createdAt: string;
-    updatedAt?: (string | null);
 };
 

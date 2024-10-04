@@ -91,10 +91,10 @@ export class ItemsService {
      * Get the latest "itemId"
      *
      * Can only be used safely on an empty table or directly after an insertion.
-     * @returns number Successful Response
+     * @returns any Successful Response
      * @throws ApiError
      */
-    public static getLatestItemId(): CancelablePromise<number> {
+    public static getLatestItemId(): CancelablePromise<(number | null)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/item/latest_item_id/',
@@ -124,12 +124,17 @@ export class ItemsService {
      */
     public static createItem({
         requestBody,
+        returnNothing,
     }: {
         requestBody: (ItemCreate | Array<ItemCreate>),
-    }): CancelablePromise<(ItemCreate | Array<ItemCreate>)> {
+        returnNothing?: (boolean | null),
+    }): CancelablePromise<(ItemCreate | Array<ItemCreate> | null)> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/api_v1/item/',
+            query: {
+                'return_nothing': returnNothing,
+            },
             body: requestBody,
             mediaType: 'application/json',
             errors: {

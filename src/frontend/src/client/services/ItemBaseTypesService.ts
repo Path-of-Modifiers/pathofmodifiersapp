@@ -113,12 +113,20 @@ export class ItemBaseTypesService {
      */
     public static createItemBaseType({
         requestBody,
+        onDuplicatePkeyDoNothing,
+        returnNothing,
     }: {
         requestBody: (ItemBaseTypeCreate | Array<ItemBaseTypeCreate>),
-    }): CancelablePromise<(ItemBaseTypeCreate | Array<ItemBaseTypeCreate>)> {
+        onDuplicatePkeyDoNothing?: (boolean | null),
+        returnNothing?: (boolean | null),
+    }): CancelablePromise<(ItemBaseTypeCreate | Array<ItemBaseTypeCreate> | null)> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/api_v1/itemBaseType/',
+            query: {
+                'on_duplicate_pkey_do_nothing': onDuplicatePkeyDoNothing,
+                'return_nothing': returnNothing,
+            },
             body: requestBody,
             mediaType: 'application/json',
             errors: {
