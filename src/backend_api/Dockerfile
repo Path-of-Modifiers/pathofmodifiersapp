@@ -25,8 +25,6 @@ COPY ./prestart.sh /app/
 
 COPY ./app /app/app
 
-RUN mkdir -p /app/app/logs && chown -R admin:admin /app/app/logs
-
 RUN chown -R admin:admin /app
 RUN chmod 755 /app
 USER admin
