@@ -3,7 +3,7 @@ import requests
 from requests.exceptions import HTTPError
 
 from data_retrieval_app.external_data_retrieval.config import settings
-from data_retrieval_app.external_data_retrieval.transforming_data.utils import (
+from data_retrieval_app.external_data_retrieval.transforming_data.roll_processor import (
     RollProcessor,
 )
 from data_retrieval_app.logs.logger import transform_logger as logger
