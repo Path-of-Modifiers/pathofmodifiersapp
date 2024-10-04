@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export const $Body_logins_login_access_token = {
+export const $Body_logins_login_access_session = {
     properties: {
         grant_type: {
             type: 'any-of',

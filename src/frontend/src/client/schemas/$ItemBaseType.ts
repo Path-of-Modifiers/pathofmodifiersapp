@@ -20,19 +20,5 @@ export const $ItemBaseType = {
                 type: 'null',
             }],
         },
-        createdAt: {
-            type: 'string',
-            isRequired: true,
-            format: 'date-time',
-        },
-        updatedAt: {
-            type: 'any-of',
-            contains: [{
-                type: 'string',
-                format: 'date-time',
-            }, {
-                type: 'null',
-            }],
-        },
     },
 } as const;

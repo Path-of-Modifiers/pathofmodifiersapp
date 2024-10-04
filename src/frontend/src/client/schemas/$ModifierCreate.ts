@@ -124,13 +124,5 @@ export const $ModifierCreate = {
                 type: 'null',
             }],
         },
-        modifierId: {
-            type: 'any-of',
-            contains: [{
-                type: 'number',
-            }, {
-                type: 'null',
-            }],
-        },
     },
 } as const;
