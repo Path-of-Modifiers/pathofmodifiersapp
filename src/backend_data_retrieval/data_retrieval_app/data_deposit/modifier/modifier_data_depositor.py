@@ -3,7 +3,7 @@ from io import StringIO
 import pandas as pd
 import requests
 
-from data_retrieval_app.data_deposit.deposit_base import DataDepositerBase
+from data_retrieval_app.data_deposit.data_depositor_base import DataDepositorBase
 from data_retrieval_app.data_deposit.modifier.modifier_processing_modules import (
     ModifierRegexCreator,
     check_for_additional_modifier_types,
@@ -16,7 +16,7 @@ from data_retrieval_app.utils import df_to_JSON
 CASCADING_UPDATE = True
 
 
-class ModifierDataDepositer(DataDepositerBase):
+class ModifierDataDepositor(DataDepositorBase):
     def __init__(self) -> None:
         super().__init__(data_type="modifier")
 

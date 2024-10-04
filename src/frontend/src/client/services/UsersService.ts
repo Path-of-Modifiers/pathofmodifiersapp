@@ -255,12 +255,12 @@ export class UsersService {
         });
     }
     /**
-     * Update
+     * Update User
      * Update a user.
      * @returns UserPublic Successful Response
      * @throws ApiError
      */
-    public static update({
+    public static updateUser({
         userId,
         requestBody,
     }: {
@@ -303,26 +303,53 @@ export class UsersService {
         });
     }
     /**
-     * Change Activate User
+     * Change Is Active User
      * Change activity to current user.
      * @returns Message Successful Response
      * @throws ApiError
      */
-    public static changeActivateUser({
+    public static changeIsActiveUser({
         userId,
-        activate,
+        isActive,
     }: {
         userId: string,
-        activate: boolean,
+        isActive: boolean,
     }): CancelablePromise<Message> {
         return __request(OpenAPI, {
             method: 'PATCH',
-            url: '/api/api_v1/user/activate/{user_id}',
+            url: '/api/api_v1/user/is_active/{user_id}',
             path: {
                 'user_id': userId,
             },
             query: {
-                'activate': activate,
+                'is_active': isActive,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+    /**
+     * Set Rate Limit Tier User
+     * Set rate limit tier to current user.
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static setRateLimitTierUser({
+        userId,
+        rateLimitTier,
+    }: {
+        userId: string,
+        rateLimitTier: number,
+    }): CancelablePromise<Message> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/api_v1/user/rate_limit_tier/{user_id}',
+            path: {
+                'user_id': userId,
+            },
+            query: {
+                'rate_limit_tier': rateLimitTier,
             },
             errors: {
                 422: `Validation Error`,
