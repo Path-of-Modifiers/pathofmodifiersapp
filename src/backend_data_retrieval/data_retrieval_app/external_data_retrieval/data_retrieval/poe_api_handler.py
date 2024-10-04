@@ -27,7 +27,7 @@ from data_retrieval_app.logs.logger import data_retrieval_logger as logger
 pd.options.mode.chained_assignment = None  # default='warn'
 
 
-class APIHandler:
+class PoEAPIHandler:
     headers = {
         "User-Agent": f"OAuth pathofmodifiers/0.1.0 (contact: {settings.OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
     }
@@ -48,13 +48,13 @@ class APIHandler:
     ) -> None:
         """
         Parameters:
-            :param url: (str) A string containing POE public stash api url.
+            :param url: (str) A string containing PoE public stash api url.
             :param auth_token: (str) A string containing OAuth2 auth token.
             :param n_wanted_items: (int) The number of items the program should search for before quitting.
             :param n_unique_wanted_items: (int) The number of different type of items the program should search for before quitin.
             :param item_detectors: (list[ItemDetector]) A list of `ItemDetector` instances.
         """
-        logger.debug("Initializing APIHandler.")
+        logger.debug("Initializing PoEAPIHandler.")
         if item_detectors is None:
             item_detectors = [
                 UniqueArmourDetector(),
@@ -82,7 +82,7 @@ class APIHandler:
 
         self._program_too_slow = False
         self.time_of_launch = time.perf_counter()
-        logger.info("APIHandler successfully initialized.")
+        logger.info("PoEAPIHandler successfully initialized.")
 
     def _json_to_df(self, stashes: list) -> pd.DataFrame:
         df_temp = pd.json_normalize(stashes)
