@@ -1,6 +1,6 @@
 import pandas as pd
 from pydantic import TypeAdapter
-from sqlalchemy import select
+from sqlalchemy import Result, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import Select
 
@@ -14,6 +14,7 @@ from app.exceptions.model_exceptions.plot_exception import (
     PlotQueryDataNotFoundError,
 )
 from app.plotting.utils import find_conversion_value, summarize_function
+from app.utils.timing_tracker import async_timing_tracker, sync_timing_tracker
 
 
 class Plotter:
@@ -114,6 +115,25 @@ class Plotter:
         intersection_statement = joined_statement.intersect(*segments)
         return intersection_statement
 
+    @async_timing_tracker
+    async def _perform_plot_db_query(
+        self, db: AsyncSession, *, query: PlotQuery
+    ) -> Result:
+        async with db.begin():
+            statement = self._init_query(query)
+            statement = self._item_spec_query(statement, query=query)
+            statement = self._base_spec_query(statement, query=query)
+            statement = self._wanted_modifier_query(statement, query=query)
+
+            result = await db.execute(statement)
+        return result
+
+    @sync_timing_tracker
+    def _convert_result_to_df(self, result: Result) -> pd.DataFrame:
+        rows = result.mappings().all()
+        return pd.DataFrame(rows)
+
+    @sync_timing_tracker
     def _create_plot_data(self, df: pd.DataFrame) -> tuple:
         # Sort values by date
         df.sort_values(by="createdAt", inplace=True)
@@ -142,6 +162,7 @@ class Plotter:
             most_common_currency_used,
         )
 
+    @sync_timing_tracker
     def _summarize_plot_data(
         self,
         value_in_chaos: pd.Series,
@@ -182,16 +203,10 @@ class Plotter:
 
         return plot_data
 
+    @async_timing_tracker
     async def plot(self, db: AsyncSession, *, query: PlotQuery) -> PlotData:
-        async with db.begin():
-            statement = self._init_query(query)
-            statement = self._item_spec_query(statement, query=query)
-            statement = self._base_spec_query(statement, query=query)
-            statement = self._wanted_modifier_query(statement, query=query)
-
-            result = await db.execute(statement)
-        rows = result.mappings().all()
-        df = pd.DataFrame(rows)
+        result = await self._perform_plot_db_query(db, query=query)
+        df = self._convert_result_to_df(result)
 
         if df.empty:
             raise PlotQueryDataNotFoundError(

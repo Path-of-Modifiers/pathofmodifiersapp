@@ -47,7 +47,8 @@ async def get_plot_data(
         cache_prefix=plot_prefix,
         enabled=settings.RATE_LIMIT,
     ):
-        return await plotter_tool.plot(
+        plot_data = await plotter_tool.plot(
             db,
             query=query,
         )
+        return plot_data
