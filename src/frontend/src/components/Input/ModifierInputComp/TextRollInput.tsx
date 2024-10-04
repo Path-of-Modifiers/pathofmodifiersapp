@@ -23,7 +23,7 @@ export const TextRollInput = ({
   }
   // Get the text rolls of the modifier at the input position
   const textRolls = modifierSelected.textRolls[inputPosition] as string;
-  const textRollsList = textRolls.split("-"); // Split the text rolls into a list
+  const textRollsList = textRolls.split("|"); // Split the text rolls into a list
 
   const getTextRollValue = () => {
     const textRollSelected =

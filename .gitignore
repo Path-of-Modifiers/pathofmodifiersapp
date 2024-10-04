@@ -7,4 +7,4 @@
 
 *\node_modules
 
-*\src\backend_data_retrieval\data_retrieval\external_data_retrieval\timing_data\*.csv
+*\src\backend_data_retrieval\data_retrieval_app\external_data_retrieval\timing_data\*.csv
