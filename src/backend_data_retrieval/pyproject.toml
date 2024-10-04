@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "app"
+name = "pom_backend_data_retrieval"
 version = "0.1.0"
 description = ""
-authors = ["Admin <admin@example.com>"]
+authors = ["Admin pomodifiers@outlook.com"]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
 uvicorn = {extras = ["standard"], version = "^0.24.0.post1"}
 fastapi = "^0.109.1"
 python-multipart = "^0.0.7"
@@ -30,13 +30,8 @@ requests = "^2.31.0"
 tqdm = "^4.66.2"
 aiohttp = "^3.9.3"
 pyjwt = "^2.9.0"
-pytest-asyncio = "0.21"
-slowapi = "^0.1.9"
-redis = "^5.0.8"
-asyncio-redis-rate-limit = "^1.0.0"
-pytest-trio = "^0.8.0"
+pytest-asyncio = "^0.23.8"
 pyyaml = "^6.0.2"
-asyncpg = "^0.29.0"
 
 
 
@@ -81,14 +76,3 @@ ignore = [
 [tool.ruff.lint.pyupgrade]
 # Preserve types, even if a file imports `from __future__ import annotations`.
 keep-runtime-typing = true
-
-
-[tool.pytest.ini_options]
-log_cli = true
-log_cli_level = "ERROR"
-log_cli_format = "%(message)s"
-
-log_file = "app/logs/pytest.log"
-log_file_level = "INFO"
-log_file_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
-log_file_date_format = "%Y-%m-%d %H:%M:%S"
