@@ -51,6 +51,7 @@ const useAuth = () => {
     navigate({ to: from ? "/" + `${from}` : "/login" });
   }
 
+  // TODO: Fix UserRegisterPreEmailConfirmation here
   const signUpMutation = useMutation({
     mutationFn: (data: UserRegisterPreEmailConfirmation) =>
       UsersService.registerUserSendConfirmation({ requestBody: data }),
