@@ -22,7 +22,7 @@ import {
 import { type SubmitHandler, useForm } from "react-hook-form";
 
 import Logo from "/assets/images/POM_logo_rec.svg";
-import type { Body_logins_login_access_token as AccessToken } from "../client";
+import type { Body_logins_login_access_session as AccessToken } from "../client";
 import useAuth, { isLoggedIn } from "../hooks/validation/useAuth";
 import useTurnstileValidation, {
   hasCompletedCaptcha,

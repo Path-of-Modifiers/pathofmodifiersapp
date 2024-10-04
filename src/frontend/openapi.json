@@ -164,6 +164,11 @@
         "summary": "Get All Accounts",
         "description": "Get all accounts.\n\nReturns a list of all accounts.",
         "operationId": "get_all_accounts",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -175,10 +180,10 @@
                       "$ref": "#/components/schemas/Account"
                     },
                     {
+                      "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/Account"
-                      },
-                      "type": "array"
+                      }
                     }
                   ],
                   "title": "Response Accounts-Get All Accounts"
@@ -186,12 +191,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
+        }
       },
       "post": {
         "tags": [
@@ -200,7 +200,47 @@
         "summary": "Create Account",
         "description": "Create one or a list of accounts.\n\nReturns the created account or list of accounts.",
         "operationId": "create_account",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "on_duplicate_pkey_do_nothing",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "On Duplicate Pkey Do Nothing"
+            }
+          },
+          {
+            "name": "return_nothing",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Return Nothing"
+            }
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -209,17 +249,16 @@
                     "$ref": "#/components/schemas/AccountCreate"
                   },
                   {
+                    "type": "array",
                     "items": {
                       "$ref": "#/components/schemas/AccountCreate"
-                    },
-                    "type": "array"
+                    }
                   }
                 ],
                 "title": "Account"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -232,10 +271,13 @@
                       "$ref": "#/components/schemas/AccountCreate"
                     },
                     {
+                      "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/AccountCreate"
-                      },
-                      "type": "array"
+                      }
+                    },
+                    {
+                      "type": "null"
                     }
                   ],
                   "title": "Response Accounts-Create Account"
@@ -253,12 +295,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
+        }
       }
     },
     "/api/api_v1/currency/{currencyId}": {
@@ -420,6 +457,11 @@
         "summary": "Get All Currencies",
         "description": "Get all currencies.\n\nReturns a list of all currencies.",
         "operationId": "get_all_currencies",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -431,10 +473,10 @@
                       "$ref": "#/components/schemas/Currency"
                     },
                     {
+                      "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/Currency"
-                      },
-                      "type": "array"
+                      }
                     }
                   ],
                   "title": "Response Currencys-Get All Currencies"
@@ -442,12 +484,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
+        }
       },
       "post": {
         "tags": [
@@ -456,7 +493,31 @@
         "summary": "Create Currency",
         "description": "Create one or a list of currencies.\n\nReturns the created currency or list of currencies.",
         "operationId": "create_currency",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "return_nothing",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Return Nothing"
+            }
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -465,17 +526,16 @@
                     "$ref": "#/components/schemas/CurrencyCreate"
                   },
                   {
+                    "type": "array",
                     "items": {
                       "$ref": "#/components/schemas/CurrencyCreate"
-                    },
-                    "type": "array"
+                    }
                   }
                 ],
                 "title": "Currency"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -488,10 +548,13 @@
                       "$ref": "#/components/schemas/CurrencyCreate"
                     },
                     {
+                      "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/CurrencyCreate"
-                      },
-                      "type": "array"
+                      }
+                    },
+                    {
+                      "type": "null"
                     }
                   ],
                   "title": "Response Currencys-Create Currency"
@@ -509,12 +572,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
+        }
       }
     },
     "/api/api_v1/currency/latest_currency_id/": {
@@ -705,6 +763,11 @@
         "summary": "Get All Item Base Types",
         "description": "Get all item base types.\n\nReturns a list of all item base types.",
         "operationId": "get_all_item_base_types",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -716,10 +779,10 @@
                       "$ref": "#/components/schemas/ItemBaseType"
                     },
                     {
+                      "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/ItemBaseType"
-                      },
-                      "type": "array"
+                      }
                     }
                   ],
                   "title": "Response Itembasetypes-Get All Item Base Types"
@@ -727,12 +790,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
+        }
       },
       "post": {
         "tags": [
@@ -741,7 +799,47 @@
         "summary": "Create Item Base Type",
         "description": "Create one or a list of new item base types.\n\nReturns the created item base type or list of item base types.",
         "operationId": "create_item_base_type",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "on_duplicate_pkey_do_nothing",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "On Duplicate Pkey Do Nothing"
+            }
+          },
+          {
+            "name": "return_nothing",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Return Nothing"
+            }
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -750,17 +848,16 @@
                     "$ref": "#/components/schemas/ItemBaseTypeCreate"
                   },
                   {
+                    "type": "array",
                     "items": {
                       "$ref": "#/components/schemas/ItemBaseTypeCreate"
-                    },
-                    "type": "array"
+                    }
                   }
                 ],
                 "title": "Itembasetype"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -773,10 +870,13 @@
                       "$ref": "#/components/schemas/ItemBaseTypeCreate"
                     },
                     {
+                      "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/ItemBaseTypeCreate"
-                      },
-                      "type": "array"
+                      }
+                    },
+                    {
+                      "type": "null"
                     }
                   ],
                   "title": "Response Itembasetypes-Create Item Base Type"
@@ -794,12 +894,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
+        }
       }
     },
     "/api/api_v1/itemBaseType/baseTypes/": {
@@ -922,7 +1017,7 @@
           "itemModifiers"
         ],
         "summary": "Get Item Modifier",
-        "description": "Get item modifier or list of item modifiers by key and\nvalue for \"itemId\", optional \"modifierId\" and optional \"position\".\n\nDominant key is \"itemId\".\n\nReturns one or a list of item modifiers.",
+        "description": "Get item modifier or list of item modifiers by key and\nvalue for optional \"itemId\", optional \"modifierId\" and optional \"orderId\".\nOne key must be provided.\n\nReturns one or a list of item modifiers.",
         "operationId": "get_item_modifier",
         "security": [
           {
@@ -935,7 +1030,14 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer",
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
               "title": "Itemid"
             }
           },
@@ -956,7 +1058,7 @@
             }
           },
           {
-            "name": "position",
+            "name": "orderId",
             "in": "query",
             "required": false,
             "schema": {
@@ -968,7 +1070,7 @@
                   "type": "null"
                 }
               ],
-              "title": "Position"
+              "title": "Orderid"
             }
           }
         ],
@@ -1011,7 +1113,7 @@
           "itemModifiers"
         ],
         "summary": "Delete Item Modifier",
-        "description": "Delete an item modifier by key and value for\n\"itemId\", optional \"modifierId\" and optional \"position\".\n\nDominant key is \"itemId\".\n\nReturns a message that the item modifier was deleted successfully.\nAlways deletes one item modifier.",
+        "description": "Delete an item modifier by key and value for \"itemId\", optional \"modifierId\" and optional \"orderId\".\n\nCan delete multiple item modifiers one one request if not modifierId or orderId is provided.\n\nDominant key is \"itemId\".\n\nReturns a message that the item modifier was deleted successfully.",
         "operationId": "delete_item_modifier",
         "security": [
           {
@@ -1042,6 +1144,22 @@
                 }
               ],
               "title": "Modifierid"
+            }
+          },
+          {
+            "name": "orderId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Orderid"
             }
           }
         ],
@@ -1116,6 +1234,24 @@
             "OAuth2PasswordBearer": []
           }
         ],
+        "parameters": [
+          {
+            "name": "return_nothing",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Return Nothing"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1152,6 +1288,9 @@
                       "items": {
                         "$ref": "#/components/schemas/ItemModifierCreate"
                       }
+                    },
+                    {
+                      "type": "null"
                     }
                   ],
                   "title": "Response Itemmodifiers-Create Item Modifier"
@@ -1176,7 +1315,7 @@
           "itemModifiers"
         ],
         "summary": "Update Item Modifier",
-        "description": "Update an item modifier by key and value for\n\"itemId\", optional \"modifierId\" and optional \"position\".\n\nDominant key is \"itemId\".\n\nReturns the updated item modifier.",
+        "description": "Update an item modifier by key and value for\n\"itemId\", \"modifierId\" and \"orderId\".\n\nReturns the updated item modifier.",
         "operationId": "update_item_modifier",
         "security": [
           {
@@ -1200,6 +1339,15 @@
             "schema": {
               "type": "integer",
               "title": "Modifierid"
+            }
+          },
+          {
+            "name": "orderId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Orderid"
             }
           }
         ],
@@ -1403,7 +1551,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "integer",
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
                   "title": "Response Items-Get Latest Item Id"
                 }
               }
@@ -1425,6 +1580,11 @@
         "summary": "Get All Items",
         "description": "Get all items.\n\nReturns a list of all items.",
         "operationId": "get_all_items",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -1436,10 +1596,10 @@
                       "$ref": "#/components/schemas/Item"
                     },
                     {
+                      "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/Item"
-                      },
-                      "type": "array"
+                      }
                     }
                   ],
                   "title": "Response Items-Get All Items"
@@ -1447,12 +1607,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
+        }
       },
       "post": {
         "tags": [
@@ -1461,7 +1616,31 @@
         "summary": "Create Item",
         "description": "Create one or a list of new items.\n\nReturns the created item or list of items.",
         "operationId": "create_item",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "return_nothing",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Return Nothing"
+            }
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -1470,17 +1649,16 @@
                     "$ref": "#/components/schemas/ItemCreate"
                   },
                   {
+                    "type": "array",
                     "items": {
                       "$ref": "#/components/schemas/ItemCreate"
-                    },
-                    "type": "array"
+                    }
                   }
                 ],
                 "title": "Item"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -1493,10 +1671,13 @@
                       "$ref": "#/components/schemas/ItemCreate"
                     },
                     {
+                      "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/ItemCreate"
-                      },
-                      "type": "array"
+                      }
+                    },
+                    {
+                      "type": "null"
                     }
                   ],
                   "title": "Response Items-Create Item"
@@ -1514,12 +1695,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
+        }
       }
     },
     "/api/api_v1/login/access-token": {
@@ -1527,14 +1703,14 @@
         "tags": [
           "logins"
         ],
-        "summary": "Login Access Token",
-        "description": "OAuth2 compatible token login, get an access token for future requests",
-        "operationId": "login_access_token",
+        "summary": "Login Access Session",
+        "description": "OAuth2 compatible session login.",
+        "operationId": "login_access_session",
         "requestBody": {
           "content": {
             "application/x-www-form-urlencoded": {
               "schema": {
-                "$ref": "#/components/schemas/Body_logins-login_access_token"
+                "$ref": "#/components/schemas/Body_logins-login_access_session"
               }
             }
           },
@@ -1879,6 +2055,24 @@
             "OAuth2PasswordBearer": []
           }
         ],
+        "parameters": [
+          {
+            "name": "return_nothing",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Return Nothing"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1915,6 +2109,9 @@
                       "items": {
                         "$ref": "#/components/schemas/ModifierCreate"
                       }
+                    },
+                    {
+                      "type": "null"
                     }
                   ],
                   "title": "Response Modifiers-Create Modifier"
@@ -2188,6 +2385,11 @@
         "summary": "Get All Stashes",
         "description": "Get all stashes.\n\nReturns a list of all stashes.",
         "operationId": "get_all_stashes",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -2199,10 +2401,10 @@
                       "$ref": "#/components/schemas/Stash"
                     },
                     {
+                      "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/Stash"
-                      },
-                      "type": "array"
+                      }
                     }
                   ],
                   "title": "Response Stashs-Get All Stashes"
@@ -2210,12 +2412,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
+        }
       },
       "post": {
         "tags": [
@@ -2224,7 +2421,47 @@
         "summary": "Create Stash",
         "description": "Create one or a list of new stashes.\n\nReturns the created stash or list of stashes.",
         "operationId": "create_stash",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "on_duplicate_pkey_do_nothing",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "On Duplicate Pkey Do Nothing"
+            }
+          },
+          {
+            "name": "return_nothing",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Return Nothing"
+            }
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -2233,17 +2470,16 @@
                     "$ref": "#/components/schemas/StashCreate"
                   },
                   {
+                    "type": "array",
                     "items": {
                       "$ref": "#/components/schemas/StashCreate"
-                    },
-                    "type": "array"
+                    }
                   }
                 ],
                 "title": "Stash"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -2256,10 +2492,13 @@
                       "$ref": "#/components/schemas/StashCreate"
                     },
                     {
+                      "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/StashCreate"
-                      },
-                      "type": "array"
+                      }
+                    },
+                    {
+                      "type": "null"
                     }
                   ],
                   "title": "Response Stashs-Create Stash"
@@ -2277,12 +2516,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
+        }
       }
     },
     "/api/api_v1/plot/": {
@@ -2478,64 +2712,14 @@
         }
       }
     },
-    "/api/api_v1/user/me": {
-      "get": {
-        "tags": [
-          "users"
-        ],
-        "summary": "Get User Me",
-        "description": "Get current user.",
-        "operationId": "get_user_me",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserPublic"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "users"
-        ],
-        "summary": "Delete User Me",
-        "description": "Delete own user.",
-        "operationId": "delete_user_me",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Message"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
-      },
+    "/api/api_v1/user/update-me-email-pre-confirmation": {
       "patch": {
         "tags": [
           "users"
         ],
-        "summary": "Update Me",
-        "description": "Update own user.",
-        "operationId": "update_me",
+        "summary": "Update Me Email Send Confirmation",
+        "description": "Send confirmation to update own user.",
+        "operationId": "update_me_email_send_confirmation",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2552,7 +2736,148 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserPublic"
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/api_v1/user/update-me-email-confirmation": {
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Update Me Email Confirmation",
+        "description": "Confirm update email.",
+        "operationId": "update_me_email_confirmation",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Token"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/api_v1/user/update-me-username-pre-confirmation": {
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Update Me Username Send Confirmation",
+        "description": "Send confirmation to update own user.",
+        "operationId": "update_me_username_send_confirmation",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdateMe"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/api_v1/user/update-me-username-confirmation": {
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Update Me Username Confirmation",
+        "description": "Confirm update username.",
+        "operationId": "update_me_username_confirmation",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Token"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
                 }
               }
             }
@@ -2622,19 +2947,71 @@
         ]
       }
     },
-    "/api/api_v1/user/signup": {
+    "/api/api_v1/user/me": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get User Me",
+        "description": "Get current user.",
+        "operationId": "get_user_me",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Delete User Me",
+        "description": "Delete own user.",
+        "operationId": "delete_user_me",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/api_v1/user/signup-send-confirmation": {
       "post": {
         "tags": [
           "users"
         ],
-        "summary": "Register User",
-        "description": "Create new user without the need to be logged in.",
-        "operationId": "register_user",
+        "summary": "Register User Send Confirmation",
+        "description": "Send email confirmation on user register. Account doesn't get created yet.",
+        "operationId": "register_user_send_confirmation",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserRegister"
+                "$ref": "#/components/schemas/UserRegisterPreEmailConfirmation"
               }
             }
           },
@@ -2646,7 +3023,49 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserPublic"
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/user/signup": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Register User Confirm",
+        "description": "Confirm new user without the need to be logged in. Requires email confirmation.",
+        "operationId": "register_user_confirm",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Token"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
                 }
               }
             }
@@ -2716,9 +3135,9 @@
         "tags": [
           "users"
         ],
-        "summary": "Update",
+        "summary": "Update User",
         "description": "Update a user.",
-        "operationId": "update",
+        "operationId": "update_user",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -2817,14 +3236,14 @@
         }
       }
     },
-    "/api/api_v1/user/activate/{user_id}": {
+    "/api/api_v1/user/is_active/{user_id}": {
       "patch": {
         "tags": [
           "users"
         ],
-        "summary": "Change Activate User",
+        "summary": "Change Is Active User",
         "description": "Change activity to current user.",
-        "operationId": "change_activate_user",
+        "operationId": "change_is_active_user",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -2842,12 +3261,12 @@
             }
           },
           {
-            "name": "activate",
+            "name": "is_active",
             "in": "query",
             "required": true,
             "schema": {
               "type": "boolean",
-              "title": "Activate"
+              "title": "Is Active"
             }
           }
         ],
@@ -2858,6 +3277,165 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/user/rate_limit_tier/{user_id}": {
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Set Rate Limit Tier User",
+        "description": "Set rate limit tier to current user.",
+        "operationId": "set_rate_limit_tier_user",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "User Id"
+            }
+          },
+          {
+            "name": "rate_limit_tier",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Rate Limit Tier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/test/bulk-insert-test": {
+      "post": {
+        "tags": [
+          "tests"
+        ],
+        "summary": "Bulk Insert Test",
+        "description": "Can only be used in `settings.ENVIRONMENT=local` environment.\n\nTest route for bulk inserting records.\n\nReturns a success message once the insertion is complete.",
+        "operationId": "bulk_insert_test",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Count"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Response Tests-Bulk Insert Test"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/test/bulk-insert-users-and-verify": {
+      "post": {
+        "tags": [
+          "tests"
+        ],
+        "summary": "Bulk Insert Users And Verify",
+        "description": "Can only be used in `settings.ENVIRONMENT=local` environment.\n\nTest route for bulk inserting users and verifying them.\n\nReturns the access tokens for the created users.",
+        "operationId": "bulk_insert_users_and_verify",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Count"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Response Tests-Bulk Insert Users And Verify"
                 }
               }
             }
@@ -3020,7 +3598,7 @@
         ],
         "title": "BaseType"
       },
-      "Body_logins-login_access_token": {
+      "Body_logins-login_access_session": {
         "properties": {
           "grant_type": {
             "anyOf": [
@@ -3075,7 +3653,7 @@
           "username",
           "password"
         ],
-        "title": "Body_logins-login_access_token"
+        "title": "Body_logins-login_access_session"
       },
       "Currency": {
         "properties": {
@@ -3618,30 +4196,12 @@
               }
             ],
             "title": "Subcategory"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Createdat"
-          },
-          "updatedAt": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Updatedat"
           }
         },
         "type": "object",
         "required": [
           "baseType",
-          "category",
-          "createdAt"
+          "category"
         ],
         "title": "ItemBaseType"
       },
@@ -3995,6 +4555,10 @@
             "type": "integer",
             "title": "Modifierid"
           },
+          "orderId": {
+            "type": "integer",
+            "title": "Orderid"
+          },
           "position": {
             "type": "integer",
             "title": "Position"
@@ -4032,6 +4596,7 @@
         "required": [
           "itemId",
           "modifierId",
+          "orderId",
           "position",
           "createdAt"
         ],
@@ -4047,6 +4612,10 @@
             "type": "integer",
             "title": "Modifierid"
           },
+          "orderId": {
+            "type": "integer",
+            "title": "Orderid"
+          },
           "position": {
             "type": "integer",
             "title": "Position"
@@ -4067,6 +4636,7 @@
         "required": [
           "itemId",
           "modifierId",
+          "orderId",
           "position"
         ],
         "title": "ItemModifierCreate"
@@ -4081,6 +4651,10 @@
             "type": "integer",
             "title": "Modifierid"
           },
+          "orderId": {
+            "type": "integer",
+            "title": "Orderid"
+          },
           "position": {
             "type": "integer",
             "title": "Position"
@@ -4101,6 +4675,7 @@
         "required": [
           "itemId",
           "modifierId",
+          "orderId",
           "position"
         ],
         "title": "ItemModifierUpdate"
@@ -4919,17 +5494,6 @@
               }
             ],
             "title": "Veiled"
-          },
-          "modifierId": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Modifierid"
           }
         },
         "type": "object",
@@ -5373,11 +5937,6 @@
           "access_token": {
             "type": "string",
             "title": "Access Token"
-          },
-          "token_type": {
-            "type": "string",
-            "title": "Token Type",
-            "default": "bearer"
           }
         },
         "type": "object",
@@ -5653,7 +6212,7 @@
         ],
         "title": "UserPublic"
       },
-      "UserRegister": {
+      "UserRegisterPreEmailConfirmation": {
         "properties": {
           "username": {
             "type": "string",
@@ -5677,7 +6236,7 @@
           "email",
           "password"
         ],
-        "title": "UserRegister"
+        "title": "UserRegisterPreEmailConfirmation"
       },
       "UserUpdate": {
         "properties": {
