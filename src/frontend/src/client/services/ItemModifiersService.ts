@@ -12,9 +12,8 @@ export class ItemModifiersService {
     /**
      * Get Item Modifier
      * Get item modifier or list of item modifiers by key and
-     * value for "itemId", optional "modifierId" and optional "position".
-     *
-     * Dominant key is "itemId".
+     * value for optional "itemId", optional "modifierId" and optional "orderId".
+     * One key must be provided.
      *
      * Returns one or a list of item modifiers.
      * @returns any Successful Response
@@ -23,11 +22,11 @@ export class ItemModifiersService {
     public static getItemModifier({
         itemId,
         modifierId,
-        position,
+        orderId,
     }: {
-        itemId: number,
+        itemId: (number | null),
         modifierId?: (number | null),
-        position?: (number | null),
+        orderId?: (number | null),
     }): CancelablePromise<(ItemModifier | Array<ItemModifier>)> {
         return __request(OpenAPI, {
             method: 'GET',
@@ -37,7 +36,7 @@ export class ItemModifiersService {
             },
             query: {
                 'modifierId': modifierId,
-                'position': position,
+                'orderId': orderId,
             },
             errors: {
                 422: `Validation Error`,
@@ -46,22 +45,24 @@ export class ItemModifiersService {
     }
     /**
      * Delete Item Modifier
-     * Delete an item modifier by key and value for
-     * "itemId", optional "modifierId" and optional "position".
+     * Delete an item modifier by key and value for "itemId", optional "modifierId" and optional "orderId".
+     *
+     * Can delete multiple item modifiers one one request if not modifierId or orderId is provided.
      *
      * Dominant key is "itemId".
      *
      * Returns a message that the item modifier was deleted successfully.
-     * Always deletes one item modifier.
      * @returns any Successful Response
      * @throws ApiError
      */
     public static deleteItemModifier({
         itemId,
         modifierId,
+        orderId,
     }: {
         itemId: number,
         modifierId?: (number | null),
+        orderId?: (number | null),
     }): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'DELETE',
@@ -71,6 +72,7 @@ export class ItemModifiersService {
             },
             query: {
                 'modifierId': modifierId,
+                'orderId': orderId,
             },
             errors: {
                 422: `Validation Error`,
@@ -101,12 +103,17 @@ export class ItemModifiersService {
      */
     public static createItemModifier({
         requestBody,
+        returnNothing,
     }: {
         requestBody: (ItemModifierCreate | Array<ItemModifierCreate>),
-    }): CancelablePromise<(ItemModifierCreate | Array<ItemModifierCreate>)> {
+        returnNothing?: (boolean | null),
+    }): CancelablePromise<(ItemModifierCreate | Array<ItemModifierCreate> | null)> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/api_v1/itemModifier/',
+            query: {
+                'return_nothing': returnNothing,
+            },
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -117,9 +124,7 @@ export class ItemModifiersService {
     /**
      * Update Item Modifier
      * Update an item modifier by key and value for
-     * "itemId", optional "modifierId" and optional "position".
-     *
-     * Dominant key is "itemId".
+     * "itemId", "modifierId" and "orderId".
      *
      * Returns the updated item modifier.
      * @returns ItemModifier Successful Response
@@ -128,10 +133,12 @@ export class ItemModifiersService {
     public static updateItemModifier({
         itemId,
         modifierId,
+        orderId,
         requestBody,
     }: {
         itemId: number,
         modifierId: number,
+        orderId: number,
         requestBody: ItemModifierUpdate,
     }): CancelablePromise<ItemModifier> {
         return __request(OpenAPI, {
@@ -140,6 +147,7 @@ export class ItemModifiersService {
             query: {
                 'itemId': itemId,
                 'modifierId': modifierId,
+                'orderId': orderId,
             },
             body: requestBody,
             mediaType: 'application/json',

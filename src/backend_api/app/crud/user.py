@@ -220,20 +220,18 @@ class CRUDUser:
             return None
         return self.validate(db_user)
 
-    def set_active(
-        self, db: Session, *, db_user: model_User, active: bool
-    ) -> model_User:
+    def set_active(self, db: Session, *, user_id: UUID, active: bool) -> model_User:
         """Set user active status
 
         Args:
             db (Session): DB session
-            user (model_User): User object
+            user_id (UUID): User ID
             active (bool): Active status
 
         Returns:
             model_User: Updated user
         """
-        db_user = db.query(model_User).filter_by(userId=db_user.userId).first()
+        db_user = db.query(model_User).filter_by(userId=user_id).first()
         if not db_user:
             raise DbObjectDoesNotExistError(
                 model_table_name=model_User.__tablename__,

@@ -4,11 +4,11 @@ import { useState } from "react";
 
 import { AxiosError } from "axios";
 import {
-  type Body_logins_login_access_token as AccessToken,
+  type Body_logins_login_access_session as AccessToken,
   type ApiError,
   LoginsService,
   type UserPublic,
-  type UserRegister,
+  type UserRegisterPreEmailConfirmation,
   UsersService,
 } from "../../client";
 import useCustomToast from "../useCustomToast";
@@ -51,9 +51,10 @@ const useAuth = () => {
     navigate({ to: from ? "/" + `${from}` : "/login" });
   }
 
+  // TODO: Fix UserRegisterPreEmailConfirmation here
   const signUpMutation = useMutation({
-    mutationFn: (data: UserRegister) =>
-      UsersService.registerUser({ requestBody: data }),
+    mutationFn: (data: UserRegisterPreEmailConfirmation) =>
+      UsersService.registerUserSendConfirmation({ requestBody: data }),
 
     onSuccess: () => {
       navigate({ to: "/login" });
@@ -78,7 +79,7 @@ const useAuth = () => {
   });
 
   const login = async (data: AccessToken) => {
-    const response = await LoginsService.loginAccessToken({
+    const response = await LoginsService.loginAccessSession({
       formData: data,
     });
     localStorage.setItem("access_token", response.access_token);
