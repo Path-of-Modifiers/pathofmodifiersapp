@@ -7,8 +7,6 @@ from typing import Any
 
 import pandas as pd
 
-from data_retrieval_app.tests.utils import random_lower_string
-
 
 class ModifierTestDataCreator:
     def __init__(self, n_of_items: int) -> None:
@@ -139,29 +137,18 @@ class ModifierTestDataCreator:
     def _extract_modifiers(self, modifier_df: pd.DataFrame) -> list[dict[str, Any]]:
         """Extract and transform modifiers from the DataFrame."""
         modifiers = []
-
-        # Group by 'effect' and aggregate the results
         grouped_modifiers = self._group_modifier_df(modifier_df.copy())
 
         for _, row in grouped_modifiers.iterrows():
-            if "static" in grouped_modifiers.columns:
-                if not row["static"]:
-                    effect = self._compute_random_modifier(row)
-                else:
-                    effect = row["effect"]
+            if "static" in grouped_modifiers.columns and row.get("static"):
+                modifiers.append(row["effect"])
             else:
-                effect = self._compute_random_modifier(row)
+                # Compute 3 different dynamic modifiers effect with random values
+                for _ in range(3):
+                    effect = self._compute_random_modifier(row)
+                    if effect not in modifiers:
+                        modifiers.append(effect)
 
-            # Append the modified effect to the modifiers list
-            modifiers.append(effect)
-        return modifiers
-
-    def _add_random_modifier_samples(self, modifiers: list[str]) -> list[str]:
-        """Duplicate modifier samples to match the desired count."""
-        total_modifiers = len(modifiers)
-        for _ in range(6 - total_modifiers):
-            random_modifier = random_lower_string()
-            modifiers.append(random_modifier)
         return modifiers
 
     def _create_item_dict(self, file_name: str, modifiers: list[str]) -> dict[str, Any]:
@@ -170,9 +157,7 @@ class ModifierTestDataCreator:
             "verified": True,
             "name": file_name,
             "identified": True,
-            "explicitMods": random.sample(
-                modifiers, k=random.randint(4, 6)
-            ),  # Random 4-6 modifiers
+            "explicitMods": modifiers,
         }
         item_data["id"] = str(uuid.uuid4())  # Generate a unique ID
         return item_data
@@ -190,8 +175,6 @@ class ModifierTestDataCreator:
             items = []
             for _ in range(self.n_of_items):
                 modifiers = self._extract_modifiers(df)
-                if len(modifiers) < 6:
-                    modifiers = self._add_random_modifier_samples(modifiers)
                 item_data = self._create_item_dict(file_name, modifiers)
                 items.append(item_data)
             yield (
