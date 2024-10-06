@@ -19,6 +19,5 @@ export type ModifierCreate = {
     corrupted?: (boolean | null);
     enchanted?: (boolean | null);
     veiled?: (boolean | null);
-    modifierId?: (number | null);
 };
 

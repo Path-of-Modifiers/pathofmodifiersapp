@@ -111,3 +111,15 @@ def get_failed_send_challenge_request_error_msg(e: Exception | list[str]) -> Mes
             f"turnstile endpoint with error: {e}"
         )
     )
+
+
+def get_set_rate_limit_tier_success_msg(username: str, rate_limit_tier: int) -> Message:
+    """Returns a message indicating the rate limit tier was set successfully.
+
+    Returns:
+        Message: Message indicating the rate limit tier was set successfully.
+    """
+
+    return Message(
+        message=f"User '{username}' rate limit tier set to {rate_limit_tier}"
+    )

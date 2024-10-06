@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type UserRegister = {
+export type UserRegisterPreEmailConfirmation = {
     username: string;
     email: string;
     password: string;
