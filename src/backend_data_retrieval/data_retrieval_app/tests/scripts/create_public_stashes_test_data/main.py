@@ -34,12 +34,14 @@ def main():
         item_mock_obj,
     ) = scrap_and_mock_poe_api_docs_objs.produce_mocks_from_docs()
     public_stashes_modifier_test_data_creator = ModifierTestDataCreator(n_of_items=1000)
+
     for (
         file_name,
         items,
     ) in (
         public_stashes_modifier_test_data_creator.create_test_data_with_modifier_file()
     ):
+        all_stashes = []
         current_public_stashes_mock_modified = replace_false_values(
             copy.deepcopy(public_stashes_mock_obj)
         )
@@ -52,8 +54,10 @@ def main():
                 merged_complete_item_dict_modified
             )
 
+        all_stashes.append(current_public_stashes_mock_modified)
+
         with open(f"{output_test_data_location_path}{file_name}.json", "w") as f:
-            json.dump(current_public_stashes_mock_modified, f, indent=4)
+            json.dump(all_stashes, f, indent=4)
 
 
 if __name__ == "__main__":
