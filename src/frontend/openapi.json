@@ -169,11 +169,6 @@
             "OAuth2PasswordBearer": []
           }
         ],
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -244,47 +239,7 @@
             }
           }
         ],
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "on_duplicate_pkey_do_nothing",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "boolean"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "On Duplicate Pkey Do Nothing"
-            }
-          },
-          {
-            "name": "return_nothing",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "boolean"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Return Nothing"
-            }
-          }
-        ],
         "requestBody": {
-          "required": true,
           "required": true,
           "content": {
             "application/json": {
@@ -594,13 +549,8 @@
                     },
                     {
                       "type": "array",
-                      "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/CurrencyCreate"
-                      }
-                    },
-                    {
-                      "type": "null"
                       }
                     },
                     {
@@ -3785,7 +3735,7 @@
         ],
         "title": "CurrencyUpdate"
       },
-      "GroupedModifierByEffect": {
+      "GroupedModifier": {
         "properties": {
           "modifierId": {
             "items": {
@@ -3793,41 +3743,6 @@
             },
             "type": "array",
             "title": "Modifierid"
-          },
-          "position": {
-            "items": {
-              "type": "integer"
-            },
-            "type": "array",
-            "title": "Position"
-          },
-          "minRoll": {
-            "items": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "type": "array",
-            "title": "Minroll"
-          },
-          "maxRoll": {
-            "items": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "type": "array",
-            "title": "Maxroll"
           },
           "textRolls": {
             "items": {
@@ -3842,35 +3757,51 @@
             },
             "type": "array",
             "title": "Textrolls"
-          },
-          "effect": {
-            "type": "string",
-            "title": "Effect"
-          },
-          "static": {
-            "items": {
-              "anyOf": [
-                {
-                  "type": "boolean"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "type": "array",
-            "title": "Static"
           }
         },
         "type": "object",
         "required": [
           "modifierId",
-          "position",
-          "minRoll",
-          "maxRoll",
-          "textRolls",
+          "textRolls"
+        ],
+        "title": "GroupedModifier"
+      },
+      "GroupedModifierByEffect": {
+        "properties": {
+          "effect": {
+            "type": "string",
+            "title": "Effect"
+          },
+          "regex": {
+            "type": "string",
+            "title": "Regex"
+          },
+          "static": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Static"
+          },
+          "relatedUniques": {
+            "type": "string",
+            "title": "Relateduniques"
+          },
+          "groupedModifier": {
+            "$ref": "#/components/schemas/GroupedModifier"
+          }
+        },
+        "type": "object",
+        "required": [
           "effect",
-          "static"
+          "regex",
+          "static",
+          "relatedUniques",
+          "groupedModifier"
         ],
         "title": "GroupedModifierByEffect"
       },
