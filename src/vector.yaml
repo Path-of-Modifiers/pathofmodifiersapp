@@ -1,0 +1,63 @@
+api:
+  enabled: true
+  address: 0.0.0.0:8686
+
+sources:
+  src-backend-1:
+    type: docker_logs
+    include_images:
+      - "${DOCKER_IMAGE_BACKEND}:${TAG}"
+    docker_host: unix:///var/run/docker.sock
+  src-backend-data-retrieval-1:
+    type: docker_logs
+    include_images:
+      - "${DOCKER_IMAGE_BACKEND_DATA_RETRIEVAL}:${TAG}"
+    docker_host: unix:///var/run/docker.sock
+
+transforms:
+  transform_docker_logs:
+    type: remap
+    inputs:
+      - src-backend-1
+      - src-backend-data-retrieval-1
+    drop_on_abort: true
+    source: |-
+      container_name = .container_name
+
+      # Check if the message is valid JSON before attempting to parse
+      if starts_with!(.message, "{") {
+        . = parse_json!(.message)
+      } else {
+        abort
+      }
+
+      .container_name = container_name
+
+      if .logger == "pom_app.request" {
+        message_keys = parse_key_value!(.message)
+        .request = message_keys
+        .request.port = to_int!(.request.port)
+        .request.process_time_ms = to_float!(.request.process_time_ms)
+        .request.status_code = to_int!(.request.status_code)
+        del(.message)
+      }
+
+      if .logger == "dataret.ext.timing" {
+        message_keys = parse_key_value!(.message)
+        .timing = message_keys
+        .timing.start_time = to_float!(.timing.start_time)
+        .timing.end_time = to_float!(.timing.end_time)
+        .timing.time_diff = to_float!(.timing.time_diff)
+        del(.message)
+      }
+
+    timezone: local
+
+sinks:
+  console:
+    inputs:
+      - transform_docker_logs
+    target: stdout
+    type: console
+    encoding:
+      codec: json
