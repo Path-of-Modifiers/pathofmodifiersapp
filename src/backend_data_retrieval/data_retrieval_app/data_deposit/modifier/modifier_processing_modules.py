@@ -298,3 +298,13 @@ def check_for_additional_modifier_types(
             put_update = True
 
     return data, put_update
+
+
+def check_for_new_related_unique(
+    data: dict[str, Any], put_update: bool, new_related_unique: str
+) -> tuple[dict[str, Any], bool]:
+    if new_related_unique not in data["relatedUniques"]:
+        data["relatedUniques"] += "|" + new_related_unique
+        put_update = True
+
+    return data, put_update
