@@ -16,6 +16,7 @@ export type { Body_logins_login_access_session } from './models/Body_logins_logi
 export type { Currency } from './models/Currency';
 export type { CurrencyCreate } from './models/CurrencyCreate';
 export type { CurrencyUpdate } from './models/CurrencyUpdate';
+export type { GroupedModifier } from './models/GroupedModifier';
 export type { GroupedModifierByEffect } from './models/GroupedModifierByEffect';
 export type { HTTPValidationError } from './models/HTTPValidationError';
 export type { Influences } from './models/Influences';
@@ -66,6 +67,7 @@ export { $Body_logins_login_access_session } from './schemas/$Body_logins_login_
 export { $Currency } from './schemas/$Currency';
 export { $CurrencyCreate } from './schemas/$CurrencyCreate';
 export { $CurrencyUpdate } from './schemas/$CurrencyUpdate';
+export { $GroupedModifier } from './schemas/$GroupedModifier';
 export { $GroupedModifierByEffect } from './schemas/$GroupedModifierByEffect';
 export { $HTTPValidationError } from './schemas/$HTTPValidationError';
 export { $Influences } from './schemas/$Influences';

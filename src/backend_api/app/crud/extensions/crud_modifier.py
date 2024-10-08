@@ -26,6 +26,7 @@ class CRUDModifier(
         stmt = select(
             model_Modifier.modifierId,
             model_Modifier.effect,
+            model_Modifier.regex,
             model_Modifier.textRolls,
             model_Modifier.relatedUniques,
             model_Modifier.static,
@@ -40,14 +41,35 @@ class CRUDModifier(
 
         modifiers_df = pd.DataFrame(db_obj)
 
-        grouped_modifier_df = modifiers_df.groupby("effect", as_index=False).agg(
-            lambda x: list(x)
+        grouped_modifier_df = modifiers_df.groupby(
+            ["effect", "regex", "static", "relatedUniques"],
+            as_index=False,
+            dropna=False,
+        ).agg(lambda x: list(x))
+
+        not_static_mask = grouped_modifier_df["static"].isna()
+        grouped_modifier_df.loc[not_static_mask, "static"] = None
+        grouped_modifier_df.loc[~not_static_mask, "regex"] = grouped_modifier_df.loc[
+            ~not_static_mask, "effect"
+        ]
+
+        # Stores the listed fields in a list of dicts
+        grouped_modifier_record = grouped_modifier_df[
+            ["modifierId", "textRolls"]
+        ].to_dict("records")
+
+        # Removes the listed fields
+        grouped_modifier_df = grouped_modifier_df.drop(
+            ["modifierId", "textRolls"], axis=1
         )
 
-        grouped_modifier_record = grouped_modifier_df.to_dict("records")
+        # Adds the fields back in, but as a field with dicts
+        grouped_modifier_df["groupedModifier"] = grouped_modifier_record
+
+        grouped_modifier_by_effect_record = grouped_modifier_df.to_dict("records")
 
         validate = TypeAdapter(
             GroupedModifierByEffect | list[GroupedModifierByEffect]
         ).validate_python
 
-        return validate(grouped_modifier_record)
+        return validate(grouped_modifier_by_effect_record)

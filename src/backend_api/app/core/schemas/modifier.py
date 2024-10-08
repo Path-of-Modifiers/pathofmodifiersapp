@@ -26,12 +26,17 @@ class _BaseModifier(_pydantic.BaseModel):
     veiled: bool | None = None
 
 
-class GroupedModifierByEffect(_pydantic.BaseModel):
+class GroupedModifier(_pydantic.BaseModel):
     modifierId: list[int]
     textRolls: list[str | None]
-    relatedUniques: list[str]
+
+
+class GroupedModifierByEffect(_pydantic.BaseModel):
     effect: str
-    static: list[bool | None]
+    regex: str
+    static: bool | None
+    relatedUniques: str
+    groupedModifier: GroupedModifier
 
 
 # Properties to receive on modifier creation
