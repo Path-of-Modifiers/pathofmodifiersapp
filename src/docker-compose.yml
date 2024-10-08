@@ -178,6 +178,18 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.middlewares=${STACK_NAME?Variable not set}-www-redirect
       - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect
 
+  vector:
+    image: timberio/vector:0.41.1-debian
+    container_name: vector
+    env_file:
+      - .env
+    volumes:
+      - ./vector.yaml:/etc/vector/vector.yaml:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8686:8686" # Exposing the API port
+    restart: always
+
 volumes:
   pom-db-data:
     name: "pom-db-data"
