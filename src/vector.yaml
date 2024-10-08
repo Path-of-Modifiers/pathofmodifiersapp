@@ -33,13 +33,21 @@ transforms:
 
       .container_name = container_name
 
-      message_keys = {}
       if .logger == "pom_app.request" {
         message_keys = parse_key_value!(.message)
         .request = message_keys
         .request.port = to_int!(.request.port)
         .request.process_time_ms = to_float!(.request.process_time_ms)
         .request.status_code = to_int!(.request.status_code)
+        del(.message)
+      }
+
+      if .logger == "dataret.ext.timing" {
+        message_keys = parse_key_value!(.message)
+        .timing = message_keys
+        .timing.start_time = to_float!(.timing.start_time)
+        .timing.end_time = to_float!(.timing.end_time)
+        .timing.time_diff = to_float!(.timing.time_diff)
         del(.message)
       }
 
