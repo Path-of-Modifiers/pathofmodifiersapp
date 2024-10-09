@@ -1,4 +1,5 @@
 # Unique Name: The Balance of Terror
+# Base Types: Cobalt Jewel
 # Source: https://poedb.tw/The_Balance_of_Terror
 minRoll,maxRoll,position,effect,static,unique
 10,15,0,"#% to all Elemental Resistances",,True

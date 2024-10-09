@@ -1,4 +1,5 @@
 # Unique Name: Precursors Emblem
+# Base Types: Ruby Ring|Sapphire Ring|Topaz Ring|Prismatic Ring|Two-Stone Ring
 # Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
 minRoll,maxRoll,textRolls,position,effect,static,unique
 20,20,,0,"+# to Strength",,True

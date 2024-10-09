@@ -1,4 +1,5 @@
 # Unique Name: The Utmost
+# Base Types: Gold Amulet
 # Source: https://poedb.tw/The_Utmost
 minRoll,maxRoll,position,effect,unique
 0,30,0,"+#% chance to Suppress Spell Damage",True
