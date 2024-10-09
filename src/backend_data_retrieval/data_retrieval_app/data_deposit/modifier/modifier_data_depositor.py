@@ -170,11 +170,16 @@ class ModifierDataDepositor(DataDepositorBase):
         duplicate_df = new_modifiers_df.loc[duplicate_mask].copy()
         self._update_duplicates(duplicate_df, current_modifiers_df)
         non_duplicate_df = new_modifiers_df.loc[~duplicate_mask].copy()
-        non_duplicate_df["relatedUniques"] = self.logged_info["Unique Name"]
 
         return non_duplicate_df
 
+    def _track_comments(self, df: pd.DataFrame) -> pd.DataFrame:
+        df["relatedUniques"] = self.logged_info["Unique Name"]
+
+        return df
+
     def _process_data(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = self.regex_creator.add_regex(df)
-        df = self._remove_duplicates(df.copy(deep=True))
+        df = self.regex_creator.add_regex(df.copy())
+        df = self._remove_duplicates(df.copy())
+        df = self._track_comments(df.copy())
         return df
