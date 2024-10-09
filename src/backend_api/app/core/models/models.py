@@ -44,6 +44,7 @@ class ItemBaseType(Base):
     )
     category: Mapped[str] = mapped_column(String, nullable=False)
     subCategory: Mapped[str | None] = mapped_column(String)
+    relatedUniques: Mapped[str | None] = mapped_column(String)
 
 
 class Item(Base):
