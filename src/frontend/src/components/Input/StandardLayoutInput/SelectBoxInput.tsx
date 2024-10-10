@@ -63,10 +63,13 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
 
   let optionList = props.optionsList;
 
+  // Adds the "Any" option
   if (props.canBeAny) {
-    optionList = [{ value: "", label: "Any", regex: ".*" }, ...optionList];
+    optionList = [{ value: "", label: "Any", regex: "Any" }, ...optionList];
   }
 
+  // A custom filter function. Uses the `regex` attribute of `SelectOption`
+  // to filter if the input starts with `~`.
   const customFilter = (
     candidate: { label: string; value: string; data: any },
     inputValue: string
@@ -75,6 +78,7 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
     const lowerCaseInputValue = inputValue.toLowerCase();
     const lowerCaseCandidate = candidate.data.regex.toLowerCase();
     if (advancedSearch) {
+      // The .slice(1) removes the initial `~`
       const splitString = lowerCaseInputValue.slice(1).split(" ");
       const regexString = splitString
         .map((subStr) => (subStr ? `(?=.*${subStr})` : ""))
@@ -101,6 +105,7 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
     borderColor: "ui.grey",
   };
 
+  // A bit verbose, but necessary to style the Chakra-react-select Chakra Add-On
   const chakraStyles: ChakraStylesConfig<SelectOption> = {
     dropdownIndicator: (provided) => ({
       ...provided,
@@ -140,10 +145,7 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
       alignItems={"center"}
       width={props.flexProps ? props.flexProps.width : "inputSizes.smallPPBox"}
     >
-      <FormControl
-        // height={props.formControlProps.height || "lineHeights.tall"}
-        color={"ui.white"}
-      >
+      <FormControl color={"ui.white"}>
         {props.descriptionText && (
           <FormLabel color={"ui.white"} fontSize="14px">
             {props.descriptionText}

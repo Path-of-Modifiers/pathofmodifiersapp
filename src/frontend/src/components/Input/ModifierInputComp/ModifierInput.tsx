@@ -5,10 +5,6 @@ import {
   SelectBoxOptionValue,
   HandleChangeEventFunction,
 } from "../StandardLayoutInput/SelectBoxInput";
-// import {
-//   MinMaxNumberProps,
-//   MinMaxNumberInput,
-// } from "../StandardLayoutInput/MinMaxNumberInput_v2";
 import { AddICheckText } from "../../Icon/AddICheckText";
 import { useExpandedComponentStore } from "../../../store/ExpandedComponentStore";
 import { useEffect, useState } from "react";
@@ -30,6 +26,7 @@ export interface ModifierOption extends SelectBoxOptionValue {
 }
 
 export const ModifierInput = (props: ModifierInputProps) => {
+  // The modifier options need to be formatted in a certain way
   const modifierPreFetched: ModifierOption[] = props.prefetchedmodifiers.map(
     (prefetchedModifier) => ({
       value: prefetchedModifier.effect,
@@ -58,6 +55,11 @@ export const ModifierInput = (props: ModifierInputProps) => {
     updateNPossibleInputs,
   } = useGraphInputStore();
 
+  // NOTE: Tthe index, which is the selected modifier's position in
+  //`selectedModifiers` is used as a unique identifier both internally
+  // in `ModifierInput` but also for `WantedModifierSpecs` which allows
+  // multiple of the same modifier to be present in `WantedModifier`
+  // by extension.
   const handleModifierSelect: HandleChangeEventFunction = (
     newValue,
     overrideIndex?: number
@@ -69,9 +71,11 @@ export const ModifierInput = (props: ModifierInputProps) => {
       return;
     }
 
+    // determines how much space needs to be left for mixed input
     const nInputs = newlySelectedModifier.groupedModifier.modifierId.length;
 
     newlySelectedModifier.isSelected = true;
+    // Removes the current modifier and replaces it with the new
     if (overrideIndex !== undefined) {
       newlySelectedModifier.index = overrideIndex;
 
@@ -81,8 +85,8 @@ export const ModifierInput = (props: ModifierInputProps) => {
         ...prevSelectedModifiers.slice(overrideIndex + 1),
       ]);
 
+      removeModifierSpec(overrideIndex);
       newlySelectedModifier.groupedModifier.modifierId.map((modifierId) => {
-        removeModifierSpec(modifierId);
         addModifierSpec({ modifierId: modifierId }, overrideIndex, nInputs);
       });
     } else {
@@ -109,11 +113,24 @@ export const ModifierInput = (props: ModifierInputProps) => {
     setExpandedModifiers(!expandedModifiers);
   };
 
-  const handleCheckboxChange = (selectedModifier: ModifierOption) => {
-    console.log(selectedModifier);
+  const handleCheckboxChange = (
+    selectedModifier: ModifierOption,
+    index_to_handle: number
+  ) => {
     selectedModifier.isSelected = !selectedModifier.isSelected;
+    // Removes the modifier if not selected, and adds it
+    // if it is selected.
+    if (selectedModifier.isSelected) {
+      const nInputs = selectedModifier.groupedModifier.modifierId.length;
+      selectedModifier.groupedModifier.modifierId.map((modifierId) => {
+        addModifierSpec({ modifierId: modifierId }, index_to_handle, nInputs);
+      });
+    } else {
+      removeModifierSpec(index_to_handle);
+    }
   };
 
+  // Removes the modifier
   const handleRemoveModifier = (index_to_remove: number) => {
     const modifierToRemove = selectedModifiers.find(
       (modifier) => modifier.index === index_to_remove
@@ -135,9 +152,9 @@ export const ModifierInput = (props: ModifierInputProps) => {
     }
   };
 
-  const { clearClicked, wantedModifierSpecs, setClearClicked } =
-    useGraphInputStore();
+  const { clearClicked, setClearClicked } = useGraphInputStore();
 
+  // removes all selected modifiers
   useEffect(() => {
     if (clearClicked) {
       setSelectedModifiers([]);
@@ -145,9 +162,10 @@ export const ModifierInput = (props: ModifierInputProps) => {
     }
   }, [clearClicked, setClearClicked]);
 
-  useEffect(() => {
-    console.log(wantedModifierSpecs);
-  }, [wantedModifierSpecs]);
+  // For debugging
+  // useEffect(() => {
+  //   console.log(wantedModifierSpecs);
+  // }, [wantedModifierSpecs]);
 
   const selectedModifierSelectBoxes = selectedModifiers.map(
     (selectedModifier, index) => (
@@ -166,7 +184,7 @@ export const ModifierInput = (props: ModifierInputProps) => {
           key={index}
           onChange={() => {
             if (selectedModifier.groupedModifier.modifierId[0] !== null) {
-              handleCheckboxChange(selectedModifier);
+              handleCheckboxChange(selectedModifier, index);
             }
           }}
         />

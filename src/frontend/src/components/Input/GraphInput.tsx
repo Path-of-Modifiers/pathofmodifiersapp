@@ -31,6 +31,8 @@ export const GraphInput = (props: GraphInputProps) => {
     prefetcheditembasetypes
   );
 
+  // Filters the available base type filters and modifiers, based on the chose item name
+  // currently only works for uniques
   useEffect(() => {
     if (itemName === undefined) {
       return;
