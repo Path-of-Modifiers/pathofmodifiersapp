@@ -1,64 +1,48 @@
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-import { BaseType } from "../../../client";
 import {
   SelectBoxInput,
   SelectBoxOptionValue,
+  HandleChangeEventFunction,
 } from "../StandardLayoutInput/SelectBoxInput";
-import { getEventTextContent } from "../../../hooks/utils";
 
 interface BaseTypeInputProps {
-  baseTypes: BaseType | BaseType[];
+  baseTypes: string[];
 }
 
 // Base Type Input Component  -  This component is used to select the base type of an item.
 export const BaseTypeInput = (props: BaseTypeInputProps) => {
-  if (!Array.isArray(props.baseTypes)) {
-    props.baseTypes = [props.baseTypes];
-  }
-
-  const defaultValue = undefined;
-
   const { setBaseType } = useGraphInputStore();
 
-  const getBaseTypeValue = () => {
-    const baseType = useGraphInputStore.getState().baseSpec?.baseType;
-    if (baseType) {
-      return baseType;
-    } else {
-      return "";
+  const handleBaseTypeChange: HandleChangeEventFunction = (newValue) => {
+    if (newValue) {
+      const baseType = newValue?.value;
+      if (baseType === "Any") {
+        setBaseType(undefined);
+      } else {
+        setBaseType(baseType);
+      }
     }
   };
 
-  const handleBaseTypeChange = (
-    event: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>
-  ) => {
-    const baseType = getEventTextContent(event);
-    if (baseType === "Any") {
-      setBaseType(undefined);
-    } else {
-      setBaseType(baseType);
-    }
-  };
-
-  const baseTypeOptions: Array<SelectBoxOptionValue> = [
-    { value: "", text: "Any" },
-    ...props.baseTypes.map((baseType) => {
+  const baseTypeOptions: Array<SelectBoxOptionValue> = props.baseTypes.map(
+    (baseType) => {
       return {
-        value: baseType.baseType,
-        text: baseType.baseType,
+        value: baseType,
+        label: baseType,
+        regex: baseType,
       };
-    }),
-  ];
+    }
+  );
 
   return (
     <SelectBoxInput
       descriptionText={"Item Base Type"}
       optionsList={baseTypeOptions}
-      itemKeyId={"BaseTypeInput"}
-      defaultValue={defaultValue}
       defaultText="Any"
-      getSelectTextValue={getBaseTypeValue()}
-      handleChange={(e) => handleBaseTypeChange(e)}
+      multipleValues={false}
+      handleChange={handleBaseTypeChange}
+      id={"baseTypeInput-0"}
+      canBeAny={true}
     />
   );
 };

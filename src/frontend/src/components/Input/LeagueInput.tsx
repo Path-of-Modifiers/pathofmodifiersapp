@@ -3,8 +3,8 @@ import { useEffect } from "react";
 import {
   SelectBoxInput,
   SelectBoxOptionValue,
+  HandleChangeEventFunction,
 } from "./StandardLayoutInput/SelectBoxInput";
-import { getEventTextContent } from "../../hooks/utils";
 
 // Set the default league in the environment variables file.
 // League Input Component  -  This component is used to select the league of the game.
@@ -17,19 +17,9 @@ export const LeagueInput = () => {
 
   const defaultLeague = import.meta.env.VITE_APP_DEFAULT_LEAGUE || "";
 
-  const handleLeagueChange = (
-    event: React.FormEvent<HTMLElement> | React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const league = getEventTextContent(event);
-    setLeague(league || defaultLeague);
-  };
-
-  const getLeagueValue = () => {
-    const league = useGraphInputStore.getState().league;
-    if (league) {
-      return league;
-    } else {
-      return "";
+  const handleLeagueChange: HandleChangeEventFunction = (newValue) => {
+    if (newValue) {
+      setLeague(newValue.label || defaultLeague);
     }
   };
 
@@ -42,7 +32,7 @@ export const LeagueInput = () => {
   }, [clearClicked, defaultLeague]);
 
   const selectLeagueOptions: Array<SelectBoxOptionValue> = [
-    { value: defaultLeague, text: defaultLeague },
+    { value: defaultLeague, label: defaultLeague, regex: defaultLeague },
     /* FUTURE IMPLEMENTATION: Add more leagues here */
     // ,
     // { value: defaultHardcoreLeague, text: defaultHardcoreLeague },
@@ -54,13 +44,11 @@ export const LeagueInput = () => {
 
   return (
     <SelectBoxInput
-      descriptionText={"League"}
       optionsList={selectLeagueOptions}
-      itemKeyId={"LeagueInput"}
-      defaultValue={defaultLeague}
+      handleChange={handleLeagueChange}
+      descriptionText={"League"}
       defaultText={defaultLeague}
-      getSelectTextValue={getLeagueValue()}
-      handleChange={(e) => handleLeagueChange(e)}
+      multipleValues={false}
     />
   );
 };

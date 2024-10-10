@@ -1,94 +1,64 @@
+import { FlexProps } from "@chakra-ui/layout";
 import {
   Flex,
   Text,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
+  NumberInputProps,
   NumberInput,
   NumberInputField,
-  NumberInputStepper,
 } from "@chakra-ui/react";
-import {
-  GetValueFunction,
-  HandleChangeStringFunction,
-} from "../../../schemas/function/InputFunction";
 
-interface MinMaxNumberInputProps {
+type HandleNumberChangeEventFunction = (
+  value: string,
+  numericalType: string
+) => void;
+
+export interface MinMaxNumberProps {
+  flexProps?: FlexProps;
+  numberInputProps?: NumberInputProps;
   descriptionText?: string;
-  minSpecKey: string;
-  maxSpecKey: string;
-  getMinValue: GetValueFunction;
-  getMaxValue: GetValueFunction;
-  handleMinChange: HandleChangeStringFunction;
-  handleMaxChange: HandleChangeStringFunction;
-  width?: string | number;
-  height?: string | number;
+  index: number;
+  handleNumberChange: HandleNumberChangeEventFunction;
   isDimmed?: boolean;
 }
 
-// Min Max Item Lvl Input Component  -  This component is used to input the min and max ilvl of an item.
-export const MinMaxNumberInput = ({
-  descriptionText,
-  minSpecKey,
-  maxSpecKey,
-  getMinValue,
-  getMaxValue,
-  handleMinChange,
-  handleMaxChange,
-  width,
-  height,
-  isDimmed,
-}: MinMaxNumberInputProps) => {
+export const MinMaxNumberInput = (props: MinMaxNumberProps) => {
   return (
     <Flex
-      color={"ui.white"}
-      width={width || "inputSizes.smallPPBox"}
-      height={height || "lineHeights.tall"}
-      flexDirection={"column"}
+      {...props.flexProps}
+      flexDirection="column"
+      width={props.flexProps ? props.flexProps.width : "inputSizes.smallPPBox"}
+      height={props.flexProps ? props.flexProps.height : "lineHeights.tall"}
     >
-      {descriptionText && (
-        <Text mb={2} fontSize={15}>
-          {descriptionText}
+      {props.descriptionText && (
+        <Text mb={2} fontSize={15} color="ui.white">
+          {props.descriptionText}
         </Text>
       )}
-
-      <Flex opacity={isDimmed ? 0.5 : 1}>
+      <Flex opacity={props.isDimmed ? 0.5 : 1} flexDirection="row">
         <NumberInput
-          value={getMinValue() ?? ""}
-          step={1}
-          key={minSpecKey}
-          borderWidth={getMinValue() !== "" ? 1 : 0}
-          borderRadius={getMinValue() !== "" ? 9 : 0}
-          borderColor={getMinValue() !== "" ? "ui.inputChanged" : "ui.grey"}
-          precision={0}
-          focusBorderColor={"ui.white"}
-          onChange={(e) => handleMinChange(e)}
-          _placeholder={{ color: "ui.white" }}
-          textAlign={"center"}
+          {...props.numberInputProps}
+          onChange={(e) => props.handleNumberChange(e, "min")}
+          mr={1}
         >
-          <NumberInputField pl={2} placeholder={"Min"} bgColor="ui.input" />
-          <NumberInputStepper width="inputSizes.tinyBox">
-            <NumberIncrementStepper color="ui.grey" />
-            <NumberDecrementStepper color="ui.grey" />
-          </NumberInputStepper>
+          <NumberInputField
+            // h={5} only for  flexDirection="column"
+            p={1}
+            placeholder={"Min"}
+            bgColor="ui.input"
+            textAlign="center"
+          />
         </NumberInput>
-
         <NumberInput
-          value={getMaxValue() ?? ""}
-          step={1}
-          key={maxSpecKey}
-          borderWidth={getMaxValue() !== "" ? 1 : 0}
-          borderRadius={getMaxValue() !== "" ? 9 : 0}
-          focusBorderColor={"ui.white"}
-          borderColor={getMaxValue() !== "" ? "ui.inputChanged" : "ui.grey"}
-          onChange={(e) => handleMaxChange(e)}
-          _placeholder={{ color: "ui.white" }}
-          textAlign={"center"}
+          {...props.numberInputProps}
+          onChange={(e) => props.handleNumberChange(e, "max")}
         >
-          <NumberInputField pl={2} placeholder={"Max"} bgColor="ui.input" />
-          <NumberInputStepper width="inputSizes.tinyBox">
-            <NumberIncrementStepper color="ui.grey" />
-            <NumberDecrementStepper color="ui.grey" />
-          </NumberInputStepper>
+          <NumberInputField
+            // h={5} only for  flexDirection="column"
+            p={1}
+            placeholder={"Max"}
+            bgColor="ui.input"
+            textAlign="center"
+          />
         </NumberInput>
       </Flex>
     </Flex>

@@ -11,18 +11,6 @@ class _BaseItemBaseType(_pydantic.BaseModel):
     relatedUniques: str | None = None
 
 
-class BaseType(_pydantic.BaseModel):
-    baseType: str
-
-
-class ItemBaseTypeCategory(_pydantic.BaseModel):
-    category: str
-
-
-class ItemBaseTypeSubCategory(_pydantic.BaseModel):
-    subCategory: str
-
-
 # Properties to receive on item base type creation
 class ItemBaseTypeCreate(_BaseItemBaseType):
     pass
