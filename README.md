@@ -21,6 +21,7 @@ Not officially released, but currently testing in production :smiley:
 - [Cloudflare](https://www.cloudflare.com/en-gb/learning/what-is-cloudflare/) for networking
 - [Traefik](https://traefik.io/) as a reverse proxy / load balancer.
 - CI (continuous integration) and CD (continuous deployment) based on GitHub Actions.
+- [Vector](https://vector.dev/) for pipelining logging and metrics
 
 ## :bike: Current goals we are working towards:
 
