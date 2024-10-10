@@ -32,6 +32,7 @@ export const MixedInput = (props: MixedInputProps) => {
     return;
   }
 
+  // A generic handle function that handles mixed input
   const handleAnyChange: HandleChangeEventFunction = (
     isNumerical: boolean,
     modifierId: number,
