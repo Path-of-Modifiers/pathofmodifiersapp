@@ -66,15 +66,11 @@ sinks:
     type: loki
     inputs:
       - transform_docker_logs
-    endpoint: "${GRAFANA_CLOUD_LOKI_ENDPOINT}"
+    endpoint: http://loki:3100
     out_of_order_action: accept
     compression: snappy
     encoding:
       codec: json
-    auth:
-      strategy: basic
-      user: "${GRAFANA_CLOUD_USER_ID}"
-      password: "${GRAFANA_CLOUD_TOKEN}"
     labels:
       job: "vector"
-      env: "${ENVIRONMENT}"
+    healthcheck: false # since loki doesn't begin immediately
