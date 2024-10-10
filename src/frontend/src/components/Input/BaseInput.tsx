@@ -31,14 +31,18 @@ export const BaseInput = (props: BaseInputProps) => {
   const baseTypes = props.itemBaseTypes.map(
     (itemBaseType) => itemBaseType.baseType
   );
-  const nonUniqueCategories = props.itemBaseTypes.map(
-    (itemBaseType) => itemBaseType.category
-  );
-  const categories = [...new Set(nonUniqueCategories)];
-  const nonUniqueSubCategories = props.itemBaseTypes
-    .map((itemBaseType) => itemBaseType.subCategory)
-    .filter((subCategory) => subCategory != null);
-  const subCategories = [...new Set(nonUniqueSubCategories)];
+  const categories = [
+    ...new Set(
+      props.itemBaseTypes.map((itemBaseType) => itemBaseType.category)
+    ),
+  ];
+  const subCategories = [
+    ...new Set(
+      props.itemBaseTypes
+        .map((itemBaseType) => itemBaseType.subCategory)
+        .filter((subCategory) => subCategory != null)
+    ),
+  ];
 
   return (
     <Flex direction={"column"} width={"inputSizes.lgBox"}>
