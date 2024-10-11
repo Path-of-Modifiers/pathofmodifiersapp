@@ -106,10 +106,11 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.middlewares=${STACK_NAME?Variable not set}-www-redirect
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://backend/api/api_v1/health"]
-      interval: 10s
-      timeout: 10s
+      test: curl --fail http://localhost/api/api_v1/health || exit 1
+      interval: 2s
+      timeout: 5s
       retries: 3
+      start_period: 5s
 
   backend-data-retrieval:
     image: "${DOCKER_IMAGE_BACKEND_DATA_RETRIEVAL?Variable not set}:${TAG-latest}"
@@ -184,6 +185,14 @@ services:
       # Enable www redirection for HTTP and HTTPS
       - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.middlewares=${STACK_NAME?Variable not set}-www-redirect
       - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect
+
+  autoheal:
+    restart: always
+    image: willfarrell/autoheal
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=all
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
   pom-db-data:
