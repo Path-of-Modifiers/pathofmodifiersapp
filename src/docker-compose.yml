@@ -109,6 +109,8 @@ services:
   backend-data-retrieval:
     image: "${DOCKER_IMAGE_BACKEND_DATA_RETRIEVAL?Variable not set}:${TAG-latest}"
     depends_on:
+      db:
+        condition: service_healthy
       backend:
         condition: service_healthy
     networks:
