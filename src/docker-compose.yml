@@ -109,7 +109,7 @@ services:
   backend-data-retrieval:
     image: "${DOCKER_IMAGE_BACKEND_DATA_RETRIEVAL?Variable not set}:${TAG-latest}"
     depends_on:
-      db:
+      backend:
         condition: service_healthy
     networks:
       # Use the public network created to be shared between Traefik and
