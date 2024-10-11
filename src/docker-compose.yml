@@ -106,7 +106,7 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.middlewares=${STACK_NAME?Variable not set}-www-redirect
     healthcheck:
-      test: curl --fail http://localhost/api/api_v1/health || exit 1
+      test: curl --fail http://src-backend-1/api/api_v1/health || exit 1
       interval: 2s
       timeout: 5s
       retries: 3
