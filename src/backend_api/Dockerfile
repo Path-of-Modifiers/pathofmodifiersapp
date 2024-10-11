@@ -29,4 +29,4 @@ RUN chown -R admin:admin /app
 RUN chmod 755 /app
 USER admin
 
-HEALTHCHECK --interval=10s --timeout=10s --retries=3 CMD curl -f http://localhost/api/api_v1/health || exit 1
+HEALTHCHECK --interval=10s --timeout=10s --retries=3 CMD curl -f http://src-backend-1:8000/api/api_v1/health || exit 1
