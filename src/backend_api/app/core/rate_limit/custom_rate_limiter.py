@@ -11,7 +11,7 @@ from asyncio_redis_rate_limit.compat import (
 )
 from typing_extensions import final
 
-from app.exceptions.model_exceptions.plot_exception import PlotRateLimitExceededError
+from app.exceptions.model_exceptions.plot_exception import RateLimitExceededError
 
 #: These aliases makes our code more readable.
 _Seconds: TypeAlias = int
@@ -94,9 +94,10 @@ class RateLimiter:
             current_rate = await self._run_pipeline(cache_key, pipeline)
             # This looks like a coverage error on 3.10:
             if current_rate > self._rate_spec.requests:  # pragma: no cover
-                raise PlotRateLimitExceededError(
+                raise RateLimitExceededError(
                     retry_after_seconds=self._rate_spec.cooldown_seconds,
                     max_amount_of_tries_per_time_period=self._rate_spec.requests,
+                    cooldown_seconds=self._rate_spec.cooldown_seconds,
                     function_name=self._acquire.__name__,
                     class_name=self.__class__.__name__,
                 )

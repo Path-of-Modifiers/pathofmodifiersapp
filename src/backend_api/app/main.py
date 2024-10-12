@@ -12,13 +12,13 @@ from app.api.api import api_router
 from app.core.config import settings
 from app.core.models.database import async_engine
 from app.exception_handlers import (
+    custom_rate_limit_exceeded_handler,
     http_exception_handler,
-    plotter_api_rate_limit_exceeded_handler,
     request_validation_exception_handler,
     slow_api_rate_limit_exceeded_handler,
     unhandled_exception_handler,
 )
-from app.exceptions.model_exceptions.plot_exception import PlotRateLimitExceededError
+from app.exceptions.model_exceptions.plot_exception import RateLimitExceededError
 from app.logs.logger import setup_logging
 from app.middleware.request_logs import log_request_middleware
 
@@ -70,6 +70,4 @@ app.add_exception_handler(RequestValidationError, request_validation_exception_h
 app.add_exception_handler(HTTPException, http_exception_handler)
 app.add_exception_handler(Exception, unhandled_exception_handler)
 app.add_exception_handler(RateLimitExceeded, slow_api_rate_limit_exceeded_handler)
-app.add_exception_handler(
-    PlotRateLimitExceededError, plotter_api_rate_limit_exceeded_handler
-)
+app.add_exception_handler(RateLimitExceededError, custom_rate_limit_exceeded_handler)
