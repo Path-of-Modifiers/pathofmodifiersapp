@@ -5,14 +5,14 @@ from pydantic_settings import BaseSettings
 
 class RateLimitSettings(BaseSettings):
     # Default IP rate limits
-    DEFAULT_IP_RATE_LIMIT_SECOND: str = "5/second"
-    DEFAULT_IP_RATE_LIMIT_MINUTE: str = "10/minute"
-    DEFAULT_IP_RATE_LIMIT_HOUR: str = "210/hour"
+    DEFAULT_IP_RATE_LIMIT_SECOND: str = "14/second"
+    DEFAULT_IP_RATE_LIMIT_MINUTE: str = "70/minute"
+    DEFAULT_IP_RATE_LIMIT_HOUR: str = "250/hour"
     DEFAULT_IP_RATE_LIMIT_DAY: str = "1100/day"
 
     # Default user rate limits
-    DEFAULT_USER_RATE_LIMIT_SECOND: str = "4/second"
-    DEFAULT_USER_RATE_LIMIT_MINUTE: str = "5/minute"
+    DEFAULT_USER_RATE_LIMIT_SECOND: str = "12/second"
+    DEFAULT_USER_RATE_LIMIT_MINUTE: str = "60/minute"
     DEFAULT_USER_RATE_LIMIT_HOUR: str = "200/hour"
     DEFAULT_USER_RATE_LIMIT_DAY: str = "1000/day"
 
