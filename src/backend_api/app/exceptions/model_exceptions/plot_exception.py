@@ -1,6 +1,5 @@
 import starlette.status as status
 
-from app.core.config import settings
 from app.exceptions.exception_base import PathOfModifiersAPIError
 from app.logs.logger import logger
 
@@ -64,8 +63,9 @@ class PlotNoModifiersProvidedError(PathOfModifiersAPIError):
         )
 
 
-# Not part of PathOfModifiersAPIError since it has its own error handler
-class PlotRateLimitExceededError(PathOfModifiersAPIError):
+class RateLimitExceededError(PathOfModifiersAPIError):
+    """Exception for the custom rate limitter"""
+
     def __init__(
         self,
         *,
@@ -73,11 +73,12 @@ class PlotRateLimitExceededError(PathOfModifiersAPIError):
         function_name: str | None = "Unknown function",
         class_name: str | None = None,
         max_amount_of_tries_per_time_period: int,
+        cooldown_seconds: int,
         status_code: int | None = status.HTTP_429_TOO_MANY_REQUESTS,
     ):
         detail = (
-            f"Rate limit for plot exceeded. Please try again later. "
-            f"max_tries: {max_amount_of_tries_per_time_period} per {settings.PLOT_RATE_LIMIT_COOLDOWN_SECONDS} seconds"
+            f"Rate limit exceeded. Please try again later. "
+            f"max_tries: {max_amount_of_tries_per_time_period} per {cooldown_seconds} seconds"
         )
 
         # Call the parent constructor with a specific status code
