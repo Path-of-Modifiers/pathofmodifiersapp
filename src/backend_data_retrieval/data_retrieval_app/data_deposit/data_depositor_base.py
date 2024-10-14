@@ -62,12 +62,16 @@ class DataDepositorBase:
         logger.info("Inserting data into database.")
         headers = {"accept": "application/json", "Content-Type": "application/json"}
         headers.update(self.pom_auth_headers)
-        response = requests.post(
-            self.data_url,
-            json=df_json,
-            headers=headers,
-        )
-        response.raise_for_status()
+        try:
+            response = requests.post(
+                self.data_url,
+                json=df_json,
+                headers=headers,
+            )
+            response.raise_for_status()
+        except Exception as e:
+            logger.error("The following error occurred while making request:", e)
+            raise e
 
         logger.info("Successfully inserted data into database.")
 
