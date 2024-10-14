@@ -3,7 +3,7 @@ import time
 
 from fastapi import Request
 
-from app.logs.logger import logger
+from app.logs.logger import logger_request
 
 """
 Taken from https://medium.com/@roy-pstr/fastapi-server-errors-and-logs-take-back-control-696405437983
@@ -16,7 +16,6 @@ async def log_request_middleware(request: Request, call_next):
     E.g. log:
     0.0.0.0:1234 - GET /ping 200 OK 1.00ms
     """
-    logger.debug("middleware: log_request_middleware")
     url = (
         f"{request.url.path}?{request.query_params}"
         if request.query_params
@@ -32,7 +31,15 @@ async def log_request_middleware(request: Request, call_next):
         status_phrase = http.HTTPStatus(response.status_code).phrase
     except ValueError:
         status_phrase = ""
-    logger.info(
-        f'{host}:{port} - "{request.method} {url}" {response.status_code} {status_phrase} {formatted_process_time}ms'
+    logger_object = (
+        f"host={host} "
+        f"port={port} "
+        f"method={request.method} "
+        f"url={url} "
+        f"status_code={response.status_code} "
+        f"status_phrase={status_phrase} "
+        f"process_time_ms={formatted_process_time}"
     )
+
+    logger_request.info(logger_object)
     return response
