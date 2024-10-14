@@ -21,7 +21,8 @@ Not officially released, but currently testing in production :smiley:
 - [Cloudflare](https://www.cloudflare.com/en-gb/learning/what-is-cloudflare/) for networking
 - [Traefik](https://traefik.io/) as a reverse proxy / load balancer.
 - CI (continuous integration) and CD (continuous deployment) based on GitHub Actions.
-- [Vector](https://vector.dev/) for pipelining logging and metrics
+- [Vector](https://vector.dev/) for observability pipeliner, centralising all logs and metrics
+- [Grafana Loki](https://grafana.com/docs/loki/latest/#grafana-loki) for storage and [Grafana](https://grafana.com/grafana/) for visualization of logs and metrics
 
 ## :bike: Current goals we are working towards:
 
