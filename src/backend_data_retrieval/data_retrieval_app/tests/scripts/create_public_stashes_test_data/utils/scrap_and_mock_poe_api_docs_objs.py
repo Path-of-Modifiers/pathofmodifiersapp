@@ -5,6 +5,8 @@ from typing import Any
 import requests
 from bs4 import BeautifulSoup
 
+from data_retrieval_app.external_data_retrieval.config import settings
+
 
 class ScrapAndMockPoEAPIDocsObjs:
     def __init__(self):
@@ -77,6 +79,8 @@ class ScrapAndMockPoEAPIDocsObjs:
     def _check_obj_key_value_type(self, obj: dict, key: str, value_type: Any):
         if "id" == key:
             obj[key] = str(uuid.uuid4())
+        elif "league" == key:
+            obj[key] = settings.CURRENT_SOFTCORE_LEAGUE
         elif "string" == value_type:
             obj[key] = ""
         elif "?string" == value_type:
@@ -134,6 +138,14 @@ class ScrapAndMockPoEAPIDocsObjs:
 
         return self._create_mock_obj_from_schema(schema_data)
 
+    def _remove_unwanted_columns_from_mock_obj(
+        self, mock_obj: dict, unwanted_columns: list[str]
+    ) -> dict:
+        for unwanted_column in unwanted_columns:
+            if unwanted_column in mock_obj:
+                mock_obj.pop(unwanted_column)
+        return mock_obj
+
     def mock_to_json_file(self, mock_obj: dict) -> str:
         """Save the objs to a JSON file."""
         json_file = json.dumps(mock_obj, indent=4)
@@ -151,6 +163,21 @@ class ScrapAndMockPoEAPIDocsObjs:
         public_stashes_mock_obj = self._mock_schemas_from_web(
             self.public_stashes_url, self.public_stashes_schema_id
         )
+        # TODO: Make this filtering columns a global list
+        unwanted_columns = [
+            "ruthless",
+            "lockedToCharacter",
+            "lockedToAccount",
+            "logbookMods",
+            "crucible",
+            "scourged",
+            "hybrid",
+            "ultimatumMods",
+        ]
         item_mock_obj = self._mock_schemas_from_web(self.item_url, self.item_schema_id)
-        print(str(public_stashes_mock_obj) + "\n\n" + str(item_mock_obj))
-        return public_stashes_mock_obj, item_mock_obj
+        item_mock_removed_unwanted_columns = (
+            self._remove_unwanted_columns_from_mock_obj(
+                mock_obj=item_mock_obj, unwanted_columns=unwanted_columns
+            )
+        )
+        return public_stashes_mock_obj, item_mock_removed_unwanted_columns
