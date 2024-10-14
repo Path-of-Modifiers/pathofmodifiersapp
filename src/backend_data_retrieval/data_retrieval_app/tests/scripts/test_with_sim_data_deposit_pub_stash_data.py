@@ -1,5 +1,4 @@
 import asyncio
-import copy
 import threading
 import time
 from collections.abc import Iterator
@@ -28,13 +27,9 @@ from data_retrieval_app.external_data_retrieval.utils import (
     sync_timing_tracker,
 )
 from data_retrieval_app.logs.logger import setup_logging, test_logger
-from data_retrieval_app.tests.scripts.create_public_stashes_test_data.utils.modifier_test_data_creator import (
-    DataDepositTestDataCreator,
+from data_retrieval_app.tests.scripts.create_public_stashes_test_data.main import (
+    iterate_create_public_stashes_test_data,
 )
-from data_retrieval_app.tests.scripts.create_public_stashes_test_data.utils.scrap_and_mock_poe_api_docs_objs import (
-    ScrapAndMockPoEAPIDocsObjs,
-)
-from data_retrieval_app.tests.utils import replace_false_values
 
 
 class TestModifierSimulatedDataPoEAPIHandler(PoEAPIHandler):
@@ -80,34 +75,10 @@ class TestModifierSimulatedDataPoEAPIHandler(PoEAPIHandler):
         stash_lock.acquire()
 
         test_logger.info("Stashes are ready for processing")
-        scrap_and_mock_poe_api_docs_objs = ScrapAndMockPoEAPIDocsObjs()
-        (
-            public_stashes_mock_obj,
-            item_mock_obj,
-        ) = scrap_and_mock_poe_api_docs_objs.produce_mocks_from_docs()
-        public_stashes_modifier_test_data_creator = DataDepositTestDataCreator(
-            n_of_items=1000
-        )
 
         all_stashes = []
-        for (
-            file_name,
-            items,
-        ) in public_stashes_modifier_test_data_creator.create_test_data_with_data_deposit_files():
-            test_logger.info(f"Processing items from file '{file_name}'")
-            current_public_stashes_mock_modified = replace_false_values(
-                copy.deepcopy(public_stashes_mock_obj)
-            )
-            for item in items:
-                merged_complete_item_dict = {**item_mock_obj, **item}
-                merged_complete_item_dict_modified = replace_false_values(
-                    copy.deepcopy(merged_complete_item_dict)
-                )
-                current_public_stashes_mock_modified["items"].append(
-                    merged_complete_item_dict_modified
-                )
-
-            all_stashes.append(current_public_stashes_mock_modified)
+        for _, _, stashes in iterate_create_public_stashes_test_data():
+            all_stashes.append(stashes[0])
 
         stashes_local = all_stashes
         del self.stashes
@@ -254,6 +225,10 @@ class TestModifierSimulatedDataContinuousDataRetrieval(ContinuousDataRetrieval):
 
 
 def main():
+    """
+    Tests backend data retrieval with deposit data simulated with mocked
+    PoE API docs objects.
+    """
     test_logger.info("Starting the program...")
     setup_logging()
     items_per_batch = 1
