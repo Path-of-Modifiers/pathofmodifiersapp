@@ -17,14 +17,14 @@ export class ItemBaseTypesService {
      * Get item base type by key and value for "baseType".
      *
      * Always returns one item base type.
-     * @returns any Successful Response
+     * @returns ItemBaseType Successful Response
      * @throws ApiError
      */
-    public static getItemBaseTypeApiApiV1ItemBaseTypeBaseTypeGet({
+    public static getItemBaseType({
         baseType,
     }: {
         baseType: string,
-    }): CancelablePromise<(ItemBaseType | Array<ItemBaseType>)> {
+    }): CancelablePromise<ItemBaseType> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/itemBaseType/{baseType}',
@@ -44,7 +44,7 @@ export class ItemBaseTypesService {
      * @returns ItemBaseType Successful Response
      * @throws ApiError
      */
-    public static updateItemBaseTypeApiApiV1ItemBaseTypeBaseTypePut({
+    public static updateItemBaseType({
         baseType,
         requestBody,
     }: {
@@ -73,7 +73,7 @@ export class ItemBaseTypesService {
      * @returns string Successful Response
      * @throws ApiError
      */
-    public static deleteItemBaseTypeApiApiV1ItemBaseTypeBaseTypeDelete({
+    public static deleteItemBaseType({
         baseType,
     }: {
         baseType: string,
@@ -97,7 +97,7 @@ export class ItemBaseTypesService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAllItemBaseTypesApiApiV1ItemBaseTypeGet(): CancelablePromise<(ItemBaseType | Array<ItemBaseType>)> {
+    public static getAllItemBaseTypes(): CancelablePromise<(ItemBaseType | Array<ItemBaseType>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/itemBaseType/',
@@ -111,14 +111,22 @@ export class ItemBaseTypesService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static createItemBaseTypeApiApiV1ItemBaseTypePost({
+    public static createItemBaseType({
         requestBody,
+        onDuplicatePkeyDoNothing,
+        returnNothing,
     }: {
         requestBody: (ItemBaseTypeCreate | Array<ItemBaseTypeCreate>),
-    }): CancelablePromise<(ItemBaseTypeCreate | Array<ItemBaseTypeCreate>)> {
+        onDuplicatePkeyDoNothing?: (boolean | null),
+        returnNothing?: (boolean | null),
+    }): CancelablePromise<(ItemBaseTypeCreate | Array<ItemBaseTypeCreate> | null)> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/api_v1/itemBaseType/',
+            query: {
+                'on_duplicate_pkey_do_nothing': onDuplicatePkeyDoNothing,
+                'return_nothing': returnNothing,
+            },
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -134,7 +142,7 @@ export class ItemBaseTypesService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getBaseTypesApiApiV1ItemBaseTypeBaseTypesGet(): CancelablePromise<(BaseType | Array<BaseType>)> {
+    public static getBaseTypes(): CancelablePromise<(BaseType | Array<BaseType>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/itemBaseType/baseTypes/',
@@ -148,7 +156,7 @@ export class ItemBaseTypesService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getUniqueCategoriesApiApiV1ItemBaseTypeUniqueCategoriesGet(): CancelablePromise<(ItemBaseTypeCategory | Array<ItemBaseTypeCategory>)> {
+    public static getUniqueCategories(): CancelablePromise<(ItemBaseTypeCategory | Array<ItemBaseTypeCategory>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/itemBaseType/uniqueCategories/',
@@ -162,7 +170,7 @@ export class ItemBaseTypesService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getUniqueSubCategoriesApiApiV1ItemBaseTypeUniqueSubCategoriesGet(): CancelablePromise<(ItemBaseTypeSubCategory | Array<ItemBaseTypeSubCategory>)> {
+    public static getUniqueSubCategories(): CancelablePromise<(ItemBaseTypeSubCategory | Array<ItemBaseTypeSubCategory>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/itemBaseType/uniqueSubCategories/',

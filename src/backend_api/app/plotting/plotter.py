@@ -1,15 +1,20 @@
-from sqlalchemy.orm import Session
-from sqlalchemy import select
-from sqlalchemy.sql.expression import Select
-from pydantic import TypeAdapter
-from fastapi import HTTPException
 import pandas as pd
+from pydantic import TypeAdapter
+from sqlalchemy import Result, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.expression import Select
 
-from .schemas import PlotQuery, PlotData
 from app.core.models.models import Currency as model_Currency
 from app.core.models.models import Item as model_Item
-from app.core.models.models import ItemModifier as model_ItemModifier
 from app.core.models.models import ItemBaseType as model_ItemBaseType
+from app.core.models.models import ItemModifier as model_ItemModifier
+from app.core.schemas.plot import PlotData, PlotQuery
+from app.exceptions.model_exceptions.plot_exception import (
+    PlotNoModifiersProvidedError,
+    PlotQueryDataNotFoundError,
+)
+from app.plotting.utils import find_conversion_value, summarize_function
+from app.utils.timing_tracker import async_timing_tracker, sync_timing_tracker
 
 
 class Plotter:
@@ -34,9 +39,10 @@ class Plotter:
             .where(model_Item.league == league)
         )
         if len(query.wantedModifiers) == 0:
-            raise HTTPException(
-                status_code=406,
-                detail="The plotting tool requires you to select at least one modifier",
+            raise PlotNoModifiersProvidedError(
+                query_data=query,
+                function_name=self._init_query.__name__,
+                class_name=self.__class__.__name__,
             )
         return statement
 
@@ -109,55 +115,118 @@ class Plotter:
         intersection_statement = joined_statement.intersect(*segments)
         return intersection_statement
 
+    @async_timing_tracker
+    async def _perform_plot_db_query(
+        self, db: AsyncSession, *, query: PlotQuery
+    ) -> Result:
+        async with db.begin():
+            statement = self._init_query(query)
+            statement = self._item_spec_query(statement, query=query)
+            statement = self._base_spec_query(statement, query=query)
+            statement = self._wanted_modifier_query(statement, query=query)
+
+            result = await db.execute(statement)
+        return result
+
+    @sync_timing_tracker
+    def _convert_result_to_df(self, result: Result) -> pd.DataFrame:
+        rows = result.mappings().all()
+        return pd.DataFrame(rows)
+
+    @sync_timing_tracker
     def _create_plot_data(self, df: pd.DataFrame) -> tuple:
+        # Sort values by date
         df.sort_values(by="createdAt", inplace=True)
+
+        # Find most common currency
         most_common_currency_used = df.tradeName.mode()[0]
+
+        # Find value in chaos
         value_in_chaos = df["currencyAmount"] * df["valueInChaos"]
-        conversionValue = value_in_chaos.copy(deep=True)
+
+        # Get timestamps of when the items were retrieved
         time_stamps = df["createdAt"]
 
-        most_common_currency_used_unique_ids = df.loc[
-            df["tradeName"] == most_common_currency_used, "currencyId"
-        ].unique()
+        # Find conversion value between chaos and most common currency
+        conversion_value = find_conversion_value(
+            df,
+            value_in_chaos=value_in_chaos,
+            most_common_currency_used=most_common_currency_used,
+        )
+        value_in_most_common_currency_used = value_in_chaos / conversion_value
 
-        for id in most_common_currency_used_unique_ids:
-            most_common_currency_value = df.loc[
-                df["currencyId"] == id, "valueInChaos"
-            ].iloc[0]
-            most_common_currency_timestamp = df.loc[
-                df["currencyId"] == id, "currencyCreatedAt"
-            ].iloc[0]
+        return (
+            value_in_chaos,
+            time_stamps,
+            value_in_most_common_currency_used,
+            most_common_currency_used,
+        )
 
-            current_timestamp_mask = (
-                df["currencyCreatedAt"] == most_common_currency_timestamp
-            )
-            conversionValue[current_timestamp_mask] = most_common_currency_value
-
-        return value_in_chaos, time_stamps, most_common_currency_used, conversionValue
-
-    async def plot(self, db: Session, *, query: PlotQuery) -> PlotData:
-        statement = self._init_query(query)
-        statement = self._item_spec_query(statement, query=query)
-        statement = self._base_spec_query(statement, query=query)
-        statement = self._wanted_modifier_query(statement, query=query)
-
-        result = db.execute(statement).mappings().all()
-        df = pd.DataFrame(result)
-
-        if df.empty:
-            raise HTTPException(
-                status_code=404, detail="No data matching criteria found."
-            )
-        else:
-            value_in_chaos, time_stamps, most_common_currency_used, conversionValue = (
-                self._create_plot_data(df)
-            )
-
-        output_dict = {
+    @sync_timing_tracker
+    def _summarize_plot_data(
+        self,
+        value_in_chaos: pd.Series,
+        time_stamps: pd.Series,
+        value_in_most_common_currency_used: pd.Series,
+        mostCommonCurrencyUsed: str,
+    ) -> dict[str, pd.Series | str]:
+        # Convert to dict
+        plot_data = {
             "valueInChaos": value_in_chaos,
             "timeStamp": time_stamps,
-            "mostCommonCurrencyUsed": most_common_currency_used,
-            "conversionValue": conversionValue,
+            "valueInMostCommonCurrencyUsed": value_in_most_common_currency_used,
+            "mostCommonCurrencyUsed": mostCommonCurrencyUsed,
         }
+        # Then as a dataframe
+        df = pd.DataFrame(plot_data)
 
-        return self.validate(output_dict)
+        # Group by hour
+        grouped_by_date_df = df.groupby(pd.Grouper(key="timeStamp", axis=0, freq="h"))
+
+        # Aggregate by custom function
+        agg_by_date_df = grouped_by_date_df.agg(
+            {
+                "valueInChaos": lambda values: summarize_function(values, 2),
+                "valueInMostCommonCurrencyUsed": lambda values: summarize_function(
+                    values, 2
+                ),
+            }
+        )
+        agg_by_date_df = agg_by_date_df.loc[~agg_by_date_df["valueInChaos"].isna()]
+
+        # Update the values in the dict
+        plot_data["timeStamp"] = agg_by_date_df.index
+        plot_data["valueInChaos"] = agg_by_date_df["valueInChaos"].values
+        plot_data["valueInMostCommonCurrencyUsed"] = agg_by_date_df[
+            "valueInMostCommonCurrencyUsed"
+        ].values
+
+        return plot_data
+
+    @async_timing_tracker
+    async def plot(self, db: AsyncSession, *, query: PlotQuery) -> PlotData:
+        result = await self._perform_plot_db_query(db, query=query)
+        df = self._convert_result_to_df(result)
+
+        if df.empty:
+            raise PlotQueryDataNotFoundError(
+                query_data=query,
+                function_name=self.plot.__name__,
+                class_name=self.__class__.__name__,
+            )
+        else:
+            (
+                value_in_chaos,
+                time_stamps,
+                value_in_most_common_currency_used,
+                mostCommonCurrencyUsed,
+            ) = self._create_plot_data(df)
+
+        plot_data = self._summarize_plot_data(
+            value_in_chaos,
+            time_stamps,
+            value_in_most_common_currency_used,
+            mostCommonCurrencyUsed,
+        )
+
+        return self.validate(plot_data)

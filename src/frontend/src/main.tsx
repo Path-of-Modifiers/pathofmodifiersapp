@@ -1,32 +1,33 @@
-import { StrictMode } from "react";
-import ReactDOM from "react-dom/client";
-import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { ChakraProvider } from "@chakra-ui/react"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { RouterProvider, createRouter } from "@tanstack/react-router"
+import ReactDOM from "react-dom/client"
+import { routeTree } from "./routeTree.gen"
 
-// Import the generated route tree
-import { routeTree } from "./routeTree.gen";
-import { ChakraProvider } from "@chakra-ui/react";
+import { StrictMode } from "react"
+import { OpenAPI } from "./client"
+import theme from "./theme"
 
-import theme from "./theme";
+OpenAPI.BASE = import.meta.env.VITE_API_URL
+OpenAPI.TOKEN = async () => {
+  return localStorage.getItem("access_token") || ""
+}
 
-// Create a new router instance
-const router = createRouter({ routeTree });
+const queryClient = new QueryClient()
 
-// Register the router instance for type safety
+const router = createRouter({ routeTree })
 declare module "@tanstack/react-router" {
   interface Register {
-    router: typeof router;
+    router: typeof router
   }
 }
 
-// Render the app
-const rootElement = document.getElementById("root")!;
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(
-    <StrictMode>
-      <ChakraProvider theme={theme}>
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <ChakraProvider theme={theme}>
+      <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
-      </ChakraProvider>
-    </StrictMode>
-  );
-}
+      </QueryClientProvider>
+    </ChakraProvider>
+  </StrictMode>,
+)

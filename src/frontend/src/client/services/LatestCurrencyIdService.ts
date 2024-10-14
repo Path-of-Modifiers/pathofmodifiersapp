@@ -14,7 +14,7 @@ export class LatestCurrencyIdService {
      * @returns number Successful Response
      * @throws ApiError
      */
-    public static getLatestCurrencyIdApiApiV1CurrencyLatestCurrencyIdGet(): CancelablePromise<number> {
+    public static getLatestCurrencyId(): CancelablePromise<number> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/currency/latest_currency_id/',

@@ -45,6 +45,13 @@ export interface ModifierSpecState {
   modifierLimitations?: ModifierLimitationState | null;
 }
 
+export interface PlotSettingsState {
+  showChaos: boolean;
+  showSecondary: boolean;
+  setShowChaos: () => void;
+  setShowSecondary: () => void;
+}
+
 export interface GraphInputState {
   clearClicked: boolean;
   queryClicked: boolean;

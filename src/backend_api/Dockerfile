@@ -1,5 +1,6 @@
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.10
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.11
 
+RUN useradd -ms /bin/bash admin
 WORKDIR /app/
 
 # Install Poetry
@@ -23,3 +24,7 @@ COPY ./alembic.ini /app/
 COPY ./prestart.sh /app/
 
 COPY ./app /app/app
+
+RUN chown -R admin:admin /app
+RUN chmod 755 /app
+USER admin

@@ -5,7 +5,7 @@
 export type PlotData = {
     valueInChaos: Array<number>;
     timeStamp: Array<string>;
+    valueInMostCommonCurrencyUsed: Array<number>;
     mostCommonCurrencyUsed: string;
-    conversionValue: Array<number>;
 };
 

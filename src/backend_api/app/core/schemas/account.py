@@ -1,5 +1,5 @@
 import datetime as _dt
-from typing import Optional
+
 import pydantic as _pydantic
 
 
@@ -8,7 +8,7 @@ class _BaseAccount(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
     accountName: str
-    isBanned: Optional[bool] = None
+    isBanned: bool | None = None
 
 
 # Properties to receive on account creation
@@ -24,7 +24,7 @@ class AccountUpdate(_BaseAccount):
 # Properties shared by models stored in DB
 class AccountInDBBase(_BaseAccount):
     createdAt: _dt.datetime
-    updatedAt: Optional[_dt.datetime] = None
+    updatedAt: _dt.datetime | None = None
 
 
 # Properties to return to client

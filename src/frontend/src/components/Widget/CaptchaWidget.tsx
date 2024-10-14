@@ -1,36 +1,42 @@
 import { Turnstile } from "@marsidev/react-turnstile";
-import useTurnstileValidation from "../../hooks/turnstile/turnstileValidation";
-import { useEffect, useRef, useState } from "react";
-import { useTurnstileStore } from "../../store/TurnstileStore";
+import { useState } from "react";
+import { Text } from "@chakra-ui/react";
+import useTurnstileValidation from "../../hooks/validation/turnstileValidation";
+import useGetIp from "../../hooks/validation/getIp";
 
 const siteKey = import.meta.env.VITE_APP_TURNSTILE_SITE_KEY || "";
 
 // Cloudfare turnstile widget for captcha
 const CaptchaWidget = () => {
-  const ip = useRef<string>("");
   const [token, setToken] = useState<string>("");
-  const { setTurnstileResponse } = useTurnstileStore();
-  const { turnstileResponse } = useTurnstileValidation({
-    token: token,
-    ip: ip.current,
-  });
+  const security_ip = useGetIp();
 
-  useEffect(() => {
-    fetch("https://api.ipify.org?format=json")
-      .then((response) => response.json())
-      .then((data) => {
-        ip.current = data.ip;
-      })
-      .catch((error) => {
-        console.log("Captcha Error fetching IP:", error);
+  const { performTurnstileValidation, error, resetError } =
+    useTurnstileValidation({
+      token: token,
+      ip: security_ip,
+    });
+
+  const turnstileHandler = async (token: string) => {
+    setToken(token);
+    resetError();
+
+    try {
+      await performTurnstileValidation.mutateAsync({
+        token: token,
+        ip: security_ip,
       });
-
-    if (turnstileResponse) {
-      setTurnstileResponse(turnstileResponse);
+    } catch {
+      // error is handled by useAuth hook
     }
-  }, [turnstileResponse, setTurnstileResponse]);
+  };
 
-  return <Turnstile siteKey={siteKey} onSuccess={setToken} />;
+  return (
+    <>
+      {!error && <Turnstile siteKey={siteKey} onSuccess={turnstileHandler} />}
+      {error && <Text color={"ui.white"}>{error}</Text>}
+    </>
+  );
 };
 
 export default CaptchaWidget;

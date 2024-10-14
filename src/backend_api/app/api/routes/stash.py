@@ -1,18 +1,21 @@
 from __future__ import annotations
-from fastapi import APIRouter, Depends, HTTPException
-from typing import List, Union
 
-from app.api.deps import get_db
-
-from app.crud import CRUD_stash
-
-import app.core.schemas as schemas
-
+from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
 
-from app.core.security import verification
-from app.api.utils import get_delete_return_message
-
+import app.core.schemas as schemas
+from app.api.api_message_util import (
+    get_delete_return_msg,
+)
+from app.api.deps import (
+    get_current_active_superuser,
+    get_current_active_user,
+    get_db,
+)
+from app.core.config import settings
+from app.core.models.models import Stash
+from app.crud import CRUD_stash
+from app.limiter import apply_user_rate_limits
 
 router = APIRouter()
 
@@ -22,23 +25,26 @@ stash_prefix = "stash"
 
 @router.get(
     "/{stashId}",
-    response_model=Union[schemas.Stash, List[schemas.Stash]],
+    response_model=schemas.Stash,
+    dependencies=[Depends(get_current_active_user)],
+)
+@apply_user_rate_limits(
+    settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    settings.DEFAULT_USER_RATE_LIMIT_DAY,
 )
 async def get_stash(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
     stashId: str,
     db: Session = Depends(get_db),
-    verification: bool = Depends(verification),
 ):
     """
     Get stash by key and value for "stashId".
 
     Always returns one stash.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {get_stash.__name__}",
-        )
 
     stash_map = {"stashId": stashId}
     stash = await CRUD_stash.get(db=db, filter=stash_map)
@@ -46,20 +52,19 @@ async def get_stash(
     return stash
 
 
-@router.get("/", response_model=Union[schemas.Stash, List[schemas.Stash]])
+@router.get(
+    "/",
+    response_model=schemas.Stash | list[schemas.Stash],
+    dependencies=[Depends(get_current_active_superuser)],
+)
 async def get_all_stashes(
-    db: Session = Depends(get_db), verification: bool = Depends(verification)
+    db: Session = Depends(get_db),
 ):
     """
     Get all stashes.
 
     Returns a list of all stashes.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {get_all_stashes.__name__}",
-        )
 
     all_stashes = await CRUD_stash.get(db=db)
 
@@ -68,44 +73,44 @@ async def get_all_stashes(
 
 @router.post(
     "/",
-    response_model=Union[schemas.StashCreate, List[schemas.StashCreate]],
+    response_model=schemas.StashCreate | list[schemas.StashCreate] | None,
+    dependencies=[Depends(get_current_active_superuser)],
 )
 async def create_stash(
-    stash: Union[schemas.StashCreate, List[schemas.StashCreate]],
+    stash: schemas.StashCreate | list[schemas.StashCreate],
+    on_duplicate_pkey_do_nothing: bool | None = None,
+    return_nothing: bool | None = None,
     db: Session = Depends(get_db),
-    verification: bool = Depends(verification),
 ):
     """
     Create one or a list of new stashes.
 
     Returns the created stash or list of stashes.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {create_stash.__name__}",
-        )
 
-    return await CRUD_stash.create(db=db, obj_in=stash)
+    return await CRUD_stash.create(
+        db=db,
+        obj_in=stash,
+        on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing,
+        return_nothing=return_nothing,
+    )
 
 
-@router.put("/{stashId}", response_model=schemas.Stash)
+@router.put(
+    "/{stashId}",
+    response_model=schemas.Stash,
+    dependencies=[Depends(get_current_active_superuser)],
+)
 async def update_stash(
     stashId: str,
     stash_update: schemas.StashUpdate,
     db: Session = Depends(get_db),
-    verification: bool = Depends(verification),
 ):
     """
     Update a stash by key and value for "stashId".
 
     Returns the updated stash.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {update_stash.__name__}",
-        )
 
     stash_map = {"stashId": stashId}
     stash = await CRUD_stash.get(
@@ -116,11 +121,14 @@ async def update_stash(
     return await CRUD_stash.update(db_obj=stash, obj_in=stash_update, db=db)
 
 
-@router.delete("/{stashId}", response_model=str)
+@router.delete(
+    "/{stashId}",
+    response_model=str,
+    dependencies=[Depends(get_current_active_superuser)],
+)
 async def delete_stash(
     stashId: str,
     db: Session = Depends(get_db),
-    verification: bool = Depends(verification),
 ):
     """
     Delete a stash by key and value for "stashId".
@@ -128,13 +136,10 @@ async def delete_stash(
     Returns a message that the stash was deleted successfully.
     Always deletes one stash.
     """
-    if not verification:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Unauthorized API access for {delete_stash.__name__}",
-        )
 
     stash_map = {"stashId": stashId}
     await CRUD_stash.remove(db=db, filter=stash_map)
 
-    return get_delete_return_message(stash_prefix, stash_map)
+    return get_delete_return_msg(
+        model_table_name=Stash.__tablename__, filter=stash_map
+    ).message

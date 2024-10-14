@@ -1,7 +1,7 @@
 import usePostPlottingData from "./postPlottingData";
 import { PlotQuery } from "../../client";
 import Datum from "../../schemas/Datum";
-import { allValueInChaos } from "./utils";
+import formatDateToLocal from "./utils";
 import { useErrorStore } from "../../store/ErrorStore";
 import { useEffect } from "react";
 
@@ -12,6 +12,7 @@ import { useEffect } from "react";
  */
 function useGetPlotData(plotQuery: PlotQuery): {
   result: Datum[] | undefined;
+  mostCommonCurrencyUsed: string | undefined;
   fetchStatus: string;
   isError: boolean;
 } {
@@ -19,8 +20,6 @@ function useGetPlotData(plotQuery: PlotQuery): {
     useErrorStore.getState();
   const { plotData, fetchStatus, isFetched, isError } =
     usePostPlottingData(plotQuery);
-
-  let result: Datum[] | undefined = undefined;
 
   useEffect(() => {
     if (isError && isFetched) {
@@ -31,19 +30,36 @@ function useGetPlotData(plotQuery: PlotQuery): {
   }, [isError, isFetched, setResultError]);
 
   if (isError || leagueError || modifiersError) {
-    return { result, fetchStatus, isError: true };
-  }
-  const data: Datum[] = [];
-  if (plotData?.timeStamp !== undefined) {
+    return {
+      result: undefined,
+      mostCommonCurrencyUsed: undefined,
+      fetchStatus,
+      isError: true,
+    };
+  } else if (plotData !== undefined) {
+    const data: Datum[] = [];
     for (let i = 0; i < plotData?.timeStamp.length; i++) {
       data.push({
-        date: plotData.timeStamp[i],
+        date: formatDateToLocal(plotData.timeStamp[i]),
         valueInChaos: plotData.valueInChaos[i],
+        valueInMostCommonCurrencyUsed:
+          plotData.valueInMostCommonCurrencyUsed[i],
       });
     }
+    return {
+      result: data,
+      mostCommonCurrencyUsed: plotData.mostCommonCurrencyUsed,
+      fetchStatus,
+      isError: false,
+    };
+  } else {
+    return {
+      result: undefined,
+      mostCommonCurrencyUsed: undefined,
+      fetchStatus,
+      isError: true,
+    };
   }
-  result = allValueInChaos(data, 1);
-  return { result, fetchStatus, isError: false };
 }
 
 export default useGetPlotData;

@@ -14,14 +14,14 @@ export class ItemsService {
      * Get item by key and value for "itemId".
      *
      * Always returns one item.
-     * @returns any Successful Response
+     * @returns Item Successful Response
      * @throws ApiError
      */
-    public static getItemApiApiV1ItemItemIdGet({
+    public static getItem({
         itemId,
     }: {
-        itemId: string,
-    }): CancelablePromise<(Item | Array<Item>)> {
+        itemId: number,
+    }): CancelablePromise<Item> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/item/{itemId}',
@@ -41,11 +41,11 @@ export class ItemsService {
      * @returns Item Successful Response
      * @throws ApiError
      */
-    public static updateItemApiApiV1ItemItemIdPut({
+    public static updateItem({
         itemId,
         requestBody,
     }: {
-        itemId: string,
+        itemId: number,
         requestBody: ItemUpdate,
     }): CancelablePromise<Item> {
         return __request(OpenAPI, {
@@ -70,10 +70,10 @@ export class ItemsService {
      * @returns string Successful Response
      * @throws ApiError
      */
-    public static deleteItemApiApiV1ItemItemIdDelete({
+    public static deleteItem({
         itemId,
     }: {
-        itemId: string,
+        itemId: number,
     }): CancelablePromise<string> {
         return __request(OpenAPI, {
             method: 'DELETE',
@@ -91,10 +91,10 @@ export class ItemsService {
      * Get the latest "itemId"
      *
      * Can only be used safely on an empty table or directly after an insertion.
-     * @returns number Successful Response
+     * @returns any Successful Response
      * @throws ApiError
      */
-    public static getLatestItemIdApiApiV1ItemLatestItemIdGet(): CancelablePromise<number> {
+    public static getLatestItemId(): CancelablePromise<(number | null)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/item/latest_item_id/',
@@ -108,7 +108,7 @@ export class ItemsService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAllItemsApiApiV1ItemGet(): CancelablePromise<(Item | Array<Item>)> {
+    public static getAllItems(): CancelablePromise<(Item | Array<Item>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/item/',
@@ -122,14 +122,19 @@ export class ItemsService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static createItemApiApiV1ItemPost({
+    public static createItem({
         requestBody,
+        returnNothing,
     }: {
         requestBody: (ItemCreate | Array<ItemCreate>),
-    }): CancelablePromise<(ItemCreate | Array<ItemCreate>)> {
+        returnNothing?: (boolean | null),
+    }): CancelablePromise<(ItemCreate | Array<ItemCreate> | null)> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/api_v1/item/',
+            query: {
+                'return_nothing': returnNothing,
+            },
             body: requestBody,
             mediaType: 'application/json',
             errors: {

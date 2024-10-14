@@ -11,17 +11,17 @@ import { request as __request } from '../core/request';
 export class AccountsService {
     /**
      * Get Account
-     * Get the account by mapping with key and value for "accountName" .
+     * Get the account by filter with key and value for "accountName" .
      *
      * Always returns one account.
-     * @returns any Successful Response
+     * @returns Account Successful Response
      * @throws ApiError
      */
-    public static getAccountApiApiV1AccountAccountNameGet({
+    public static getAccount({
         accountName,
     }: {
         accountName: string,
-    }): CancelablePromise<(Account | Array<Account>)> {
+    }): CancelablePromise<Account> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/account/{accountName}',
@@ -41,7 +41,7 @@ export class AccountsService {
      * @returns Account Successful Response
      * @throws ApiError
      */
-    public static updateAccountApiApiV1AccountAccountNamePut({
+    public static updateAccount({
         accountName,
         requestBody,
     }: {
@@ -70,7 +70,7 @@ export class AccountsService {
      * @returns string Successful Response
      * @throws ApiError
      */
-    public static deleteAccountApiApiV1AccountAccountNameDelete({
+    public static deleteAccount({
         accountName,
     }: {
         accountName: string,
@@ -94,7 +94,7 @@ export class AccountsService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAllAccountsApiApiV1AccountGet(): CancelablePromise<(Account | Array<Account>)> {
+    public static getAllAccounts(): CancelablePromise<(Account | Array<Account>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/account/',
@@ -108,14 +108,22 @@ export class AccountsService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static createAccountApiApiV1AccountPost({
+    public static createAccount({
         requestBody,
+        onDuplicatePkeyDoNothing,
+        returnNothing,
     }: {
         requestBody: (AccountCreate | Array<AccountCreate>),
-    }): CancelablePromise<(AccountCreate | Array<AccountCreate>)> {
+        onDuplicatePkeyDoNothing?: (boolean | null),
+        returnNothing?: (boolean | null),
+    }): CancelablePromise<(AccountCreate | Array<AccountCreate> | null)> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/api_v1/account/',
+            query: {
+                'on_duplicate_pkey_do_nothing': onDuplicatePkeyDoNothing,
+                'return_nothing': returnNothing,
+            },
             body: requestBody,
             mediaType: 'application/json',
             errors: {
