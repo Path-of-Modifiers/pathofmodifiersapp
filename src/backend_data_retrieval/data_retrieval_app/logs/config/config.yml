@@ -63,6 +63,12 @@ loggers:
       - stdout
       - file
     propagate: no
+  dataret.test:
+    level: INFO
+    handlers:
+      - stdout
+      - file
+    propagate: no
 root:
   level: INFO
   handlers:
