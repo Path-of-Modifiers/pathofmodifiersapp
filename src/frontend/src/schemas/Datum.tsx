@@ -4,7 +4,7 @@
 interface Datum {
   date: string;
   valueInChaos: number;
-  yaxis2?: number;
+  valueInMostCommonCurrencyUsed: number;
 }
 
 export default Datum;

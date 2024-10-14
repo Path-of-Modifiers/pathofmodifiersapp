@@ -1,6 +1,6 @@
 services:
   test-db:
-    image: postgres:16.1  
+    image: postgres:16.1
     ports:
       - 5433:5432
     restart: no

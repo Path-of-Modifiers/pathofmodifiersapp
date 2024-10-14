@@ -1,0 +1,79 @@
+version: 1
+disable_existing_loggers: false
+formatters:
+  simple:
+    format: "[%(name)s|%(levelname)s|%(module)s]: %(asctime)s: %(message)s"
+    datefmt: "%Y-%m-%dT%H:%M:%S%z"
+  json:
+    (): app.logs.config.JSONFormatter
+    fmt_keys:
+      logger: name
+      level: levelname
+      message: message
+      timestamp: timestamp
+  json-uvicorn-access:
+    (): app.logs.config.UvicornAccessMessageFormatter
+    fmt_keys:
+      logger: name
+      level: levelname
+      timestamp: timestamp
+filters:
+  sensitive_data_filter:
+    (): app.logs.config.SensitiveDataFilter
+handlers:
+  stdout:
+    class: logging.StreamHandler
+    level: DEBUG
+    filters: [sensitive_data_filter]
+    formatter: simple
+    stream: "ext://sys.stdout"
+  file:
+    class: logging.handlers.RotatingFileHandler
+    level: DEBUG
+    filters: [sensitive_data_filter]
+    formatter: simple
+    filename: "app/logs/backendapi.log"
+    maxBytes: 504857600 # 500 MB
+    backupCount: 2
+loggers:
+  uvicorn.error:
+    level: INFO
+    handlers:
+      - stdout
+      - file
+    propagate: no
+  slowapi:
+    level: ERROR
+    handlers:
+      - stdout
+      - file
+    propagate: no
+  pom_app:
+    level: DEBUG
+    handlers:
+      - stdout
+      - file
+    propagate: no
+  pom_app.plot:
+    level: DEBUG
+    handlers:
+      - stdout
+      - file
+    propagate: no
+  pom_app.test:
+    level: INFO
+    handlers:
+      - stdout
+      - file
+    propagate: no
+  httpx:
+    level: ERROR
+    handlers:
+      - stdout
+      - file
+    propagate: no
+root:
+  level: INFO
+  handlers:
+    - stdout
+    - file

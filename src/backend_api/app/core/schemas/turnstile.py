@@ -1,6 +1,4 @@
-from typing import Annotated, List, Optional, Union
 import pydantic as _pydantic
-from pydantic import conlist
 
 
 class TurnstileQuery(_pydantic.BaseModel):
@@ -8,11 +6,15 @@ class TurnstileQuery(_pydantic.BaseModel):
     ip: str
 
 
+class MetadataObject(_pydantic.BaseModel):
+    interactive: bool | None = None
+
+
 class TurnstileResponse(_pydantic.BaseModel):
     success: bool
-    error_codes: Optional[List[str]] = None
-    challenge_ts: str
-    hostname: str
-    action: str
-    cdata: str
-    metadata: dict
+    error_codes: list[str] | None = None
+    challenge_ts: str | None = None
+    hostname: str | None = None
+    action: str | None = None
+    cdata: str | None = None
+    metadata: MetadataObject | None = None

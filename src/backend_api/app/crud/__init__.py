@@ -1,3 +1,4 @@
+from app.crud.user import CRUDUser
 from .base import CRUDBase
 from app.crud.extensions.crud_modifier import CRUDModifier
 from app.crud.extensions.crud_item_base_type import CRUDItemBaseType
@@ -16,7 +17,6 @@ from app.core.schemas.account import AccountCreate, AccountUpdate, Account
 from app.core.schemas.currency import CurrencyCreate, CurrencyUpdate, Currency
 from app.core.schemas.item_base_type import (
     ItemBaseTypeCreate,
-    ItemBaseTypeUpdate,
     ItemBaseType,
 )
 from app.core.schemas.item_modifier import (
@@ -27,7 +27,6 @@ from app.core.schemas.item_modifier import (
 from app.core.schemas.modifier import ModifierCreate, ModifierUpdate, Modifier
 from app.core.schemas.item import ItemCreate, ItemUpdate, Item
 from app.core.schemas.stash import StashCreate, StashUpdate, Stash
-
 
 CRUD_account = CRUDBase[
     model_Account,
@@ -42,10 +41,16 @@ CRUD_currency = CRUDBase[
     Currency,
     CurrencyCreate,
     CurrencyUpdate,
-](model=model_Currency, schema=Currency, create_schema=CurrencyCreate)
+](
+    model=model_Currency,
+    schema=Currency,
+    create_schema=CurrencyCreate,
+)
 
 
-CRUD_itemBaseType = CRUDItemBaseType(model=model_ItemBaseType, schema=ItemBaseType, create_schema=ItemBaseTypeCreate)
+CRUD_itemBaseType = CRUDItemBaseType(
+    model=model_ItemBaseType, schema=ItemBaseType, create_schema=ItemBaseTypeCreate
+)
 
 
 CRUD_itemModifier = CRUDBase[
@@ -53,7 +58,11 @@ CRUD_itemModifier = CRUDBase[
     ItemModifier,
     ItemModifierCreate,
     ItemModifierUpdate,
-](model=model_ItemModifier, schema=ItemModifier, create_schema=ItemModifierCreate)
+](
+    model=model_ItemModifier,
+    schema=ItemModifier,
+    create_schema=ItemModifierCreate,
+)
 
 CRUD_item = CRUDBase[
     model_Item,
@@ -63,7 +72,9 @@ CRUD_item = CRUDBase[
 ](model=model_Item, schema=Item, create_schema=ItemCreate)
 
 CRUD_modifier = CRUDModifier(
-    model=model_Modifier, schema=Modifier, create_schema=ModifierCreate
+    model=model_Modifier,
+    schema=Modifier,
+    create_schema=ModifierCreate,
 )
 
 CRUD_stash = CRUDBase[
@@ -72,3 +83,6 @@ CRUD_stash = CRUDBase[
     StashCreate,
     StashUpdate,
 ](model=model_Stash, schema=Stash, create_schema=StashCreate)
+
+
+CRUD_user = CRUDUser()

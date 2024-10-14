@@ -1,5 +1,5 @@
 import datetime as _dt
-from typing import Optional
+
 import pydantic as _pydantic
 
 
@@ -26,7 +26,7 @@ class StashUpdate(_BaseStash):
 class StashInDBBase(_BaseStash):
     stashId: str
     createdAt: _dt.datetime
-    updatedAt: Optional[_dt.datetime] = None
+    updatedAt: _dt.datetime | None = None
 
 
 # Properties to return to client

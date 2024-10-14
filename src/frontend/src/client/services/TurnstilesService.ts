@@ -25,7 +25,7 @@ export class TurnstilesService {
      * @returns TurnstileResponse Successful Response
      * @throws ApiError
      */
-    public static getTurnstileValidationApiApiV1TurnstilePost({
+    public static getTurnstileValidation({
         requestBody,
     }: {
         requestBody: TurnstileQuery,

@@ -1,5 +1,5 @@
 import datetime as _dt
-from typing import Optional, List
+
 import pydantic as _pydantic
 
 
@@ -9,7 +9,7 @@ class _BaseItemBaseType(_pydantic.BaseModel):
 
     baseType: str
     category: str
-    subCategory: Optional[str] = None
+    subCategory: str | None = None
 
 
 class BaseType(_pydantic.BaseModel):
@@ -23,6 +23,7 @@ class ItemBaseTypeCategory(_pydantic.BaseModel):
 class ItemBaseTypeSubCategory(_pydantic.BaseModel):
     subCategory: str
 
+
 # Properties to receive on item base type creation
 class ItemBaseTypeCreate(_BaseItemBaseType):
     pass
@@ -35,8 +36,7 @@ class ItemBaseTypeUpdate(_BaseItemBaseType):
 
 # Properties shared by models stored in DB
 class ItemBaseTypeInDBBase(_BaseItemBaseType):
-    createdAt: _dt.datetime
-    updatedAt: Optional[_dt.datetime] = None
+    pass
 
 
 # Properties to return to client

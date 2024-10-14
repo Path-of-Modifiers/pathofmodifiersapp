@@ -1,46 +1,29 @@
-import asyncio
-from typing import Dict, Tuple, Optional, List, Union
 from sqlalchemy.orm import Session
 
 from app import crud
-from app.core.models.models import Stash, Account, Item, Currency, ItemBaseType
+from app.core.models.models import Account, Currency, Item, ItemBaseType, Stash
 from app.core.schemas.item import ItemCreate
+from app.tests.utils.model_utils.currency import generate_random_currency
+from app.tests.utils.model_utils.item_base_type import generate_random_item_base_type
+from app.tests.utils.model_utils.stash import generate_random_stash
 from app.tests.utils.utils import (
-    random_lower_string,
-    random_int,
     random_bool,
     random_float,
+    random_int,
     random_json,
+    random_lower_string,
     random_url,
 )
 
-from app.tests.utils.model_utils.item_base_type import generate_random_item_base_type
-from app.tests.utils.model_utils.currency import generate_random_currency
-from app.tests.utils.model_utils.stash import generate_random_stash
-
 
 async def create_random_item_dict(
-    db: Session, retrieve_dependencies: Optional[bool] = False
-) -> Union[
-    Dict,
-    Tuple[
-        Dict,
-        List[
-            Union[
-                Dict,
-                Account,
-                Stash,
-                ItemBaseType,
-                Currency,
-            ]
-        ],
-    ],
-]:
+    db: Session, retrieve_dependencies: bool | None = False
+) -> dict | tuple[dict, list[dict | Account | Stash | ItemBaseType | Currency]]:
     """Create a random item dictionary.
 
     Args:
         db (Session): DB session.
-        retrieve_dependencies (Optional[bool], optional): Whether to retrieve dependencies. Defaults to False.
+        retrieve_dependencies (bool, optional): Whether to retrieve dependencies. Defaults to False.
 
     Returns:
         Union[ Dict, Tuple[ Dict, List[ Union[ Dict, Account, Stash, ItemBaseType, Currency, ] ], ], ]: \n
@@ -132,30 +115,20 @@ async def create_random_item_dict(
 
 
 async def generate_random_item(
-    db: Session, retrieve_dependencies: Optional[bool] = False
-) -> Tuple[
-    Dict,
+    db: Session, retrieve_dependencies: bool | None = False
+) -> tuple[
+    dict,
     Item,
-    Optional[
-        List[
-            Union[
-                Dict,
-                Account,
-                Stash,
-                ItemBaseType,
-                Currency,
-            ]
-        ]
-    ],
+    list[dict | Account | Stash | ItemBaseType | Currency] | None,
 ]:
     """Generate a random item.
 
     Args:
         db (Session): DB session.
-        retrieve_dependencies (Optional[bool], optional): Whether to retrieve dependencies. Defaults to False.
+        retrieve_dependencies (bool, optional): Whether to retrieve dependencies. Defaults to False.
 
     Returns:
-        Tuple[ Dict, Item, Optional[ List[ Union[ Dict, Account, Stash, ItemBaseType, Currency, ] ] ], ]: \n
+        Tuple[ Dict, Item,  List[ Union[ Dict, Account, Stash, ItemBaseType, Currency, ] ] ], ]: \n
         Random item dict and Item db object and optional dependencies.
     """
     output = await create_random_item_dict(db, retrieve_dependencies)

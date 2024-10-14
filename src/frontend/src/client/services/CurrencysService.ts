@@ -14,14 +14,14 @@ export class CurrencysService {
      * Get currency by key and value for "currencyId".
      *
      * Always returns one currency.
-     * @returns any Successful Response
+     * @returns Currency Successful Response
      * @throws ApiError
      */
-    public static getCurrencyApiApiV1CurrencyCurrencyIdGet({
+    public static getCurrency({
         currencyId,
     }: {
-        currencyId: string,
-    }): CancelablePromise<(Currency | Array<Currency>)> {
+        currencyId: number,
+    }): CancelablePromise<Currency> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/currency/{currencyId}',
@@ -41,11 +41,11 @@ export class CurrencysService {
      * @returns Currency Successful Response
      * @throws ApiError
      */
-    public static updateCurrencyApiApiV1CurrencyCurrencyIdPut({
+    public static updateCurrency({
         currencyId,
         requestBody,
     }: {
-        currencyId: string,
+        currencyId: number,
         requestBody: CurrencyUpdate,
     }): CancelablePromise<Currency> {
         return __request(OpenAPI, {
@@ -70,10 +70,10 @@ export class CurrencysService {
      * @returns string Successful Response
      * @throws ApiError
      */
-    public static deleteCurrencyApiApiV1CurrencyCurrencyIdDelete({
+    public static deleteCurrency({
         currencyId,
     }: {
-        currencyId: string,
+        currencyId: number,
     }): CancelablePromise<string> {
         return __request(OpenAPI, {
             method: 'DELETE',
@@ -94,7 +94,7 @@ export class CurrencysService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAllCurrenciesApiApiV1CurrencyGet(): CancelablePromise<(Currency | Array<Currency>)> {
+    public static getAllCurrencies(): CancelablePromise<(Currency | Array<Currency>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/currency/',
@@ -108,14 +108,19 @@ export class CurrencysService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static createCurrencyApiApiV1CurrencyPost({
+    public static createCurrency({
         requestBody,
+        returnNothing,
     }: {
         requestBody: (CurrencyCreate | Array<CurrencyCreate>),
-    }): CancelablePromise<(CurrencyCreate | Array<CurrencyCreate>)> {
+        returnNothing?: (boolean | null),
+    }): CancelablePromise<(CurrencyCreate | Array<CurrencyCreate> | null)> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/api_v1/currency/',
+            query: {
+                'return_nothing': returnNothing,
+            },
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -131,7 +136,7 @@ export class CurrencysService {
      * @returns number Successful Response
      * @throws ApiError
      */
-    public static getLatestCurrencyIdApiApiV1CurrencyLatestCurrencyIdGet(): CancelablePromise<number> {
+    public static getLatestCurrencyId(): CancelablePromise<number> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/currency/latest_currency_id/',

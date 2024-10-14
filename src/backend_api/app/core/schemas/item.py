@@ -1,15 +1,15 @@
 import datetime as _dt
-from typing import Optional
+
 import pydantic as _pydantic
 
 
 class Influences(_pydantic.BaseModel):
-    elder: Optional[bool] = None
-    shaper: Optional[bool] = None
-    crusader: Optional[bool] = None
-    redeemer: Optional[bool] = None
-    hunter: Optional[bool] = None
-    warlord: Optional[bool] = None
+    elder: bool | None = None
+    shaper: bool | None = None
+    crusader: bool | None = None
+    redeemer: bool | None = None
+    hunter: bool | None = None
+    warlord: bool | None = None
 
 
 # Shared item props
@@ -18,31 +18,31 @@ class _BaseItem(_pydantic.BaseModel):
 
     stashId: str
     gameItemId: str
-    name: Optional[str] = None
-    iconUrl: Optional[str] = None
+    name: str | None = None
+    iconUrl: str | None = None
     league: str
     typeLine: str
     baseType: str
     ilvl: int
     rarity: str
     identified: bool = True
-    forumNote: Optional[str] = None
-    currencyAmount: Optional[float] = None
-    currencyId: Optional[int] = None
-    corrupted: Optional[bool] = None
-    delve: Optional[bool] = None
-    fractured: Optional[bool] = None
-    synthesized: Optional[bool] = None
-    replica: Optional[bool] = None
-    elder: Optional[bool] = None
-    shaper: Optional[bool] = None
-    influences: Optional[Influences] = None
-    searing: Optional[bool] = None
-    tangled: Optional[bool] = None
-    isRelic: Optional[bool] = None
-    prefixes: Optional[int] = None
-    suffixes: Optional[int] = None
-    foilVariation: Optional[int] = None
+    forumNote: str | None = None
+    currencyAmount: float | None = None
+    currencyId: int | None = None
+    corrupted: bool | None = None
+    delve: bool | None = None
+    fractured: bool | None = None
+    synthesized: bool | None = None
+    replica: bool | None = None
+    elder: bool | None = None
+    shaper: bool | None = None
+    influences: Influences | None = None
+    searing: bool | None = None
+    tangled: bool | None = None
+    isRelic: bool | None = None
+    prefixes: int | None = None
+    suffixes: int | None = None
+    foilVariation: int | None = None
 
 
 # Properties to receive on item creation

@@ -14,14 +14,14 @@ export class StashsService {
      * Get stash by key and value for "stashId".
      *
      * Always returns one stash.
-     * @returns any Successful Response
+     * @returns Stash Successful Response
      * @throws ApiError
      */
-    public static getStashApiApiV1StashStashIdGet({
+    public static getStash({
         stashId,
     }: {
         stashId: string,
-    }): CancelablePromise<(Stash | Array<Stash>)> {
+    }): CancelablePromise<Stash> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/stash/{stashId}',
@@ -41,7 +41,7 @@ export class StashsService {
      * @returns Stash Successful Response
      * @throws ApiError
      */
-    public static updateStashApiApiV1StashStashIdPut({
+    public static updateStash({
         stashId,
         requestBody,
     }: {
@@ -70,7 +70,7 @@ export class StashsService {
      * @returns string Successful Response
      * @throws ApiError
      */
-    public static deleteStashApiApiV1StashStashIdDelete({
+    public static deleteStash({
         stashId,
     }: {
         stashId: string,
@@ -94,7 +94,7 @@ export class StashsService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAllStashesApiApiV1StashGet(): CancelablePromise<(Stash | Array<Stash>)> {
+    public static getAllStashes(): CancelablePromise<(Stash | Array<Stash>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/stash/',
@@ -108,14 +108,22 @@ export class StashsService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static createStashApiApiV1StashPost({
+    public static createStash({
         requestBody,
+        onDuplicatePkeyDoNothing,
+        returnNothing,
     }: {
         requestBody: (StashCreate | Array<StashCreate>),
-    }): CancelablePromise<(StashCreate | Array<StashCreate>)> {
+        onDuplicatePkeyDoNothing?: (boolean | null),
+        returnNothing?: (boolean | null),
+    }): CancelablePromise<(StashCreate | Array<StashCreate> | null)> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/api_v1/stash/',
+            query: {
+                'on_duplicate_pkey_do_nothing': onDuplicatePkeyDoNothing,
+                'return_nothing': returnNothing,
+            },
             body: requestBody,
             mediaType: 'application/json',
             errors: {

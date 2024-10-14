@@ -1,20 +1,17 @@
-from typing import List, Union
-
 from fastapi import HTTPException
 from pydantic import TypeAdapter
-
-from sqlalchemy.orm import Session
 from sqlalchemy import select
+from sqlalchemy.orm import Session
 
+from app.core.models.models import ItemBaseType as model_item_base_type
 from app.core.schemas.item_base_type import (
     BaseType,
+    ItemBaseType,
     ItemBaseTypeCategory,
     ItemBaseTypeCreate,
     ItemBaseTypeSubCategory,
     ItemBaseTypeUpdate,
-    ItemBaseType,
 )
-from app.core.models.models import ItemBaseType as model_item_base_type
 from app.crud.base import CRUDBase
 
 
@@ -40,7 +37,7 @@ class CRUDItemBaseType(
         if len(db_obj) == 1:
             db_obj = db_obj[0]
 
-        validate = TypeAdapter(Union[BaseType, List[BaseType]]).validate_python
+        validate = TypeAdapter(BaseType | list[BaseType]).validate_python
 
         return validate(db_obj)
 
@@ -59,7 +56,7 @@ class CRUDItemBaseType(
             db_obj = db_obj[0]
 
         validate = TypeAdapter(
-            Union[ItemBaseTypeCategory, List[ItemBaseTypeCategory]]
+            ItemBaseTypeCategory | list[ItemBaseTypeCategory]
         ).validate_python
 
         return validate(db_obj)
@@ -68,7 +65,7 @@ class CRUDItemBaseType(
         statement = (
             select(model_item_base_type.subCategory)
             .distinct()
-            .where(model_item_base_type.subCategory != None)
+            .where(model_item_base_type.subCategory.isnot(None))
         )
 
         db_obj = db.execute(statement).mappings().all()
@@ -83,7 +80,7 @@ class CRUDItemBaseType(
             db_obj = db_obj[0]
 
         validate = TypeAdapter(
-            Union[ItemBaseTypeSubCategory, List[ItemBaseTypeSubCategory]]
+            ItemBaseTypeSubCategory | list[ItemBaseTypeSubCategory]
         ).validate_python
 
         return validate(db_obj)

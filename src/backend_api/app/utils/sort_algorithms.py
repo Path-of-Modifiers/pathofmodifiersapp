@@ -1,7 +1,7 @@
-from typing import Any, List
+from typing import Any
 
 
-def quickSort(array: List[Any]) -> List[Any]:
+def quickSort(array: list[Any]) -> list[Any]:
     """Quick sort algorithm.
 
     Args:
@@ -26,8 +26,8 @@ def quickSort(array: List[Any]) -> List[Any]:
 
 
 def sort_with_reference(
-    items: List[Any], reference: List[Any], presorted: bool = False
-) -> List[Any]:
+    items: list[Any], reference: list[Any], presorted: bool = False
+) -> list[Any]:
     """Sort items based on a reference list.
 
     Args:
@@ -44,7 +44,7 @@ def sort_with_reference(
         sorted_reference = reference
 
     sorted_items = ["filler"] * len(items)
-    for obj, column_value in zip(items, reference):
+    for obj, column_value in zip(items, reference, strict=False):
         ind = sorted_reference.index(column_value)
         sorted_items[ind] = obj
 
