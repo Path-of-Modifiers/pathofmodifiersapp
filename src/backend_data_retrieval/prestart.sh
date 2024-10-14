@@ -11,7 +11,7 @@ else
 fi
 
 # Test scripts in "tests" module
-# python data_retrieval_app/tests/scripts/test_bdr_with_sim_modifier_pub_stash_data.py
+# python data_retrieval_app/tests/scripts/test_with_sim_data_deposit_pub_stash_data.py
 
 # exit 1
 
