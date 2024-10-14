@@ -26,3 +26,5 @@ transform_logger = external_data_retrieval_logger.getChild("transform")
 data_retrieval_logger = external_data_retrieval_logger.getChild("dataret")
 
 data_deposit_logger = main_logger.getChild("datadepo")
+
+test_logger = main_logger.getChild("test")
