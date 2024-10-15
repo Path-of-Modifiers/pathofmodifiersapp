@@ -39,12 +39,13 @@ class CRUDModifier(
                 detail=f"No objects found in the table {self.model.__tablename__}.",
             )
 
-        modifiers_df = pd.DataFrame(db_obj)
+        modifiers_df = pd.DataFrame(db_obj).sort_values(by="modifierId")
 
         grouped_modifier_df = modifiers_df.groupby(
             ["effect", "regex", "static", "relatedUniques"],
             as_index=False,
             dropna=False,
+            sort=False,
         ).agg(lambda x: list(x))
 
         not_static_mask = grouped_modifier_df["static"].isna()
