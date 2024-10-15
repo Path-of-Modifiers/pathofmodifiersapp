@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "pom_backend_data_retrieval"
 version = "0.1.0"
-description = ""
-authors = ["Admin pomodifiers@outlook.com"]
+description = "Path of Modifiers backend data retrieval"
+authors = ["Path of Modifiers team <pomodifiers@outlook.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -32,6 +32,7 @@ aiohttp = "^3.9.3"
 pyjwt = "^2.9.0"
 pytest-asyncio = "^0.23.8"
 pyyaml = "^6.0.2"
+beautifulsoup4 = "^4.12.3"
 
 
 
