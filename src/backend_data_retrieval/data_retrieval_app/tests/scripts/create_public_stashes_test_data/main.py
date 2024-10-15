@@ -1,14 +1,7 @@
 import copy
 import json
-import os
-import sys
 from collections.abc import Iterator
 
-# TODO: REMOVE:
-# Be in dir src.backend_data_retrieval before executing this script
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.././.."))
-)
 from data_retrieval_app.logs.logger import test_logger
 from data_retrieval_app.tests.scripts.create_public_stashes_test_data.utils.data_deposit_test_data_creator import (
     DataDepositTestDataCreator,

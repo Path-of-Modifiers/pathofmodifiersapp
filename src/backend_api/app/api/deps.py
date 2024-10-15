@@ -11,6 +11,7 @@ from app.core.cache.user_cache import UserCache, UserCacheTokenType
 from app.core.config import settings
 from app.core.models.database import AsyncSessionLocal, SessionLocal
 from app.core.models.models import User
+from app.core.rate_limit.rate_limit_config import rate_limit_settings
 from app.exceptions import (
     DbObjectDoesNotExistError,
     InvalidHeaderProvidedError,
@@ -190,9 +191,9 @@ def get_username_by_request(request: Request) -> str:
 
 def get_rate_limit_amount_by_tier(tier: int) -> int:
     if tier == 0:
-        return settings.TIER_0_PLOT_RATE_LIMIT
+        return rate_limit_settings.TIER_0_PLOT_RATE_LIMIT
     if tier == 1:
-        return settings.TIER_1_PLOT_RATE_LIMIT
+        return rate_limit_settings.TIER_1_PLOT_RATE_LIMIT
 
 
 async def get_rate_limit_tier_by_request(
@@ -204,6 +205,6 @@ async def get_rate_limit_tier_by_request(
     user = await user_cache_session.verify_token(token)
 
     if user.isSuperuser:
-        return settings.TIER_SUPERUSER_PLOT_RATE_LIMIT
+        return rate_limit_settings.TIER_SUPERUSER_PLOT_RATE_LIMIT
 
     return get_rate_limit_amount_by_tier(user.rateLimitTier)

@@ -44,6 +44,7 @@ class TestRateLimitBase(BaseTest):
             if not isinstance(all_rate_limits_per_interval, list):
                 all_rate_limits_per_interval = [all_rate_limits_per_interval]
             last_rate_limit_count = 0
+            last_interval_seconds = 0
             for rate_limits_per_interval in all_rate_limits_per_interval:
                 rate, interval_seconds = self._get_rate_and_interval(
                     rate_limits_per_interval
@@ -56,6 +57,9 @@ class TestRateLimitBase(BaseTest):
                 for i in range(
                     request_amount + 2
                 ):  # + 2 for guaranteeing getting 429 response
+                    if last_rate_limit_count:
+                        if i % last_rate_limit_count == 0:
+                            await asyncio.sleep(last_interval_seconds)
                     if create_object_dict_func is not None:
                         object_dict = create_object_dict_func()
                         response = await api_function(object_dict)
@@ -76,3 +80,4 @@ class TestRateLimitBase(BaseTest):
                         int(response.headers["Retry-After-Seconds"])
                     )  # Wait for rate to reset after seconds rate limit
                 last_rate_limit_count = rate
+                last_interval_seconds = interval_seconds
