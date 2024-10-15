@@ -3,6 +3,8 @@ import time
 from collections.abc import Callable
 from functools import wraps
 
+from data_retrieval_app.logs.logger import timing_logger as timing_logger
+
 
 def async_timing_tracker(func: Callable) -> Callable:
     filepath = os.path.join(
@@ -29,6 +31,10 @@ def async_timing_tracker(func: Callable) -> Callable:
             infile.write(
                 f"{start_time:0.3f},{end_time:0.3f},{end_time-start_time:0.3f}\n"
             )
+
+        timing_logger.info(
+            f"function={func.__name__} start_time_ms={start_time:0.3f} end_time_ms={end_time:0.3f} time_diff_ms={end_time-start_time:0.3f}"
+        )
 
         return result
 
@@ -60,6 +66,10 @@ def sync_timing_tracker(func: Callable) -> Callable:
             infile.write(
                 f"{start_time:0.3f},{end_time:0.3f},{end_time-start_time:0.3f}\n"
             )
+
+        timing_logger.info(
+            f"function={func.__name__} start_time={start_time:0.3f} end_time={end_time:0.3f} time_diff={end_time-start_time:0.3f}"
+        )
 
         return result
 

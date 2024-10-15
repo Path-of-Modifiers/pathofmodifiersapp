@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "app"
+name = "pom_backend_api"
 version = "0.1.0"
-description = ""
-authors = ["Admin <admin@example.com>"]
+description = "Path of Modifiers backend API"
+authors = ["Path of Modifiers team <pomodifiers@outlook.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.11"

@@ -160,11 +160,15 @@ class PoEAPIHandler:
         ):  # For testing purposes, set manual next_change_id
             next_change_id = settings.NEXT_CHANGE_ID
             return next_change_id
-        response = requests.get(
-            "https://www.pathofexile.com/api/trade/data/change-ids",
-            headers=self.headers,
-        )
-        response.raise_for_status()
+        try:
+            response = requests.get(
+                "https://www.pathofexile.com/api/trade/data/change-ids",
+                headers=self.headers,
+            )
+            response.raise_for_status()
+        except Exception as e:
+            logger.error("The following error occurred while making request:", e)
+            raise e
         response_json = response.json()
         next_change_id = response_json["psapi"]
         time.sleep(

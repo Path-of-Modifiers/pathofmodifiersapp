@@ -24,7 +24,7 @@ from app.core.cache.cache import cache
 from app.core.cache.user_cache import UserCache, UserCacheTokenType
 from app.core.config import settings
 from app.core.models.init_db import init_db
-from app.limiter import limiter_ip, limiter_user
+from app.core.rate_limit.rate_limiters import limiter_ip, limiter_user
 from app.main import app as actual_app
 from app.tests.test_simulating_env.setup_test_database import (
     ASYNC_TEST_DATABASE_URL,
