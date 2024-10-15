@@ -9,7 +9,7 @@ from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.responses import JSONResponse, PlainTextResponse, Response
 from slowapi.errors import RateLimitExceeded
 
-from app.exceptions.model_exceptions.plot_exception import PlotRateLimitExceededError
+from app.exceptions.model_exceptions.rate_limit_exception import RateLimitExceededError
 from app.logs.logger import logger
 
 """
@@ -90,9 +90,9 @@ async def slow_api_rate_limit_exceeded_handler(
     )
 
 
-async def plotter_api_rate_limit_exceeded_handler(
+async def custom_rate_limit_exceeded_handler(
     request: Request,  # noqa: ARG001
-    exc: PlotRateLimitExceededError,
+    exc: RateLimitExceededError,
 ):
     retry_after_seconds = exc.headers["Retry-After-Seconds"]
 
