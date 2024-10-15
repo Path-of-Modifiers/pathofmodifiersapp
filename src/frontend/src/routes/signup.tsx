@@ -78,13 +78,12 @@ function SignUp() {
         bgColor="ui.main"
         color="ui.white"
         flexDir={{ base: "column", md: "row" }}
-        h="100vh"
+        h="loginPages.standardHeight"
+        minH="loginPages.standardMinHeight"
       >
         <Container
           as="form"
           onSubmit={handleSubmit(onSubmit)}
-          h="100vh"
-          maxW="sm"
           alignItems="stretch"
           mt={"25vh"}
           gap={4}
