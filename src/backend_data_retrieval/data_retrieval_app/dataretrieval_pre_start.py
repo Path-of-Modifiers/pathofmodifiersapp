@@ -33,7 +33,7 @@ def init() -> None:
         response = requests.get(test_url, headers=pom_api_headers)
         response.raise_for_status()
     except Exception as e:
-        logger.error(e)
+        logger.error("The following error occurred while making request:", e)
         raise e
 
 
