@@ -231,10 +231,14 @@ class PoEAPIDataTransformerBase:
         return item_df
 
     def _get_latest_item_id_series(self, item_df: pd.DataFrame) -> pd.Series:
-        response = requests.get(
-            self.url + "/item/latest_item_id/", headers=self.pom_auth_headers
-        )
-        response.raise_for_status()
+        try:
+            response = requests.get(
+                self.url + "/item/latest_item_id/", headers=self.pom_auth_headers
+            )
+            response.raise_for_status()
+        except Exception as e:
+            logger.error("The following error occurred while making request:", e)
+            raise e
         latest_item_id = int(response.text)
 
         item_id = pd.Series(
