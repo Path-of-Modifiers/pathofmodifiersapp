@@ -1,16 +1,21 @@
+from contextlib import asynccontextmanager
+
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
 from app.api.deps import get_username_by_request
+from app.core.cache.cache import cache
 from app.core.config import settings
+from app.core.rate_limit.custom_rate_limiter import RateLimiter, RateSpec
+from app.core.rate_limit.rate_limit_config import rate_limit_settings
 
 
 def default_limit_provider() -> list[str]:
     return [
-        settings.DEFAULT_USER_RATE_LIMIT_SECOND,
-        settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
-        settings.DEFAULT_USER_RATE_LIMIT_HOUR,
-        settings.DEFAULT_USER_RATE_LIMIT_DAY,
+        rate_limit_settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+        rate_limit_settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+        rate_limit_settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+        rate_limit_settings.DEFAULT_USER_RATE_LIMIT_DAY,
     ]
 
 
@@ -50,3 +55,18 @@ def apply_user_rate_limits(*limits):
 
 def apply_ip_rate_limits(*limits):
     return apply_rate_limits(limiter_ip, *limits)
+
+
+@asynccontextmanager
+async def apply_custom_rate_limit(unique_key: str, rate_spec: RateSpec, prefix: str):
+    """
+    Helper function to apply custom rate limit based on a unique key.
+    """
+    async with RateLimiter(
+        unique_key=unique_key,
+        backend=cache,
+        rate_spec=rate_spec,
+        cache_prefix=prefix,
+        enabled=settings.RATE_LIMIT,
+    ):
+        yield
