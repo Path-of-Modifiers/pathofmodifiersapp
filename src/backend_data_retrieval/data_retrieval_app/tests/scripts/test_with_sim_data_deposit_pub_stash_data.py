@@ -2,7 +2,7 @@ import asyncio
 import threading
 import time
 from collections.abc import Iterator
-from concurrent.futures import ALL_COMPLETED, FIRST_EXCEPTION, ThreadPoolExecutor, wait
+from concurrent.futures import FIRST_EXCEPTION, ThreadPoolExecutor, wait
 
 import aiohttp
 import pandas as pd
@@ -46,7 +46,11 @@ class TestModifierSimulatedDataPoEAPIHandler(PoEAPIHandler):
         session = aiohttp.ClientSession(headers=self.headers, timeout=timeout)
         try:
             stash_lock.acquire()
-            self.stashes += stashes
+            all_stashes = []
+            if not self.stashes:
+                for _, _, stashes in iterate_create_public_stashes_test_data():
+                    all_stashes.append(stashes[0])
+                self.stashes += all_stashes
             stash_lock.release()
             del stashes
 
@@ -76,11 +80,7 @@ class TestModifierSimulatedDataPoEAPIHandler(PoEAPIHandler):
 
         test_logger.info("Stashes are ready for processing")
 
-        all_stashes = []
-        for _, _, stashes in iterate_create_public_stashes_test_data():
-            all_stashes.append(stashes[0])
-
-        stashes_local = all_stashes
+        stashes_local = self.stashes
         del self.stashes
         self.stashes = []
 
@@ -103,14 +103,7 @@ class TestModifierSimulatedDataPoEAPIHandler(PoEAPIHandler):
         """Overrides the function in PoEAPIHandler"""
         df = pd.DataFrame()
         for _ in range(n):
-            start_time = time.perf_counter()
             df = self._process_stream(stashes_ready_event, stash_lock, df)
-            end_time = time.perf_counter()
-
-            time_per_mini_batch = end_time - start_time
-            if time_per_mini_batch > (2 * 60):
-                # Does not allow a batch to take longer than 2 minutes
-                raise ProgramTooSlowException
 
         return df
 
@@ -125,7 +118,7 @@ class TestModifierSimulatedDataPoEAPIHandler(PoEAPIHandler):
             time.sleep(5)  # Waits for the listening threads to have time to start up.
             while True:
                 test_logger.info("Waiting for data from the stream")
-                df = self._gather_n_checkpoints(stashes_ready_event, stash_lock)
+                df = self._gather_n_checkpoints(stashes_ready_event, stash_lock, n=1)
                 test_logger.info(
                     "Finished processing the stream, entering transformation phase"
                 )
@@ -172,49 +165,9 @@ class TestModifierSimulatedDataContinuousDataRetrieval(ContinuousDataRetrieval):
                 )
                 follow_future = executor.submit(self._follow_data_dump_stream)
                 futures[follow_future] = "data_processing"
-                test_logger.info("Waiting for futures to crash.")
                 done_futures, not_done_futures = wait(
                     futures, return_when=FIRST_EXCEPTION
                 )
-                crashed_future = list(done_futures)[0]
-                future_job = futures.pop(crashed_future)
-                test_logger.info(
-                    f"The future '{future_job}' has crashed. Finding exception..."
-                )
-                if future_job == "data_processing":
-                    crashed_future_exception = crashed_future.exception()
-                    try:
-                        raise crashed_future_exception
-                    except ProgramTooSlowException:
-                        test_logger.info(
-                            f"The job '{future_job}' was too slow. Restarting..."
-                        )
-                        self.poe_api_handler.set_program_too_slow()
-
-                        wait(futures, return_when=ALL_COMPLETED)
-
-                        raise ProgramTooSlowException
-                    except ProgramRunTooLongException:
-                        test_logger.info(
-                            f"The job '{future_job}' has been running too long. Restarting..."
-                        )
-                        self.poe_api_handler.set_program_too_slow()
-
-                        wait(futures, return_when=ALL_COMPLETED)
-                        raise ProgramRunTooLongException
-                    except Exception:
-                        test_logger.exception(
-                            f"The following exception occured in job '{future_job}': {crashed_future_exception}"
-                        )
-                        follow_future = executor.submit(self._follow_data_dump_stream)
-                        futures[follow_future] = "data_processing"
-                elif future_job == "listener":
-                    new_future = self._initialize_data_stream_threads(
-                        executor,
-                        listeners=1,
-                        has_crashed=True,
-                    )
-                    futures[new_future] = "listener"
         except ProgramTooSlowException:
             test_logger.info("Program was too slow. Restarting...")
         except ProgramRunTooLongException:
