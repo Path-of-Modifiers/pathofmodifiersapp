@@ -1,5 +1,5 @@
 import { extendTheme } from "@chakra-ui/react";
-import '@fontsource/asap';
+import "@fontsource/asap";
 
 const theme = extendTheme({
   colors: {
@@ -102,6 +102,10 @@ const theme = extendTheme({
       defaultBox: "95rem",
       largeBox: "98rem",
       gigaBox: "130rem",
+    },
+    loginPages: {
+      standardHeight: "100vh",
+      standardMinHeight: "600px",
     },
   },
 });
