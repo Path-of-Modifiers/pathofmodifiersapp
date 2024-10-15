@@ -82,7 +82,7 @@ class NonErrorFilter(logging.Filter):
         return record.levelno <= logging.INFO
 
 
-class UvicornAccessMessageFormatter(JSONFormatter):
+class APIMessageFormatter(JSONFormatter):
     def format(self, record: logging.LogRecord) -> str:
         access_log_map = {
             "h": 0,  # remote address

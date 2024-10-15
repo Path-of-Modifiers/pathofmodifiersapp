@@ -3,7 +3,23 @@ from logging import Filter, LogRecord
 from typing import Any
 
 
-class SensitiveDataFilter(Filter):
+class DataFilterBase(Filter):
+    def _check_message_type(self, message: Any) -> str:
+        if not isinstance(message, str):
+            try:
+                message = str(message)
+            except Exception:
+                message = "Message format not supported"
+        return message
+
+    def mask_data(self, message: Any, compile_patterns: str, mask: str) -> str:
+        message = self._check_message_type(message)
+        if re.search(compile_patterns, message) is not None:
+            return mask
+        return message
+
+
+class SensitiveDataFilter(DataFilterBase):
     sensitive_patterns = [
         r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",  # Email addresses
         r"username",  # Matches 'username'
@@ -38,20 +54,33 @@ class SensitiveDataFilter(Filter):
     ]
     compile_sensitive_patterns = "|".join(sensitive_patterns)
 
-    def _check_message_type(self, message: Any) -> str:
-        if not isinstance(message, str):
-            try:
-                message = str(message)
-            except Exception:
-                message = "Message format not supported"
-        return message
-
     def filter(self, record: LogRecord) -> bool:
         record.msg = self.mask_sensitive_data(record.msg)
         return True
 
     def mask_sensitive_data(self, message: Any):
+        mask = "Details contains sensitive information."
+        return self.mask_data(
+            message=message, compile_patterns=self.compile_sensitive_patterns, mask=mask
+        )
+
+
+class UnwantedDataFilter(DataFilterBase):
+    unwanted_patterns = [
+        r"/api/api_v1/health",
+    ]
+    compile_unwanted_patterns = "|".join(unwanted_patterns)
+
+    def filter(self, record: LogRecord) -> bool:
+        record.msg = self.mask_unwanted_data(record.msg)
+        if not record.msg:
+            return False
+        return True
+
+    def mask_unwanted_data(self, message: Any):
+        mask = ""
         message = self._check_message_type(message)
-        if re.search(self.compile_sensitive_patterns, message) is not None:
-            message = "Details contains sensitive information."
-        return message
+        masked = self.mask_data(
+            message=message, compile_patterns=self.compile_unwanted_patterns, mask=mask
+        )
+        return masked
