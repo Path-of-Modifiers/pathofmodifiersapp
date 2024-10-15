@@ -9,7 +9,7 @@ from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.responses import JSONResponse, PlainTextResponse, Response
 from slowapi.errors import RateLimitExceeded
 
-from app.exceptions.model_exceptions.plot_exception import RateLimitExceededError
+from app.exceptions.model_exceptions.rate_limit_exception import RateLimitExceededError
 from app.logs.logger import logger
 
 """

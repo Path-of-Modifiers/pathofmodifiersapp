@@ -18,7 +18,7 @@ from app.exception_handlers import (
     slow_api_rate_limit_exceeded_handler,
     unhandled_exception_handler,
 )
-from app.exceptions.model_exceptions.plot_exception import RateLimitExceededError
+from app.exceptions.model_exceptions.rate_limit_exception import RateLimitExceededError
 from app.logs.logger import setup_logging
 from app.middleware.request_logs import log_request_middleware
 
