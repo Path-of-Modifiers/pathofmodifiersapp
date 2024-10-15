@@ -2,7 +2,6 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 from slowapi.errors import RateLimitExceeded
 from starlette.exceptions import HTTPException
@@ -53,11 +52,6 @@ if settings.BACKEND_CORS_ORIGINS:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-
-
-@app.get(f"{settings.API_V1_STR}/health", tags=["health"])
-async def health_check():
-    return JSONResponse(status_code=200, content={"status": "OK"})
 
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
