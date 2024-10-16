@@ -12,7 +12,6 @@ from app.api.api_message_util import (
     get_user_psw_change_msg,
 )
 from app.api.deps import (
-    CurrentUser,
     UserCachePasswordResetSession,
     UserCacheSession,
     get_current_active_superuser,
@@ -20,7 +19,7 @@ from app.api.deps import (
 )
 from app.core.config import settings
 from app.core.models.models import User
-from app.core.schemas import Message, NewPassword, Token, UserPublic
+from app.core.schemas import Message, NewPassword, Token
 from app.core.schemas.token import RecoverPassword
 from app.core.security import (
     get_password_hash,
@@ -35,7 +34,7 @@ from app.exceptions import (
     NewPasswordIsSameError,
     UserIsNotActiveError,
 )
-from app.limiter import apply_ip_rate_limits, apply_user_rate_limits
+from app.limiter import apply_ip_rate_limits
 from app.utils.user import (
     generate_reset_password_email,
     send_email,
@@ -85,25 +84,6 @@ async def login_access_session(
     return Token(
         access_token=access_token,
     )
-
-
-@router.post("/test-token", response_model=UserPublic)
-@apply_user_rate_limits(
-    settings.LOGIN_RATE_LIMIT_SECOND,
-    settings.LOGIN_RATE_LIMIT_MINUTE,
-    settings.LOGIN_RATE_LIMIT_HOUR,
-    settings.LOGIN_RATE_LIMIT_DAY,
-)
-async def test_token(
-    request: Request,  # noqa: ARG001
-    response: Response,  # noqa: ARG001
-    current_user: CurrentUser,
-) -> Any:
-    """
-    Test access token
-
-    """
-    return current_user
 
 
 @router.post("/password-recovery/")
