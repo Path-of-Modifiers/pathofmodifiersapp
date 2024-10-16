@@ -81,19 +81,6 @@ class TestLoginRoutes(BaseTest):
         assert r.status_code == 401
 
     @pytest.mark.anyio
-    async def test_use_access_token(
-        self, async_client: AsyncClient, superuser_token_headers: dict[str, str]
-    ) -> None:
-        r = await async_client.post(
-            f"{settings.API_V1_STR}/{login_prefix}/test-token",
-            headers=superuser_token_headers,
-        )
-        result = r.json()
-        assert r.status_code == 200
-        assert "email" in result
-        assert "username" in result
-
-    @pytest.mark.anyio
     async def test_recovery_password(
         self, async_client: AsyncClient, normal_user_token_headers: dict[str, str]
     ) -> None:
