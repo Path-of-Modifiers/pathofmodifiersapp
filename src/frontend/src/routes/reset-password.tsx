@@ -24,9 +24,17 @@ import { hasCompletedCaptcha } from "../hooks/validation/turnstileValidation";
 interface NewPasswordForm extends NewPassword {
   confirm_password: string;
 }
+
+const token = new URLSearchParams(window.location.search).get("token");
+
 export const Route = createFileRoute("/reset-password")({
   component: ResetPassword,
   beforeLoad: async () => {
+    if (!token) {
+      throw redirect({
+        to: "/login",
+      });
+    }
     if (!hasCompletedCaptcha() && !isLoggedIn()) {
       throw redirect({
         to: "/captcha",
@@ -59,7 +67,6 @@ function ResetPassword() {
   const navigate = useNavigate();
 
   const resetPassword = async (data: NewPassword) => {
-    const token = new URLSearchParams(window.location.search).get("token");
     if (!token) return;
     await LoginsService.resetPassword({
       requestBody: { new_password: data.new_password, token: token },

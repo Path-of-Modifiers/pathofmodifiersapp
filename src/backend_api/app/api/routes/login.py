@@ -36,7 +36,6 @@ from app.exceptions import (
     EmailOrUsernameRequiredError,
     InvalidTokenError,
     NewPasswordIsSameError,
-    UserIsNotActiveError,
 )
 from app.utils.user import (
     generate_reset_password_email,
@@ -71,11 +70,6 @@ async def login_access_session(
 
     if not user:
         raise BadLoginCredentialsError(
-            function_name=login_access_session.__name__,
-        )
-    elif not user.isActive:
-        raise UserIsNotActiveError(
-            username_or_email=user.username,
             function_name=login_access_session.__name__,
         )
 
@@ -174,11 +168,6 @@ async def reset_password(
         raise DbObjectDoesNotExistError(
             model_table_name=User.__tablename__,
             filter=get_user_filter,
-            function_name=reset_password.__name__,
-        )
-    elif not user.isActive:
-        raise UserIsNotActiveError(
-            username_or_email=user.username,
             function_name=reset_password.__name__,
         )
     if verify_password(body.new_password, user.hashedPassword):

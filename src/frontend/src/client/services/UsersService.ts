@@ -104,40 +104,21 @@ export class UsersService {
         });
     }
     /**
-     * Update Me Username Send Confirmation
-     * Send confirmation to update own user.
+     * Update Me Username
+     * Update username. Can only be used by users once a month.
+     *
+     * TODO: Fix rate limit if route throws an error, it doesn't rate limit.
      * @returns Message Successful Response
      * @throws ApiError
      */
-    public static updateMeUsernameSendConfirmation({
+    public static updateMeUsername({
         requestBody,
     }: {
         requestBody: UserUpdateMe,
     }): CancelablePromise<Message> {
         return __request(OpenAPI, {
             method: 'PATCH',
-            url: '/api/api_v1/user/update-me-username-pre-confirmation',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                422: `Validation Error`,
-            },
-        });
-    }
-    /**
-     * Update Me Username Confirmation
-     * Confirm update username.
-     * @returns Message Successful Response
-     * @throws ApiError
-     */
-    public static updateMeUsernameConfirmation({
-        requestBody,
-    }: {
-        requestBody: Token,
-    }): CancelablePromise<Message> {
-        return __request(OpenAPI, {
-            method: 'PATCH',
-            url: '/api/api_v1/user/update-me-username-confirmation',
+            url: '/api/api_v1/user/update-me-username',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -168,7 +149,7 @@ export class UsersService {
     }
     /**
      * Get User Me
-     * Get current user.
+     * Get current user. User doesn't have to be active (confirmed email).
      * @returns UserPublic Successful Response
      * @throws ApiError
      */
@@ -354,6 +335,31 @@ export class UsersService {
             errors: {
                 422: `Validation Error`,
             },
+        });
+    }
+    /**
+     * Check Current User Active
+     * Checks if the current user is active. Returns True if the user is active, otherwise False.
+     * @returns boolean Successful Response
+     * @throws ApiError
+     */
+    public static checkCurrentUserActive(): CancelablePromise<boolean> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/api_v1/user/check-current-user-active',
+        });
+    }
+    /**
+     * Set Active User Send Confirmation
+     * Send email confirmation to set active user during registration process.
+     * Rute `/signup` is used to confirm the user.
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static setActiveUserSendConfirmation(): CancelablePromise<Message> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/api_v1/user/activation-token-send-confirmation',
         });
     }
 }

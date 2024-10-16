@@ -109,6 +109,24 @@ async def get_current_user(
     return user
 
 
+async def get_current_user_not_active(
+    token: TokenDep,
+    user_cache_session: UserCacheSession,
+    db: Session = Depends(get_db),
+) -> User:
+    """Use if user is not active yet."""
+    user_cached = await user_cache_session.verify_token(token)
+
+    user = db.get(User, user_cached.userId)
+    if not user:
+        raise DbObjectDoesNotExistError(
+            model_table_name=User.__tablename__,
+            filter={"userId": user_cached.userId},
+            function_name=get_current_user.__name__,
+        )
+    return user
+
+
 async def get_async_current_user(
     token: TokenDep,
     user_cache_session: UserCacheSession,
@@ -132,6 +150,7 @@ async def get_async_current_user(
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
+CurrentUserNotActive = Annotated[User, Depends(get_current_user_not_active)]
 AsyncCurrentUser = Annotated[User, Depends(get_async_current_user)]
 
 
