@@ -298,6 +298,162 @@
         }
       }
     },
+    "/api/api_v1/check-token/check-access-token": {
+      "post": {
+        "tags": [
+          "check-tokens"
+        ],
+        "summary": "Check Access Token",
+        "description": "Check access token",
+        "operationId": "check_access_token",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/api_v1/check-token/check-register-token": {
+      "post": {
+        "tags": [
+          "check-tokens"
+        ],
+        "summary": "Check Register Token",
+        "description": "Check register token",
+        "operationId": "check_register_token",
+        "parameters": [
+          {
+            "name": "register_token",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Register Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInCache"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/check-token/check-password-reset-token": {
+      "post": {
+        "tags": [
+          "check-tokens"
+        ],
+        "summary": "Check Password Reset Token",
+        "description": "Check password reset token",
+        "operationId": "check_password_reset_token",
+        "parameters": [
+          {
+            "name": "password_reset_token",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Password Reset Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInCache"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/check-token/check-update-me-token": {
+      "post": {
+        "tags": [
+          "check-tokens"
+        ],
+        "summary": "Check Update Me Token",
+        "description": "Check register token",
+        "operationId": "check_update_me_token",
+        "parameters": [
+          {
+            "name": "update_me_token",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Update Me Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInCache"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/api_v1/currency/{currencyId}": {
       "get": {
         "tags": [
@@ -1738,33 +1894,6 @@
             }
           }
         }
-      }
-    },
-    "/api/api_v1/login/test-token": {
-      "post": {
-        "tags": [
-          "logins"
-        ],
-        "summary": "Test Token",
-        "description": "Test access token",
-        "operationId": "test_token",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserPublic"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
       }
     },
     "/api/api_v1/login/password-recovery/": {
@@ -6137,6 +6266,80 @@
           "password"
         ],
         "title": "UserCreate"
+      },
+      "UserInCache": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "pattern": "^[\\p{L}\\p{N}_]+$",
+            "title": "Username"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "isActive": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isactive",
+            "default": true
+          },
+          "isSuperuser": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issuperuser",
+            "default": false
+          },
+          "rateLimitTier": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ratelimittier",
+            "default": 0
+          },
+          "isBanned": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isbanned",
+            "default": false
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Userid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "email",
+          "userId"
+        ],
+        "title": "UserInCache"
       },
       "UserPublic": {
         "properties": {
