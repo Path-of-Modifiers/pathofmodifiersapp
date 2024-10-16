@@ -159,23 +159,18 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
           variant={props.unstyled ? "unstyled" : "outline"}
           placeholder={props.defaultText}
           options={optionList}
-          onChange={(newValue) => handleChangeInternal(newValue)}
-          onMenuClose={() => {
-            if (selectedValue) {
-              const newValue: NewValue = {
-                label: selectedValue.label,
-                value: selectedValue.value,
-              };
-              if (props.presetIndex !== undefined) {
-                handleChangeExternal(newValue, props.presetIndex);
-              } else {
-                handleChangeExternal(newValue);
-                if (props.multipleValues) {
-                  setSelectedValue(null);
-                }
+          onChange={(newValue) => {
+            handleChangeInternal(newValue);
+            if (props.presetIndex !== undefined) {
+              handleChangeExternal(newValue, props.presetIndex);
+            } else {
+              handleChangeExternal(newValue);
+              if (props.multipleValues) {
+                setSelectedValue(null);
               }
             }
           }}
+          closeMenuOnSelect={true}
           filterOption={(option, inputValue) =>
             customFilter(option, inputValue)
           }

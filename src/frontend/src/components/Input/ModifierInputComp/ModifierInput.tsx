@@ -156,6 +156,10 @@ export const ModifierInput = (props: ModifierInputProps) => {
   //   console.log(wantedModifierSpecs);
   // }, [wantedModifierSpecs]);
 
+  // useEffect(() => {
+  //   console.log(selectedModifiers);
+  // }, [selectedModifiers]);
+
   const selectedModifierSelectBoxes = selectedModifiers.map(
     (selectedModifier, index) => (
       <Flex
