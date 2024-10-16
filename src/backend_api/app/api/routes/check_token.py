@@ -9,10 +9,10 @@ from app.api.deps import (
     UserCacheRegisterSession,
     UserCacheUpdateMeSession,
 )
-from app.core.config import settings
+from app.core.rate_limit.rate_limit_config import rate_limit_settings
+from app.core.rate_limit.rate_limiters import apply_user_rate_limits
 from app.core.schemas import UserPublic
 from app.core.schemas.user import UserInCache
-from app.limiter import apply_user_rate_limits
 
 router = APIRouter()
 
@@ -22,10 +22,10 @@ check_token_prefix = "check-token"
 
 @router.post("/check-access-token", response_model=UserPublic)
 @apply_user_rate_limits(
-    settings.LOGIN_RATE_LIMIT_SECOND,
-    settings.LOGIN_RATE_LIMIT_MINUTE,
-    settings.LOGIN_RATE_LIMIT_HOUR,
-    settings.LOGIN_RATE_LIMIT_DAY,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_SECOND,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_MINUTE,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_HOUR,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_DAY,
 )
 async def check_access_token(
     request: Request,  # noqa: ARG001
@@ -41,10 +41,10 @@ async def check_access_token(
 
 @router.post("/check-register-token", response_model=UserInCache)
 @apply_user_rate_limits(
-    settings.LOGIN_RATE_LIMIT_SECOND,
-    settings.LOGIN_RATE_LIMIT_MINUTE,
-    settings.LOGIN_RATE_LIMIT_HOUR,
-    settings.LOGIN_RATE_LIMIT_DAY,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_SECOND,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_MINUTE,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_HOUR,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_DAY,
 )
 async def check_register_token(
     request: Request,  # noqa: ARG001
@@ -60,10 +60,10 @@ async def check_register_token(
 
 @router.post("/check-password-reset-token", response_model=UserInCache)
 @apply_user_rate_limits(
-    settings.LOGIN_RATE_LIMIT_SECOND,
-    settings.LOGIN_RATE_LIMIT_MINUTE,
-    settings.LOGIN_RATE_LIMIT_HOUR,
-    settings.LOGIN_RATE_LIMIT_DAY,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_SECOND,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_MINUTE,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_HOUR,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_DAY,
 )
 async def check_password_reset_token(
     request: Request,  # noqa: ARG001
@@ -79,10 +79,10 @@ async def check_password_reset_token(
 
 @router.post("/check-update-me-token", response_model=UserInCache)
 @apply_user_rate_limits(
-    settings.LOGIN_RATE_LIMIT_SECOND,
-    settings.LOGIN_RATE_LIMIT_MINUTE,
-    settings.LOGIN_RATE_LIMIT_HOUR,
-    settings.LOGIN_RATE_LIMIT_DAY,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_SECOND,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_MINUTE,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_HOUR,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_DAY,
 )
 async def check_update_me_token(
     request: Request,  # noqa: ARG001
