@@ -46,7 +46,7 @@ export interface WantedModifier {
 
 export interface WantedModifierSpecs extends WantedModifier {
   index: number;
-  nInputs: number;
+  isSelected: boolean;
 }
 
 export interface PlotSettingsState {
@@ -64,7 +64,6 @@ export interface GraphInputState {
   itemSpec: ItemSpecState;
   baseSpec?: BaseSpecState;
   wantedModifiers: WantedModifier[];
-  nPossibleInputs: number;
   wantedModifierSpecs: WantedModifierSpecs[];
   plotQuery: PlotQuery;
   setQueryClicked: () => void;
@@ -94,12 +93,12 @@ export interface GraphInputState {
   setBaseType: (baseType: string | undefined) => void;
   setItemCategory: (category: string | undefined) => void;
   setItemSubCategory: (subCategory: string | undefined) => void;
-  addModifierSpec: (
-    wantedModifier: WantedModifier,
-    index: number,
-    nInputs: number
-  ) => void;
+  addModifierSpec: (wantedModifier: WantedModifier, index: number) => void;
   removeModifierSpec: (index_to_remove: number) => void;
+  updateSelectedModifierSpec: (
+    index_to_update: number,
+    isSelected: boolean
+  ) => void;
   setWantedModifierMinRoll: (
     modifierId: number,
     minRoll: number | undefined,
@@ -115,8 +114,6 @@ export interface GraphInputState {
     textRoll: number | undefined,
     index: number
   ) => void;
-  setNPossibleInputs: (n: number) => void;
-  updateNPossibleInputs: () => void;
 }
 
 export interface ExpandedComponentState {

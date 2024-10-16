@@ -12,7 +12,7 @@ import AddIconCheckbox from "../../Icon/AddIconCheckbox";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 // For debugging purposes
 // import { useOutsideClick } from "../../../hooks/useOutsideClick";
-import { MixedInput } from "./MixedInput";
+import { FancySelectedModifier } from "./FancySelectedModifier";
 interface ModifierInputProps {
   prefetchedmodifiers: GroupedModifierByEffect[];
 }
@@ -48,12 +48,8 @@ export const ModifierInput = (props: ModifierInputProps) => {
     []
   );
 
-  const {
-    addModifierSpec,
-    removeModifierSpec,
-    nPossibleInputs,
-    updateNPossibleInputs,
-  } = useGraphInputStore();
+  const { addModifierSpec, removeModifierSpec, updateSelectedModifierSpec } =
+    useGraphInputStore();
 
   // NOTE: Tthe index, which is the selected modifier's position in
   //`selectedModifiers` is used as a unique identifier both internally
@@ -71,9 +67,6 @@ export const ModifierInput = (props: ModifierInputProps) => {
       return;
     }
 
-    // determines how much space needs to be left for mixed input
-    const nInputs = newlySelectedModifier.groupedModifier.modifierId.length;
-
     newlySelectedModifier.isSelected = true;
     // Removes the current modifier and replaces it with the new
     if (overrideIndex !== undefined) {
@@ -87,7 +80,7 @@ export const ModifierInput = (props: ModifierInputProps) => {
 
       removeModifierSpec(overrideIndex);
       newlySelectedModifier.groupedModifier.modifierId.map((modifierId) => {
-        addModifierSpec({ modifierId: modifierId }, overrideIndex, nInputs);
+        addModifierSpec({ modifierId: modifierId }, overrideIndex);
       });
     } else {
       newlySelectedModifier.index = selectedModifiers.length;
@@ -96,11 +89,7 @@ export const ModifierInput = (props: ModifierInputProps) => {
         newlySelectedModifier,
       ]);
       newlySelectedModifier.groupedModifier.modifierId.map((modifierId) => {
-        addModifierSpec(
-          { modifierId: modifierId },
-          selectedModifiers.length,
-          nInputs
-        );
+        addModifierSpec({ modifierId: modifierId }, selectedModifiers.length);
       });
     }
   };
@@ -117,17 +106,17 @@ export const ModifierInput = (props: ModifierInputProps) => {
     selectedModifier: ModifierOption,
     index_to_handle: number
   ) => {
+    updateSelectedModifierSpec(index_to_handle, !selectedModifier.isSelected);
     selectedModifier.isSelected = !selectedModifier.isSelected;
     // Removes the modifier if not selected, and adds it
     // if it is selected.
-    if (selectedModifier.isSelected) {
-      const nInputs = selectedModifier.groupedModifier.modifierId.length;
-      selectedModifier.groupedModifier.modifierId.map((modifierId) => {
-        addModifierSpec({ modifierId: modifierId }, index_to_handle, nInputs);
-      });
-    } else {
-      removeModifierSpec(index_to_handle);
-    }
+    // if (selectedModifier.isSelected) {
+    //   selectedModifier.groupedModifier.modifierId.map((modifierId) => {
+    //     addModifierSpec({ modifierId: modifierId }, index_to_handle);
+    //   });
+    // } else {
+    //   removeModifierSpec(index_to_handle);
+    // }
   };
 
   // Removes the modifier
@@ -148,7 +137,6 @@ export const ModifierInput = (props: ModifierInputProps) => {
         }))
       );
       removeModifierSpec(index_to_remove);
-      updateNPossibleInputs();
     }
   };
 
@@ -163,6 +151,7 @@ export const ModifierInput = (props: ModifierInputProps) => {
   }, [clearClicked, setClearClicked]);
 
   // For debugging
+  // const { wantedModifierSpecs } = useGraphInputStore();
   // useEffect(() => {
   //   console.log(wantedModifierSpecs);
   // }, [wantedModifierSpecs]);
@@ -173,7 +162,7 @@ export const ModifierInput = (props: ModifierInputProps) => {
         key={index}
         bgColor={"ui.secondary"}
         flexDirection={"row"}
-        height={10}
+        // height={10}
         // maxHeight={10}
         maxWidth="95vw"
         alignItems={"center"}
@@ -188,26 +177,10 @@ export const ModifierInput = (props: ModifierInputProps) => {
             }
           }}
         />
-        <SelectBoxInput
-          handleChange={handleModifierSelect}
-          optionsList={modifierPreFetched}
-          defaultText={selectedModifier.label}
-          multipleValues={true}
-          id={`modifierInput-${index}`}
-          isDimmed={!selectedModifier.isSelected}
-          presetIndex={index}
-          flexProps={{
-            w: `${80 - nPossibleInputs * 10}%`,
-            minW: `${80 - nPossibleInputs * 10}%`,
-            // mr: "auto",
-          }}
-        />
-        <MixedInput
+        <FancySelectedModifier
           selectedModifier={selectedModifier}
           index={index}
           isDimmed={!selectedModifier.isSelected}
-          nPossibleInputs={nPossibleInputs}
-          ml="auto"
         />
         <CloseButton
           _hover={{ background: "gray.100", cursor: "pointer" }}
