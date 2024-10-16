@@ -12,20 +12,26 @@ type HandleNumberChangeEventFunction = (
   numericalType: string
 ) => void;
 
+export interface DefaultMinMaxValues {
+  min?: number;
+  max?: number;
+}
+
 export interface MinMaxNumberProps {
   flexProps?: FlexProps;
   numberInputProps?: NumberInputProps;
   descriptionText?: string;
-  index: number;
   handleNumberChange: HandleNumberChangeEventFunction;
   isDimmed?: boolean;
+  defaultValues?: DefaultMinMaxValues;
+  tight?: boolean;
 }
 
 export const MinMaxNumberInput = (props: MinMaxNumberProps) => {
   return (
     <Flex
       {...props.flexProps}
-      flexDirection="column"
+      flexDirection={"column"}
       width={props.flexProps ? props.flexProps.width : "inputSizes.smallPPBox"}
       height={props.flexProps ? props.flexProps.height : "lineHeights.tall"}
     >
@@ -34,14 +40,33 @@ export const MinMaxNumberInput = (props: MinMaxNumberProps) => {
           {props.descriptionText}
         </Text>
       )}
-      <Flex opacity={props.isDimmed ? 0.5 : 1} flexDirection="row">
+      <Flex
+        opacity={props.isDimmed ? 0.5 : 1}
+        flexDirection={
+          props.flexProps ? props.flexProps.flexDirection : "column"
+        }
+      >
         <NumberInput
           {...props.numberInputProps}
+          id="number-input-min"
           onChange={(e) => props.handleNumberChange(e, "min")}
           mr={1}
+          defaultValue={
+            props.defaultValues?.min ? props.defaultValues.min : undefined
+          }
+          onBlurCapture={(e) => {
+            if (e.relatedTarget != null) {
+              if (e.relatedTarget.id === "number-input-max") {
+                e.stopPropagation();
+              }
+            }
+          }}
+          focusBorderColor="ui.white"
         >
           <NumberInputField
-            // h={5} only for  flexDirection="column"
+            h={props.tight ? 5 : undefined}
+            w={props.tight ? 10 : undefined}
+            autoFocus={props.defaultValues ? true : false}
             p={1}
             placeholder={"Min"}
             bgColor="ui.input"
@@ -50,10 +75,23 @@ export const MinMaxNumberInput = (props: MinMaxNumberProps) => {
         </NumberInput>
         <NumberInput
           {...props.numberInputProps}
+          id="number-input-max"
           onChange={(e) => props.handleNumberChange(e, "max")}
+          defaultValue={
+            props.defaultValues?.max ? props.defaultValues.max : undefined
+          }
+          onBlurCapture={(e) => {
+            if (e.relatedTarget != null) {
+              if (e.relatedTarget.id === "number-input-min") {
+                e.stopPropagation();
+              }
+            }
+          }}
+          focusBorderColor="ui.white"
         >
           <NumberInputField
-            // h={5} only for  flexDirection="column"
+            h={props.tight ? 5 : undefined}
+            w={props.tight ? 10 : undefined}
             p={1}
             placeholder={"Max"}
             bgColor="ui.input"

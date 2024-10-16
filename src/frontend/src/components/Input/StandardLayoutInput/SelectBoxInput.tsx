@@ -43,6 +43,8 @@ export interface SelectBoxProps {
   descriptionText?: string;
   presetIndex?: number;
   canBeAny?: boolean;
+  autoFocus?: boolean;
+  unstyled?: boolean;
 }
 
 interface SelectOption extends OptionBase {
@@ -65,7 +67,7 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
 
   // Adds the "Any" option
   if (props.canBeAny) {
-    optionList = [{ value: "", label: "Any", regex: "Any" }, ...optionList];
+    optionList = [{ value: "Any", label: "Any", regex: "Any" }, ...optionList];
   }
 
   // A custom filter function. Uses the `regex` attribute of `SelectOption`
@@ -122,6 +124,8 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
       marginBottom: 0,
       opacity: props.isDimmed ? 0.5 : 1,
       borderRadius: "lg",
+      w: props.unstyled ? "10vw" : undefined,
+      h: props.unstyled ? 5 : undefined,
     }),
     option: (provided) => ({
       ...provided,
@@ -152,6 +156,7 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
           </FormLabel>
         )}
         <Select<SelectOption>
+          variant={props.unstyled ? "unstyled" : "outline"}
           placeholder={props.defaultText}
           options={optionList}
           onChange={(newValue) => handleChangeInternal(newValue)}
@@ -178,6 +183,10 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
           selectedOptionColorScheme="#1B1B1B"
           chakraStyles={chakraStyles}
           defaultInputValue={defaultOptionText}
+          autoFocus={props.autoFocus ?? false}
+          openMenuOnFocus={true}
+          focusBorderColor="ui.white"
+          key={`${props.id}`}
         />
       </FormControl>
     </Flex>

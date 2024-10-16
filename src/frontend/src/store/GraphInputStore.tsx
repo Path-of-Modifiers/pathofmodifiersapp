@@ -16,7 +16,6 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
   itemSpec: {},
   baseSpec: {},
   wantedModifiers: [],
-  nPossibleInputs: 1,
   wantedModifierSpecs: [],
   plotQuery: {
     league: defaultLeague,
@@ -34,10 +33,12 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
         league: state.league,
         itemSpecifications: state.itemSpec,
         baseSpec: state.baseSpec,
-        wantedModifiers: state.wantedModifierSpecs.map((wantedModifier) => ({
-          modifierId: wantedModifier.modifierId,
-          modifierLimitations: wantedModifier.modifierLimitations,
-        })),
+        wantedModifiers: state.wantedModifierSpecs
+          .filter((wantedModifier) => wantedModifier.isSelected)
+          .map((wantedModifier) => ({
+            modifierId: wantedModifier.modifierId,
+            modifierLimitations: wantedModifier.modifierLimitations,
+          })),
       },
     })),
 
@@ -224,17 +225,30 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       baseSpec: { ...state.baseSpec, subCategory: subCategory },
     })),
 
-  addModifierSpec: (
-    wantedModifier: WantedModifier,
-    index: number,
-    nInputs: number
-  ) =>
+  addModifierSpec: (wantedModifier: WantedModifier, index: number) =>
     set((state) => {
-      state.setNPossibleInputs(nInputs);
       return {
         wantedModifierSpecs: [
           ...state.wantedModifierSpecs,
-          { ...wantedModifier, index: index, nInputs: nInputs },
+          { ...wantedModifier, index: index, isSelected: true },
+        ],
+      };
+    }),
+
+  updateSelectedModifierSpec: (index_to_update: number, isSelected: boolean) =>
+    set((state) => {
+      const chosenModifierSpecs = state.wantedModifierSpecs.filter(
+        (modifierSpec) => modifierSpec.index === index_to_update
+      );
+      return {
+        wantedModifierSpecs: [
+          ...state.wantedModifierSpecs.filter(
+            (modifierSpec) => modifierSpec.index !== index_to_update
+          ),
+          ...chosenModifierSpecs.map((chosenModifierSpec) => ({
+            ...chosenModifierSpec,
+            isSelected: isSelected,
+          })),
         ],
       };
     }),
@@ -308,7 +322,6 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
     index: number
   ) =>
     set((state) => {
-      console.log(modifierId, textRoll, index);
       const updatedSpecs = state.wantedModifierSpecs.map(
         (wantedModifierSpec) =>
           wantedModifierSpec.modifierId === modifierId &&
@@ -326,21 +339,5 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             : wantedModifierSpec
       );
       return { wantedModifierSpecs: updatedSpecs };
-    }),
-  setNPossibleInputs: (n: number) =>
-    set((state) => ({
-      nPossibleInputs: state.nPossibleInputs < n ? n : state.nPossibleInputs,
-    })),
-  updateNPossibleInputs: () =>
-    set((state) => {
-      if (state.wantedModifierSpecs.length > 0) {
-        const modifierSpecWMostInputs = state.wantedModifierSpecs.reduce(
-          (prevVal, val) => (prevVal.nInputs > val.nInputs ? prevVal : val)
-        );
-        const maxNInputs = modifierSpecWMostInputs.nInputs;
-        return { nPossibleInputs: maxNInputs };
-      } else {
-        return { nPossibleInputs: 1 };
-      }
     }),
 }));

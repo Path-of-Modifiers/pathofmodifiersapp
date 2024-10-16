@@ -11,6 +11,7 @@ export interface TextRollInputProps {
   textRolls: string;
   index: number;
   handleTextChange: HandleTextChangeEventFunction;
+  defaultValue?: string;
   isDimmed?: boolean;
 }
 
@@ -26,21 +27,18 @@ export const TextRollInput = (props: TextRollInputProps) => {
       return selectOption;
     }
   );
-  // Lets you choose any
-  textRollOptions.unshift({
-    label: "Any",
-    value: "Any",
-    regex: "Any",
-  });
   return (
     <SelectBoxInput
       optionsList={textRollOptions}
-      defaultText={"Any"}
+      defaultText={props.defaultValue ?? "Any"}
       multipleValues={false}
       handleChange={(e) => props.handleTextChange(e?.value ?? undefined)}
       id={`TextRollInput-${props.index}`}
       isDimmed={props.isDimmed}
       flexProps={props.flexProps}
+      autoFocus={true}
+      canBeAny={true}
+      unstyled={true}
     />
   );
 };
