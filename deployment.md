@@ -110,7 +110,7 @@ export DOMAIN=pathofmodifiers.com
 Create an environment variable with the email for Let's Encrypt:
 
 ```bash
-export EMAIL=pomodifiers@outlook.com
+export EMAIL=team@pathofmodifiers.com
 ```
 
 Create an environment variable with the CF_DNS_API_TOKEN for cloudfare api token:

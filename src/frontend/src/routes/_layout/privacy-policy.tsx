@@ -188,7 +188,7 @@ function PrivacyPolicy() {
                   you have the right to opt out of the sale of your personal
                   information and to request the deletion of your data. To opt
                   out or request deletion, please contact us at
-                  pomodifiers@outlook.com. We will respond to your request
+                  team@pathofmodifiers.com. We will respond to your request
                   within the time frame required by law.
                 </Text>
               </ListItem>
@@ -205,7 +205,7 @@ function PrivacyPolicy() {
                 <Text fontWeight="bold">Contact Us</Text>
                 <Text>
                   If you have any questions about this Privacy Policy, please
-                  contact us at pomodifiers@outlook.com.
+                  contact us at team@pathofmodifiers.com.
                 </Text>
               </ListItem>
             </OrderedList>
