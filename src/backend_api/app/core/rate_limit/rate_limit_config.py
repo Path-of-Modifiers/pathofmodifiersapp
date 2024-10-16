@@ -48,7 +48,9 @@ class RateLimitSettings(BaseSettings):
     UPDATE_ME_RATE_LIMIT_SECOND: str = "1/second"
     UPDATE_ME_RATE_LIMIT_MINUTE: str = "1/minute"
     UPDATE_ME_RATE_LIMIT_HOUR: str = "2/hour"
-    UPDATE_ME_RATE_LIMIT_DAY: str = "2/day"
+    UPDATE_ME_RATE_LIMIT_DAY: str = "3/day"
+    # Used for updating username once a month
+    UPDATE_ME_RATE_LIMIT_MONTH: str = "1/month"
 
     # Update password me rate limits
     UPDATE_PASSWORD_ME_RATE_LIMIT_SECOND: str = "1/second"
