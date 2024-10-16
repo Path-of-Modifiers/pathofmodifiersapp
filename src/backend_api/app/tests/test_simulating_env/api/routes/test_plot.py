@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 
 from app.api.routes.plot import plot_prefix
 from app.core.config import settings
+from app.core.rate_limit.rate_limit_config import rate_limit_settings
 from app.tests.test_simulating_env.api.api_test_rate_limit_base import TestRateLimitBase
 from app.tests.utils.model_utils.plot import create_minimal_random_plot_query_dict
 from app.tests.utils.rate_limit import RateLimitPerTimeInterval
@@ -87,7 +88,7 @@ class TestPlotRateLimitAPI(TestRateLimitBase):
 
         # Get rate limit per time interval for POST plot request
         rate_limits_per_interval_format = RateLimitPerTimeInterval(
-            rate_per_interval=f"{settings.TIER_SUPERUSER_PLOT_RATE_LIMIT}/second"
+            rate_per_interval=f"{rate_limit_settings.TIER_SUPERUSER_PLOT_RATE_LIMIT}/second"
         )
 
         await self.perform_time_interval_requests_with_api_function(

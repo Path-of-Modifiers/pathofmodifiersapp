@@ -14,12 +14,14 @@ formatters:
 filters:
   sensitive_data_filter:
     (): app.logs.config.SensitiveDataFilter
+  unwanted_data_filter:
+    (): app.logs.config.UnwantedDataFilter
 handlers:
   stdout:
     class: logging.StreamHandler
     level: DEBUG
-    filters: [sensitive_data_filter]
-    formatter: json
+    filters: [sensitive_data_filter, unwanted_data_filter]
+    formatter: simple
     stream: "ext://sys.stdout"
   stdout-api-formatter:
     class: logging.StreamHandler
@@ -30,7 +32,7 @@ handlers:
   file:
     class: logging.handlers.RotatingFileHandler
     level: DEBUG
-    filters: [sensitive_data_filter]
+    filters: [sensitive_data_filter, unwanted_data_filter]
     formatter: simple
     filename: "app/logs/backend-api.log"
     maxBytes: 504857600 # 500 MB

@@ -25,7 +25,7 @@ def iterate_create_public_stashes_test_data() -> Iterator[tuple[int, str, list[d
         item_mock_obj,
     ) = scrap_and_mock_poe_api_docs_objs.produce_mocks_from_docs()
     public_stashes_modifier_test_data_creator = DataDepositTestDataCreator(
-        n_of_items=1000
+        n_of_items=50
     )
 
     for index, (

@@ -74,7 +74,12 @@ function Login() {
   };
 
   return (
-    <Flex bgColor="ui.main" color="ui.white" h="100vh">
+    <Flex
+      bgColor="ui.main"
+      color="ui.white"
+      h="loginPages.standardHeight"
+      minH="loginPages.standardMinHeight"
+    >
       <Container
         as="form"
         onSubmit={handleSubmit(onSubmit)}
