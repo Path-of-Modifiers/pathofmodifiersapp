@@ -19,6 +19,10 @@ from app.api.deps import (
 )
 from app.core.config import settings
 from app.core.models.models import User
+from app.core.rate_limit.rate_limit_config import rate_limit_settings
+from app.core.rate_limit.rate_limiters import (
+    apply_ip_rate_limits,
+)
 from app.core.schemas import Message, NewPassword, Token
 from app.core.schemas.token import RecoverPassword
 from app.core.security import (
@@ -34,7 +38,6 @@ from app.exceptions import (
     NewPasswordIsSameError,
     UserIsNotActiveError,
 )
-from app.limiter import apply_ip_rate_limits
 from app.utils.user import (
     generate_reset_password_email,
     send_email,
@@ -47,10 +50,10 @@ login_prefix = "login"
 
 @router.post("/access-token")
 @apply_ip_rate_limits(
-    settings.LOGIN_RATE_LIMIT_SECOND,
-    settings.LOGIN_RATE_LIMIT_MINUTE,
-    settings.LOGIN_RATE_LIMIT_HOUR,
-    settings.LOGIN_RATE_LIMIT_DAY,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_DAY,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_MINUTE,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_HOUR,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_DAY,
 )
 async def login_access_session(
     request: Request,  # noqa: ARG001
@@ -88,10 +91,10 @@ async def login_access_session(
 
 @router.post("/password-recovery/")
 @apply_ip_rate_limits(
-    settings.RECOVERY_PASSWORD_RATE_LIMIT_SECOND,
-    settings.RECOVERY_PASSWORD_RATE_LIMIT_MINUTE,
-    settings.RECOVERY_PASSWORD_RATE_LIMIT_HOUR,
-    settings.RECOVERY_PASSWORD_RATE_LIMIT_DAY,
+    rate_limit_settings.RECOVERY_PASSWORD_RATE_LIMIT_SECOND,
+    rate_limit_settings.RECOVERY_PASSWORD_RATE_LIMIT_MINUTE,
+    rate_limit_settings.RECOVERY_PASSWORD_RATE_LIMIT_HOUR,
+    rate_limit_settings.RECOVERY_PASSWORD_RATE_LIMIT_DAY,
 )
 async def recover_password(
     request: Request,  # noqa: ARG001
@@ -142,10 +145,10 @@ async def recover_password(
 
 @router.post("/reset-password/")
 @apply_ip_rate_limits(
-    settings.RESET_PASSWORD_RATE_LIMIT_SECOND,
-    settings.RESET_PASSWORD_RATE_LIMIT_MINUTE,
-    settings.RESET_PASSWORD_RATE_LIMIT_HOUR,
-    settings.RESET_PASSWORD_RATE_LIMIT_DAY,
+    rate_limit_settings.RESET_PASSWORD_RATE_LIMIT_SECOND,
+    rate_limit_settings.RESET_PASSWORD_RATE_LIMIT_MINUTE,
+    rate_limit_settings.RESET_PASSWORD_RATE_LIMIT_HOUR,
+    rate_limit_settings.RESET_PASSWORD_RATE_LIMIT_DAY,
 )
 async def reset_password(
     request: Request,  # noqa: ARG001
