@@ -1,4 +1,3 @@
-import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -8,6 +7,7 @@ from jinja2 import Template
 from pydantic import EmailStr
 
 from app.core.config import settings
+from app.logs.logger import logger
 
 
 @dataclass
@@ -45,10 +45,9 @@ def send_email(
         smtp_options["user"] = settings.SMTP_USER
     if settings.SMTP_PASSWORD:
         smtp_options["password"] = settings.SMTP_PASSWORD
-
     response = message.send(to=email_to, smtp=smtp_options)
 
-    logging.info(f"Send email result: {response}")
+    logger.debug(f"Send email result: {response}")
 
 
 def generate_test_email(email_to: EmailStr) -> EmailData:
