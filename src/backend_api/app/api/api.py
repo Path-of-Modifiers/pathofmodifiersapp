@@ -3,6 +3,8 @@ from fastapi import APIRouter
 from app.api.routes import (
     account,
     account_prefix,
+    check_token,
+    check_token_prefix,
     currency,
     currency_prefix,
     item,
@@ -32,6 +34,9 @@ api_router = APIRouter()
 
 api_router.include_router(
     account.router, prefix=f"/{account_prefix}", tags=[f"{account_prefix}s"]
+)
+api_router.include_router(
+    check_token.router, prefix=f"/{check_token_prefix}", tags=[f"{check_token_prefix}s"]
 )
 api_router.include_router(
     currency.router, prefix=f"/{currency_prefix}", tags=[f"{currency_prefix}s"]
