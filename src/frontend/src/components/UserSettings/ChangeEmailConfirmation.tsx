@@ -33,10 +33,7 @@ const ChangeEmailConfirmation = ({ isOpen, onClose }: DeleteProps) => {
     register,
     handleSubmit,
     reset,
-    formState: {
-      isSubmitting,
-      errors,
-    },
+    formState: { isSubmitting, errors },
   } = useForm<UserUpdateMe>({
     mode: "onBlur",
     criteriaMode: "all",
@@ -94,8 +91,8 @@ const ChangeEmailConfirmation = ({ isOpen, onClose }: DeleteProps) => {
             <AlertDialogHeader>Change Email</AlertDialogHeader>
 
             <AlertDialogBody>
-              Change email to any available email in this application. The
-              update takes effect immediately.
+              Change email to any available email in this application. A
+              confirmation will be sent to the new email.
             </AlertDialogBody>
             <AlertDialogBody>
               <FormControl minWidth={"100%"} isInvalid={!!errors.email}>
@@ -123,13 +120,22 @@ const ChangeEmailConfirmation = ({ isOpen, onClose }: DeleteProps) => {
             </AlertDialogBody>
 
             <AlertDialogFooter gap={3}>
-              <Button variant="danger" type="submit" isLoading={isSubmitting}>
+              <Button
+                bg="ui.queryBaseInput"
+                _hover={{ bg: "ui.queryMainInput" }}
+                variant="danger"
+                type="submit"
+                isLoading={isSubmitting}
+              >
                 Update
               </Button>
               <Button
                 ref={cancelRef}
                 onClick={handleClose}
                 isDisabled={isSubmitting}
+                bg="ui.lighterSecondary.100"
+                color="ui.white"
+                _hover={{ bg: "ui.lightInput" }}
               >
                 Cancel
               </Button>
