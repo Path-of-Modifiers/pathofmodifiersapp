@@ -6,25 +6,15 @@ authors = ["Path of Modifiers team <pomodifiers@outlook.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-uvicorn = {extras = ["standard"], version = "^0.24.0.post1"}
-fastapi = "^0.109.1"
 python-multipart = "^0.0.7"
 email-validator = "^2.1.0.post1"
-passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 tenacity = "^8.2.3"
 pydantic = ">2.0"
-emails = "^0.6"
 
-gunicorn = "^22.0.0"
 jinja2 = "^3.1.4"
-alembic = "^1.12.1"
 httpx = "^0.25.1"
-psycopg = {extras = ["binary"], version = "^3.1.13"}
-# Pin bcrypt until passlib supports the latest
-bcrypt = "4.0.1"
 pydantic-settings = "^2.2.1"
 sentry-sdk = {extras = ["fastapi"], version = "^1.40.6"}
-psycopg2 = "^2.9.9" # for PostgreSQL database
 pandas = "2.2.0" # for dataframe processing
 requests = "^2.31.0"
 tqdm = "^4.66.2"
