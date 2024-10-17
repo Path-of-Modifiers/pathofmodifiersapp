@@ -140,7 +140,7 @@ function TermsOfUse() {
                 <Text fontWeight={"bold"}>Contact Information</Text>
                 <Text>
                   8.1 If you have a ny questions about these Terms, please
-                  contact us at pomodifiers@outlook.com.
+                  contact us at team@pathofmodifiers.com.
                 </Text>
               </ListItem>
             </OrderedList>

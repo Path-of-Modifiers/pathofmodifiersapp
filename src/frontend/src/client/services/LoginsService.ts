@@ -7,7 +7,6 @@ import type { Message } from '../models/Message';
 import type { NewPassword } from '../models/NewPassword';
 import type { RecoverPassword } from '../models/RecoverPassword';
 import type { Token } from '../models/Token';
-import type { UserPublic } from '../models/UserPublic';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -31,18 +30,6 @@ export class LoginsService {
             errors: {
                 422: `Validation Error`,
             },
-        });
-    }
-    /**
-     * Test Token
-     * Test access token
-     * @returns UserPublic Successful Response
-     * @throws ApiError
-     */
-    public static testToken(): CancelablePromise<UserPublic> {
-        return __request(OpenAPI, {
-            method: 'POST',
-            url: '/api/api_v1/login/test-token',
         });
     }
     /**
