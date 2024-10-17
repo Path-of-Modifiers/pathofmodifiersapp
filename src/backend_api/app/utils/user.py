@@ -127,3 +127,40 @@ def generate_new_account_email(email_to: EmailStr, username: str) -> EmailData:
         },
     )
     return EmailData(html_content=html_content, subject=subject)
+
+
+def generate_email_changed_notify_email(
+    email_to: EmailStr, new_email: EmailStr, username: str
+) -> EmailData:
+    """Sent to the old email after a user updates their email"""
+    project_name = settings.PROJECT_NAME
+    subject = f"{project_name} - Email changed for user {username}"
+    html_content = render_email_template(
+        template_name="email_changed_notify.html",
+        context={
+            "project_name": settings.PROJECT_NAME,
+            "username": username,
+            "email": email_to,
+            "new_email": new_email,
+            "link": settings.server_host,
+        },
+    )
+    return EmailData(html_content=html_content, subject=subject)
+
+
+def generate_password_changed_notify_email(
+    email_to: EmailStr, username: str
+) -> EmailData:
+    """Sent to email after a user updates their password"""
+    project_name = settings.PROJECT_NAME
+    subject = f"{project_name} - Password changed for user {username}"
+    html_content = render_email_template(
+        template_name="password_changed_notify.html",
+        context={
+            "project_name": settings.PROJECT_NAME,
+            "username": username,
+            "email": email_to,
+            "link": settings.server_host,
+        },
+    )
+    return EmailData(html_content=html_content, subject=subject)
