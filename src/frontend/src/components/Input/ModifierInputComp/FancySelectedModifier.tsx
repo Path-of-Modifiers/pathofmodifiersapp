@@ -19,6 +19,7 @@ export type HandleChangeEventFunction = (
 
 export const FancySelectedModifier = (props: FancyModifierInputProps) => {
   const selectedModifier = props.selectedModifier;
+
   const splitSelectedModiferLabel = selectedModifier.label.split("#");
 
   const [currentlyTakingInput, setCurrentlyTakingInput] = useState<boolean[]>(

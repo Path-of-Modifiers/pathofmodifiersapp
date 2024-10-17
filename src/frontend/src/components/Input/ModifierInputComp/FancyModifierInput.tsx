@@ -182,6 +182,13 @@ export const FancyModifierInput = (props: FancyModifierInputProps) => {
   const currentRelevantModifierSpec =
     currentWantedModifierSpecs[props.orderIndex];
 
+  // This happens when 'Clear Query' is pressed:
+  // For a split second this element is rerendered, but there are no selected modifiers.
+  // which makes 'currentRelevantModifierSpec' null | undefined
+  if (currentRelevantModifierSpec == null) {
+    return;
+  }
+
   if (props.currentlyTakingInput) {
     return (
       <InputChangeHandler
