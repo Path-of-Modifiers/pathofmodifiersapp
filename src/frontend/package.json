@@ -27,7 +27,7 @@
         "@tanstack/router-devtools": "^1.23.1",
         "@types/lodash": "^4.17.1",
         "@types/recharts": "^1.8.29",
-        "axios": "^1.6.8",
+        "axios": "^1.7.4",
         "framer-motion": "^11.0.23",
         "js-cookie": "^3.0.5",
         "lodash": "^4.17.21",
