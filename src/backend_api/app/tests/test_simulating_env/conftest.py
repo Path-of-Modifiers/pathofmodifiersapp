@@ -144,9 +144,15 @@ def anyio_backend():
 
 @pytest_asyncio.fixture
 async def get_cache() -> AsyncGenerator[Redis, None]:
+    # Not to be used directly in tests
     yield cache
-    # await cache.flushall()
-    await cache.aclose()
+
+
+@pytest_asyncio.fixture
+async def clear_cache(get_cache: Redis) -> AsyncGenerator:
+    await get_cache.flushall()
+    await get_cache.aclose()
+    yield
 
 
 @pytest_asyncio.fixture
@@ -179,14 +185,6 @@ async def user_cache_update_me() -> AsyncGenerator[UserCache, None]:
 def clear_db(engine: Engine) -> Generator:
     # Remove any data from database (even data not created by this session)
     clear_all_tables(engine)
-    yield
-
-
-@pytest_asyncio.fixture
-async def clear_cache(get_cache: Redis) -> AsyncGenerator:
-    # Remove any data from cache
-    # await get_cache.flushall()
-    await get_cache.aclose()
     yield
 
 

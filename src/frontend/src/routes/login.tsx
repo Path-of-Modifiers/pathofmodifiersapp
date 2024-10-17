@@ -47,7 +47,7 @@ export const Route = createFileRoute("/login")({
 function Login() {
   useTurnstileValidation();
   const [show, setShow] = useBoolean();
-  const { loginMutation, error, resetError } = useAuth();
+  const { loginMutation, checkIsActiveMutation, error, resetError } = useAuth();
   const {
     register,
     handleSubmit,
@@ -68,6 +68,7 @@ function Login() {
 
     try {
       await loginMutation.mutateAsync(data);
+      await checkIsActiveMutation();
     } catch {
       // error is handled by useAuth hook
     }
@@ -142,14 +143,16 @@ function Login() {
           </InputGroup>
           {error && <FormErrorMessage>{error}</FormErrorMessage>}
         </FormControl>
-        <Link
-          as={RouterLink}
-          to="/recover-password"
-          params={{ from: "login" }}
-          color="blue.500"
-        >
-          Forgot password?
-        </Link>
+        <Text>
+          <Link
+            as={RouterLink}
+            to="/recover-password"
+            params={{ from: "login" }}
+            color="blue.500"
+          >
+            Forgot password?
+          </Link>
+        </Text>
         <Button
           bg="ui.queryBaseInput"
           color="ui.white"
