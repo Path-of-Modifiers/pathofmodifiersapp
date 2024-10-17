@@ -42,4 +42,6 @@ async def log_request_middleware(request: Request, call_next):
     )
 
     logger_request.info(logger_object)
+    if process_time > 10000:
+        logger_request.warning("Request took longer than 10 seconds.")
     return response
