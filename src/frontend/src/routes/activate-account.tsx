@@ -20,7 +20,6 @@ import { isLoggedIn } from "../hooks/validation/useAuth";
 import { hasCompletedCaptcha } from "../hooks/validation/turnstileValidation";
 
 const token = new URLSearchParams(window.location.search).get("token");
-
 export const Route = createFileRoute("/activate-account")({
   component: ActivateAccount,
   beforeLoad: async () => {
@@ -55,8 +54,8 @@ function ActivateAccount() {
 
       return response;
     },
-    retry: false,
-    enabled: !!localStorage.getItem("access_token"),
+    retry: 3,
+    retryDelay: 2000,
   });
 
   return (
