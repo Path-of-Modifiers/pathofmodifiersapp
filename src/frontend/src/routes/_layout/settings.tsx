@@ -57,9 +57,21 @@ function UserSettings() {
           borderTopColor={"ui.darkBrown"}
           borderTopWidth={1}
         >
-          <TabList>
+          <TabList borderColor="ui.lighterSecondary.100">
             {tabsConfig.map((tab, index) => (
-              <Tab key={index}>{tab.title}</Tab>
+              <Tab
+                key={index}
+                _selected={{
+                  color: "ui.inputChanged",
+                  textDecoration: "underline",
+                  fontWeight: "bold",
+                }}
+                _hover={{
+                  color: "ui.inputChanged",
+                }}
+              >
+                {tab.title}
+              </Tab>
             ))}
           </TabList>
           <TabPanels>
