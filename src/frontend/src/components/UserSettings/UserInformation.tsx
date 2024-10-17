@@ -1,78 +1,22 @@
 import {
-  Box,
+  VStack,
   Button,
   Container,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
   Heading,
-  Input,
+  HStack,
   Text,
-  useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { type SubmitHandler, useForm } from "react-hook-form";
 
-import {
-  type ApiError,
-  type UserPublic,
-  type UserUpdateMe,
-  UsersService,
-} from "../../client";
+import EditInputIcon from "../Icon/EditInputIcon";
 import useAuth from "../../hooks/validation/useAuth";
-import useCustomToast from "../../hooks/useCustomToast";
-import { emailPattern, handleError, usernamePattern } from "../../utils";
+import ChangeUsernameConfirmation from "./ChangeUsernameConfirmation";
+import ChangeEmailConfirmation from "./ChangeEmailConfirmation";
 
 const UserInformation = () => {
-  const queryClient = useQueryClient();
-  const color = useColorModeValue("inherit", "ui.light");
-  const showToast = useCustomToast();
-  const [editMode, setEditMode] = useState(false);
   const { user: currentUser } = useAuth();
-  const {
-    register,
-    handleSubmit,
-    reset,
-    getValues,
-    formState: { isSubmitting, errors, isDirty },
-  } = useForm<UserPublic>({
-    mode: "onBlur",
-    criteriaMode: "all",
-    defaultValues: {
-      username: currentUser?.username,
-      email: currentUser?.email,
-    },
-  });
-
-  const toggleEditMode = () => {
-    setEditMode(!editMode);
-  };
-
-  // TODO: Fix updateMeEmailSendConfirmation() here
-  const mutation = useMutation({
-    mutationFn: (data: UserUpdateMe) =>
-      UsersService.updateMeEmailSendConfirmation({ requestBody: data }),
-    onSuccess: () => {
-      showToast("Success!", "User updated successfully.", "success");
-    },
-    onError: (err: ApiError) => {
-      handleError(err, showToast);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries();
-    },
-  });
-
-  const onSubmit: SubmitHandler<UserUpdateMe> = async (data) => {
-    mutation.mutate(data);
-  };
-
-  const onCancel = () => {
-    reset();
-    toggleEditMode();
-  };
+  const confirmationUsernameModal = useDisclosure();
+  const confirmationEmailModal = useDisclosure();
 
   return (
     <>
@@ -80,86 +24,85 @@ const UserInformation = () => {
         <Heading size="md" py={4}>
           User Information
         </Heading>
-        <Box
-          w={{ sm: "full", md: "50%" }}
-          as="form"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <FormControl>
-            <FormLabel color={color} htmlFor="name">
+        <VStack gap={4} w={{ sm: "full", md: "full" }} as="form">
+          <HStack width="full">
+            <Text size="md" py={2} isTruncated maxWidth="250px" mr="auto">
               Username
-            </FormLabel>
-            {editMode ? (
-              <Input
-                id="name"
-                {...register("username", {
-                  maxLength: 50,
-                  pattern: usernamePattern,
-                })}
-                type="text"
-                size="md"
-                w="auto"
-              />
-            ) : (
+            </Text>
+            <HStack
+              width="inputSizes.mdPlusBox"
+              bgColor="ui.lighterSecondary.100"
+              borderRadius={4}
+            >
               <Text
-                size="md"
-                py={2}
-                color={!currentUser?.username ? "ui.dim" : "inherit"}
-                isTruncated
-                maxWidth="250px"
+                width="full"
+                borderRadius={4}
+                borderRightRadius={0}
+                borderWidth={1}
+                borderColor={"ui.greyShade.100"}
+                color="ui.greyShade.200"
+                p="6px"
+                mr={-2}
               >
                 {currentUser?.username || "N/A"}
               </Text>
-            )}
-          </FormControl>
-          <FormControl mt={4} isInvalid={!!errors.email}>
-            <FormLabel color={color} htmlFor="email">
-              Email
-            </FormLabel>
-            {editMode ? (
-              <Input
-                id="email"
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: emailPattern,
-                })}
-                type="email"
-                maxWidth="250px"
-                size="md"
-                w="auto"
-              />
-            ) : (
-              <Text width="inputSizes.lgBox" py={2} isTruncated>
-                {currentUser?.email}
-              </Text>
-            )}
-            {errors.email && (
-              <FormErrorMessage>{errors.email.message}</FormErrorMessage>
-            )}
-          </FormControl>
-          <Flex mt={4} gap={3}>
-            <Button
-              variant="primary"
-              bgColor="ui.success"
-              _hover={{ bgColor: "ui.queryMainInput" }}
-              onClick={toggleEditMode}
-              type={editMode ? "button" : "submit"}
-              isLoading={editMode ? isSubmitting : false}
-              isDisabled={editMode ? !isDirty || !getValues("email") : false}
-            >
-              {editMode ? "Save" : "Edit"}
-            </Button>
-            {editMode && (
+
               <Button
-                _hover={{ bgColor: "ui.grey" }}
-                onClick={onCancel}
-                isDisabled={isSubmitting}
+                leftIcon={<EditInputIcon boxSize={4} color="white" ml="6px" />}
+                variant="primary"
+                onClick={confirmationUsernameModal.onOpen}
+                width="40px"
+                _hover={{
+                  bg: "ui.lighterSecondary.200",
+                }}
+              />
+            </HStack>
+
+            <ChangeUsernameConfirmation
+              isOpen={confirmationUsernameModal.isOpen}
+              onClose={confirmationUsernameModal.onClose}
+            />
+          </HStack>
+
+          <HStack width="full">
+            <Text size="md" py={2} isTruncated maxWidth="250px" mr="auto">
+              Email
+            </Text>
+            <HStack
+              width="inputSizes.mdPlusBox"
+              bgColor="ui.lighterSecondary.100"
+              borderRadius={4}
+            >
+              <Text
+                width="full"
+                borderRadius={4}
+                borderRightRadius={0}
+                borderWidth={1}
+                borderColor={"ui.greyShade.100"}
+                color="ui.greyShade.200"
+                p="6px"
+                mr={-2}
               >
-                Cancel
-              </Button>
-            )}
-          </Flex>
-        </Box>
+                {currentUser?.email || "N/A"}
+              </Text>
+
+              <Button
+                leftIcon={<EditInputIcon boxSize={4} color="white" ml="6px" />}
+                variant="primary"
+                onClick={confirmationEmailModal.onOpen}
+                width="40px"
+                _hover={{
+                  bg: "ui.lighterSecondary.200",
+                }}
+              />
+            </HStack>
+
+            <ChangeEmailConfirmation
+              isOpen={confirmationEmailModal.isOpen}
+              onClose={confirmationEmailModal.onClose}
+            />
+          </HStack>
+        </VStack>
       </Container>
     </>
   );
