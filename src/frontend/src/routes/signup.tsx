@@ -14,6 +14,7 @@ import {
   Link as RouterLink,
   createFileRoute,
   redirect,
+  useNavigate,
 } from "@tanstack/react-router";
 import { type SubmitHandler, useForm } from "react-hook-form";
 
