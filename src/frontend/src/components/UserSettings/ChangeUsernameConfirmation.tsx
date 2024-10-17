@@ -47,7 +47,7 @@ const ChangeUsernameConfirmation = ({ isOpen, onClose }: DeleteProps) => {
     onSuccess: () => {
       showToast(
         "Success",
-        "A confirmation email has been sent to update your username.",
+        "Successfully updated to the new username.",
         "success"
       );
       onClose();
