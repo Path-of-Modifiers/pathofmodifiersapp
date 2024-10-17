@@ -114,8 +114,8 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
       ...chakraStylesBase,
       p: 0,
       marginBottom: 0,
-      maxH: "200px",
       overflowY: "auto",
+      opacity: props.unstyled ? 0 : 1,
     }),
     container: (provided) => ({
       ...provided,
@@ -124,7 +124,6 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
       marginBottom: 0,
       opacity: props.isDimmed ? 0.5 : 1,
       borderRadius: "lg",
-      w: props.unstyled ? "10vw" : undefined,
       h: props.unstyled ? 5 : undefined,
     }),
     option: (provided) => ({
@@ -137,6 +136,8 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
     menuList: (provided) => ({
       ...provided,
       ...chakraStylesBase,
+      w: props.unstyled ? "50vw" : undefined,
+      maxH: "20vw",
     }),
   };
 
@@ -170,7 +171,7 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
               }
             }
           }}
-          closeMenuOnSelect={true}
+          blurInputOnSelect={true}
           filterOption={(option, inputValue) =>
             customFilter(option, inputValue)
           }
