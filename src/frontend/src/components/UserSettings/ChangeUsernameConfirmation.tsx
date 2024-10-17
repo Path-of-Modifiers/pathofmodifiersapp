@@ -121,13 +121,22 @@ const ChangeUsernameConfirmation = ({ isOpen, onClose }: DeleteProps) => {
             </AlertDialogBody>
 
             <AlertDialogFooter gap={3}>
-              <Button variant="danger" type="submit" isLoading={isSubmitting}>
+              <Button
+                bg="ui.queryBaseInput"
+                _hover={{ bg: "ui.queryMainInput" }}
+                variant="danger"
+                type="submit"
+                isLoading={isSubmitting}
+              >
                 Update
               </Button>
               <Button
                 ref={cancelRef}
                 onClick={handleClose}
                 isDisabled={isSubmitting}
+                bg="ui.lighterSecondary.100"
+                color="ui.white"
+                _hover={{ bg: "ui.lightInput" }}
               >
                 Cancel
               </Button>
