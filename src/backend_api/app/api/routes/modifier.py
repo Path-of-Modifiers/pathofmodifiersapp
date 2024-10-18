@@ -1,6 +1,6 @@
-from __future__ import annotations
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Query, Request, Response
 from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
@@ -12,6 +12,7 @@ from app.api.deps import (
     get_current_active_user,
     get_db,
 )
+from app.api.params import FilterParams
 from app.core.models.models import Modifier
 from app.core.rate_limit.rate_limit_config import rate_limit_settings
 from app.core.rate_limit.rate_limiters import apply_user_rate_limits
@@ -69,6 +70,7 @@ async def get_modifier(
 async def get_all_modifiers(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
+    filter_params: Annotated[FilterParams, Query()],
     db: Session = Depends(get_db),
 ):
     """
@@ -77,7 +79,7 @@ async def get_all_modifiers(
     Returns a list of all modifiers.
     """
 
-    all_modifiers = await CRUD_modifier.get(db=db)
+    all_modifiers = await CRUD_modifier.get(db=db, filter_params=filter_params)
 
     return all_modifiers
 
