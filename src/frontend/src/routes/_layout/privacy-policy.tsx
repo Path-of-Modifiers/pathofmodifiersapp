@@ -51,7 +51,7 @@ function PrivacyPolicy() {
               text="Privacy Policy"
               textProps={{ fontSize: "2xl", marginBottom: "1rem" }}
             />
-            <Text mb="1rem">Effective Date: July 17, 2024</Text>
+            <Text mb="1rem">Effective Date: October 17th, 2024</Text>
             <Text whiteSpace="pre-line">
               This Privacy Policy explains how Path of Modifiers ("we," "us," or
               "our") collects, uses, stores, and protects your information when
@@ -97,7 +97,7 @@ function PrivacyPolicy() {
                 <Text>
                   We store your data securely using industry-standard encryption
                   and security measures. Data is stored on servers located in
-                  Norway. We take appropriate measures to ensure your data is
+                  Sweden. We take appropriate measures to ensure your data is
                   protected against unauthorized access, alteration, or
                   destruction.
                 </Text>
