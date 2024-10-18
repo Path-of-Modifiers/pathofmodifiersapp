@@ -52,7 +52,6 @@ from app.tests.utils.utils import random_email, random_lower_string
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
-@pytest.mark.usefixtures("clear_cache", autouse=True)
 class TestUserAPI(BaseTest):
     @pytest.mark.anyio
     async def _get_current_normal_user(
@@ -1140,7 +1139,6 @@ class TestUserAPI(BaseTest):
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
-@pytest.mark.usefixtures("clear_cache", autouse=True)
 @pytest.mark.skipif(
     settings.SKIP_RATE_LIMIT_TEST is True or settings.SKIP_RATE_LIMIT_TEST == "True",
     reason="Rate limit test is disabled",
