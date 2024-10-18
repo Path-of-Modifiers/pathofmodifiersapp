@@ -1,9 +1,11 @@
 # Path of Modifiers API documentation
 
-This document describes and illustration more advanced features in the API.
+This document describes and illustrates more advanced features in the API.
 
 - [Authentication](#authentication)
 - [Rate limit](#rate-limit)
+
+Description of each route is documented in [Path of Modifiers API Docs][https://pathofmodifiers.com/docs]
 
 ## Authentication
 
