@@ -12,7 +12,7 @@ Description of each route is documented in [Path of Modifiers API Docs](https://
 ### User session authentication
 
 The routes produces authentication outcomes based on user roles, privileges and scope. There are two main categories for routes required during authentication:
-`User required` and `Non-user required` routes. Inside `User required` routes, there are two sub categories between if a user is superuser or not also.
+`User required` and `Non-user required` routes. Inside `User required` routes, there are two sub categories if a user is `Superuser` or `Not superuser`.
 
 To determine if a route is `User required` or not, the hints are to look at the dependencies of the route. Dependencies are either provided in the route decoration `@route`
 or inside the route arguments with a dependency type, like `current_user: CurrentUser`.
@@ -23,7 +23,7 @@ The figure below illustrates a general action path of authenticating a user sess
 
 ### Different user cache token types
 
-Async Redis cache is used to cache different type of tokens during user authentication processes. Inside module `app/core/cache/user_cache` the different cache token types are specified.
+Async Redis cache is used to cache different types of tokens during user authentication processes. Inside module `app/core/cache/user_cache` the different cache token types are specified.
 
 Using different types of tokens provides versatility to how long different tokens last and multiple processes happening concurrently by a user.
 
