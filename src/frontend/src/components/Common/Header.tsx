@@ -1,9 +1,21 @@
-import { Flex, Link, Text } from "@chakra-ui/react";
+import {
+  Flex,
+  Link,
+  Text,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+} from "@chakra-ui/react";
+import SettingsIcon from "../Icon/SettingsIcon";
+import LogoutIcon from "../Icon/LogoutIcon";
 import useAuth from "../../hooks/validation/useAuth";
 
 // Header component for the application
 const Header = () => {
+  const { logout } = useAuth();
   const { user: currentUser } = useAuth();
+
   return (
     <Flex as="header" align="center" justify="space-between" padding="1rem">
       <Link href={"/"}>
@@ -16,16 +28,38 @@ const Header = () => {
           Path of Modifiers
         </Text>
       </Link>
-      <Link href={"/settings"}>
-        <Text
+
+      {/* Menu for user actions */}
+      <Menu placement="bottom-end">
+        <MenuButton
           color="ui.white"
           fontSize="20px"
           fontWeight="medium"
           _hover={{ color: "ui.inputChanged", textDecoration: "underline" }}
         >
-          {currentUser?.username}
-        </Text>
-      </Link>
+          <Text>{currentUser?.username}</Text>
+        </MenuButton>
+        <MenuList bgColor="ui.secondary" border={0} p={2} minW="150px">
+          <MenuItem
+            color="ui.white"
+            bgColor="ui.secondary"
+            icon={<SettingsIcon />}
+            onClick={() => (window.location.href = "/settings")}
+            _hover={{ bgColor: "ui.lighterSecondary.100" }}
+          >
+            Settings
+          </MenuItem>
+          <MenuItem
+            color="ui.white"
+            bgColor="ui.secondary"
+            icon={<LogoutIcon />}
+            onClick={logout}
+            _hover={{ bgColor: "ui.lighterSecondary.100" }}
+          >
+            Logout
+          </MenuItem>
+        </MenuList>
+      </Menu>
     </Flex>
   );
 };
