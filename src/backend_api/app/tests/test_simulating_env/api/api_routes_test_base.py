@@ -23,7 +23,6 @@ from app.tests.utils.utils import is_courotine_function
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
-@pytest.mark.usefixtures("clear_cache", autouse=True)
 class TestAPI(BaseTest):
     async def _create_object_api(
         self,

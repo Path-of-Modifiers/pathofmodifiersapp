@@ -11,11 +11,14 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as UserNotActivatedImport } from './routes/user-not-activated'
+import { Route as UpdateUserEmailImport } from './routes/update-user-email'
 import { Route as SignupImport } from './routes/signup'
 import { Route as ResetPasswordImport } from './routes/reset-password'
 import { Route as RecoverPasswordImport } from './routes/recover-password'
 import { Route as LoginImport } from './routes/login'
 import { Route as CaptchaImport } from './routes/captcha'
+import { Route as ActivateAccountImport } from './routes/activate-account'
 import { Route as LayoutImport } from './routes/_layout'
 import { Route as LayoutIndexImport } from './routes/_layout/index'
 import { Route as LayoutTermsOfUseImport } from './routes/_layout/terms-of-use'
@@ -24,6 +27,16 @@ import { Route as LayoutPrivacyPolicyImport } from './routes/_layout/privacy-pol
 import { Route as LayoutAboutImport } from './routes/_layout/about'
 
 // Create/Update Routes
+
+const UserNotActivatedRoute = UserNotActivatedImport.update({
+  path: '/user-not-activated',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const UpdateUserEmailRoute = UpdateUserEmailImport.update({
+  path: '/update-user-email',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const SignupRoute = SignupImport.update({
   path: '/signup',
@@ -47,6 +60,11 @@ const LoginRoute = LoginImport.update({
 
 const CaptchaRoute = CaptchaImport.update({
   path: '/captcha',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ActivateAccountRoute = ActivateAccountImport.update({
+  path: '/activate-account',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -88,6 +106,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutImport
       parentRoute: typeof rootRoute
     }
+    '/activate-account': {
+      preLoaderRoute: typeof ActivateAccountImport
+      parentRoute: typeof rootRoute
+    }
     '/captcha': {
       preLoaderRoute: typeof CaptchaImport
       parentRoute: typeof rootRoute
@@ -106,6 +128,14 @@ declare module '@tanstack/react-router' {
     }
     '/signup': {
       preLoaderRoute: typeof SignupImport
+      parentRoute: typeof rootRoute
+    }
+    '/update-user-email': {
+      preLoaderRoute: typeof UpdateUserEmailImport
+      parentRoute: typeof rootRoute
+    }
+    '/user-not-activated': {
+      preLoaderRoute: typeof UserNotActivatedImport
       parentRoute: typeof rootRoute
     }
     '/_layout/about': {
@@ -141,11 +171,14 @@ export const routeTree = rootRoute.addChildren([
     LayoutTermsOfUseRoute,
     LayoutIndexRoute,
   ]),
+  ActivateAccountRoute,
   CaptchaRoute,
   LoginRoute,
   RecoverPasswordRoute,
   ResetPasswordRoute,
   SignupRoute,
+  UpdateUserEmailRoute,
+  UserNotActivatedRoute,
 ])
 
 /* prettier-ignore-end */

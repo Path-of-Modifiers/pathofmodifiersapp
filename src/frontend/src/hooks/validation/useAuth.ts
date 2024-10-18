@@ -24,6 +24,7 @@ const useAuth = () => {
   const queryClient = useQueryClient();
   const searchParams = new URLSearchParams(window.location.search);
   const from = searchParams.get("from");
+
   const {
     data: user,
     isLoading: isLoadingUser,
@@ -38,6 +39,9 @@ const useAuth = () => {
         if (from) {
           navigate({ to: "/login" });
         }
+      }
+      if (!user.isActive) {
+        navigate({ to: "/user-not-activated" });
       }
 
       return user; // Add this line to return the user
@@ -60,7 +64,7 @@ const useAuth = () => {
       navigate({ to: "/login" });
       showToast(
         "Account created.",
-        "Your account has been created successfully.",
+        "Your account has been created successfully. Please check your email for confirmation.",
         "success"
       );
     },
@@ -106,6 +110,15 @@ const useAuth = () => {
     },
   });
 
+  const checkIsActiveMutation = async () => {
+    const response = await UsersService.checkCurrentUserActive();
+    if (!response) {
+      navigate({ to: "/user-not-activated" });
+      return;
+    }
+    return response;
+  };
+
   const logout = () => {
     localStorage.removeItem("access_token");
     navigate({ to: "/login" });
@@ -115,6 +128,7 @@ const useAuth = () => {
     signUpMutation,
     loginMutation,
     logout,
+    checkIsActiveMutation,
     user,
     isLoadingUser,
     error,

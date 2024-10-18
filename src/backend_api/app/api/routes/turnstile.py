@@ -41,7 +41,7 @@ async def get_turnstile_validation(
     client_ip = request.client.host if request.client else "127.0.0.1"
 
     async with apply_custom_rate_limit(
-        unique_key=client_ip,
+        unique_key="turnstile_" + client_ip,
         rate_spec=rate_spec,
         prefix=turnstile_prefix,
     ):

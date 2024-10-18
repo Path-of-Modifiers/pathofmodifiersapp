@@ -12,7 +12,6 @@ from app.api.api_message_util import (
     get_user_psw_change_msg,
 )
 from app.api.deps import (
-    CurrentUser,
     UserCachePasswordResetSession,
     UserCacheSession,
     get_current_active_superuser,
@@ -23,9 +22,8 @@ from app.core.models.models import User
 from app.core.rate_limit.rate_limit_config import rate_limit_settings
 from app.core.rate_limit.rate_limiters import (
     apply_ip_rate_limits,
-    apply_user_rate_limits,
 )
-from app.core.schemas import Message, NewPassword, Token, UserPublic
+from app.core.schemas import Message, NewPassword, Token
 from app.core.schemas.token import RecoverPassword
 from app.core.security import (
     get_password_hash,
@@ -38,7 +36,6 @@ from app.exceptions import (
     EmailOrUsernameRequiredError,
     InvalidTokenError,
     NewPasswordIsSameError,
-    UserIsNotActiveError,
 )
 from app.utils.user import (
     generate_reset_password_email,
@@ -75,11 +72,6 @@ async def login_access_session(
         raise BadLoginCredentialsError(
             function_name=login_access_session.__name__,
         )
-    elif not user.isActive:
-        raise UserIsNotActiveError(
-            username_or_email=user.username,
-            function_name=login_access_session.__name__,
-        )
 
     access_token = await user_session_cache.create_user_cache_instance(
         user=user,
@@ -89,25 +81,6 @@ async def login_access_session(
     return Token(
         access_token=access_token,
     )
-
-
-@router.post("/test-token", response_model=UserPublic)
-@apply_user_rate_limits(
-    rate_limit_settings.USER_LOGIN_RATE_LIMIT_SECOND,
-    rate_limit_settings.USER_LOGIN_RATE_LIMIT_MINUTE,
-    rate_limit_settings.USER_LOGIN_RATE_LIMIT_HOUR,
-    rate_limit_settings.USER_LOGIN_RATE_LIMIT_DAY,
-)
-async def test_token(
-    request: Request,  # noqa: ARG001
-    response: Response,  # noqa: ARG001
-    current_user: CurrentUser,
-) -> Any:
-    """
-    Test access token
-
-    """
-    return current_user
 
 
 @router.post("/password-recovery/")
@@ -195,11 +168,6 @@ async def reset_password(
         raise DbObjectDoesNotExistError(
             model_table_name=User.__tablename__,
             filter=get_user_filter,
-            function_name=reset_password.__name__,
-        )
-    elif not user.isActive:
-        raise UserIsNotActiveError(
-            username_or_email=user.username,
             function_name=reset_password.__name__,
         )
     if verify_password(body.new_password, user.hashedPassword):

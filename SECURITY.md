@@ -12,7 +12,7 @@ Versions currently supported with security updates:
 
 ## Reporting a Vulnerability
 
-To report a vulnerability, please contact pomodifiers@outlook.com with specifications for:
+To report a vulnerability, please contact team@pathofmodifiers.com with specifications for:
 
 - Description
 - Module and/or file(s)

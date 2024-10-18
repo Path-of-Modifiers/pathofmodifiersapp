@@ -43,11 +43,13 @@ async def get_plot_data(
     )
 
     async with apply_custom_rate_limit(
-        unique_key=get_username_by_request(request),
+        unique_key="plot_" + get_username_by_request(request),
         rate_spec=rate_spec,
         prefix=plot_prefix,
     ), apply_custom_rate_limit(
-        unique_key=request.client.host, rate_spec=rate_spec, prefix=plot_prefix
+        unique_key="plot_" + request.client.host,
+        rate_spec=rate_spec,
+        prefix=plot_prefix,
     ):
         plot_data = await plotter_tool.plot(
             db,

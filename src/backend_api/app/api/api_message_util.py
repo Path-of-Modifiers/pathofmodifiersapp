@@ -123,3 +123,14 @@ def get_set_rate_limit_tier_success_msg(username: str, rate_limit_tier: int) -> 
     return Message(
         message=f"User '{username}' rate limit tier set to {rate_limit_tier}"
     )
+
+
+def get_activation_token_confirmation_sent_msg(
+    username: UsernameStr, email: EmailStr
+) -> Message:
+    return Message(
+        message=(
+            f"Successfully sent user activation token with "
+            f"username '{username}' and email '{email}'. Please check your email for confirmation."
+        )
+    )
