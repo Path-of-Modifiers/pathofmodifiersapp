@@ -31,7 +31,7 @@ export const Route = createFileRoute("/activate-account")({
     if (!hasCompletedCaptcha() && !isLoggedIn()) {
       throw redirect({
         to: "/captcha",
-        search: () => ({ from: "reset-password" }), // Pass the query parameter using search
+        search: () => ({ from: "activate-account" }), // Pass the query parameter using search
       });
     }
   },
@@ -54,7 +54,10 @@ function ActivateAccount() {
       return response;
     },
     retry: (failureCount, error) =>
-      failureCount < 3 && error instanceof ApiError && error.status !== 401 && error.status !== 429,
+      failureCount < 3 &&
+      error instanceof ApiError &&
+      error.status !== 401 &&
+      error.status !== 429,
     retryDelay: 1500,
   });
 
@@ -77,7 +80,7 @@ function ActivateAccount() {
       >
         <Image
           src={Logo}
-          alt="FastAPI logo"
+          alt="POM logo"
           height="auto"
           maxW="2xs"
           alignSelf="center"
