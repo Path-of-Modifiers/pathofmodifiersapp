@@ -57,7 +57,9 @@ from app.exceptions.model_exceptions.user_login_exception import (
     UserUsernameRequiredError,
 )
 from app.utils.user import (
+    generate_email_changed_notify_email,
     generate_new_account_email,
+    generate_password_changed_notify_email,
     generate_user_email_update,
     generate_user_registration_email,
     send_email,
@@ -189,6 +191,7 @@ async def update_me_email_confirmation(
     token: Token,
     current_user: CurrentUser,
     user_cache_update_me: UserCacheUpdateMeSession,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ) -> Message:
     """
@@ -210,6 +213,18 @@ async def update_me_email_confirmation(
         db,
         filter={"email": update_email},
     )
+    if settings.emails_enabled:
+        email_data = generate_email_changed_notify_email(
+            email_to=current_user.email,
+            new_email=update_email,
+            username=current_user.username,
+        )
+        background_tasks.add_task(
+            send_email,
+            email_to=current_user.email,
+            subject=email_data.subject,
+            html_content=email_data.html_content,
+        )
     CRUD_user.update(
         db,
         user_id=current_user.userId,
@@ -285,6 +300,7 @@ async def update_password_me(
     db: Session = Depends(get_db),
     body: UpdatePassword,
     current_user: CurrentUser,
+    background_tasks: BackgroundTasks,
 ) -> Any:
     """
     Update own password.
@@ -294,6 +310,18 @@ async def update_password_me(
         db_user=current_user,
         body=body,
     )
+
+    if settings.emails_enabled:
+        email_data = generate_password_changed_notify_email(
+            email_to=current_user.email,
+            username=current_user.username,
+        )
+        background_tasks.add_task(
+            send_email,
+            email_to=current_user.email,
+            subject=email_data.subject,
+            html_content=email_data.html_content,
+        )
 
     return get_user_psw_change_msg(current_user.username)
 
