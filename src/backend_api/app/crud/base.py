@@ -1,16 +1,17 @@
 from collections.abc import Generator, Iterable
 from itertools import islice
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, Literal, TypeVar
 
 from pydantic import BaseModel, TypeAdapter
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
+# from app.api.params import FilterParams
+from app.api.params import FilterParams
 from app.exceptions import (
     ArgValueNotSupportedError,
     DbObjectDoesNotExistError,
     DbTooManyItemsDeleteError,
-    SortingMethodNotSupportedError,
 )
 from app.exceptions.model_exceptions.db_exception import (
     DbObjectAlreadyExistsError,
@@ -53,27 +54,22 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
     def _sort_objects(
         self,
         objs: list[ModelType],
-        key: str | None = None,
-        sort: str | None = None,
+        sort_key: str | None = None,
+        sort_method: Literal["asc", "dec"] | None = None,
     ) -> list[ModelType]:
-        available_sorting_choices = ["asc", "dec"]
-        if sort is None:
+        """
+        `sort_key` is the column name to sort on. For example `createdAt`.
+        """
+        if sort_method is None:
             return objs
-        elif sort not in available_sorting_choices:
-            raise SortingMethodNotSupportedError(
-                sort=sort,
-                available_sorting_choices=available_sorting_choices,
-                function_name=self._sort_objects.__name__,
-                class_name=self.__class__.__name__,
-            )
-        if sort in ["asc", "dec"]:
+        if sort_method:
             unsorted_extracted_column = []
             for obj in objs:
-                unsorted_extracted_column.append(getattr(obj, key))
+                unsorted_extracted_column.append(getattr(obj, sort_key))
 
             sorted_objs = sort_with_reference(objs, unsorted_extracted_column)
 
-            if sort == "asc":
+            if sort_method == "asc":
                 return sorted_objs
             else:
                 return sorted_objs[::-1]
@@ -204,13 +200,26 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         db: Session,
         filter: dict[str, Any] | None = None,
         *,
-        sort_key: str | None = None,
-        sort: str | None = None,
+        filter_params: FilterParams | None = None,
     ) -> ModelType | list[ModelType] | None:
+        query = db.query(self.model)
         if filter is None:
-            db_obj = db.query(self.model).all()
+            if filter_params is None:
+                db_obj = query.all()
+            else:
+                db_obj = (
+                    query.offset(filter_params.skip).limit(filter_params.limit).all()
+                )
         else:
-            db_obj = db.query(self.model).filter_by(**filter).all()
+            if filter_params is None:
+                db_obj = query.filter_by(**filter).all()
+            else:
+                db_obj = (
+                    query.filter_by(**filter)
+                    .offset(filter_params.skip)
+                    .limit(filter_params.limit)
+                    .all()
+                )
         if not db_obj and not filter:  # Get all objs on an empty db
             pass
         elif not db_obj:
@@ -223,7 +232,14 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         if len(db_obj) == 1 and filter:
             db_obj = db_obj[0]
         else:
-            db_obj = self._sort_objects(db_obj, key=sort_key, sort=sort)
+            if filter_params is None:
+                db_obj = self._sort_objects(db_obj)
+            else:
+                db_obj = self._sort_objects(
+                    db_obj,
+                    sort_key=filter_params.sort_key,
+                    sort_method=filter_params.sort_method,
+                )
         return self.validate(db_obj)
 
     async def create(
@@ -327,7 +343,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         *,
         filter: Any,
         sort_key: str | None = None,
-        sort: str | None = None,
+        sort_method: Literal["asc", "dec"] | None = None,
         max_deletion_limit: int | None = 12,
     ) -> ModelType:
         db_objs = db.query(self.model).filter_by(**filter).all()
@@ -352,7 +368,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             db_objs = db_objs[0]
             db.delete(db_objs)
         else:
-            db_objs = self._sort_objects(db_objs, key=sort_key, sort=sort)
+            db_objs = self._sort_objects(db_objs, key=sort_key, sort_method=sort_method)
             [db.delete(obj) for obj in db_objs]
         db.commit()
         return self.validate(db_objs)
