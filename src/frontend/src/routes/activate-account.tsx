@@ -15,7 +15,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 
 import Logo from "/assets/images/POM_logo_rec.svg";
-import { UsersService } from "../client";
+import { UsersService, ApiError } from "../client";
 import { isLoggedIn } from "../hooks/validation/useAuth";
 import { hasCompletedCaptcha } from "../hooks/validation/turnstileValidation";
 
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/activate-account")({
     if (!hasCompletedCaptcha() && !isLoggedIn()) {
       throw redirect({
         to: "/captcha",
-        search: () => ({ from: "reset-password" }), // Pass the query parameter using search
+        search: () => ({ from: "activate-account" }), // Pass the query parameter using search
       });
     }
   },
@@ -51,11 +51,14 @@ function ActivateAccount() {
       const response = await UsersService.registerUserConfirm({
         requestBody: { access_token: token },
       });
-
       return response;
     },
-    retry: 3,
-    retryDelay: 2000,
+    retry: (failureCount, error) =>
+      failureCount < 3 &&
+      error instanceof ApiError &&
+      error.status !== 401 &&
+      error.status !== 429,
+    retryDelay: 1500,
   });
 
   return (
@@ -77,7 +80,7 @@ function ActivateAccount() {
       >
         <Image
           src={Logo}
-          alt="FastAPI logo"
+          alt="POM logo"
           height="auto"
           maxW="2xs"
           alignSelf="center"

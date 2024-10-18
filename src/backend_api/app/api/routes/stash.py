@@ -1,6 +1,6 @@
-from __future__ import annotations
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Query, Request, Response
 from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
@@ -12,6 +12,7 @@ from app.api.deps import (
     get_current_active_user,
     get_db,
 )
+from app.api.params import FilterParams
 from app.core.models.models import Stash
 from app.core.rate_limit.rate_limit_config import rate_limit_settings
 from app.core.rate_limit.rate_limiters import apply_user_rate_limits
@@ -58,6 +59,7 @@ async def get_stash(
     dependencies=[Depends(get_current_active_superuser)],
 )
 async def get_all_stashes(
+    filter_params: Annotated[FilterParams, Query()],
     db: Session = Depends(get_db),
 ):
     """
@@ -66,7 +68,7 @@ async def get_all_stashes(
     Returns a list of all stashes.
     """
 
-    all_stashes = await CRUD_stash.get(db=db)
+    all_stashes = await CRUD_stash.get(db=db, filter_params=filter_params)
 
     return all_stashes
 

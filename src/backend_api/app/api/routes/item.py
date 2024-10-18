@@ -1,6 +1,6 @@
-from __future__ import annotations
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Query, Request, Response
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -13,6 +13,7 @@ from app.api.deps import (
     get_current_active_user,
     get_db,
 )
+from app.api.params import FilterParams
 from app.core.models.models import Item
 from app.core.rate_limit.rate_limit_config import rate_limit_settings
 from app.core.rate_limit.rate_limiters import apply_user_rate_limits
@@ -89,6 +90,7 @@ async def get_latest_item_id(
     dependencies=[Depends(get_current_active_superuser)],
 )
 async def get_all_items(
+    filter_params: Annotated[FilterParams, Query()],
     db: Session = Depends(get_db),
 ):
     """
@@ -97,7 +99,7 @@ async def get_all_items(
     Returns a list of all items.
     """
 
-    all_items = await CRUD_item.get(db=db)
+    all_items = await CRUD_item.get(db=db, filter_params=filter_params)
 
     return all_items
 
