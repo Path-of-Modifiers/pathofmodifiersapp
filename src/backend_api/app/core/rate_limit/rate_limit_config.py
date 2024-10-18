@@ -18,9 +18,9 @@ class RateLimitSettings(BaseSettings):
 
     # Stricter default rate limits
     STRICT_DEFAULT_USER_RATE_LIMIT_SECOND: str = "1/second"
-    STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE: str = "1/minute"
-    STRICT_DEFAULT_USER_RATE_LIMIT_HOUR: str = "3/hour"
-    STRICT_DEFAULT_USER_RATE_LIMIT_DAY: str = "5/day"
+    STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE: str = "3/minute"
+    STRICT_DEFAULT_USER_RATE_LIMIT_HOUR: str = "10/hour"
+    STRICT_DEFAULT_USER_RATE_LIMIT_DAY: str = "15/day"
 
     # Login rate limits
     USER_LOGIN_RATE_LIMIT_SECOND: str = "1/second"
