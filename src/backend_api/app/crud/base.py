@@ -60,19 +60,20 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         """
         `sort_key` is the column name to sort on. For example `createdAt`.
         """
-        if sort_method is None:
+        if sort_key is None:
             return objs
-        if sort_method:
-            unsorted_extracted_column = []
-            for obj in objs:
-                unsorted_extracted_column.append(getattr(obj, sort_key))
+        if sort_method is None:
+            sort_method = "asc"
+        unsorted_extracted_column = []
+        for obj in objs:
+            unsorted_extracted_column.append(getattr(obj, sort_key))
 
-            sorted_objs = sort_with_reference(objs, unsorted_extracted_column)
+        sorted_objs = sort_with_reference(objs, unsorted_extracted_column)
 
-            if sort_method == "asc":
-                return sorted_objs
-            else:
-                return sorted_objs[::-1]
+        if sort_method == "asc":
+            return sorted_objs
+        else:
+            return sorted_objs[::-1]
 
     def _map_obj_pks_to_value(
         self,
@@ -203,23 +204,15 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         filter_params: FilterParams | None = None,
     ) -> ModelType | list[ModelType] | None:
         query = db.query(self.model)
-        if filter is None:
-            if filter_params is None:
-                db_obj = query.all()
-            else:
-                db_obj = (
-                    query.offset(filter_params.skip).limit(filter_params.limit).all()
-                )
-        else:
-            if filter_params is None:
-                db_obj = query.filter_by(**filter).all()
-            else:
-                db_obj = (
-                    query.filter_by(**filter)
-                    .offset(filter_params.skip)
-                    .limit(filter_params.limit)
-                    .all()
-                )
+        if filter is not None:
+            query = query.filter_by(**filter)
+        if filter_params is not None:
+            if filter_params.skip is not None:
+                query = query.offset(filter_params.skip)
+            if filter_params.limit is not None:
+                query = query.limit(filter_params.limit)
+        db_obj = query.all()
+
         if not db_obj and not filter:  # Get all objs on an empty db
             pass
         elif not db_obj:
