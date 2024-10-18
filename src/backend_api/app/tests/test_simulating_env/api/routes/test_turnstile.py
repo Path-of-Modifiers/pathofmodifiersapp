@@ -18,7 +18,6 @@ from app.tests.utils.utils import create_random_ip
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
-@pytest.mark.usefixtures("clear_cache", autouse=True)
 class TestTurnstileAPI(BaseTest):
     @pytest.mark.anyio
     async def test_success_turnstile_validation_always_passes(
@@ -121,7 +120,6 @@ class TestTurnstileAPI(BaseTest):
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
-@pytest.mark.usefixtures("clear_cache", autouse=True)
 @pytest.mark.skipif(
     settings.SKIP_RATE_LIMIT_TEST is True or settings.SKIP_RATE_LIMIT_TEST == "True",
     reason="Rate limit test is disabled",

@@ -144,15 +144,8 @@ def anyio_backend():
 
 @pytest_asyncio.fixture
 async def get_cache() -> AsyncGenerator[Redis, None]:
-    # Not to be used directly in tests
     yield cache
-
-
-@pytest_asyncio.fixture
-async def clear_cache(get_cache: Redis) -> AsyncGenerator:
-    await get_cache.flushall()
-    await get_cache.aclose()
-    yield
+    await cache.aclose()
 
 
 @pytest_asyncio.fixture

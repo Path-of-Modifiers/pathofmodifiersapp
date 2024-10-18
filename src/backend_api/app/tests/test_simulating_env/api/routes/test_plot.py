@@ -18,7 +18,6 @@ from app.tests.utils.rate_limit import RateLimitPerTimeInterval
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
-@pytest.mark.usefixtures("clear_cache", autouse=True)
 class TestPlotAPI(TestRateLimitBase):
     @pytest.mark.anyio
     async def test_post_multiple_plots_with_different_users(
@@ -58,7 +57,6 @@ class TestPlotAPI(TestRateLimitBase):
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
-@pytest.mark.usefixtures("clear_cache", autouse=True)
 @pytest.mark.skipif(
     settings.SKIP_RATE_LIMIT_TEST is True or settings.SKIP_RATE_LIMIT_TEST == "True",
     reason="Rate limit test is disabled",
