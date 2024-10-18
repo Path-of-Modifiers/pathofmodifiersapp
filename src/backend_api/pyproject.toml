@@ -2,7 +2,7 @@
 name = "pom_backend_api"
 version = "0.1.0"
 description = "Path of Modifiers backend API"
-authors = ["Path of Modifiers team <pomodifiers@outlook.com>"]
+authors = ["Path of Modifiers team <team@pathofmodifiers.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.11"

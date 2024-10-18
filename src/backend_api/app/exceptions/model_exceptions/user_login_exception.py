@@ -35,7 +35,31 @@ class UserIsNotActiveError(PathOfModifiersAPIError):
         status_code: int | None = status.HTTP_403_FORBIDDEN,
     ):
         detail = (
-            f"Cannot perform action with user '{username_or_email}'. User is not active"
+            f"Cannot perform action with user '{username_or_email}'. "
+            f"User is not active. Please check your email for activation link"
+        )
+        super().__init__(
+            status_code=status_code,
+            function_name=function_name,
+            class_name=class_name,
+            detail=detail,
+        )
+
+
+class UserIsAlreadyActiveError(PathOfModifiersAPIError):
+    """Exception raised when user tries to perform actions and is already active."""
+
+    def __init__(
+        self,
+        *,
+        username_or_email: str,
+        function_name: str | None = "Unknown function",
+        class_name: str | None = None,
+        status_code: int | None = status.HTTP_403_FORBIDDEN,
+    ):
+        detail = (
+            f"Cannot perform action with user '{username_or_email}'. "
+            f"User is already active."
         )
         super().__init__(
             status_code=status_code,

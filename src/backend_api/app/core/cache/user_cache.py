@@ -34,7 +34,7 @@ class UserCache:
     so the username is always in the headers of the request
 
     A subset string of `token` called `cache_key`, is stored as the key inside the cache.
-    Format of `cache_key` is '*{user_token_type}:{token}*'
+    Format of `cache_key` is '*{user_token_type}:{token_uuid}*'
 
     We don't need username when storing the key inside the cache.
     """
@@ -121,7 +121,7 @@ class UserCache:
         update_params: dict[str, Any] | None = None,
     ) -> str:
         """
-        Creates a cache instance for the given user. Returns the access token.
+        Creates a cache instance for the given user. Returns the token.
 
         ``user`` is the user db object.
         ``expire_seconds`` is the number of seconds until the cache entry expires.
