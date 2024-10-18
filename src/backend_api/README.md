@@ -31,7 +31,7 @@ To see how it works, check out the `app/core/cache/user_cache` module.
 
 ## Rate limit
 
-Uses the same Async Redis cache to track rate limit between users as the one storing user cache tokens.
+Uses the same Async Redis cache to track rate limit between users. It is the same cache as storing user cache tokens.
 
 There are two rate limitting modules: `SlowAPI rate limitter` and our own custom rate limitter.
 
