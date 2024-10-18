@@ -98,7 +98,7 @@ async def async_client(app: FastAPI) -> AsyncGenerator[AsyncClient, None]:
         yield c
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest_asyncio.fixture(scope="function", autouse=True)
 async def session_override(
     app: FastAPI, engine: Engine, async_engine: AsyncEngine
 ) -> None:
