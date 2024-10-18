@@ -91,7 +91,7 @@ function SignUp() {
         >
           <Image
             src={Logo}
-            alt="FastAPI logo"
+            alt="POM logo"
             height="auto"
             maxW="2xs"
             alignSelf="center"

@@ -15,7 +15,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 
 import Logo from "/assets/images/POM_logo_rec.svg";
-import { UsersService } from "../client";
+import { UsersService, ApiError } from "../client";
 import { isLoggedIn } from "../hooks/validation/useAuth";
 import { hasCompletedCaptcha } from "../hooks/validation/turnstileValidation";
 
@@ -55,8 +55,12 @@ function UpdateUserEmail() {
 
       return response;
     },
-    retry: false,
-    enabled: !!localStorage.getItem("access_token"),
+    retry: (failureCount, error) =>
+      failureCount < 3 &&
+      error instanceof ApiError  &&
+      error.status !== 401 &&
+      error.status !== 429,
+    retryDelay: 1500,
   });
 
   return (
@@ -78,7 +82,7 @@ function UpdateUserEmail() {
       >
         <Image
           src={Logo}
-          alt="FastAPI logo"
+          alt="POM logo"
           height="auto"
           maxW="2xs"
           alignSelf="center"
