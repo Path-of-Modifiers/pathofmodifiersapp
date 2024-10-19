@@ -1,7 +1,0 @@
-services:
-  backend:
-    healthcheck:
-      test: ["CMD", "true"]  # This will always succeed
-      interval: 10s
-      timeout: 10s
-      retries: 3
