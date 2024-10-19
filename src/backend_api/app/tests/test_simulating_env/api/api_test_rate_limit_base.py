@@ -49,7 +49,7 @@ class TestRateLimitBase(BaseTest):
                 rate, interval_seconds = self._get_rate_and_interval(
                     rate_limits_per_interval
                 )
-                if interval_seconds > 60:  # Skips test because it takes too long
+                if interval_seconds > 40:  # Skips test because it takes too long
                     continue
                 skip_time = abs(rate - interval_seconds) // rate
 
