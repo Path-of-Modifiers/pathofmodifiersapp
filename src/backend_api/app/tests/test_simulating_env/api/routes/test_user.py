@@ -1149,6 +1149,7 @@ class TestUserRateLimitAPI(TestRateLimitBase):
         self,
         async_client: AsyncClient,
         ip_rate_limiter,  # noqa: ARG001 # Do not remove, used to enable ip rate limiter
+        user_rate_limiter,  # noqa: ARG001 # Do not remove, used to enable user rate limiter
     ) -> None:
         """
         Perform rate limit test for pre register user endpoint.
