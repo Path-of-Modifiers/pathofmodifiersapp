@@ -1,4 +1,3 @@
-import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -8,6 +7,7 @@ from jinja2 import Template
 from pydantic import EmailStr
 
 from app.core.config import settings
+from app.logs.logger import logger
 
 
 @dataclass
@@ -45,10 +45,9 @@ def send_email(
         smtp_options["user"] = settings.SMTP_USER
     if settings.SMTP_PASSWORD:
         smtp_options["password"] = settings.SMTP_PASSWORD
-
     response = message.send(to=email_to, smtp=smtp_options)
 
-    logging.info(f"Send email result: {response}")
+    logger.debug(f"Send email result: {response}")
 
 
 def generate_test_email(email_to: EmailStr) -> EmailData:
@@ -85,7 +84,7 @@ def generate_user_registration_email(
 ) -> EmailData:
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - Activate account for user {username}"
-    link = f"{settings.server_host}/activate-account?token={token}?email={email_to}?username={username}"
+    link = f"{settings.server_host}/activate-account?token={token}"
     html_content = render_email_template(
         template_name="register_user.html",
         context={
@@ -99,15 +98,14 @@ def generate_user_registration_email(
     return EmailData(html_content=html_content, subject=subject)
 
 
-def generate_user_update(email_to: EmailStr, username: str, token: str) -> EmailData:
+def generate_user_email_update(email_to: EmailStr, token: str) -> EmailData:
     project_name = settings.PROJECT_NAME
-    subject = f"{project_name} - Update user information for user {username}"
-    link = f"{settings.server_host}/update-user?token={token}?email={email_to}?username={username}"
+    subject = f"{project_name} - Update user email information for user {email_to}"
+    link = f"{settings.server_host}/update-user-email?token={token}"
     html_content = render_email_template(
         template_name="update_user.html",
         context={
             "project_name": settings.PROJECT_NAME,
-            "username": username,
             "email": email_to,
             "valid_hours": settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS // 3600,
             "link": link,
@@ -121,6 +119,43 @@ def generate_new_account_email(email_to: EmailStr, username: str) -> EmailData:
     subject = f"{project_name} - New account for user {username}"
     html_content = render_email_template(
         template_name="new_account.html",
+        context={
+            "project_name": settings.PROJECT_NAME,
+            "username": username,
+            "email": email_to,
+            "link": settings.server_host,
+        },
+    )
+    return EmailData(html_content=html_content, subject=subject)
+
+
+def generate_email_changed_notify_email(
+    email_to: EmailStr, new_email: EmailStr, username: str
+) -> EmailData:
+    """Sent to the old email after a user updates their email"""
+    project_name = settings.PROJECT_NAME
+    subject = f"{project_name} - Email changed for user {username}"
+    html_content = render_email_template(
+        template_name="email_changed_notify.html",
+        context={
+            "project_name": settings.PROJECT_NAME,
+            "username": username,
+            "email": email_to,
+            "new_email": new_email,
+            "link": settings.server_host,
+        },
+    )
+    return EmailData(html_content=html_content, subject=subject)
+
+
+def generate_password_changed_notify_email(
+    email_to: EmailStr, username: str
+) -> EmailData:
+    """Sent to email after a user updates their password"""
+    project_name = settings.PROJECT_NAME
+    subject = f"{project_name} - Password changed for user {username}"
+    html_content = render_email_template(
+        template_name="password_changed_notify.html",
         context={
             "project_name": settings.PROJECT_NAME,
             "username": username,

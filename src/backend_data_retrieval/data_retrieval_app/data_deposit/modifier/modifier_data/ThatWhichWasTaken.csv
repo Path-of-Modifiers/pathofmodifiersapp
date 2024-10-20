@@ -71,7 +71,7 @@ minRoll,maxRoll,position,effect,static,unique
 10,20,0,"Every 4 seconds, Regenerate #% of Life over one second",,True
 ,,0,"Nearby Enemies cannot gain Power, Frenzy or Endurance Charges",True,True
 ,,0,"While there are at least five nearby Allies, you and nearby Allies have Onslaught",True,True
--7,-4,0,"Exposure you inflict applies an extra #% to the affected Resistance",,True
+-7,-4,0,"Exposure you inflict applies an extra +#% to the affected Resistance",,True
 ,,0,"All Damage can Ignite",True,True
 5,10,0,"Shocks from your Hits always increase Damage taken by at least #%",,True
 3,6,0,"Chills from your Hits always reduce Action Speed by at least #%",,True

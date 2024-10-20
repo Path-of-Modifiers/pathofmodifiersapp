@@ -12,7 +12,6 @@ from app.api.api_message_util import (
     get_user_psw_change_msg,
 )
 from app.api.deps import (
-    CurrentUser,
     UserCachePasswordResetSession,
     UserCacheSession,
     get_current_active_superuser,
@@ -20,7 +19,11 @@ from app.api.deps import (
 )
 from app.core.config import settings
 from app.core.models.models import User
-from app.core.schemas import Message, NewPassword, Token, UserPublic
+from app.core.rate_limit.rate_limit_config import rate_limit_settings
+from app.core.rate_limit.rate_limiters import (
+    apply_ip_rate_limits,
+)
+from app.core.schemas import Message, NewPassword, Token
 from app.core.schemas.token import RecoverPassword
 from app.core.security import (
     get_password_hash,
@@ -33,9 +36,7 @@ from app.exceptions import (
     EmailOrUsernameRequiredError,
     InvalidTokenError,
     NewPasswordIsSameError,
-    UserIsNotActiveError,
 )
-from app.limiter import apply_ip_rate_limits, apply_user_rate_limits
 from app.utils.user import (
     generate_reset_password_email,
     send_email,
@@ -48,10 +49,10 @@ login_prefix = "login"
 
 @router.post("/access-token")
 @apply_ip_rate_limits(
-    settings.LOGIN_RATE_LIMIT_SECOND,
-    settings.LOGIN_RATE_LIMIT_MINUTE,
-    settings.LOGIN_RATE_LIMIT_HOUR,
-    settings.LOGIN_RATE_LIMIT_DAY,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_DAY,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_MINUTE,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_HOUR,
+    rate_limit_settings.IP_LOGIN_RATE_LIMIT_DAY,
 )
 async def login_access_session(
     request: Request,  # noqa: ARG001
@@ -71,11 +72,6 @@ async def login_access_session(
         raise BadLoginCredentialsError(
             function_name=login_access_session.__name__,
         )
-    elif not user.isActive:
-        raise UserIsNotActiveError(
-            username_or_email=user.username,
-            function_name=login_access_session.__name__,
-        )
 
     access_token = await user_session_cache.create_user_cache_instance(
         user=user,
@@ -87,31 +83,12 @@ async def login_access_session(
     )
 
 
-@router.post("/test-token", response_model=UserPublic)
-@apply_user_rate_limits(
-    settings.LOGIN_RATE_LIMIT_SECOND,
-    settings.LOGIN_RATE_LIMIT_MINUTE,
-    settings.LOGIN_RATE_LIMIT_HOUR,
-    settings.LOGIN_RATE_LIMIT_DAY,
-)
-async def test_token(
-    request: Request,  # noqa: ARG001
-    response: Response,  # noqa: ARG001
-    current_user: CurrentUser,
-) -> Any:
-    """
-    Test access token
-
-    """
-    return current_user
-
-
 @router.post("/password-recovery/")
 @apply_ip_rate_limits(
-    settings.RECOVERY_PASSWORD_RATE_LIMIT_SECOND,
-    settings.RECOVERY_PASSWORD_RATE_LIMIT_MINUTE,
-    settings.RECOVERY_PASSWORD_RATE_LIMIT_HOUR,
-    settings.RECOVERY_PASSWORD_RATE_LIMIT_DAY,
+    rate_limit_settings.RECOVERY_PASSWORD_RATE_LIMIT_SECOND,
+    rate_limit_settings.RECOVERY_PASSWORD_RATE_LIMIT_MINUTE,
+    rate_limit_settings.RECOVERY_PASSWORD_RATE_LIMIT_HOUR,
+    rate_limit_settings.RECOVERY_PASSWORD_RATE_LIMIT_DAY,
 )
 async def recover_password(
     request: Request,  # noqa: ARG001
@@ -162,10 +139,10 @@ async def recover_password(
 
 @router.post("/reset-password/")
 @apply_ip_rate_limits(
-    settings.RESET_PASSWORD_RATE_LIMIT_SECOND,
-    settings.RESET_PASSWORD_RATE_LIMIT_MINUTE,
-    settings.RESET_PASSWORD_RATE_LIMIT_HOUR,
-    settings.RESET_PASSWORD_RATE_LIMIT_DAY,
+    rate_limit_settings.RESET_PASSWORD_RATE_LIMIT_SECOND,
+    rate_limit_settings.RESET_PASSWORD_RATE_LIMIT_MINUTE,
+    rate_limit_settings.RESET_PASSWORD_RATE_LIMIT_HOUR,
+    rate_limit_settings.RESET_PASSWORD_RATE_LIMIT_DAY,
 )
 async def reset_password(
     request: Request,  # noqa: ARG001
@@ -191,11 +168,6 @@ async def reset_password(
         raise DbObjectDoesNotExistError(
             model_table_name=User.__tablename__,
             filter=get_user_filter,
-            function_name=reset_password.__name__,
-        )
-    elif not user.isActive:
-        raise UserIsNotActiveError(
-            username_or_email=user.username,
             function_name=reset_password.__name__,
         )
     if verify_password(body.new_password, user.hashedPassword):

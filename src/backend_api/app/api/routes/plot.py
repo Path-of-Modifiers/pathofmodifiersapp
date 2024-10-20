@@ -8,9 +8,9 @@ from app.api.deps import (
     get_rate_limit_tier_by_request,
     get_username_by_request,
 )
-from app.api.rate_limit.rate_limiter import RateLimiter, RateSpec
-from app.core.cache.cache import cache
-from app.core.config import settings
+from app.core.rate_limit.custom_rate_limiter import RateSpec
+from app.core.rate_limit.rate_limit_config import rate_limit_settings
+from app.core.rate_limit.rate_limiters import apply_custom_rate_limit
 from app.core.schemas.plot import PlotData, PlotQuery
 from app.plotting import plotter_tool
 
@@ -36,16 +36,20 @@ async def get_plot_data(
 
     The 'PlotQuery' schema allows for modifier restriction and item specifications.
     """
+    rate_limit_tier = await get_rate_limit_tier_by_request(request, user_cache_session)
+    rate_spec = RateSpec(
+        requests=rate_limit_tier,
+        cooldown_seconds=rate_limit_settings.PLOT_RATE_LIMIT_COOLDOWN_SECONDS,
+    )
 
-    async with RateLimiter(
-        unique_key=get_username_by_request(request),
-        backend=cache,
-        rate_spec=RateSpec(
-            requests=await get_rate_limit_tier_by_request(request, user_cache_session),
-            cooldown_seconds=settings.PLOT_RATE_LIMIT_COOLDOWN_SECONDS,
-        ),
-        cache_prefix=plot_prefix,
-        enabled=settings.RATE_LIMIT,
+    async with apply_custom_rate_limit(
+        unique_key="plot_" + get_username_by_request(request),
+        rate_spec=rate_spec,
+        prefix=plot_prefix,
+    ), apply_custom_rate_limit(
+        unique_key="plot_" + request.client.host,
+        rate_spec=rate_spec,
+        prefix=plot_prefix,
     ):
         plot_data = await plotter_tool.plot(
             db,

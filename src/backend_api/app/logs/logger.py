@@ -19,6 +19,8 @@ def setup_logging():
 
 logger = logging.getLogger("pom_app")
 
-plot_logger = logger.getChild("plot")
+logger_request = logging.getLogger("pom_app.request")
+
+plot_logger = logging.getLogger("pom_app.plot")
 
 test_logger = logging.getLogger("pom_app.test")

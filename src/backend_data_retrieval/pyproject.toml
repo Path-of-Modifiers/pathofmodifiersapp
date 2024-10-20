@@ -1,30 +1,20 @@
 [tool.poetry]
 name = "pom_backend_data_retrieval"
 version = "0.1.0"
-description = ""
-authors = ["Admin pomodifiers@outlook.com"]
+description = "Path of Modifiers backend data retrieval"
+authors = ["Path of Modifiers team <team@pathofmodifiers.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-uvicorn = {extras = ["standard"], version = "^0.24.0.post1"}
-fastapi = "^0.109.1"
 python-multipart = "^0.0.7"
 email-validator = "^2.1.0.post1"
-passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 tenacity = "^8.2.3"
 pydantic = ">2.0"
-emails = "^0.6"
 
-gunicorn = "^22.0.0"
 jinja2 = "^3.1.4"
-alembic = "^1.12.1"
 httpx = "^0.25.1"
-psycopg = {extras = ["binary"], version = "^3.1.13"}
-# Pin bcrypt until passlib supports the latest
-bcrypt = "4.0.1"
 pydantic-settings = "^2.2.1"
 sentry-sdk = {extras = ["fastapi"], version = "^1.40.6"}
-psycopg2 = "^2.9.9" # for PostgreSQL database
 pandas = "2.2.0" # for dataframe processing
 requests = "^2.31.0"
 tqdm = "^4.66.2"
@@ -32,6 +22,7 @@ aiohttp = "^3.9.3"
 pyjwt = "^2.9.0"
 pytest-asyncio = "^0.23.8"
 pyyaml = "^6.0.2"
+beautifulsoup4 = "^4.12.3"
 
 
 

@@ -1,6 +1,6 @@
-from __future__ import annotations
+from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
@@ -11,6 +11,7 @@ from app.api.deps import (
     get_current_active_superuser,
     get_db,
 )
+from app.api.params import FilterParams
 from app.core.models.models import Account
 from app.crud import CRUD_account
 
@@ -48,6 +49,7 @@ async def get_account(accountName: str, db: Session = Depends(get_db)):
     ],
 )
 async def get_all_accounts(
+    filter_params: Annotated[FilterParams, Query()],
     db: Session = Depends(get_db),
 ):
     """
@@ -55,7 +57,7 @@ async def get_all_accounts(
 
     Returns a list of all accounts.
     """
-    all_accounts = await CRUD_account.get(db=db)
+    all_accounts = await CRUD_account.get(db=db, filter_params=filter_params)
 
     return all_accounts
 

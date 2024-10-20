@@ -8,7 +8,7 @@ from data_retrieval_app.logs.logger import main_logger as logger
 from data_retrieval_app.pom_api_authentication import get_superuser_token_headers
 
 max_tries = 60 * 5  # 5 minutes
-wait_seconds = 1
+wait_seconds = 6
 
 
 @retry(
@@ -33,7 +33,9 @@ def init() -> None:
         response = requests.get(test_url, headers=pom_api_headers)
         response.raise_for_status()
     except Exception as e:
-        logger.error(e)
+        logger.debug(
+            "The following error occurred while initializing pom api request:", e
+        )
         raise e
 
 
