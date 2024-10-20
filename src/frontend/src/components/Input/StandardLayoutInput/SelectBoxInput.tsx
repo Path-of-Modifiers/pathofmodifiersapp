@@ -13,7 +13,8 @@ import {
   OptionBase,
   ChakraStylesConfig,
 } from "chakra-react-select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useGraphInputStore } from "../../../store/GraphInputStore";
 
 interface NewValue {
   label: string;
@@ -55,6 +56,15 @@ interface SelectOption extends OptionBase {
 export const SelectBoxInput = (props: SelectBoxProps) => {
   const handleChangeExternal = props.handleChange;
   const [selectedValue, setSelectedValue] = useState<SelectOption | null>(null);
+
+  const { clearClicked } = useGraphInputStore();
+
+  useEffect(() => {
+    if (clearClicked) {
+      setSelectedValue(null);
+    }
+  }, [clearClicked, setSelectedValue]);
+
   let defaultOptionText: string | undefined = undefined;
   if (props.presetIndex !== undefined) {
     const defaultOption = props.optionsList.find(
