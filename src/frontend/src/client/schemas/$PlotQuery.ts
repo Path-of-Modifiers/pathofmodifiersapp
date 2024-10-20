@@ -9,8 +9,12 @@ export const $PlotQuery = {
             isRequired: true,
         },
         itemSpecifications: {
-            type: 'ItemSpecs',
-            isRequired: true,
+            type: 'any-of',
+            contains: [{
+                type: 'ItemSpecs',
+            }, {
+                type: 'null',
+            }],
         },
         baseSpecifications: {
             type: 'any-of',

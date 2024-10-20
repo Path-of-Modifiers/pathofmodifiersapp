@@ -1,5 +1,3 @@
-import datetime as _dt
-
 import pydantic as _pydantic
 
 
@@ -10,18 +8,7 @@ class _BaseItemBaseType(_pydantic.BaseModel):
     baseType: str
     category: str
     subCategory: str | None = None
-
-
-class BaseType(_pydantic.BaseModel):
-    baseType: str
-
-
-class ItemBaseTypeCategory(_pydantic.BaseModel):
-    category: str
-
-
-class ItemBaseTypeSubCategory(_pydantic.BaseModel):
-    subCategory: str
+    relatedUniques: str | None = None
 
 
 # Properties to receive on item base type creation

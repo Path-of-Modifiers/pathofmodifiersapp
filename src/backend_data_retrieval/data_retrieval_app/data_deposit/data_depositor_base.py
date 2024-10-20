@@ -38,6 +38,7 @@ class DataDepositorBase:
         for filename in os.listdir(self.new_data_location):
             filepath = os.path.join(self.new_data_location, filename)
 
+            self.logged_info = {}
             logger.info(f"Loading new data from '{filename}'.")
             df = pd.read_csv(filepath, dtype=str, comment="#", index_col=False)
             logger.info("Successfully loaded new data.")
@@ -46,6 +47,8 @@ class DataDepositorBase:
                 for line in infile:
                     if "#" == line[0]:
                         logger.info(line.rstrip())
+                        split_line = line[1:].split(":")
+                        self.logged_info[split_line[0].strip()] = split_line[1].strip()
                     else:
                         logger.info("End of attached comments.")
                         break

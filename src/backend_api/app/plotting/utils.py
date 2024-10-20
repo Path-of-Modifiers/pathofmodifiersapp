@@ -1,9 +1,24 @@
+import numpy as np
 import pandas as pd
 
 
-def summarize_function(*args) -> int:
-    values = args[0]
-    return values.get(0)
+def summarize_function(values: pd.Series, *args) -> int:
+    return mean_of_top_n_values(values, *args)
+
+
+def mean_of_top_n_values(values: pd.Series, N: int) -> int:
+    n_values = len(values)
+    if n_values > 100:
+        n_values = 100
+    chosen_values = values.iloc[:n_values]
+
+    mean_value = np.mean(chosen_values)
+    std_value = np.std(chosen_values)
+
+    filtered_values = chosen_values.loc[abs(chosen_values - mean_value) < N * std_value]
+
+    mean_filtered_value = np.mean(filtered_values)
+    return mean_filtered_value
 
 
 def find_conversion_value(

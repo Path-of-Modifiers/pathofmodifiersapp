@@ -20,5 +20,13 @@ export const $ItemBaseTypeUpdate = {
                 type: 'null',
             }],
         },
+        relatedUniques: {
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+            }, {
+                type: 'null',
+            }],
+        },
     },
 } as const;

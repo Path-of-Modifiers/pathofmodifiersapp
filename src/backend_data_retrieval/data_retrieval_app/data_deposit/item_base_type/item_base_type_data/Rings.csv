@@ -1,15 +1,15 @@
 # Source: https://poedb.tw/us/Rings#RingsItem
 # Additional note: Only contains bases relevant to the uniques we are tracking
-baseType,category
-"Iron Ring",ring
-"Coral Ring",ring
-"Paua Ring",ring
-"Gold Ring",ring
-"Topaz Ring",ring
-"Sapphire Ring",ring
-"Ruby Ring",ring
-"Prismatic Ring",ring
-"Moonstone Ring",ring
-"Amethyst Ring",ring
-"Diamond Ring",ring
-"Two-Stone Ring",ring
+baseType,category,relatedUniques
+"Iron Ring",ring,"Circle of Guilt"
+"Coral Ring",ring,
+"Paua Ring",ring,
+"Gold Ring",ring,
+"Topaz Ring",ring,"Precursor's Emblem|Circle of Regret"
+"Sapphire Ring",ring,"Precursor's Emblem|Circle of Fear"
+"Ruby Ring",ring,"Precursor's Emblem|Circle of Anguish"
+"Prismatic Ring",ring,"Precursor's Emblem|Circle of Ambition"
+"Moonstone Ring",ring,
+"Amethyst Ring",ring,"Circle of Nostalgia"
+"Diamond Ring",ring,
+"Two-Stone Ring",ring,"Precursor's Emblem"
