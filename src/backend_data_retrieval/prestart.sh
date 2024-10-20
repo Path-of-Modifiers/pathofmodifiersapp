@@ -10,6 +10,11 @@ else
     exit 1
 fi
 
+# Test scripts in "tests" module
+# python data_retrieval_app/tests/scripts/test_with_sim_data_deposit_pub_stash_data.py
+
+# exit 1
+
 # Variables that need to be set before running container.
 # Check if exists or value = changethis
 if [[ -z "${POE_PUBLIC_STASHES_AUTH_TOKEN}" ]] || [[ "${POE_PUBLIC_STASHES_AUTH_TOKEN}" == "changethis" ]] ; then

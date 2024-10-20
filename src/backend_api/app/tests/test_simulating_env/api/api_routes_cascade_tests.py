@@ -12,7 +12,6 @@ from app.tests.utils.utils import random_based_on_type
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
-@pytest.mark.usefixtures("clear_cache", autouse=True)
 class TestCascadeAPI(TestAPI):
     @pytest.mark.anyio
     async def test_cascade_delete(

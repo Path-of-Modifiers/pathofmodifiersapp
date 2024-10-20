@@ -9,17 +9,13 @@ formatters:
     fmt_keys:
       logger: name
       level: levelname
+      timestamp: timestamp
       message: message
-      timestamp: timestamp
-  json-uvicorn-access:
-    (): app.logs.config.UvicornAccessMessageFormatter
-    fmt_keys:
-      logger: name
-      level: levelname
-      timestamp: timestamp
 filters:
   sensitive_data_filter:
     (): app.logs.config.SensitiveDataFilter
+  unwanted_data_filter:
+    (): app.logs.config.UnwantedDataFilter
 handlers:
   stdout:
     class: logging.StreamHandler
@@ -27,15 +23,31 @@ handlers:
     filters: [sensitive_data_filter]
     formatter: simple
     stream: "ext://sys.stdout"
+  stdout-api-formatter:
+    class: logging.StreamHandler
+    level: DEBUG
+    filters: [sensitive_data_filter]
+    formatter: json
+    stream: "ext://sys.stdout"
   file:
     class: logging.handlers.RotatingFileHandler
     level: DEBUG
     filters: [sensitive_data_filter]
     formatter: simple
-    filename: "app/logs/backendapi.log"
+    filename: "app/logs/backend-api.log"
     maxBytes: 504857600 # 500 MB
     backupCount: 2
 loggers:
+  uvicorn:
+    level: WARNING
+    handlers:
+      - stdout
+    propagate: no
+  uvicorn.access: # Add this block to format the access logs
+    level: CRITICAL
+    handlers:
+      - stdout
+    propagate: no
   uvicorn.error:
     level: INFO
     handlers:
@@ -49,27 +61,27 @@ loggers:
       - file
     propagate: no
   pom_app:
-    level: DEBUG
+    level: INFO
     handlers:
-      - stdout
+      - stdout-api-formatter
       - file
     propagate: no
   pom_app.plot:
-    level: DEBUG
+    level: INFO
     handlers:
-      - stdout
+      - stdout-api-formatter
       - file
     propagate: no
   pom_app.test:
     level: INFO
     handlers:
-      - stdout
+      - stdout-api-formatter
       - file
     propagate: no
-  httpx:
-    level: ERROR
+  pom_app.request:
+    level: INFO
     handlers:
-      - stdout
+      - stdout-api-formatter
       - file
     propagate: no
 root:

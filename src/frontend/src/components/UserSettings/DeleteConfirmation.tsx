@@ -6,30 +6,30 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
   Button,
-} from "@chakra-ui/react"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import React from "react"
-import { useForm } from "react-hook-form"
+} from "@chakra-ui/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import React from "react";
+import { useForm } from "react-hook-form";
 
-import { type ApiError, UsersService } from "../../client"
-import useAuth from "../../hooks/validation/useAuth"
-import useCustomToast from "../../hooks/useCustomToast"
-import { handleError } from "../../utils"
+import { type ApiError, UsersService } from "../../client";
+import useAuth from "../../hooks/validation/useAuth";
+import useCustomToast from "../../hooks/useCustomToast";
+import { handleError } from "../../utils";
 
 interface DeleteProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 const DeleteConfirmation = ({ isOpen, onClose }: DeleteProps) => {
-  const queryClient = useQueryClient()
-  const showToast = useCustomToast()
-  const cancelRef = React.useRef<HTMLButtonElement | null>(null)
+  const queryClient = useQueryClient();
+  const showToast = useCustomToast();
+  const cancelRef = React.useRef<HTMLButtonElement | null>(null);
   const {
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm()
-  const { logout } = useAuth()
+  } = useForm();
+  const { logout } = useAuth();
 
   const mutation = useMutation({
     mutationFn: () => UsersService.deleteUserMe(),
@@ -37,22 +37,22 @@ const DeleteConfirmation = ({ isOpen, onClose }: DeleteProps) => {
       showToast(
         "Success",
         "Your account has been successfully deleted.",
-        "success",
-      )
-      logout()
-      onClose()
+        "success"
+      );
+      logout();
+      onClose();
     },
     onError: (err: ApiError) => {
-      handleError(err, showToast)
+      handleError(err, showToast);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["currentUser"] })
+      queryClient.invalidateQueries({ queryKey: ["currentUser"] });
     },
-  })
+  });
 
   const onSubmit = async () => {
-    mutation.mutate()
-  }
+    mutation.mutate();
+  };
 
   return (
     <>
@@ -64,7 +64,12 @@ const DeleteConfirmation = ({ isOpen, onClose }: DeleteProps) => {
         isCentered
       >
         <AlertDialogOverlay>
-          <AlertDialogContent as="form" onSubmit={handleSubmit(onSubmit)}>
+          <AlertDialogContent
+            backgroundColor="ui.secondary"
+            color="ui.white"
+            as="form"
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <AlertDialogHeader>Confirmation Required</AlertDialogHeader>
 
             <AlertDialogBody>
@@ -75,13 +80,22 @@ const DeleteConfirmation = ({ isOpen, onClose }: DeleteProps) => {
             </AlertDialogBody>
 
             <AlertDialogFooter gap={3}>
-              <Button variant="danger" type="submit" isLoading={isSubmitting}>
+              <Button
+                bg="ui.queryBaseInput"
+                _hover={{ bg: "ui.queryMainInput" }}
+                variant="danger"
+                type="submit"
+                isLoading={isSubmitting}
+              >
                 Confirm
               </Button>
               <Button
                 ref={cancelRef}
-                onClick={onClose}
                 isDisabled={isSubmitting}
+                bg="ui.lighterSecondary.100"
+                color="ui.white"
+                _hover={{ bg: "ui.lightInput" }}
+                onClick={onClose}
               >
                 Cancel
               </Button>
@@ -90,7 +104,7 @@ const DeleteConfirmation = ({ isOpen, onClose }: DeleteProps) => {
         </AlertDialogOverlay>
       </AlertDialog>
     </>
-  )
-}
+  );
+};
 
-export default DeleteConfirmation
+export default DeleteConfirmation;

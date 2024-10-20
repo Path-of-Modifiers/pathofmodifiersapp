@@ -79,10 +79,14 @@ class TransformPoENinjaCurrencyAPIData:
         return currency_df
 
     def _get_latest_currency_id_series(self, currency_df: pd.DataFrame) -> pd.Series:
-        response = requests.get(
-            self.url + "/currency/latest_currency_id/", headers=self.pom_api_headers
-        )
-        response.raise_for_status()
+        try:
+            response = requests.get(
+                self.url + "/currency/latest_currency_id/", headers=self.pom_api_headers
+            )
+            response.raise_for_status()
+        except Exception as e:
+            logger.error("The following error occurred while making request:", e)
+            raise e
         latest_currency_id = int(response.text)
 
         currency_id = pd.Series(

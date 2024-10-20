@@ -1,0 +1,14 @@
+<mjml>
+  <mj-body background-color="#1B1B1B">
+    <mj-section background-color="#282828" padding="40px 20px">
+      <mj-column vertical-align="middle" width="100%">
+        <mj-image src="https://i.ibb.co/pWC0gY8/POM-logo-rec.jpg" alt="POM Logo" width="200px" title=""></mj-image>
+        <mj-text align="center" padding="35px" font-size="20px" font-family="Arial, Helvetica, sans-serif" color="white">{{ project_name }} - Password Changed</mj-text>
+        <mj-text align="center" font-size="16px" padding-left="25px" padding-right="25px" font-family="Arial, Helvetica, sans-serif" color="white"><span>Hello {{ username }},</span></mj-text>
+        <mj-text align="center" font-size="16px" padding-left="25px" padding-right="25px" font-family="Arial, Helvetica, sans-serif" color="white">This is just a notification that the password in your account has changed.</mj-text>
+        <mj-divider border-color="#ccc" border-width="2px"></mj-divider>
+        <mj-text align="center" font-size="14px" padding-left="25px" padding-right="25px" font-family="Arial, Helvetica, sans-serif" color="white">If you didn't make this change, please reset your password immediately.</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

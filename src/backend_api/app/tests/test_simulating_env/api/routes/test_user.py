@@ -52,7 +52,6 @@ from app.tests.utils.utils import random_email, random_lower_string
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
-@pytest.mark.usefixtures("clear_cache", autouse=True)
 class TestUserAPI(BaseTest):
     @pytest.mark.anyio
     async def _get_current_normal_user(
@@ -360,38 +359,18 @@ class TestUserAPI(BaseTest):
         normal_user_token_headers: dict[str, str],
         superuser_token_headers: dict[str, str],
         db: Session,
-        user_cache_update_me: UserCache,
     ) -> None:
         normal_user = await self._get_current_normal_user(
             async_client, normal_user_token_headers, db
         )
         update_username = random_lower_string()
         update_data = {"username": update_username}
-        r_pre_confirm = await async_client.patch(
-            f"{settings.API_V1_STR}/{user_prefix}/update-me-username-pre-confirmation",
-            headers=normal_user_token_headers,
-            json=update_data,
-        )
-        detail_pre_confirm = r_pre_confirm.json()["message"]
-        assert r_pre_confirm.status_code == 200
-        assert (
-            detail_pre_confirm
-            == get_user_update_me_confirmation_sent_msg(update_username).message
-        )
         assert normal_user.username != update_data["username"]
 
-        user_update_username_token = (
-            await user_cache_update_me.create_user_cache_instance(
-                user=normal_user,
-                expire_seconds=settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS,
-                update_params=update_data,
-            )
-        )
-        data_confirm = {"access_token": user_update_username_token}
         r_confirm = await async_client.patch(
-            f"{settings.API_V1_STR}/{user_prefix}/update-me-username-confirmation",
+            f"{settings.API_V1_STR}/{user_prefix}/update-me-username",
             headers=normal_user_token_headers,
-            json=data_confirm,
+            json=update_data,
         )
         details_confirm = r_confirm.json()["message"]
         assert r_confirm.status_code == 200
@@ -524,7 +503,7 @@ class TestUserAPI(BaseTest):
 
         data = {"username": user.username}
         r = await async_client.patch(
-            f"{settings.API_V1_STR}/{user_prefix}/update-me-username-pre-confirmation",
+            f"{settings.API_V1_STR}/{user_prefix}/update-me-username",
             headers=normal_user_token_headers,
             json=data,
         )
@@ -1160,7 +1139,6 @@ class TestUserAPI(BaseTest):
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
-@pytest.mark.usefixtures("clear_cache", autouse=True)
 @pytest.mark.skipif(
     settings.SKIP_RATE_LIMIT_TEST is True or settings.SKIP_RATE_LIMIT_TEST == "True",
     reason="Rate limit test is disabled",

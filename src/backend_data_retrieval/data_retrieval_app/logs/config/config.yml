@@ -8,12 +8,12 @@ formatters:
     (): data_retrieval_app.logs.config.JSONFormatter
     fmt_keys:
       logger: name
+      level: levelname
       module: module
       func: funcName
       lineno: lineno
-      level: levelname
-      message: message
       timestamp: timestamp
+      message: message
 filters:
   sensitive_data_filter:
     (): data_retrieval_app.logs.config.SensitiveDataFilter
@@ -22,13 +22,13 @@ handlers:
     class: logging.StreamHandler
     level: INFO
     filters: [sensitive_data_filter]
-    formatter: simple
+    formatter: json
     stream: "ext://sys.stdout"
   file:
     class: logging.handlers.RotatingFileHandler
     level: DEBUG
     filters: [sensitive_data_filter]
-    filename: "data_retrieval_app/logs/external_data_retrieval.log"
+    filename: "data_retrieval_app/logs/backend-data-retrieval.log"
     maxBytes: 504857600 # 500 MB
     backupCount: 2
     formatter: simple
@@ -40,6 +40,12 @@ loggers:
       - file
     propagate: no
   dataret.ext:
+    level: INFO
+    handlers:
+      - stdout
+      - file
+    propagate: no
+  dataret.ext.timing:
     level: INFO
     handlers:
       - stdout
@@ -58,6 +64,12 @@ loggers:
       - file
     propagate: no
   dataret.datadepo:
+    level: INFO
+    handlers:
+      - stdout
+      - file
+    propagate: no
+  dataret.test:
     level: INFO
     handlers:
       - stdout

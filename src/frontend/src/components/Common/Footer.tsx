@@ -19,13 +19,13 @@ const links = [
 ];
 const accounts = [
   {
-    url: "https://github.com/Ivareh/pathofmodifiersapp",
+    url: "https://github.com/Path-of-Modifiers/pathofmodifiersapp",
     label: "Github Repository",
     type: "gray",
     icon: <FaGithub />,
   },
   {
-    url: "https://twitter.com/PModifiers85473",
+    url: "https://x.com/PathOfMods",
     label: "POM twitter Account",
     type: "twitter",
     icon: <FaTwitter />,

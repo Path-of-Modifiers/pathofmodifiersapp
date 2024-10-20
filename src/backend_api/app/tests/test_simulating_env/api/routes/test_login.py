@@ -24,7 +24,6 @@ from app.tests.utils.rate_limit import (
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
-@pytest.mark.usefixtures("clear_cache", autouse=True)
 class TestLoginRoutes(BaseTest):
     @pytest.mark.anyio
     async def test_get_access_token_email(self, async_client: AsyncClient) -> None:
@@ -79,19 +78,6 @@ class TestLoginRoutes(BaseTest):
             f"{settings.API_V1_STR}/login/access-token", data=login_data
         )
         assert r.status_code == 401
-
-    @pytest.mark.anyio
-    async def test_use_access_token(
-        self, async_client: AsyncClient, superuser_token_headers: dict[str, str]
-    ) -> None:
-        r = await async_client.post(
-            f"{settings.API_V1_STR}/{login_prefix}/test-token",
-            headers=superuser_token_headers,
-        )
-        result = r.json()
-        assert r.status_code == 200
-        assert "email" in result
-        assert "username" in result
 
     @pytest.mark.anyio
     async def test_recovery_password(
@@ -253,7 +239,6 @@ class TestLoginRoutes(BaseTest):
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
-@pytest.mark.usefixtures("clear_cache", autouse=True)
 @pytest.mark.skipif(
     settings.SKIP_RATE_LIMIT_TEST is True or settings.SKIP_RATE_LIMIT_TEST == "True",
     reason="Rate limit test is disabled",

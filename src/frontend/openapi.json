@@ -298,6 +298,162 @@
         }
       }
     },
+    "/api/api_v1/check-token/check-access-token": {
+      "post": {
+        "tags": [
+          "check-tokens"
+        ],
+        "summary": "Check Access Token",
+        "description": "Check access token",
+        "operationId": "check_access_token",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/api_v1/check-token/check-register-token": {
+      "post": {
+        "tags": [
+          "check-tokens"
+        ],
+        "summary": "Check Register Token",
+        "description": "Check register token",
+        "operationId": "check_register_token",
+        "parameters": [
+          {
+            "name": "register_token",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Register Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInCache"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/check-token/check-password-reset-token": {
+      "post": {
+        "tags": [
+          "check-tokens"
+        ],
+        "summary": "Check Password Reset Token",
+        "description": "Check password reset token",
+        "operationId": "check_password_reset_token",
+        "parameters": [
+          {
+            "name": "password_reset_token",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Password Reset Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInCache"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/check-token/check-update-me-token": {
+      "post": {
+        "tags": [
+          "check-tokens"
+        ],
+        "summary": "Check Update Me Token",
+        "description": "Check register token",
+        "operationId": "check_update_me_token",
+        "parameters": [
+          {
+            "name": "update_me_token",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Update Me Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInCache"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/api_v1/currency/{currencyId}": {
       "get": {
         "tags": [
@@ -1626,33 +1782,6 @@
         }
       }
     },
-    "/api/api_v1/login/test-token": {
-      "post": {
-        "tags": [
-          "logins"
-        ],
-        "summary": "Test Token",
-        "description": "Test access token",
-        "operationId": "test_token",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserPublic"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
-      }
-    },
     "/api/api_v1/login/password-recovery/": {
       "post": {
         "tags": [
@@ -2692,66 +2821,19 @@
         ]
       }
     },
-    "/api/api_v1/user/update-me-username-pre-confirmation": {
+    "/api/api_v1/user/update-me-username": {
       "patch": {
         "tags": [
           "users"
         ],
-        "summary": "Update Me Username Send Confirmation",
-        "description": "Send confirmation to update own user.",
-        "operationId": "update_me_username_send_confirmation",
+        "summary": "Update Me Username",
+        "description": "Update username. Can only be used by users once a month.\n\nTODO: Fix rate limit if route throws an error, it doesn't rate limit.",
+        "operationId": "update_me_username",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UserUpdateMe"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Message"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
-      }
-    },
-    "/api/api_v1/user/update-me-username-confirmation": {
-      "patch": {
-        "tags": [
-          "users"
-        ],
-        "summary": "Update Me Username Confirmation",
-        "description": "Confirm update username.",
-        "operationId": "update_me_username_confirmation",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Token"
               }
             }
           },
@@ -2839,7 +2921,7 @@
           "users"
         ],
         "summary": "Get User Me",
-        "description": "Get current user.",
+        "description": "Get current user. User doesn't have to be active (confirmed email).",
         "operationId": "get_user_me",
         "responses": {
           "200": {
@@ -3236,6 +3318,61 @@
             }
           }
         }
+      }
+    },
+    "/api/api_v1/user/check-current-user-active": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Check Current User Active",
+        "description": "Checks if the current user is active. Returns True if the user is active, otherwise False.",
+        "operationId": "check_current_user_active",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean",
+                  "title": "Response Users-Check Current User Active"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/api_v1/user/activation-token-send-confirmation": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Set Active User Send Confirmation",
+        "description": "Send email confirmation to set active user during registration process.\nRute `/signup` is used to confirm the user.",
+        "operationId": "set_active_user_send_confirmation",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
       }
     },
     "/api/api_v1/test/bulk-insert-test": {
@@ -6019,6 +6156,80 @@
           "password"
         ],
         "title": "UserCreate"
+      },
+      "UserInCache": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "pattern": "^[\\p{L}\\p{N}_]+$",
+            "title": "Username"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "isActive": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isactive",
+            "default": true
+          },
+          "isSuperuser": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issuperuser",
+            "default": false
+          },
+          "rateLimitTier": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ratelimittier",
+            "default": 0
+          },
+          "isBanned": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isbanned",
+            "default": false
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Userid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "email",
+          "userId"
+        ],
+        "title": "UserInCache"
       },
       "UserPublic": {
         "properties": {

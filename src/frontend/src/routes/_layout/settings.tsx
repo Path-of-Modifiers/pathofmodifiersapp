@@ -16,7 +16,7 @@ import UserInformation from "../../components/UserSettings/UserInformation";
 import Header from "../../components/Common/Header";
 
 const tabsConfig = [
-  { title: "My profile", component: UserInformation },
+  { title: "Profile", component: UserInformation },
   { title: "Password", component: ChangePassword },
   { title: "Danger zone", component: DeleteAccount },
 ];
@@ -41,6 +41,7 @@ function UserSettings() {
       minHeight="200vh"
       height="100vh"
       minWidth="bgBoxes.miniPBox"
+      maxWidth="100vw"
     >
       <Header />
       <Container maxW="full" color="ui.white" centerContent h="100vh">
@@ -50,14 +51,27 @@ function UserSettings() {
         <Tabs
           variant="enclosed"
           width="bgBoxes.tinyBox"
+          maxWidth="100vw"
           bgColor="ui.secondary"
           borderTopRadius={10}
           borderTopColor={"ui.darkBrown"}
           borderTopWidth={1}
         >
-          <TabList>
+          <TabList borderColor="ui.lighterSecondary.100">
             {tabsConfig.map((tab, index) => (
-              <Tab key={index}>{tab.title}</Tab>
+              <Tab
+                key={index}
+                _selected={{
+                  color: "ui.inputChanged",
+                  textDecoration: "underline",
+                  fontWeight: "bold",
+                }}
+                _hover={{
+                  color: "ui.inputChanged",
+                }}
+              >
+                {tab.title}
+              </Tab>
             ))}
           </TabList>
           <TabPanels>

@@ -1,6 +1,6 @@
-from __future__ import annotations
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_400_BAD_REQUEST
 
@@ -12,6 +12,7 @@ from app.api.deps import (
     get_current_active_superuser,
     get_db,
 )
+from app.api.params import FilterParams
 from app.core.models.models import ItemModifier
 from app.crud import CRUD_itemModifier
 
@@ -63,6 +64,7 @@ async def get_item_modifier(
     dependencies=[Depends(get_current_active_superuser)],
 )
 async def get_all_item_modifiers(
+    filter_params: Annotated[FilterParams, Query()],
     db: Session = Depends(get_db),
 ):
     """
@@ -71,7 +73,7 @@ async def get_all_item_modifiers(
     Returns a list of all item modifiers.
     """
 
-    all_itemModifiers = await CRUD_itemModifier.get(db=db)
+    all_itemModifiers = await CRUD_itemModifier.get(db=db, filter_params=filter_params)
 
     return all_itemModifiers
 

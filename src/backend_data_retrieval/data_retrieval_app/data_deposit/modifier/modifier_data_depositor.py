@@ -143,13 +143,19 @@ class ModifierDataDepositor(DataDepositorBase):
                     "Content-Type": "application/json",
                 }
                 headers.update(self.pom_auth_headers)
-                response = requests.put(
-                    update_url.format(row_cur["modifierId"]),
-                    json=data,
-                    headers=headers,
-                    # add HTTP Basic Auth
-                )
-                response.raise_for_status()
+                try:
+                    response = requests.put(
+                        update_url.format(row_cur["modifierId"]),
+                        json=data,
+                        headers=headers,
+                        # add HTTP Basic Auth
+                    )
+                    response.raise_for_status()
+                except Exception as e:
+                    logger.error(
+                        "The following error occurred while making request:", e
+                    )
+                    raise e
 
             # We reset the rolls if the position is 0, because then the next row will be a new modifier
             if position == 0 and rolls is not None:

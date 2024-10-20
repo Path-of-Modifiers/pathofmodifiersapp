@@ -99,4 +99,7 @@ def insert_data(
         response.raise_for_status()
 
     elif response.status_code >= 300:
+        logger.exception(
+            f"Recieved a {response.status_code} response. Error msg: {response.text[:10000]}"
+        )
         response.raise_for_status()
