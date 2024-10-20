@@ -7,7 +7,7 @@ import {
   NumberInputField,
 } from "@chakra-ui/react";
 
-type HandleNumberChangeEventFunction = (
+export type HandleNumberChangeEventFunction = (
   value: string,
   numericalType: string
 ) => void;
@@ -34,18 +34,14 @@ export const MinMaxNumberInput = (props: MinMaxNumberProps) => {
       flexDirection={"column"}
       width={props.flexProps ? props.flexProps.width : "inputSizes.smallPPBox"}
       height={props.flexProps ? props.flexProps.height : "lineHeights.tall"}
+      color="ui.white"
     >
       {props.descriptionText && (
         <Text mb={2} fontSize={15} color="ui.white">
           {props.descriptionText}
         </Text>
       )}
-      <Flex
-        opacity={props.isDimmed ? 0.5 : 1}
-        flexDirection={
-          props.flexProps ? props.flexProps.flexDirection : "column"
-        }
-      >
+      <Flex opacity={props.isDimmed ? 0.5 : 1}>
         <NumberInput
           {...props.numberInputProps}
           id="number-input-min"
