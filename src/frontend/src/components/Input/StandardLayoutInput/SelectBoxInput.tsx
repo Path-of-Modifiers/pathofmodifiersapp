@@ -1,187 +1,199 @@
-import { Flex } from "@chakra-ui/layout";
-import { HandleChangeEventFunction } from "../../../schemas/function/InputFunction";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {
-  AutoComplete,
-  AutoCompleteInput,
-  AutoCompleteItem,
-  AutoCompleteList,
-  AutoCompleteInputProps,
-} from "@choc-ui/chakra-autocomplete";
-import { FormControl, FormLabel } from "@chakra-ui/react";
+  FormControlProps,
+  FormControl,
+  FormLabel,
+  Flex,
+  FlexProps,
+} from "@chakra-ui/react";
+import {
+  Select,
+  SingleValue,
+  OptionBase,
+  ChakraStylesConfig,
+} from "chakra-react-select";
 import { useEffect, useState } from "react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-import { getEventTextContent } from "../../../hooks/utils";
 
-export interface SelectBoxProps extends AutoCompleteInputProps {
-  optionsList: Array<SelectBoxOptionValue>;
-  itemKeyId: string;
-  defaultValue: string | undefined;
-  defaultText: string | undefined;
-  descriptionText?: string;
-  getSelectTextValue: string;
-  handleChange: HandleChangeEventFunction;
-  staticPlaceholder?: string;
-  centerInputText?: boolean;
-  isDimmed?: boolean;
-  noInputChange?: boolean;
-  onFocusNotBlankInputText?: boolean;
+interface NewValue {
+  label: string;
+  value: string;
 }
 
-export type SelectBoxOptionValue = { value: string | undefined; text: string };
+export type HandleChangeEventFunction = (
+  newValue: SingleValue<NewValue>,
+  overrideIndex?: number
+) => void;
+
+export interface SelectBoxOptionValue {
+  value: string;
+  label: string;
+  regex: string;
+}
+
+export interface SelectBoxProps {
+  formControlProps?: FormControlProps;
+  flexProps?: FlexProps;
+  optionsList: Array<SelectBoxOptionValue>;
+  handleChange: HandleChangeEventFunction;
+  defaultText: string | undefined;
+  multipleValues: boolean;
+  id: string;
+  isDimmed?: boolean;
+  descriptionText?: string;
+  presetIndex?: number;
+  canBeAny?: boolean;
+  autoFocus?: boolean;
+  unstyled?: boolean;
+}
+
+interface SelectOption extends OptionBase {
+  label: string;
+  value: string;
+}
 
 export const SelectBoxInput = (props: SelectBoxProps) => {
-  const {
-    optionsList,
-    itemKeyId,
-    defaultValue,
-    defaultText,
-    descriptionText,
-    getSelectTextValue,
-    handleChange,
-    staticPlaceholder,
-    centerInputText,
-    isDimmed,
-    noInputChange,
-    onFocusNotBlankInputText,
-    height,
-    width,
-    ml,
-    mr,
-  } = props;
+  const handleChangeExternal = props.handleChange;
+  const [selectedValue, setSelectedValue] = useState<SelectOption | null>(null);
 
-  const [inputText, setInputText] = useState<string>(defaultText ?? "");
-  const [inputPlaceholder, setInputPlaceholder] = useState<string>(
-    defaultText ?? ""
-  );
-  const [inputChanged, setInputChanged] = useState<boolean>(false);
-
-  const optionValues = optionsList.map((option) =>
-    option["text"].toLowerCase()
-  );
-
-  const clearClicked = useGraphInputStore((state) => state.clearClicked);
-
-  const handleChangeValue = (
-    e: React.ChangeEvent<HTMLInputElement> | React.MouseEvent<HTMLElement>,
-    actualValue?: string | undefined
-  ) => {
-    const target_value = getEventTextContent(e);
-    setInputText(target_value);
-
-    if (optionValues.includes(target_value.toLowerCase()) || !target_value) {
-      if (!staticPlaceholder) {
-        setInputPlaceholder(target_value);
-      } else {
-        setInputText("");
-      }
-      handleChange(e, actualValue);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Escape") {
-      setInputText(inputPlaceholder);
-      e.currentTarget.blur();
-    }
-  };
+  const { clearClicked } = useGraphInputStore();
 
   useEffect(() => {
     if (clearClicked) {
-      setInputText(defaultText || "");
+      setSelectedValue(null);
     }
-    if (getSelectTextValue !== "") {
-      setInputText(getSelectTextValue);
-    }
-    if (
-      getSelectTextValue !== defaultText &&
-      getSelectTextValue !== "" &&
-      getSelectTextValue !== undefined
-    ) {
-      setInputChanged(true);
+  }, [clearClicked, setSelectedValue]);
+
+  let defaultOptionText: string | undefined = undefined;
+  if (props.presetIndex !== undefined) {
+    const defaultOption = props.optionsList.find(
+      (option) => option.label === props.defaultText
+    );
+    defaultOptionText = defaultOption ? defaultOption.label : undefined;
+  }
+
+  let optionList = props.optionsList;
+
+  // Adds the "Any" option
+  if (props.canBeAny) {
+    optionList = [{ value: "Any", label: "Any", regex: "Any" }, ...optionList];
+  }
+
+  // A custom filter function. Uses the `regex` attribute of `SelectOption`
+  // to filter if the input starts with `~`.
+  const customFilter = (
+    candidate: { label: string; value: string; data: any },
+    inputValue: string
+  ): boolean => {
+    const advancedSearch = inputValue.at(0) === "~";
+    const lowerCaseInputValue = inputValue.toLowerCase();
+    const lowerCaseCandidate = candidate.data.regex.toLowerCase();
+    if (advancedSearch) {
+      // The .slice(1) removes the initial `~`
+      const splitString = lowerCaseInputValue.slice(1).split(" ");
+      const regexString = splitString
+        .map((subStr) => (subStr ? `(?=.*${subStr})` : ""))
+        .join("");
+      const regex = RegExp(regexString, "g");
+      return regex.test(lowerCaseCandidate);
     } else {
-      setInputChanged(false);
+      return lowerCaseCandidate.includes(lowerCaseInputValue);
     }
-  }, [clearClicked, defaultText, getSelectTextValue]);
+  };
+
+  const handleChangeInternal: HandleChangeEventFunction = (newValue) => {
+    if (newValue) {
+      const newSelectedValue: SelectOption = {
+        label: newValue.label,
+        value: newValue.value,
+      };
+      setSelectedValue(newSelectedValue);
+    }
+  };
+
+  const chakraStylesBase = {
+    background: "ui.input",
+    borderColor: "ui.grey",
+  };
+
+  // A bit verbose, but necessary to style the Chakra-react-select Chakra Add-On
+  const chakraStyles: ChakraStylesConfig<SelectOption> = {
+    dropdownIndicator: (provided) => ({
+      ...provided,
+      ...chakraStylesBase,
+      p: 0,
+      marginBottom: 0,
+      overflowY: "auto",
+      opacity: props.unstyled ? 0 : 1,
+    }),
+    container: (provided) => ({
+      ...provided,
+      ...chakraStylesBase,
+      p: 0,
+      marginBottom: 0,
+      opacity: props.isDimmed ? 0.5 : 1,
+      borderRadius: "lg",
+      h: props.unstyled ? 5 : undefined,
+    }),
+    option: (provided) => ({
+      ...provided,
+      ...chakraStylesBase,
+      _hover: {
+        bgColor: "ui.secondary",
+      },
+    }),
+    menuList: (provided) => ({
+      ...provided,
+      ...chakraStylesBase,
+      w: props.unstyled ? "50vw" : undefined,
+      maxH: "20vw",
+    }),
+  };
 
   return (
     <Flex
+      {...props.flexProps}
       marginTop={0}
       marginBottom={0}
-      height={height}
       flexDirection={"row"}
       alignItems={"center"}
-      width={width || "inputSizes.smallPPBox"}
+      width={props.flexProps ? props.flexProps.width : "inputSizes.smallPPBox"}
     >
-      <FormControl height={height || "lineHeights.tall"} color={"ui.white"}>
-        {descriptionText && (
+      <FormControl color={"ui.white"}>
+        {props.descriptionText && (
           <FormLabel color={"ui.white"} fontSize="14px">
-            {descriptionText}
+            {props.descriptionText}
           </FormLabel>
         )}
-        <AutoComplete
-          openOnFocus
-          listAllValuesOnFocus
-          defaultValue={getSelectTextValue || defaultValue}
-          emptyState={false}
-          key={"autocomplete" + itemKeyId + defaultText}
-        >
-          <AutoCompleteInput
-            value={inputText}
-            onChange={(e) => handleChangeValue(e)}
-            onFocus={() =>
-              setInputText(onFocusNotBlankInputText ? inputPlaceholder : "")
+        <Select<SelectOption>
+          variant={props.unstyled ? "unstyled" : "outline"}
+          placeholder={props.defaultText}
+          options={optionList}
+          onChange={(newValue) => {
+            handleChangeInternal(newValue);
+            if (props.presetIndex !== undefined) {
+              handleChangeExternal(newValue, props.presetIndex);
+            } else {
+              handleChangeExternal(newValue);
+              if (props.multipleValues) {
+                setSelectedValue(null);
+              }
             }
-            onKeyDown={handleKeyDown}
-            pl={2}
-            ml={ml || 0}
-            mr={mr || 0}
-            opacity={isDimmed ? 0.5 : 1.0}
-            placeholder={
-              staticPlaceholder ? staticPlaceholder : inputPlaceholder
-            }
-            focusBorderColor="ui.white"
-            borderRadius={inputPlaceholder !== defaultText ? 9 : 6}
-            borderWidth={inputPlaceholder !== defaultText ? 2 : 1}
-            borderColor={
-              inputChanged && !noInputChange ? "ui.inputChanged" : "ui.grey"
-            }
-            textAlign={centerInputText ? "center" : "left"}
-            bgColor={"ui.input"}
-            autoComplete="off"
-            key={"autocompleteinput" + itemKeyId + defaultText}
-            sx={{
-              _focus: {
-                textAlign: "left",
-              },
-            }}
-          />
-          <AutoCompleteList
-            onBlur={() => setInputText(inputPlaceholder)}
-            borderColor={"ui.grey"}
-            bgColor="ui.input"
-            margin={0}
-            p={0}
-            marginBottom={0}
-            maxH={"200px"}
-            overflowY={"auto"}
-          >
-            {optionsList.map((option) => (
-              <AutoCompleteItem
-                value={option["text"]}
-                key={descriptionText + itemKeyId + option["value"]}
-                style={{
-                  color: "white",
-                  backgroundColor: "#2d3333",
-                  margin: 0,
-                  borderRadius: 0,
-                }}
-                onClick={(e) => handleChangeValue(e, option["value"])}
-              >
-                {option["text"]}
-              </AutoCompleteItem>
-            ))}
-          </AutoCompleteList>
-        </AutoComplete>
+          }}
+          blurInputOnSelect={true}
+          filterOption={(option, inputValue) =>
+            customFilter(option, inputValue)
+          }
+          value={selectedValue}
+          selectedOptionColorScheme="#1B1B1B"
+          chakraStyles={chakraStyles}
+          defaultInputValue={defaultOptionText}
+          autoFocus={props.autoFocus ?? false}
+          openMenuOnFocus={true}
+          focusBorderColor="ui.white"
+          key={`${props.id}`}
+        />
       </FormControl>
     </Flex>
   );

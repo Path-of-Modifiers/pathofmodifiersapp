@@ -1,11 +1,7 @@
 import { Flex } from "@chakra-ui/layout";
 import { useEffect } from "react";
 import { BaseTypeInput } from "./ItemBaseTypeInputComp/BaseTypeInput";
-import {
-  BaseType,
-  ItemBaseTypeCategory,
-  ItemBaseTypeSubCategory,
-} from "../../client";
+import { ItemBaseType } from "../../client";
 import { CategoryInput } from "./ItemBaseTypeInputComp/CategoryInput";
 import { SubCategoryInput } from "./ItemBaseTypeInputComp/SubCategoryInput";
 import { useGraphInputStore } from "../../store/GraphInputStore";
@@ -13,23 +9,17 @@ import { AddICheckText } from "../Icon/AddICheckText";
 import { useExpandedComponentStore } from "../../store/ExpandedComponentStore";
 
 interface BaseInputProps {
-  baseTypes: BaseType[];
-  categories: ItemBaseTypeCategory[];
-  subCategories: ItemBaseTypeSubCategory[];
+  itemBaseTypes: ItemBaseType[];
 }
 
 // BaseInput component that contains the base type input, category input, and sub category input
 export const BaseInput = (props: BaseInputProps) => {
   const clearClicked = useGraphInputStore((state) => state.clearClicked);
 
-  const baseTypeExpanded = useExpandedComponentStore(
-    (state) => state.expandedBaseType
-  );
-
-  const { setExpandedBaseType } = useExpandedComponentStore();
+  const { expandedBaseType, setExpandedBaseType } = useExpandedComponentStore();
 
   const handleExpanded = () => {
-    setExpandedBaseType(!baseTypeExpanded);
+    setExpandedBaseType(!expandedBaseType);
   };
 
   useEffect(() => {
@@ -38,23 +28,36 @@ export const BaseInput = (props: BaseInputProps) => {
     }
   }, [clearClicked, setExpandedBaseType]);
 
+  const baseTypes = props.itemBaseTypes.map(
+    (itemBaseType) => itemBaseType.baseType
+  );
+  const categories = [
+    ...new Set(
+      props.itemBaseTypes.map((itemBaseType) => itemBaseType.category)
+    ),
+  ];
+  const subCategories = [
+    ...new Set(
+      props.itemBaseTypes
+        .map((itemBaseType) => itemBaseType.subCategory)
+        .filter((subCategory) => subCategory != null)
+    ),
+  ];
+
   return (
     <Flex direction={"column"} width={"inputSizes.lgBox"}>
       <AddICheckText
-        isChecked={baseTypeExpanded}
+        isChecked={expandedBaseType}
         onChange={handleExpanded}
         text="Base Type"
       />
-      {baseTypeExpanded &&
-        props.baseTypes.length !== 0 &&
-        props.categories.length !== 0 &&
-        props.subCategories.length !== 0 && (
-          <Flex flexWrap={"wrap"} justifyContent={"flex-start"} ml={10} gap={2}>
-            <BaseTypeInput baseTypes={props.baseTypes} />
-            <CategoryInput categories={props.categories} />
-            <SubCategoryInput subCategories={props.subCategories} />
-          </Flex>
-        )}
+      {expandedBaseType && props.itemBaseTypes.length !== 0 && (
+        <Flex flexWrap={"wrap"} justifyContent={"flex-start"} ml={10} gap={2}>
+          <BaseTypeInput baseTypes={baseTypes} />
+          <CategoryInput categories={categories} />
+          <SubCategoryInput subCategories={subCategories} />
+        </Flex>
+      )}
     </Flex>
   );
 };
