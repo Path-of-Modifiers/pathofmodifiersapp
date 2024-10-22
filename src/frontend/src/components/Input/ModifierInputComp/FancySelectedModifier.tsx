@@ -68,10 +68,13 @@ export const FancySelectedModifier = (props: FancyModifierInputProps) => {
                 );
               } else if (isNotEnd) {
                 const textRolls =
-                  selectedModifier.groupedModifier.textRolls[labelIndex] ??
-                  undefined;
+                  selectedModifier.groupedModifierProperties.textRolls[
+                    labelIndex
+                  ] ?? undefined;
                 const modifierId =
-                  selectedModifier.groupedModifier.modifierId[labelIndex];
+                  selectedModifier.groupedModifierProperties.modifierId[
+                    labelIndex
+                  ];
                 return (
                   <HStack
                     spacing={0}

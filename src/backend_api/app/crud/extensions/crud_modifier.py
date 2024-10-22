@@ -55,7 +55,7 @@ class CRUDModifier(
         ]
 
         # Stores the listed fields in a list of dicts
-        grouped_modifier_record = grouped_modifier_df[
+        grouped_modifier_properties_record = grouped_modifier_df[
             ["modifierId", "textRolls"]
         ].to_dict("records")
 
@@ -65,7 +65,9 @@ class CRUDModifier(
         )
 
         # Adds the fields back in, but as a field with dicts
-        grouped_modifier_df["groupedModifier"] = grouped_modifier_record
+        grouped_modifier_df[
+            "groupedModifierProperties"
+        ] = grouped_modifier_properties_record
 
         grouped_modifier_by_effect_record = grouped_modifier_df.to_dict("records")
 

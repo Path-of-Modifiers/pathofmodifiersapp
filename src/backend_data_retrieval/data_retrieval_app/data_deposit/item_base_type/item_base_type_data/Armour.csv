@@ -1,5 +1,5 @@
 # Source: https://www.poewiki.net/wiki/Armour_(equipment)
-# Additional note: Only contains bases relevant to the uniques we are tracking
+# Note: Only contains bases relevant to the uniques we are tracking
 baseType,category,subCategory,relatedUniques
 "Great Crown","any armour",helmet,"Forbidden Shako"
 "Carnal Armour","any armour","body armour","Shroud of the Lightless"

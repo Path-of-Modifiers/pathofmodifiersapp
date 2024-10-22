@@ -94,10 +94,29 @@ export class AccountsService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAllAccounts(): CancelablePromise<(Account | Array<Account>)> {
+    public static getAllAccounts({
+        limit,
+        skip,
+        sortKey,
+        sortMethod,
+    }: {
+        limit?: (number | null),
+        skip?: (number | null),
+        sortKey?: (string | null),
+        sortMethod?: ('asc' | 'desc' | null),
+    }): CancelablePromise<(Account | Array<Account>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/account/',
+            query: {
+                'limit': limit,
+                'skip': skip,
+                'sort_key': sortKey,
+                'sort_method': sortMethod,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
         });
     }
     /**

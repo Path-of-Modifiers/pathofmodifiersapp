@@ -32,7 +32,7 @@ function Index() {
     []
   );
   const [itemBaseTypes, setItemBaseTypes] = useState<ItemBaseType[]>([]);
-  const [uniques, setUniques] = useState<string[]>([]);
+  const [itemNames, setItemNames] = useState<string[]>([]);
   const { modifiersError, leagueError, resultError } = useErrorStore();
   const isFetched = useRef(false);
 
@@ -43,7 +43,7 @@ function Index() {
       });
       prefetchAllBaseTypeData(queryClient).then((data) => {
         setItemBaseTypes(data.itemBaseTypes);
-        setUniques(data.uniques);
+        setItemNames(data.itemNames);
       });
       isFetched.current = true; // Mark as fetched
     }
@@ -81,7 +81,7 @@ function Index() {
               <GraphInput
                 prefetchedmodifiers={modifiersData}
                 prefetcheditembasetypes={itemBaseTypes}
-                prefetcheduniques={uniques}
+                prefecteditemnames={itemNames}
               />
             )}
             <QueryButtons />

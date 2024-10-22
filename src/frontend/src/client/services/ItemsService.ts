@@ -108,10 +108,29 @@ export class ItemsService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAllItems(): CancelablePromise<(Item | Array<Item>)> {
+    public static getAllItems({
+        limit,
+        skip,
+        sortKey,
+        sortMethod,
+    }: {
+        limit?: (number | null),
+        skip?: (number | null),
+        sortKey?: (string | null),
+        sortMethod?: ('asc' | 'desc' | null),
+    }): CancelablePromise<(Item | Array<Item>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/item/',
+            query: {
+                'limit': limit,
+                'skip': skip,
+                'sort_key': sortKey,
+                'sort_method': sortMethod,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
         });
     }
     /**

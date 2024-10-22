@@ -10,7 +10,7 @@ export const prefetchAllBaseTypeData = async (queryClient: QueryClient) => {
     await queryClient.prefetchQuery({
       queryKey: ["uniqueBasetypeValues"],
       queryFn: async () => {
-        const data = await ItemBaseTypesService.getAllItemBaseTypes();
+        const data = await ItemBaseTypesService.getAllItemBaseTypes({});
 
         if (Array.isArray(data)) {
           itemBaseTypes = data;
@@ -25,8 +25,8 @@ export const prefetchAllBaseTypeData = async (queryClient: QueryClient) => {
   } catch (error) {
     console.log(error);
   }
-  const createUniqueArray = (itemBaseType: ItemBaseType[]) => {
-    const reduceUniqueArray = (
+  const createItemNameArray = (itemBaseType: ItemBaseType[]) => {
+    const reduceItemNameArray = (
       prev: string[] | undefined,
       cur: string[] | undefined
     ): string[] => {
@@ -36,26 +36,26 @@ export const prefetchAllBaseTypeData = async (queryClient: QueryClient) => {
       if (cur === undefined) {
         return prev;
       }
-      const newUniques = cur.filter((value) => !prev.includes(value));
-      prev.push(...newUniques);
+      const newItemNames = cur.filter((value) => !prev.includes(value));
+      prev.push(...newItemNames);
       return prev;
     };
 
-    const arrayOfUniques = itemBaseType.map((baseType) => {
+    const arrayOfRelatedUniques = itemBaseType.map((baseType) => {
       const relatedUniques = baseType.relatedUniques;
       if (relatedUniques) {
         return relatedUniques.split("|");
       }
       return [];
     });
-    const uniques = arrayOfUniques.reduce(reduceUniqueArray, []);
-    return uniques;
+    const itemNames = arrayOfRelatedUniques.reduce(reduceItemNameArray, []);
+    return itemNames;
   };
 
-  const uniques = createUniqueArray(itemBaseTypes);
+  const itemNames = createItemNameArray(itemBaseTypes);
 
   return {
     itemBaseTypes,
-    uniques,
+    itemNames,
   };
 };

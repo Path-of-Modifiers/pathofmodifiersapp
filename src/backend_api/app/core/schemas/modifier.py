@@ -8,7 +8,7 @@ class _BaseModifier(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
     position: int
-    relatedUniques: str
+    relatedUniques: str | None = None
     minRoll: float | None = None
     maxRoll: float | None = None
     textRolls: str | None = None
@@ -26,7 +26,7 @@ class _BaseModifier(_pydantic.BaseModel):
     veiled: bool | None = None
 
 
-class GroupedModifier(_pydantic.BaseModel):
+class GroupedModifierProperties(_pydantic.BaseModel):
     modifierId: list[int]
     textRolls: list[str | None]
 
@@ -35,8 +35,8 @@ class GroupedModifierByEffect(_pydantic.BaseModel):
     effect: str
     regex: str
     static: bool | None
-    relatedUniques: str
-    groupedModifier: GroupedModifier
+    relatedUniques: str | None
+    groupedModifierProperties: GroupedModifierProperties
 
 
 # Properties to receive on modifier creation

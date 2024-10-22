@@ -1,5 +1,5 @@
 # Source: https://poedb.tw/us/Rings#RingsItem
-# Additional note: Only contains bases relevant to the uniques we are tracking
+# Note: Only contains bases relevant to the uniques we are tracking
 baseType,category,relatedUniques
 "Iron Ring",ring,"Circle of Guilt"
 "Coral Ring",ring,

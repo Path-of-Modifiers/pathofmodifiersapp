@@ -1,5 +1,8 @@
 import { Box, CloseButton, Flex, Stack } from "@chakra-ui/react";
-import { GroupedModifierByEffect, GroupedModifier } from "../../../client";
+import {
+  GroupedModifierByEffect,
+  GroupedModifierProperties,
+} from "../../../client";
 import {
   SelectBoxInput,
   SelectBoxOptionValue,
@@ -21,8 +24,8 @@ export interface ModifierOption extends SelectBoxOptionValue {
   isSelected?: boolean;
   index?: number;
   static?: boolean;
-  relatedUniques: string;
-  groupedModifier: GroupedModifier;
+  relatedUniques?: string;
+  groupedModifierProperties: GroupedModifierProperties;
 }
 
 export const ModifierInput = (props: ModifierInputProps) => {
@@ -33,8 +36,8 @@ export const ModifierInput = (props: ModifierInputProps) => {
       label: prefetchedModifier.effect,
       regex: prefetchedModifier.regex,
       static: prefetchedModifier.static ?? undefined,
-      relatedUniques: prefetchedModifier.relatedUniques,
-      groupedModifier: prefetchedModifier.groupedModifier,
+      relatedUniques: prefetchedModifier.relatedUniques ?? undefined,
+      groupedModifierProperties: prefetchedModifier.groupedModifierProperties,
     })
   );
   // For debugging purposes
@@ -79,18 +82,22 @@ export const ModifierInput = (props: ModifierInputProps) => {
       ]);
 
       removeModifierSpec(overrideIndex);
-      newlySelectedModifier.groupedModifier.modifierId.map((modifierId) => {
-        addModifierSpec({ modifierId: modifierId }, overrideIndex);
-      });
+      newlySelectedModifier.groupedModifierProperties.modifierId.map(
+        (modifierId) => {
+          addModifierSpec({ modifierId: modifierId }, overrideIndex);
+        }
+      );
     } else {
       newlySelectedModifier.index = selectedModifiers.length;
       setSelectedModifiers((prevSelectedModifiers) => [
         ...prevSelectedModifiers,
         newlySelectedModifier,
       ]);
-      newlySelectedModifier.groupedModifier.modifierId.map((modifierId) => {
-        addModifierSpec({ modifierId: modifierId }, selectedModifiers.length);
-      });
+      newlySelectedModifier.groupedModifierProperties.modifierId.map(
+        (modifierId) => {
+          addModifierSpec({ modifierId: modifierId }, selectedModifiers.length);
+        }
+      );
     }
   };
 
@@ -176,7 +183,9 @@ export const ModifierInput = (props: ModifierInputProps) => {
           isChecked={selectedModifier.isSelected}
           key={index}
           onChange={() => {
-            if (selectedModifier.groupedModifier.modifierId[0] !== null) {
+            if (
+              selectedModifier.groupedModifierProperties.modifierId[0] !== null
+            ) {
               handleCheckboxChange(selectedModifier, index);
             }
           }}
