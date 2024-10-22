@@ -133,7 +133,7 @@ class ModifierDataDepositor(DataDepositorBase):
             data, put_update = check_for_new_related_unique(
                 data=data,
                 put_update=put_update,
-                new_related_unique=self.logged_info["Unique Name"],
+                new_related_unique=self.logged_file_comments["Unique Name"],
             )
 
             if put_update:
@@ -180,7 +180,7 @@ class ModifierDataDepositor(DataDepositorBase):
         return non_duplicate_df
 
     def _track_comments(self, df: pd.DataFrame) -> pd.DataFrame:
-        df["relatedUniques"] = self.logged_info["Unique Name"]
+        df["relatedUniques"] = self.logged_file_comments["Unique Name"]
 
         return df
 

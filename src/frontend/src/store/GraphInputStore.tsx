@@ -45,6 +45,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
   setClearClicked: () =>
     set(() => ({
       clearClicked: true,
+      itemName: undefined,
       itemSpec: {},
       wantedModifierSpecs: [],
       wantedModifiers: [],

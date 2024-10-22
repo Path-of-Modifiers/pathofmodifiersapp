@@ -2,12 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { GroupedModifier } from './GroupedModifier';
+import type { GroupedModifierProperties } from './GroupedModifierProperties';
 export type GroupedModifierByEffect = {
     effect: string;
     regex: string;
     static: (boolean | null);
-    relatedUniques: string;
-    groupedModifier: GroupedModifier;
+    relatedUniques: (string | null);
+    groupedModifierProperties: GroupedModifierProperties;
 };
 

@@ -16,7 +16,11 @@ export const ItemNameInput = (props: ItemNameInputProps) => {
   const handleNameChange: HandleChangeEventFunction = (newValue) => {
     if (newValue) {
       const itemNameText = newValue.value;
-      setItemName(itemNameText);
+      if (itemNameText === "Any") {
+        setItemName(undefined);
+      } else {
+        setItemName(itemNameText);
+      }
     }
   };
 

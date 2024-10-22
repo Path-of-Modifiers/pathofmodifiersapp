@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type GroupedModifier = {
+export type GroupedModifierProperties = {
     modifierId: Array<number>;
     textRolls: Array<(string | null)>;
 };

@@ -4,7 +4,7 @@
 /* eslint-disable */
 export type ModifierCreate = {
     position: number;
-    relatedUniques: string;
+    relatedUniques?: (string | null);
     minRoll?: (number | null);
     maxRoll?: (number | null);
     textRolls?: (string | null);

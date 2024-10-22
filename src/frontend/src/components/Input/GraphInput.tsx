@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 interface GraphInputProps extends WrapProps {
   prefetchedmodifiers: GroupedModifierByEffect[];
   prefetcheditembasetypes: ItemBaseType[];
-  prefetcheduniques: string[];
+  prefecteditemnames: string[];
 }
 
 // Graph Input Component  -  This component is used to input the query data.
@@ -22,7 +22,7 @@ export const GraphInput = (props: GraphInputProps) => {
   );
   const { itemName } = useGraphInputStore();
 
-  const { prefetchedmodifiers, prefetcheditembasetypes, prefetcheduniques } =
+  const { prefetchedmodifiers, prefetcheditembasetypes, prefecteditemnames } =
     props;
 
   const [modifiers, setModifiers] =
@@ -35,18 +35,20 @@ export const GraphInput = (props: GraphInputProps) => {
   // currently only works for uniques
   useEffect(() => {
     if (itemName === undefined) {
-      return;
+      setModifiers(prefetchedmodifiers);
+      setItemBaseTypes(prefetcheditembasetypes);
+    } else {
+      setModifiers(
+        prefetchedmodifiers.filter((modifier) =>
+          modifier.relatedUniques?.includes(itemName)
+        )
+      );
+      setItemBaseTypes(
+        prefetcheditembasetypes.filter((itemBaseType) =>
+          itemBaseType.relatedUniques?.includes(itemName)
+        )
+      );
     }
-    setModifiers(
-      prefetchedmodifiers.filter((modifier) =>
-        modifier.relatedUniques.includes(itemName)
-      )
-    );
-    setItemBaseTypes(
-      prefetcheditembasetypes.filter((itemBaseType) =>
-        itemBaseType.relatedUniques?.includes(itemName)
-      )
-    );
   }, [itemName, prefetchedmodifiers, prefetcheditembasetypes]);
 
   return (
@@ -60,7 +62,7 @@ export const GraphInput = (props: GraphInputProps) => {
             width={"bgBoxes.mediumPPBox"}
             maxWidth="98vw"
           >
-            <ItemInput itemNameInputProps={{ uniques: prefetcheduniques }} />
+            <ItemInput itemNameInputProps={{ uniques: prefecteditemnames }} />
             <LeagueInput />
           </Flex>
         </WrapItem>

@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export const $GroupedModifier = {
+export const $GroupedModifierProperties = {
     properties: {
         modifierId: {
             type: 'array',

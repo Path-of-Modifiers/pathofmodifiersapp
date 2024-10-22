@@ -87,10 +87,29 @@ export class ItemModifiersService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAllItemModifiers(): CancelablePromise<(ItemModifier | Array<ItemModifier>)> {
+    public static getAllItemModifiers({
+        limit,
+        skip,
+        sortKey,
+        sortMethod,
+    }: {
+        limit?: (number | null),
+        skip?: (number | null),
+        sortKey?: (string | null),
+        sortMethod?: ('asc' | 'desc' | null),
+    }): CancelablePromise<(ItemModifier | Array<ItemModifier>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/itemModifier/',
+            query: {
+                'limit': limit,
+                'skip': skip,
+                'sort_key': sortKey,
+                'sort_method': sortMethod,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
         });
     }
     /**

@@ -1,8 +1,8 @@
 # How to deposit new data?
 
 1. Ready file in csv-format
-   - Add comments that are recorded in `history.log` by starting initial lines with `#`
-   - Record the comments for data processing (See [Modifier Types](#modifier-types) and [Uniques](#uniques))
+   - Add comments that are recorded by relevant logger by starting initial lines with `#`
+   - Add the comments needed for data processing (See [Modifier Types](#modifier-types))
 2. Paste file into `./{date type}/{data type}_data`
 3. Run `main.py`
 
@@ -14,10 +14,8 @@ This does not mean a modifier cannot have both modifier types, but the reason it
 
 The related uniques are tracked by comments in the modifier file, identified by `# Unique Name: ...`.
 
-## Uniques
-
-The `./uniques.json` file is created and maintained by the `modifier` package using comments in the modifier files, identified by `# Base Types: ...`.
-
 ## Item Base types
 
 Only base types that are relevant are stored
+
+The related uniques are tracked by comments in the item base types file, identified by `# Unique Name: ...`.

@@ -22,11 +22,16 @@ export const $GroupedModifierByEffect = {
             isRequired: true,
         },
         relatedUniques: {
-            type: 'string',
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+            }, {
+                type: 'null',
+            }],
             isRequired: true,
         },
-        groupedModifier: {
-            type: 'GroupedModifier',
+        groupedModifierProperties: {
+            type: 'GroupedModifierProperties',
             isRequired: true,
         },
     },

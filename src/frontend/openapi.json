@@ -169,6 +169,78 @@
             "OAuth2PasswordBearer": []
           }
         ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "sort_key",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort Key"
+            }
+          },
+          {
+            "name": "sort_method",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "asc",
+                    "desc"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort Method"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -187,6 +259,16 @@
                     }
                   ],
                   "title": "Response Accounts-Get All Accounts"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -281,162 +363,6 @@
                     }
                   ],
                   "title": "Response Accounts-Create Account"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/api_v1/check-token/check-access-token": {
-      "post": {
-        "tags": [
-          "check-tokens"
-        ],
-        "summary": "Check Access Token",
-        "description": "Check access token",
-        "operationId": "check_access_token",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserPublic"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
-      }
-    },
-    "/api/api_v1/check-token/check-register-token": {
-      "post": {
-        "tags": [
-          "check-tokens"
-        ],
-        "summary": "Check Register Token",
-        "description": "Check register token",
-        "operationId": "check_register_token",
-        "parameters": [
-          {
-            "name": "register_token",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Register Token"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserInCache"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/api_v1/check-token/check-password-reset-token": {
-      "post": {
-        "tags": [
-          "check-tokens"
-        ],
-        "summary": "Check Password Reset Token",
-        "description": "Check password reset token",
-        "operationId": "check_password_reset_token",
-        "parameters": [
-          {
-            "name": "password_reset_token",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Password Reset Token"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserInCache"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/api_v1/check-token/check-update-me-token": {
-      "post": {
-        "tags": [
-          "check-tokens"
-        ],
-        "summary": "Check Update Me Token",
-        "description": "Check register token",
-        "operationId": "check_update_me_token",
-        "parameters": [
-          {
-            "name": "update_me_token",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Update Me Token"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserInCache"
                 }
               }
             }
@@ -618,6 +544,78 @@
             "OAuth2PasswordBearer": []
           }
         ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "sort_key",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort Key"
+            }
+          },
+          {
+            "name": "sort_method",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "asc",
+                    "desc"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort Method"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -636,6 +634,16 @@
                     }
                   ],
                   "title": "Response Currencys-Get All Currencies"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -924,6 +932,78 @@
             "OAuth2PasswordBearer": []
           }
         ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "sort_key",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort Key"
+            }
+          },
+          {
+            "name": "sort_method",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "asc",
+                    "desc"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort Method"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -942,6 +1022,16 @@
                     }
                   ],
                   "title": "Response Itembasetypes-Get All Item Base Types"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -1240,6 +1330,78 @@
             "OAuth2PasswordBearer": []
           }
         ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "sort_key",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort Key"
+            }
+          },
+          {
+            "name": "sort_method",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "asc",
+                    "desc"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort Method"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -1258,6 +1420,16 @@
                     }
                   ],
                   "title": "Response Itemmodifiers-Get All Item Modifiers"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -1627,6 +1799,78 @@
             "OAuth2PasswordBearer": []
           }
         ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "sort_key",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort Key"
+            }
+          },
+          {
+            "name": "sort_method",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "asc",
+                    "desc"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort Method"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -1645,6 +1889,16 @@
                     }
                   ],
                   "title": "Response Items-Get All Items"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -2034,6 +2288,78 @@
             "OAuth2PasswordBearer": []
           }
         ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "sort_key",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort Key"
+            }
+          },
+          {
+            "name": "sort_method",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "asc",
+                    "desc"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort Method"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -2052,6 +2378,16 @@
                     }
                   ],
                   "title": "Response Modifiers-Get All Modifiers"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -2405,6 +2741,78 @@
             "OAuth2PasswordBearer": []
           }
         ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "sort_key",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort Key"
+            }
+          },
+          {
+            "name": "sort_method",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "asc",
+                    "desc"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort Method"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -2423,6 +2831,16 @@
                     }
                   ],
                   "title": "Response Stashs-Get All Stashes"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -2628,9 +3046,9 @@
         "tags": [
           "users"
         ],
-        "summary": "Get All",
+        "summary": "Get All Users",
         "description": "Retrieve all users.",
-        "operationId": "get_all",
+        "operationId": "get_all_users",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -3745,7 +4163,53 @@
         ],
         "title": "CurrencyUpdate"
       },
-      "GroupedModifier": {
+      "GroupedModifierByEffect": {
+        "properties": {
+          "effect": {
+            "type": "string",
+            "title": "Effect"
+          },
+          "regex": {
+            "type": "string",
+            "title": "Regex"
+          },
+          "static": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Static"
+          },
+          "relatedUniques": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relateduniques"
+          },
+          "groupedModifierProperties": {
+            "$ref": "#/components/schemas/GroupedModifierProperties"
+          }
+        },
+        "type": "object",
+        "required": [
+          "effect",
+          "regex",
+          "static",
+          "relatedUniques",
+          "groupedModifierProperties"
+        ],
+        "title": "GroupedModifierByEffect"
+      },
+      "GroupedModifierProperties": {
         "properties": {
           "modifierId": {
             "items": {
@@ -3774,46 +4238,7 @@
           "modifierId",
           "textRolls"
         ],
-        "title": "GroupedModifier"
-      },
-      "GroupedModifierByEffect": {
-        "properties": {
-          "effect": {
-            "type": "string",
-            "title": "Effect"
-          },
-          "regex": {
-            "type": "string",
-            "title": "Regex"
-          },
-          "static": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Static"
-          },
-          "relatedUniques": {
-            "type": "string",
-            "title": "Relateduniques"
-          },
-          "groupedModifier": {
-            "$ref": "#/components/schemas/GroupedModifier"
-          }
-        },
-        "type": "object",
-        "required": [
-          "effect",
-          "regex",
-          "static",
-          "relatedUniques",
-          "groupedModifier"
-        ],
-        "title": "GroupedModifierByEffect"
+        "title": "GroupedModifierProperties"
       },
       "HTTPValidationError": {
         "properties": {
@@ -5141,7 +5566,14 @@
             "title": "Position"
           },
           "relatedUniques": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Relateduniques"
           },
           "minRoll": {
@@ -5327,7 +5759,6 @@
         "type": "object",
         "required": [
           "position",
-          "relatedUniques",
           "effect",
           "modifierId",
           "createdAt"
@@ -5341,7 +5772,14 @@
             "title": "Position"
           },
           "relatedUniques": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Relateduniques"
           },
           "minRoll": {
@@ -5506,7 +5944,6 @@
         "type": "object",
         "required": [
           "position",
-          "relatedUniques",
           "effect"
         ],
         "title": "ModifierCreate"
@@ -5557,7 +5994,14 @@
             "title": "Position"
           },
           "relatedUniques": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Relateduniques"
           },
           "minRoll": {
@@ -5722,7 +6166,6 @@
         "type": "object",
         "required": [
           "position",
-          "relatedUniques",
           "effect"
         ],
         "title": "ModifierUpdate"
@@ -6156,80 +6599,6 @@
           "password"
         ],
         "title": "UserCreate"
-      },
-      "UserInCache": {
-        "properties": {
-          "username": {
-            "type": "string",
-            "pattern": "^[\\p{L}\\p{N}_]+$",
-            "title": "Username"
-          },
-          "email": {
-            "type": "string",
-            "format": "email",
-            "title": "Email"
-          },
-          "isActive": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Isactive",
-            "default": true
-          },
-          "isSuperuser": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Issuperuser",
-            "default": false
-          },
-          "rateLimitTier": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Ratelimittier",
-            "default": 0
-          },
-          "isBanned": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Isbanned",
-            "default": false
-          },
-          "userId": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Userid"
-          }
-        },
-        "type": "object",
-        "required": [
-          "username",
-          "email",
-          "userId"
-        ],
-        "title": "UserInCache"
       },
       "UserPublic": {
         "properties": {

@@ -22,7 +22,7 @@ interface NewValue {
 }
 
 export type HandleChangeEventFunction = (
-  newValue: SingleValue<NewValue>,
+  newValue: SingleValue<NewValue> | undefined,
   overrideIndex?: number
 ) => void;
 
@@ -42,7 +42,6 @@ export interface SelectBoxProps {
   id: string;
   isDimmed?: boolean;
   descriptionText?: string;
-  presetIndex?: number;
   canBeAny?: boolean;
   autoFocus?: boolean;
   unstyled?: boolean;
@@ -55,30 +54,33 @@ interface SelectOption extends OptionBase {
 
 export const SelectBoxInput = (props: SelectBoxProps) => {
   const handleChangeExternal = props.handleChange;
-  const [selectedValue, setSelectedValue] = useState<SelectOption | null>(null);
+  const [placeholder, setPlaceholder] = useState<string | null>(null);
+  const [inFocus, setInFocus] = useState<boolean>(false);
+
+  let optionList = props.optionsList;
+  // Adds the "Any" option
+  if (props.canBeAny) {
+    optionList = [{ value: "Any", label: "Any", regex: "Any" }, ...optionList];
+  }
+  let defaultValue: SelectOption;
+  if (props.defaultText) {
+    defaultValue = {
+      label: props.defaultText,
+      value: props.defaultText,
+    };
+  } else {
+    defaultValue = optionList[0];
+  }
+  const [selectedValue, setSelectedValue] = useState<SelectOption | null>(
+    defaultValue
+  );
 
   const { clearClicked } = useGraphInputStore();
-
   useEffect(() => {
     if (clearClicked) {
       setSelectedValue(null);
     }
   }, [clearClicked, setSelectedValue]);
-
-  let defaultOptionText: string | undefined = undefined;
-  if (props.presetIndex !== undefined) {
-    const defaultOption = props.optionsList.find(
-      (option) => option.label === props.defaultText
-    );
-    defaultOptionText = defaultOption ? defaultOption.label : undefined;
-  }
-
-  let optionList = props.optionsList;
-
-  // Adds the "Any" option
-  if (props.canBeAny) {
-    optionList = [{ value: "Any", label: "Any", regex: "Any" }, ...optionList];
-  }
 
   // A custom filter function. Uses the `regex` attribute of `SelectOption`
   // to filter if the input starts with `~`.
@@ -103,7 +105,7 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
   };
 
   const handleChangeInternal: HandleChangeEventFunction = (newValue) => {
-    if (newValue) {
+    if (newValue != null) {
       const newSelectedValue: SelectOption = {
         label: newValue.label,
         value: newValue.value,
@@ -111,6 +113,41 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
       setSelectedValue(newSelectedValue);
     }
   };
+
+  const handleFocus = () => {
+    setInFocus(true);
+    if (selectedValue) {
+      setPlaceholder(selectedValue.label);
+    }
+    setSelectedValue(null);
+  };
+  useEffect(() => {
+    if (inFocus) {
+      return;
+    }
+    if (selectedValue != null && !clearClicked) {
+      return;
+    }
+    const prevOptionSelected = optionList.find(
+      (option) => option.label === placeholder
+    );
+    if (prevOptionSelected === undefined) {
+      setSelectedValue(defaultValue);
+      return;
+    }
+    const prevSelectedValue: SelectOption = {
+      label: prevOptionSelected.label,
+      value: prevOptionSelected.value,
+    };
+    setSelectedValue(prevSelectedValue);
+  }, [
+    selectedValue,
+    placeholder,
+    optionList,
+    inFocus,
+    clearClicked,
+    defaultValue,
+  ]);
 
   const chakraStylesBase = {
     background: "ui.input",
@@ -146,18 +183,15 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
     menuList: (provided) => ({
       ...provided,
       ...chakraStylesBase,
-      w: props.unstyled ? "50vw" : undefined,
-      maxH: "20vw",
+      minW: props.unstyled ? "13rem" : undefined,
+      maxH: ["8rem", "15rem"],
     }),
   };
 
   return (
     <Flex
       {...props.flexProps}
-      marginTop={0}
-      marginBottom={0}
       flexDirection={"row"}
-      alignItems={"center"}
       width={props.flexProps ? props.flexProps.width : "inputSizes.smallPPBox"}
     >
       <FormControl color={"ui.white"}>
@@ -168,27 +202,24 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
         )}
         <Select<SelectOption>
           variant={props.unstyled ? "unstyled" : "outline"}
-          placeholder={props.defaultText}
+          placeholder={placeholder ? placeholder : props.defaultText}
           options={optionList}
           onChange={(newValue) => {
             handleChangeInternal(newValue);
-            if (props.presetIndex !== undefined) {
-              handleChangeExternal(newValue, props.presetIndex);
-            } else {
-              handleChangeExternal(newValue);
-              if (props.multipleValues) {
-                setSelectedValue(null);
-              }
+            handleChangeExternal(newValue);
+            if (props.multipleValues) {
+              setSelectedValue(null);
             }
           }}
           blurInputOnSelect={true}
           filterOption={(option, inputValue) =>
             customFilter(option, inputValue)
           }
+          onFocus={handleFocus}
+          onBlur={() => setInFocus(false)}
           value={selectedValue}
           selectedOptionColorScheme="#1B1B1B"
           chakraStyles={chakraStyles}
-          defaultInputValue={defaultOptionText}
           autoFocus={props.autoFocus ?? false}
           openMenuOnFocus={true}
           focusBorderColor="ui.white"

@@ -51,6 +51,7 @@ const InputChangeHandler = (props: InputChangeHandler) => {
         }
         flexProps={{
           onBlur: () => props.changeTakingInput(props.orderIndex),
+          mt: "auto",
         }}
         defaultValues={defaultMinMaxValues}
         tight={true}
@@ -81,6 +82,7 @@ const InputChangeHandler = (props: InputChangeHandler) => {
         defaultValue={defaultTextValue}
         flexProps={{
           onBlur: () => props.changeTakingInput(props.orderIndex),
+          mt: "-7px",
         }}
       ></TextRollInput>
     );
