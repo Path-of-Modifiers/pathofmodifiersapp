@@ -49,6 +49,7 @@ export const LeagueInput = () => {
       descriptionText={"League"}
       defaultText={defaultLeague}
       multipleValues={false}
+      id={`leagueInput-0`}
     />
   );
 };
