@@ -1,4 +1,6 @@
+from collections.abc import AsyncGenerator, Callable
 from contextlib import asynccontextmanager
+from typing import Any
 
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -38,10 +40,14 @@ limiter_ip = Limiter(
 )
 
 
-def apply_rate_limits(limiter, *limits):
-    def decorator(func):
+def apply_rate_limits(
+    limiter: Limiter, *limits: str
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+        # Dynamically add the _rate_limits attribute using setattr
         func._rate_limits = limits
 
+        # Apply each limit individually
         for limit in limits:
             func = limiter.limit(limit)(func)
         return func
@@ -49,16 +55,22 @@ def apply_rate_limits(limiter, *limits):
     return decorator
 
 
-def apply_user_rate_limits(*limits):
+def apply_user_rate_limits(
+    *limits: str,
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     return apply_rate_limits(limiter_user, *limits)
 
 
-def apply_ip_rate_limits(*limits):
+def apply_ip_rate_limits(
+    *limits: str,
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     return apply_rate_limits(limiter_ip, *limits)
 
 
 @asynccontextmanager
-async def apply_custom_rate_limit(unique_key: str, rate_spec: RateSpec, prefix: str):
+async def apply_custom_rate_limit(
+    unique_key: str, rate_spec: RateSpec, prefix: str
+) -> AsyncGenerator[None, RateLimiter]:
     """
     Helper function to apply custom rate limit based on a unique key.
     """

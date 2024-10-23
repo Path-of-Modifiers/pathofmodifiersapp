@@ -94,10 +94,29 @@ export class StashsService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAllStashes(): CancelablePromise<(Stash | Array<Stash>)> {
+    public static getAllStashes({
+        limit,
+        skip,
+        sortKey,
+        sortMethod,
+    }: {
+        limit?: (number | null),
+        skip?: (number | null),
+        sortKey?: (string | null),
+        sortMethod?: ('asc' | 'desc' | null),
+    }): CancelablePromise<(Stash | Array<Stash>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/stash/',
+            query: {
+                'limit': limit,
+                'skip': skip,
+                'sort_key': sortKey,
+                'sort_method': sortMethod,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
         });
     }
     /**

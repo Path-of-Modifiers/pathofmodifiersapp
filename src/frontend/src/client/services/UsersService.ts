@@ -16,12 +16,12 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class UsersService {
     /**
-     * Get All
+     * Get All Users
      * Retrieve all users.
      * @returns UsersPublic Successful Response
      * @throws ApiError
      */
-    public static getAll({
+    public static getAllUsers({
         skip,
         limit = 100,
     }: {
@@ -106,8 +106,6 @@ export class UsersService {
     /**
      * Update Me Username
      * Update username. Can only be used by users once a month.
-     *
-     * TODO: Fix rate limit if route throws an error, it doesn't rate limit.
      * @returns Message Successful Response
      * @throws ApiError
      */
@@ -121,6 +119,30 @@ export class UsersService {
             url: '/api/api_v1/user/update-me-username',
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+    /**
+     * Check Username Exists
+     * Checks if username exists in the db.
+     *
+     * Returns `True` if the user exists, else `False`
+     * @returns boolean Successful Response
+     * @throws ApiError
+     */
+    public static checkUsernameExists({
+        username,
+    }: {
+        username: string,
+    }): CancelablePromise<boolean> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/api_v1/user/check-username-exists',
+            query: {
+                'username': username,
+            },
             errors: {
                 422: `Validation Error`,
             },
