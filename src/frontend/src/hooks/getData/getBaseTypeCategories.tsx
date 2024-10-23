@@ -17,7 +17,7 @@ export const prefetchAllBaseTypeData = async (queryClient: QueryClient) => {
       queryKey: ["baseTypes"],
       queryFn: async () => {
         const data =
-          await ItemBaseTypesService.getAllItemBaseTypes();
+          await ItemBaseTypesService.getAllItemBaseTypes({});
         if (Array.isArray(data)) {
           baseTypes = data;
         } else {
