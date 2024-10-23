@@ -44,6 +44,7 @@ from app.core.schemas.token import Token
 from app.core.schemas.user import UserUpdateMe
 from app.crud import CRUD_user
 from app.exceptions import (
+    DbObjectAlreadyExistsError,
     DbObjectDoesNotExistError,
     InvalidTokenError,
     SuperUserNotAllowedToChangeActiveSelfError,
@@ -253,8 +254,6 @@ async def update_me_username(
 ) -> Message:
     """
     Update username. Can only be used by users once a month.
-
-    TODO: Fix rate limit if route throws an error, it doesn't rate limit.
     """
     if not user_update_me_username.username:
         raise UserUsernameRequiredError(
@@ -280,6 +279,39 @@ async def update_me_username(
     return get_user_update_me_success_msg(
         email_or_username=user_update_me_username.username
     )
+
+
+@router.patch(
+    "/check-username-exists",
+    response_model=bool,
+    dependencies=[Depends(get_current_active_user)],
+)
+@apply_user_rate_limits(
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    rate_limit_settings.DEFAULT_IP_RATE_LIMIT_MINUTE,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
+async def check_username_exists(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    username: str,
+    db: Session = Depends(get_db),
+) -> bool:
+    """
+    Checks if username exists in the db.
+
+    Returns `True` if the user exists, else `False`
+    """
+    try:
+        CRUD_user.check_exists_raise(
+            db,
+            filter={"username": username},
+        )
+    except DbObjectAlreadyExistsError:
+        return True
+
+    return False
 
 
 @router.patch(
