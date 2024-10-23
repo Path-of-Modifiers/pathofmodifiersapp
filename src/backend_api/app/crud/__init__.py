@@ -1,7 +1,6 @@
 from app.crud.user import CRUDUser
 from .base import CRUDBase
 from app.crud.extensions.crud_modifier import CRUDModifier
-from app.crud.extensions.crud_item_base_type import CRUDItemBaseType
 
 from app.core.models.models import Currency
 
@@ -18,6 +17,7 @@ from app.core.schemas.currency import CurrencyCreate, CurrencyUpdate, Currency
 from app.core.schemas.item_base_type import (
     ItemBaseTypeCreate,
     ItemBaseType,
+    ItemBaseTypeUpdate,
 )
 from app.core.schemas.item_modifier import (
     ItemModifierCreate,
@@ -48,9 +48,9 @@ CRUD_currency = CRUDBase[
 )
 
 
-CRUD_itemBaseType = CRUDItemBaseType(
-    model=model_ItemBaseType, schema=ItemBaseType, create_schema=ItemBaseTypeCreate
-)
+CRUD_itemBaseType = CRUDBase[
+    model_ItemBaseType, ItemBaseType, ItemBaseTypeCreate, ItemBaseTypeUpdate
+](model=model_ItemBaseType, schema=ItemBaseType, create_schema=ItemBaseTypeCreate)
 
 
 CRUD_itemModifier = CRUDBase[

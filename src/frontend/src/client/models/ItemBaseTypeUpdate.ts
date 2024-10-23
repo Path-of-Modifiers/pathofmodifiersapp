@@ -6,5 +6,6 @@ export type ItemBaseTypeUpdate = {
     baseType: string;
     category: string;
     subCategory?: (string | null);
+    relatedUniques?: (string | null);
 };
 

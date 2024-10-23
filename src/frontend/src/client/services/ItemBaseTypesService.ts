@@ -2,11 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { BaseType } from '../models/BaseType';
 import type { ItemBaseType } from '../models/ItemBaseType';
-import type { ItemBaseTypeCategory } from '../models/ItemBaseTypeCategory';
 import type { ItemBaseTypeCreate } from '../models/ItemBaseTypeCreate';
-import type { ItemBaseTypeSubCategory } from '../models/ItemBaseTypeSubCategory';
 import type { ItemBaseTypeUpdate } from '../models/ItemBaseTypeUpdate';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -97,10 +94,29 @@ export class ItemBaseTypesService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAllItemBaseTypes(): CancelablePromise<(ItemBaseType | Array<ItemBaseType>)> {
+    public static getAllItemBaseTypes({
+        limit,
+        skip,
+        sortKey,
+        sortMethod,
+    }: {
+        limit?: (number | null),
+        skip?: (number | null),
+        sortKey?: (string | null),
+        sortMethod?: ('asc' | 'desc' | null),
+    }): CancelablePromise<(ItemBaseType | Array<ItemBaseType>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/itemBaseType/',
+            query: {
+                'limit': limit,
+                'skip': skip,
+                'sort_key': sortKey,
+                'sort_method': sortMethod,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
         });
     }
     /**
@@ -132,48 +148,6 @@ export class ItemBaseTypesService {
             errors: {
                 422: `Validation Error`,
             },
-        });
-    }
-    /**
-     * Get Base Types
-     * Get all base types.
-     *
-     * Returns a list of all base types.
-     * @returns any Successful Response
-     * @throws ApiError
-     */
-    public static getBaseTypes(): CancelablePromise<(BaseType | Array<BaseType>)> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/api/api_v1/itemBaseType/baseTypes/',
-        });
-    }
-    /**
-     * Get Unique Categories
-     * Get all unique categories.
-     *
-     * Returns a list of all categories.
-     * @returns any Successful Response
-     * @throws ApiError
-     */
-    public static getUniqueCategories(): CancelablePromise<(ItemBaseTypeCategory | Array<ItemBaseTypeCategory>)> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/api/api_v1/itemBaseType/uniqueCategories/',
-        });
-    }
-    /**
-     * Get Unique Sub Categories
-     * Get all unique sub categories.
-     *
-     * Returns a list of all sub categories.
-     * @returns any Successful Response
-     * @throws ApiError
-     */
-    public static getUniqueSubCategories(): CancelablePromise<(ItemBaseTypeSubCategory | Array<ItemBaseTypeSubCategory>)> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/api/api_v1/itemBaseType/uniqueSubCategories/',
         });
     }
 }

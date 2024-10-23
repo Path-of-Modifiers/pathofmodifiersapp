@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app import crud
 from app.core.models.models import ItemBaseType
 from app.core.schemas.item_base_type import ItemBaseTypeCreate
-from app.tests.utils.utils import random_lower_string
+from app.tests.utils.utils import random_int, random_lower_string
 
 
 def create_random_item_base_type_dict() -> dict:
@@ -15,11 +15,15 @@ def create_random_item_base_type_dict() -> dict:
     baseType = random_lower_string()
     category = random_lower_string()
     subCategory = random_lower_string()
+    relatedUniques = "|".join(
+        [random_lower_string() for _ in range(random_int(max_value=3))]
+    )
 
     item_base_type = {
         "baseType": baseType,
         "category": category,
         "subCategory": subCategory,
+        "relatedUniques": relatedUniques,
     }
 
     return item_base_type

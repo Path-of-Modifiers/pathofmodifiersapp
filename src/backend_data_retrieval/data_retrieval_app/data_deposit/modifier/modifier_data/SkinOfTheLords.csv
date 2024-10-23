@@ -1,5 +1,7 @@
+# Unique Name: Skin of the Lords
+# Base Types: Simple Robe
 # Source: https://poedb.tw/Skin_of_the_Lords#SkinoftheLordsUnique
-# Potential source of error due to very simple effect string
+# Note: Potential source of error due to very simple effect string
 minRoll,maxRoll,textRolls,position,effect,static,unique
 ,,,0,"Sockets cannot be modified",True,True
 2,2,,0,"+# to Level of Socketed Gems",,True

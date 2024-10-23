@@ -178,6 +178,27 @@ class ModifierRegexCreator:
             "effect"
         ].str.replace(r"\+", "+")
 
+        def remove_quantifier(ser: pd.Series) -> pd.Series:
+            contains_q_mask = ser.str.contains("?", regex=False)
+            ser_contains_q = ser.loc[contains_q_mask]
+
+            if ser_contains_q.empty:
+                return ser
+
+            ser_split = ser_contains_q.str.split("?")
+            for index, str_parts in ser_split.items():
+                ser.iloc[index] = "".join(
+                    [
+                        part[:-1] if i < (len(str_parts) - 1) else part
+                        for i, part in enumerate(str_parts)
+                    ]
+                )
+            return ser
+
+        dynamic_modifier_df.loc[:, "effect"] = remove_quantifier(
+            dynamic_modifier_df.loc[:, "effect"]
+        )
+
         final_df = pd.concat(
             (dynamic_modifier_df, static_modifier_df), ignore_index=True
         )
@@ -275,5 +296,15 @@ def check_for_additional_modifier_types(
             )
             data[modifier_type] = row_new[modifier_type]
             put_update = True
+
+    return data, put_update
+
+
+def check_for_new_related_unique(
+    data: dict[str, Any], put_update: bool, new_related_unique: str
+) -> tuple[dict[str, Any], bool]:
+    if new_related_unique not in data["relatedUniques"]:
+        data["relatedUniques"] += "|" + new_related_unique
+        put_update = True
 
     return data, put_update

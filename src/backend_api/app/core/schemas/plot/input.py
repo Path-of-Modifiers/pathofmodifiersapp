@@ -35,12 +35,11 @@ class ModifierLimitations(_pydantic.BaseModel):
 
 class WantedModifier(_pydantic.BaseModel):
     modifierId: int
-    position: int
     modifierLimitations: ModifierLimitations | None = None
 
 
 class PlotQuery(_pydantic.BaseModel):
     league: str
-    itemSpecifications: ItemSpecs
+    itemSpecifications: ItemSpecs | None = None
     baseSpecifications: BaseSpecs | None = None
     wantedModifiers: list[WantedModifier]

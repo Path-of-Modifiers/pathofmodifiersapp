@@ -1,6 +1,6 @@
 import { Flex } from "@chakra-ui/layout";
 import { IsItemInput } from "./ItemInputComp/IsItemInput";
-import { MinMaxInput } from "./ItemInputComp/MinMaxItemLvlInput";
+import { MinMaxIlvlInput } from "./ItemInputComp/MinMaxItemLvlInput";
 import { useEffect } from "react";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 import { AddICheckText } from "../Icon/AddICheckText";
@@ -37,11 +37,7 @@ export const MiscItemInput = () => {
         <Flex flexWrap={"wrap"} justifyContent={"flex-start"} gap={2} ml={10}>
           <IsItemInput itemSpecKey={"identified"} text={"Identified"} />
           <IsItemInput itemSpecKey={"corrupted"} text={"Corrupted"} />
-          <MinMaxInput
-            itemMinSpecKey="minIlvl"
-            itemMaxSpecKey="maxIlvl"
-            text="Item level"
-          />
+          <MinMaxIlvlInput text="Item level" />
           <IsItemInput itemSpecKey={"delve"} text={"Delve"} />
           <IsItemInput itemSpecKey={"fractured"} text={"Fracture"} />
           <IsItemInput itemSpecKey={"synthesized"} text={"Synthesize"} />

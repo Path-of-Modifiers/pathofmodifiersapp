@@ -8,10 +8,6 @@ export const $WantedModifier = {
             type: 'number',
             isRequired: true,
         },
-        position: {
-            type: 'number',
-            isRequired: true,
-        },
         modifierLimitations: {
             type: 'any-of',
             contains: [{

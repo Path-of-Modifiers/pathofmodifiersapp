@@ -39,10 +39,14 @@ export interface ModifierLimitationState {
   textRoll?: number | null;
 }
 
-export interface ModifierSpecState {
+export interface WantedModifier {
   modifierId: number;
-  position: number;
   modifierLimitations?: ModifierLimitationState | null;
+}
+
+export interface WantedModifierSpecs extends WantedModifier {
+  index: number;
+  isSelected: boolean;
 }
 
 export interface PlotSettingsState {
@@ -56,9 +60,11 @@ export interface GraphInputState {
   clearClicked: boolean;
   queryClicked: boolean;
   league: string;
+  itemName: string | undefined;
   itemSpec: ItemSpecState;
   baseSpec?: BaseSpecState;
-  modifierSpecs: ModifierSpecState[];
+  wantedModifiers: WantedModifier[];
+  wantedModifierSpecs: WantedModifierSpecs[];
   plotQuery: PlotQuery;
   setQueryClicked: () => void;
   setPlotQuery: () => void;
@@ -87,20 +93,26 @@ export interface GraphInputState {
   setBaseType: (baseType: string | undefined) => void;
   setItemCategory: (category: string | undefined) => void;
   setItemSubCategory: (subCategory: string | undefined) => void;
-  addModifierSpec: (modifierSpec: ModifierSpecState, position?: number) => void;
-  removeModifierSpec: (modifierId: number) => void;
-  updateModifierSpec: (modifierSpec: ModifierSpecState) => void;
-  setMinRollModifierSpec: (
-    modifierId: number,
-    minRoll: number | undefined
+  addModifierSpec: (wantedModifier: WantedModifier, index: number) => void;
+  removeModifierSpec: (index_to_remove: number) => void;
+  updateSelectedModifierSpec: (
+    index_to_update: number,
+    isSelected: boolean
   ) => void;
-  setMaxRollModifierSpec: (
+  setWantedModifierMinRoll: (
     modifierId: number,
-    maxRoll: number | undefined
+    minRoll: number | undefined,
+    index: number
   ) => void;
-  setTextRollModifierSpec: (
+  setWantedModifierMaxRoll: (
     modifierId: number,
-    textRoll: number | undefined
+    maxRoll: number | undefined,
+    index: number
+  ) => void;
+  setWantedModifierTextRoll: (
+    modifierId: number,
+    textRoll: number | undefined,
+    index: number
   ) => void;
 }
 

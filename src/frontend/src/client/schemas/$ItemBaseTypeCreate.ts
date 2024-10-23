@@ -20,5 +20,13 @@ export const $ItemBaseTypeCreate = {
                 type: 'null',
             }],
         },
+        relatedUniques: {
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+            }, {
+                type: 'null',
+            }],
+        },
     },
 } as const;

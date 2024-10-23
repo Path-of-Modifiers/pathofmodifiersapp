@@ -1,29 +1,16 @@
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-import { MinMaxNumberInput } from "../StandardLayoutInput/MinMaxNumberInput";
+import {
+  MinMaxNumberInput,
+  HandleNumberChangeEventFunction,
+} from "../StandardLayoutInput/MinMaxNumberInput";
 
 interface MinMaxInputProps {
-  itemMinSpecKey: string;
-  itemMaxSpecKey: string;
   text: string;
 }
 
 // Min Max Item Lvl Input Component  -  This component is used to input the min and max ilvl of an item.
-export const MinMaxInput = ({
-  itemMinSpecKey,
-  itemMaxSpecKey,
-  text,
-}: MinMaxInputProps) => {
+export const MinMaxIlvlInput = (props: MinMaxInputProps) => {
   const { setItemSpecMinIlvl, setItemSpecMaxIlvl } = useGraphInputStore();
-
-  const getGlobalMinValue = () => {
-    const globalMin = useGraphInputStore.getState().itemSpec.minIlvl;
-    return globalMin ?? "";
-  };
-
-  const getGlobalMaxValue = () => {
-    const globalMax = useGraphInputStore.getState().itemSpec.maxIlvl;
-    return globalMax ?? "";
-  };
 
   const handleMinChange = (eventValue: string) => {
     const eventValueInt = parseInt(eventValue);
@@ -37,15 +24,23 @@ export const MinMaxInput = ({
     setItemSpecMaxIlvl(eventValueInt);
   };
 
+  const handleNumberChange: HandleNumberChangeEventFunction = (
+    value,
+    numericalType
+  ) => {
+    if (numericalType === "min") {
+      handleMinChange(value);
+    } else if (numericalType === "max") {
+      handleMaxChange(value);
+    } else {
+      throw "'numericalType' must be 'min' or 'max'";
+    }
+  };
+
   return (
     <MinMaxNumberInput
-      descriptionText={text}
-      minSpecKey={itemMinSpecKey}
-      maxSpecKey={itemMaxSpecKey}
-      getMinValue={getGlobalMinValue}
-      getMaxValue={getGlobalMaxValue}
-      handleMinChange={handleMinChange}
-      handleMaxChange={handleMaxChange}
+      descriptionText={props.text}
+      handleNumberChange={handleNumberChange}
     />
   );
 };

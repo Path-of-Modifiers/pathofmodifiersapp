@@ -44,6 +44,7 @@ class ItemBaseType(Base):
     )
     category: Mapped[str] = mapped_column(String, nullable=False)
     subCategory: Mapped[str | None] = mapped_column(String)
+    relatedUniques: Mapped[str | None] = mapped_column(String)
 
 
 class Item(Base):
@@ -105,6 +106,7 @@ class Modifier(Base):
         primary_key=True,
     )
     position: Mapped[int] = mapped_column(SmallInteger, nullable=False, index=True)
+    relatedUniques: Mapped[str | None] = mapped_column(String)
     minRoll: Mapped[float | None] = mapped_column(Float(24))
     maxRoll: Mapped[float | None] = mapped_column(Float(24))
     textRolls: Mapped[str | None] = mapped_column(String)
