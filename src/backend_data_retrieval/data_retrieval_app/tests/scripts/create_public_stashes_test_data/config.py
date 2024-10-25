@@ -3,9 +3,9 @@ from pydantic_settings import BaseSettings
 
 class PoEPublicStashesTestDataSettings(BaseSettings):
     N_OF_ITEMS_PER_MODIFIER_FILE: int = 50
-    MODIFIER_CSV_FILES_TO_ITERATE: list[str] = [
-        "AulsUprising.csv"
-    ]  # For instance: ["AulsUprising.csv", "ThreadOfHope.csv"]
+    MODIFIER_CSV_FILES_TO_ITERATE: list[str] = (
+        []
+    )  # For instance: ["AulsUprising.csv", "ThreadOfHope.csv"]
 
     CREATE_DATA_DIFFERENT_TIMING_INTERVAL: bool = (
         True  # Provides variety to timing of data created
