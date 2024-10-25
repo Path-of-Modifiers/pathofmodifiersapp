@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class PoEPublicStashesTestDataSettings(BaseSettings):
-    N_OF_ITEMS_PER_MODIFIER_FILE: int = 50
+    N_OF_ITEMS_PER_MODIFIER_FILE: int = 100
     MODIFIER_CSV_FILES_TO_ITERATE: list[str] = (
         []
     )  # For instance: ["AulsUprising.csv", "ThreadOfHope.csv"]
