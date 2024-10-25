@@ -14,7 +14,7 @@ pd.options.mode.chained_assignment = None  # default="warn"
 
 
 class PoEAPIDataTransformerBase:
-    def __init__(self):
+    def __init__(self) -> None:
         logger.debug("Initializing PoEAPIDataTransformer")
         if "localhost" not in settings.BASEURL:
             self.url = f"https://{settings.BASEURL}"
@@ -167,9 +167,9 @@ class PoEAPIDataTransformerBase:
                 influence_dict = {}
                 for influence_column in influence_columns:
                     if row[influence_column]:
-                        influence_dict[
-                            influence_column.replace("influences.", "")
-                        ] = True
+                        influence_dict[influence_column.replace("influences.", "")] = (
+                            True
+                        )
                 return influence_dict
 
         influence_columns = [
@@ -357,7 +357,7 @@ class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
 
         return item_modifier_df
 
-    def _clean_item_modifier_table(self, item_modifer_df: pd.DataFrame):
+    def _clean_item_modifier_table(self, item_modifer_df: pd.DataFrame) -> pd.DataFrame:
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
@@ -368,4 +368,5 @@ class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
             axis=1,
             inplace=True,
         )
+
         return item_modifer_df

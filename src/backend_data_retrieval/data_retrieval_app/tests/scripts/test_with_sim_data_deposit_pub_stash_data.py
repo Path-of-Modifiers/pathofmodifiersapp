@@ -1,4 +1,6 @@
+import numpy as np
 import asyncio
+from datetime import datetime
 import threading
 import time
 from collections.abc import Iterator
@@ -7,6 +9,10 @@ from concurrent.futures import FIRST_EXCEPTION, ThreadPoolExecutor, wait
 import aiohttp
 import pandas as pd
 
+from data_retrieval_app.utils import insert_data
+from data_retrieval_app.tests.scripts.create_public_stashes_test_data.config import (
+    script_settings,
+)
 from data_retrieval_app.external_data_retrieval.data_retrieval.poe_api_handler import (
     PoEAPIHandler,
 )
@@ -16,7 +22,6 @@ from data_retrieval_app.external_data_retrieval.data_retrieval.poe_ninja_currenc
 from data_retrieval_app.external_data_retrieval.main import ContinuousDataRetrieval
 from data_retrieval_app.external_data_retrieval.transforming_data.transform_poe_api_data import (
     PoEAPIDataTransformerBase,
-    UniquePoEAPIDataTransformer,
 )
 from data_retrieval_app.external_data_retrieval.transforming_data.transform_poe_ninja_currency_api_data import (
     TransformPoENinjaCurrencyAPIData,
@@ -26,10 +31,92 @@ from data_retrieval_app.external_data_retrieval.utils import (
     ProgramTooSlowException,
     sync_timing_tracker,
 )
-from data_retrieval_app.logs.logger import setup_logging, test_logger
 from data_retrieval_app.tests.scripts.create_public_stashes_test_data.main import (
     iterate_create_public_stashes_test_data,
 )
+from data_retrieval_app.logs.logger import test_logger, setup_logging
+
+
+class TestPoEAPIDataTransformerBase(PoEAPIDataTransformerBase):
+    def _add_timing_item_modifier_table(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Implemented in test child functions"""
+        raise NotImplementedError("Only available in child classes")
+
+    def _process_item_modifier_table(
+        self, df: pd.DataFrame, item_id: pd.Series
+    ) -> None:
+        item_modifier_df = self._create_item_modifier_table(df, item_id=item_id)
+        item_modifier_df = self._transform_item_modifier_table(item_modifier_df)
+        item_modifier_df = self._add_timing_item_modifier_table(item_modifier_df)
+        item_modifier_df = self._clean_item_modifier_table(item_modifier_df)
+
+        insert_data(
+            item_modifier_df,
+            url=self.url,
+            logger=test_logger,
+            table_name="itemModifier",
+            headers=self.pom_auth_headers,
+        )
+
+
+class TestUniquePoEAPIDataTransformer(TestPoEAPIDataTransformerBase):
+    def _add_timing_item_modifier_table(self, df: pd.DataFrame) -> pd.DataFrame:
+        if not script_settings.dispersed_timing_enabled:
+            return df
+        dati = script_settings.DAYS_AMOUNT_TIMING_INTERVAL
+        test_logger.info(f"Amount of days creating timing interval for: {dati}")
+        df_size = df.size
+        df_chunks = [df.copy()]
+        if df_size == max(df_size, dati):
+            test_logger.info(f"Df size adding timing: {df_size}")
+            df_chunks = np.array_split(df, dati)
+
+        for day, chunk in enumerate(df_chunks):
+            month = day // 30
+            year = month // 12
+
+            chunk["createdAt"] = datetime(2020 + year, month + 1, day + 1).isoformat()
+        df_combined: pd.DataFrame = pd.concat(df_chunks, ignore_index=True)  # type: ignore
+
+        return df_combined
+
+    def _transform_item_modifier_table(
+        self, item_modifier_df: pd.DataFrame
+    ) -> pd.DataFrame:
+        item_modifier_df = self.roll_processor.add_rolls(df=item_modifier_df)
+
+        return item_modifier_df
+
+    def _clean_item_modifier_table(self, item_modifer_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Gets rid of unnecessay information, so that only fields needed for the DB remains.
+        """
+        item_modifer_df.drop(
+            item_modifer_df.columns.difference(
+                ["itemId", "modifierId", "orderId", "position", "roll", "createdAt"]
+            ),
+            axis=1,
+            inplace=True,
+        )
+        return item_modifer_df
+
+    def _create_item_modifier_table(
+        self, df: pd.DataFrame, *, item_id: pd.Series
+    ) -> pd.DataFrame:
+        """
+        A similiar process to creating the item table, only this time the
+        relevant column contains a list and not a JSON-object
+        """
+        self.item_modifier_columns = ["name", "explicitMods"]
+
+        item_modifier_df = df.loc[:, self.item_modifier_columns].reset_index()
+
+        item_modifier_df["itemId"] = item_id
+        item_modifier_df = item_modifier_df.explode("explicitMods", ignore_index=True)
+
+        item_modifier_df.rename({"explicitMods": "modifier"}, axis=1, inplace=True)
+
+        return item_modifier_df
 
 
 class TestModifierSimulatedDataPoEAPIHandler(PoEAPIHandler):
@@ -38,7 +125,7 @@ class TestModifierSimulatedDataPoEAPIHandler(PoEAPIHandler):
         stashes_ready_event: threading.Event,
         waiting_for_next_id_lock: threading.Lock,
         stash_lock: threading.Lock,
-    ):
+    ) -> None:
         """Overrides the function in PoEAPIHandler"""
         stashes = []  # For exeption handling
 
@@ -56,13 +143,12 @@ class TestModifierSimulatedDataPoEAPIHandler(PoEAPIHandler):
 
             stashes_ready_event.set()
             await asyncio.sleep(1)
-        except:
-            test_logger.exception(
-                f"The following exception occured during {self._follow_stream}"
+        except Exception as e:
+            test_logger.info(
+                f"The following exception occured during {self._follow_stream}: {e} {e.args}"
             )
-            raise
+            raise e
         finally:
-            test_logger.info(f"Exiting {self._follow_stream} gracefully")
 
             await session.close()
 
@@ -78,8 +164,6 @@ class TestModifierSimulatedDataPoEAPIHandler(PoEAPIHandler):
         stashes_ready_event.wait()
         stash_lock.acquire()
 
-        test_logger.info("Stashes are ready for processing")
-
         stashes_local = self.stashes
         del self.stashes
         self.stashes = []
@@ -88,10 +172,8 @@ class TestModifierSimulatedDataPoEAPIHandler(PoEAPIHandler):
         stash_lock.release()
         stashes_ready_event.clear()
 
-        test_logger.debug("Copied stashes locally and reset the event")
         wandted_df = self._check_stashes(stashes_local)
         df = pd.concat((df, wandted_df))
-        test_logger.info("Finished processing the data, waiting for more")
         return df
 
     def _gather_n_checkpoints(
@@ -117,14 +199,12 @@ class TestModifierSimulatedDataPoEAPIHandler(PoEAPIHandler):
         else:
             time.sleep(5)  # Waits for the listening threads to have time to start up.
             while True:
-                test_logger.info("Waiting for data from the stream")
                 df = self._gather_n_checkpoints(stashes_ready_event, stash_lock, n=1)
                 test_logger.info(
                     "Finished processing the stream, entering transformation phase"
                 )
                 yield df.reset_index()
                 del df
-                test_logger.info("Finished transformation phase")
                 raise ProgramRunTooLongException  # Script exits here
 
 
@@ -134,7 +214,6 @@ class TestModifierSimulatedDataContinuousDataRetrieval(ContinuousDataRetrieval):
         items_per_batch: int,
         data_transformers: dict[str, PoEAPIDataTransformerBase],
     ):
-        """Overrides the function in ContinuousDataRetrieval"""
         self.data_transformers = {
             key: data_transformer()
             for key, data_transformer in data_transformers.items()
@@ -152,7 +231,7 @@ class TestModifierSimulatedDataContinuousDataRetrieval(ContinuousDataRetrieval):
         )
         self.poe_ninja_transformer = TransformPoENinjaCurrencyAPIData()
 
-    def retrieve_data(self):
+    def retrieve_data(self) -> None:
         """Overrides the function in ContinuousDataRetrieval"""
         test_logger.info("Program starting up.")
         test_logger.info("Initiating data stream.")
@@ -177,19 +256,16 @@ class TestModifierSimulatedDataContinuousDataRetrieval(ContinuousDataRetrieval):
             raise e
 
 
-def main():
+def main() -> None:
     """
     Tests backend data retrieval with deposit data simulated with mocked
     PoE API docs objects.
     """
-    test_logger.info("Starting the program...")
     setup_logging()
     items_per_batch = 1
-    data_transformers = {"unique": UniquePoEAPIDataTransformer}
-
+    data_transformers = {"unique": TestUniquePoEAPIDataTransformer}
     data_retriever = TestModifierSimulatedDataContinuousDataRetrieval(
-        items_per_batch=items_per_batch,
-        data_transformers=data_transformers,
+        items_per_batch=items_per_batch, data_transformers=data_transformers
     )
     data_retriever.retrieve_data()
 

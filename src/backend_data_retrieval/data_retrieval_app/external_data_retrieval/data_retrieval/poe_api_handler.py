@@ -324,11 +324,11 @@ class PoEAPIHandler:
                 stashes = []
                 stashes_ready_event.set()
                 await asyncio.sleep(1)
-        except:
-            logger.exception(
-                f"The following exception occured during {self._follow_stream}"
+        except Exception as e:
+            logger.info(
+                f"The following exception occured during {self._follow_stream}: {e}"
             )
-            raise
+            raise e
         finally:
             logger.info(f"Exiting {self._follow_stream} gracefully")
 

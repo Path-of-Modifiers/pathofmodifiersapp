@@ -1,3 +1,4 @@
+from typing import Any
 import copy
 import json
 from collections.abc import Iterator
@@ -12,20 +13,23 @@ from data_retrieval_app.tests.scripts.create_public_stashes_test_data.utils.scra
 from data_retrieval_app.tests.utils import (
     replace_false_values,
 )
+from data_retrieval_app.tests.scripts.create_public_stashes_test_data.config import (
+    script_settings,
+)
 
-# from data_retrieval_app.logs.logger import setup_logging
-# TODO: Remove soon:
-output_test_data_location_path = "data_retrieval_app/tests/test_data/"  #
+output_test_data_location_path = "data_retrieval_app/tests/test_data/"
 
 
-def iterate_create_public_stashes_test_data() -> Iterator[tuple[int, str, list[dict]]]:
+def iterate_create_public_stashes_test_data() -> (
+    Iterator[tuple[int, str, list[dict[str, Any]]]]
+):
     scrap_and_mock_poe_api_docs_objs = ScrapAndMockPoEAPIDocsObjs()
     (
         public_stashes_mock_obj,
         item_mock_obj,
     ) = scrap_and_mock_poe_api_docs_objs.produce_mocks_from_docs()
     public_stashes_modifier_test_data_creator = DataDepositTestDataCreator(
-        n_of_items=50
+        n_of_items=script_settings.N_OF_ITEMS_PER_MODIFIER_FILE
     )
 
     for index, (
@@ -56,7 +60,7 @@ def iterate_create_public_stashes_test_data() -> Iterator[tuple[int, str, list[d
 # Script that creates test data for public_stashes
 # NOTE: The POE api docs mocks are mocked only to this applications' interests. So some key-attribute values are not the same
 # as in the POE api docs. This is due to our lazyness since many key-attributes gets filtered anyway.
-def main():
+def main() -> None:
     # setup_logging() #TODO Setup logging for script if needed
     for i, modifier_file_name, all_stashes in iterate_create_public_stashes_test_data():
         with open(
