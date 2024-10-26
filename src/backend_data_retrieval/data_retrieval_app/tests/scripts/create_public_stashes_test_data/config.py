@@ -11,7 +11,7 @@ class PoEPublicStashesTestDataSettings(BaseSettings):
         True  # Provides variety to timing of data created
     )
     DAYS_AMOUNT_TIMING_INTERVAL: int = (
-        20  # Amount of days the data gets dispersed when created. Maximum days up to equivalent <10 years.
+        10  # Amount of days the data gets dispersed when created. Maximum days up to equivalent <10 years.
     )
 
     @property
@@ -20,6 +20,9 @@ class PoEPublicStashesTestDataSettings(BaseSettings):
             self.CREATE_DATA_DIFFERENT_TIMING_INTERVAL
             and self.DAYS_AMOUNT_TIMING_INTERVAL
         )
+
+    ITEM_NOTE_CURRENCY_TYPES: list[str] = ["chaos"]  # "chaos", "divine", "mirror", etc.
+    MAXIMUM_ITEM_PRICE: int = 50
 
 
 script_settings = PoEPublicStashesTestDataSettings()

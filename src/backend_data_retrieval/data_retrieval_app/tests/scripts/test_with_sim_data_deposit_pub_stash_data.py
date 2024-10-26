@@ -3,7 +3,7 @@ import asyncio
 from datetime import datetime
 import threading
 import time
-from collections.abc import Iterator
+from typing import Iterator
 from concurrent.futures import FIRST_EXCEPTION, ThreadPoolExecutor, wait
 
 import aiohttp
@@ -39,32 +39,118 @@ from data_retrieval_app.logs.logger import test_logger, setup_logging
 
 
 class TestPoEAPIDataTransformerBase(PoEAPIDataTransformerBase):
-    def _add_timing_item_table(self, df: pd.DataFrame) -> pd.DataFrame:
-        if not script_settings.dispersed_timing_enabled:
-            return df
-        dati = script_settings.DAYS_AMOUNT_TIMING_INTERVAL
-        test_logger.info(f"Amount of days creating timing interval for: {dati}")
-        df_size = df.size
-        df_chunks = [df.copy()]
-        if df_size == max(df_size, dati):
-            test_logger.info(f"Df size adding timing: {df_size}")
-            df_chunks = np.array_split(df, dati)
+    def _add_timing_item_table(
+        self, split_item_dfs_by_unique_names: list[pd.DataFrame]
+    ) -> pd.DataFrame:
+        item_dfs_combined = []
+        for item_df in split_item_dfs_by_unique_names:
+            if not script_settings.dispersed_timing_enabled:
+                return item_df
+            dati = script_settings.DAYS_AMOUNT_TIMING_INTERVAL
+            test_logger.info(f"Amount of days creating timing interval for: {dati}")
+            df_size = item_df.size
+            df_chunks = [item_df.copy()]
+            if df_size == max(df_size, dati):
+                test_logger.info(f"Df size adding timing: {df_size}")
+                df_chunks = np.array_split(item_df, dati)
 
-        for day, chunk in enumerate(df_chunks):
-            month = day // 30
-            year = month // 12
+            for day, chunk in enumerate(df_chunks):
+                month = day // 30
+                year = month // 12
 
-            chunk["createdAt"] = datetime(2020 + year, month + 1, day + 1).isoformat()
-        df_combined: pd.DataFrame = pd.concat(df_chunks, ignore_index=True)  # type: ignore
+                chunk["createdAt"] = datetime(
+                    2020 + year, month + 1, day + 1
+                ).isoformat()
+            item_named_df_combined: pd.DataFrame = pd.concat(df_chunks, ignore_index=True)  # type: ignore
+            item_dfs_combined.append(item_named_df_combined)
+        item_df_combined: pd.DataFrame = pd.concat(item_dfs_combined, ignore_index=True)
+        return item_df_combined
 
-        return df_combined
+    def _split_item_table_by_item_name(
+        self, item_df: pd.DataFrame
+    ) -> list[pd.DataFrame]:
+        unique_item_names = item_df["name"].unique()
+
+        split_by_unique_item_names_dfs = []
+        for unique_name in unique_item_names:
+            unique_item_name_mask_df = item_df["name"] == unique_name
+            split_by_unique_item_names_dfs.append(item_df[unique_item_name_mask_df])
+
+        return split_by_unique_item_names_dfs
+
+    def _transform_item_table(
+        self, item_df: pd.DataFrame, currency_df: pd.DataFrame
+    ) -> pd.DataFrame:
+        """
+        The `item` table requires a foreign key to the `currency` table.
+        Everything related to the price of the item is stored in the `node`
+        attribute.
+
+        There are two types of listings in PoE, exact price and asking price which are
+        represented by `price` and `b/o` respectively.
+        """
+
+        def get_currency_amount(element):
+            if isinstance(element, list):
+                if len(element) == 3:
+                    return element[1] if element[0] in ["~b/o", "~price"] else pd.NA
+
+            return pd.NA
+
+        def get_currency_type(element):
+            if isinstance(element, list):
+                if len(element) == 3:
+                    return element[2] if element[0] in ["~b/o", "~price"] else ""
+
+            return ""
+
+        def transform_influences(row: pd.DataFrame, influence_columns: list[str]):
+            if not row[influence_columns].any():
+                return pd.NA
+            else:
+                influence_dict = {}
+                for influence_column in influence_columns:
+                    if row[influence_column]:
+                        influence_dict[influence_column.replace("influences.", "")] = (
+                            True
+                        )
+                return influence_dict
+
+        influence_columns = [
+            column for column in item_df.columns if "influences" in column
+        ]
+        item_df["influences"] = item_df.apply(
+            lambda row: transform_influences(row, influence_columns), axis=1
+        )
+
+        stash_series = item_df["stash"].str.split(" ")
+        currency_series = item_df["note"].str.split(" ")
+
+        currency_series = currency_series.where(
+            item_df["note"].str.contains("~"), stash_series
+        )
+        item_df["currencyAmount"] = currency_series.apply(get_currency_amount)
+        item_df["currencyType"] = currency_series.apply(get_currency_type)
+
+        invalid_amount_mask = ~item_df["currencyAmount"].str.match(
+            r"^(([0-9]*[.])?[0-9]+)$", na=False
+        )
+        item_df.loc[invalid_amount_mask, "currencyAmount"] = pd.NA
+        item_df.loc[invalid_amount_mask, "currencyType"] = ""
+
+        item_df = item_df.merge(
+            currency_df, how="left", left_on="currencyType", right_on="tradeName"
+        )
+
+        return item_df
 
     def _process_item_table(
         self, df: pd.DataFrame, currency_df: pd.DataFrame
     ) -> pd.Series:
         item_df = self._create_item_table(df)
         item_df = self._transform_item_table(item_df, currency_df)
-        item_df = self._add_timing_item_table(item_df)
+        split_by_unique_name_item_df = self._split_item_table_by_item_name(item_df)
+        item_df = self._add_timing_item_table(split_by_unique_name_item_df)
         item_df = self._clean_item_table(item_df)
         insert_data(
             item_df,
