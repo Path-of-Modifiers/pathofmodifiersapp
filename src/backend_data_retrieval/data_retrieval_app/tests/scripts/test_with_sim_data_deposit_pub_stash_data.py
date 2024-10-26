@@ -22,7 +22,6 @@ from data_retrieval_app.external_data_retrieval.data_retrieval.poe_ninja_currenc
 from data_retrieval_app.external_data_retrieval.main import ContinuousDataRetrieval
 from data_retrieval_app.external_data_retrieval.transforming_data.transform_poe_api_data import (
     PoEAPIDataTransformerBase,
-    UniquePoEAPIDataTransformer,
 )
 from data_retrieval_app.external_data_retrieval.transforming_data.transform_poe_ninja_currency_api_data import (
     TransformPoENinjaCurrencyAPIData,
