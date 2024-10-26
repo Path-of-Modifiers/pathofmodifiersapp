@@ -16,7 +16,7 @@ class _BaseItemModifier(_pydantic.BaseModel):
 
 # Properties to receive on item modifier creation
 class ItemModifierCreate(_BaseItemModifier):
-    createdAt: _dt.datetime | None = None  # For testing purposes
+    pass
 
 
 # Properties to receive on update

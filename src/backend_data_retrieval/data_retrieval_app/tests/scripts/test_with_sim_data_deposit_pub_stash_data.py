@@ -22,6 +22,7 @@ from data_retrieval_app.external_data_retrieval.data_retrieval.poe_ninja_currenc
 from data_retrieval_app.external_data_retrieval.main import ContinuousDataRetrieval
 from data_retrieval_app.external_data_retrieval.transforming_data.transform_poe_api_data import (
     PoEAPIDataTransformerBase,
+    UniquePoEAPIDataTransformer,
 )
 from data_retrieval_app.external_data_retrieval.transforming_data.transform_poe_ninja_currency_api_data import (
     TransformPoENinjaCurrencyAPIData,
@@ -38,29 +39,7 @@ from data_retrieval_app.logs.logger import test_logger, setup_logging
 
 
 class TestPoEAPIDataTransformerBase(PoEAPIDataTransformerBase):
-    def _add_timing_item_modifier_table(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Implemented in test child functions"""
-        raise NotImplementedError("Only available in child classes")
-
-    def _process_item_modifier_table(
-        self, df: pd.DataFrame, item_id: pd.Series
-    ) -> None:
-        item_modifier_df = self._create_item_modifier_table(df, item_id=item_id)
-        item_modifier_df = self._transform_item_modifier_table(item_modifier_df)
-        item_modifier_df = self._add_timing_item_modifier_table(item_modifier_df)
-        item_modifier_df = self._clean_item_modifier_table(item_modifier_df)
-
-        insert_data(
-            item_modifier_df,
-            url=self.url,
-            logger=test_logger,
-            table_name="itemModifier",
-            headers=self.pom_auth_headers,
-        )
-
-
-class TestUniquePoEAPIDataTransformer(TestPoEAPIDataTransformerBase):
-    def _add_timing_item_modifier_table(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _add_timing_item_table(self, df: pd.DataFrame) -> pd.DataFrame:
         if not script_settings.dispersed_timing_enabled:
             return df
         dati = script_settings.DAYS_AMOUNT_TIMING_INTERVAL
@@ -80,25 +59,55 @@ class TestUniquePoEAPIDataTransformer(TestPoEAPIDataTransformerBase):
 
         return df_combined
 
-    def _transform_item_modifier_table(
-        self, item_modifier_df: pd.DataFrame
-    ) -> pd.DataFrame:
-        item_modifier_df = self.roll_processor.add_rolls(df=item_modifier_df)
+    def _process_item_table(
+        self, df: pd.DataFrame, currency_df: pd.DataFrame
+    ) -> pd.Series:
+        item_df = self._create_item_table(df)
+        item_df = self._transform_item_table(item_df, currency_df)
+        item_df = self._add_timing_item_table(item_df)
+        item_df = self._clean_item_table(item_df)
+        insert_data(
+            item_df,
+            url=self.url,
+            table_name="item",
+            logger=test_logger,
+            headers=self.pom_auth_headers,
+        )
+        item_id = self._get_latest_item_id_series(item_df)
+        test_logger.debug("Latest item id found: " + str(item_id))
+        return item_id
 
-        return item_modifier_df
-
-    def _clean_item_modifier_table(self, item_modifer_df: pd.DataFrame) -> pd.DataFrame:
+    def _clean_item_table(self, item_df: pd.DataFrame) -> pd.DataFrame:
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
-        item_modifer_df.drop(
-            item_modifer_df.columns.difference(
-                ["itemId", "modifierId", "orderId", "position", "roll", "createdAt"]
-            ),
+        drop_list = [
+            "influences.shaper",
+            "influences.elder",
+            "influences.crusader",
+            "influences.hunter",
+            "influences.redeemer",
+            "influences.warlord",
+            "stash",
+            "currencyType",
+            "tradeName",
+            "valueInChaos",
+            "itemId",
+            "iconUrl",
+        ]
+        item_df.drop(
+            drop_list,
             axis=1,
             inplace=True,
+            errors="ignore",
         )
-        return item_modifer_df
+
+        item_df.rename({"icon": "iconUrl"}, axis=1, inplace=True)
+        return item_df
+
+
+class TestUniquePoEAPIDataTransformer(TestPoEAPIDataTransformerBase):
+    """Nothing changed in this class, it just needs to inherit and override functions properly"""
 
     def _create_item_modifier_table(
         self, df: pd.DataFrame, *, item_id: pd.Series
@@ -117,6 +126,27 @@ class TestUniquePoEAPIDataTransformer(TestPoEAPIDataTransformerBase):
         item_modifier_df.rename({"explicitMods": "modifier"}, axis=1, inplace=True)
 
         return item_modifier_df
+
+    def _transform_item_modifier_table(
+        self, item_modifier_df: pd.DataFrame
+    ) -> pd.DataFrame:
+        item_modifier_df = self.roll_processor.add_rolls(df=item_modifier_df)
+
+        return item_modifier_df
+
+    def _clean_item_modifier_table(self, item_modifer_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Gets rid of unnecessay information, so that only fields needed for the DB remains.
+        """
+        item_modifer_df.drop(
+            item_modifer_df.columns.difference(
+                ["itemId", "modifierId", "orderId", "position", "roll"]
+            ),
+            axis=1,
+            inplace=True,
+        )
+
+        return item_modifer_df
 
 
 class TestModifierSimulatedDataPoEAPIHandler(PoEAPIHandler):
