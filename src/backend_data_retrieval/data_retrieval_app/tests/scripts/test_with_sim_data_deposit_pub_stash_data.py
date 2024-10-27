@@ -38,19 +38,20 @@ from data_retrieval_app.logs.logger import test_logger, setup_logging
 
 
 class TestPoEAPIDataTransformerBase(PoEAPIDataTransformerBase):
+
     def _add_timing_item_table(
         self, split_item_dfs_by_unique_names: list[pd.DataFrame]
     ) -> pd.DataFrame:
+        if not script_settings.dispersed_timing_enabled:
+            return pd.concat(split_item_dfs_by_unique_names, ignore_index=True)
+        dati = script_settings.DAYS_AMOUNT_TIMING_INTERVAL
+
         item_dfs_combined = []
+        test_logger.info("Adding timing to the item tables")
         for item_df in split_item_dfs_by_unique_names:
-            if not script_settings.dispersed_timing_enabled:
-                return item_df
-            dati = script_settings.DAYS_AMOUNT_TIMING_INTERVAL
-            test_logger.info(f"Amount of days creating timing interval for: {dati}")
             df_size = item_df.size
             df_chunks = [item_df.copy()]
             if df_size == max(df_size, dati):
-                test_logger.info(f"Df size adding timing: {df_size}")
                 df_chunks = np.array_split(item_df, dati)
 
             for day, chunk in enumerate(df_chunks):
@@ -146,11 +147,16 @@ class TestPoEAPIDataTransformerBase(PoEAPIDataTransformerBase):
     def _process_item_table(
         self, df: pd.DataFrame, currency_df: pd.DataFrame
     ) -> pd.Series:
+        test_logger.info("Processing item tables...")
+        test_logger.info(f"Total items to process: {df.size}")
         item_df = self._create_item_table(df)
         item_df = self._transform_item_table(item_df, currency_df)
         split_by_unique_name_item_df = self._split_item_table_by_item_name(item_df)
         item_df = self._add_timing_item_table(split_by_unique_name_item_df)
         item_df = self._clean_item_table(item_df)
+        test_logger.info("Finished preprocessing the item tables")
+
+        test_logger.info("Posting items the pom API...")
         insert_data(
             item_df,
             url=self.url,
@@ -158,6 +164,9 @@ class TestPoEAPIDataTransformerBase(PoEAPIDataTransformerBase):
             logger=test_logger,
             headers=self.pom_auth_headers,
         )
+        test_logger.info("Finished posting the items to pom API")
+
+        test_logger.info("Finding latest item id...")
         item_id = self._get_latest_item_id_series(item_df)
         test_logger.debug("Latest item id found: " + str(item_id))
         return item_id
@@ -189,6 +198,26 @@ class TestPoEAPIDataTransformerBase(PoEAPIDataTransformerBase):
 
         item_df.rename({"icon": "iconUrl"}, axis=1, inplace=True)
         return item_df
+
+    def _process_item_modifier_table(
+        self, df: pd.DataFrame, item_id: pd.Series
+    ) -> None:
+        test_logger.info("Processing item tables...")
+        test_logger.info(f"Total item modifiers to process: {df.size}")
+        item_modifier_df = self._create_item_modifier_table(df, item_id=item_id)
+        item_modifier_df = self._transform_item_modifier_table(item_modifier_df)
+        item_modifier_df = self._clean_item_modifier_table(item_modifier_df)
+        test_logger.info("Finished preprocessing the item tables")
+
+        test_logger.info("Posting items the pom API...")
+        insert_data(
+            item_modifier_df,
+            url=self.url,
+            table_name="itemModifier",
+            logger=test_logger,
+            headers=self.pom_auth_headers,
+        )
+        test_logger.info("Finished posting the items to pom API")
 
 
 class TestUniquePoEAPIDataTransformer(TestPoEAPIDataTransformerBase):

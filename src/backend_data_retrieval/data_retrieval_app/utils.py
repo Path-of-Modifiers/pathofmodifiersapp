@@ -57,7 +57,7 @@ def insert_data(
     table_name: str,
     logger: logging.Logger,
     on_duplicate_pkey_do_nothing: bool = False,
-    headers: dict[str, str] = None,
+    headers: dict[str, str] | None = None,
 ) -> None:
     logger.debug("Inserting data into database.")
     if df.empty:
