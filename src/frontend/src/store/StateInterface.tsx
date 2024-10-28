@@ -43,8 +43,8 @@ export interface WantedModifier {
   modifierId: number;
   modifierLimitations?: ModifierLimitationState | null;
 }
-
-export interface WantedModifierSpecs extends WantedModifier {
+// Used to keep track of the different wanted modifiers for frontend
+export interface WantedModifierExtended extends WantedModifier {
   index: number;
   isSelected: boolean;
 }
@@ -55,6 +55,7 @@ export interface PlotSettingsState {
   setShowChaos: () => void;
   setShowSecondary: () => void;
 }
+export type SetItemSpecMisc = (isItemSpecType: boolean | undefined) => void;
 
 export interface GraphInputState {
   clearClicked: boolean;
@@ -64,38 +65,41 @@ export interface GraphInputState {
   itemSpec: ItemSpecState;
   baseSpec?: BaseSpecState;
   wantedModifiers: WantedModifier[];
-  wantedModifierSpecs: WantedModifierSpecs[];
+  wantedModifierExtended: WantedModifierExtended[];
   plotQuery: PlotQuery;
   setQueryClicked: () => void;
   setPlotQuery: () => void;
   setClearClicked: () => void;
   setLeague: (league: string) => void;
-  setItemSpecIdentified: (identified: boolean | undefined) => void;
   setItemName: (name: string | undefined) => void;
+  setItemRarity: (rarity: string | undefined) => void;
   setItemSpecMinIlvl: (minIlvl: number | undefined) => void;
   setItemSpecMaxIlvl: (maxIlvl: number | undefined) => void;
-  setItemRarity: (rarity: string | undefined) => void;
-  setItemSpecCorrupted: (corrupted: boolean | undefined) => void;
-  setItemSpecDelve: (delve: boolean | undefined) => void;
-  setItemSpecFractured: (fractured: boolean | undefined) => void;
-  setItemSpecSynthesized: (synthesized: boolean | undefined) => void;
-  setItemSpecElderInfluence: (elder: boolean | undefined) => void;
-  setItemSpecShaperInfluence: (shaper: boolean | undefined) => void;
-  setItemSpecCrusaderInfluence: (crusader: boolean | undefined) => void;
-  setItemSpecRedeemerInfluence: (redeemer: boolean | undefined) => void;
-  setItemSpecHunterInfluence: (hunter: boolean | undefined) => void;
-  setItemSpecWarlordInfluence: (warlord: boolean | undefined) => void;
-  setItemSpecReplica: (replica: boolean | undefined) => void;
-  setItemSpecSearing: (searing: boolean | undefined) => void;
-  setItemSpecTangled: (tangled: boolean | undefined) => void;
-  setItemSpecIsRelic: (isRelic: boolean | undefined) => void;
+  setItemSpecIdentified: SetItemSpecMisc;
+  setItemSpecCorrupted: SetItemSpecMisc;
+  setItemSpecDelve: SetItemSpecMisc;
+  setItemSpecFractured: SetItemSpecMisc;
+  setItemSpecSynthesized: SetItemSpecMisc;
+  setItemSpecElderInfluence: SetItemSpecMisc;
+  setItemSpecShaperInfluence: SetItemSpecMisc;
+  setItemSpecCrusaderInfluence: SetItemSpecMisc;
+  setItemSpecRedeemerInfluence: SetItemSpecMisc;
+  setItemSpecHunterInfluence: SetItemSpecMisc;
+  setItemSpecWarlordInfluence: SetItemSpecMisc;
+  setItemSpecReplica: SetItemSpecMisc;
+  setItemSpecSearing: SetItemSpecMisc;
+  setItemSpecTangled: SetItemSpecMisc;
+  setItemSpecIsRelic: SetItemSpecMisc;
   setItemSpecFoilVariation: (foilVariation: number | undefined) => void;
   setBaseType: (baseType: string | undefined) => void;
   setItemCategory: (category: string | undefined) => void;
   setItemSubCategory: (subCategory: string | undefined) => void;
-  addModifierSpec: (wantedModifier: WantedModifier, index: number) => void;
-  removeModifierSpec: (index_to_remove: number) => void;
-  updateSelectedModifierSpec: (
+  addWantedModifierExtended: (
+    wantedModifier: WantedModifier,
+    index: number
+  ) => void;
+  removeWantedModifierExtended: (index_to_remove: number) => void;
+  updateSelectedWantedModifierExtended: (
     index_to_update: number,
     isSelected: boolean
   ) => void;

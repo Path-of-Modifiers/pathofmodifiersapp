@@ -3,6 +3,7 @@ import {
   GraphInputState,
   ItemSpecState,
   WantedModifier,
+  WantedModifierExtended,
 } from "./StateInterface";
 
 const defaultLeague = import.meta.env.VITE_APP_DEFAULT_LEAGUE;
@@ -16,7 +17,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
   itemSpec: {},
   baseSpec: {},
   wantedModifiers: [],
-  wantedModifierSpecs: [],
+  wantedModifierExtended: [],
   plotQuery: {
     league: defaultLeague,
     wantedModifiers: [],
@@ -33,7 +34,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
         league: state.league,
         itemSpecifications: state.itemSpec,
         baseSpec: state.baseSpec,
-        wantedModifiers: state.wantedModifierSpecs
+        wantedModifiers: state.wantedModifierExtended
           .filter((wantedModifier) => wantedModifier.isSelected)
           .map((wantedModifier) => ({
             modifierId: wantedModifier.modifierId,
@@ -47,7 +48,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       clearClicked: true,
       itemName: undefined,
       itemSpec: {},
-      wantedModifierSpecs: [],
+      wantedModifierExtended: [],
       wantedModifiers: [],
       baseSpec: {},
     })),
@@ -188,18 +189,12 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
 
   setItemSpecMinIlvl: (minIlvl: number | undefined) =>
     set((state) => {
-      if (!minIlvl || minIlvl === 0) {
-        minIlvl = undefined;
-      }
       const itemSpec = { ...state.itemSpec, minIlvl: minIlvl };
       return { itemSpec: itemSpec };
     }),
 
   setItemSpecMaxIlvl: (maxIlvl: number | undefined) =>
     set((state) => {
-      if (!maxIlvl || maxIlvl === 0) {
-        maxIlvl = undefined;
-      }
       const itemSpec = { ...state.itemSpec, maxIlvl: maxIlvl };
       return { itemSpec: itemSpec };
     }),
@@ -226,38 +221,45 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       baseSpec: { ...state.baseSpec, subCategory: subCategory },
     })),
 
-  addModifierSpec: (wantedModifier: WantedModifier, index: number) =>
+  addWantedModifierExtended: (wantedModifier: WantedModifier, index: number) =>
     set((state) => {
       return {
-        wantedModifierSpecs: [
-          ...state.wantedModifierSpecs,
+        wantedModifierExtended: [
+          ...state.wantedModifierExtended,
           { ...wantedModifier, index: index, isSelected: true },
         ],
       };
     }),
 
-  updateSelectedModifierSpec: (index_to_update: number, isSelected: boolean) =>
+  updateSelectedWantedModifierExtended: (
+    index_to_update: number,
+    isSelected: boolean
+  ) =>
     set((state) => {
-      const chosenModifierSpecs = state.wantedModifierSpecs.filter(
-        (modifierSpec) => modifierSpec.index === index_to_update
+      const chosenModifiersExtended = state.wantedModifierExtended.filter(
+        (modifierExtended) => modifierExtended.index === index_to_update
       );
       return {
-        wantedModifierSpecs: [
-          ...state.wantedModifierSpecs.filter(
-            (modifierSpec) => modifierSpec.index !== index_to_update
+        wantedModifierExtended: [
+          ...state.wantedModifierExtended.filter(
+            (modifierExtended) => modifierExtended.index !== index_to_update
           ),
-          ...chosenModifierSpecs.map((chosenModifierSpec) => ({
-            ...chosenModifierSpec,
+          ...chosenModifiersExtended.map((chosenModifierExtended) => ({
+            ...chosenModifierExtended,
             isSelected: isSelected,
           })),
         ],
       };
     }),
 
-  removeModifierSpec: (index_to_remove: number) =>
+  removeWantedModifierExtended: (indexToRemove: number) =>
     set((state) => ({
-      wantedModifierSpecs: state.wantedModifierSpecs.filter(
-        (modifierSpec) => modifierSpec.index !== index_to_remove
+      wantedModifierExtended: state.wantedModifierExtended.reduce(
+        (prev, cur) =>
+          cur.index !== indexToRemove
+            ? [...prev, { ...cur, index: prev.length }]
+            : prev,
+        [] as WantedModifierExtended[]
       ),
     })),
 
@@ -267,29 +269,33 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
     index: number
   ) =>
     set((state) => {
-      const updatedSpecs = state.wantedModifierSpecs.map(
-        (wantedModifierSpec) => {
+      const updatedModifiersExtended = state.wantedModifierExtended.map(
+        (wantedModifierExtended) => {
           if (
-            wantedModifierSpec.modifierId === modifierId &&
-            wantedModifierSpec.index === index
+            wantedModifierExtended.modifierId === modifierId &&
+            wantedModifierExtended.index === index
           ) {
             if (minRoll === undefined) {
-              delete wantedModifierSpec["modifierLimitations"];
-              return wantedModifierSpec;
+              if (!wantedModifierExtended.modifierLimitations?.maxRoll) {
+                delete wantedModifierExtended["modifierLimitations"];
+              } else {
+                delete wantedModifierExtended.modifierLimitations["minRoll"];
+              }
+              return wantedModifierExtended;
             }
             return {
-              ...wantedModifierSpec,
+              ...wantedModifierExtended,
               modifierLimitations: {
-                ...wantedModifierSpec.modifierLimitations,
+                ...wantedModifierExtended.modifierLimitations,
                 minRoll: minRoll,
               },
             };
           } else {
-            return wantedModifierSpec;
+            return wantedModifierExtended;
           }
         }
       );
-      return { wantedModifierSpecs: updatedSpecs };
+      return { wantedModifierExtended: updatedModifiersExtended };
     }),
 
   setWantedModifierMaxRoll: (
@@ -298,23 +304,33 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
     index: number
   ) =>
     set((state) => {
-      const updatedSpecs = state.wantedModifierSpecs.map(
-        (wantedModifierSpec) =>
-          wantedModifierSpec.modifierId === modifierId &&
-          wantedModifierSpec.index === index
-            ? {
-                ...wantedModifierSpec,
-                modifierLimitations:
-                  maxRoll !== undefined
-                    ? {
-                        ...wantedModifierSpec.modifierLimitations,
-                        maxRoll: maxRoll,
-                      }
-                    : undefined,
+      const updatedModifiersExtended = state.wantedModifierExtended.map(
+        (wantedModifierExtended) => {
+          if (
+            wantedModifierExtended.modifierId === modifierId &&
+            wantedModifierExtended.index === index
+          ) {
+            if (maxRoll === undefined) {
+              if (!wantedModifierExtended.modifierLimitations?.minRoll) {
+                delete wantedModifierExtended["modifierLimitations"];
+              } else {
+                delete wantedModifierExtended.modifierLimitations["maxRoll"];
               }
-            : wantedModifierSpec
+              return wantedModifierExtended;
+            }
+            return {
+              ...wantedModifierExtended,
+              modifierLimitations: {
+                ...wantedModifierExtended.modifierLimitations,
+                maxRoll: maxRoll,
+              },
+            };
+          } else {
+            return wantedModifierExtended;
+          }
+        }
       );
-      return { wantedModifierSpecs: updatedSpecs };
+      return { wantedModifierExtended: updatedModifiersExtended };
     }),
 
   setWantedModifierTextRoll: (
@@ -323,22 +339,22 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
     index: number
   ) =>
     set((state) => {
-      const updatedSpecs = state.wantedModifierSpecs.map(
-        (wantedModifierSpec) =>
-          wantedModifierSpec.modifierId === modifierId &&
-          wantedModifierSpec.index === index
+      const updatedModifiersExtended = state.wantedModifierExtended.map(
+        (wantedModifierExtended) =>
+          wantedModifierExtended.modifierId === modifierId &&
+          wantedModifierExtended.index === index
             ? {
-                ...wantedModifierSpec,
+                ...wantedModifierExtended,
                 modifierLimitations:
                   textRoll !== undefined
                     ? {
-                        ...wantedModifierSpec.modifierLimitations,
+                        ...wantedModifierExtended.modifierLimitations,
                         textRoll: textRoll,
                       }
                     : undefined,
               }
-            : wantedModifierSpec
+            : wantedModifierExtended
       );
-      return { wantedModifierSpecs: updatedSpecs };
+      return { wantedModifierExtended: updatedModifiersExtended };
     }),
 }));

@@ -11,7 +11,7 @@ export interface ItemNameInputProps {
 
 // Item Name Input Component  -  This component is used to input the name of an item.
 export const ItemNameInput = (props: ItemNameInputProps) => {
-  const { setItemName } = useGraphInputStore();
+  const { itemName, setItemName } = useGraphInputStore();
 
   const handleNameChange: HandleChangeEventFunction = (newValue) => {
     if (newValue) {
@@ -34,7 +34,7 @@ export const ItemNameInput = (props: ItemNameInputProps) => {
     <SelectBoxInput
       descriptionText="Item Name"
       optionsList={optionsList}
-      defaultText="Any"
+      defaultText={itemName !== undefined ? itemName : "Any"}
       multipleValues={false}
       handleChange={handleNameChange}
       flexProps={{

@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import AddIconCheckbox from "../../Icon/AddIconCheckbox";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 // For debugging purposes
-// import { useOutsideClick } from "../../../hooks/useOutsideClick";
+import { useOutsideClick } from "../../../hooks/useOutsideClick";
 import { FancySelectedModifier } from "./FancySelectedModifier";
 interface ModifierInputProps {
   prefetchedmodifiers: GroupedModifierByEffect[];
@@ -40,23 +40,53 @@ export const ModifierInput = (props: ModifierInputProps) => {
       groupedModifierProperties: prefetchedModifier.groupedModifierProperties,
     })
   );
-  // For debugging purposes
-  // const ref = useOutsideClick(() => {
-  //   const store = useGraphInputStore.getState();
-  // console.log("STORE", store);
-  // console.log("LOCALSTORESELECTEDMODIFIERS", selectedModifiers);
-  // });
+
+  const {
+    wantedModifierExtended,
+    addWantedModifierExtended,
+    removeWantedModifierExtended,
+    updateSelectedWantedModifierExtended,
+  } = useGraphInputStore();
+  let prevSelectedModifiers: ModifierOption[] = [];
+  if (wantedModifierExtended.length > 0) {
+    prevSelectedModifiers = wantedModifierExtended.reduce(
+      (selectedModifiers, wantedModifier) => {
+        const prevSelectedModifier = modifierPreFetched.find((modifier) =>
+          modifier.groupedModifierProperties.modifierId.includes(
+            wantedModifier.modifierId
+          )
+        );
+        if (prevSelectedModifier === undefined) {
+          return selectedModifiers;
+        }
+
+        return [
+          ...selectedModifiers,
+          {
+            ...prevSelectedModifier,
+            isSelected: wantedModifier.isSelected,
+            index: wantedModifier.index,
+          },
+        ];
+      },
+      [] as ModifierOption[]
+    );
+  }
 
   const [selectedModifiers, setSelectedModifiers] = useState<ModifierOption[]>(
-    []
+    prevSelectedModifiers
   );
 
-  const { addModifierSpec, removeModifierSpec, updateSelectedModifierSpec } =
-    useGraphInputStore();
+  // For debugging purposes
+  const ref = useOutsideClick(() => {
+    const store = useGraphInputStore.getState();
+    console.log("STORE", store);
+    // console.log("query ->", store.wantedModifierExtended);
+  });
 
-  // NOTE: Tthe index, which is the selected modifier's position in
+  // NOTE: The index, which is the selected modifier's position in
   //`selectedModifiers` is used as a unique identifier both internally
-  // in `ModifierInput` but also for `WantedModifierSpecs` which allows
+  // in `ModifierInput` but also for `WantedModifiersExtended` which allows
   // multiple of the same modifier to be present in `WantedModifier`
   // by extension.
   const handleModifierSelect: HandleChangeEventFunction = (
@@ -71,31 +101,35 @@ export const ModifierInput = (props: ModifierInputProps) => {
     }
 
     newlySelectedModifier.isSelected = true;
+    // Note: currently not in use, but may be useful going forward
     // Removes the current modifier and replaces it with the new
     if (overrideIndex !== undefined) {
       newlySelectedModifier.index = overrideIndex;
 
-      setSelectedModifiers((prevSelectedModifiers) => [
-        ...prevSelectedModifiers.slice(0, overrideIndex),
+      setSelectedModifiers((currentSelectedModifiers) => [
+        ...currentSelectedModifiers.slice(0, overrideIndex),
         newlySelectedModifier,
-        ...prevSelectedModifiers.slice(overrideIndex + 1),
+        ...currentSelectedModifiers.slice(overrideIndex + 1),
       ]);
 
-      removeModifierSpec(overrideIndex);
+      removeWantedModifierExtended(overrideIndex);
       newlySelectedModifier.groupedModifierProperties.modifierId.map(
         (modifierId) => {
-          addModifierSpec({ modifierId: modifierId }, overrideIndex);
+          addWantedModifierExtended({ modifierId: modifierId }, overrideIndex);
         }
       );
     } else {
       newlySelectedModifier.index = selectedModifiers.length;
-      setSelectedModifiers((prevSelectedModifiers) => [
-        ...prevSelectedModifiers,
+      setSelectedModifiers((currentSelectedModifiers) => [
+        ...currentSelectedModifiers,
         newlySelectedModifier,
       ]);
       newlySelectedModifier.groupedModifierProperties.modifierId.map(
         (modifierId) => {
-          addModifierSpec({ modifierId: modifierId }, selectedModifiers.length);
+          addWantedModifierExtended(
+            { modifierId: modifierId },
+            selectedModifiers.length
+          );
         }
       );
     }
@@ -113,59 +147,41 @@ export const ModifierInput = (props: ModifierInputProps) => {
     selectedModifier: ModifierOption,
     index_to_handle: number
   ) => {
-    updateSelectedModifierSpec(index_to_handle, !selectedModifier.isSelected);
     selectedModifier.isSelected = !selectedModifier.isSelected;
-    // Removes the modifier if not selected, and adds it
-    // if it is selected.
-    // if (selectedModifier.isSelected) {
-    //   selectedModifier.groupedModifier.modifierId.map((modifierId) => {
-    //     addModifierSpec({ modifierId: modifierId }, index_to_handle);
-    //   });
-    // } else {
-    //   removeModifierSpec(index_to_handle);
-    // }
+    updateSelectedWantedModifierExtended(
+      index_to_handle,
+      selectedModifier.isSelected
+    );
   };
 
   // Removes the modifier
-  const handleRemoveModifier = (index_to_remove: number) => {
+  const handleRemoveModifier = (indexToRemove: number) => {
     const modifierToRemove = selectedModifiers.find(
-      (modifier) => modifier.index === index_to_remove
+      (modifier) => modifier.index === indexToRemove
     );
+    console.log(modifierToRemove);
     if (modifierToRemove) {
-      setSelectedModifiers((prevSelectedModifiers) =>
-        prevSelectedModifiers.filter(
-          (modifier) => modifier.index !== index_to_remove
+      setSelectedModifiers((currentSelectedModifiers) =>
+        currentSelectedModifiers.reduce(
+          (prev, cur) =>
+            cur.index !== indexToRemove
+              ? [...prev, { ...cur, index: prev.length }]
+              : prev,
+          [] as ModifierOption[]
         )
       );
-      setSelectedModifiers((prevSelectedModifiers) =>
-        prevSelectedModifiers.map((selectedModifier, index) => ({
-          ...selectedModifier,
-          index: index,
-        }))
-      );
-      removeModifierSpec(index_to_remove);
+      removeWantedModifierExtended(indexToRemove);
     }
   };
 
-  const { clearClicked, setClearClicked } = useGraphInputStore();
+  const { clearClicked } = useGraphInputStore();
 
   // removes all selected modifiers
   useEffect(() => {
     if (clearClicked) {
       setSelectedModifiers([]);
-      setClearClicked();
     }
-  }, [clearClicked, setClearClicked]);
-
-  // For debugging
-  // const { wantedModifierSpecs } = useGraphInputStore();
-  // useEffect(() => {
-  //   console.log(wantedModifierSpecs);
-  // }, [wantedModifierSpecs]);
-
-  // useEffect(() => {
-  //   console.log(selectedModifiers);
-  // }, [selectedModifiers]);
+  }, [clearClicked]);
 
   const selectedModifierSelectBoxes = selectedModifiers.map(
     (selectedModifier, index) => (
@@ -173,8 +189,6 @@ export const ModifierInput = (props: ModifierInputProps) => {
         key={index}
         bgColor={"ui.secondary"}
         flexDirection={"row"}
-        // height={10}
-        // maxHeight={10}
         maxWidth="95vw"
         alignItems={"center"}
         gap={2}
@@ -221,11 +235,15 @@ export const ModifierInput = (props: ModifierInputProps) => {
           </Stack>
 
           {/* mx here needs to be same length as checkboxes in selectedModifiersList */}
-          <Box
-            mx="40px"
-            // For debugging purposes
-            // ref={ref}
+          <Flex
+            bgColor={"ui.secondary"}
+            flexDirection={"row"}
+            maxWidth="95vw"
+            alignItems={"center"}
+            gap={2}
+            ref={ref}
           >
+            <AddIconCheckbox dontshow />
             <SelectBoxInput
               handleChange={handleModifierSelect}
               optionsList={modifierPreFetched}
@@ -234,9 +252,12 @@ export const ModifierInput = (props: ModifierInputProps) => {
               id={`modifierInput-${selectedModifiers.length}`}
               flexProps={{
                 width: "100%",
+                textAlign: "center",
+                _focusWithin: { textAlign: "left" },
               }}
             />
-          </Box>
+            <Box boxSize="28px" minW="28px" />
+          </Flex>
         </Box>
       )}
     </Flex>

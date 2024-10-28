@@ -5,14 +5,13 @@ import {
   DefaultMinMaxValues,
 } from "../StandardLayoutInput/MinMaxNumberInput";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-import { WantedModifierSpecs } from "../../../store/StateInterface";
+import { WantedModifierExtended } from "../../../store/StateInterface";
 
 type HandleChangeEventFunction = (
-  isNumerical: boolean,
   modifierId: number,
   value: string | undefined,
   selectedModifierIndex: number,
-  numericalType?: string,
+  numericalType?: "min" | "max",
   textRolls?: string
 ) => void;
 
@@ -21,7 +20,7 @@ export type TakingInputEventFunction = (orderIndex: number) => void;
 interface InputChangeHandler {
   modifierId: number;
   selectedModifierIndex: number;
-  currentRelevantModifierSpec: WantedModifierSpecs;
+  currentRelevantModifierSpec: WantedModifierExtended;
   orderIndex: number;
   isNumerical: boolean;
   textRolls: string | null | undefined;
@@ -42,7 +41,6 @@ const InputChangeHandler = (props: InputChangeHandler) => {
       <MinMaxNumberInput
         handleNumberChange={(value, numericalType) =>
           props.handleAnyChange(
-            props.isNumerical,
             props.modifierId,
             value,
             props.selectedModifierIndex,
@@ -62,7 +60,7 @@ const InputChangeHandler = (props: InputChangeHandler) => {
   } else {
     const defaultTextIndex = modifierLimitations?.textRoll ?? undefined;
     let defaultTextValue: string | undefined = undefined;
-    if (defaultTextIndex) {
+    if (defaultTextIndex !== undefined) {
       defaultTextValue = textRolls.split("|")[defaultTextIndex];
     }
     return (
@@ -71,7 +69,6 @@ const InputChangeHandler = (props: InputChangeHandler) => {
         index={props.selectedModifierIndex}
         handleTextChange={(value) =>
           props.handleAnyChange(
-            props.isNumerical,
             props.modifierId,
             value,
             props.selectedModifierIndex,
@@ -82,7 +79,7 @@ const InputChangeHandler = (props: InputChangeHandler) => {
         defaultValue={defaultTextValue}
         flexProps={{
           onBlur: () => props.changeTakingInput(props.orderIndex),
-          mt: "-7px",
+          mt: "-10.5px",
         }}
       ></TextRollInput>
     );
@@ -90,7 +87,7 @@ const InputChangeHandler = (props: InputChangeHandler) => {
 };
 
 interface DefaultOutputHandlerProps {
-  currentRelevantModifierSpec: WantedModifierSpecs;
+  currentRelevantModifierSpec: WantedModifierExtended;
   isNumerical: boolean;
   textRolls: string | null | undefined;
 }
@@ -102,6 +99,12 @@ const DefaultOutputHandler = (props: DefaultOutputHandlerProps) => {
     return <Box as="u">#</Box>;
   }
   if (props.isNumerical) {
+    if (
+      modifierLimitations.minRoll == null &&
+      modifierLimitations.maxRoll == null
+    ) {
+      return <Box as="u">#</Box>;
+    }
     return (
       <Box>
         <Box fontSize={10} textAlign="center">
@@ -138,7 +141,7 @@ interface FancyModifierInputProps {
 export const FancyModifierInput = (props: FancyModifierInputProps) => {
   const isNumerical = props.textRolls == null;
   const {
-    wantedModifierSpecs,
+    wantedModifierExtended,
     setWantedModifierMinRoll,
     setWantedModifierMaxRoll,
     setWantedModifierTextRoll,
@@ -146,25 +149,23 @@ export const FancyModifierInput = (props: FancyModifierInputProps) => {
 
   // A generic handle function that handles mixed input
   const handleAnyChange: HandleChangeEventFunction = (
-    isNumerical: boolean,
     modifierId: number,
     value: string | undefined,
     selectedModifierIndex: number,
-    numericalType?: string,
+    numericalType?: "min" | "max",
     textRolls?: string
   ): void => {
-    if (isNumerical && numericalType !== undefined) {
-      const numValue = value !== undefined ? Number(value) : undefined;
+    if (numericalType && textRolls) {
+      throw "'numericalType' and 'textRolls' cannot both be defined";
+    }
+    if (numericalType !== undefined) {
+      const numValue = value ? Number(value) : undefined;
       if (numericalType === "min") {
         setWantedModifierMinRoll(modifierId, numValue, selectedModifierIndex);
-      } else if (numericalType === "max") {
-        setWantedModifierMaxRoll(modifierId, numValue, selectedModifierIndex);
       } else {
-        throw `numerical type needs to be 'min' or 'max', not ${numericalType}`;
+        setWantedModifierMaxRoll(modifierId, numValue, selectedModifierIndex);
       }
-    } else if (isNumerical && numericalType === undefined) {
-      throw "Numerical type must be specified if 'isNumerical`===true";
-    } else if (!isNumerical && textRolls) {
+    } else if (textRolls) {
       if (value === "Any") {
         value = undefined;
       }
@@ -175,15 +176,18 @@ export const FancyModifierInput = (props: FancyModifierInputProps) => {
       throw "Modifier must have text rolls if the roll is not numerical.";
     }
   };
-  const currentWantedModifierSpecs = wantedModifierSpecs.filter(
+  if (wantedModifierExtended === undefined) {
+    throw `Couldnt find the current 'wantedModifierExtended' with the index ${props.selectedModifierIndex}`;
+  }
+  const currentWantedModifierExtended = wantedModifierExtended.filter(
     (spec) => spec.index == props.selectedModifierIndex
   );
-  if (wantedModifierSpecs === undefined) {
-    throw `Couldnt find the current 'wantedModifierSpecs' with the index ${props.selectedModifierIndex}`;
-  }
-  const currentRelevantModifierSpec =
-    currentWantedModifierSpecs[props.orderIndex];
 
+  const currentRelevantModifierSpec =
+    currentWantedModifierExtended[props.orderIndex];
+
+  // console.log("asbdhbasdhv", currentWantedModifierExtended);
+  // console.log("dasdas", currentRelevantModifierSpec);
   // This happens when 'Clear Query' is pressed:
   // For a split second this element is rerendered, but there are no selected modifiers.
   // which makes 'currentRelevantModifierSpec' null | undefined

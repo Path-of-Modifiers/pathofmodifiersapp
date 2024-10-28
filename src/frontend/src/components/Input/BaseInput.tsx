@@ -14,19 +14,21 @@ interface BaseInputProps {
 
 // BaseInput component that contains the base type input, category input, and sub category input
 export const BaseInput = (props: BaseInputProps) => {
-  const clearClicked = useGraphInputStore((state) => state.clearClicked);
-
-  const { expandedBaseType, setExpandedBaseType } = useExpandedComponentStore();
-
-  const handleExpanded = () => {
-    setExpandedBaseType(!expandedBaseType);
-  };
-
-  useEffect(() => {
-    if (clearClicked) {
-      setExpandedBaseType(false);
+  const { clearClicked, baseSpec } = useGraphInputStore();
+  let presetBaseType: string | undefined;
+  let presetCategory: string | undefined;
+  let presetSubCategory: string | undefined;
+  if (baseSpec !== undefined) {
+    if (baseSpec.baseType != null) {
+      presetBaseType = baseSpec.baseType;
     }
-  }, [clearClicked, setExpandedBaseType]);
+    if (baseSpec.category != null) {
+      presetCategory = baseSpec.category;
+    }
+    if (baseSpec.subCategory != null) {
+      presetSubCategory = baseSpec.subCategory;
+    }
+  }
 
   const baseTypes = props.itemBaseTypes.map(
     (itemBaseType) => itemBaseType.baseType
@@ -44,6 +46,16 @@ export const BaseInput = (props: BaseInputProps) => {
     ),
   ];
 
+  const { expandedBaseType, setExpandedBaseType } = useExpandedComponentStore();
+  const handleExpanded = () => {
+    setExpandedBaseType(!expandedBaseType);
+  };
+  useEffect(() => {
+    if (clearClicked) {
+      setExpandedBaseType(false);
+    }
+  }, [clearClicked, setExpandedBaseType]);
+
   return (
     <Flex direction={"column"} width={"inputSizes.lgBox"}>
       <AddICheckText
@@ -53,9 +65,12 @@ export const BaseInput = (props: BaseInputProps) => {
       />
       {expandedBaseType && props.itemBaseTypes.length !== 0 && (
         <Flex flexWrap={"wrap"} justifyContent={"flex-start"} ml={10} gap={2}>
-          <BaseTypeInput baseTypes={baseTypes} />
-          <CategoryInput categories={categories} />
-          <SubCategoryInput subCategories={subCategories} />
+          <BaseTypeInput baseTypes={baseTypes} presetValue={presetBaseType} />
+          <CategoryInput categories={categories} presetValue={presetCategory} />
+          <SubCategoryInput
+            subCategories={subCategories}
+            presetValue={presetSubCategory}
+          />
         </Flex>
       )}
     </Flex>

@@ -9,12 +9,12 @@ import {
 
 export type HandleNumberChangeEventFunction = (
   value: string,
-  numericalType: string
+  numericalType: "min" | "max"
 ) => void;
 
 export interface DefaultMinMaxValues {
-  min?: number;
-  max?: number;
+  min?: number | undefined;
+  max?: number | undefined;
 }
 
 export interface MinMaxNumberProps {
@@ -37,7 +37,7 @@ export const MinMaxNumberInput = (props: MinMaxNumberProps) => {
       color="ui.white"
     >
       {props.descriptionText && (
-        <Text mb={2} fontSize={15} color="ui.white">
+        <Text mb={2} fontSize="fontSizes.defaultRead" color="ui.white">
           {props.descriptionText}
         </Text>
       )}
@@ -48,7 +48,9 @@ export const MinMaxNumberInput = (props: MinMaxNumberProps) => {
           onChange={(e) => props.handleNumberChange(e, "min")}
           mr={1}
           defaultValue={
-            props.defaultValues?.min ? props.defaultValues.min : undefined
+            props.defaultValues?.min !== undefined
+              ? props.defaultValues.min
+              : undefined
           }
           onBlurCapture={(e) => {
             if (e.relatedTarget != null) {
@@ -74,7 +76,9 @@ export const MinMaxNumberInput = (props: MinMaxNumberProps) => {
           id="number-input-max"
           onChange={(e) => props.handleNumberChange(e, "max")}
           defaultValue={
-            props.defaultValues?.max ? props.defaultValues.max : undefined
+            props.defaultValues?.max !== undefined
+              ? props.defaultValues.max
+              : undefined
           }
           onBlurCapture={(e) => {
             if (e.relatedTarget != null) {
