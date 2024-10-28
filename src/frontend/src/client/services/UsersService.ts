@@ -16,12 +16,12 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class UsersService {
     /**
-     * Get All
+     * Get All Users
      * Retrieve all users.
      * @returns UsersPublic Successful Response
      * @throws ApiError
      */
-    public static getAll({
+    public static getAllUsers({
         skip,
         limit = 100,
     }: {

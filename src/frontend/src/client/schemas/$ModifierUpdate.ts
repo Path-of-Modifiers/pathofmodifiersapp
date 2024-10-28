@@ -8,6 +8,14 @@ export const $ModifierUpdate = {
             type: 'number',
             isRequired: true,
         },
+        relatedUniques: {
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+            }, {
+                type: 'null',
+            }],
+        },
         minRoll: {
             type: 'any-of',
             contains: [{

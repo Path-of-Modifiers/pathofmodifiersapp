@@ -39,10 +39,14 @@ export interface ModifierLimitationState {
   textRoll?: number | null;
 }
 
-export interface ModifierSpecState {
+export interface WantedModifier {
   modifierId: number;
-  position: number;
   modifierLimitations?: ModifierLimitationState | null;
+}
+// Used to keep track of the different wanted modifiers for frontend
+export interface WantedModifierExtended extends WantedModifier {
+  index: number;
+  isSelected: boolean;
 }
 
 export interface PlotSettingsState {
@@ -51,56 +55,68 @@ export interface PlotSettingsState {
   setShowChaos: () => void;
   setShowSecondary: () => void;
 }
+export type SetItemSpecMisc = (isItemSpecType: boolean | undefined) => void;
 
 export interface GraphInputState {
   clearClicked: boolean;
   queryClicked: boolean;
   league: string;
+  itemName: string | undefined;
   itemSpec: ItemSpecState;
   baseSpec?: BaseSpecState;
-  modifierSpecs: ModifierSpecState[];
+  wantedModifiers: WantedModifier[];
+  wantedModifierExtended: WantedModifierExtended[];
   plotQuery: PlotQuery;
   setQueryClicked: () => void;
   setPlotQuery: () => void;
   setClearClicked: () => void;
   setLeague: (league: string) => void;
-  setItemSpecIdentified: (identified: boolean | undefined) => void;
   setItemName: (name: string | undefined) => void;
+  setItemRarity: (rarity: string | undefined) => void;
   setItemSpecMinIlvl: (minIlvl: number | undefined) => void;
   setItemSpecMaxIlvl: (maxIlvl: number | undefined) => void;
-  setItemRarity: (rarity: string | undefined) => void;
-  setItemSpecCorrupted: (corrupted: boolean | undefined) => void;
-  setItemSpecDelve: (delve: boolean | undefined) => void;
-  setItemSpecFractured: (fractured: boolean | undefined) => void;
-  setItemSpecSynthesized: (synthesized: boolean | undefined) => void;
-  setItemSpecElderInfluence: (elder: boolean | undefined) => void;
-  setItemSpecShaperInfluence: (shaper: boolean | undefined) => void;
-  setItemSpecCrusaderInfluence: (crusader: boolean | undefined) => void;
-  setItemSpecRedeemerInfluence: (redeemer: boolean | undefined) => void;
-  setItemSpecHunterInfluence: (hunter: boolean | undefined) => void;
-  setItemSpecWarlordInfluence: (warlord: boolean | undefined) => void;
-  setItemSpecReplica: (replica: boolean | undefined) => void;
-  setItemSpecSearing: (searing: boolean | undefined) => void;
-  setItemSpecTangled: (tangled: boolean | undefined) => void;
-  setItemSpecIsRelic: (isRelic: boolean | undefined) => void;
+  setItemSpecIdentified: SetItemSpecMisc;
+  setItemSpecCorrupted: SetItemSpecMisc;
+  setItemSpecDelve: SetItemSpecMisc;
+  setItemSpecFractured: SetItemSpecMisc;
+  setItemSpecSynthesized: SetItemSpecMisc;
+  setItemSpecElderInfluence: SetItemSpecMisc;
+  setItemSpecShaperInfluence: SetItemSpecMisc;
+  setItemSpecCrusaderInfluence: SetItemSpecMisc;
+  setItemSpecRedeemerInfluence: SetItemSpecMisc;
+  setItemSpecHunterInfluence: SetItemSpecMisc;
+  setItemSpecWarlordInfluence: SetItemSpecMisc;
+  setItemSpecReplica: SetItemSpecMisc;
+  setItemSpecSearing: SetItemSpecMisc;
+  setItemSpecTangled: SetItemSpecMisc;
+  setItemSpecIsRelic: SetItemSpecMisc;
   setItemSpecFoilVariation: (foilVariation: number | undefined) => void;
   setBaseType: (baseType: string | undefined) => void;
   setItemCategory: (category: string | undefined) => void;
   setItemSubCategory: (subCategory: string | undefined) => void;
-  addModifierSpec: (modifierSpec: ModifierSpecState, position?: number) => void;
-  removeModifierSpec: (modifierId: number) => void;
-  updateModifierSpec: (modifierSpec: ModifierSpecState) => void;
-  setMinRollModifierSpec: (
-    modifierId: number,
-    minRoll: number | undefined
+  addWantedModifierExtended: (
+    wantedModifier: WantedModifier,
+    index: number
   ) => void;
-  setMaxRollModifierSpec: (
-    modifierId: number,
-    maxRoll: number | undefined
+  removeWantedModifierExtended: (index_to_remove: number) => void;
+  updateSelectedWantedModifierExtended: (
+    index_to_update: number,
+    isSelected: boolean
   ) => void;
-  setTextRollModifierSpec: (
+  setWantedModifierMinRoll: (
     modifierId: number,
-    textRoll: number | undefined
+    minRoll: number | undefined,
+    index: number
+  ) => void;
+  setWantedModifierMaxRoll: (
+    modifierId: number,
+    maxRoll: number | undefined,
+    index: number
+  ) => void;
+  setWantedModifierTextRoll: (
+    modifierId: number,
+    textRoll: number | undefined,
+    index: number
   ) => void;
 }
 
