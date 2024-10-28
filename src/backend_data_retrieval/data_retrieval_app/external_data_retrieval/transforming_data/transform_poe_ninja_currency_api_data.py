@@ -24,7 +24,7 @@ def load_currency_data():
 
 
 class TransformPoENinjaCurrencyAPIData:
-    def __init__(self):
+    def __init__(self) -> None:
         logger.debug("Initializing TransformPoENinjaCurrencyAPIData.")
         if "localhost" not in settings.BASEURL:
             self.url = f"https://{settings.BASEURL}"

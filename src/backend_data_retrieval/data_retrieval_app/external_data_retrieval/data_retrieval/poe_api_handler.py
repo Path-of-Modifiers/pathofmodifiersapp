@@ -299,7 +299,7 @@ class PoEAPIHandler:
         stashes_ready_event: threading.Event,
         waiting_for_next_id_lock: threading.Lock,
         stash_lock: threading.Lock,
-    ):
+    ) -> None:
         """
         Follows the API stream for 30 requests before letting another thread take
         the stashes. Sends 5 requets before waiting to recieve the request body.
@@ -324,11 +324,11 @@ class PoEAPIHandler:
                 stashes = []
                 stashes_ready_event.set()
                 await asyncio.sleep(1)
-        except:
-            logger.exception(
-                f"The following exception occured during {self._follow_stream}"
+        except Exception as e:
+            logger.info(
+                f"The following exception occured during {self._follow_stream}: {e}"
             )
-            raise
+            raise e
         finally:
             logger.info(f"Exiting {self._follow_stream} gracefully")
 
