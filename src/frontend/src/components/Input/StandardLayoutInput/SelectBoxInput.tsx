@@ -80,7 +80,7 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
     if (clearClicked) {
       setSelectedValue(defaultValue);
     }
-  }, [clearClicked, setSelectedValue, defaultValue]);
+  }, [clearClicked, setSelectedValue, defaultValue, props]);
 
   // A custom filter function. Uses the `regex` attribute of `SelectOption`
   // to filter if the input starts with `~`.
@@ -141,7 +141,7 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
     if (inFocus) {
       return;
     }
-    if (selectedValue != null && !clearClicked) {
+    if (selectedValue != null) {
       return;
     }
     const prevOptionSelected = optionList.find(
@@ -156,14 +156,7 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
       value: prevOptionSelected.value,
     };
     setSelectedValue(prevSelectedValue);
-  }, [
-    selectedValue,
-    placeholder,
-    optionList,
-    inFocus,
-    clearClicked,
-    defaultValue,
-  ]);
+  }, [selectedValue, placeholder, optionList, inFocus, defaultValue]);
 
   const chakraStylesBase = {
     background: "ui.input",
