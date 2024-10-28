@@ -7,6 +7,7 @@ from data_retrieval_app.data_deposit.data_depositor_base import DataDepositorBas
 from data_retrieval_app.data_deposit.modifier.modifier_processing_modules import (
     ModifierRegexCreator,
     check_for_additional_modifier_types,
+    check_for_new_related_unique,
     check_for_updated_numerical_rolls,
     check_for_updated_text_rolls,
 )
@@ -129,6 +130,12 @@ class ModifierDataDepositor(DataDepositorBase):
                 modifier_types=self.modifier_types,
             )
 
+            data, put_update = check_for_new_related_unique(
+                data=data,
+                put_update=put_update,
+                new_related_unique=self.logged_file_comments["Unique Name"],
+            )
+
             if put_update:
                 logger.info("Pushed updated modifier to the database.")
                 headers = {
@@ -172,7 +179,13 @@ class ModifierDataDepositor(DataDepositorBase):
 
         return non_duplicate_df
 
+    def _track_comments(self, df: pd.DataFrame) -> pd.DataFrame:
+        df["relatedUniques"] = self.logged_file_comments["Unique Name"]
+
+        return df
+
     def _process_data(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = self.regex_creator.add_regex(df)
-        df = self._remove_duplicates(df.copy(deep=True))
+        df = self.regex_creator.add_regex(df.copy())
+        df = self._remove_duplicates(df.copy())
+        df = self._track_comments(df.copy())
         return df

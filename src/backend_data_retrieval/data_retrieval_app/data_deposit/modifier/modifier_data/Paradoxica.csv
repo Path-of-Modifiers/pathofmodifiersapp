@@ -1,3 +1,5 @@
+# Unique Name: Paradoxica
+# Base Types: Vaal Rapier
 # Source: https://www.poewiki.net/wiki/Paradoxica
 minRoll,maxRoll,textRolls,position,effect,static,unique,veiled
 ,,,0,"Attacks with this Weapon deal Double Damage",True,True,True

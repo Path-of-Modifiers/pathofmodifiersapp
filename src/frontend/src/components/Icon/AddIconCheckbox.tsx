@@ -29,23 +29,32 @@ const AddIcon = (props: AddIconProps) => {
   );
 };
 
-export const AddIconCheckbox = (props: CheckboxProps) => {
+interface IconCheckboxProps extends CheckboxProps {
+  dontshow?: boolean;
+}
+
+export const AddIconCheckbox = (props: IconCheckboxProps) => {
+  const dontShow = props.dontshow ? true : false;
   return (
     <Box
       display="inline-block"
       padding="8px" // Adjust padding to increase clickable area
     >
-      <Checkbox
-        {...props}
-        icon={<AddIcon />}
-        isIndeterminate={props.isIndeterminate}
-        colorScheme={props.colorScheme || "ui.lightInput"}
-        borderColor={props.colorScheme || "ui.lightInput"}
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        iconSize="1.5em"
-      />
+      {!dontShow ? (
+        <Checkbox
+          {...props}
+          icon={<AddIcon />}
+          isIndeterminate={props.isIndeterminate}
+          colorScheme={props.colorScheme || "ui.lightInput"}
+          borderColor={props.colorScheme || "ui.lightInput"}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          iconSize="1.5em"
+        />
+      ) : (
+        <Box boxSize="14px" />
+      )}
     </Box>
   );
 };

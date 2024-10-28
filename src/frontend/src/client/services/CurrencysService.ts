@@ -94,10 +94,29 @@ export class CurrencysService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAllCurrencies(): CancelablePromise<(Currency | Array<Currency>)> {
+    public static getAllCurrencies({
+        limit,
+        skip,
+        sortKey,
+        sortMethod,
+    }: {
+        limit?: (number | null),
+        skip?: (number | null),
+        sortKey?: (string | null),
+        sortMethod?: ('asc' | 'desc' | null),
+    }): CancelablePromise<(Currency | Array<Currency>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/currency/',
+            query: {
+                'limit': limit,
+                'skip': skip,
+                'sort_key': sortKey,
+                'sort_method': sortMethod,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
         });
     }
     /**

@@ -1,53 +1,43 @@
-import { getEventTextContent } from "../../../hooks/utils";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import {
   SelectBoxInput,
   SelectBoxOptionValue,
+  HandleChangeEventFunction,
 } from "../StandardLayoutInput/SelectBoxInput";
 
 // Item Rarity Input Component  -  This component is used to select the rarity of an item.
 export const ItemRarityInput = () => {
-  const { setItemRarity } = useGraphInputStore();
+  const { itemSpec, setItemRarity } = useGraphInputStore();
 
-  const defaultValue = undefined;
-
-  const getRarityTextValue = () => {
-    const rarity = useGraphInputStore.getState().itemSpec.rarity;
-    if (rarity) {
-      return rarity;
-    } else {
-      return "";
-    }
-  };
-
-  const handleItemRarityChange = (
-    event: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>
-  ) => {
-    const itemRarityInput = getEventTextContent(event);
-    if (itemRarityInput === "Any") {
-      setItemRarity(undefined);
-    } else {
-      setItemRarity(itemRarityInput);
+  const handleItemRarityChange: HandleChangeEventFunction = (newValue) => {
+    if (newValue) {
+      const itemRarityInput = newValue.value;
+      if (itemRarityInput === "Any") {
+        setItemRarity(undefined);
+      } else {
+        setItemRarity(itemRarityInput);
+      }
     }
   };
 
   const optionsList: Array<SelectBoxOptionValue> = [
-    { value: undefined, text: "Any" },
-    { value: "Unique", text: "Unique" },
+    { value: "Unique", label: "Unique", regex: "Unique" },
     /* Future implementation for non-unique items
-    { value: "Non_Unique", text: "Any Non-Unique" },
+    { value: "Non_Unique", label: "Any Non-Unique" },
     */
   ];
+
+  const presetItemRarity = itemSpec.rarity;
 
   return (
     <SelectBoxInput
       descriptionText={"Item Rarity"}
       optionsList={optionsList}
-      itemKeyId={"ItemRarityInput"}
-      defaultValue={defaultValue}
-      defaultText="Any"
-      getSelectTextValue={getRarityTextValue()}
-      handleChange={(e) => handleItemRarityChange(e)}
+      defaultText={presetItemRarity ? presetItemRarity : "Any"}
+      multipleValues={false}
+      handleChange={handleItemRarityChange}
+      id={"itemRarityInput-0"}
+      canBeAny={true}
     />
   );
 };
