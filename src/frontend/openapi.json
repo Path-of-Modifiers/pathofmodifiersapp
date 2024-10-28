@@ -1143,120 +1143,6 @@
         }
       }
     },
-    "/api/api_v1/itemBaseType/baseTypes/": {
-      "get": {
-        "tags": [
-          "itemBaseTypes"
-        ],
-        "summary": "Get Base Types",
-        "description": "Get all base types.\n\nReturns a list of all base types.",
-        "operationId": "get_base_types",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/BaseType"
-                    },
-                    {
-                      "items": {
-                        "$ref": "#/components/schemas/BaseType"
-                      },
-                      "type": "array"
-                    }
-                  ],
-                  "title": "Response Itembasetypes-Get Base Types"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
-      }
-    },
-    "/api/api_v1/itemBaseType/uniqueCategories/": {
-      "get": {
-        "tags": [
-          "itemBaseTypes"
-        ],
-        "summary": "Get Unique Categories",
-        "description": "Get all unique categories.\n\nReturns a list of all categories.",
-        "operationId": "get_unique_categories",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/ItemBaseTypeCategory"
-                    },
-                    {
-                      "items": {
-                        "$ref": "#/components/schemas/ItemBaseTypeCategory"
-                      },
-                      "type": "array"
-                    }
-                  ],
-                  "title": "Response Itembasetypes-Get Unique Categories"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
-      }
-    },
-    "/api/api_v1/itemBaseType/uniqueSubCategories/": {
-      "get": {
-        "tags": [
-          "itemBaseTypes"
-        ],
-        "summary": "Get Unique Sub Categories",
-        "description": "Get all unique sub categories.\n\nReturns a list of all sub categories.",
-        "operationId": "get_unique_sub_categories",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/ItemBaseTypeSubCategory"
-                    },
-                    {
-                      "items": {
-                        "$ref": "#/components/schemas/ItemBaseTypeSubCategory"
-                      },
-                      "type": "array"
-                    }
-                  ],
-                  "title": "Response Itembasetypes-Get Unique Sub Categories"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
-      }
-    },
     "/api/api_v1/itemModifier/{itemId}": {
       "get": {
         "tags": [
@@ -4189,19 +4075,6 @@
         "type": "object",
         "title": "BaseSpecs"
       },
-      "BaseType": {
-        "properties": {
-          "baseType": {
-            "type": "string",
-            "title": "Basetype"
-          }
-        },
-        "type": "object",
-        "required": [
-          "baseType"
-        ],
-        "title": "BaseType"
-      },
       "Body_logins-login_access_session": {
         "properties": {
           "grant_type": {
@@ -4341,47 +4214,58 @@
       },
       "GroupedModifierByEffect": {
         "properties": {
+          "effect": {
+            "type": "string",
+            "title": "Effect"
+          },
+          "regex": {
+            "type": "string",
+            "title": "Regex"
+          },
+          "static": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Static"
+          },
+          "relatedUniques": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relateduniques"
+          },
+          "groupedModifierProperties": {
+            "$ref": "#/components/schemas/GroupedModifierProperties"
+          }
+        },
+        "type": "object",
+        "required": [
+          "effect",
+          "regex",
+          "static",
+          "relatedUniques",
+          "groupedModifierProperties"
+        ],
+        "title": "GroupedModifierByEffect"
+      },
+      "GroupedModifierProperties": {
+        "properties": {
           "modifierId": {
             "items": {
               "type": "integer"
             },
             "type": "array",
             "title": "Modifierid"
-          },
-          "position": {
-            "items": {
-              "type": "integer"
-            },
-            "type": "array",
-            "title": "Position"
-          },
-          "minRoll": {
-            "items": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "type": "array",
-            "title": "Minroll"
-          },
-          "maxRoll": {
-            "items": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "type": "array",
-            "title": "Maxroll"
           },
           "textRolls": {
             "items": {
@@ -4396,37 +4280,14 @@
             },
             "type": "array",
             "title": "Textrolls"
-          },
-          "effect": {
-            "type": "string",
-            "title": "Effect"
-          },
-          "static": {
-            "items": {
-              "anyOf": [
-                {
-                  "type": "boolean"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "type": "array",
-            "title": "Static"
           }
         },
         "type": "object",
         "required": [
           "modifierId",
-          "position",
-          "minRoll",
-          "maxRoll",
-          "textRolls",
-          "effect",
-          "static"
+          "textRolls"
         ],
-        "title": "GroupedModifierByEffect"
+        "title": "GroupedModifierProperties"
       },
       "HTTPValidationError": {
         "properties": {
@@ -4800,6 +4661,17 @@
               }
             ],
             "title": "Subcategory"
+          },
+          "relatedUniques": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relateduniques"
           }
         },
         "type": "object",
@@ -4808,19 +4680,6 @@
           "category"
         ],
         "title": "ItemBaseType"
-      },
-      "ItemBaseTypeCategory": {
-        "properties": {
-          "category": {
-            "type": "string",
-            "title": "Category"
-          }
-        },
-        "type": "object",
-        "required": [
-          "category"
-        ],
-        "title": "ItemBaseTypeCategory"
       },
       "ItemBaseTypeCreate": {
         "properties": {
@@ -4842,6 +4701,17 @@
               }
             ],
             "title": "Subcategory"
+          },
+          "relatedUniques": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relateduniques"
           }
         },
         "type": "object",
@@ -4850,19 +4720,6 @@
           "category"
         ],
         "title": "ItemBaseTypeCreate"
-      },
-      "ItemBaseTypeSubCategory": {
-        "properties": {
-          "subCategory": {
-            "type": "string",
-            "title": "Subcategory"
-          }
-        },
-        "type": "object",
-        "required": [
-          "subCategory"
-        ],
-        "title": "ItemBaseTypeSubCategory"
       },
       "ItemBaseTypeUpdate": {
         "properties": {
@@ -4884,6 +4741,17 @@
               }
             ],
             "title": "Subcategory"
+          },
+          "relatedUniques": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relateduniques"
           }
         },
         "type": "object",
@@ -5746,6 +5614,17 @@
             "type": "integer",
             "title": "Position"
           },
+          "relatedUniques": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relateduniques"
+          },
           "minRoll": {
             "anyOf": [
               {
@@ -5940,6 +5819,17 @@
           "position": {
             "type": "integer",
             "title": "Position"
+          },
+          "relatedUniques": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relateduniques"
           },
           "minRoll": {
             "anyOf": [
@@ -6151,6 +6041,17 @@
           "position": {
             "type": "integer",
             "title": "Position"
+          },
+          "relatedUniques": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relateduniques"
           },
           "minRoll": {
             "anyOf": [
@@ -6383,7 +6284,14 @@
             "title": "League"
           },
           "itemSpecifications": {
-            "$ref": "#/components/schemas/ItemSpecs"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ItemSpecs"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "baseSpecifications": {
             "anyOf": [
@@ -6406,7 +6314,6 @@
         "type": "object",
         "required": [
           "league",
-          "itemSpecifications",
           "wantedModifiers"
         ],
         "title": "PlotQuery"
@@ -7022,10 +6929,6 @@
             "type": "integer",
             "title": "Modifierid"
           },
-          "position": {
-            "type": "integer",
-            "title": "Position"
-          },
           "modifierLimitations": {
             "anyOf": [
               {
@@ -7039,8 +6942,7 @@
         },
         "type": "object",
         "required": [
-          "modifierId",
-          "position"
+          "modifierId"
         ],
         "title": "WantedModifier"
       }

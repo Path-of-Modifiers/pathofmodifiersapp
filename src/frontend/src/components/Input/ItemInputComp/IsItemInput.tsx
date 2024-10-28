@@ -1,9 +1,10 @@
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-import { convertToBoolean, getEventTextContent } from "../../../hooks/utils";
-import { ItemSpecState } from "../../../store/StateInterface";
+import { SetItemSpecMisc } from "../../../store/StateInterface";
+import { convertToBoolean } from "../../../hooks/utils";
 import {
   SelectBoxInput,
   SelectBoxOptionValue,
+  HandleChangeEventFunction,
 } from "../StandardLayoutInput/SelectBoxInput";
 
 interface IsItemInputProps {
@@ -28,36 +29,8 @@ interface IsItemInputProps {
 
 // Is Item Input Component  -  This component is used to select the boolean item properties.
 export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
-  const defaultValue = undefined;
-
-  const getIsItemSelectValue = () => {
-    let selectValue = undefined;
-    if (
-      itemSpecKey === "elder" ||
-      itemSpecKey === "shaper" ||
-      itemSpecKey === "crusader" ||
-      itemSpecKey === "redeemer" ||
-      itemSpecKey === "hunter" ||
-      itemSpecKey === "warlord"
-    ) {
-      selectValue =
-        (useGraphInputStore.getState().itemSpec as ItemSpecState).influences?.[
-          itemSpecKey
-        ] ?? undefined;
-    } else {
-      selectValue = (useGraphInputStore.getState().itemSpec as ItemSpecState)[
-        itemSpecKey
-      ];
-    }
-    if (selectValue) {
-      return "Yes";
-    } else if (selectValue === false) {
-      return "No";
-    }
-    return "";
-  };
-
   const {
+    itemSpec,
     setItemSpecIdentified,
     setItemSpecCorrupted,
     setItemSpecDelve,
@@ -75,77 +48,99 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
     setItemSpecIsRelic,
   } = useGraphInputStore();
 
-  const handleIsItemChange = (
-    event: React.FormEvent<HTMLElement> | React.MouseEvent<HTMLElement>,
-    value: string
-  ) => {
-    const textContent = getEventTextContent(event);
-    const selectedValue = convertToBoolean(textContent) as boolean;
+  let presetValue: boolean | undefined | null;
+  let setItemSpecMisc: SetItemSpecMisc;
+  switch (itemSpecKey) {
+    case "identified":
+      presetValue = itemSpec.identified;
+      setItemSpecMisc = setItemSpecIdentified;
+      break;
+    case "corrupted":
+      presetValue = itemSpec.corrupted;
+      setItemSpecMisc = setItemSpecCorrupted;
+      break;
+    case "delve":
+      presetValue = itemSpec.delve;
+      setItemSpecMisc = setItemSpecDelve;
+      break;
+    case "fractured":
+      presetValue = itemSpec.fractured;
+      setItemSpecMisc = setItemSpecFractured;
+      break;
+    case "synthesized":
+      presetValue = itemSpec.synthesized;
+      setItemSpecMisc = setItemSpecSynthesized;
+      break;
+    case "replica":
+      presetValue = itemSpec.replica;
+      setItemSpecMisc = setItemSpecReplica;
+      break;
+    case "elder":
+      presetValue = itemSpec.influences?.elder;
+      setItemSpecMisc = setItemSpecElderInfluence;
+      break;
+    case "shaper":
+      presetValue = itemSpec.influences?.shaper;
+      setItemSpecMisc = setItemSpecShaperInfluence;
+      break;
+    case "crusader":
+      presetValue = itemSpec.influences?.crusader;
+      setItemSpecMisc = setItemSpecCrusaderInfluence;
+      break;
+    case "redeemer":
+      presetValue = itemSpec.influences?.redeemer;
+      setItemSpecMisc = setItemSpecRedeemerInfluence;
+      break;
+    case "hunter":
+      presetValue = itemSpec.influences?.hunter;
+      setItemSpecMisc = setItemSpecHunterInfluence;
+      break;
+    case "warlord":
+      presetValue = itemSpec.influences?.warlord;
+      setItemSpecMisc = setItemSpecWarlordInfluence;
+      break;
+    case "searing":
+      presetValue = itemSpec.searing;
+      setItemSpecMisc = setItemSpecSearing;
+      break;
+    case "tangled":
+      presetValue = itemSpec.tangled;
+      setItemSpecMisc = setItemSpecTangled;
+      break;
+    case "isRelic":
+      presetValue = itemSpec.isRelic;
+      setItemSpecMisc = setItemSpecIsRelic;
+      break;
+    default:
+      throw "Couldn't match 'itemSpecKey' with item spec set function.";
+  }
 
-    switch (value) {
-      case "identified":
-        setItemSpecIdentified(selectedValue);
-        break;
-      case "corrupted":
-        setItemSpecCorrupted(selectedValue);
-        break;
-      case "delve":
-        setItemSpecDelve(selectedValue);
-        break;
-      case "fractured":
-        setItemSpecFractured(selectedValue);
-        break;
-      case "synthesized":
-        setItemSpecSynthesized(selectedValue);
-        break;
-      case "replica":
-        setItemSpecReplica(selectedValue);
-        break;
-      case "elder":
-        setItemSpecElderInfluence(selectedValue);
-        break;
-      case "shaper":
-        setItemSpecShaperInfluence(selectedValue);
-        break;
-      case "crusader":
-        setItemSpecCrusaderInfluence(selectedValue);
-        break;
-      case "redeemer":
-        setItemSpecRedeemerInfluence(selectedValue);
-        break;
-      case "hunter":
-        setItemSpecHunterInfluence(selectedValue);
-        break;
-      case "warlord":
-        setItemSpecWarlordInfluence(selectedValue);
-        break;
-      case "searing":
-        setItemSpecSearing(selectedValue);
-        break;
-      case "tangled":
-        setItemSpecTangled(selectedValue);
-        break;
-      case "isRelic":
-        setItemSpecIsRelic(selectedValue);
-        break;
+  const handleIsItemChange: HandleChangeEventFunction = (newValue) => {
+    if (newValue) {
+      const textContent = newValue.value;
+      const selectedValue = convertToBoolean(textContent) as boolean;
+      setItemSpecMisc(selectedValue);
     }
   };
 
   const optionsList: Array<SelectBoxOptionValue> = [
-    { value: undefined, text: "Any" },
-    { value: "true", text: "Yes" },
-    { value: "false", text: "No" },
+    { value: "true", label: "Yes", regex: "Yes" },
+    { value: "false", label: "No", regex: "No" },
   ];
+
+  const defaultOption = optionsList.find(
+    (option) => convertToBoolean(option.value) === presetValue
+  );
 
   return (
     <SelectBoxInput
       descriptionText={text}
       optionsList={optionsList}
-      itemKeyId={itemSpecKey}
-      defaultValue={defaultValue}
-      defaultText="Any"
-      getSelectTextValue={getIsItemSelectValue()}
-      handleChange={(e) => handleIsItemChange(e, itemSpecKey)}
+      defaultText={defaultOption ? defaultOption.label : "Any"}
+      multipleValues={false}
+      handleChange={handleIsItemChange}
+      id={`miscItemInput-${itemSpecKey}-0`}
+      canBeAny={true}
     />
   );
 };

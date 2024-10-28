@@ -7,12 +7,7 @@ import { GraphInput } from "../../components/Input/GraphInput";
 import GraphComponent from "../../components/Graph/GraphComponent";
 import { useEffect, useRef, useState } from "react";
 import { prefetchedGroupedModifiers } from "../../hooks/getData/prefetchGroupedModifiers";
-import {
-  BaseType,
-  GroupedModifierByEffect,
-  ItemBaseTypeCategory,
-  ItemBaseTypeSubCategory,
-} from "../../client";
+import { GroupedModifierByEffect, ItemBaseType } from "../../client";
 import { prefetchAllBaseTypeData } from "../../hooks/getData/getBaseTypeCategories";
 import Footer from "../../components/Common/Footer";
 import { ErrorMessage } from "../../components/Input/StandardLayoutInput/ErrorMessage";
@@ -36,11 +31,8 @@ function Index() {
   const [modifiersData, setModifiersData] = useState<GroupedModifierByEffect[]>(
     []
   );
-  const [baseTypes, setBaseTypes] = useState<BaseType[]>([]);
-  const [categories, setCategories] = useState<ItemBaseTypeCategory[]>([]);
-  const [subCategories, setSubCategories] = useState<ItemBaseTypeSubCategory[]>(
-    []
-  );
+  const [itemBaseTypes, setItemBaseTypes] = useState<ItemBaseType[]>([]);
+  const [itemNames, setItemNames] = useState<string[]>([]);
   const { modifiersError, leagueError, resultError } = useErrorStore();
   const isFetched = useRef(false);
 
@@ -50,9 +42,8 @@ function Index() {
         setModifiersData(data.groupedModifiers);
       });
       prefetchAllBaseTypeData(queryClient).then((data) => {
-        setBaseTypes(data.baseTypes);
-        setCategories(data.itemBaseTypeCategory);
-        setSubCategories(data.itemBaseTypeSubCategory);
+        setItemBaseTypes(data.itemBaseTypes);
+        setItemNames(data.itemNames);
       });
       isFetched.current = true; // Mark as fetched
     }
@@ -86,12 +77,11 @@ function Index() {
           alignSelf="center"
         >
           <VStack width={"bgBoxes.defaultBox"} height={"100%"} maxW={"100%"}>
-            {modifiersData.length > 0 && baseTypes.length > 0 && (
+            {modifiersData.length > 0 && itemBaseTypes.length > 0 && (
               <GraphInput
                 prefetchedmodifiers={modifiersData}
-                prefetchbasetypes={baseTypes}
-                prefetchcategories={categories}
-                prefetchsubcategories={subCategories}
+                prefetcheditembasetypes={itemBaseTypes}
+                prefecteditemnames={itemNames}
               />
             )}
             <QueryButtons />

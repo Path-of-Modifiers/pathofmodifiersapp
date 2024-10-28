@@ -2,7 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type ItemBaseTypeSubCategory = {
-    subCategory: string;
+export type GroupedModifierProperties = {
+    modifierId: Array<number>;
+    textRolls: Array<(string | null)>;
 };
 

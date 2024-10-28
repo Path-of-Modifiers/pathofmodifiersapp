@@ -39,7 +39,7 @@ const theme = extendTheme({
   styles: {
     global: {
       "html, body": {
-        fontSize: "15px",
+        fontSize: "14px",
       },
     },
   },
@@ -55,8 +55,8 @@ const theme = extendTheme({
     black: 900,
   },
   fontSizes: {
-    mini: 13,
-    defaultRead: 15,
+    mini: 10,
+    defaultRead: 14,
     input: 16,
     menu: 17,
     heading: 50,
