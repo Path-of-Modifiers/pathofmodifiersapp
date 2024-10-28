@@ -9,6 +9,11 @@ from typing import Any
 import pandas as pd
 
 from data_retrieval_app.external_data_retrieval.config import settings
+from data_retrieval_app.tests.scripts.create_public_stashes_test_data.config import (
+    script_settings,
+)
+from data_retrieval_app.tests.utils import random_int
+from data_retrieval_app.logs.logger import test_logger
 
 
 class DataDepositTestDataCreator:
@@ -91,17 +96,28 @@ class DataDepositTestDataCreator:
             case _:
                 return "Unknown CSV file"
 
-    def _load_data(self, data_location: str) -> Iterator[pd.DataFrame]:
-        for file_name in os.listdir(data_location):
+    def _load_data(self, data_location: str) -> Iterator[tuple[str, pd.DataFrame]]:
+        test_logger.info(
+            f"Currently iterating modifier csv files: {script_settings.MODIFIER_CSV_FILES_TO_ITERATE}"
+        )
+        file_names = os.listdir(data_location)
+        if data_location.split("/")[-2] == "modifier_data":
+            if script_settings.MODIFIER_CSV_FILES_TO_ITERATE:
+                file_names = script_settings.MODIFIER_CSV_FILES_TO_ITERATE
+
+        for file_name in file_names:
             filepath = os.path.join(data_location, file_name)
             df = pd.read_csv(filepath, comment="#", index_col=False)
+            if df.empty:
+                raise Exception(
+                    "Something went wrong when trying to load the dataframe from file"
+                )
             with open(filepath) as infile:
                 for line in infile:
                     if "#" == line[0]:
                         line.rstrip()
                     else:
                         break
-
             yield file_name, df
 
     def _get_roll_index_positions(self, modifier_effect: str) -> list[int]:
@@ -273,10 +289,18 @@ class DataDepositTestDataCreator:
 
         return list(base_types), list(categories), list(sub_categories)
 
+    def _create_random_note_text(self) -> str:
+        cur_types = script_settings.ITEM_NOTE_CURRENCY_TYPES
+        r_cur_type = cur_types[random_int(0, len(cur_types) - 1)]
+        r_int = random_int(1, script_settings.MAXIMUM_ITEM_PRICE)
+
+        note = f"~price {r_int} {r_cur_type}"
+        return note
+
     def _create_item_dict(
         self,
         file_name: str,
-        modifiers: list[str],
+        modifiers: list[dict[str, Any]],
         item_base_types: tuple[list, list, list],
     ) -> dict[str, Any]:
         """Create an item dictionary with attributes and modifiers."""
@@ -298,6 +322,7 @@ class DataDepositTestDataCreator:
             "league": settings.CURRENT_SOFTCORE_LEAGUE,
             "rarity": "Unique",
             "baseType": random.choice(base_types),
+            "note": self._create_random_note_text(),
             "extended": [
                 {
                     "category": (
@@ -308,8 +333,8 @@ class DataDepositTestDataCreator:
                         if sub_categories
                         else ["helmet"]  # just add dummy value
                     ),
-                    "prefixes": random.randint(0, 99),
-                    "suffixes": random.randint(0, 99),
+                    "prefixes": random_int(0, 99),
+                    "suffixes": random_int(0, 99),
                 }
             ],
             "explicitMods": modifiers,
@@ -318,19 +343,26 @@ class DataDepositTestDataCreator:
         item_data["id"] = str(uuid.uuid4())  # Generate a unique ID
         return item_data
 
-    def save_to_json(self, items: list[dict[str, Any]], output_file: str):
+    def save_to_json(self, items: list[dict[str, Any]], output_file: str) -> None:
         """Save the items to a JSON file."""
         with open(output_file, "w") as json_file:
             json.dump(items, json_file, indent=4)
 
     def create_test_data_with_data_deposit_files(
         self,
-    ) -> Iterator[tuple[str, str, list[dict[str, Any]]]]:
-        # Load data from both locations and make them cycle indefinitely
-        modifier_iterator = self._load_data(self.new_modifier_data_location)
-        item_base_type_iterator = itertools.cycle(
+    ) -> Iterator[tuple[Any, list[dict[str, Any]]]]:
+        modifier_data = list(self._load_data(self.new_modifier_data_location))
+        item_base_type_data = list(
             self._load_data(self.new_item_base_type_data_location)
         )
+
+        # Determine which one is smaller and cycle the smaller one
+        if len(modifier_data) <= len(item_base_type_data):
+            modifier_iterator = itertools.cycle(modifier_data)
+            item_base_type_iterator = iter(item_base_type_data)
+        else:
+            modifier_iterator = iter(modifier_data)
+            item_base_type_iterator = itertools.cycle(item_base_type_data)
 
         # Iterate over both at the same time
         for (modifier_file_name, df), (_, item_base_type_df) in zip(

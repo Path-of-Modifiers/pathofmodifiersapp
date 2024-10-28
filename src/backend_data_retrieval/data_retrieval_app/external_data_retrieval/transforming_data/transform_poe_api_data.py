@@ -14,7 +14,7 @@ pd.options.mode.chained_assignment = None  # default="warn"
 
 
 class PoEAPIDataTransformerBase:
-    def __init__(self):
+    def __init__(self) -> None:
         logger.debug("Initializing PoEAPIDataTransformer")
         if "localhost" not in settings.BASEURL:
             self.url = f"https://{settings.BASEURL}"
@@ -139,7 +139,7 @@ class PoEAPIDataTransformerBase:
     ) -> pd.DataFrame:
         """
         The `item` table requires a foreign key to the `currency` table.
-        Everything related to the price of the item is stored in the `node`
+        Everything related to the price of the item is stored in the `note`
         attribute.
 
         There are two types of listings in PoE, exact price and asking price which are
@@ -167,9 +167,9 @@ class PoEAPIDataTransformerBase:
                 influence_dict = {}
                 for influence_column in influence_columns:
                     if row[influence_column]:
-                        influence_dict[
-                            influence_column.replace("influences.", "")
-                        ] = True
+                        influence_dict[influence_column.replace("influences.", "")] = (
+                            True
+                        )
                 return influence_dict
 
         influence_columns = [
@@ -357,15 +357,18 @@ class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
 
         return item_modifier_df
 
-    def _clean_item_modifier_table(self, item_modifer_df: pd.DataFrame):
+    def _clean_item_modifier_table(
+        self, item_modifier_df: pd.DataFrame
+    ) -> pd.DataFrame:
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
-        item_modifer_df.drop(
-            item_modifer_df.columns.difference(
+        item_modifier_df.drop(
+            item_modifier_df.columns.difference(
                 ["itemId", "modifierId", "orderId", "position", "roll"]
             ),
             axis=1,
             inplace=True,
         )
-        return item_modifer_df
+
+        return item_modifier_df

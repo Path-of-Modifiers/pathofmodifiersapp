@@ -47,7 +47,7 @@ class _BaseItem(_pydantic.BaseModel):
 
 # Properties to receive on item creation
 class ItemCreate(_BaseItem):
-    pass
+    createdAt: _dt.datetime | None = None
 
 
 # Properties to receive on update

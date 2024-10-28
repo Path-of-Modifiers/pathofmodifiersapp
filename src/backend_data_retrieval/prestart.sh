@@ -11,9 +11,14 @@ else
 fi
 
 # Test scripts in "tests" module
-# python data_retrieval_app/tests/scripts/test_with_sim_data_deposit_pub_stash_data.py
-
-# exit 1
+echo "Checking whether to run alternative data scripts"
+if [[ "${DATA_RET_TEST_PUB_STASH_SIM_DATA_DEPOSIT_ENABLED}" == "True" ]] ; then
+    echo "Running script with simulated public stashes data from modifier files"
+    python data_retrieval_app/tests/scripts/test_with_sim_data_deposit_pub_stash_data.py
+    echo "Finished running script with simulated public stashes data from modifier files"
+    exit 0
+fi
+echo "Didn't find any alternative data scripts set to run"
 
 # Variables that need to be set before running container.
 # Check if exists or value = changethis
