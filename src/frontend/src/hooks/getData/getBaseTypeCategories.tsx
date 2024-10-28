@@ -10,14 +10,13 @@ export const prefetchAllBaseTypeData = async (queryClient: QueryClient) => {
     await queryClient.prefetchQuery({
       queryKey: ["uniqueBasetypeValues"],
       queryFn: async () => {
-        const data = await ItemBaseTypesService.getAllItemBaseTypes({});
-
+        const data =
+          await ItemBaseTypesService.getAllItemBaseTypes({});
         if (Array.isArray(data)) {
           itemBaseTypes = data;
         } else {
           itemBaseTypes = [data];
         }
-
         return 1;
       },
       staleTime: 10 * 1000, // only prefetch if older than 10 seconds
@@ -25,6 +24,7 @@ export const prefetchAllBaseTypeData = async (queryClient: QueryClient) => {
   } catch (error) {
     console.log(error);
   }
+
   const createItemNameArray = (itemBaseType: ItemBaseType[]) => {
     const reduceItemNameArray = (
       prev: string[] | undefined,

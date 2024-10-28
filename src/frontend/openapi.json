@@ -3245,7 +3245,7 @@
           "users"
         ],
         "summary": "Update Me Username",
-        "description": "Update username. Can only be used by users once a month.\n\nTODO: Fix rate limit if route throws an error, it doesn't rate limit.",
+        "description": "Update username. Can only be used by users once a month.",
         "operationId": "update_me_username",
         "requestBody": {
           "content": {
@@ -3284,6 +3284,55 @@
             "OAuth2PasswordBearer": []
           }
         ]
+      }
+    },
+    "/api/api_v1/user/check-username-exists": {
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Check Username Exists",
+        "description": "Checks if username exists in the db.\n\nReturns `True` if the user exists, else `False`",
+        "operationId": "check_username_exists",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Username"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean",
+                  "title": "Response Users-Check Username Exists"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/api_v1/user/me/password": {
