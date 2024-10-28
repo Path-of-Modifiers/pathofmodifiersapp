@@ -78,9 +78,9 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
   const { clearClicked } = useGraphInputStore();
   useEffect(() => {
     if (clearClicked) {
-      setSelectedValue(null);
+      setSelectedValue(defaultValue);
     }
-  }, [clearClicked, setSelectedValue]);
+  }, [clearClicked, setSelectedValue, defaultValue]);
 
   // A custom filter function. Uses the `regex` attribute of `SelectOption`
   // to filter if the input starts with `~`.
@@ -88,20 +88,35 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
     candidate: { label: string; value: string; data: any },
     inputValue: string
   ): boolean => {
-    const advancedSearch = inputValue.at(0) === "~";
-    const lowerCaseInputValue = inputValue.toLowerCase();
-    const lowerCaseCandidate = candidate.data.regex.toLowerCase();
-    if (advancedSearch) {
+    const advancedSearchEnabled = inputValue.at(0) === "~";
+    const inputValueLowerCase = inputValue.toLowerCase();
+    const candidateValueLowerCase = candidate.data.regex.toLowerCase();
+    let passedCheck: boolean = false;
+    if (advancedSearchEnabled) {
       // The .slice(1) removes the initial `~`
-      const splitString = lowerCaseInputValue.slice(1).split(" ");
+      const splitString = inputValueLowerCase.slice(1).split(" ");
       const regexString = splitString
         .map((subStr) => (subStr ? `(?=.*${subStr})` : ""))
         .join("");
       const regex = RegExp(regexString, "g");
-      return regex.test(lowerCaseCandidate);
+      passedCheck = regex.test(candidateValueLowerCase);
     } else {
-      return lowerCaseCandidate.includes(lowerCaseInputValue);
+      passedCheck = candidateValueLowerCase.includes(inputValueLowerCase);
+      if (!passedCheck) {
+        if (candidateValueLowerCase.includes("?")) {
+          const candidateLabelValue = candidate.label.toLowerCase();
+          passedCheck = candidateLabelValue.includes(inputValueLowerCase);
+          if (!passedCheck) {
+            const candidateValueSimplified = candidateValueLowerCase
+              .split("?")
+              .join("");
+            passedCheck =
+              candidateValueSimplified.includes(inputValueLowerCase);
+          }
+        }
+      }
     }
+    return passedCheck;
   };
 
   const handleChangeInternal: HandleChangeEventFunction = (newValue) => {
@@ -121,6 +136,7 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
     }
     setSelectedValue(null);
   };
+
   useEffect(() => {
     if (inFocus) {
       return;
@@ -196,7 +212,7 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
     >
       <FormControl color={"ui.white"}>
         {props.descriptionText && (
-          <FormLabel color={"ui.white"} fontSize="14px">
+          <FormLabel color={"ui.white"} fontSize="fontSizes.defaultRead">
             {props.descriptionText}
           </FormLabel>
         )}
@@ -224,6 +240,7 @@ export const SelectBoxInput = (props: SelectBoxProps) => {
           openMenuOnFocus={true}
           focusBorderColor="ui.white"
           key={`${props.id}`}
+          menuShouldScrollIntoView={false}
         />
       </FormControl>
     </Flex>

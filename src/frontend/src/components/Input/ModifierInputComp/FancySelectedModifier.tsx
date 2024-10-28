@@ -55,8 +55,8 @@ export const FancySelectedModifier = (props: FancyModifierInputProps) => {
         {splitSelectedModiferLabel.map(
           (labelPart, labelIndex, splitSelectedModifer) => {
             const labelPartSplit = labelPart.split(" ");
+            const isNotEnd = splitSelectedModifer.length !== labelIndex + 1;
             return labelPartSplit.map((word, wordIndex) => {
-              const isNotEnd = splitSelectedModifer.length !== labelIndex + 1;
               if (wordIndex < labelPartSplit.length - 1 || !isNotEnd) {
                 return (
                   <Text

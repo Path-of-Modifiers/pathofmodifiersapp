@@ -7,6 +7,7 @@ import {
 
 interface BaseTypeInputProps {
   baseTypes: string[];
+  presetValue: string | undefined;
 }
 
 // Base Type Input Component  -  This component is used to select the base type of an item.
@@ -38,7 +39,7 @@ export const BaseTypeInput = (props: BaseTypeInputProps) => {
     <SelectBoxInput
       descriptionText={"Item Base Type"}
       optionsList={baseTypeOptions}
-      defaultText="Any"
+      defaultText={props.presetValue ? props.presetValue : "Any"}
       multipleValues={false}
       handleChange={handleBaseTypeChange}
       id={"baseTypeInput-0"}

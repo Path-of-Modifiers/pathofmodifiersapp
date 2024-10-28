@@ -1,5 +1,5 @@
 import { Flex } from "@chakra-ui/layout";
-import AddIconCheckbox from "./AddIconCheckbox";
+import { AddIconCheckbox } from "./AddIconCheckbox";
 import { TextWithUnderline } from "../Text/TextWithUnderline";
 
 interface IconTextProps {
@@ -9,7 +9,7 @@ interface IconTextProps {
   onMouseEnter?: () => void;
 }
 
-/** Conains both the AddIconCheckbox and the Text component
+/** Contains both the AddIconCheckbox and the Text component
  *  with a border */
 export const AddICheckText = (props: IconTextProps) => {
   return (

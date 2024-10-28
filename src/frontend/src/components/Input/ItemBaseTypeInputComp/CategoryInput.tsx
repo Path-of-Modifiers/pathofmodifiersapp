@@ -8,6 +8,7 @@ import {
 
 interface CategoryInputProps {
   categories: string[];
+  presetValue: string | undefined;
 }
 
 // Category Input Component  -  This component is used to select the category of an item base type.
@@ -39,7 +40,9 @@ export const CategoryInput = (props: CategoryInputProps) => {
     <SelectBoxInput
       descriptionText={"Item Category"}
       optionsList={categoryOptions}
-      defaultText="Any"
+      defaultText={
+        props.presetValue ? capitalizeFirstLetter(props.presetValue) : "Any"
+      }
       multipleValues={false}
       handleChange={handleCategoryChange}
       id={"categoryInput-0"}

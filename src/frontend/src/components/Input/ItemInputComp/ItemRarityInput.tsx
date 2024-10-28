@@ -7,7 +7,7 @@ import {
 
 // Item Rarity Input Component  -  This component is used to select the rarity of an item.
 export const ItemRarityInput = () => {
-  const { setItemRarity } = useGraphInputStore();
+  const { itemSpec, setItemRarity } = useGraphInputStore();
 
   const handleItemRarityChange: HandleChangeEventFunction = (newValue) => {
     if (newValue) {
@@ -27,11 +27,13 @@ export const ItemRarityInput = () => {
     */
   ];
 
+  const presetItemRarity = itemSpec.rarity;
+
   return (
     <SelectBoxInput
       descriptionText={"Item Rarity"}
       optionsList={optionsList}
-      defaultText="Any"
+      defaultText={presetItemRarity ? presetItemRarity : "Any"}
       multipleValues={false}
       handleChange={handleItemRarityChange}
       id={"itemRarityInput-0"}

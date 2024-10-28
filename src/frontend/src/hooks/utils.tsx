@@ -5,9 +5,9 @@ export const capitalizeFirstLetter = (string: string): string => {
 
 // Convert a string to a boolean
 export const convertToBoolean = (value: string) => {
-  if (value === "Yes") {
+  if (value === "true") {
     return true;
-  } else if (value === "No") {
+  } else if (value === "false") {
     return false;
   } else {
     return undefined;

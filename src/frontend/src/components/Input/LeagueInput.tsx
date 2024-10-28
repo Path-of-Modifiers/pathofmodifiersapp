@@ -11,7 +11,7 @@ import {
 export const LeagueInput = () => {
   // FUTURE IMPLEMENTATION: Add default hardcore league
   //   const defaultHardcoreLeague = import.meta.env.CURRENT_HARDCORE_LEAGUE;
-  const { setLeague } = useGraphInputStore();
+  const { league, setLeague } = useGraphInputStore();
 
   const clearClicked = useGraphInputStore((state) => state.clearClicked);
 
@@ -24,8 +24,6 @@ export const LeagueInput = () => {
   };
 
   useEffect(() => {
-    useGraphInputStore.setState({ league: defaultLeague });
-
     if (clearClicked) {
       useGraphInputStore.setState({ league: defaultLeague });
     }
@@ -35,11 +33,11 @@ export const LeagueInput = () => {
     { value: defaultLeague, label: defaultLeague, regex: defaultLeague },
     /* FUTURE IMPLEMENTATION: Add more leagues here */
     // ,
-    // { value: defaultHardcoreLeague, text: defaultHardcoreLeague },
+    // { value: defaultHardcoreLeague, label: defaultHardcoreLeague },
     // ,
-    // { value: "Standard", text: "Standard" },
+    // { value: "Standard", label: "Standard" },
     // ,
-    // { value: "Hardcore", text: "Hardcore" },
+    // { value: "Hardcore", label: "Hardcore" },
   ];
 
   return (
@@ -47,7 +45,7 @@ export const LeagueInput = () => {
       optionsList={selectLeagueOptions}
       handleChange={handleLeagueChange}
       descriptionText={"League"}
-      defaultText={defaultLeague}
+      defaultText={league}
       multipleValues={false}
       id={`leagueInput-0`}
     />
