@@ -11,9 +11,6 @@ from .modifier import (
 )
 from .item_base_type import (
     ItemBaseType,
-    BaseType,
-    ItemBaseTypeCategory,
-    ItemBaseTypeSubCategory,
     ItemBaseTypeInDB,
     ItemBaseTypeCreate,
     ItemBaseTypeUpdate,

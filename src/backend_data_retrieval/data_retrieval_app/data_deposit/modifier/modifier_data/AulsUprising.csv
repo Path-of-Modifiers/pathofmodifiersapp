@@ -1,3 +1,5 @@
+# Unique Name: Aul's Uprising
+# Base Types: Onyx Amulet
 # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
 minRoll,maxRoll,textRolls,position,effect,static,unique
 20,30,,0,"+# to Intelligence",,True

@@ -5,18 +5,14 @@ import { BaseInput } from "./BaseInput";
 import { LeagueInput } from "./LeagueInput";
 import { useExpandedComponentStore } from "../../store/ExpandedComponentStore";
 import { ItemInput } from "./ItemInput";
-import {
-  BaseType,
-  GroupedModifierByEffect,
-  ItemBaseTypeCategory,
-  ItemBaseTypeSubCategory,
-} from "../../client";
+import { GroupedModifierByEffect, ItemBaseType } from "../../client";
+import { useGraphInputStore } from "../../store/GraphInputStore";
+import { useEffect, useState } from "react";
 
 interface GraphInputProps extends WrapProps {
   prefetchedmodifiers: GroupedModifierByEffect[];
-  prefetchbasetypes: BaseType[];
-  prefetchcategories: ItemBaseTypeCategory[];
-  prefetchsubcategories: ItemBaseTypeSubCategory[];
+  prefetcheditembasetypes: ItemBaseType[];
+  prefecteditemnames: string[];
 }
 
 // Graph Input Component  -  This component is used to input the query data.
@@ -24,6 +20,36 @@ export const GraphInput = (props: GraphInputProps) => {
   const expandedGraphInputFilters = useExpandedComponentStore(
     (state) => state.expandedGraphInputFilters
   );
+  const { itemName } = useGraphInputStore();
+
+  const { prefetchedmodifiers, prefetcheditembasetypes, prefecteditemnames } =
+    props;
+
+  const [modifiers, setModifiers] =
+    useState<GroupedModifierByEffect[]>(prefetchedmodifiers);
+  const [itemBaseTypes, setItemBaseTypes] = useState<ItemBaseType[]>(
+    prefetcheditembasetypes
+  );
+
+  // Filters the available base type filters and modifiers, based on the chose item name
+  // currently only works for uniques
+  useEffect(() => {
+    if (itemName === undefined) {
+      setModifiers(prefetchedmodifiers);
+      setItemBaseTypes(prefetcheditembasetypes);
+    } else {
+      setModifiers(
+        prefetchedmodifiers.filter((modifier) =>
+          modifier.relatedUniques?.includes(itemName)
+        )
+      );
+      setItemBaseTypes(
+        prefetcheditembasetypes.filter((itemBaseType) =>
+          itemBaseType.relatedUniques?.includes(itemName)
+        )
+      );
+    }
+  }, [itemName, prefetchedmodifiers, prefetcheditembasetypes]);
 
   return (
     expandedGraphInputFilters && (
@@ -36,7 +62,7 @@ export const GraphInput = (props: GraphInputProps) => {
             width={"bgBoxes.mediumPPBox"}
             maxWidth="98vw"
           >
-            <ItemInput />
+            <ItemInput itemNameInputProps={{ uniques: prefecteditemnames }} />
             <LeagueInput />
           </Flex>
         </WrapItem>
@@ -49,14 +75,10 @@ export const GraphInput = (props: GraphInputProps) => {
             maxWidth="98vw"
           >
             <VStack spacing={2} mb={2}>
-              <BaseInput
-                baseTypes={props.prefetchbasetypes}
-                categories={props.prefetchcategories}
-                subCategories={props.prefetchsubcategories}
-              />
+              <BaseInput itemBaseTypes={itemBaseTypes} />
               <MiscItemInput />
             </VStack>
-            <ModifierInput prefetchedmodifiers={props.prefetchedmodifiers} />
+            <ModifierInput prefetchedmodifiers={modifiers} />
           </Flex>
         </WrapItem>
       </Wrap>

@@ -1,3 +1,5 @@
+# Unique Name: That Which Was Taken
+# Base Types: Crimson Jewel
 # Source: https://poedb.tw/That_Which_Was_Taken
 minRoll,maxRoll,position,effect,static,unique
 ,,0,"Movement Speed cannot be modified to below Base Value",True,True

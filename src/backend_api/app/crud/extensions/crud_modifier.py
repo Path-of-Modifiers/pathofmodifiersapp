@@ -1,9 +1,7 @@
-from typing import Any
-
+import pandas as pd
 from fastapi import HTTPException
 from pydantic import TypeAdapter
-from sqlalchemy import Boolean, Column, Float, Integer, String, func, select
-from sqlalchemy.dialects.postgresql import ARRAY, aggregate_order_by
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.models.models import Modifier as model_Modifier
@@ -24,56 +22,57 @@ class CRUDModifier(
         ModifierUpdate,
     ]
 ):
-    def _create_array_agg(self, column: Column[Any], type_: ARRAY):
-        return func.array_agg(column, type_=type_).label(column.name)
-
-    def _create_array_agg_position(self):
-        return func.array_agg(
-            aggregate_order_by(model_Modifier.position, model_Modifier.position.asc()),
-            type_=ARRAY(Integer),
-        ).label(model_Modifier.position.name)
-
     async def get_grouped_modifier_by_effect(self, db: Session):
-        modifier_agg = self._create_array_agg(
-            model_Modifier.modifierId, type_=ARRAY(Integer)
+        stmt = select(
+            model_Modifier.modifierId,
+            model_Modifier.effect,
+            model_Modifier.regex,
+            model_Modifier.textRolls,
+            model_Modifier.relatedUniques,
+            model_Modifier.static,
         )
-        position_agg = self._create_array_agg_position()
-        minRoll_agg = self._create_array_agg(model_Modifier.minRoll, type_=ARRAY(Float))
-        maxRoll_agg = self._create_array_agg(model_Modifier.maxRoll, type_=ARRAY(Float))
-        textRolls_agg = self._create_array_agg(
-            model_Modifier.textRolls, type_=ARRAY(String)
-        )
-        static_agg = self._create_array_agg(model_Modifier.static, type_=ARRAY(Boolean))
+        db_modifier_rows = db.execute(stmt).mappings().all()
 
-        statement = (
-            select(
-                modifier_agg,
-                position_agg,
-                minRoll_agg,
-                maxRoll_agg,
-                textRolls_agg,
-                model_Modifier.effect,
-                static_agg,
-            )
-            .group_by(model_Modifier.effect)
-            .order_by(
-                model_Modifier.effect,
-            )
-        )
-
-        db_obj = db.execute(statement).mappings().all()
-
-        if not db_obj:
+        if not db_modifier_rows:
             raise HTTPException(
                 status_code=404,
                 detail=f"No objects found in the table {self.model.__tablename__}.",
             )
 
-        if len(db_obj) == 1:
-            db_obj = db_obj[0]
+        modifiers_df = pd.DataFrame(db_modifier_rows).sort_values(by="modifierId")
+
+        grouped_modifier_df = modifiers_df.groupby(
+            ["effect", "regex", "static", "relatedUniques"],
+            as_index=False,
+            dropna=False,
+            sort=False,
+        ).agg(lambda x: list(x))
+
+        not_static_mask = grouped_modifier_df["static"].isna()
+        grouped_modifier_df.loc[not_static_mask, "static"] = None
+        grouped_modifier_df.loc[~not_static_mask, "regex"] = grouped_modifier_df.loc[
+            ~not_static_mask, "effect"
+        ]
+
+        # Stores the listed fields in a list of dicts
+        grouped_modifier_properties_record = grouped_modifier_df[
+            ["modifierId", "textRolls"]
+        ].to_dict("records")
+
+        # Removes the listed fields
+        grouped_modifier_df = grouped_modifier_df.drop(
+            ["modifierId", "textRolls"], axis=1
+        )
+
+        # Adds the fields back in, but as a field with dicts
+        grouped_modifier_df[
+            "groupedModifierProperties"
+        ] = grouped_modifier_properties_record
+
+        grouped_modifier_by_effect_record = grouped_modifier_df.to_dict("records")
 
         validate = TypeAdapter(
             GroupedModifierByEffect | list[GroupedModifierByEffect]
         ).validate_python
 
-        return validate(db_obj)
+        return validate(grouped_modifier_by_effect_record)
