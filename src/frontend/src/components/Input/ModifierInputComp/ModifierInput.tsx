@@ -13,9 +13,9 @@ import { useExpandedComponentStore } from "../../../store/ExpandedComponentStore
 import { useEffect, useState } from "react";
 import AddIconCheckbox from "../../Icon/AddIconCheckbox";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-// For debugging purposes
-import { useOutsideClick } from "../../../hooks/useOutsideClick";
 import { FancySelectedModifier } from "./FancySelectedModifier";
+// For debugging purposes
+// import { useOutsideClick } from "../../../hooks/useOutsideClick";
 interface ModifierInputProps {
   prefetchedmodifiers: GroupedModifierByEffect[];
 }
@@ -47,6 +47,7 @@ export const ModifierInput = (props: ModifierInputProps) => {
     removeWantedModifierExtended,
     updateSelectedWantedModifierExtended,
   } = useGraphInputStore();
+
   let prevSelectedModifiers: ModifierOption[] = [];
   if (wantedModifierExtended.length > 0) {
     prevSelectedModifiers = wantedModifierExtended.reduce(
@@ -78,11 +79,11 @@ export const ModifierInput = (props: ModifierInputProps) => {
   );
 
   // For debugging purposes
-  const ref = useOutsideClick(() => {
-    const store = useGraphInputStore.getState();
-    console.log("STORE", store);
-    // console.log("query ->", store.wantedModifierExtended);
-  });
+  // const ref = useOutsideClick(() => {
+  //   const store = useGraphInputStore.getState();
+  //   console.log("STORE", store);
+  //   // console.log("query ->", store.wantedModifierExtended);
+  // });
 
   // NOTE: The index, which is the selected modifier's position in
   //`selectedModifiers` is used as a unique identifier both internally
@@ -159,7 +160,6 @@ export const ModifierInput = (props: ModifierInputProps) => {
     const modifierToRemove = selectedModifiers.find(
       (modifier) => modifier.index === indexToRemove
     );
-    console.log(modifierToRemove);
     if (modifierToRemove) {
       setSelectedModifiers((currentSelectedModifiers) =>
         currentSelectedModifiers.reduce(
@@ -241,7 +241,7 @@ export const ModifierInput = (props: ModifierInputProps) => {
             maxWidth="95vw"
             alignItems={"center"}
             gap={2}
-            ref={ref}
+            // ref={ref}
           >
             <AddIconCheckbox dontshow />
             <SelectBoxInput

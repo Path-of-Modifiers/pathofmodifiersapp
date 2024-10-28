@@ -18,7 +18,7 @@ export const BaseInput = (props: BaseInputProps) => {
   let presetBaseType: string | undefined;
   let presetCategory: string | undefined;
   let presetSubCategory: string | undefined;
-  if (baseSpec !== undefined) {
+  if (baseSpec) {
     if (baseSpec.baseType != null) {
       presetBaseType = baseSpec.baseType;
     }
