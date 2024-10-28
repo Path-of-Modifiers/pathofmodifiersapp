@@ -151,8 +151,8 @@ class TestPoEAPIDataTransformerBase(PoEAPIDataTransformerBase):
         test_logger.info(f"Total items to process: {df.size}")
         item_df = self._create_item_table(df)
         item_df = self._transform_item_table(item_df, currency_df)
-        split_by_unique_name_item_df = self._split_item_table_by_item_name(item_df)
         if script_settings.dispersed_timing_enabled:
+            split_by_unique_name_item_df = self._split_item_table_by_item_name(item_df)
             item_df = self._add_timing_item_table(split_by_unique_name_item_df)
         item_df = self._clean_item_table(item_df)
         test_logger.info("Finished preprocessing the item tables")
@@ -222,7 +222,7 @@ class TestPoEAPIDataTransformerBase(PoEAPIDataTransformerBase):
 
 
 class TestUniquePoEAPIDataTransformer(TestPoEAPIDataTransformerBase):
-    """Nothing changed in this class, it just needs to inherit and override functions properly"""
+    """Nothing changed in this class, it just needs to inherit and override functions properly. If"""
 
     def _create_item_modifier_table(
         self, df: pd.DataFrame, *, item_id: pd.Series
@@ -263,7 +263,7 @@ class TestUniquePoEAPIDataTransformer(TestPoEAPIDataTransformerBase):
             inplace=True,
         )
 
-        return item_modifier_df
+        return item_modifer_df
 
 
 class TestModifierSimulatedDataPoEAPIHandler(PoEAPIHandler):
