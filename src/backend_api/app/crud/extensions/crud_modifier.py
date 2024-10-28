@@ -31,15 +31,15 @@ class CRUDModifier(
             model_Modifier.relatedUniques,
             model_Modifier.static,
         )
-        db_obj = db.execute(stmt).mappings().all()
+        db_modifier_rows = db.execute(stmt).mappings().all()
 
-        if not db_obj:
+        if not db_modifier_rows:
             raise HTTPException(
                 status_code=404,
                 detail=f"No objects found in the table {self.model.__tablename__}.",
             )
 
-        modifiers_df = pd.DataFrame(db_obj).sort_values(by="modifierId")
+        modifiers_df = pd.DataFrame(db_modifier_rows).sort_values(by="modifierId")
 
         grouped_modifier_df = modifiers_df.groupby(
             ["effect", "regex", "static", "relatedUniques"],
