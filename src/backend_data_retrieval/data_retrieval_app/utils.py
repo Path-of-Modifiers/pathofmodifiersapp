@@ -1,5 +1,5 @@
 import logging
-from typing import Any
+from typing import Any, Generator
 
 import pandas as pd
 import requests
@@ -7,7 +7,7 @@ import requests
 from data_retrieval_app.logs.logger import main_logger as logger
 
 
-def _chunks(lst, n):
+def _chunks(lst: list[Any], n: int) -> Generator[Any, None, None]:
     """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
         yield lst[i : i + n]
@@ -25,7 +25,7 @@ def remove_empty_fields(json_in: list[dict[str, str]]) -> list[dict[str, Any]]:
 
 def df_to_JSON(
     df: pd.DataFrame | pd.Series, request_method: str
-) -> list[dict[str, Any]] | dict:
+) -> list[dict[str, Any]] | dict[str, Any] | Any:
     logger.debug(f"Transforming data into JSON with request method {request_method}.")
     if isinstance(df, pd.Series):
         df = df.to_frame().transpose()
@@ -57,7 +57,7 @@ def insert_data(
     table_name: str,
     logger: logging.Logger,
     on_duplicate_pkey_do_nothing: bool = False,
-    headers: dict[str, str] = None,
+    headers: dict[str, str] | None = None,
 ) -> None:
     logger.debug("Inserting data into database.")
     if df.empty:

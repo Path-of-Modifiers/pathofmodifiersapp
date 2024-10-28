@@ -5,7 +5,7 @@ from pathlib import Path
 import yaml
 
 
-def setup_logging():
+def setup_logging() -> None:
     # Determine the path to config.yml relative to the current directory
     config_path = Path(__file__).parent / "config" / "config.yml"
 

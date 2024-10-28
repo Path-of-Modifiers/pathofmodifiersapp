@@ -9,7 +9,7 @@ from data_retrieval_app.external_data_retrieval.config import settings
 
 
 class ScrapAndMockPoEAPIDocsObjs:
-    def __init__(self):
+    def __init__(self) -> None:
         self.public_stashes_url = "https://www.pathofexile.com/developer/docs/reference#type-PublicStashChange"
         self.public_stashes_schema_id = "type-PublicStashChange"
 
