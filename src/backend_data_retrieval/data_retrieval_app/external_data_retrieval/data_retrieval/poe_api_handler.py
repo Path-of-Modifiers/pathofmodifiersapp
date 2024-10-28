@@ -299,7 +299,7 @@ class PoEAPIHandler:
         stashes_ready_event: threading.Event,
         waiting_for_next_id_lock: threading.Lock,
         stash_lock: threading.Lock,
-    ):
+    ) -> None:
         """
         Follows the API stream for 30 requests before letting another thread take
         the stashes. Sends 5 requets before waiting to recieve the request body.

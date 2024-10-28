@@ -108,7 +108,7 @@ class DataDepositTestDataCreator:
         for file_name in file_names:
             filepath = os.path.join(data_location, file_name)
             df = pd.read_csv(filepath, comment="#", index_col=False)
-            if df.size == 0:
+            if df.empty:
                 raise Exception(
                     "Something went wrong when trying to load the dataframe from file"
                 )

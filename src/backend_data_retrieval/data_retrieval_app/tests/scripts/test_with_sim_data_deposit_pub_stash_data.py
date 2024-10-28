@@ -42,16 +42,16 @@ class TestPoEAPIDataTransformerBase(PoEAPIDataTransformerBase):
     def _add_timing_item_table(
         self, split_item_dfs_by_unique_names: list[pd.DataFrame]
     ) -> pd.DataFrame:
-        if not script_settings.dispersed_timing_enabled:
-            return pd.concat(split_item_dfs_by_unique_names, ignore_index=True)
         dati = script_settings.DAYS_AMOUNT_TIMING_INTERVAL
 
         item_dfs_combined = []
         test_logger.info("Adding timing to the item tables")
         for item_df in split_item_dfs_by_unique_names:
             df_size = item_df.size
-            df_chunks = [item_df.copy()]
-            if df_size == max(df_size, dati):
+
+            if df_size != max(df_size, dati):
+                df_chunks = [item_df.copy()]
+            else:
                 df_chunks = np.array_split(item_df, dati)
 
             for day, chunk in enumerate(df_chunks):
@@ -61,9 +61,9 @@ class TestPoEAPIDataTransformerBase(PoEAPIDataTransformerBase):
                 chunk["createdAt"] = datetime(
                     2020 + year, month + 1, day + 1
                 ).isoformat()
-            item_named_df_combined: pd.DataFrame = pd.concat(df_chunks, ignore_index=True)  # type: ignore
+            item_named_df_combined = pd.concat(df_chunks, ignore_index=True)
             item_dfs_combined.append(item_named_df_combined)
-        item_df_combined: pd.DataFrame = pd.concat(item_dfs_combined, ignore_index=True)
+        item_df_combined = pd.concat(item_dfs_combined, ignore_index=True)
         return item_df_combined
 
     def _split_item_table_by_item_name(
@@ -83,7 +83,7 @@ class TestPoEAPIDataTransformerBase(PoEAPIDataTransformerBase):
     ) -> pd.DataFrame:
         """
         The `item` table requires a foreign key to the `currency` table.
-        Everything related to the price of the item is stored in the `node`
+        Everything related to the price of the item is stored in the `note`
         attribute.
 
         There are two types of listings in PoE, exact price and asking price which are
@@ -152,7 +152,8 @@ class TestPoEAPIDataTransformerBase(PoEAPIDataTransformerBase):
         item_df = self._create_item_table(df)
         item_df = self._transform_item_table(item_df, currency_df)
         split_by_unique_name_item_df = self._split_item_table_by_item_name(item_df)
-        item_df = self._add_timing_item_table(split_by_unique_name_item_df)
+        if script_settings.dispersed_timing_enabled:
+            item_df = self._add_timing_item_table(split_by_unique_name_item_df)
         item_df = self._clean_item_table(item_df)
         test_logger.info("Finished preprocessing the item tables")
 
@@ -248,19 +249,21 @@ class TestUniquePoEAPIDataTransformer(TestPoEAPIDataTransformerBase):
 
         return item_modifier_df
 
-    def _clean_item_modifier_table(self, item_modifer_df: pd.DataFrame) -> pd.DataFrame:
+    def _clean_item_modifier_table(
+        self, item_modifier_df: pd.DataFrame
+    ) -> pd.DataFrame:
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
-        item_modifer_df.drop(
-            item_modifer_df.columns.difference(
+        item_modifier_df.drop(
+            item_modifier_df.columns.difference(
                 ["itemId", "modifierId", "orderId", "position", "roll"]
             ),
             axis=1,
             inplace=True,
         )
 
-        return item_modifer_df
+        return item_modifier_df
 
 
 class TestModifierSimulatedDataPoEAPIHandler(PoEAPIHandler):

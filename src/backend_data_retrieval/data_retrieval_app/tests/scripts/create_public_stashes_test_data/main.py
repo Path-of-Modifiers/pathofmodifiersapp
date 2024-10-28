@@ -17,7 +17,7 @@ from data_retrieval_app.tests.scripts.create_public_stashes_test_data.config imp
     script_settings,
 )
 
-output_test_data_location_path = "data_retrieval_app/tests/test_data/"
+OUTPUT_TEST_DATA_LOCATION_PATH = "data_retrieval_app/tests/test_data/"
 
 
 def iterate_create_public_stashes_test_data() -> (
