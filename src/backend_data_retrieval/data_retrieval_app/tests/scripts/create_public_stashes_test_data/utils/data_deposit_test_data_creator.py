@@ -9,11 +9,11 @@ from typing import Any
 import pandas as pd
 
 from data_retrieval_app.external_data_retrieval.config import settings
+from data_retrieval_app.logs.logger import test_logger
 from data_retrieval_app.tests.scripts.create_public_stashes_test_data.config import (
     script_settings,
 )
 from data_retrieval_app.tests.utils import random_int
-from data_retrieval_app.logs.logger import test_logger
 
 
 class DataDepositTestDataCreator:
@@ -28,75 +28,7 @@ class DataDepositTestDataCreator:
         )
         self.output_test_data_location_path = "data_retrieval_app/tests/test_data/"
 
-    def _map_filename_to_actual_name(self, filename: str) -> str:
-        # TODO: Needs a global list of supported item names instead of this manual approach
-        match filename:
-            case "AulsUprising.csv":
-                return "Aul's Uprising"
-            case "BalanceOfTerror.csv":
-                return "The Balance of Terror"
-            case "BrutalRestraint.csv":
-                return "Brutal Restraint"
-            case "ElegantHubris.csv":
-                return "Elegant Hubris"
-            case "ForbiddenFlame.csv":
-                return "Forbidden Flame"
-            case "ForbiddenFlesh.csv":
-                return "Forbidden Flesh"
-            case "ForbiddenShako.csv":
-                return "Forbidden Shako"
-            case "GloriousVanity.csv":
-                return "Glorious Vanity"
-            case "GrandSpectrum.csv":
-                return "Grand Spectrum"
-            case "ImpossibleEscape.csv":
-                return "Impossible Escape"
-            case "LethalPride.csv":
-                return "Lethal Pride"
-            case "MilitantFaith.csv":
-                return "Militant Faith"
-            case "Paradoxica.csv":
-                return "Paradoxica"
-            case "PrecursorsEmblem.csv":
-                return "Precursor's Emblem"
-            case "ReplicaDragonfangsFlight.csv":
-                return "Replica Dragonfang's Flight"
-            case "ShroudOfTheLightless.csv":
-                return "Shroud of the Lightless"
-            case "SkinOfTheLords.csv":
-                return "Skin of the Lords"
-            case "SplitPersonality.csv":
-                return "Split Personality"
-            case "SublimeVision.csv":
-                return "Sublime Vision"
-            case "ThatWhichWasTaken.csv":
-                return "That Which Was Taken"
-            case "TheCircleOfAmbition.csv":
-                return "Circle of Ambition"
-            case "TheCircleOfAnguish.csv":
-                return "Circle of Anguish"
-            case "TheCircleOfFear.csv":
-                return "Circle of Fear"
-            case "TheCircleOfGuilt.csv":
-                return "Circle of Guilt"
-            case "TheCircleOfNostalgia.csv":
-                return "Circle of Nostalgia"
-            case "TheCircleOfRegret.csv":
-                return "Circle of Regret"
-            case "TheLightOfMeaning.csv":
-                return "The Light Of Meaning"
-            case "TheUtmost.csv":
-                return "The Utmost"
-            case "ThreadOfHope.csv":
-                return "Thread of Hope"
-            case "Voices.csv":
-                return "Voices"
-            case "WatchersEye.csv":
-                return "Watcher's Eye"
-            case _:
-                return "Unknown CSV file"
-
-    def _load_data(self, data_location: str) -> Iterator[tuple[str, pd.DataFrame]]:
+    def _load_data(self, data_location: str) -> Iterator[tuple[str, str, pd.DataFrame]]:
         test_logger.info(
             f"Currently iterating modifier csv files: {script_settings.MODIFIER_CSV_FILES_TO_ITERATE}"
         )
@@ -105,8 +37,11 @@ class DataDepositTestDataCreator:
             if script_settings.MODIFIER_CSV_FILES_TO_ITERATE:
                 file_names = script_settings.MODIFIER_CSV_FILES_TO_ITERATE
 
-        for file_name in file_names:
-            filepath = os.path.join(data_location, file_name)
+        for filename in file_names:
+            filepath = os.path.join(data_location, filename)
+
+            logged_file_comments = {}
+            unique_name = ""
             df = pd.read_csv(filepath, comment="#", index_col=False)
             if df.empty:
                 raise Exception(
@@ -115,10 +50,16 @@ class DataDepositTestDataCreator:
             with open(filepath) as infile:
                 for line in infile:
                     if "#" == line[0]:
-                        line.rstrip()
+                        split_line = line[1:].split(":")
+                        logged_file_comments[split_line[0].strip()] = split_line[
+                            1
+                        ].strip()
+                        if "Unique Name" in logged_file_comments:
+                            unique_name = logged_file_comments["Unique Name"]
                     else:
                         break
-            yield file_name, df
+
+        yield filename, unique_name, df
 
     def _get_roll_index_positions(self, modifier_effect: str) -> list[int]:
         """We need the index of the hashtag(s) and amount of hashtags"""
@@ -299,7 +240,7 @@ class DataDepositTestDataCreator:
 
     def _create_item_dict(
         self,
-        file_name: str,
+        item_name: str,
         modifiers: list[dict[str, Any]],
         item_base_types: tuple[list, list, list],
     ) -> dict[str, Any]:
@@ -317,7 +258,7 @@ class DataDepositTestDataCreator:
         # Create the item dictionary
         item_data = {
             "verified": True,
-            "name": self._map_filename_to_actual_name(file_name),
+            "name": item_name,
             "identified": True,
             "league": settings.CURRENT_SOFTCORE_LEAGUE,
             "rarity": "Unique",
@@ -365,7 +306,7 @@ class DataDepositTestDataCreator:
             item_base_type_iterator = itertools.cycle(item_base_type_data)
 
         # Iterate over both at the same time
-        for (modifier_file_name, df), (_, item_base_type_df) in zip(
+        for (modifier_file_name, item_name, df), (_, _, item_base_type_df) in zip(
             modifier_iterator, item_base_type_iterator, strict=False
         ):
             items = []
@@ -373,7 +314,7 @@ class DataDepositTestDataCreator:
                 modifiers = self._extract_and_transform_modifiers(df)
                 item_base_types = self._extract_item_base_types(item_base_type_df)
                 item_data = self._create_item_dict(
-                    modifier_file_name, modifiers, item_base_types
+                    item_name, modifiers, item_base_types
                 )
                 items.append(item_data)
             yield (

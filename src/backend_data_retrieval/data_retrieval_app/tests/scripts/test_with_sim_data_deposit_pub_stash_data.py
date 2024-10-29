@@ -1,18 +1,14 @@
-import numpy as np
 import asyncio
-from datetime import datetime
 import threading
 import time
-from typing import Iterator
+from collections.abc import Iterator
 from concurrent.futures import FIRST_EXCEPTION, ThreadPoolExecutor, wait
+from datetime import datetime
 
 import aiohttp
+import numpy as np
 import pandas as pd
 
-from data_retrieval_app.utils import insert_data
-from data_retrieval_app.tests.scripts.create_public_stashes_test_data.config import (
-    script_settings,
-)
 from data_retrieval_app.external_data_retrieval.data_retrieval.poe_api_handler import (
     PoEAPIHandler,
 )
@@ -31,14 +27,17 @@ from data_retrieval_app.external_data_retrieval.utils import (
     ProgramTooSlowException,
     sync_timing_tracker,
 )
+from data_retrieval_app.logs.logger import setup_logging, test_logger
+from data_retrieval_app.tests.scripts.create_public_stashes_test_data.config import (
+    script_settings,
+)
 from data_retrieval_app.tests.scripts.create_public_stashes_test_data.main import (
     iterate_create_public_stashes_test_data,
 )
-from data_retrieval_app.logs.logger import test_logger, setup_logging
+from data_retrieval_app.utils import insert_data
 
 
 class TestPoEAPIDataTransformerBase(PoEAPIDataTransformerBase):
-
     def _add_timing_item_table(
         self, split_item_dfs_by_unique_names: list[pd.DataFrame]
     ) -> pd.DataFrame:
@@ -111,9 +110,9 @@ class TestPoEAPIDataTransformerBase(PoEAPIDataTransformerBase):
                 influence_dict = {}
                 for influence_column in influence_columns:
                     if row[influence_column]:
-                        influence_dict[influence_column.replace("influences.", "")] = (
-                            True
-                        )
+                        influence_dict[
+                            influence_column.replace("influences.", "")
+                        ] = True
                 return influence_dict
 
         influence_columns = [
@@ -263,7 +262,7 @@ class TestUniquePoEAPIDataTransformer(TestPoEAPIDataTransformerBase):
             inplace=True,
         )
 
-        return item_modifer_df
+        return item_modifier_df
 
 
 class TestModifierSimulatedDataPoEAPIHandler(PoEAPIHandler):
@@ -296,7 +295,6 @@ class TestModifierSimulatedDataPoEAPIHandler(PoEAPIHandler):
             )
             raise e
         finally:
-
             await session.close()
 
     @sync_timing_tracker
