@@ -15,7 +15,7 @@ import AddIconCheckbox from "../../Icon/AddIconCheckbox";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { FancySelectedModifier } from "./FancySelectedModifier";
 // For debugging purposes
-// import { useOutsideClick } from "../../../hooks/useOutsideClick";
+import { useOutsideClick } from "../../../hooks/useOutsideClick";
 interface ModifierInputProps {
   prefetchedmodifiers: GroupedModifierByEffect[];
 }
@@ -79,11 +79,11 @@ export const ModifierInput = (props: ModifierInputProps) => {
   );
 
   // For debugging purposes
-  // const ref = useOutsideClick(() => {
-  //   const store = useGraphInputStore.getState();
-  //   console.log("STORE", store);
-  //   // console.log("query ->", store.wantedModifierExtended);
-  // });
+  const ref = useOutsideClick(() => {
+    const store = useGraphInputStore.getState();
+    console.log("STORE", store);
+    // console.log("query ->", store.wantedModifierExtended);
+  });
 
   // NOTE: The index, which is the selected modifier's position in
   //`selectedModifiers` is used as a unique identifier both internally
@@ -241,7 +241,7 @@ export const ModifierInput = (props: ModifierInputProps) => {
             maxWidth="95vw"
             alignItems={"center"}
             gap={2}
-            // ref={ref}
+            ref={ref}
           >
             <AddIconCheckbox dontshow />
             <SelectBoxInput
