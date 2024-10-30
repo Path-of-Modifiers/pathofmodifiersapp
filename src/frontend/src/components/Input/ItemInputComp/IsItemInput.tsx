@@ -52,63 +52,63 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
   let setItemSpecMisc: SetItemSpecMisc;
   switch (itemSpecKey) {
     case "identified":
-      presetValue = itemSpec.identified;
+      presetValue = itemSpec?.identified;
       setItemSpecMisc = setItemSpecIdentified;
       break;
     case "corrupted":
-      presetValue = itemSpec.corrupted;
+      presetValue = itemSpec?.corrupted;
       setItemSpecMisc = setItemSpecCorrupted;
       break;
     case "delve":
-      presetValue = itemSpec.delve;
+      presetValue = itemSpec?.delve;
       setItemSpecMisc = setItemSpecDelve;
       break;
     case "fractured":
-      presetValue = itemSpec.fractured;
+      presetValue = itemSpec?.fractured;
       setItemSpecMisc = setItemSpecFractured;
       break;
     case "synthesized":
-      presetValue = itemSpec.synthesized;
+      presetValue = itemSpec?.synthesized;
       setItemSpecMisc = setItemSpecSynthesized;
       break;
     case "replica":
-      presetValue = itemSpec.replica;
+      presetValue = itemSpec?.replica;
       setItemSpecMisc = setItemSpecReplica;
       break;
     case "elder":
-      presetValue = itemSpec.influences?.elder;
+      presetValue = itemSpec?.influences?.elder;
       setItemSpecMisc = setItemSpecElderInfluence;
       break;
     case "shaper":
-      presetValue = itemSpec.influences?.shaper;
+      presetValue = itemSpec?.influences?.shaper;
       setItemSpecMisc = setItemSpecShaperInfluence;
       break;
     case "crusader":
-      presetValue = itemSpec.influences?.crusader;
+      presetValue = itemSpec?.influences?.crusader;
       setItemSpecMisc = setItemSpecCrusaderInfluence;
       break;
     case "redeemer":
-      presetValue = itemSpec.influences?.redeemer;
+      presetValue = itemSpec?.influences?.redeemer;
       setItemSpecMisc = setItemSpecRedeemerInfluence;
       break;
     case "hunter":
-      presetValue = itemSpec.influences?.hunter;
+      presetValue = itemSpec?.influences?.hunter;
       setItemSpecMisc = setItemSpecHunterInfluence;
       break;
     case "warlord":
-      presetValue = itemSpec.influences?.warlord;
+      presetValue = itemSpec?.influences?.warlord;
       setItemSpecMisc = setItemSpecWarlordInfluence;
       break;
     case "searing":
-      presetValue = itemSpec.searing;
+      presetValue = itemSpec?.searing;
       setItemSpecMisc = setItemSpecSearing;
       break;
     case "tangled":
-      presetValue = itemSpec.tangled;
+      presetValue = itemSpec?.tangled;
       setItemSpecMisc = setItemSpecTangled;
       break;
     case "isRelic":
-      presetValue = itemSpec.isRelic;
+      presetValue = itemSpec?.isRelic;
       setItemSpecMisc = setItemSpecIsRelic;
       break;
     default:

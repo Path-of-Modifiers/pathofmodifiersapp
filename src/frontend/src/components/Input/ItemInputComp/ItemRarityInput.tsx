@@ -27,7 +27,7 @@ export const ItemRarityInput = () => {
     */
   ];
 
-  const presetItemRarity = itemSpec.rarity;
+  const presetItemRarity = itemSpec?.rarity;
 
   return (
     <SelectBoxInput
