@@ -221,6 +221,28 @@ In root directory `.`, using Poetry, you could do it with:
 poetry -C src/backend_api run pre-commit run --all-files --config src/.pre-commit-config.yaml
 ```
 
+
+### Backup and restore database
+
+Useful if you have gathered data and want to optimize and min max performance with different database architectures.
+
+Or just create a safepoint before doing general migrations.
+
+To backup the database in a file, make sure you are in a fitting folder to put the file (which is quite large).
+Create the file:
+
+```bash
+docker exec -t src-db-1 pg_dumpall -c -U pom_oltp_superuser > pom_db_data_dump_`date +%Y-%m-%d"_"%H_%M_%S`.sql
+```
+
+To restore the database from the file:
+
+```bash
+cat your_dump.sql | docker exec -i src-db-1 psql -U postgres
+```
+
+Source: [stackoverflow-backup-restore-postgres-db](https://stackoverflow.com/questions/24718706/backup-restore-a-dockerized-postgresql-database)
+
 ### URLs
 
 The production or staging URLs would use these same paths, but with your own domain.
