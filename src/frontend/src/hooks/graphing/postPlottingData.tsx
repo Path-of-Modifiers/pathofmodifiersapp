@@ -28,7 +28,7 @@ function usePostPlottingData(requestBody: PlotQuery): {
       return 1;
     },
     retry: false,
-    enabled: true, // stops constant refreshes
+    enabled: false, // stops constant refreshes
   });
   useEffect(() => {
     // Only refetches data if the query button is clicked
