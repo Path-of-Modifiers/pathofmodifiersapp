@@ -1,9 +1,12 @@
-from typing import Any
 import copy
 import json
 from collections.abc import Iterator
+from typing import Any
 
 from data_retrieval_app.logs.logger import test_logger
+from data_retrieval_app.tests.scripts.create_public_stashes_test_data.config import (
+    script_settings,
+)
 from data_retrieval_app.tests.scripts.create_public_stashes_test_data.utils.data_deposit_test_data_creator import (
     DataDepositTestDataCreator,
 )
@@ -12,9 +15,6 @@ from data_retrieval_app.tests.scripts.create_public_stashes_test_data.utils.scra
 )
 from data_retrieval_app.tests.utils import (
     replace_false_values,
-)
-from data_retrieval_app.tests.scripts.create_public_stashes_test_data.config import (
-    script_settings,
 )
 
 OUTPUT_TEST_DATA_LOCATION_PATH = "data_retrieval_app/tests/test_data/"
@@ -64,7 +64,7 @@ def main() -> None:
     # setup_logging() #TODO Setup logging for script if needed
     for i, modifier_file_name, all_stashes in iterate_create_public_stashes_test_data():
         with open(
-            f"{output_test_data_location_path}{i}_{modifier_file_name}.json", "w"
+            f"{OUTPUT_TEST_DATA_LOCATION_PATH}{i}_{modifier_file_name}.json", "w"
         ) as f:
             json.dump(all_stashes, f, indent=4)
 
