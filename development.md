@@ -238,7 +238,7 @@ docker exec -t src-db-1 pg_dumpall -c -U pom_oltp_superuser > pom_db_data_dump_`
 To restore the database from the file:
 
 ```bash
-cat your_dump.sql | docker exec -i src-db-1 psql -U postgres
+cat your_dump.sql | docker exec -i src-db-1 psql -U pom_oltp_superuser -d pom_oltp_db
 ```
 
 Source: [stackoverflow-backup-restore-postgres-db](https://stackoverflow.com/questions/24718706/backup-restore-a-dockerized-postgresql-database)
