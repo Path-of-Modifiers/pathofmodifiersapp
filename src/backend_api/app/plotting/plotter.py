@@ -1,6 +1,6 @@
 import pandas as pd
 from pydantic import TypeAdapter
-from sqlalchemy import Boolean, Result, and_, select
+from sqlalchemy import Boolean, Result, and_, intersect, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import CompoundSelect, Select
 
@@ -29,7 +29,9 @@ class Plotter:
                 class_name=self.__class__.__name__,
             )
 
-        subquery_stmt = select(model_ItemModifier.itemId.label("itemModifierItemId"))
+        base_subquery_stmt = select(
+            model_ItemModifier.itemId.label("itemModifierItemId")
+        )
 
         wanted_modifier_conditions = []
         for wanted_modifier in query.wantedModifiers:
@@ -54,12 +56,12 @@ class Plotter:
                         model_ItemModifier.roll
                         == (wanted_modifier.modifierLimitations.textRoll)
                     )
-            intersect_wanted_modifier_statement = subquery_stmt.where(
+            intersect_wanted_modifier_statement = base_subquery_stmt.where(
                 model_ItemModifier.modifierId == modifier_id, *limitations
             )
             wanted_modifier_conditions.append(intersect_wanted_modifier_statement)
 
-        subquery_stmt = subquery_stmt.intersect(*wanted_modifier_conditions)
+        subquery_stmt = intersect(*wanted_modifier_conditions)
 
         return subquery_stmt
 
@@ -80,6 +82,14 @@ class Plotter:
             .join_from(model_Currency, model_Item)
             .where(and_(model_Item.itemId.in_(subquery), model_Item.league == league))
         )
+
+        return statement
+
+    def _apply_priority_filters(self, statement: Select, *, query: PlotQuery) -> Select:
+        if query.itemSpecifications.name is not None:
+            statement = statement.where(
+                model_Item.name == query.itemSpecifications.name
+            )
 
         return statement
 
@@ -113,6 +123,10 @@ class Plotter:
         item_spec_query_fields = item_spec_query.model_fields.copy()
         item_specifications = []
 
+        if item_spec_query.name is not None:
+            # name has already been applied
+            item_spec_query_fields.pop("name")
+
         if item_spec_query.minIlvl is not None:
             item_specifications.append(model_Item.ilvl >= item_spec_query.minIlvl)
             item_spec_query_fields.pop("minIlvl")
@@ -143,6 +157,7 @@ class Plotter:
         """
         Prioritizes filtering the largest amount of rows
         """
+        statement = self._apply_priority_filters(statement, query=query)
         if query.baseSpecifications is not None:
             statement = self._apply_base_specs(
                 statement, base_spec_query=query.baseSpecifications
@@ -169,8 +184,9 @@ class Plotter:
 
     @sync_timing_tracker
     def _convert_result_to_df(self, result: Result) -> pd.DataFrame:
-        rows = result.mappings().all()
-        return pd.DataFrame(rows)
+        rows = result.fetchall()
+        df = pd.DataFrame(rows, columns=result.keys())
+        return df
 
     @sync_timing_tracker
     def _create_plot_data(self, df: pd.DataFrame) -> tuple:
