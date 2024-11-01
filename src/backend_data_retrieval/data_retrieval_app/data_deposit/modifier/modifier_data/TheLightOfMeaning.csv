@@ -1,6 +1,9 @@
 # Unique Name: The Light of Meaning
 # Base Types: Prismatic Jewel
-# Source: https://poedb.tw/The_Light_of_Meaning
+# Total modifiers: 1
+# Can have duplicate modifiers: False
+# Modifier distrubution: "rest":1 
+# Source: https://poedb.tw/The_Light_of_Meaningp
 position,effect,static,unique
 0,"Passive Skills in Radius also grant +5 to maximum Life",True,True
 0,"Passive Skills in Radius also grant +5 to maximum Mana",True,True
