@@ -1,5 +1,8 @@
 # Unique Name: Aul's Uprising
 # Base Types: Onyx Amulet
+# Total modifiers: 5|6
+# Can have duplicate modifiers: False|False
+# Modifier distrubution: 8:3,"rest":2|3 
 # Source: https://poedb.tw/Auls_Uprising#AulsUprisingUnique
 minRoll,maxRoll,textRolls,position,effect,static,unique
 20,30,,0,"+# to Intelligence",,True
@@ -9,8 +12,8 @@ minRoll,maxRoll,textRolls,position,effect,static,unique
 15,20,,0,"#% increased maximum Energy Shield",,True
 15,20,,0,"#% increased Armour",,True
 15,20,,0,"#% increased Evasion Rating",,True
-15,20,,0,"#% increased Global Defences",,True
 50,120,,0,"+# to maximum Life",,True
+15,20,,0,"#% increased Global Defences",,True
 ,,,0,"Hits against Nearby Enemies have 50% increased Critical Strike Chance",True,True
 ,,,0,"10% reduced Stun and Block Recovery",True,True
 ,,,0,"Nearby Enemies have 10% reduced Stun and Block Recovery",True,True

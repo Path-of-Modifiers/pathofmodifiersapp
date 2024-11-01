@@ -1,5 +1,8 @@
 # Unique Name: Brutal Restraint
 # Base Types: Timeless Jewel
+# Total modifiers: 2
+# Can have duplicate modifiers: False
+# Modifier distrubution: "rest":2 
 # Source: https://poedb.tw/Brutal_Restraint
 minRoll,maxRoll,textRolls,position,effect,static,unique
 500,8000,,0,"Denoted service of # dekhara in the akhara of # Passives in radius are Conquered by the Maraketh",,True
