@@ -7,7 +7,7 @@ import GraphComponent from "../../components/Graph/GraphComponent";
 import { useEffect, useRef, useState } from "react";
 import { useGetGroupedModifiers } from "../../hooks/getData/prefetchGroupedModifiers";
 import { useGetItemBaseTypes } from "../../hooks/getData/getBaseTypeCategories";
-import { GroupedModifierByEffect, ItemBaseType, ModifiersService } from "../../client";
+import { GroupedModifierByEffect, ItemBaseType } from "../../client";
 import Footer from "../../components/Common/Footer";
 import { ErrorMessage } from "../../components/Input/StandardLayoutInput/ErrorMessage";
 import { useErrorStore } from "../../store/ErrorStore";
@@ -34,8 +34,7 @@ function Index() {
                 const itemBaseTypes = await requestItemBaseTypes
                 if (groupedModifiers) {
                     setModifiers(groupedModifiers.groupedModifiers);
-                }
-                if (itemBaseTypes) {
+                } if (itemBaseTypes) {
                     setItemBaseTypes(itemBaseTypes.itemBaseTypes);
                     setItemNames(itemBaseTypes.itemNames);
                 }
