@@ -103,7 +103,6 @@ function UserIsNotActivated() {
             as={RouterLink}
             to="/login"
             onClick={logout}
-            params={{ from: "recover-password" }}
             from="user-not-activated"
             color="blue.500"
           >
