@@ -31,13 +31,12 @@ def iterate_create_public_stashes_test_data() -> (
     public_stashes_modifier_test_data_creator = DataDepositTestDataCreator(
         n_of_items=script_settings.N_OF_ITEMS_PER_MODIFIER_FILE
     )
+    public_stashes_modifier_test_data_creator.create_templates()
 
     for index, (
         modifier_file_name,
         items,
-    ) in enumerate(
-        public_stashes_modifier_test_data_creator.create_test_data_with_data_deposit_files()
-    ):
+    ) in enumerate(public_stashes_modifier_test_data_creator.create_test_data()):
         test_logger.info(f"Creating test data for file '{modifier_file_name}'")
         all_stashes = []
         current_public_stashes_mock_modified = replace_false_values(
