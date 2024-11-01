@@ -1,360 +1,366 @@
 import { create } from "zustand";
 import {
-  GraphInputState,
-  ItemSpecState,
-  WantedModifier,
-  WantedModifierExtended,
+    GraphInputState,
+    ItemSpecState,
+    WantedModifier,
+    WantedModifierExtended,
 } from "./StateInterface";
 
 const defaultLeague = import.meta.env.VITE_APP_DEFAULT_LEAGUE;
 
 // Graph Input Store  -  This store is used to store graph input data.
 export const useGraphInputStore = create<GraphInputState>((set) => ({
-  clearClicked: false,
-  queryClicked: false,
-  league: defaultLeague,
-  itemName: undefined,
-  itemSpec: {},
-  baseSpec: {},
-  wantedModifiers: [],
-  wantedModifierExtended: [],
-  plotQuery: {
+    clearClicked: false,
+    queryClicked: false,
+    fetchStatus: undefined,
     league: defaultLeague,
+    itemName: undefined,
+    itemSpec: {},
+    baseSpec: {},
     wantedModifiers: [],
-  },
+    wantedModifierExtended: [],
+    plotQuery: {
+        league: defaultLeague,
+        wantedModifiers: [],
+    },
 
-  setQueryClicked: () =>
-    set(() => ({
-      queryClicked: true,
-    })),
+    setQueryClicked: () =>
+        set(() => ({
+            queryClicked: true,
+        })),
 
-  setPlotQuery: () =>
-    set((state) => ({
-      plotQuery: {
-        league: state.league,
-        itemSpecifications: state.itemSpec,
-        baseSpec: state.baseSpec,
-        wantedModifiers: state.wantedModifierExtended
-          .filter((wantedModifier) => wantedModifier.isSelected)
-          .map((wantedModifier) => ({
-            modifierId: wantedModifier.modifierId,
-            modifierLimitations: wantedModifier.modifierLimitations,
-          })),
-      },
-    })),
+    setFetchStatus: (fetchStatus: string | undefined) =>
+        set(() => ({
+            fetchStatus: fetchStatus
+        })),
 
-  setClearClicked: () =>
-    set(() => ({
-      clearClicked: true,
-      itemName: undefined,
-      itemSpec: {},
-      wantedModifierExtended: [],
-      wantedModifiers: [],
-      baseSpec: {},
-    })),
+    setPlotQuery: () =>
+        set((state) => ({
+            plotQuery: {
+                league: state.league,
+                itemSpecifications: state.itemSpec,
+                baseSpec: state.baseSpec,
+                wantedModifiers: state.wantedModifierExtended
+                    .filter((wantedModifier) => wantedModifier.isSelected)
+                    .map((wantedModifier) => ({
+                        modifierId: wantedModifier.modifierId,
+                        modifierLimitations: wantedModifier.modifierLimitations,
+                    })),
+            },
+        })),
 
-  setLeague: (league: string) => set(() => ({ league: league })),
+    setClearClicked: () =>
+        set(() => ({
+            clearClicked: true,
+            itemName: undefined,
+            itemSpec: {},
+            wantedModifierExtended: [],
+            wantedModifiers: [],
+            baseSpec: {},
+        })),
 
-  setItemSpecIdentified: (identified: boolean | undefined) =>
-    set((state) => ({
-      itemSpec: { ...state.itemSpec, identified: identified },
-    })),
+    setLeague: (league: string) => set(() => ({ league: league })),
 
-  setItemName: (name: string | undefined) =>
-    set((state) => ({
-      itemSpec: { ...state.itemSpec, name: name },
-      itemName: name,
-    })),
+    setItemSpecIdentified: (identified: boolean | undefined) =>
+        set((state) => ({
+            itemSpec: { ...state.itemSpec, identified: identified },
+        })),
 
-  setItemSpecElderInfluence: (elder: boolean | undefined) =>
-    set((state) => ({
-      itemSpec: {
-        ...state.itemSpec,
-        influences: {
-          ...state.itemSpec.influences,
-          elder: elder,
-        },
-      },
-    })),
+    setItemName: (name: string | undefined) =>
+        set((state) => ({
+            itemSpec: { ...state.itemSpec, name: name },
+            itemName: name,
+        })),
 
-  setItemSpecShaperInfluence: (shaper: boolean | undefined) =>
-    set((state) => ({
-      itemSpec: {
-        ...state.itemSpec,
-        influences: {
-          ...state.itemSpec.influences,
-          shaper: shaper,
-        },
-      },
-    })),
+    setItemSpecElderInfluence: (elder: boolean | undefined) =>
+        set((state) => ({
+            itemSpec: {
+                ...state.itemSpec,
+                influences: {
+                    ...state.itemSpec.influences,
+                    elder: elder,
+                },
+            },
+        })),
 
-  setItemSpecCrusaderInfluence: (crusader: boolean | undefined) =>
-    set((state) => ({
-      itemSpec: {
-        ...state.itemSpec,
-        influences: {
-          ...state.itemSpec.influences,
-          crusader: crusader,
-        },
-      },
-    })),
+    setItemSpecShaperInfluence: (shaper: boolean | undefined) =>
+        set((state) => ({
+            itemSpec: {
+                ...state.itemSpec,
+                influences: {
+                    ...state.itemSpec.influences,
+                    shaper: shaper,
+                },
+            },
+        })),
 
-  setItemSpecRedeemerInfluence: (redeemer: boolean | undefined) =>
-    set((state) => ({
-      itemSpec: {
-        ...state.itemSpec,
-        influences: {
-          ...state.itemSpec.influences,
-          redeemer: redeemer,
-        },
-      },
-    })),
+    setItemSpecCrusaderInfluence: (crusader: boolean | undefined) =>
+        set((state) => ({
+            itemSpec: {
+                ...state.itemSpec,
+                influences: {
+                    ...state.itemSpec.influences,
+                    crusader: crusader,
+                },
+            },
+        })),
 
-  setItemSpecHunterInfluence: (hunter: boolean | undefined) =>
-    set((state) => ({
-      itemSpec: {
-        ...state.itemSpec,
-        influences: {
-          ...state.itemSpec.influences,
-          hunter: hunter,
-        },
-      },
-    })),
+    setItemSpecRedeemerInfluence: (redeemer: boolean | undefined) =>
+        set((state) => ({
+            itemSpec: {
+                ...state.itemSpec,
+                influences: {
+                    ...state.itemSpec.influences,
+                    redeemer: redeemer,
+                },
+            },
+        })),
 
-  setItemSpecWarlordInfluence: (warlord: boolean | undefined) =>
-    set((state) => ({
-      itemSpec: {
-        ...state.itemSpec,
-        influences: {
-          ...state.itemSpec.influences,
-          warlord: warlord,
-        },
-      },
-    })),
+    setItemSpecHunterInfluence: (hunter: boolean | undefined) =>
+        set((state) => ({
+            itemSpec: {
+                ...state.itemSpec,
+                influences: {
+                    ...state.itemSpec.influences,
+                    hunter: hunter,
+                },
+            },
+        })),
 
-  setItemSpecReplica: (replica: boolean | undefined) =>
-    set((state) => ({
-      itemSpec: { ...state.itemSpec, replica: replica },
-    })),
+    setItemSpecWarlordInfluence: (warlord: boolean | undefined) =>
+        set((state) => ({
+            itemSpec: {
+                ...state.itemSpec,
+                influences: {
+                    ...state.itemSpec.influences,
+                    warlord: warlord,
+                },
+            },
+        })),
 
-  setItemSpecSearingInfluence: (searing: boolean | undefined) =>
-    set((state) => ({
-      itemSpec: { ...state.itemSpec, searing: searing },
-    })),
+    setItemSpecReplica: (replica: boolean | undefined) =>
+        set((state) => ({
+            itemSpec: { ...state.itemSpec, replica: replica },
+        })),
 
-  setItemSpecTangledInfluence: (tangled: boolean | undefined) =>
-    set((state) => ({
-      itemSpec: { ...state.itemSpec, tangled: tangled },
-    })),
+    setItemSpecSearingInfluence: (searing: boolean | undefined) =>
+        set((state) => ({
+            itemSpec: { ...state.itemSpec, searing: searing },
+        })),
 
-  setItemSpecIsRelic: (isRelic: boolean | undefined) =>
-    set((state) => ({
-      itemSpec: { ...state.itemSpec, isRelic: isRelic },
-    })),
+    setItemSpecTangledInfluence: (tangled: boolean | undefined) =>
+        set((state) => ({
+            itemSpec: { ...state.itemSpec, tangled: tangled },
+        })),
 
-  setItemSpecCorrupted: (corrupted: boolean | undefined) =>
-    set((state) => ({
-      itemSpec: { ...state.itemSpec, corrupted: corrupted },
-    })),
+    setItemSpecIsRelic: (isRelic: boolean | undefined) =>
+        set((state) => ({
+            itemSpec: { ...state.itemSpec, isRelic: isRelic },
+        })),
 
-  setItemSpecDelve: (delve: boolean | undefined) =>
-    set((state) => ({
-      itemSpec: { ...state.itemSpec, delve: delve },
-    })),
+    setItemSpecCorrupted: (corrupted: boolean | undefined) =>
+        set((state) => ({
+            itemSpec: { ...state.itemSpec, corrupted: corrupted },
+        })),
 
-  setItemSpecFractured: (fractured: boolean | undefined) =>
-    set((state) => ({
-      itemSpec: { ...state.itemSpec, fractured: fractured },
-    })),
+    setItemSpecDelve: (delve: boolean | undefined) =>
+        set((state) => ({
+            itemSpec: { ...state.itemSpec, delve: delve },
+        })),
 
-  setItemSpecSynthesized: (synthesized: boolean | undefined) =>
-    set((state) => ({
-      itemSpec: { ...state.itemSpec, synthesized: synthesized },
-    })),
+    setItemSpecFractured: (fractured: boolean | undefined) =>
+        set((state) => ({
+            itemSpec: { ...state.itemSpec, fractured: fractured },
+        })),
 
-  setItemSpecSearing: (searing: boolean | undefined) =>
-    set((state) => ({
-      itemSpec: { ...state.itemSpec, searing: searing },
-    })),
+    setItemSpecSynthesized: (synthesized: boolean | undefined) =>
+        set((state) => ({
+            itemSpec: { ...state.itemSpec, synthesized: synthesized },
+        })),
 
-  setItemSpecTangled: (tangled: boolean | undefined) =>
-    set((state) => ({
-      itemSpec: { ...state.itemSpec, tangled: tangled },
-    })),
+    setItemSpecSearing: (searing: boolean | undefined) =>
+        set((state) => ({
+            itemSpec: { ...state.itemSpec, searing: searing },
+        })),
 
-  setItemSpecFoilVariation: (foilVariation: number | undefined) =>
-    set((state) => ({
-      itemSpec: { ...state.itemSpec, foilVariation: foilVariation },
-    })),
+    setItemSpecTangled: (tangled: boolean | undefined) =>
+        set((state) => ({
+            itemSpec: { ...state.itemSpec, tangled: tangled },
+        })),
 
-  setItemSpecMinIlvl: (minIlvl: number | undefined) =>
-    set((state) => {
-      const itemSpec = { ...state.itemSpec, minIlvl: minIlvl };
-      return { itemSpec: itemSpec };
-    }),
+    setItemSpecFoilVariation: (foilVariation: number | undefined) =>
+        set((state) => ({
+            itemSpec: { ...state.itemSpec, foilVariation: foilVariation },
+        })),
 
-  setItemSpecMaxIlvl: (maxIlvl: number | undefined) =>
-    set((state) => {
-      const itemSpec = { ...state.itemSpec, maxIlvl: maxIlvl };
-      return { itemSpec: itemSpec };
-    }),
+    setItemSpecMinIlvl: (minIlvl: number | undefined) =>
+        set((state) => {
+            const itemSpec = { ...state.itemSpec, minIlvl: minIlvl };
+            return { itemSpec: itemSpec };
+        }),
 
-  setItemRarity: (rarity: string | undefined) =>
-    set((state) => ({
-      itemSpec: { ...state.itemSpec, rarity: rarity },
-    })),
+    setItemSpecMaxIlvl: (maxIlvl: number | undefined) =>
+        set((state) => {
+            const itemSpec = { ...state.itemSpec, maxIlvl: maxIlvl };
+            return { itemSpec: itemSpec };
+        }),
 
-  setItemSpec: (itemSpec: ItemSpecState) => set(() => ({ itemSpec: itemSpec })),
+    setItemRarity: (rarity: string | undefined) =>
+        set((state) => ({
+            itemSpec: { ...state.itemSpec, rarity: rarity },
+        })),
 
-  setBaseType: (baseType: string | undefined) =>
-    set((state) => ({
-      baseSpec: { ...state.baseSpec, baseType: baseType },
-    })),
+    setItemSpec: (itemSpec: ItemSpecState) => set(() => ({ itemSpec: itemSpec })),
 
-  setItemCategory: (category: string | undefined) =>
-    set((state) => ({
-      baseSpec: { ...state.baseSpec, category: category },
-    })),
+    setBaseType: (baseType: string | undefined) =>
+        set((state) => ({
+            baseSpec: { ...state.baseSpec, baseType: baseType },
+        })),
 
-  setItemSubCategory: (subCategory: string | undefined) =>
-    set((state) => ({
-      baseSpec: { ...state.baseSpec, subCategory: subCategory },
-    })),
+    setItemCategory: (category: string | undefined) =>
+        set((state) => ({
+            baseSpec: { ...state.baseSpec, category: category },
+        })),
 
-  addWantedModifierExtended: (wantedModifier: WantedModifier, index: number) =>
-    set((state) => {
-      return {
-        wantedModifierExtended: [
-          ...state.wantedModifierExtended,
-          { ...wantedModifier, index: index, isSelected: true },
-        ],
-      };
-    }),
+    setItemSubCategory: (subCategory: string | undefined) =>
+        set((state) => ({
+            baseSpec: { ...state.baseSpec, subCategory: subCategory },
+        })),
 
-  updateSelectedWantedModifierExtended: (
-    index_to_update: number,
-    isSelected: boolean
-  ) =>
-    set((state) => {
-      const chosenModifiersExtended = state.wantedModifierExtended.filter(
-        (modifierExtended) => modifierExtended.index === index_to_update
-      );
-      return {
-        wantedModifierExtended: [
-          ...state.wantedModifierExtended.filter(
-            (modifierExtended) => modifierExtended.index !== index_to_update
-          ),
-          ...chosenModifiersExtended.map((chosenModifierExtended) => ({
-            ...chosenModifierExtended,
-            isSelected: isSelected,
-          })),
-        ],
-      };
-    }),
-
-  removeWantedModifierExtended: (indexToRemove: number) =>
-    set((state) => ({
-      wantedModifierExtended: state.wantedModifierExtended.reduce(
-        (prev, cur) =>
-          cur.index !== indexToRemove
-            ? [...prev, { ...cur, index: prev.length }]
-            : prev,
-        [] as WantedModifierExtended[]
-      ),
-    })),
-
-  setWantedModifierMinRoll: (
-    modifierId: number,
-    minRoll: number | undefined,
-    index: number
-  ) =>
-    set((state) => {
-      const updatedModifiersExtended = state.wantedModifierExtended.map(
-        (wantedModifierExtended) => {
-          if (
-            wantedModifierExtended.modifierId === modifierId &&
-            wantedModifierExtended.index === index
-          ) {
-            if (minRoll === undefined) {
-              if (!wantedModifierExtended.modifierLimitations?.maxRoll) {
-                delete wantedModifierExtended["modifierLimitations"];
-              } else {
-                delete wantedModifierExtended.modifierLimitations["minRoll"];
-              }
-              return wantedModifierExtended;
-            }
+    addWantedModifierExtended: (wantedModifier: WantedModifier, index: number) =>
+        set((state) => {
             return {
-              ...wantedModifierExtended,
-              modifierLimitations: {
-                ...wantedModifierExtended.modifierLimitations,
-                minRoll: minRoll,
-              },
+                wantedModifierExtended: [
+                    ...state.wantedModifierExtended,
+                    { ...wantedModifier, index: index, isSelected: true },
+                ],
             };
-          } else {
-            return wantedModifierExtended;
-          }
-        }
-      );
-      return { wantedModifierExtended: updatedModifiersExtended };
-    }),
+        }),
 
-  setWantedModifierMaxRoll: (
-    modifierId: number,
-    maxRoll: number | undefined,
-    index: number
-  ) =>
-    set((state) => {
-      const updatedModifiersExtended = state.wantedModifierExtended.map(
-        (wantedModifierExtended) => {
-          if (
-            wantedModifierExtended.modifierId === modifierId &&
-            wantedModifierExtended.index === index
-          ) {
-            if (maxRoll === undefined) {
-              if (!wantedModifierExtended.modifierLimitations?.minRoll) {
-                delete wantedModifierExtended["modifierLimitations"];
-              } else {
-                delete wantedModifierExtended.modifierLimitations["maxRoll"];
-              }
-              return wantedModifierExtended;
-            }
+    updateSelectedWantedModifierExtended: (
+        index_to_update: number,
+        isSelected: boolean
+    ) =>
+        set((state) => {
+            const chosenModifiersExtended = state.wantedModifierExtended.filter(
+                (modifierExtended) => modifierExtended.index === index_to_update
+            );
             return {
-              ...wantedModifierExtended,
-              modifierLimitations: {
-                ...wantedModifierExtended.modifierLimitations,
-                maxRoll: maxRoll,
-              },
+                wantedModifierExtended: [
+                    ...state.wantedModifierExtended.filter(
+                        (modifierExtended) => modifierExtended.index !== index_to_update
+                    ),
+                    ...chosenModifiersExtended.map((chosenModifierExtended) => ({
+                        ...chosenModifierExtended,
+                        isSelected: isSelected,
+                    })),
+                ],
             };
-          } else {
-            return wantedModifierExtended;
-          }
-        }
-      );
-      return { wantedModifierExtended: updatedModifiersExtended };
-    }),
+        }),
 
-  setWantedModifierTextRoll: (
-    modifierId: number,
-    textRoll: number | undefined,
-    index: number
-  ) =>
-    set((state) => {
-      const updatedModifiersExtended = state.wantedModifierExtended.map(
-        (wantedModifierExtended) =>
-          wantedModifierExtended.modifierId === modifierId &&
-          wantedModifierExtended.index === index
-            ? {
-                ...wantedModifierExtended,
-                modifierLimitations:
-                  textRoll !== undefined
-                    ? {
-                        ...wantedModifierExtended.modifierLimitations,
-                        textRoll: textRoll,
-                      }
-                    : undefined,
-              }
-            : wantedModifierExtended
-      );
-      return { wantedModifierExtended: updatedModifiersExtended };
-    }),
+    removeWantedModifierExtended: (indexToRemove: number) =>
+        set((state) => ({
+            wantedModifierExtended: state.wantedModifierExtended.reduce(
+                (prev, cur) =>
+                    cur.index !== indexToRemove
+                        ? [...prev, { ...cur, index: prev.length }]
+                        : prev,
+                [] as WantedModifierExtended[]
+            ),
+        })),
+
+    setWantedModifierMinRoll: (
+        modifierId: number,
+        minRoll: number | undefined,
+        index: number
+    ) =>
+        set((state) => {
+            const updatedModifiersExtended = state.wantedModifierExtended.map(
+                (wantedModifierExtended) => {
+                    if (
+                        wantedModifierExtended.modifierId === modifierId &&
+                        wantedModifierExtended.index === index
+                    ) {
+                        if (minRoll === undefined) {
+                            if (!wantedModifierExtended.modifierLimitations?.maxRoll) {
+                                delete wantedModifierExtended["modifierLimitations"];
+                            } else {
+                                delete wantedModifierExtended.modifierLimitations["minRoll"];
+                            }
+                            return wantedModifierExtended;
+                        }
+                        return {
+                            ...wantedModifierExtended,
+                            modifierLimitations: {
+                                ...wantedModifierExtended.modifierLimitations,
+                                minRoll: minRoll,
+                            },
+                        };
+                    } else {
+                        return wantedModifierExtended;
+                    }
+                }
+            );
+            return { wantedModifierExtended: updatedModifiersExtended };
+        }),
+
+    setWantedModifierMaxRoll: (
+        modifierId: number,
+        maxRoll: number | undefined,
+        index: number
+    ) =>
+        set((state) => {
+            const updatedModifiersExtended = state.wantedModifierExtended.map(
+                (wantedModifierExtended) => {
+                    if (
+                        wantedModifierExtended.modifierId === modifierId &&
+                        wantedModifierExtended.index === index
+                    ) {
+                        if (maxRoll === undefined) {
+                            if (!wantedModifierExtended.modifierLimitations?.minRoll) {
+                                delete wantedModifierExtended["modifierLimitations"];
+                            } else {
+                                delete wantedModifierExtended.modifierLimitations["maxRoll"];
+                            }
+                            return wantedModifierExtended;
+                        }
+                        return {
+                            ...wantedModifierExtended,
+                            modifierLimitations: {
+                                ...wantedModifierExtended.modifierLimitations,
+                                maxRoll: maxRoll,
+                            },
+                        };
+                    } else {
+                        return wantedModifierExtended;
+                    }
+                }
+            );
+            return { wantedModifierExtended: updatedModifiersExtended };
+        }),
+
+    setWantedModifierTextRoll: (
+        modifierId: number,
+        textRoll: number | undefined,
+        index: number
+    ) =>
+        set((state) => {
+            const updatedModifiersExtended = state.wantedModifierExtended.map(
+                (wantedModifierExtended) =>
+                    wantedModifierExtended.modifierId === modifierId &&
+                        wantedModifierExtended.index === index
+                        ? {
+                            ...wantedModifierExtended,
+                            modifierLimitations:
+                                textRoll !== undefined
+                                    ? {
+                                        ...wantedModifierExtended.modifierLimitations,
+                                        textRoll: textRoll,
+                                    }
+                                    : undefined,
+                        }
+                        : wantedModifierExtended
+            );
+            return { wantedModifierExtended: updatedModifiersExtended };
+        }),
 }));
