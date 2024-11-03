@@ -86,20 +86,30 @@ class PoEAPIHandler:
         logger.info("PoEAPIHandler successfully initialized.")
 
     def _json_to_df(self, stashes: list) -> pd.DataFrame:
+        logger.debug(f"Start of json_to_df {time.perf_counter()}")
         df_temp = pd.json_normalize(stashes)
+        logger.debug(f"After json_normalize {time.perf_counter()}")
         if "items" not in df_temp.columns:
             return None
         df_temp = df_temp.explode(["items"])
+        logger.debug(f"After explode items {time.perf_counter()}")
         df_temp = df_temp.loc[~df_temp["items"].isnull()]
+        logger.debug(f"After removing items that are null {time.perf_counter()}")
         df_temp.drop("items", axis=1, inplace=True)
         df_temp.rename(columns={"id": "stashId"}, inplace=True)
+        logger.debug(f"After dropping items and renaming id {time.perf_counter()}")
 
         df = pd.json_normalize(stashes, record_path=["items"])
+        logger.debug(f"After json_normalize record path items {time.perf_counter()}")
         df["stash_index"] = df_temp.index
+        logger.debug(f"After setting stash_index {time.perf_counter()}")
 
         df_temp.index = df.index
+        logger.debug(f"After setting new index {time.perf_counter()}")
         df[df_temp.columns.to_list()] = df_temp
+        logger.debug(f"After inserting df_temp into df {time.perf_counter()}")
         df.rename(columns={"id": "gameItemId"}, inplace=True)
+        logger.debug(f"After rename id {time.perf_counter()}")
 
         return df
 
