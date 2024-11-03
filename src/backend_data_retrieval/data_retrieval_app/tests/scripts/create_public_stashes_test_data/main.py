@@ -20,6 +20,44 @@ from data_retrieval_app.tests.utils import (
 OUTPUT_TEST_DATA_LOCATION_PATH = "data_retrieval_app/tests/test_data/"
 
 
+class PublicStashMockAPI:
+    def __init__(self) -> None:
+        scrap_and_mock_poe_api_docs_objs = ScrapAndMockPoEAPIDocsObjs()
+        (
+            self.public_stashes_mock_obj,
+            self.item_mock_obj,
+        ) = scrap_and_mock_poe_api_docs_objs.produce_mocks_from_docs()
+
+        self.public_stashes_modifier_test_data_creator = DataDepositTestDataCreator(
+            n_of_items=script_settings.N_OF_ITEMS_PER_MODIFIER_FILE
+        )
+        self.public_stashes_modifier_test_data_creator.create_templates()
+
+    def get_test_data(self) -> list[dict[str, Any]]:
+        stashes = []
+
+        for (
+            modifier_file_name,
+            items,
+        ) in self.public_stashes_modifier_test_data_creator.create_test_data():
+            test_logger.debug(f"Creating test data for file '{modifier_file_name}'")
+            current_public_stashes_mock_modified = replace_false_values(
+                copy.deepcopy(self.public_stashes_mock_obj)
+            )
+            for item in items:
+                merged_complete_item_dict = {**self.item_mock_obj, **item}
+                merged_complete_item_dict_modified = replace_false_values(
+                    copy.deepcopy(merged_complete_item_dict)
+                )
+                current_public_stashes_mock_modified["items"].append(
+                    merged_complete_item_dict_modified
+                )
+
+            stashes.append(current_public_stashes_mock_modified)
+
+        return stashes
+
+
 def iterate_create_public_stashes_test_data() -> (
     Iterator[tuple[int, str, list[dict[str, Any]]]]
 ):
@@ -37,7 +75,7 @@ def iterate_create_public_stashes_test_data() -> (
         modifier_file_name,
         items,
     ) in enumerate(public_stashes_modifier_test_data_creator.create_test_data()):
-        test_logger.info(f"Creating test data for file '{modifier_file_name}'")
+        test_logger.debug(f"Creating test data for file '{modifier_file_name}'")
         all_stashes = []
         current_public_stashes_mock_modified = replace_false_values(
             copy.deepcopy(public_stashes_mock_obj)
