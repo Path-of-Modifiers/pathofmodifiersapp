@@ -82,6 +82,7 @@ class PoEAPIHandler:
 
         self._program_too_slow = False
         self.time_of_launch = time.perf_counter()
+        self.run_program_for_n_seconds = 3600
         logger.info("PoEAPIHandler successfully initialized.")
 
     def _json_to_df(self, stashes: list) -> pd.DataFrame:
@@ -110,7 +111,6 @@ class PoEAPIHandler:
         df_wanted = pd.DataFrame()
         n_new_items = 0
         n_total_unique_items = 0
-
         df = self._json_to_df(stashes)
         if df is None:
             return df_wanted
@@ -485,5 +485,5 @@ class PoEAPIHandler:
                 logger.info("Finished transformation phase")
                 current_time = time.perf_counter()
                 time_since_launch = current_time - self.time_of_launch
-                if time_since_launch > 3600:
+                if time_since_launch > self.run_program_for_n_seconds:
                     raise ProgramRunTooLongException
