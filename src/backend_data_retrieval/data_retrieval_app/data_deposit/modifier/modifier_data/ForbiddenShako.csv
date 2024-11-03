@@ -1,7 +1,7 @@
 # Unique Name: Forbidden Shako
 # Base Types: Great Crown
 # Total modifiers: 3
-# Can have duplicate modifiers: False
+# Can have duplicate modifiers: True
 # Modifier distrubution: "rest":3 
 # Source: https://poedb.tw/Forbidden_Shako#ForbiddenShakoUnique
 minRoll,maxRoll,textRolls,position,effect,unique

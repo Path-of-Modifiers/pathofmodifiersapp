@@ -1,7 +1,7 @@
 # Unique Name: Sublime Vision
 # Base Types: Prismatic Jewel
 # Total modifiers: 3
-# Can have duplicate modifiers: False,False,False
+# Can have duplicate modifiers: False|False|False
 # Modifier distrubution: 2:1,17:1,"rest":1 
 # Source: https://poedb.tw/Sublime_Vision
 minRoll,maxRoll,textRolls,position,effect,static,unique
