@@ -381,7 +381,8 @@ class DataDepositTestDataCreator:
 
                 modifiers.append(effect)
 
-                if remove_chosen_modifiers_from_pool:
+                if remove_chosen_modifiers_from_pool or not chosen_rolls:
+                    # not chosen_rolls -> static, can't have multiple static modifiers
                     modifier_ids_to_choose_from.pop(choice_made)
                     complementing_roll_ranges.pop(choice_made)
 
