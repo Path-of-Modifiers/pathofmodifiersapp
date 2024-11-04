@@ -120,6 +120,11 @@ class DataDepositTestDataCreator:
         dict[int | str, list[list[int]]], dict[int | str, list[tuple[int, int] | str]]
     ]:
         """
+        Example input modifier_distrubution dict:
+        {
+            3: [1],
+            "rest": [1]
+        }
         Example output connected_modifier_ids_dict:
         {
             3: [
@@ -137,7 +142,7 @@ class DataDepositTestDataCreator:
                 "Balbala|Xibaqua"
             ],
             "rest": [
-                [1, 20]
+                []
             ]
         }
         Where a list indicates numerical roll and
@@ -189,26 +194,27 @@ class DataDepositTestDataCreator:
         for key in modifier_distrubution:
             upper_bound = key
             if key == "rest":
-                upper_bound = modifier_df.size
+                upper_bound = len(modifier_df)
 
             choosable_modifiers_slice = slice(prev_key, upper_bound - 1)
             choosable_modifier_df = modifier_df.loc[choosable_modifiers_slice]
 
-            # Convert to one long regex string
-            effects_to_choose_from = "|".join(
-                choosable_modifier_df["effect"]
-                .str.replace("+", r"\+")
-                .unique()
-                .tolist()
+            effects = (
+                "^"
+                + choosable_modifier_df["effect"].str.replace("+", r"\+").unique()
+                + "$"
             )
+
+            # Convert to one long regex string
+            effects_to_choose_from = "|".join(effects)
             choosable_effects_mask = grouped_modifier_df["effect"].str.contains(
                 effects_to_choose_from, regex=True
             )
-            connected_grouped_modifier_df = grouped_modifier_df.loc[
+            choosable_grouped_modifier_df = grouped_modifier_df.loc[
                 choosable_effects_mask
             ]
 
-            modifier_ids_rolls_effect_df = connected_grouped_modifier_df.apply(
+            modifier_ids_rolls_effect_df = choosable_grouped_modifier_df.apply(
                 get_modifier_ids_rolls_effect, axis=1
             )
 
@@ -250,9 +256,9 @@ class DataDepositTestDataCreator:
                     modifier_comments["Base Types"]
                 )
             else:
-                modifier_template["base_types"] = random.choice(
-                    self.base_type_df["baseType"].to_list()
-                )
+                modifier_template["base_types"] = [
+                    random.choice(self.base_type_df["baseType"].to_list())
+                ]
 
             modifier_template["can_duplicate"] = self._parse_comment(
                 modifier_comments["Can have duplicate modifiers"]
@@ -284,7 +290,15 @@ class DataDepositTestDataCreator:
             the_len = len(next(it))
             if not all(len(list_to_compare) == the_len for list_to_compare in it):
                 raise AttributeError(
-                    f"Something went wrong while creating the template, its not correct: \n {modifier_template}"
+                    f"Something went wrong while creating the template, its not correct: \n {modifier_template}\n Lengths:"
+                    + str(
+                        [
+                            len(modifier_template["can_duplicate"]),
+                            len(modifier_template["distrubution"].keys()),
+                            len(modifier_template["modifier_ids_to_choose"].keys()),
+                            len(modifier_template["roll_ranges"].keys()),
+                        ]
+                    )
                 )
 
             self.templates[filename] = modifier_template
@@ -306,8 +320,19 @@ class DataDepositTestDataCreator:
             if isinstance(roll, str):
                 new_effect += random.choice(roll.split("|"))
             else:
-                new_effect += f"{random_float(roll[0], roll[1])}"
-                new_effect = new_effect.replace("+-", "-")
+                selected_roll = random_float(roll[0], roll[1])
+                if selected_roll < 0:
+                    new_effect = new_effect.replace("+", "-")
+
+                    # Probably works, `increased` might be present several times,
+                    # but should only be replaced once ¯\_(ツ)_/¯
+                    opposite_effect = effect.replace("increased", "reduced")
+                    split_effect = opposite_effect.split("#")
+
+                    selected_roll *= -1
+
+                new_effect += f"{selected_roll}"
+
         return new_effect + split_effect[-1]
 
     def _choose_and_make_modifiers(
@@ -337,7 +362,9 @@ class DataDepositTestDataCreator:
 
             remove_chosen_modifiers_from_pool: bool = not can_duplicate[i]
 
-            modifier_ids_to_choose_from: list = modifier_ids_to_choose[key].copy()
+            modifier_ids_to_choose_from: list[list[int]] = modifier_ids_to_choose[
+                key
+            ].copy()
             complementing_roll_ranges: list[str | list[float]] = roll_ranges[key].copy()
 
             for _ in range(n_modifiers_to_create):
@@ -357,6 +384,7 @@ class DataDepositTestDataCreator:
                 if remove_chosen_modifiers_from_pool:
                     modifier_ids_to_choose_from.pop(choice_made)
                     complementing_roll_ranges.pop(choice_made)
+
         return modifiers
 
     def _create_item_dict_from_template(
@@ -369,7 +397,7 @@ class DataDepositTestDataCreator:
         rarity = (
             "Unique"
             if template["is_unique"]
-            else random.choice(["normal", "magic", "rare"])
+            else random.choice(["Normal", "Magic", "Rare"])
         )
         base_type = random.choice(template["base_types"])
         modifiers = self._choose_and_make_modifiers(template)
