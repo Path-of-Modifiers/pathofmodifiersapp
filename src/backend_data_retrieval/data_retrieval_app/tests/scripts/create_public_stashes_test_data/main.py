@@ -11,7 +11,7 @@ from data_retrieval_app.tests.scripts.create_public_stashes_test_data.utils.data
     DataDepositTestDataCreator,
 )
 from data_retrieval_app.tests.scripts.create_public_stashes_test_data.utils.scrap_and_mock_poe_api_docs_objs import (
-    ScrapAndMockPoEAPIDocsObjs,
+    ScrapAndMockPoEAPIDocs,
 )
 from data_retrieval_app.tests.utils import (
     replace_false_values,
@@ -22,7 +22,7 @@ OUTPUT_TEST_DATA_LOCATION_PATH = "data_retrieval_app/tests/test_data/"
 
 class PublicStashMockAPI:
     def __init__(self) -> None:
-        scrap_and_mock_poe_api_docs_objs = ScrapAndMockPoEAPIDocsObjs()
+        scrap_and_mock_poe_api_docs_objs = ScrapAndMockPoEAPIDocs()
         (
             self.public_stashes_mock_obj,
             self.item_mock_obj,
@@ -61,7 +61,7 @@ class PublicStashMockAPI:
 def iterate_create_public_stashes_test_data() -> (
     Iterator[tuple[int, str, list[dict[str, Any]]]]
 ):
-    scrap_and_mock_poe_api_docs_objs = ScrapAndMockPoEAPIDocsObjs()
+    scrap_and_mock_poe_api_docs_objs = ScrapAndMockPoEAPIDocs()
     (
         public_stashes_mock_obj,
         item_mock_obj,

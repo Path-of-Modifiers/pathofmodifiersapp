@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from data_retrieval_app.external_data_retrieval.config import settings
 
 
-class ScrapAndMockPoEAPIDocsObjs:
+class ScrapAndMockPoEAPIDocs:
     def __init__(self) -> None:
         self.public_stashes_url = "https://www.pathofexile.com/developer/docs/reference#type-PublicStashChange"
         self.public_stashes_schema_id = "type-PublicStashChange"

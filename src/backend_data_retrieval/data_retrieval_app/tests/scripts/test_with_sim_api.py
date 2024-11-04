@@ -2,8 +2,8 @@ import threading
 
 import numpy as np
 import pandas as pd
-from requests.exceptions import HTTPError
 
+from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.external_data_retrieval.data_retrieval.poe_api_handler import (
     PoEAPIHandler,
 )
@@ -13,7 +13,6 @@ from data_retrieval_app.external_data_retrieval.transforming_data.transform_poe_
     UniquePoEAPIDataTransformer,
 )
 from data_retrieval_app.logs.logger import setup_logging, test_logger
-from data_retrieval_app.logs.logger import transform_logger as logger
 from data_retrieval_app.tests.scripts.create_public_stashes_test_data.config import (
     script_settings,
 )
@@ -56,10 +55,11 @@ class TestUniquePoEAPIDataTransformer(UniquePoEAPIDataTransformer):
         """
         item_modifier_columns = ["name", "explicitMods"]
 
-        item_modifier_df = df.loc[:, item_modifier_columns].reset_index()
-
         if script_settings.dispersed_timing_enabled:
-            item_modifier_df["createdAt"] = self.time_column
+            df["createdAt"] = self.time_column
+            item_modifier_columns.append("createdAt")
+
+        item_modifier_df = df.loc[:, item_modifier_columns].reset_index()
 
         item_modifier_df["itemId"] = item_id
         item_modifier_df = item_modifier_df.explode("explicitMods", ignore_index=True)
@@ -74,25 +74,10 @@ class TestUniquePoEAPIDataTransformer(UniquePoEAPIDataTransformer):
         modifier_df: pd.DataFrame,
         currency_df: pd.DataFrame,
     ) -> None:
-        self.roll_processor.add_modifier_df(modifier_df)
-
         if script_settings.dispersed_timing_enabled:
             self.time_column = self._create_random_time_column(length=len(df))
 
-        try:
-            logger.debug("Transforming data into tables.")
-            logger.debug("Processing data tables.")
-            self._process_account_table(df.copy(deep=True))
-            self._process_stash_table(df.copy(deep=True))
-            item_id = self._process_item_table(
-                df.copy(deep=True), currency_df=currency_df
-            )
-            self._process_item_modifier_table(df.copy(deep=True), item_id=item_id)
-            logger.debug("Successfully transformed data into tables.")
-
-        except HTTPError as e:
-            logger.exception(f"Something went wrong:\n{repr(e)}")
-            raise e
+        super().transform_into_tables(df, modifier_df, currency_df)
 
 
 class PoEMockAPIHandler(PoEAPIHandler):
@@ -108,7 +93,7 @@ class PoEMockAPIHandler(PoEAPIHandler):
         waiting_for_next_id_lock: threading.Lock,  # noqa: ARG002
         stash_lock: threading.Lock,
     ) -> None:
-        mini_batch_size = 30
+        mini_batch_size = settings.MINI_BATCH_SIZE
         while True:
             while self.requests_since_last_checkpoint < mini_batch_size:
                 stashes = self.mock_api.get_test_data()
@@ -119,22 +104,6 @@ class PoEMockAPIHandler(PoEAPIHandler):
                 stash_lock.release()
 
             stashes_ready_event.set()
-
-    def _gather_n_checkpoints(
-        self,
-        stashes_ready_event: threading.Event,
-        stash_lock: threading.Lock,
-        n: int = 1,
-    ) -> pd.DataFrame:
-        """
-        The data collecting is divided into mini batches and batches.
-        A batch size is determined by n, and the mini batch size (currently hard coded to be 30).
-        """
-        df = pd.DataFrame()
-        for _ in range(n):
-            df = self._process_stream(stashes_ready_event, stash_lock, df)
-
-        return df
 
 
 class ContinuousMockDataRetrieval(ContinuousDataRetrieval):
