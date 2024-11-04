@@ -7,6 +7,9 @@ class PoEPublicStashesTestDataSettings(BaseSettings):
         str
     ] = []  # For instance: ["AulsUprising.csv", "ThreadOfHope.csv"]
 
+    MINI_BATCH_SIZE: int = 10
+    N_CHECKPOINTS_PER_TRANSFORMATION: int = 1
+
     CREATE_TEST_DATA_FOR_N_SECONDS: int = 10 * 60  # 10 min
     CREATE_DATA_DIFFERENT_TIMING_INTERVAL: bool = (
         True  # Provides variety to timing of data created

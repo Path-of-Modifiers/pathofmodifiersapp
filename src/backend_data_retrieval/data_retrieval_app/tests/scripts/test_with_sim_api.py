@@ -3,7 +3,6 @@ import threading
 import numpy as np
 import pandas as pd
 
-from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.external_data_retrieval.data_retrieval.poe_api_handler import (
     PoEAPIHandler,
 )
@@ -86,6 +85,9 @@ class PoEMockAPIHandler(PoEAPIHandler):
 
         self.mock_api = PublicStashMockAPI()
         self.run_program_for_n_seconds = script_settings.CREATE_TEST_DATA_FOR_N_SECONDS
+        self.n_checkpoints_per_transfromation = (
+            script_settings.N_CHECKPOINTS_PER_TRANSFORMATION
+        )
 
     async def _follow_stream(
         self,
@@ -93,7 +95,7 @@ class PoEMockAPIHandler(PoEAPIHandler):
         waiting_for_next_id_lock: threading.Lock,  # noqa: ARG002
         stash_lock: threading.Lock,
     ) -> None:
-        mini_batch_size = settings.MINI_BATCH_SIZE
+        mini_batch_size = script_settings.MINI_BATCH_SIZE
         while True:
             while self.requests_since_last_checkpoint < mini_batch_size:
                 stashes = self.mock_api.get_test_data()
