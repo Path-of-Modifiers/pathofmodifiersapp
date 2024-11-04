@@ -377,7 +377,6 @@ class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
         self, item_modifier_df: pd.DataFrame
     ) -> pd.DataFrame:
         item_modifier_df = self.roll_processor.add_rolls(df=item_modifier_df)
-
         return item_modifier_df
 
     @property
@@ -399,8 +398,7 @@ class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
         self, *, dont_drop: set[str]
     ) -> None:
         columns_to_drop = self.item_modifier_table_columns_to_not_drop
-
-        self.item_modifier_table_columns_to_not_drop = columns_to_drop.update(dont_drop)
+        self.item_modifier_table_columns_to_not_drop = columns_to_drop | dont_drop
 
     def _clean_item_modifier_table(
         self, item_modifier_df: pd.DataFrame
@@ -408,7 +406,7 @@ class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
-        dont_drop_columns = {"itemId", "modifierId", "orderId", "position", "roll"}
+        dont_drop_columns = self.item_modifier_table_columns_to_not_drop
 
         item_modifier_df.drop(
             item_modifier_df.columns.difference(dont_drop_columns),
