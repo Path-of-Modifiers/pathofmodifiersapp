@@ -319,7 +319,7 @@ class PoEAPIHandler:
 
         timeout = aiohttp.ClientTimeout(total=60)
         session = aiohttp.ClientSession(headers=self.headers, timeout=timeout)
-        mini_batch_size = 30
+        mini_batch_size = settings.MINI_BATCH_SIZE
         try:
             while True:
                 while self.requests_since_last_checkpoint < mini_batch_size:
@@ -487,7 +487,11 @@ class PoEAPIHandler:
             time.sleep(5)  # Waits for the listening threads to have time to start up.
             while True:
                 logger.info("Waiting for data from the stream")
-                df = self._gather_n_checkpoints(stashes_ready_event, stash_lock)
+                df = self._gather_n_checkpoints(
+                    stashes_ready_event,
+                    stash_lock,
+                    n=settings.N_CHECKPOINTS_PER_TRANSFORMATION,
+                )
                 logger.info(
                     "Finished processing the stream, entering transformation phase"
                 )
