@@ -62,6 +62,9 @@ class TestUniquePoEAPIDataTransformer(UniquePoEAPIDataTransformer):
 
         item_modifier_df["itemId"] = item_id
         item_modifier_df = item_modifier_df.explode("explicitMods", ignore_index=True)
+        test_logger.info(
+            f"Transforming {len(item_modifier_df)} item modifiers, making them ready to insert into db"
+        )
 
         item_modifier_df.rename({"explicitMods": "modifier"}, axis=1, inplace=True)
 
@@ -76,6 +79,9 @@ class TestUniquePoEAPIDataTransformer(UniquePoEAPIDataTransformer):
         if script_settings.dispersed_timing_enabled:
             self.time_column = self._create_random_time_column(length=len(df))
 
+        test_logger.info(
+            f"Transforming {len(df)} items, making them ready to insert into db"
+        )
         super().transform_into_tables(df, modifier_df, currency_df)
 
 
