@@ -85,6 +85,10 @@ class PoEAPIHandler:
         self.run_program_for_n_seconds = 3600
         logger.info("PoEAPIHandler successfully initialized.")
 
+        self.n_checkpoints_per_transfromation = (
+            settings.N_CHECKPOINTS_PER_TRANSFORMATION
+        )
+
     def _json_to_df(self, stashes: list) -> pd.DataFrame | None:
         df_temp = pd.json_normalize(stashes)
 
@@ -490,7 +494,7 @@ class PoEAPIHandler:
                 df = self._gather_n_checkpoints(
                     stashes_ready_event,
                     stash_lock,
-                    n=settings.N_CHECKPOINTS_PER_TRANSFORMATION,
+                    n=self.n_checkpoints_per_transfromation,
                 )
                 logger.info(
                     "Finished processing the stream, entering transformation phase"
