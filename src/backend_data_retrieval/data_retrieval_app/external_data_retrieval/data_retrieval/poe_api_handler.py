@@ -85,31 +85,28 @@ class PoEAPIHandler:
         self.run_program_for_n_seconds = 3600
         logger.info("PoEAPIHandler successfully initialized.")
 
-    def _json_to_df(self, stashes: list) -> pd.DataFrame:
-        logger.debug(f"Start of json_to_df {time.perf_counter()}")
+    def _json_to_df(self, stashes: list) -> pd.DataFrame | None:
         df_temp = pd.json_normalize(stashes)
-        logger.debug(f"After json_normalize {time.perf_counter()}")
+
         if "items" not in df_temp.columns:
             return None
+
         df_temp = df_temp.explode(["items"])
-        logger.debug(f"After explode items {time.perf_counter()}")
+
         df_temp = df_temp.loc[~df_temp["items"].isnull()]
-        logger.debug(f"After removing items that are null {time.perf_counter()}")
+
         df_temp.drop("items", axis=1, inplace=True)
         df_temp.rename(columns={"id": "stashId"}, inplace=True)
-        logger.debug(f"After dropping items and renaming id {time.perf_counter()}")
 
         df = pd.json_normalize(stashes, record_path=["items"])
-        logger.debug(f"After json_normalize record path items {time.perf_counter()}")
+
         df["stash_index"] = df_temp.index
-        logger.debug(f"After setting stash_index {time.perf_counter()}")
 
         df_temp.index = df.index
-        logger.debug(f"After setting new index {time.perf_counter()}")
+
         df[df_temp.columns.to_list()] = df_temp
-        logger.debug(f"After inserting df_temp into df {time.perf_counter()}")
+
         df.rename(columns={"id": "gameItemId"}, inplace=True)
-        logger.debug(f"After rename id {time.perf_counter()}")
 
         return df
 
@@ -136,12 +133,16 @@ class PoEAPIHandler:
                 ) = item_detector.iterate_stashes(df)
 
                 df_wanted = pd.concat((df_wanted, df_filtered))
+
+                del df_filtered
+
                 n_new_items += item_count
                 n_total_unique_items += n_unique_found_items
                 if df_leftover.empty:
                     break
 
                 df = df_leftover.copy(deep=True)
+                del df_leftover
         except:
             logger.exception(
                 f"While checking stashes (detector: {item_detector}), the exception below occured:"
