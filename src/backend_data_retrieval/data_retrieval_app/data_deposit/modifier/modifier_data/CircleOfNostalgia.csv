@@ -1,5 +1,8 @@
 # Unique Name: Circle of Nostalgia
-# Base Types: Ametyst Ring
+# Base Types: Amethyst Ring
+# Total modifiers on each item: 5
+# Can have duplicate modifiers: False|False
+# Modifier distrubution: 4:3,"rest":2 
 # Source: https://www.poewiki.net/wiki/Synthesis_league#Unique_items
 minRoll,maxRoll,textRolls,position,effect,static,unique
 10,20,,0,"+# to all Attributes",,True

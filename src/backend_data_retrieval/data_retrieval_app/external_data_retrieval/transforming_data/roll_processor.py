@@ -14,12 +14,12 @@ class RollProcessor:
 
     @modifier_df.setter
     def modifier_df(self, modifier_df: pd.DataFrame):
-        self._modifier_df = modifier_df
+        self._modifier_df = modifier_df.drop(["createdAt"], axis=1)
 
-        static_modifier_mask = modifier_df["static"] == "True"
-        self.static_modifier_df = modifier_df.loc[static_modifier_mask]
+        static_modifier_mask = self._modifier_df["static"] == "True"
+        self.static_modifier_df = self._modifier_df.loc[static_modifier_mask]
 
-        self.dynamic_modifier_df = modifier_df.loc[~static_modifier_mask]
+        self.dynamic_modifier_df = self._modifier_df.loc[~static_modifier_mask]
 
     def add_modifier_df(self, modifier_df: pd.DataFrame):
         try:
@@ -46,6 +46,10 @@ class RollProcessor:
         static_modifier_df = self.static_modifier_df
 
         static_df = df.loc[static_modifers_mask]
+        if static_df.empty:
+            return pd.DataFrame(
+                columns=static_df.columns.append(static_modifier_df.columns)
+            )
         static_df.loc[:, "position"] = "0"
         static_df.loc[:, "effect"] = static_df.loc[:, "modifier"]
 
@@ -132,6 +136,8 @@ class RollProcessor:
         """
         dynamic_modifier_df = self.dynamic_modifier_df
         dynamic_df = df.loc[~static_modifers_mask]  # Everything not static is dynamic
+        if dynamic_df.empty:
+            raise Exception("ASDHSDHASDHHSADDSHAD")
 
         dynamic_df.loc[:, "effect"] = dynamic_df.loc[:, "modifier"]
 
