@@ -14,8 +14,8 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
   queryClicked: false,
   league: defaultLeague,
   itemName: undefined,
-  itemSpec: {},
-  baseSpec: {},
+  itemSpec: undefined,
+  baseSpec: undefined,
   wantedModifiers: [],
   wantedModifierExtended: [],
   plotQuery: {
@@ -33,7 +33,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       plotQuery: {
         league: state.league,
         itemSpecifications: state.itemSpec,
-        baseSpec: state.baseSpec,
+        baseSpecifications: state.baseSpec,
         wantedModifiers: state.wantedModifierExtended
           .filter((wantedModifier) => wantedModifier.isSelected)
           .map((wantedModifier) => ({
@@ -71,7 +71,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       itemSpec: {
         ...state.itemSpec,
         influences: {
-          ...state.itemSpec.influences,
+          ...state.itemSpec?.influences,
           elder: elder,
         },
       },
@@ -82,7 +82,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       itemSpec: {
         ...state.itemSpec,
         influences: {
-          ...state.itemSpec.influences,
+          ...state.itemSpec?.influences,
           shaper: shaper,
         },
       },
@@ -93,7 +93,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       itemSpec: {
         ...state.itemSpec,
         influences: {
-          ...state.itemSpec.influences,
+          ...state.itemSpec?.influences,
           crusader: crusader,
         },
       },
@@ -104,7 +104,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       itemSpec: {
         ...state.itemSpec,
         influences: {
-          ...state.itemSpec.influences,
+          ...state.itemSpec?.influences,
           redeemer: redeemer,
         },
       },
@@ -115,7 +115,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       itemSpec: {
         ...state.itemSpec,
         influences: {
-          ...state.itemSpec.influences,
+          ...state.itemSpec?.influences,
           hunter: hunter,
         },
       },
@@ -126,7 +126,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       itemSpec: {
         ...state.itemSpec,
         influences: {
-          ...state.itemSpec.influences,
+          ...state.itemSpec?.influences,
           warlord: warlord,
         },
       },
