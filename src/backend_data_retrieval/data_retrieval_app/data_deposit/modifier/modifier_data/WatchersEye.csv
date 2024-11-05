@@ -1,5 +1,8 @@
 # Unique Name: Watcher's Eye
 # Base Types: Prismatic Jewel
+# Total modifiers: 5|6
+# Can have duplicate modifiers: False|False
+# Modifier distrubution: 3:3,"rest":2|3 
 # Source: https://poedb.tw/Watchers_Eye
 minRoll,maxRoll,position,effect,static,unique
 4,6,0,"#% increased maximum Energy Shield",,True

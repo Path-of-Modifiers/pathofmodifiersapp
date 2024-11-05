@@ -1,14 +1,14 @@
 import pandas as pd
 from pydantic import TypeAdapter
-from sqlalchemy import Result, select
+from sqlalchemy import Boolean, Result, and_, intersect, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql.expression import Select
+from sqlalchemy.sql.expression import CompoundSelect, Select
 
 from app.core.models.models import Currency as model_Currency
 from app.core.models.models import Item as model_Item
 from app.core.models.models import ItemBaseType as model_ItemBaseType
 from app.core.models.models import ItemModifier as model_ItemModifier
-from app.core.schemas.plot import PlotData, PlotQuery
+from app.core.schemas.plot import BaseSpecs, ItemSpecs, PlotData, PlotQuery
 from app.exceptions.model_exceptions.plot_exception import (
     PlotNoModifiersProvidedError,
     PlotQueryDataNotFoundError,
@@ -21,74 +21,23 @@ class Plotter:
     def __init__(self):
         self.validate = TypeAdapter(PlotData).validate_python
 
-    def _init_query(self, query: PlotQuery) -> Select:
-        league = query.league
-
-        statement = (
-            select(
-                model_Item.itemId,
-                model_Item.createdAt,
-                model_Item.baseType,
-                model_Item.currencyId,
-                model_Item.currencyAmount,
-                model_Currency.tradeName,
-                model_Currency.valueInChaos,
-                model_Currency.createdAt.label("currencyCreatedAt"),
-            )
-            .join_from(model_Currency, model_Item)
-            .where(model_Item.league == league)
-        )
+    def _create_wanted_modifier_subquery(self, query: PlotQuery):
         if len(query.wantedModifiers) == 0:
             raise PlotNoModifiersProvidedError(
                 query_data=query,
-                function_name=self._init_query.__name__,
+                function_name=self._create_wanted_modifier_subquery.__name__,
                 class_name=self.__class__.__name__,
             )
-        return statement
 
-    def _item_spec_query(self, statement: Select, *, query: PlotQuery) -> Select:
-        item_specifications = [
-            model_Item.__dict__[key] == query.itemSpecifications.__dict__[key]
-            for key in query.itemSpecifications.model_fields
-            if (
-                query.itemSpecifications.__dict__[key] is not None and "Ilvl" not in key
-            )
-        ]
-        if query.itemSpecifications.minIlvl is not None:
-            item_specifications.append(
-                model_Item.ilvl >= query.itemSpecifications.minIlvl
-            )
+        base_subquery_stmt = select(
+            model_ItemModifier.itemId.label("itemModifierItemId")
+        )
 
-        if query.itemSpecifications.maxIlvl is not None:
-            item_specifications.append(
-                model_Item.ilvl <= query.itemSpecifications.maxIlvl
-            )
-
-        if item_specifications:
-            return statement.where(*item_specifications)
-        else:
-            return statement
-
-    def _base_spec_query(self, statement: Select, *, query: PlotQuery) -> Select:
-        if query.baseSpecifications is not None:
-            base_specifications = [
-                model_ItemBaseType.__dict__[key]
-                == query.baseSpecifications.__dict__[key]
-                for key in query.baseSpecifications.model_fields
-                if query.baseSpecifications.__dict__[key] is not None
-            ]
-            statement = statement.join(model_ItemBaseType).where(*base_specifications)
-
-        return statement
-
-    def _wanted_modifier_query(self, statement: Select, *, query: PlotQuery) -> Select:
-        joined_statement = statement.join(model_ItemModifier)
-
-        intersection_statement = None
-        segments = []
+        wanted_modifier_conditions = []
         for wanted_modifier in query.wantedModifiers:
             modifier_id = wanted_modifier.modifierId
             modifier_limitation = wanted_modifier.modifierLimitations
+
             limitations = []
             if modifier_limitation is not None:
                 # Adds limitations if they exist
@@ -107,31 +56,137 @@ class Plotter:
                         model_ItemModifier.roll
                         == (wanted_modifier.modifierLimitations.textRoll)
                     )
-            intersect_segment_statement = joined_statement.where(
+            intersect_wanted_modifier_statement = base_subquery_stmt.where(
                 model_ItemModifier.modifierId == modifier_id, *limitations
             )
-            segments.append(intersect_segment_statement)
+            wanted_modifier_conditions.append(intersect_wanted_modifier_statement)
 
-        intersection_statement = joined_statement.intersect(*segments)
-        return intersection_statement
+        subquery_stmt = intersect(*wanted_modifier_conditions)
+
+        return subquery_stmt
+
+    def _init_stmt(self, query: PlotQuery, *, subquery: CompoundSelect) -> Select:
+        league = query.league
+
+        statement = (
+            select(
+                model_Item.itemId,
+                model_Item.createdAt,
+                model_Item.baseType,
+                model_Item.currencyId,
+                model_Item.currencyAmount,
+                model_Currency.tradeName,
+                model_Currency.valueInChaos,
+                model_Currency.createdAt.label("currencyCreatedAt"),
+            )
+            .join_from(model_Currency, model_Item)
+            .where(and_(model_Item.itemId.in_(subquery), model_Item.league == league))
+        )
+
+        return statement
+
+    def _apply_priority_filters(self, statement: Select, *, query: PlotQuery) -> Select:
+        if query.itemSpecifications.name is not None:
+            statement = statement.where(
+                model_Item.name == query.itemSpecifications.name
+            )
+
+        return statement
+
+    def _apply_base_specs(
+        self, statement: Select, *, base_spec_query: BaseSpecs
+    ) -> Select:
+        base_spec_conditions = []
+        if base_spec_query.baseType is not None:
+            # Using baseType without joining saves performance
+            base_spec_conditions.append(model_Item.baseType == base_spec_query.baseType)
+
+        if (
+            base_spec_query.category is not None
+            or base_spec_query.subCategory is not None
+        ):
+            statement = statement.join(model_ItemBaseType)
+            if base_spec_query.category is not None:
+                base_spec_conditions.append(
+                    model_ItemBaseType.category == base_spec_query.category
+                )
+
+            if base_spec_query.subCategory is not None:
+                base_spec_conditions.append(
+                    model_ItemBaseType.subCategory == base_spec_query.subCategory
+                )
+
+        return statement.where(and_(*base_spec_conditions))
+
+    def _apply_item_specs(
+        self, statement: Select, *, item_spec_query: ItemSpecs
+    ) -> Select:
+        item_spec_query_fields = item_spec_query.model_fields.copy()
+        item_specifications = []
+
+        if item_spec_query.name is not None:
+            # name has already been applied
+            item_spec_query_fields.pop("name")
+
+        if item_spec_query.minIlvl is not None:
+            item_specifications.append(model_Item.ilvl >= item_spec_query.minIlvl)
+            item_spec_query_fields.pop("minIlvl")
+
+        if item_spec_query.maxIlvl is not None:
+            item_specifications.append(model_Item.ilvl <= item_spec_query.maxIlvl)
+            item_spec_query_fields.pop("maxIlvl")
+
+        if item_spec_query.influences is not None:
+            item_specifications += [
+                model_Item.influences[key].cast(Boolean)
+                == item_spec_query.influences.__dict__[key]
+                for key in item_spec_query.influences.model_fields
+                if (item_spec_query.influences.__dict__[key] is not None)
+            ]
+            item_spec_query_fields.pop("influences")
+
+        item_specifications += [
+            model_Item.__dict__[key] == item_spec_query.__dict__[key]
+            for key in item_spec_query_fields
+            if (item_spec_query.__dict__[key] is not None)
+        ]
+
+        return statement.where(and_(*item_specifications))
+
+    def _filter_from_query(self, statement: Select, *, query: PlotQuery) -> Select:
+        """
+        Prioritizes filtering the largest amount of rows
+        """
+        statement = self._apply_priority_filters(statement, query=query)
+        if query.baseSpecifications is not None:
+            statement = self._apply_base_specs(
+                statement, base_spec_query=query.baseSpecifications
+            )
+
+        if query.itemSpecifications is not None:
+            statement = self._apply_item_specs(
+                statement, item_spec_query=query.itemSpecifications
+            )
+
+        return statement
 
     @async_timing_tracker
     async def _perform_plot_db_query(
         self, db: AsyncSession, *, query: PlotQuery
     ) -> Result:
+        subquery_stmt = self._create_wanted_modifier_subquery(query)
+        statement = self._init_stmt(query, subquery=subquery_stmt)
+        statement = self._filter_from_query(statement, query=query)
         async with db.begin():
-            statement = self._init_query(query)
-            statement = self._item_spec_query(statement, query=query)
-            statement = self._base_spec_query(statement, query=query)
-            statement = self._wanted_modifier_query(statement, query=query)
-
             result = await db.execute(statement)
+
         return result
 
     @sync_timing_tracker
     def _convert_result_to_df(self, result: Result) -> pd.DataFrame:
-        rows = result.mappings().all()
-        return pd.DataFrame(rows)
+        rows = result.fetchall()
+        df = pd.DataFrame(rows, columns=result.keys())
+        return df
 
     @sync_timing_tracker
     def _create_plot_data(self, df: pd.DataFrame) -> tuple:

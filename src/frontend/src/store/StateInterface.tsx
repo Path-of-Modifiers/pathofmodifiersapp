@@ -63,13 +63,13 @@ export interface GraphInputState {
     fetchStatus: string | undefined;
     league: string;
     itemName: string | undefined;
-    itemSpec: ItemSpecState;
-    baseSpec?: BaseSpecState;
+    itemSpec: ItemSpecState | undefined;
+    baseSpec: BaseSpecState | undefined;
     wantedModifiers: WantedModifier[];
     wantedModifierExtended: WantedModifierExtended[];
     plotQuery: PlotQuery;
     setQueryClicked: () => void;
-    setFetchStatus: (fetchStatus: string | undefined) => void
+    setFetchStatus: (fetchStatus: string | undefined) => void;
     setPlotQuery: () => void;
     setClearClicked: () => void;
     setLeague: (league: string) => void;
