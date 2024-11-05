@@ -18,19 +18,19 @@ def random_lower_string(*, small_string: bool | None = None) -> str:
     return random_lower_string
 
 
-def random_string(length: int = 15):
+def random_string(max_length: int = 15):
     """Generates a random string of a specified length (default is 15)."""
     return "".join(
-        random.choice(string.ascii_letters) for _ in range(random.randint(1, length))
+        random.choice(string.ascii_letters) for _ in range(random_int(5, max_length))
     )
 
 
-def random_int(min_val: int = 0, max_val: int = 100):
+def random_int(min_val: int = 1, max_val: int = 100):
     """Generates a random integer between min_val and max_val (default is 0 to 100)."""
     return random.randint(min_val, max_val)
 
 
-def random_float(min_val: float = 0, max_val: float = 100, precision: int = 2):
+def random_float(min_val: float = 1, max_val: float = 100, precision: int = 2):
     """Generates a random float between min_val and max_val (default is 0 to 100)."""
     return round(random.uniform(min_val, max_val), precision)
 
@@ -42,19 +42,14 @@ def random_boolean():
 
 def random_list_str(max_length: int = 5) -> list[str]:
     """Generates a list with a random number of random string elements (max 5)."""
-    return [
-        random_string(random.randint(1, 10))
-        for _ in range(random.randint(1, max_length))
-    ]
+    return [random_string(random_int(5, 15)) for _ in range(random_int(5, max_length))]
 
 
 def random_dict(max_length: int = 5) -> dict:
     """Generates a random object."""
     dict = {}
-    for _ in range(random.randint(1, max_length)):
-        dict[random_string(random.randint(1, 10))] = random_string(
-            random.randint(1, 10)
-        )
+    for _ in range(random_int(1, max_length)):
+        dict[random_string()] = random_string()
     return dict
 
 
