@@ -25,7 +25,7 @@ class Plotter:
         if len(query.wantedModifiers) == 0:
             raise PlotNoModifiersProvidedError(
                 query_data=query,
-                function_name=self._init_query.__name__,
+                function_name=self._create_wanted_modifier_subquery.__name__,
                 class_name=self.__class__.__name__,
             )
 
@@ -65,7 +65,7 @@ class Plotter:
 
         return subquery_stmt
 
-    def _init_query(self, query: PlotQuery, *, subquery: CompoundSelect) -> Select:
+    def _init_stmt(self, query: PlotQuery, *, subquery: CompoundSelect) -> Select:
         league = query.league
 
         statement = (
@@ -100,6 +100,7 @@ class Plotter:
         if base_spec_query.baseType is not None:
             # Using baseType without joining saves performance
             base_spec_conditions.append(model_Item.baseType == base_spec_query.baseType)
+
         if (
             base_spec_query.category is not None
             or base_spec_query.subCategory is not None
@@ -144,12 +145,11 @@ class Plotter:
             ]
             item_spec_query_fields.pop("influences")
 
-        if not any(item_specifications):
-            item_specifications += [
-                model_Item.__dict__[key] == item_spec_query.__dict__[key]
-                for key in item_spec_query_fields
-                if (item_spec_query.__dict__[key] is not None)
-            ]
+        item_specifications += [
+            model_Item.__dict__[key] == item_spec_query.__dict__[key]
+            for key in item_spec_query_fields
+            if (item_spec_query.__dict__[key] is not None)
+        ]
 
         return statement.where(and_(*item_specifications))
 
@@ -175,7 +175,7 @@ class Plotter:
         self, db: AsyncSession, *, query: PlotQuery
     ) -> Result:
         subquery_stmt = self._create_wanted_modifier_subquery(query)
-        statement = self._init_query(query, subquery=subquery_stmt)
+        statement = self._init_stmt(query, subquery=subquery_stmt)
         statement = self._filter_from_query(statement, query=query)
         async with db.begin():
             result = await db.execute(statement)
