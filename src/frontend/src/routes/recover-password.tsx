@@ -132,7 +132,6 @@ function RecoverPassword() {
           <Link
             as={RouterLink}
             to="/login"
-            params={{ from: "recover-password" }}
             from="recover-password"
             color="blue.500"
           >

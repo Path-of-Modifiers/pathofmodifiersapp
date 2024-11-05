@@ -1,61 +1,54 @@
-import { QueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { ItemBaseTypesService, ItemBaseType } from "../../client";
 
-// Prefetches all item base type data
-export const prefetchAllBaseTypeData = async (queryClient: QueryClient) => {
-  let itemBaseTypes: ItemBaseType[] = [];
+// Fetches all item base type data and processes related unique item names
+export const useGetItemBaseTypes = async () => {
+    const queryClient = useQueryClient();
 
-  try {
-    // Prefetch all unique values
-    await queryClient.prefetchQuery({
-      queryKey: ["uniqueBasetypeValues"],
-      queryFn: async () => {
-        const data =
-          await ItemBaseTypesService.getAllItemBaseTypes({});
-        if (Array.isArray(data)) {
-          itemBaseTypes = data;
-        } else {
-          itemBaseTypes = [data];
-        }
-        return 1;
-      },
-      staleTime: 10 * 1000, // only prefetch if older than 10 seconds
-    });
-  } catch (error) {
-    console.log(error);
-  }
+    try {
+        // Fetch and return item base types directly
+        const itemBaseTypes = await queryClient.fetchQuery({
+            queryKey: ["baseTypeValues"],
+            queryFn: async () => {
+                const data = await ItemBaseTypesService.getAllItemBaseTypes({});
+                return Array.isArray(data) ? data : [data];
+            },
+        });
 
-  const createItemNameArray = (itemBaseType: ItemBaseType[]) => {
-    const reduceItemNameArray = (
-      prev: string[] | undefined,
-      cur: string[] | undefined
-    ): string[] => {
-      if (prev === undefined) {
-        prev = [];
-      }
-      if (cur === undefined) {
-        return prev;
-      }
-      const newItemNames = cur.filter((value) => !prev.includes(value));
-      prev.push(...newItemNames);
-      return prev;
-    };
+        const createItemNameArray = (itemBaseType: ItemBaseType[]): string[] => {
+            const reduceItemNameArray = (
+                prev: string[] | undefined,
+                cur: string[] | undefined
+            ): string[] => {
+                prev = prev || [];
+                if (cur) {
+                    const newItemNames = cur.filter((value) => !prev.includes(value));
+                    prev.push(...newItemNames);
+                }
+                return prev;
+            };
 
-    const arrayOfRelatedUniques = itemBaseType.map((baseType) => {
-      const relatedUniques = baseType.relatedUniques;
-      if (relatedUniques) {
-        return relatedUniques.split("|");
-      }
-      return [];
-    });
-    const itemNames = arrayOfRelatedUniques.reduce(reduceItemNameArray, []);
-    return itemNames;
-  };
+            const arrayOfRelatedUniques = itemBaseType.map((baseType) => {
+                const relatedUniques = baseType.relatedUniques;
+                return relatedUniques ? relatedUniques.split("|") : [];
+            });
 
-  const itemNames = createItemNameArray(itemBaseTypes);
+            return arrayOfRelatedUniques.reduce(reduceItemNameArray, []);
+        };
 
-  return {
-    itemBaseTypes,
-    itemNames,
-  };
+        const itemNames = createItemNameArray(itemBaseTypes);
+
+        return {
+            itemBaseTypes,
+            itemNames,
+        };
+
+    } catch (error) {
+        console.error("Error fetching item base types:", error);
+        return {
+            itemBaseTypes: [],
+            itemNames: [],
+        };
+    }
 };
+
