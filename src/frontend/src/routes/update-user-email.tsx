@@ -32,7 +32,7 @@ export const Route = createFileRoute("/update-user-email")({
     if (!hasCompletedCaptcha() && !isLoggedIn()) {
       throw redirect({
         to: "/captcha",
-        search: () => ({ from: "reset-password" }), // Pass the query parameter using search
+        search: () => ({ from: "update-user-email" }), // Pass the query parameter using search
       });
     }
   },
@@ -115,8 +115,7 @@ function UpdateUserEmail() {
         <Link
           as={RouterLink}
           to="/login"
-          params={{ from: "recover-password" }}
-          from="user-not-activated"
+          from="update-user-email"
           color="blue.500"
         >
           Back to Log In Page

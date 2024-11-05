@@ -167,9 +167,9 @@ class PoEAPIDataTransformerBase:
                 influence_dict = {}
                 for influence_column in influence_columns:
                     if row[influence_column]:
-                        influence_dict[influence_column.replace("influences.", "")] = (
-                            True
-                        )
+                        influence_dict[
+                            influence_column.replace("influences.", "")
+                        ] = True
                 return influence_dict
 
         influence_columns = [
@@ -196,32 +196,55 @@ class PoEAPIDataTransformerBase:
         item_df.loc[invalid_amount_mask, "currencyType"] = ""
 
         item_df = item_df.merge(
-            currency_df, how="left", left_on="currencyType", right_on="tradeName"
+            currency_df,
+            how="left",
+            left_on="currencyType",
+            right_on="tradeName",
         )
 
         return item_df
+
+    @property
+    def item_table_columns_to_drop(self) -> set[str]:
+        try:
+            drop_columns = self._item_table_columns_to_drop
+        except AttributeError:
+            drop_columns = {
+                "influences.shaper",
+                "influences.elder",
+                "influences.crusader",
+                "influences.hunter",
+                "influences.redeemer",
+                "influences.warlord",
+                "stash",
+                "currencyType",
+                "tradeName",
+                "valueInChaos",
+                "itemId",
+                "createdAt",
+                "iconUrl",
+            }
+            self._item_table_columns_to_drop = drop_columns
+        return drop_columns
+
+    @item_table_columns_to_drop.setter
+    def item_table_columns_to_drop(self, columns_to_drop: set[str]) -> set[str]:
+        self._item_table_columns_to_drop = columns_to_drop
+
+    def _update_item_table_columns_to_drop(self, *, dont_drop: set[str]) -> None:
+        columns_to_drop = self.item_table_columns_to_drop
+
+        self.item_table_columns_to_drop = columns_to_drop.difference(dont_drop)
 
     def _clean_item_table(self, item_df: pd.DataFrame) -> pd.DataFrame:
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
-        drop_list = [
-            "influences.shaper",
-            "influences.elder",
-            "influences.crusader",
-            "influences.hunter",
-            "influences.redeemer",
-            "influences.warlord",
-            "stash",
-            "currencyType",
-            "tradeName",
-            "valueInChaos",
-            "itemId",
-            "createdAt",
-            "iconUrl",
-        ]
+
+        drop_columns = self._item_table_columns_to_drop
+
         item_df.drop(
-            drop_list,
+            item_df.columns.intersection(drop_columns),
             axis=1,
             inplace=True,
             errors="ignore",
@@ -339,9 +362,9 @@ class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
         A similiar process to creating the item table, only this time the
         relevant column contains a list and not a JSON-object
         """
-        self.item_modifier_columns = ["name", "explicitMods"]
+        item_modifier_columns = ["name", "explicitMods"]
 
-        item_modifier_df = df.loc[:, self.item_modifier_columns].reset_index()
+        item_modifier_df = df.loc[:, item_modifier_columns].reset_index()
 
         item_modifier_df["itemId"] = item_id
         item_modifier_df = item_modifier_df.explode("explicitMods", ignore_index=True)
@@ -354,8 +377,28 @@ class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
         self, item_modifier_df: pd.DataFrame
     ) -> pd.DataFrame:
         item_modifier_df = self.roll_processor.add_rolls(df=item_modifier_df)
-
         return item_modifier_df
+
+    @property
+    def item_modifier_table_columns_to_not_drop(self) -> set[str]:
+        try:
+            dont_drop_columns = self._item_modifier_table_columns_to_not_drop
+        except AttributeError:
+            dont_drop_columns = {"itemId", "modifierId", "orderId", "position", "roll"}
+            self._item_modifier_table_columns_to_not_drop = dont_drop_columns
+        return dont_drop_columns
+
+    @item_modifier_table_columns_to_not_drop.setter
+    def item_modifier_table_columns_to_not_drop(
+        self, columns_to_drop: set[str]
+    ) -> set[str]:
+        self._item_modifier_table_columns_to_not_drop = columns_to_drop
+
+    def _update_item_modifier_table_columns_to_not_drop(
+        self, *, dont_drop: set[str]
+    ) -> None:
+        columns_to_drop = self.item_modifier_table_columns_to_not_drop
+        self.item_modifier_table_columns_to_not_drop = columns_to_drop | dont_drop
 
     def _clean_item_modifier_table(
         self, item_modifier_df: pd.DataFrame
@@ -363,10 +406,10 @@ class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
+        dont_drop_columns = self.item_modifier_table_columns_to_not_drop
+
         item_modifier_df.drop(
-            item_modifier_df.columns.difference(
-                ["itemId", "modifierId", "orderId", "position", "roll"]
-            ),
+            item_modifier_df.columns.difference(dont_drop_columns),
             axis=1,
             inplace=True,
         )

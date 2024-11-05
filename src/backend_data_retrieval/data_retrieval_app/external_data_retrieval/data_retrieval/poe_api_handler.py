@@ -82,22 +82,34 @@ class PoEAPIHandler:
 
         self._program_too_slow = False
         self.time_of_launch = time.perf_counter()
+        self.run_program_for_n_seconds = 3600
         logger.info("PoEAPIHandler successfully initialized.")
 
-    def _json_to_df(self, stashes: list) -> pd.DataFrame:
+        self.n_checkpoints_per_transfromation = (
+            settings.N_CHECKPOINTS_PER_TRANSFORMATION
+        )
+
+    def _json_to_df(self, stashes: list) -> pd.DataFrame | None:
         df_temp = pd.json_normalize(stashes)
+
         if "items" not in df_temp.columns:
             return None
+
         df_temp = df_temp.explode(["items"])
+
         df_temp = df_temp.loc[~df_temp["items"].isnull()]
+
         df_temp.drop("items", axis=1, inplace=True)
         df_temp.rename(columns={"id": "stashId"}, inplace=True)
 
         df = pd.json_normalize(stashes, record_path=["items"])
+
         df["stash_index"] = df_temp.index
 
         df_temp.index = df.index
+
         df[df_temp.columns.to_list()] = df_temp
+
         df.rename(columns={"id": "gameItemId"}, inplace=True)
 
         return df
@@ -110,7 +122,6 @@ class PoEAPIHandler:
         df_wanted = pd.DataFrame()
         n_new_items = 0
         n_total_unique_items = 0
-
         df = self._json_to_df(stashes)
         if df is None:
             return df_wanted
@@ -126,12 +137,16 @@ class PoEAPIHandler:
                 ) = item_detector.iterate_stashes(df)
 
                 df_wanted = pd.concat((df_wanted, df_filtered))
+
+                del df_filtered
+
                 n_new_items += item_count
                 n_total_unique_items += n_unique_found_items
                 if df_leftover.empty:
                     break
 
                 df = df_leftover.copy(deep=True)
+                del df_leftover
         except:
             logger.exception(
                 f"While checking stashes (detector: {item_detector}), the exception below occured:"
@@ -308,7 +323,7 @@ class PoEAPIHandler:
 
         timeout = aiohttp.ClientTimeout(total=60)
         session = aiohttp.ClientSession(headers=self.headers, timeout=timeout)
-        mini_batch_size = 30
+        mini_batch_size = settings.MINI_BATCH_SIZE
         try:
             while True:
                 while self.requests_since_last_checkpoint < mini_batch_size:
@@ -476,7 +491,11 @@ class PoEAPIHandler:
             time.sleep(5)  # Waits for the listening threads to have time to start up.
             while True:
                 logger.info("Waiting for data from the stream")
-                df = self._gather_n_checkpoints(stashes_ready_event, stash_lock)
+                df = self._gather_n_checkpoints(
+                    stashes_ready_event,
+                    stash_lock,
+                    n=self.n_checkpoints_per_transfromation,
+                )
                 logger.info(
                     "Finished processing the stream, entering transformation phase"
                 )
@@ -485,5 +504,5 @@ class PoEAPIHandler:
                 logger.info("Finished transformation phase")
                 current_time = time.perf_counter()
                 time_since_launch = current_time - self.time_of_launch
-                if time_since_launch > 3600:
+                if time_since_launch > self.run_program_for_n_seconds:
                     raise ProgramRunTooLongException
