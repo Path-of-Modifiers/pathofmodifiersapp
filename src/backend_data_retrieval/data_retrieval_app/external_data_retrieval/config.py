@@ -14,5 +14,8 @@ class Settings:
     OAUTH_CLIENT_SECRET: str = os.getenv("OAUTH_CLIENT_SECRET")
     OATH_ACC_TOKEN_CONTACT_EMAIL: str = os.getenv("OATH_ACC_TOKEN_CONTACT_EMAIL")
 
+    MINI_BATCH_SIZE: int = 30
+    N_CHECKPOINTS_PER_TRANSFORMATION: int = 10
+
 
 settings = Settings()
