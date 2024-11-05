@@ -1,28 +1,24 @@
-import { QueryClient } from "@tanstack/react-query";
-import { GroupedModifierByEffect, ModifiersService } from "../../client";
+import { useQueryClient } from "@tanstack/react-query";
+import { ModifiersService } from "../../client";
 
-export const prefetchedGroupedModifiers = async (queryClient: QueryClient) => {
-  let groupedModifiers: GroupedModifierByEffect[] = [];
+export const useGetGroupedModifiers = async () => {
+    const queryClient = useQueryClient();
 
-  try {
-    // Prefetch all grouped modifiers
-    await queryClient.prefetchQuery({
-      queryKey: ["prefetchedgroupedmodifiers"],
-      queryFn: async () => {
-        const data =
-          await ModifiersService.getGroupedModifierByEffect();
-        if (Array.isArray(data)) {
-          groupedModifiers = data;
-        } else {
-          groupedModifiers = [data];
+        try {
+            // Fetch and return the grouped modifiers directly
+            const data = await queryClient.fetchQuery({
+                queryKey: ["prefetchedGroupedModifiers"],
+                queryFn: async () => {
+                    const fetchedData = await ModifiersService.getGroupedModifierByEffect();
+                    return Array.isArray(fetchedData) ? fetchedData : [fetchedData];
+                },
+            });
+
+            return { groupedModifiers: data };
+
+        } catch (error) {
+            console.log(error);
+            return { groupedModifiers: [] }; // Return an empty array on error
         }
-        return 1;
-      },
-      staleTime: 10 * 1000, // only prefetch if older than 10 seconds
-    });
-  } catch (error) {
-    console.log(error);
-  }
-
-  return { groupedModifiers };
 };
+
