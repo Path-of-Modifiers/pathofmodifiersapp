@@ -179,7 +179,7 @@ class ContinuousDataRetrieval:
                     future_job = futures.pop(crashed_future)
                     logger.info(
                         f"The future '{future_job}' has crashed. Finding exception...",
-                        done_futures,
+                        f"{done_futures=}",
                     )
                     if future_job == "data_processing":
                         crashed_future_exception = crashed_future.exception()

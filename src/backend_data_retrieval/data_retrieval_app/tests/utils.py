@@ -30,6 +30,11 @@ def random_int(min_val: int = 0, max_val: int = 100):
     return random.randint(min_val, max_val)
 
 
+def random_float(min_val: float = 0, max_val: float = 100, precision: int = 2):
+    """Generates a random float between min_val and max_val (default is 0 to 100)."""
+    return round(random.uniform(min_val, max_val), precision)
+
+
 def random_boolean():
     """Generates a random boolean value (True or False)."""
     return random.choice([True, False])

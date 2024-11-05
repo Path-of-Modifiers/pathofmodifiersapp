@@ -1,5 +1,8 @@
 # Unique Name: Grand Spectrum
 # Base Types: Viridian Jewel|Cobalt Jewel|Crimson Jewel
+# Total modifiers on each item: 1
+# Can have duplicate modifiers: False
+# Modifier distrubution: "rest":1 
 # Source: https://poedb.tw/Grand_Spectrum
 minRoll,maxRoll,position,effect,static,unique
 ,,0,"+7% to all Elemental Resistances per Grand Spectrum",True,True

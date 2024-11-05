@@ -1,5 +1,8 @@
 # Unique Name: Voices
 # Base Types: Large Cluster Jewel
+# Total modifiers on each item: 2
+# Can have duplicate modifiers: False
+# Modifier distrubution: "rest":2 
 # Source: https://poedb.tw/Voices
 textRolls,position,effect,static,unique
 "1|3|5|7",0,"Adds # Small Passive Skills? which grants? nothing",,True
