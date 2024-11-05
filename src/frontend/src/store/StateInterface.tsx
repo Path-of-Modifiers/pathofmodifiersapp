@@ -62,8 +62,8 @@ export interface GraphInputState {
   queryClicked: boolean;
   league: string;
   itemName: string | undefined;
-  itemSpec: ItemSpecState;
-  baseSpec?: BaseSpecState;
+  itemSpec: ItemSpecState | undefined;
+  baseSpec: BaseSpecState | undefined;
   wantedModifiers: WantedModifier[];
   wantedModifierExtended: WantedModifierExtended[];
   plotQuery: PlotQuery;
