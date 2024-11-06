@@ -1,47 +1,51 @@
+import { useEffect } from "react";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
 import {
-  SelectBoxInput,
-  SelectBoxOptionValue,
-  HandleChangeEventFunction,
+    SelectBoxInput,
+    SelectBoxOptionValue,
+    HandleChangeEventFunction,
 } from "../StandardLayoutInput/SelectBoxInput";
 
-export interface ItemNameInputProps {
-  uniques: string[];
-}
-
 // Item Name Input Component  -  This component is used to input the name of an item.
-export const ItemNameInput = (props: ItemNameInputProps) => {
-  const { itemName, setItemName } = useGraphInputStore();
+export const ItemNameInput = () => {
+    const { itemName, setItemName, choosableItemNames, updateChoosable } =
+        useGraphInputStore();
 
-  const handleNameChange: HandleChangeEventFunction = (newValue) => {
-    if (newValue) {
-      const itemNameText = newValue.value;
-      if (itemNameText === "Any") {
-        setItemName(undefined);
-      } else {
-        setItemName(itemNameText);
-      }
-    }
-  };
+    useEffect(() => {
+        updateChoosable(itemName);
+    }, [itemName, updateChoosable]);
 
-  const optionsList: SelectBoxOptionValue[] = props.uniques.map((unique) => ({
-    value: unique,
-    label: unique,
-    regex: unique,
-  }));
+    const handleNameChange: HandleChangeEventFunction = (newValue) => {
+        if (newValue) {
+            const itemNameText = newValue.value;
+            if (itemNameText === "Any") {
+                setItemName(undefined);
+            } else {
+                setItemName(itemNameText);
+            }
+        }
+    };
 
-  return (
-    <SelectBoxInput
-      descriptionText="Item Name"
-      optionsList={optionsList}
-      defaultText={itemName !== undefined ? itemName : "Any"}
-      multipleValues={false}
-      handleChange={handleNameChange}
-      flexProps={{
-        width: "inputSizes.ultraPBox",
-      }}
-      id="itemNameInput-1"
-      canBeAny={true}
-    />
-  );
+    const optionsList: SelectBoxOptionValue[] = choosableItemNames.map(
+        (itemName) => ({
+            value: itemName,
+            label: itemName,
+            regex: itemName,
+        })
+    );
+
+    return (
+        <SelectBoxInput
+            descriptionText="Item Name"
+            optionsList={optionsList}
+            defaultText={itemName !== undefined ? itemName : "Any"}
+            multipleValues={false}
+            handleChange={handleNameChange}
+            flexProps={{
+                width: "inputSizes.ultraPBox",
+            }}
+            id="itemNameInput-1"
+            canBeAny={true}
+        />
+    );
 };
