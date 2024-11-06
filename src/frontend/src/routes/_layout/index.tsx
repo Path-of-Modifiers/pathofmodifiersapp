@@ -4,13 +4,11 @@ import QueryButtons from "../../components/Common/QueryButtons";
 import { Flex, Box, VStack } from "@chakra-ui/layout";
 import { GraphInput } from "../../components/Input/GraphInput";
 import GraphComponent from "../../components/Graph/GraphComponent";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useGetGroupedModifiers } from "../../hooks/getData/prefetchGroupedModifiers";
 import { useGetItemBaseTypes } from "../../hooks/getData/getBaseTypeCategories";
-import { GroupedModifierByEffect, ItemBaseType } from "../../client";
 import Footer from "../../components/Common/Footer";
-import { ErrorMessage } from "../../components/Input/StandardLayoutInput/ErrorMessage";
-import { useErrorStore } from "../../store/ErrorStore";
+import { useGraphInputStore } from "../../store/GraphInputStore";
 
 export const Route = createFileRoute("/_layout/")({
     component: Index,
@@ -18,32 +16,38 @@ export const Route = createFileRoute("/_layout/")({
 
 // Index Component - This component is the main component for the index route.
 function Index() {
-    const [modifiers, setModifiers] = useState<GroupedModifierByEffect[]>([]);
-    const [itemBaseTypes, setItemBaseTypes] = useState<ItemBaseType[]>([]);
-    const [itemNames, setItemNames] = useState<string[]>([]);
+    const {
+        setChoosableModifiers,
+        setChoosableItemBaseType,
+        setChoosableItemNames,
+    } = useGraphInputStore();
     const requestGroupedModifiers = useGetGroupedModifiers();
     const requestItemBaseTypes = useGetItemBaseTypes();
-    const { modifiersError, leagueError, resultError } = useErrorStore();
     const isFetched = useRef<boolean>(false);
-
 
     useEffect(() => {
         if (!isFetched.current) {
             const fetchData = async () => {
-                const groupedModifiers = await requestGroupedModifiers
-                const itemBaseTypes = await requestItemBaseTypes
+                const groupedModifiers = await requestGroupedModifiers;
+                const itemBaseTypes = await requestItemBaseTypes;
                 if (groupedModifiers) {
-                    setModifiers(groupedModifiers.groupedModifiers);
-                } if (itemBaseTypes) {
-                    setItemBaseTypes(itemBaseTypes.itemBaseTypes);
-                    setItemNames(itemBaseTypes.itemNames);
+                    setChoosableModifiers(groupedModifiers.groupedModifiers);
                 }
-                isFetched.current = true
-            }
-            fetchData()
+                if (itemBaseTypes) {
+                    setChoosableItemBaseType(itemBaseTypes.itemBaseTypes);
+                    setChoosableItemNames(itemBaseTypes.itemNames);
+                }
+                isFetched.current = true;
+            };
+            fetchData();
         }
-        }, [requestGroupedModifiers, requestItemBaseTypes]);
-
+    }, [
+        requestGroupedModifiers,
+        requestItemBaseTypes,
+        setChoosableModifiers,
+        setChoosableItemBaseType,
+        setChoosableItemNames,
+    ]);
 
     return (
         <Flex
@@ -72,33 +76,13 @@ function Index() {
                     borderTopWidth={1}
                     alignSelf="center"
                 >
-                    <VStack width={"bgBoxes.defaultBox"} height={"100%"} maxW={"100%"}>
-                        {modifiers.length > 0 && itemBaseTypes.length > 0 && (
-                            <GraphInput
-                                prefetchedmodifiers={modifiers}
-                                prefetcheditembasetypes={itemBaseTypes}
-                                prefecteditemnames={itemNames}
-                            />
-                        )}
+                    <VStack
+                        width={"bgBoxes.defaultBox"}
+                        height={"100%"}
+                        maxW={"100%"}
+                    >
+                        <GraphInput />
                         <QueryButtons />
-                        {modifiersError && (
-                            <ErrorMessage
-                                alertTitle="No Modifiers Selected"
-                                alertDescription="Please select at least one modifier."
-                            />
-                        )}
-                        {leagueError && (
-                            <ErrorMessage
-                                alertTitle="No League Selected"
-                                alertDescription="Please select a league."
-                            />
-                        )}
-                        {resultError && (
-                            <ErrorMessage
-                                alertTitle="No Results Found"
-                                alertDescription="No results were found for the current query."
-                            />
-                        )}
 
                         <GraphComponent
                             width={"bgBoxes.mediumBox"}
@@ -115,4 +99,3 @@ function Index() {
         </Flex>
     );
 }
-
