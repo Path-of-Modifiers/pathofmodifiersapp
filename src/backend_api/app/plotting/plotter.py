@@ -1,6 +1,6 @@
 import pandas as pd
 from pydantic import TypeAdapter
-from sqlalchemy import Boolean, Result, and_, intersect, select
+from sqlalchemy import Boolean, Result, and_, intersect, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import CompoundSelect, Select
 
@@ -86,10 +86,18 @@ class Plotter:
         return statement
 
     def _apply_priority_filters(self, statement: Select, *, query: PlotQuery) -> Select:
-        if query.itemSpecifications.name is not None:
-            statement = statement.where(
-                model_Item.name == query.itemSpecifications.name
-            )
+        if query.itemSpecifications is not None:
+            if query.itemSpecifications.name is not None:
+                if "|" in query.itemSpecifications.name:
+                    name_filter = or_(
+                        *[
+                            model_Item.name == name
+                            for name in query.itemSpecifications.name.split("|")
+                        ]
+                    )
+                else:
+                    name_filter = model_Item.name == query.itemSpecifications.name
+                statement = statement.where(name_filter)
 
         return statement
 
@@ -177,6 +185,7 @@ class Plotter:
         subquery_stmt = self._create_wanted_modifier_subquery(query)
         statement = self._init_stmt(query, subquery=subquery_stmt)
         statement = self._filter_from_query(statement, query=query)
+
         async with db.begin():
             result = await db.execute(statement)
 
