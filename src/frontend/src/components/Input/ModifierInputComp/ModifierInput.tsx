@@ -13,7 +13,7 @@ import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { FancySelectedModifier } from "./FancySelectedModifier";
 import { ChoosableModifiersExtended } from "../../../store/StateInterface";
 // For debugging purposes
-import { useOutsideClick } from "../../../hooks/useOutsideClick";
+// import { useOutsideClick } from "../../../hooks/useOutsideClick";
 
 export interface ModifierOption extends SelectBoxOptionValue {
     isSelected?: boolean;
@@ -90,11 +90,11 @@ export const ModifierInput = () => {
     >(prevSelectedModifiers);
 
     // For debugging purposes
-    const ref = useOutsideClick(() => {
-        const store = useGraphInputStore.getState();
-        console.log("STORE", store);
-        // console.log("query ->", store.wantedModifierExtended);
-    });
+    // const ref = useOutsideClick(() => {
+    //     const store = useGraphInputStore.getState();
+    //     console.log("STORE", store);
+    //     // console.log("query ->", store.wantedModifierExtended);
+    // });
 
     // NOTE: The index, which is the selected modifier's position in
     //`selectedModifiers` is used as a unique identifier both internally
@@ -116,7 +116,6 @@ export const ModifierInput = () => {
         // Note: currently not in use, but may be useful going forward
         // Removes the current modifier and replaces it with the new
         if (overrideIndex !== undefined) {
-            console.log("IKKE BRA!");
             newlySelectedModifier.index = overrideIndex;
             setSelectedModifiers((currentSelectedModifiers) => [
                 ...currentSelectedModifiers.slice(0, overrideIndex),
@@ -260,7 +259,7 @@ export const ModifierInput = () => {
                         maxWidth="95vw"
                         alignItems={"center"}
                         gap={2}
-                        ref={ref}
+                        // ref={ref}
                     >
                         <AddIconCheckbox dontshow />
                         <SelectBoxInput
