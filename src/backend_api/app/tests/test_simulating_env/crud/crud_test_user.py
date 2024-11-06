@@ -85,7 +85,7 @@ class TestUserCRUD(BaseTest):
         user_2 = crud.get(db=db, filter={"userId": user.userId})
         assert user_2
         assert user.email == user_2.email
-        assert jsonable_encoder(user) == jsonable_encoder(user_2)
+        self._test_object(user_2, user)
 
     def test_update_user(self, db: Session) -> None:
         password = random_lower_string()

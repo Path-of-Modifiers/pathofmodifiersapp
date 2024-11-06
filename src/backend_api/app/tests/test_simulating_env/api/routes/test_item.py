@@ -9,15 +9,13 @@ from sqlalchemy.orm import Session
 
 import app.tests.test_simulating_env.api.api_routes_cascade_tests as test_cascade_api
 from app.api.routes import (
-    account_prefix,
     currency_prefix,
     item_base_type_prefix,
     item_prefix,
-    stash_prefix,
 )
 from app.api.routes.item import get_item
 from app.core.config import settings
-from app.core.models.models import Account, Currency, Item, ItemBaseType, Stash
+from app.core.models.models import Currency, Item, ItemBaseType
 from app.crud import CRUD_item
 from app.crud.base import CRUDBase, ModelType
 from app.tests.test_simulating_env.api.api_routes_test_slowapi_rate_limit import (
@@ -124,9 +122,7 @@ def create_random_object_func() -> Callable[[Session], Awaitable[dict]]:
 
 @pytest.fixture(scope="module")
 def object_generator_func_w_deps() -> (
-    Callable[
-        [], tuple[dict, Item, list[dict | Stash | ItemBaseType | Currency | Account]]
-    ]
+    Callable[[], tuple[dict, Item, list[dict | ItemBaseType | Currency]]]
 ):
     def generate_random_item_w_deps(
         db,
@@ -135,7 +131,7 @@ def object_generator_func_w_deps() -> (
         tuple[
             dict,
             Item,
-            list[dict | Stash | ItemBaseType | Currency | Account],
+            list[dict | ItemBaseType | Currency],
         ],
     ]:
         return generate_random_item(db, retrieve_dependencies=True)
@@ -155,8 +151,6 @@ def api_deps_instances() -> list[list[str]]:
         List[Dict]: API dependencies instances. Format: [dep_route_prefix: dep_unique_identifier]
     """
     return [
-        [account_prefix, get_model_unique_identifier(Account), Account.__tablename__],
-        [stash_prefix, get_model_unique_identifier(Stash), Stash.__tablename__],
         [
             item_base_type_prefix,
             get_model_unique_identifier(ItemBaseType),

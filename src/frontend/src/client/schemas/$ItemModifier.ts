@@ -33,14 +33,5 @@ export const $ItemModifier = {
             isRequired: true,
             format: 'date-time',
         },
-        updatedAt: {
-            type: 'any-of',
-            contains: [{
-                type: 'string',
-                format: 'date-time',
-            }, {
-                type: 'null',
-            }],
-        },
     },
 } as const;

@@ -29,104 +29,37 @@ class PoEAPIDataTransformerBase:
 
         self.roll_processor = RollProcessor()
 
-    def _create_account_table(self, df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Creates the basis of the `account` table.
-        It is not immediately processed in order to save compute power later.
-        """
-        self.account_columns = ["accountName"]
-        account_df = df.loc[:, self.account_columns]
-
-        return account_df
-
-    def _clean_account_table(self, account_df: pd.DataFrame) -> pd.DataFrame:
-        account_df.drop_duplicates(inplace=True)
-
-        return account_df
-
-    def _transform_account_table(self, account_df: pd.DataFrame) -> pd.DataFrame:
-        account_df.drop_duplicates("accountName", inplace=True)
-
-        account_df["isBanned"] = None
-
-        return account_df
-
-    def _process_account_table(self, df: pd.DataFrame) -> None:
-        account_df = self._create_account_table(df)
-        account_df = self._transform_account_table(account_df)
-        insert_data(
-            account_df,
-            url=self.url,
-            table_name="account",
-            logger=logger,
-            on_duplicate_pkey_do_nothing=True,
-            headers=self.pom_auth_headers,
-        )
-
-    def _create_stash_table(self, df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Creates the basis of the `stash` table.
-        It is not immediately processed in order to save compute power later.
-        """
-        self.stash_columns = ["stashId", "accountName", "public", "league"]
-        stash_df = df.loc[:, self.stash_columns]
-
-        return stash_df
-
-    def _clean_stash_table(self, stash_df: pd.DataFrame) -> pd.DataFrame:
-        stash_df = stash_df.drop_duplicates(["stashId"])
-
-        return stash_df
-
-    def _process_stash_table(self, df: pd.DataFrame) -> None:
-        stash_df = self._create_stash_table(df)
-        stash_df = self._clean_stash_table(stash_df)
-        insert_data(
-            stash_df,
-            url=self.url,
-            table_name="stash",
-            logger=logger,
-            on_duplicate_pkey_do_nothing=True,
-            headers=self.pom_auth_headers,
-        )
-
     def _create_item_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
-        Creates the basis of the `item` table, using parts of `stash` table.
-
-        The `item` table requires the `stashId` as a foreign key. This is
-        why the `stash` table was not immediately processed.
+        Creates the basis of the `item` table.
         """
         self.item_columns = [
             "itemId",
-            "gameItemId",
-            "stashId",
             "name",
-            "icon",
             "league",
-            "typeLine",
             "baseType",
+            "typeLine",
+            "ilvl",
             "rarity",
             "identified",
-            "ilvl",
             "note",
-            "forum_note",
             "corrupted",
             "delve",
             "fractured",
-            "synthesized",
+            "synthesised",
             "replica",
-            "elder",
-            "shaper",
             "influences.shaper",
             "influences.elder",
             "influences.crusader",
             "influences.hunter",
             "influences.redeemer",
             "influences.warlord",
+            "extended.prefixes",
+            "extended.suffixes",
             "searing",
             "tangled",
             "foilVariation",
+            "isRelic",
             "stash",
         ]
         item_df = df.loc[
@@ -178,6 +111,15 @@ class PoEAPIDataTransformerBase:
         item_df["influences"] = item_df.apply(
             lambda row: transform_influences(row, influence_columns), axis=1
         )
+
+        rename_extended_map = {}
+        if "extended.prefixes" in item_df.columns:
+            rename_extended_map["extended.prefixes"] = "prefixes"
+        if "extended.suffixes" in item_df.columns:
+            rename_extended_map["extended.suffixes"] = "suffixes"
+
+        if rename_extended_map:
+            item_df = item_df.rename(columns=rename_extended_map)
 
         stash_series = item_df["stash"].str.split(" ")
         currency_series = item_df["note"].str.split(" ")
@@ -250,7 +192,6 @@ class PoEAPIDataTransformerBase:
             errors="ignore",
         )
 
-        item_df.rename({"icon": "iconUrl"}, axis=1, inplace=True)
         return item_df
 
     def _get_latest_item_id_series(self, item_df: pd.DataFrame) -> pd.Series:
@@ -341,8 +282,6 @@ class PoEAPIDataTransformerBase:
         try:
             logger.debug("Transforming data into tables.")
             logger.debug("Processing data tables.")
-            self._process_account_table(df.copy(deep=True))
-            self._process_stash_table(df.copy(deep=True))
             item_id = self._process_item_table(
                 df.copy(deep=True), currency_df=currency_df
             )

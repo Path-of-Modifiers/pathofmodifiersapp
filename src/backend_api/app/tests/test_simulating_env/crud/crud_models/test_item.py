@@ -3,13 +3,11 @@ from collections.abc import Callable
 import pytest
 
 import app.tests.test_simulating_env.crud.cascade_tests as cascade_test
-from app.core.models.models import Account, Currency, Item, ItemBaseType, Stash
+from app.core.models.models import Currency, Item, ItemBaseType
 from app.crud import (
-    CRUD_account,
     CRUD_currency,
     CRUD_item,
     CRUD_itemBaseType,
-    CRUD_stash,
 )
 from app.crud.base import CRUDBase
 from app.tests.utils.model_utils.item import generate_random_item
@@ -22,9 +20,7 @@ def object_generator_func() -> Callable[[], dict]:
 
 @pytest.fixture(scope="module")
 def object_generator_func_w_deps() -> (
-    Callable[
-        [], tuple[dict, Item, list[dict | Stash | ItemBaseType | Currency | Account]]
-    ]
+    Callable[[], tuple[dict, Item, list[dict | ItemBaseType | Currency]]]
 ):
     def generate_random_item_w_deps(
         db,
@@ -33,7 +29,7 @@ def object_generator_func_w_deps() -> (
         tuple[
             dict,
             Item,
-            list[dict | Stash | ItemBaseType | Currency | Account],
+            list[dict | ItemBaseType | Currency],
         ],
     ]:
         return generate_random_item(db, retrieve_dependencies=True)
@@ -63,8 +59,6 @@ def crud_deps_instances() -> CRUDBase:
         CRUDBase: CRUD dependencies instances.
     """
     return [
-        CRUD_account,
-        CRUD_stash,
         CRUD_itemBaseType,
         CRUD_currency,
     ]

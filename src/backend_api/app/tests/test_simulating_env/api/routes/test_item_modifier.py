@@ -5,22 +5,18 @@ from sqlalchemy.orm import Session
 
 import app.tests.test_simulating_env.api.api_routes_cascade_tests as test_cascade_api
 from app.api.routes import (
-    account_prefix,
     currency_prefix,
     item_base_type_prefix,
     item_modifier_prefix,
     item_prefix,
     modifier_prefix,
-    stash_prefix,
 )
 from app.core.models.models import (
-    Account,
     Currency,
     Item,
     ItemBaseType,
     ItemModifier,
     Modifier,
-    Stash,
 )
 from app.crud import CRUD_itemModifier
 from app.crud.base import CRUDBase, ModelType
@@ -65,6 +61,11 @@ def unique_identifier() -> str:
 def get_crud_test_model() -> UtilTestCRUD:
     model = UtilTestCRUD()
     return model
+
+
+@pytest.fixture(scope="module")
+def skip_update_test() -> bool:
+    return True
 
 
 @pytest.fixture(scope="module")
@@ -120,16 +121,14 @@ def create_random_object_func() -> Callable[[Session], Awaitable[dict]]:
 
 
 @pytest.fixture(scope="module")
-def object_generator_func_w_deps() -> (
-    Callable[
-        [],
-        tuple[
-            dict,
-            ItemModifier,
-            list[dict | Item | Stash | Account | ItemBaseType | Currency | Modifier],
-        ],
-    ]
-):
+def object_generator_func_w_deps() -> Callable[
+    [],
+    tuple[
+        dict,
+        ItemModifier,
+        list[dict | Item | ItemBaseType | Currency | Modifier],
+    ],
+]:
     def generate_random_item_modifier_w_deps(
         db,
     ) -> Callable[
@@ -137,7 +136,7 @@ def object_generator_func_w_deps() -> (
         tuple[
             dict,
             ItemModifier,
-            list[dict | Item | Stash | Account | ItemBaseType | Currency | Modifier],
+            list[dict | Item | ItemBaseType | Currency | Modifier],
         ],
     ]:
         return generate_random_item_modifier(db, retrieve_dependencies=True)
@@ -159,8 +158,6 @@ def api_deps_instances() -> list[list[str]]:
 
     """
     return [
-        [account_prefix, get_model_unique_identifier(Account), Account.__tablename__],
-        [stash_prefix, get_model_unique_identifier(Stash), Stash.__tablename__],
         [
             item_base_type_prefix,
             get_model_unique_identifier(ItemBaseType),

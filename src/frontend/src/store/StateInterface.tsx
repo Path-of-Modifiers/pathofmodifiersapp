@@ -10,21 +10,21 @@ export interface InfluenceSpecState {
 }
 
 export interface ItemSpecState {
-    name?: string | null;
-    identified?: boolean | null;
-    minIlvl?: number | null;
-    maxIlvl?: number | null;
-    rarity?: string | null;
-    corrupted?: boolean | null;
-    delve?: boolean | null;
-    fractured?: boolean | null;
-    synthesized?: boolean | null;
-    replica?: boolean | null;
-    influences?: InfluenceSpecState | null;
-    searing?: boolean | null;
-    tangled?: boolean | null;
-    isRelic?: boolean | null;
-    foilVariation?: number | null;
+  name?: string | null;
+  identified?: boolean | null;
+  minIlvl?: number | null;
+  maxIlvl?: number | null;
+  rarity?: string | null;
+  corrupted?: boolean | null;
+  delve?: boolean | null;
+  fractured?: boolean | null;
+  synthesised?: boolean | null;
+  replica?: boolean | null;
+  influences?: InfluenceSpecState | null;
+  searing?: boolean | null;
+  tangled?: boolean | null;
+  isRelic?: boolean | null;
+  foilVariation?: number | null;
 }
 
 export interface BaseSpecState {
@@ -81,7 +81,7 @@ export interface GraphInputState {
     setItemSpecCorrupted: SetItemSpecMisc;
     setItemSpecDelve: SetItemSpecMisc;
     setItemSpecFractured: SetItemSpecMisc;
-    setItemSpecSynthesized: SetItemSpecMisc;
+    setItemSpecSynthesised: SetItemSpecMisc;
     setItemSpecElderInfluence: SetItemSpecMisc;
     setItemSpecShaperInfluence: SetItemSpecMisc;
     setItemSpecCrusaderInfluence: SetItemSpecMisc;

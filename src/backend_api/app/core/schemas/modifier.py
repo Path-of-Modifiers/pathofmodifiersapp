@@ -19,7 +19,7 @@ class _BaseModifier(_pydantic.BaseModel):
     explicit: bool | None = None
     delve: bool | None = None
     fractured: bool | None = None
-    synthesized: bool | None = None
+    synthesised: bool | None = None
     unique: bool | None = None
     corrupted: bool | None = None
     enchanted: bool | None = None

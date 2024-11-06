@@ -9,6 +9,5 @@ export type ItemModifier = {
     position: number;
     roll?: (number | null);
     createdAt: string;
-    updatedAt?: (string | null);
 };
 

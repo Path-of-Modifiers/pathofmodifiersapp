@@ -10,7 +10,6 @@ from sqlalchemy import (
     ForeignKey,
     ForeignKeyConstraint,
     Identity,
-    PrimaryKeyConstraint,
     SmallInteger,
     String,
     UniqueConstraint,
@@ -29,10 +28,10 @@ class Currency(Base):
         BigInteger, Identity(), primary_key=True, index=True, nullable=False
     )
     tradeName: Mapped[str] = mapped_column(String, index=True, nullable=False)
-    valueInChaos: Mapped[float] = mapped_column(Float(), nullable=False)
+    valueInChaos: Mapped[float] = mapped_column(Float(4), nullable=False)
     iconUrl: Mapped[str] = mapped_column(String, nullable=False)
     createdAt: Mapped[datetime] = mapped_column(
-        DateTime(), default=func.now(), nullable=False
+        DateTime(timezone=True), default=func.now(), nullable=False
     )
 
 
@@ -40,7 +39,7 @@ class ItemBaseType(Base):
     __tablename__ = "item_base_type"
 
     baseType: Mapped[str] = mapped_column(
-        String, nullable=False, primary_key=True, index=True
+        String, primary_key=True, nullable=False, index=True
     )
     category: Mapped[str] = mapped_column(String, nullable=False)
     subCategory: Mapped[str | None] = mapped_column(String)
@@ -51,39 +50,38 @@ class Item(Base):
     __tablename__ = "item"
 
     itemId: Mapped[int] = mapped_column(
-        BigInteger, Identity(), primary_key=True, index=True, nullable=False
-    )
-    gameItemId: Mapped[str] = mapped_column(String, index=True, nullable=False)
-    stashId: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("stash.stashId", ondelete="CASCADE"),
+        BigInteger,
+        Identity(start=1, increment=1, cycle=True),
+        primary_key=True,
+        index=True,
         nullable=False,
     )
-    name: Mapped[str | None] = mapped_column(String)
-    iconUrl: Mapped[str | None] = mapped_column(String)
-    league: Mapped[str] = mapped_column(String, nullable=False)
-    typeLine: Mapped[str] = mapped_column(String, nullable=False)
+    name: Mapped[str | None] = mapped_column(String, index=True)
+    league: Mapped[str] = mapped_column(
+        String, nullable=False
+    )  # TODO: Add index when we add more leagues
     baseType: Mapped[str] = mapped_column(
         String,
         ForeignKey("item_base_type.baseType", ondelete="RESTRICT", onupdate="CASCADE"),
         nullable=False,
+        index=True,
     )
+    typeLine: Mapped[str] = mapped_column(String, nullable=False)
     ilvl: Mapped[int] = mapped_column(SmallInteger, nullable=False)
     rarity: Mapped[str] = mapped_column(String, nullable=False)
     identified: Mapped[bool] = mapped_column(Boolean, nullable=False)
-    forumNote: Mapped[str | None] = mapped_column(String)
-    currencyAmount: Mapped[float | None] = mapped_column(Float(24))
+    currencyAmount: Mapped[float | None] = mapped_column(Float(4))
     currencyId: Mapped[int | None] = mapped_column(
         BigInteger, ForeignKey("currency.currencyId", ondelete="RESTRICT")
     )
     corrupted: Mapped[bool | None] = mapped_column(Boolean)
     delve: Mapped[bool | None] = mapped_column(Boolean)
     fractured: Mapped[bool | None] = mapped_column(Boolean)
-    synthesized: Mapped[bool | None] = mapped_column(Boolean)
+    synthesised: Mapped[bool | None] = mapped_column(Boolean)
     replica: Mapped[bool | None] = mapped_column(Boolean)
-    elder: Mapped[bool | None] = mapped_column(Boolean)
-    shaper: Mapped[bool | None] = mapped_column(Boolean)
-    influences: Mapped[dict | None] = mapped_column(JSONB)
+    influences: Mapped[dict[str, str] | None] = mapped_column(
+        JSONB
+    )  # elder, shaper, warlord etc
     searing: Mapped[bool | None] = mapped_column(Boolean)
     tangled: Mapped[bool | None] = mapped_column(Boolean)
     isRelic: Mapped[bool | None] = mapped_column(Boolean)
@@ -91,11 +89,15 @@ class Item(Base):
     suffixes: Mapped[int | None] = mapped_column(SmallInteger)
     foilVariation: Mapped[int | None] = mapped_column(SmallInteger)
     createdAt: Mapped[datetime] = mapped_column(
-        DateTime(), default=func.now(), nullable=False
+        DateTime(timezone=True), default=func.now(), nullable=False
     )
 
 
 class Modifier(Base):
+    # Timescale hypertable (see alembic revisions timescale definitions)
+    # SQLAlchemy timescale dialect is limited and not regularily updated
+    # We have baseTypeId a part of pkey, since the table segments on this attribute
+    # TODO: Add dialect if the sqlalchemy timescale library gets updated
     __tablename__ = "modifier"
 
     modifierId: Mapped[int] = mapped_column(
@@ -107,8 +109,8 @@ class Modifier(Base):
     )
     position: Mapped[int] = mapped_column(SmallInteger, nullable=False, index=True)
     relatedUniques: Mapped[str | None] = mapped_column(String)
-    minRoll: Mapped[float | None] = mapped_column(Float(24))
-    maxRoll: Mapped[float | None] = mapped_column(Float(24))
+    minRoll: Mapped[float | None] = mapped_column(Float(4))
+    maxRoll: Mapped[float | None] = mapped_column(Float(4))
     textRolls: Mapped[str | None] = mapped_column(String)
     static: Mapped[bool | None] = mapped_column(Boolean)
     effect: Mapped[str] = mapped_column(String, nullable=False)
@@ -117,16 +119,16 @@ class Modifier(Base):
     explicit: Mapped[bool | None] = mapped_column(Boolean)
     delve: Mapped[bool | None] = mapped_column(Boolean)
     fractured: Mapped[bool | None] = mapped_column(Boolean)
-    synthesized: Mapped[bool | None] = mapped_column(Boolean)
+    synthesised: Mapped[bool | None] = mapped_column(Boolean)
     unique: Mapped[bool | None] = mapped_column(Boolean)
     corrupted: Mapped[bool | None] = mapped_column(Boolean)
     enchanted: Mapped[bool | None] = mapped_column(Boolean)
     veiled: Mapped[bool | None] = mapped_column(Boolean)
     createdAt: Mapped[datetime] = mapped_column(
-        DateTime(), default=func.now(), nullable=False
+        DateTime(timezone=True), default=func.now(), nullable=False
     )
     updatedAt: Mapped[datetime | None] = mapped_column(
-        DateTime(),
+        DateTime(timezone=True),
         onupdate=func.now(),
     )
 
@@ -181,72 +183,30 @@ class Modifier(Base):
 
 
 class ItemModifier(Base):
+    # Hypertable
+    # Segments by modifierId and createdAt
     __tablename__ = "item_modifier"
 
     itemId: Mapped[int] = mapped_column(
         BigInteger,
         ForeignKey("item.itemId", ondelete="CASCADE", onupdate="CASCADE"),
         nullable=False,
+        primary_key=True,  # Dummy pk since we removing the pks on hypertable creation
         index=True,
     )
     modifierId: Mapped[int] = mapped_column(BigInteger, nullable=False, index=True)
-    orderId: Mapped[int] = mapped_column(SmallInteger, nullable=False, index=True)
-    position: Mapped[int] = mapped_column(SmallInteger, nullable=False, index=True)
-    roll: Mapped[float | None] = mapped_column(Float(24))
+    roll: Mapped[float | None] = mapped_column(Float(4))
     createdAt: Mapped[datetime] = mapped_column(
-        DateTime(), default=func.now(), nullable=False
-    )
-    updatedAt: Mapped[datetime | None] = mapped_column(
-        DateTime(),
-        onupdate=func.now(),
+        DateTime(timezone=True), default=func.now(), nullable=False
     )
 
     __table_args__ = (
-        PrimaryKeyConstraint(itemId, modifierId, orderId),
         ForeignKeyConstraint(
-            [modifierId, position],
-            ["modifier.modifierId", "modifier.position"],
+            [modifierId],
+            ["modifier.modifierId"],
             ondelete="CASCADE",
             onupdate="CASCADE",
         ),
-    )
-
-
-class Stash(Base):
-    __tablename__ = "stash"
-
-    stashId: Mapped[str] = mapped_column(
-        String, primary_key=True, index=True, nullable=False
-    )
-    accountName: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("account.accountName", ondelete="CASCADE", onupdate="CASCADE"),
-        nullable=False,
-    )
-    public: Mapped[bool] = mapped_column(Boolean, nullable=False)
-    league: Mapped[str] = mapped_column(String, nullable=False)
-    createdAt: Mapped[datetime] = mapped_column(
-        DateTime(), default=func.now(), nullable=False
-    )
-    updatedAt: Mapped[datetime | None] = mapped_column(
-        DateTime(),
-        onupdate=func.now(),
-    )
-
-
-class Account(Base):
-    __tablename__ = "account"
-
-    accountName: Mapped[str] = mapped_column(
-        String, primary_key=True, index=True, nullable=False
-    )
-    isBanned: Mapped[bool | None] = mapped_column(Boolean)
-    createdAt: Mapped[datetime] = mapped_column(
-        DateTime(), default=func.now(), nullable=False
-    )
-    updatedAt: Mapped[datetime | None] = mapped_column(
-        DateTime(),
-        onupdate=func.now(),
     )
 
 
@@ -272,10 +232,10 @@ class User(Base):
     )  # 0 = basic limit usage
     isBanned: Mapped[bool | None] = mapped_column(Boolean)
     createdAt: Mapped[datetime] = mapped_column(
-        DateTime(), default=func.now(), nullable=False
+        DateTime(timezone=True), default=func.now(), nullable=False
     )
     updatedAt: Mapped[datetime | None] = mapped_column(
-        DateTime(),
+        DateTime(timezone=True),
         onupdate=func.now(),
     )
 

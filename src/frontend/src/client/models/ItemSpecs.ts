@@ -12,7 +12,7 @@ export type ItemSpecs = {
     corrupted?: (boolean | null);
     delve?: (boolean | null);
     fractured?: (boolean | null);
-    synthesized?: (boolean | null);
+    synthesised?: (boolean | null);
     replica?: (boolean | null);
     influences?: (Influences | null);
     searing?: (boolean | null);

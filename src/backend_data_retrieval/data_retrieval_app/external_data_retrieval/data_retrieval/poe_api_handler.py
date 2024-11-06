@@ -100,7 +100,6 @@ class PoEAPIHandler:
         df_temp = df_temp.loc[~df_temp["items"].isnull()]
 
         df_temp.drop("items", axis=1, inplace=True)
-        df_temp.rename(columns={"id": "stashId"}, inplace=True)
 
         df = pd.json_normalize(stashes, record_path=["items"])
 
@@ -109,8 +108,6 @@ class PoEAPIHandler:
         df_temp.index = df.index
 
         df[df_temp.columns.to_list()] = df_temp
-
-        df.rename(columns={"id": "gameItemId"}, inplace=True)
 
         return df
 

@@ -16,26 +16,20 @@ class Influences(_pydantic.BaseModel):
 class _BaseItem(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
-    stashId: str
-    gameItemId: str
     name: str | None = None
-    iconUrl: str | None = None
     league: str
-    typeLine: str
     baseType: str
+    typeLine: str
     ilvl: int
     rarity: str
     identified: bool = True
-    forumNote: str | None = None
     currencyAmount: float | None = None
     currencyId: int | None = None
     corrupted: bool | None = None
     delve: bool | None = None
     fractured: bool | None = None
-    synthesized: bool | None = None
+    synthesised: bool | None = None
     replica: bool | None = None
-    elder: bool | None = None
-    shaper: bool | None = None
     influences: Influences | None = None
     searing: bool | None = None
     tangled: bool | None = None

@@ -5,381 +5,6 @@
     "version": "0.1.0"
   },
   "paths": {
-    "/api/api_v1/account/{accountName}": {
-      "get": {
-        "tags": [
-          "accounts"
-        ],
-        "summary": "Get Account",
-        "description": "Get the account by filter with key and value for \"accountName\" .\n\nAlways returns one account.",
-        "operationId": "get_account",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "accountName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Accountname"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Account"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "accounts"
-        ],
-        "summary": "Update Account",
-        "description": "Update an account by key and value for \"accountName\".\n\nReturns the updated account.",
-        "operationId": "update_account",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "accountName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Accountname"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AccountUpdate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Account"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "accounts"
-        ],
-        "summary": "Delete Account",
-        "description": "Delete an account by key and value \"accountName\".\n\nReturns a message indicating the account was deleted.\nAlways deletes one account.",
-        "operationId": "delete_account",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "accountName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Accountname"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "title": "Response Accounts-Delete Account"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/api_v1/account/": {
-      "get": {
-        "tags": [
-          "accounts"
-        ],
-        "summary": "Get All Accounts",
-        "description": "Get all accounts.\n\nReturns a list of all accounts.",
-        "operationId": "get_all_accounts",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer",
-                  "exclusiveMinimum": 0
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Limit"
-            }
-          },
-          {
-            "name": "skip",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Skip"
-            }
-          },
-          {
-            "name": "sort_key",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Sort Key"
-            }
-          },
-          {
-            "name": "sort_method",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "enum": [
-                    "asc",
-                    "desc"
-                  ],
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Sort Method"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Account"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Account"
-                      }
-                    }
-                  ],
-                  "title": "Response Accounts-Get All Accounts"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "accounts"
-        ],
-        "summary": "Create Account",
-        "description": "Create one or a list of accounts.\n\nReturns the created account or list of accounts.",
-        "operationId": "create_account",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "on_duplicate_pkey_do_nothing",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "boolean"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "On Duplicate Pkey Do Nothing"
-            }
-          },
-          {
-            "name": "return_nothing",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "boolean"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Return Nothing"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/AccountCreate"
-                  },
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/AccountCreate"
-                    }
-                  }
-                ],
-                "title": "Account"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/AccountCreate"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/AccountCreate"
-                      }
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ],
-                  "title": "Response Accounts-Create Account"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/api_v1/currency/{currencyId}": {
       "get": {
         "tags": [
@@ -2577,381 +2202,6 @@
         ]
       }
     },
-    "/api/api_v1/stash/{stashId}": {
-      "get": {
-        "tags": [
-          "stashs"
-        ],
-        "summary": "Get Stash",
-        "description": "Get stash by key and value for \"stashId\".\n\nAlways returns one stash.",
-        "operationId": "get_stash",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "stashId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Stashid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Stash"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "stashs"
-        ],
-        "summary": "Update Stash",
-        "description": "Update a stash by key and value for \"stashId\".\n\nReturns the updated stash.",
-        "operationId": "update_stash",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "stashId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Stashid"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/StashUpdate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Stash"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "stashs"
-        ],
-        "summary": "Delete Stash",
-        "description": "Delete a stash by key and value for \"stashId\".\n\nReturns a message that the stash was deleted successfully.\nAlways deletes one stash.",
-        "operationId": "delete_stash",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "stashId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Stashid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "title": "Response Stashs-Delete Stash"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/api_v1/stash/": {
-      "get": {
-        "tags": [
-          "stashs"
-        ],
-        "summary": "Get All Stashes",
-        "description": "Get all stashes.\n\nReturns a list of all stashes.",
-        "operationId": "get_all_stashes",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer",
-                  "exclusiveMinimum": 0
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Limit"
-            }
-          },
-          {
-            "name": "skip",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Skip"
-            }
-          },
-          {
-            "name": "sort_key",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Sort Key"
-            }
-          },
-          {
-            "name": "sort_method",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "enum": [
-                    "asc",
-                    "desc"
-                  ],
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Sort Method"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Stash"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Stash"
-                      }
-                    }
-                  ],
-                  "title": "Response Stashs-Get All Stashes"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "stashs"
-        ],
-        "summary": "Create Stash",
-        "description": "Create one or a list of new stashes.\n\nReturns the created stash or list of stashes.",
-        "operationId": "create_stash",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "on_duplicate_pkey_do_nothing",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "boolean"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "On Duplicate Pkey Do Nothing"
-            }
-          },
-          {
-            "name": "return_nothing",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "boolean"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Return Nothing"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/StashCreate"
-                  },
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/StashCreate"
-                    }
-                  }
-                ],
-                "title": "Stash"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/StashCreate"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/StashCreate"
-                      }
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ],
-                  "title": "Response Stashs-Create Stash"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/api_v1/plot/": {
       "post": {
         "tags": [
@@ -3946,96 +3196,6 @@
   },
   "components": {
     "schemas": {
-      "Account": {
-        "properties": {
-          "accountName": {
-            "type": "string",
-            "title": "Accountname"
-          },
-          "isBanned": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Isbanned"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Createdat"
-          },
-          "updatedAt": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Updatedat"
-          }
-        },
-        "type": "object",
-        "required": [
-          "accountName",
-          "createdAt"
-        ],
-        "title": "Account"
-      },
-      "AccountCreate": {
-        "properties": {
-          "accountName": {
-            "type": "string",
-            "title": "Accountname"
-          },
-          "isBanned": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Isbanned"
-          }
-        },
-        "type": "object",
-        "required": [
-          "accountName"
-        ],
-        "title": "AccountCreate"
-      },
-      "AccountUpdate": {
-        "properties": {
-          "accountName": {
-            "type": "string",
-            "title": "Accountname"
-          },
-          "isBanned": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Isbanned"
-          }
-        },
-        "type": "object",
-        "required": [
-          "accountName"
-        ],
-        "title": "AccountUpdate"
-      },
       "BaseSpecs": {
         "properties": {
           "baseType": {
@@ -4376,10 +3536,6 @@
       },
       "Item": {
         "properties": {
-          "stashId": {
-            "type": "string",
-            "title": "Stashid"
-          },
           "gameItemId": {
             "type": "string",
             "title": "Gameitemid"
@@ -4395,28 +3551,17 @@
             ],
             "title": "Name"
           },
-          "iconUrl": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Iconurl"
-          },
           "league": {
             "type": "string",
             "title": "League"
           },
-          "typeLine": {
-            "type": "string",
-            "title": "Typeline"
-          },
           "baseType": {
             "type": "string",
             "title": "Basetype"
+          },
+          "typeLine": {
+            "type": "string",
+            "title": "Typeline"
           },
           "ilvl": {
             "type": "integer",
@@ -4430,17 +3575,6 @@
             "type": "boolean",
             "title": "Identified",
             "default": true
-          },
-          "forumNote": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Forumnote"
           },
           "currencyAmount": {
             "anyOf": [
@@ -4497,7 +3631,7 @@
             ],
             "title": "Fractured"
           },
-          "synthesized": {
+          "synthesised": {
             "anyOf": [
               {
                 "type": "boolean"
@@ -4506,7 +3640,7 @@
                 "type": "null"
               }
             ],
-            "title": "Synthesized"
+            "title": "Synthesised"
           },
           "replica": {
             "anyOf": [
@@ -4518,28 +3652,6 @@
               }
             ],
             "title": "Replica"
-          },
-          "elder": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Elder"
-          },
-          "shaper": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Shaper"
           },
           "influences": {
             "anyOf": [
@@ -4629,11 +3741,10 @@
         },
         "type": "object",
         "required": [
-          "stashId",
           "gameItemId",
           "league",
-          "typeLine",
           "baseType",
+          "typeLine",
           "ilvl",
           "rarity",
           "createdAt",
@@ -4763,10 +3874,6 @@
       },
       "ItemCreate": {
         "properties": {
-          "stashId": {
-            "type": "string",
-            "title": "Stashid"
-          },
           "gameItemId": {
             "type": "string",
             "title": "Gameitemid"
@@ -4782,28 +3889,17 @@
             ],
             "title": "Name"
           },
-          "iconUrl": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Iconurl"
-          },
           "league": {
             "type": "string",
             "title": "League"
           },
-          "typeLine": {
-            "type": "string",
-            "title": "Typeline"
-          },
           "baseType": {
             "type": "string",
             "title": "Basetype"
+          },
+          "typeLine": {
+            "type": "string",
+            "title": "Typeline"
           },
           "ilvl": {
             "type": "integer",
@@ -4817,17 +3913,6 @@
             "type": "boolean",
             "title": "Identified",
             "default": true
-          },
-          "forumNote": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Forumnote"
           },
           "currencyAmount": {
             "anyOf": [
@@ -4884,7 +3969,7 @@
             ],
             "title": "Fractured"
           },
-          "synthesized": {
+          "synthesised": {
             "anyOf": [
               {
                 "type": "boolean"
@@ -4893,7 +3978,7 @@
                 "type": "null"
               }
             ],
-            "title": "Synthesized"
+            "title": "Synthesised"
           },
           "replica": {
             "anyOf": [
@@ -4905,28 +3990,6 @@
               }
             ],
             "title": "Replica"
-          },
-          "elder": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Elder"
-          },
-          "shaper": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Shaper"
           },
           "influences": {
             "anyOf": [
@@ -5003,15 +4066,26 @@
               }
             ],
             "title": "Foilvariation"
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
           }
         },
         "type": "object",
         "required": [
-          "stashId",
           "gameItemId",
           "league",
-          "typeLine",
           "baseType",
+          "typeLine",
           "ilvl",
           "rarity"
         ],
@@ -5050,18 +4124,6 @@
             "type": "string",
             "format": "date-time",
             "title": "Createdat"
-          },
-          "updatedAt": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Updatedat"
           }
         },
         "type": "object",
@@ -5242,7 +4304,7 @@
             ],
             "title": "Fractured"
           },
-          "synthesized": {
+          "synthesised": {
             "anyOf": [
               {
                 "type": "boolean"
@@ -5251,7 +4313,7 @@
                 "type": "null"
               }
             ],
-            "title": "Synthesized"
+            "title": "Synthesised"
           },
           "replica": {
             "anyOf": [
@@ -5324,10 +4386,6 @@
       },
       "ItemUpdate": {
         "properties": {
-          "stashId": {
-            "type": "string",
-            "title": "Stashid"
-          },
           "gameItemId": {
             "type": "string",
             "title": "Gameitemid"
@@ -5343,28 +4401,17 @@
             ],
             "title": "Name"
           },
-          "iconUrl": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Iconurl"
-          },
           "league": {
             "type": "string",
             "title": "League"
           },
-          "typeLine": {
-            "type": "string",
-            "title": "Typeline"
-          },
           "baseType": {
             "type": "string",
             "title": "Basetype"
+          },
+          "typeLine": {
+            "type": "string",
+            "title": "Typeline"
           },
           "ilvl": {
             "type": "integer",
@@ -5378,17 +4425,6 @@
             "type": "boolean",
             "title": "Identified",
             "default": true
-          },
-          "forumNote": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Forumnote"
           },
           "currencyAmount": {
             "anyOf": [
@@ -5445,7 +4481,7 @@
             ],
             "title": "Fractured"
           },
-          "synthesized": {
+          "synthesised": {
             "anyOf": [
               {
                 "type": "boolean"
@@ -5454,7 +4490,7 @@
                 "type": "null"
               }
             ],
-            "title": "Synthesized"
+            "title": "Synthesised"
           },
           "replica": {
             "anyOf": [
@@ -5466,28 +4502,6 @@
               }
             ],
             "title": "Replica"
-          },
-          "elder": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Elder"
-          },
-          "shaper": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Shaper"
           },
           "influences": {
             "anyOf": [
@@ -5568,11 +4582,10 @@
         },
         "type": "object",
         "required": [
-          "stashId",
           "gameItemId",
           "league",
-          "typeLine",
           "baseType",
+          "typeLine",
           "ilvl",
           "rarity"
         ],
@@ -5728,7 +4741,7 @@
             ],
             "title": "Fractured"
           },
-          "synthesized": {
+          "synthesised": {
             "anyOf": [
               {
                 "type": "boolean"
@@ -5737,7 +4750,7 @@
                 "type": "null"
               }
             ],
-            "title": "Synthesized"
+            "title": "Synthesised"
           },
           "unique": {
             "anyOf": [
@@ -5934,7 +4947,7 @@
             ],
             "title": "Fractured"
           },
-          "synthesized": {
+          "synthesised": {
             "anyOf": [
               {
                 "type": "boolean"
@@ -5943,7 +4956,7 @@
                 "type": "null"
               }
             ],
-            "title": "Synthesized"
+            "title": "Synthesised"
           },
           "unique": {
             "anyOf": [
@@ -6156,7 +5169,7 @@
             ],
             "title": "Fractured"
           },
-          "synthesized": {
+          "synthesised": {
             "anyOf": [
               {
                 "type": "boolean"
@@ -6165,7 +5178,7 @@
                 "type": "null"
               }
             ],
-            "title": "Synthesized"
+            "title": "Synthesised"
           },
           "unique": {
             "anyOf": [
@@ -6345,103 +5358,6 @@
         },
         "type": "object",
         "title": "RecoverPassword"
-      },
-      "Stash": {
-        "properties": {
-          "accountName": {
-            "type": "string",
-            "title": "Accountname"
-          },
-          "public": {
-            "type": "boolean",
-            "title": "Public"
-          },
-          "league": {
-            "type": "string",
-            "title": "League"
-          },
-          "stashId": {
-            "type": "string",
-            "title": "Stashid"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Createdat"
-          },
-          "updatedAt": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Updatedat"
-          }
-        },
-        "type": "object",
-        "required": [
-          "accountName",
-          "public",
-          "league",
-          "stashId",
-          "createdAt"
-        ],
-        "title": "Stash"
-      },
-      "StashCreate": {
-        "properties": {
-          "accountName": {
-            "type": "string",
-            "title": "Accountname"
-          },
-          "public": {
-            "type": "boolean",
-            "title": "Public"
-          },
-          "league": {
-            "type": "string",
-            "title": "League"
-          },
-          "stashId": {
-            "type": "string",
-            "title": "Stashid"
-          }
-        },
-        "type": "object",
-        "required": [
-          "accountName",
-          "public",
-          "league",
-          "stashId"
-        ],
-        "title": "StashCreate"
-      },
-      "StashUpdate": {
-        "properties": {
-          "accountName": {
-            "type": "string",
-            "title": "Accountname"
-          },
-          "public": {
-            "type": "boolean",
-            "title": "Public"
-          },
-          "league": {
-            "type": "string",
-            "title": "League"
-          }
-        },
-        "type": "object",
-        "required": [
-          "accountName",
-          "public",
-          "league"
-        ],
-        "title": "StashUpdate"
       },
       "Token": {
         "properties": {

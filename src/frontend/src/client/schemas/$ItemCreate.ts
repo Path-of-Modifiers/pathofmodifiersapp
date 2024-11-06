@@ -4,10 +4,6 @@
 /* eslint-disable */
 export const $ItemCreate = {
     properties: {
-        stashId: {
-            type: 'string',
-            isRequired: true,
-        },
         gameItemId: {
             type: 'string',
             isRequired: true,
@@ -20,23 +16,15 @@ export const $ItemCreate = {
                 type: 'null',
             }],
         },
-        iconUrl: {
-            type: 'any-of',
-            contains: [{
-                type: 'string',
-            }, {
-                type: 'null',
-            }],
-        },
         league: {
             type: 'string',
             isRequired: true,
         },
-        typeLine: {
+        baseType: {
             type: 'string',
             isRequired: true,
         },
-        baseType: {
+        typeLine: {
             type: 'string',
             isRequired: true,
         },
@@ -50,14 +38,6 @@ export const $ItemCreate = {
         },
         identified: {
             type: 'boolean',
-        },
-        forumNote: {
-            type: 'any-of',
-            contains: [{
-                type: 'string',
-            }, {
-                type: 'null',
-            }],
         },
         currencyAmount: {
             type: 'any-of',
@@ -99,7 +79,7 @@ export const $ItemCreate = {
                 type: 'null',
             }],
         },
-        synthesized: {
+        synthesised: {
             type: 'any-of',
             contains: [{
                 type: 'boolean',
@@ -108,22 +88,6 @@ export const $ItemCreate = {
             }],
         },
         replica: {
-            type: 'any-of',
-            contains: [{
-                type: 'boolean',
-            }, {
-                type: 'null',
-            }],
-        },
-        elder: {
-            type: 'any-of',
-            contains: [{
-                type: 'boolean',
-            }, {
-                type: 'null',
-            }],
-        },
-        shaper: {
             type: 'any-of',
             contains: [{
                 type: 'boolean',
@@ -183,6 +147,15 @@ export const $ItemCreate = {
             type: 'any-of',
             contains: [{
                 type: 'number',
+            }, {
+                type: 'null',
+            }],
+        },
+        createdAt: {
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+                format: 'date-time',
             }, {
                 type: 'null',
             }],

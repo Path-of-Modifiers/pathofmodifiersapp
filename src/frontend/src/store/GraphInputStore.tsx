@@ -33,6 +33,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
         set(() => ({
             fetchStatus: fetchStatus,
         })),
+
     setPlotQuery: () =>
         set((state) => ({
             plotQuery: {
@@ -172,9 +173,9 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             itemSpec: { ...state.itemSpec, fractured: fractured },
         })),
 
-    setItemSpecSynthesized: (synthesized: boolean | undefined) =>
+    setItemSpecSynthesised: (synthesised: boolean | undefined) =>
         set((state) => ({
-            itemSpec: { ...state.itemSpec, synthesized: synthesized },
+            itemSpec: { ...state.itemSpec, synthesised: synthesised },
         })),
 
     setItemSpecSearing: (searing: boolean | undefined) =>

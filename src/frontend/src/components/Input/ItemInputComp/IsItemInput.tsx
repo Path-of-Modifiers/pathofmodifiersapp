@@ -13,7 +13,7 @@ interface IsItemInputProps {
     | "corrupted"
     | "delve"
     | "fractured"
-    | "synthesized"
+    | "synthesised"
     | "replica"
     | "elder"
     | "shaper"
@@ -35,7 +35,7 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
     setItemSpecCorrupted,
     setItemSpecDelve,
     setItemSpecFractured,
-    setItemSpecSynthesized,
+    setItemSpecSynthesised,
     setItemSpecReplica,
     setItemSpecElderInfluence,
     setItemSpecShaperInfluence,
@@ -67,9 +67,9 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
       presetValue = itemSpec?.fractured;
       setItemSpecMisc = setItemSpecFractured;
       break;
-    case "synthesized":
+    case "synthesised":
       presetValue = itemSpec?.synthesized;
-      setItemSpecMisc = setItemSpecSynthesized;
+      setItemSpecMisc = setItemSpecSynthesised;
       break;
     case "replica":
       presetValue = itemSpec?.replica;

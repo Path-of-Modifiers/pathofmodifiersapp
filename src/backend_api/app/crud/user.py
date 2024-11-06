@@ -84,7 +84,8 @@ class CRUDUser:
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
-        return self.validate(db_obj)
+        self.validate(db_obj)
+        return db_obj
 
     def get_all(self, db: Session, *, skip: int = 0, limit: int = 100) -> UsersPublic:
         """Get all users

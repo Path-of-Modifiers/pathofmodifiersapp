@@ -83,7 +83,7 @@ class ContinuousDataRetrieval:
             "explicit",
             "delve",
             "fractured",
-            "synthesized",
+            "synthesised",
             "unique",
             "corrupted",
             "enchanted",
@@ -102,15 +102,15 @@ class ContinuousDataRetrieval:
 
         # TODO not fully exhaustive yet, needs to be updated over time
         # category_priority = [
-        # "synthesized",
+        # "synthesised",
         # "fractured",
         # "delve",
         # "veiled",
         # "unique",
         # ]
         # Needs to take priority, see nebulis and rational doctrine
-        # not_synth_mask = df["synthesized"].isna()
-        # split_dfs["synthesized"] = df.loc[~not_synth_mask]
+        # not_synth_mask = df["synthesised"].isna()
+        # split_dfs["synthesised"] = df.loc[~not_synth_mask]
         # df = df.loc[not_synth_mask]
 
         not_unique_mask = df["rarity"] != "Unique"

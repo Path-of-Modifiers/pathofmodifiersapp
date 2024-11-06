@@ -1,7 +1,4 @@
 class TestPoeAPIDataTransformerBase:
-    def test_helper_transform_account_table(self):
-        pass
-
     def test_helper_transform_item_table(self):
         pass
 

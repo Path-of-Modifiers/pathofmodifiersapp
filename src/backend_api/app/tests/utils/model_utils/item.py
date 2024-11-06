@@ -1,11 +1,10 @@
 from sqlalchemy.orm import Session
 
 from app import crud
-from app.core.models.models import Account, Currency, Item, ItemBaseType, Stash
+from app.core.models.models import Currency, Item, ItemBaseType
 from app.core.schemas.item import ItemCreate
 from app.tests.utils.model_utils.currency import generate_random_currency
 from app.tests.utils.model_utils.item_base_type import generate_random_item_base_type
-from app.tests.utils.model_utils.stash import generate_random_stash
 from app.tests.utils.utils import (
     random_bool,
     random_float,
@@ -18,7 +17,7 @@ from app.tests.utils.utils import (
 
 async def create_random_item_dict(
     db: Session, retrieve_dependencies: bool | None = False
-) -> dict | tuple[dict, list[dict | Account | Stash | ItemBaseType | Currency]]:
+) -> dict | tuple[dict, list[dict | ItemBaseType | Currency]]:
     """Create a random item dictionary.
 
     Args:
@@ -26,26 +25,21 @@ async def create_random_item_dict(
         retrieve_dependencies (bool, optional): Whether to retrieve dependencies. Defaults to False.
 
     Returns:
-        Union[ Dict, Tuple[ Dict, List[ Union[ Dict, Account, Stash, ItemBaseType, Currency, ] ], ], ]: \n
+        Union[ Dict, Tuple[ Dict, List[ Union[ Dict, ItemBaseType, Currency, ] ], ], ]: \n
         Random item dictionary or tuple with random item dictionary and dependencies.
     """
-    gameItemId = random_lower_string()
     name = random_lower_string()
-    iconUrl = random_url()
     league = random_lower_string()
     typeLine = random_lower_string()
+    ilvl = random_int(small_int=True)
     rarity = random_lower_string()
     identified = random_bool()
-    ilvl = random_int(small_int=True)
-    forumNote = random_lower_string()
     currencyAmount = random_float(small_float=True)
     corrupted = random_bool()
     delve = random_bool()
     fractured = random_bool()
-    synthesized = random_bool()
+    synthesised = random_bool()
     replica = random_bool()
-    elder = random_bool()
-    shaper = random_bool()
     influences_type_dict = {
         "elder": "bool",
         "shaper": "bool",
@@ -62,40 +56,26 @@ async def create_random_item_dict(
     suffixes = random_int(small_int=True)
     foilVariation = random_int(small_int=True)
 
-    # Set the dependencies
-    if not retrieve_dependencies:
-        stash_dict, stash = await generate_random_stash(db)
-    else:
-        stash_dict, stash, deps = await generate_random_stash(
-            db, retrieve_dependencies=retrieve_dependencies
-        )
-    stashId = stash.stashId
     item_base_type_dict, item_base_type = await generate_random_item_base_type(db)
     baseType = item_base_type.baseType
     currency_dict, currency = await generate_random_currency(db)
     currencyId = currency.currencyId
 
     item = {
-        "stashId": stashId,
-        "gameItemId": gameItemId,
         "name": name,
-        "iconUrl": iconUrl,
         "league": league,
-        "typeLine": typeLine,
         "baseType": baseType,
+        "typeLine": typeLine,
+        "ilvl": ilvl,
         "rarity": rarity,
         "identified": identified,
-        "ilvl": ilvl,
-        "forumNote": forumNote,
         "currencyAmount": currencyAmount,
         "currencyId": currencyId,
         "corrupted": corrupted,
         "delve": delve,
         "fractured": fractured,
-        "synthesized": synthesized,
+        "synthesised": synthesised,
         "replica": replica,
-        "elder": elder,
-        "shaper": shaper,
         "influences": influences,
         "searing": searing,
         "tangled": tangled,
@@ -108,7 +88,7 @@ async def create_random_item_dict(
     if not retrieve_dependencies:
         return item
     else:  # Gather dependencies and return
-        deps += [stash_dict, stash]
+        deps = []
         deps += [item_base_type_dict, item_base_type]
         deps += [currency_dict, currency]
         return item, deps
@@ -119,7 +99,7 @@ async def generate_random_item(
 ) -> tuple[
     dict,
     Item,
-    list[dict | Account | Stash | ItemBaseType | Currency] | None,
+    list[dict | ItemBaseType | Currency] | None,
 ]:
     """Generate a random item.
 
@@ -128,7 +108,7 @@ async def generate_random_item(
         retrieve_dependencies (bool, optional): Whether to retrieve dependencies. Defaults to False.
 
     Returns:
-        Tuple[ Dict, Item,  List[ Union[ Dict, Account, Stash, ItemBaseType, Currency, ] ] ], ]: \n
+        Tuple[ Dict, Item,  List[ Union[ Dict, ItemBaseType, Currency, ] ] ], ]: \n
         Random item dict and Item db object and optional dependencies.
     """
     output = await create_random_item_dict(db, retrieve_dependencies)
