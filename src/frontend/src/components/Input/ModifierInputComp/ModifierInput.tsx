@@ -13,7 +13,7 @@ import { useGraphInputStore } from "../../../store/GraphInputStore";
 import { FancySelectedModifier } from "./FancySelectedModifier";
 import { ChoosableModifiersExtended } from "../../../store/StateInterface";
 // For debugging purposes
-// import { useOutsideClick } from "../../../hooks/useOutsideClick";
+import { useOutsideClick } from "../../../hooks/useOutsideClick";
 
 export interface ModifierOption extends SelectBoxOptionValue {
     isSelected?: boolean;
@@ -44,12 +44,12 @@ export const ModifierInput = () => {
             groupedModifierProperties:
                 prefetchedModifier.groupedModifierProperties,
         }));
-    const [isChoosableModifiers, setIsChoosableModifiers] = useState<
+    const [choosableModifierOptions, setChoosableModifierOptions] = useState<
         ModifierOption[]
     >(mapChoosableModifiersExtendedtoModifierOption(choosableModifiers));
 
     useEffect(() => {
-        setIsChoosableModifiers(
+        setChoosableModifierOptions(
             mapChoosableModifiersExtendedtoModifierOption(
                 choosableModifiers.filter(
                     (modifier) => !modifier.isNotChoosable
@@ -62,7 +62,7 @@ export const ModifierInput = () => {
     if (wantedModifierExtended.length > 0) {
         prevSelectedModifiers = wantedModifierExtended.reduce(
             (selectedModifiers, wantedModifier) => {
-                const prevSelectedModifier = isChoosableModifiers.find(
+                const prevSelectedModifier = choosableModifierOptions.find(
                     (modifier) =>
                         modifier.groupedModifierProperties.modifierId.includes(
                             wantedModifier.modifierId
@@ -90,11 +90,11 @@ export const ModifierInput = () => {
     >(prevSelectedModifiers);
 
     // For debugging purposes
-    // const ref = useOutsideClick(() => {
-    //     const store = useGraphInputStore.getState();
-    //     console.log("STORE", store);
-    //     // console.log("query ->", store.wantedModifierExtended);
-    // });
+    const ref = useOutsideClick(() => {
+        const store = useGraphInputStore.getState();
+        console.log("STORE", store);
+        // console.log("query ->", store.wantedModifierExtended);
+    });
 
     // NOTE: The index, which is the selected modifier's position in
     //`selectedModifiers` is used as a unique identifier both internally
@@ -105,7 +105,7 @@ export const ModifierInput = () => {
         newValue,
         overrideIndex?: number
     ) => {
-        const newlySelectedModifier = isChoosableModifiers.find(
+        const newlySelectedModifier = choosableModifierOptions.find(
             (modifier) => modifier.label === newValue?.label
         );
         if (!newlySelectedModifier) {
@@ -260,12 +260,12 @@ export const ModifierInput = () => {
                         maxWidth="95vw"
                         alignItems={"center"}
                         gap={2}
-                        // ref={ref}
+                        ref={ref}
                     >
                         <AddIconCheckbox dontshow />
                         <SelectBoxInput
                             handleChange={handleModifierSelect}
-                            optionsList={isChoosableModifiers}
+                            optionsList={choosableModifierOptions}
                             defaultText="+ Add Modifier"
                             multipleValues={true}
                             id={`modifierInput-${selectedModifiers.length}`}

@@ -7,6 +7,7 @@ export const useErrorStore = create<ErrorState>((set) => ({
     resultError: false,
     noRelatedUniqueError: false,
     itemDoesNotHaveSelectedModifiersError: false,
+    baseSpecDoesNotMatchError: false,
     setLeagueError: (leagueError: boolean) =>
         set((state) => ({ ...state, leagueError })),
     setModifiersError: (modifiersError: boolean) =>
@@ -18,4 +19,6 @@ export const useErrorStore = create<ErrorState>((set) => ({
     setItemDoesNotHaveSelectedModifiersError: (
         itemDoesNotHaveSelectedModifiersError: boolean
     ) => set((state) => ({ ...state, itemDoesNotHaveSelectedModifiersError })),
+    setBaseSpecDoesNotMatchError: (baseSpecDoesNotMatchError: boolean) =>
+        set((state) => ({ ...state, baseSpecDoesNotMatchError })),
 }));

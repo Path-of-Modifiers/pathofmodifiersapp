@@ -30,6 +30,7 @@ function usePostPlottingData(plotQuery: PlotQuery): {
     const {
         setNoRelatedUniqueError,
         setItemDoesNotHaveSelectedModifiersError,
+        setBaseSpecDoesNotMatchError,
     } = useErrorStore();
     const { setFetchStatus } = useGraphInputStore();
     const { fetchStatus, refetch, isFetched, isError } = useQuery({
@@ -57,43 +58,58 @@ function usePostPlottingData(plotQuery: PlotQuery): {
                 plotQuery.itemSpecifications;
             let baseSpec: BaseSpecs | undefined | null =
                 plotQuery.baseSpecifications;
-            let possibleUniques = wantedModifierExtended.reduce((prev, cur) => {
-                if (cur.relatedUniques === undefined || !cur.isSelected) {
-                    return prev;
-                }
+            let possibleUniques = wantedModifierExtended.reduce(
+                (prev, cur, index) => {
+                    if (cur.relatedUniques === undefined || !cur.isSelected) {
+                        return prev;
+                    }
 
-                const newUniqueCandidates = cur.relatedUniques.split("|");
-                if (prev.length === 0) {
-                    return newUniqueCandidates;
-                }
-                return prev.filter((prevCandidate) =>
-                    newUniqueCandidates.includes(prevCandidate)
-                );
-            }, [] as string[]);
+                    const newUniqueCandidates = cur.relatedUniques.split("|");
+                    if (index === 0) {
+                        return newUniqueCandidates;
+                    }
+                    return prev.filter((prevCandidate) =>
+                        newUniqueCandidates.includes(prevCandidate)
+                    );
+                },
+                [] as string[]
+            );
             if (possibleUniques.length === 0) {
                 setNoRelatedUniqueError(true);
                 return;
+            } else {
+                setNoRelatedUniqueError(false);
             }
             if (itemName != null) {
                 if (!possibleUniques.includes(itemName)) {
                     setItemDoesNotHaveSelectedModifiersError(true);
                     return;
+                } else {
+                    setItemDoesNotHaveSelectedModifiersError(false);
                 }
                 possibleUniques = [itemName];
             }
             // Only applicable if rarity is unique and base spec is not already
             // chosen
-            if (baseSpec != null) {
-                const possibleBaseSpecs = choosableItemBaseType.reduce(
-                    (prev, cur) => {
-                        if (cur.relatedUniques == null) {
-                            return prev;
-                        }
-                        const relatedUniques = cur.relatedUniques.split("|");
+            const possibleBaseSpecs = choosableItemBaseType.reduce(
+                (prev, cur) => {
+                    if (cur.relatedUniques == null) {
+                        return prev;
+                    }
+                    const relatedUniques = cur.relatedUniques.split("|");
+                    if (
+                        possibleUniques.some((unique) =>
+                            relatedUniques.includes(unique)
+                        )
+                    ) {
                         if (
-                            possibleUniques.some((unique) =>
-                                relatedUniques.includes(unique)
-                            )
+                            !baseSpec ||
+                            ((!baseSpec.baseType ||
+                                baseSpec.baseType === cur.baseType) &&
+                                (!baseSpec.category ||
+                                    baseSpec.category === cur.category) &&
+                                (!baseSpec.subCategory ||
+                                    baseSpec.subCategory === cur.subCategory))
                         ) {
                             return [
                                 ...prev,
@@ -103,12 +119,20 @@ function usePostPlottingData(plotQuery: PlotQuery): {
                                     subCategory: cur.subCategory,
                                 },
                             ];
-                        } else {
-                            return prev;
                         }
-                    },
-                    [] as BaseSpecState[]
-                );
+                    }
+                    return prev;
+                },
+                [] as BaseSpecState[]
+            );
+
+            if (possibleBaseSpecs.length === 0) {
+                setBaseSpecDoesNotMatchError(true);
+                return;
+            } else {
+                setBaseSpecDoesNotMatchError(false);
+            }
+            if (baseSpec != null) {
                 if (possibleBaseSpecs.length === 1) {
                     baseSpec = possibleBaseSpecs[0];
                 }
@@ -142,6 +166,7 @@ function usePostPlottingData(plotQuery: PlotQuery): {
         setItemDoesNotHaveSelectedModifiersError,
         choosableItemBaseType,
         plotQuery,
+        setBaseSpecDoesNotMatchError,
     ]);
     return { plotData, fetchStatus, isFetched, isError };
 }
