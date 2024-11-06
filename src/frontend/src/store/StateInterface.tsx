@@ -175,6 +175,7 @@ export interface ErrorState {
     resultError: boolean;
     noRelatedUniqueError: boolean;
     itemDoesNotHaveSelectedModifiersError: boolean;
+    baseSpecDoesNotMatchError: boolean;
     setLeagueError: (leagueError: boolean) => void;
     setModifiersError: (modifiersError: boolean) => void;
     setResultError: (resultError: boolean) => void;
@@ -182,6 +183,7 @@ export interface ErrorState {
     setItemDoesNotHaveSelectedModifiersError: (
         itemDoesNotHaveSelectedModifiersError: boolean
     ) => void;
+    setBaseSpecDoesNotMatchError: (baseSpecDoesNotMatchError: boolean) => void;
 }
 
 export interface TurnstileState {

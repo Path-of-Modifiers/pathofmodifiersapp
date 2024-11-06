@@ -17,6 +17,7 @@ const QueryButtons = (props: FlexProps) => {
         resultError,
         noRelatedUniqueError,
         itemDoesNotHaveSelectedModifiersError,
+        baseSpecDoesNotMatchError,
         setResultError,
     } = useErrorStore();
     const { setPlotQuery, fetchStatus } = useGraphInputStore();
@@ -152,6 +153,12 @@ const QueryButtons = (props: FlexProps) => {
                 <ErrorMessage
                     alertTitle="No query performed"
                     alertDescription="The chosen unique cannot have the currently selected modifiers."
+                />
+            )}
+            {baseSpecDoesNotMatchError && (
+                <ErrorMessage
+                    alertTitle="No query performed"
+                    alertDescription="The chosen base type filter cannot have the currently selected modifiers."
                 />
             )}
         </Flex>

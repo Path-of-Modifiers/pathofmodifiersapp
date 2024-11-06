@@ -100,7 +100,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             plotQuery: {
                 league: state.league,
                 itemSpecifications: state.itemSpec,
-                baseSpec: state.baseSpec,
+                baseSpecifications: state.baseSpec,
                 wantedModifiers: state.wantedModifierExtended
                     .filter((wantedModifier) => wantedModifier.isSelected)
                     .map((wantedModifier) => ({
