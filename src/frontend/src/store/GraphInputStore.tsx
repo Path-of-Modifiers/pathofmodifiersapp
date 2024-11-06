@@ -1,10 +1,13 @@
 import { create } from "zustand";
 import {
+    ChoosableItemBaseTypesExtended,
+    ChoosableModifiersExtended,
     GraphInputState,
     ItemSpecState,
     WantedModifier,
     WantedModifierExtended,
 } from "./StateInterface";
+import { GroupedModifierByEffect, ItemBaseType } from "../client";
 
 const defaultLeague = import.meta.env.VITE_APP_DEFAULT_LEAGUE;
 
@@ -13,12 +16,20 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
     clearClicked: false,
     queryClicked: false,
     fetchStatus: undefined,
+
+    choosableModifiers: [],
+    choosableItemBaseType: [],
+    choosableItemNames: [],
+
     league: defaultLeague,
+
     itemName: undefined,
     itemSpec: undefined,
     baseSpec: undefined,
+
     wantedModifiers: [],
     wantedModifierExtended: [],
+
     plotQuery: {
         league: defaultLeague,
         wantedModifiers: [],
@@ -33,12 +44,63 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
         set(() => ({
             fetchStatus: fetchStatus,
         })),
+
+    setChoosableModifiers: (choosableModifiers: GroupedModifierByEffect[]) =>
+        set(() => ({
+            choosableModifiers: choosableModifiers,
+        })),
+
+    setChoosableItemBaseType: (choosableItemBaseType: ItemBaseType[]) =>
+        set(() => ({
+            choosableItemBaseType: choosableItemBaseType,
+        })),
+    setChoosableItemNames: (choosableItemNames: string[]) =>
+        set(() => ({
+            choosableItemNames: choosableItemNames,
+        })),
+
+    updateChoosable: (itemName: string | undefined) =>
+        set((state) => {
+            let choosableModifiers: ChoosableModifiersExtended[];
+            let choosableItemBaseType: ChoosableItemBaseTypesExtended[];
+            if (itemName === undefined) {
+                choosableModifiers = state.choosableModifiers.map(
+                    (modifier) => ({ ...modifier, isNotChoosable: false })
+                );
+                choosableItemBaseType = state.choosableItemBaseType.map(
+                    (itemBaseType) => ({
+                        ...itemBaseType,
+                        isNotChoosable: false,
+                    })
+                );
+            } else {
+                choosableModifiers = state.choosableModifiers.map(
+                    (modifier) => ({
+                        ...modifier,
+                        isNotChoosable:
+                            !modifier.relatedUniques?.includes(itemName),
+                    })
+                );
+                choosableItemBaseType = state.choosableItemBaseType.map(
+                    (itemBaseType) => ({
+                        ...itemBaseType,
+                        isNotChoosable:
+                            !itemBaseType.relatedUniques?.includes(itemName),
+                    })
+                );
+            }
+            return {
+                choosableModifiers: choosableModifiers,
+                choosableItemBaseType: choosableItemBaseType,
+            };
+        }),
+
     setPlotQuery: () =>
         set((state) => ({
             plotQuery: {
                 league: state.league,
                 itemSpecifications: state.itemSpec,
-                baseSpec: state.baseSpec,
+                baseSpecifications: state.baseSpec,
                 wantedModifiers: state.wantedModifierExtended
                     .filter((wantedModifier) => wantedModifier.isSelected)
                     .map((wantedModifier) => ({
@@ -70,7 +132,6 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             itemSpec: { ...state.itemSpec, name: name },
             itemName: name,
         })),
-
     setItemSpecElderInfluence: (elder: boolean | undefined) =>
         set((state) => ({
             itemSpec: {
@@ -229,16 +290,20 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
 
     addWantedModifierExtended: (
         wantedModifier: WantedModifier,
-        index: number
+        index: number,
+        relatedUniques?: string
     ) =>
-        set((state) => {
-            return {
-                wantedModifierExtended: [
-                    ...state.wantedModifierExtended,
-                    { ...wantedModifier, index: index, isSelected: true },
-                ],
-            };
-        }),
+        set((state) => ({
+            wantedModifierExtended: [
+                ...state.wantedModifierExtended,
+                {
+                    ...wantedModifier,
+                    index: index,
+                    isSelected: true,
+                    relatedUniques: relatedUniques,
+                },
+            ],
+        })),
 
     updateSelectedWantedModifierExtended: (
         index_to_update: number,

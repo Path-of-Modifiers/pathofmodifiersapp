@@ -8,14 +8,14 @@ const { setLeagueError, setModifiersError } = useErrorStore.getState();
  * @returns boolean
  */
 export const checkGraphQueryLeageInput = () => {
-  // If league is empty, return false
-  const plotLeagueQueryStore = useGraphInputStore.getState().plotQuery.league;
-  if (plotLeagueQueryStore === "") {
-    setLeagueError(true);
-    return false;
-  }
-  setLeagueError(false);
-  return true;
+    // If league is empty, return false
+    const league = useGraphInputStore.getState().plotQuery.league;
+    if (league === "") {
+        setLeagueError(true);
+        return false;
+    }
+    setLeagueError(false);
+    return true;
 };
 
 /**
@@ -23,13 +23,13 @@ export const checkGraphQueryLeageInput = () => {
  * @returns boolean
  */
 export const checkGraphQueryModifierInput = () => {
-  const plotModifierQueryStore =
-    useGraphInputStore.getState().plotQuery.wantedModifiers;
-  // If modifiers are empty, return false
-  if (plotModifierQueryStore.length === 0) {
-    setModifiersError(true);
-    return false;
-  }
-  setModifiersError(false);
-  return true;
+    const plotModifierQueryStore =
+        useGraphInputStore.getState().plotQuery.wantedModifiers;
+    // If modifiers are empty, return false
+    if (plotModifierQueryStore.length === 0) {
+        setModifiersError(true);
+        return false;
+    }
+    setModifiersError(false);
+    return true;
 };
