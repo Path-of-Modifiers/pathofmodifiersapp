@@ -35,7 +35,6 @@ function usePostPlottingData(plotQuery: PlotQuery): {
     const { fetchStatus, refetch, isFetched, isError } = useQuery({
         queryKey: ["allPlotData"],
         queryFn: async () => {
-            console.log("inside request", localPlotQuery);
             if (localPlotQuery == null) {
                 return 0;
             }
@@ -49,9 +48,6 @@ function usePostPlottingData(plotQuery: PlotQuery): {
         retry: false,
         enabled: false, // stops constant refreshes
     });
-    useEffect(() => {
-        console.log("tracking local plot query", localPlotQuery);
-    }, [localPlotQuery]);
 
     useEffect(() => {
         const handleQueryClicked = () => {
