@@ -7,14 +7,8 @@ import { useEffect, useRef } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_layout/")({
-    validateSearch: (search: Record<string, unknown>) => {
-        // let parseURL: boolean = false;
-        // for (const key of Object.keys(search) as Array<string>) {
-        //     parseURL = !!search[key];
-        //     if (parseURL) break;
-        // }
-        // return parseURL;
-        return search;
+    beforeLoad: async () => {
+        useGraphInputStore.getState().setHashFromStore();
     },
     component: Index,
 });
@@ -31,9 +25,6 @@ function Index() {
     const requestItemBaseTypes = useGetItemBaseTypes();
     const isFetched = useRef<boolean>(false);
 
-    // const search = Route.useSearch();
-    // if (stateHash === undefined) {
-    // }
     useEffect(() => {
         if (!isFetched.current) {
             const fetchData = async () => {
