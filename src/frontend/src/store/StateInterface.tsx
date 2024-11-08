@@ -69,7 +69,17 @@ export interface PlotSettingsState {
 }
 export type SetItemSpecMisc = (isItemSpecType: boolean | undefined) => void;
 
+export interface StateHash {
+    league?: string;
+    itemName?: string;
+    baseSpec?: string;
+    itemSpec?: string;
+    wantedModifierExtended?: string;
+}
+
 export interface GraphInputState {
+    stateHash: StateHash | undefined;
+
     clearClicked: boolean;
     queryClicked: boolean;
     fetchStatus: string | undefined;
@@ -84,10 +94,13 @@ export interface GraphInputState {
     itemSpec: ItemSpecState | undefined;
     baseSpec: BaseSpecState | undefined;
 
-    wantedModifiers: WantedModifier[];
     wantedModifierExtended: WantedModifierExtended[];
 
     plotQuery: PlotQuery;
+
+    getStoreFromHash: (searchParams: URLSearchParams) => void;
+    setHashFromStore: () => void;
+    clearHash: () => void;
 
     setClearClicked: () => void;
     setQueryClicked: () => void;
@@ -106,6 +119,7 @@ export interface GraphInputState {
 
     setItemName: (name: string | undefined) => void;
 
+    setItemSpec: (itemSpec: ItemSpecState) => void;
     setItemRarity: (rarity: string | undefined) => void;
     setItemSpecMinIlvl: (minIlvl: number | undefined) => void;
     setItemSpecMaxIlvl: (maxIlvl: number | undefined) => void;
@@ -126,10 +140,14 @@ export interface GraphInputState {
     setItemSpecIsRelic: SetItemSpecMisc;
     setItemSpecFoilVariation: (foilVariation: number | undefined) => void;
 
+    setBaseSpec: (baseSpec: BaseSpecState) => void;
     setBaseType: (baseType: string | undefined) => void;
     setItemCategory: (category: string | undefined) => void;
     setItemSubCategory: (subCategory: string | undefined) => void;
 
+    setWantedModifierExtended: (
+        wantedModifierExtended: WantedModifierExtended[]
+    ) => void;
     addWantedModifierExtended: (
         wantedModifier: WantedModifier,
         index: number,
