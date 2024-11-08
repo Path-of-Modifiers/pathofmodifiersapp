@@ -35,9 +35,10 @@ export default formatDateToLocal;
 export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
     // currently always runs, needs to be in if check
     // when Non-unique rarity is possible
-    const itemName = useGraphInputStore.getState().itemName;
-    let itemSpec = useGraphInputStore.getState().itemSpec;
-    let baseSpec = useGraphInputStore.getState().baseSpec;
+    const state = useGraphInputStore.getState();
+    const itemName = state.itemName;
+    let itemSpec = state.itemSpec;
+    let baseSpec = state.baseSpec;
     let possibleUniques = useGraphInputStore
         .getState()
         .wantedModifierExtended.reduce((prev, cur, index) => {
@@ -122,7 +123,7 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
 
     itemSpec = { ...itemSpec, name: possibleUniques.join("|") };
     return {
-        league: useGraphInputStore.getState().league,
+        league: state.league,
         itemSpecifications: itemSpec,
         baseSpecifications: baseSpec,
         wantedModifiers: useGraphInputStore
