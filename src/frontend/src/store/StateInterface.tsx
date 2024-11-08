@@ -100,7 +100,6 @@ export interface GraphInputState {
 
     getStoreFromHash: (searchParams: URLSearchParams) => void;
     setHashFromStore: () => void;
-    clearHash: () => void;
 
     setClearClicked: () => void;
     setQueryClicked: () => void;
