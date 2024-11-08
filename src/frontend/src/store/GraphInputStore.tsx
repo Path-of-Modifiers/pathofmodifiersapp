@@ -43,7 +43,6 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
         set((state) => {
             const internalState: GraphInputState = { ...state };
             searchParams.forEach((value, key) => {
-                console.log(key, value);
                 if (key === "league") {
                     internalState.league = value;
                 }
@@ -108,7 +107,6 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             location.hash = searchParams.toString();
             return { stateHash: stateHash };
         }),
-    clearHash: () => set(() => ({ stateHash: undefined })),
 
     setQueryClicked: () =>
         set(() => ({

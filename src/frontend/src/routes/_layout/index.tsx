@@ -8,7 +8,13 @@ import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_layout/")({
     beforeLoad: async () => {
-        useGraphInputStore.getState().setHashFromStore();
+        const searchParams = new URLSearchParams(location.hash.slice(1));
+        if (searchParams.size > 0) {
+            useGraphInputStore.getState().getStoreFromHash(searchParams);
+        } else {
+            // This happens when being redirected from login
+            useGraphInputStore.getState().setHashFromStore();
+        }
     },
     component: Index,
 });
@@ -37,10 +43,6 @@ function Index() {
                     setChoosableItemBaseType(itemBaseTypes.itemBaseTypes);
                     setChoosableItemNames(itemBaseTypes.itemNames);
                 }
-                const searchParams = new URLSearchParams(
-                    location.hash.slice(1)
-                );
-                getStoreFromHash(searchParams);
                 isFetched.current = true;
             };
             fetchData();
