@@ -8,6 +8,7 @@ import {
 } from "../../hooks/graphing/checkGraphQueryInput";
 import { useErrorStore } from "../../store/ErrorStore";
 import { ErrorMessage } from "../../components/Input/StandardLayoutInput/ErrorMessage";
+import { getOptimizedPlotQuery } from "../../hooks/graphing/utils";
 
 const QueryButtons = (props: FlexProps) => {
     const { setExpandedGraphInputFilters } = useExpandedComponentStore();
@@ -47,7 +48,9 @@ const QueryButtons = (props: FlexProps) => {
         if (stateHash) return;
         setHashFromStore();
         setResultError(false);
-        setPlotQuery();
+        const plotQuery = getOptimizedPlotQuery();
+        if (plotQuery === undefined) return;
+        setPlotQuery(plotQuery);
         const leagueValid = checkGraphQueryLeageInput();
         const modifierValid = checkGraphQueryModifierInput();
         if (leagueValid && modifierValid) {
