@@ -45,7 +45,9 @@ const QueryButtons = (props: FlexProps) => {
     const handlePlotQuery = () => {
         if (isFetching) return;
         setResultError(false);
-        setPlotQuery(getOptimizedPlotQuery());
+        const plotQuery = getOptimizedPlotQuery();
+        if (plotQuery === undefined) return;
+        setPlotQuery(plotQuery);
         const leagueValid = checkGraphQueryLeageInput();
         const modifierValid = checkGraphQueryModifierInput();
         if (leagueValid && modifierValid) {
