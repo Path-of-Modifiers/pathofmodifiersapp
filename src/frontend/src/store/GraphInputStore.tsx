@@ -1,18 +1,23 @@
 import { create } from "zustand";
 import {
+    BaseSpecState,
     ChoosableItemBaseTypesExtended,
     ChoosableModifiersExtended,
     GraphInputState,
     ItemSpecState,
+    StateHash,
     WantedModifier,
     WantedModifierExtended,
 } from "./StateInterface";
 import { GroupedModifierByEffect, ItemBaseType, PlotQuery } from "../client";
+import { encodeHash, decodeHash } from "./utils";
 
 const defaultLeague = import.meta.env.VITE_APP_DEFAULT_LEAGUE;
 
 // Graph Input Store  -  This store is used to store graph input data.
 export const useGraphInputStore = create<GraphInputState>((set) => ({
+    stateHash: undefined,
+
     clearClicked: false,
     queryClicked: false,
     fetchStatus: undefined,
@@ -27,13 +32,81 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
     itemSpec: undefined,
     baseSpec: undefined,
 
-    wantedModifiers: [],
     wantedModifierExtended: [],
 
     plotQuery: {
         league: defaultLeague,
         wantedModifiers: [],
     },
+
+    getStoreFromHash: (searchParams: URLSearchParams) =>
+        set((state) => {
+            const internalState: GraphInputState = { ...state };
+            searchParams.forEach((value, key) => {
+                if (key === "league") {
+                    internalState.league = value;
+                }
+                if (key === "itemName") {
+                    internalState.itemName = value;
+                }
+                if (key === "baseSpec") {
+                    const baseSpec: BaseSpecState = JSON.parse(
+                        decodeHash(value)
+                    );
+                    internalState.baseSpec = baseSpec;
+                }
+                if (key === "itemSpec") {
+                    const itemSpec: ItemSpecState = JSON.parse(
+                        decodeHash(value)
+                    );
+                    internalState.itemSpec = itemSpec;
+                }
+                if (key === "wantedModifierExtended") {
+                    const wantedModifierExtended: WantedModifierExtended[] =
+                        JSON.parse(decodeHash(value));
+                    internalState.wantedModifierExtended =
+                        wantedModifierExtended;
+                }
+            });
+            return { ...internalState };
+        }),
+    setHashFromStore: () =>
+        set((state) => {
+            if (state.stateHash != null) return {};
+            const searchParams = new URLSearchParams(location.hash.slice(1));
+            const stateHash: StateHash = {};
+            if (state.league != null) {
+                stateHash.league = state.league;
+                searchParams.set("league", state.league);
+            }
+            if (state.itemName != null) {
+                stateHash.itemName = state.itemName;
+                searchParams.set("itemName", state.itemName);
+            }
+            if (state.baseSpec != null) {
+                const baseSpecHash = encodeHash(JSON.stringify(state.baseSpec));
+                stateHash.baseSpec = baseSpecHash;
+                searchParams.set("baseSpec", baseSpecHash);
+            }
+            if (state.itemSpec != null) {
+                const itemSpecHash = encodeHash(JSON.stringify(state.itemSpec));
+                stateHash.itemSpec = itemSpecHash;
+                searchParams.set("itemSpec", itemSpecHash);
+            }
+            if (state.wantedModifierExtended.length > 0) {
+                const wantedModifierExtendedHash = encodeHash(
+                    JSON.stringify(state.wantedModifierExtended)
+                );
+                stateHash.wantedModifierExtended = wantedModifierExtendedHash;
+                searchParams.set(
+                    "wantedModifierExtended",
+                    wantedModifierExtendedHash
+                );
+            }
+
+            location.hash = searchParams.toString();
+            return { stateHash: stateHash };
+        }),
 
     setQueryClicked: () =>
         set(() => ({
@@ -111,6 +184,9 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
         })),
 
     setLeague: (league: string) => set(() => ({ league: league })),
+
+    setItemSpec: (itemSpec: ItemSpecState) =>
+        set(() => ({ itemSpec: itemSpec })),
 
     setItemSpecIdentified: (identified: boolean | undefined) =>
         set((state) => ({
@@ -260,8 +336,8 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             itemSpec: { ...state.itemSpec, rarity: rarity },
         })),
 
-    setItemSpec: (itemSpec: ItemSpecState) =>
-        set(() => ({ itemSpec: itemSpec })),
+    setBaseSpec: (baseSpec: BaseSpecState) =>
+        set(() => ({ baseSpec: baseSpec })),
 
     setBaseType: (baseType: string | undefined) =>
         set((state) => ({
@@ -277,6 +353,10 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
         set((state) => ({
             baseSpec: { ...state.baseSpec, subCategory: subCategory },
         })),
+
+    setWantedModifierExtended: (
+        wantedModifierExtended: WantedModifierExtended[]
+    ) => set(() => ({ wantedModifierExtended: wantedModifierExtended })),
 
     addWantedModifierExtended: (
         wantedModifier: WantedModifier,

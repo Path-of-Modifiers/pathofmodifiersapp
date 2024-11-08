@@ -1,16 +1,21 @@
-import { createFileRoute } from "@tanstack/react-router";
-import Header from "../../components/Common/Header";
-import QueryButtons from "../../components/Common/QueryButtons";
-import { Flex, Box, VStack } from "@chakra-ui/layout";
-import { GraphInput } from "../../components/Input/GraphInput";
-import GraphComponent from "../../components/Graph/GraphComponent";
-import { useEffect, useRef } from "react";
+import { MainPage } from "../../components/Common/MainPage";
+import { useGraphInputStore } from "../../store/GraphInputStore";
 import { useGetGroupedModifiers } from "../../hooks/getData/prefetchGroupedModifiers";
 import { useGetItemBaseTypes } from "../../hooks/getData/getBaseTypeCategories";
-import Footer from "../../components/Common/Footer";
-import { useGraphInputStore } from "../../store/GraphInputStore";
+
+import { useEffect, useRef } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_layout/")({
+    beforeLoad: async () => {
+        const searchParams = new URLSearchParams(location.hash.slice(1));
+        if (searchParams.size > 0) {
+            useGraphInputStore.getState().getStoreFromHash(searchParams);
+        } else {
+            // This happens when being redirected from login
+            useGraphInputStore.getState().setHashFromStore();
+        }
+    },
     component: Index,
 });
 
@@ -20,6 +25,7 @@ function Index() {
         setChoosableModifiers,
         setChoosableItemBaseType,
         setChoosableItemNames,
+        getStoreFromHash,
     } = useGraphInputStore();
     const requestGroupedModifiers = useGetGroupedModifiers();
     const requestItemBaseTypes = useGetItemBaseTypes();
@@ -47,55 +53,7 @@ function Index() {
         setChoosableModifiers,
         setChoosableItemBaseType,
         setChoosableItemNames,
+        getStoreFromHash,
     ]);
-
-    return (
-        <Flex
-            direction="column"
-            bg="ui.main"
-            width="99vw"
-            minWidth="bgBoxes.miniPBox"
-        >
-            <>
-                <Box mb={"7rem"}>
-                    <Header />
-                </Box>
-
-                <Flex
-                    direction="row"
-                    bg="ui.secondary"
-                    justifyContent="center"
-                    maxWidth={"100%"}
-                    flexWrap="wrap"
-                    minHeight="100vh"
-                    p={3}
-                    pl={10}
-                    pr={10}
-                    borderTopRadius={10}
-                    borderTopColor={"ui.darkBrown"}
-                    borderTopWidth={1}
-                    alignSelf="center"
-                >
-                    <VStack
-                        width={"bgBoxes.defaultBox"}
-                        height={"100%"}
-                        maxW={"100%"}
-                    >
-                        <GraphInput />
-                        <QueryButtons />
-
-                        <GraphComponent
-                            width={"bgBoxes.mediumBox"}
-                            minH={"bgBoxes.smallBox"}
-                            height={"bgBoxes.smallBox"}
-                            maxW="98vw"
-                            mb="10rem"
-                            justifyItems={"center"}
-                        />
-                        <Footer />
-                    </VStack>
-                </Flex>
-            </>
-        </Flex>
-    );
+    return <MainPage isReady={isFetched.current} />;
 }
