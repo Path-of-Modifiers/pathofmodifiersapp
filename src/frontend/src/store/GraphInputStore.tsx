@@ -9,7 +9,7 @@ import {
     WantedModifier,
     WantedModifierExtended,
 } from "./StateInterface";
-import { GroupedModifierByEffect, ItemBaseType } from "../client";
+import { GroupedModifierByEffect, ItemBaseType, PlotQuery } from "../client";
 import { encodeHash, decodeHash } from "./utils";
 
 const defaultLeague = import.meta.env.VITE_APP_DEFAULT_LEAGUE;
@@ -170,19 +170,9 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             };
         }),
 
-    setPlotQuery: () =>
-        set((state) => ({
-            plotQuery: {
-                league: state.league,
-                itemSpecifications: state.itemSpec,
-                baseSpecifications: state.baseSpec,
-                wantedModifiers: state.wantedModifierExtended
-                    .filter((wantedModifier) => wantedModifier.isSelected)
-                    .map((wantedModifier) => ({
-                        modifierId: wantedModifier.modifierId,
-                        modifierLimitations: wantedModifier.modifierLimitations,
-                    })),
-            },
+    setPlotQuery: (plotQuery: PlotQuery) =>
+        set(() => ({
+            plotQuery: plotQuery,
         })),
 
     setClearClicked: () =>

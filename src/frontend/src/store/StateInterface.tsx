@@ -113,7 +113,7 @@ export interface GraphInputState {
     setChoosableItemNames: (choosableItemNames: string[]) => void;
     updateChoosable: (itemName: string | undefined) => void;
 
-    setPlotQuery: () => void;
+    setPlotQuery: (plotQuery: PlotQuery) => void;
 
     setLeague: (league: string) => void;
 
