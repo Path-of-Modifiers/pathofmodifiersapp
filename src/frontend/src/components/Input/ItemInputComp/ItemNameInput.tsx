@@ -16,7 +16,7 @@ export const ItemNameInput = () => {
     }, [itemName, updateChoosable]);
 
     const handleNameChange: HandleChangeEventFunction = (newValue) => {
-        if (newValue) {
+        if (newValue != null) {
             const itemNameText = newValue.value;
             if (itemNameText === "Any") {
                 setItemName(undefined);

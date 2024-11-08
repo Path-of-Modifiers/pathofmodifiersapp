@@ -20,7 +20,8 @@ const QueryButtons = (props: FlexProps) => {
         baseSpecDoesNotMatchError,
         setResultError,
     } = useErrorStore();
-    const { setPlotQuery, fetchStatus } = useGraphInputStore();
+    const { stateHash, fetchStatus, setHashFromStore, setPlotQuery } =
+        useGraphInputStore();
     const isFetching = fetchStatus === "fetching";
 
     const filterExpanded = useExpandedComponentStore(
@@ -43,6 +44,8 @@ const QueryButtons = (props: FlexProps) => {
 
     const handlePlotQuery = () => {
         if (isFetching) return;
+        if (stateHash) return;
+        setHashFromStore();
         setResultError(false);
         setPlotQuery();
         const leagueValid = checkGraphQueryLeageInput();
@@ -54,6 +57,7 @@ const QueryButtons = (props: FlexProps) => {
             // state is updated.
             setTimeout(() => {
                 useGraphInputStore.getState().queryClicked = false;
+                useGraphInputStore.getState().stateHash = undefined;
             }, 20);
         }
     };
