@@ -1,7 +1,10 @@
 import { PlotQuery } from "../../client";
 import { useErrorStore } from "../../store/ErrorStore";
 import { useGraphInputStore } from "../../store/GraphInputStore";
-import { BaseSpecState } from "../../store/StateInterface";
+import {
+    BaseSpecState,
+    WantedModifierExtended,
+} from "../../store/StateInterface";
 
 function formatDateToLocal(date: string): string {
     // Parse the UTC date string
@@ -126,14 +129,32 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
         league: state.league,
         itemSpecifications: itemSpec,
         baseSpecifications: baseSpec,
-        wantedModifiers: useGraphInputStore
-            .getState()
-            .wantedModifierExtended.filter(
-                (wantedModifier) => wantedModifier.isSelected
-            )
-            .map((wantedModifier) => ({
-                modifierId: wantedModifier.modifierId,
-                modifierLimitations: wantedModifier.modifierLimitations,
-            })),
+        wantedModifiers: state.wantedModifierExtended
+            .filter((wantedModifier) => wantedModifier.isSelected)
+            .reduce((prev, cur, index) => {
+                // Very over complicated way to group modifier ids
+                const prevLength = prev.length;
+                if (prevLength === 0) {
+                    return [[cur]];
+                }
+                const wantedModifierIndex = cur.index;
+                const prevWantedModifierIndex =
+                    state.wantedModifierExtended[index - 1].index;
+
+                if (wantedModifierIndex === prevWantedModifierIndex) {
+                    return [
+                        ...prev.slice(0, prevLength - 1),
+                        [...prev[prevLength - 1], cur],
+                    ];
+                }
+                return [...prev, [cur]];
+            }, [] as WantedModifierExtended[][])
+            .map((groupedWantedModifierExtended) =>
+                groupedWantedModifierExtended.map((wantedModifierExtended) => ({
+                    modifierId: wantedModifierExtended.modifierId,
+                    modifierLimitations:
+                        wantedModifierExtended.modifierLimitations,
+                }))
+            ),
     };
 };

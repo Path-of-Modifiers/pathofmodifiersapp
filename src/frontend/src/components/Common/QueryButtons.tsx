@@ -49,6 +49,7 @@ const QueryButtons = (props: FlexProps) => {
         setHashFromStore();
         setResultError(false);
         const plotQuery = getOptimizedPlotQuery();
+        console.log(plotQuery);
         if (plotQuery === undefined) return;
         setPlotQuery(plotQuery);
         const leagueValid = checkGraphQueryLeageInput();
