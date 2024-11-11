@@ -5003,6 +5003,18 @@
               }
             ],
             "title": "Foilvariation"
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
           }
         },
         "type": "object",
@@ -5102,6 +5114,18 @@
               }
             ],
             "title": "Roll"
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
           }
         },
         "type": "object",
@@ -6305,10 +6329,35 @@
           },
           "wantedModifiers": {
             "items": {
-              "$ref": "#/components/schemas/WantedModifier"
+              "items": {
+                "$ref": "#/components/schemas/WantedModifier"
+              },
+              "type": "array"
             },
             "type": "array",
             "title": "Wantedmodifiers"
+          },
+          "before": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Before"
+          },
+          "after": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "After"
           }
         },
         "type": "object",
