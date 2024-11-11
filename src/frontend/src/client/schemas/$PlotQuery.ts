@@ -34,5 +34,21 @@ export const $PlotQuery = {
             },
             isRequired: true,
         },
+        before: {
+            type: 'any-of',
+            contains: [{
+                type: 'number',
+            }, {
+                type: 'null',
+            }],
+        },
+        after: {
+            type: 'any-of',
+            contains: [{
+                type: 'number',
+            }, {
+                type: 'null',
+            }],
+        },
     },
 } as const;
