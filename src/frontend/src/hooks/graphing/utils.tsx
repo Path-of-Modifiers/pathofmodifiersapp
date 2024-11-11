@@ -1,4 +1,4 @@
-import { PlotQuery } from "../../client";
+import { PlotQuery, WantedModifier } from "../../client";
 import { useErrorStore } from "../../store/ErrorStore";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 import {
@@ -42,9 +42,8 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
     const itemName = state.itemName;
     let itemSpec = state.itemSpec;
     let baseSpec = state.baseSpec;
-    let possibleUniques = useGraphInputStore
-        .getState()
-        .wantedModifierExtended.reduce((prev, cur, index) => {
+    let possibleUniques = state.wantedModifierExtended.reduce(
+        (prev, cur, index) => {
             if (cur.relatedUniques === undefined || !cur.isSelected) {
                 return prev;
             }
@@ -56,7 +55,9 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
             return prev.filter((prevCandidate) =>
                 newUniqueCandidates.includes(prevCandidate)
             );
-        }, [] as string[]);
+        },
+        [] as string[]
+    );
     if (possibleUniques.length === 0) {
         useErrorStore.getState().setNoRelatedUniqueError(true);
         return;
@@ -78,9 +79,8 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
     }
     // Only applicable if rarity is unique and base spec is not already
     // chosen
-    const possibleBaseSpecs = useGraphInputStore
-        .getState()
-        .choosableItemBaseType.reduce((prev, cur) => {
+    const possibleBaseSpecs = state.choosableItemBaseType.reduce(
+        (prev, cur) => {
             if (cur.relatedUniques == null) {
                 return prev;
             }
@@ -110,7 +110,9 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
                 }
             }
             return prev;
-        }, [] as BaseSpecState[]);
+        },
+        [] as BaseSpecState[]
+    );
 
     if (possibleBaseSpecs.length === 0) {
         useErrorStore.getState().setBaseSpecDoesNotMatchError(true);
@@ -125,36 +127,37 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
     }
 
     itemSpec = { ...itemSpec, name: possibleUniques.join("|") };
+    const wantedModifier: WantedModifier[][] = state.wantedModifierExtended
+        .filter((wantedModifier) => wantedModifier.isSelected)
+        .reduce((prev, cur, index) => {
+            // Very over complicated way to group modifier ids
+            const prevLength = prev.length;
+            if (prevLength === 0) {
+                return [[cur]];
+            }
+            const wantedModifierIndex = cur.index;
+            const prevWantedModifierIndex =
+                state.wantedModifierExtended[index - 1].index;
+
+            if (wantedModifierIndex === prevWantedModifierIndex) {
+                return [
+                    ...prev.slice(0, prevLength - 1),
+                    [...prev[prevLength - 1], cur],
+                ];
+            }
+            return [...prev, [cur]];
+        }, [] as WantedModifierExtended[][])
+        .map((groupedWantedModifierExtended) =>
+            groupedWantedModifierExtended.map((wantedModifierExtended) => ({
+                modifierId: wantedModifierExtended.modifierId,
+                modifierLimitations: wantedModifierExtended.modifierLimitations,
+            }))
+        );
+
     return {
         league: state.league,
         itemSpecifications: itemSpec,
         baseSpecifications: baseSpec,
-        wantedModifiers: state.wantedModifierExtended
-            .filter((wantedModifier) => wantedModifier.isSelected)
-            .reduce((prev, cur, index) => {
-                // Very over complicated way to group modifier ids
-                const prevLength = prev.length;
-                if (prevLength === 0) {
-                    return [[cur]];
-                }
-                const wantedModifierIndex = cur.index;
-                const prevWantedModifierIndex =
-                    state.wantedModifierExtended[index - 1].index;
-
-                if (wantedModifierIndex === prevWantedModifierIndex) {
-                    return [
-                        ...prev.slice(0, prevLength - 1),
-                        [...prev[prevLength - 1], cur],
-                    ];
-                }
-                return [...prev, [cur]];
-            }, [] as WantedModifierExtended[][])
-            .map((groupedWantedModifierExtended) =>
-                groupedWantedModifierExtended.map((wantedModifierExtended) => ({
-                    modifierId: wantedModifierExtended.modifierId,
-                    modifierLimitations:
-                        wantedModifierExtended.modifierLimitations,
-                }))
-            ),
+        wantedModifiers: wantedModifier,
     };
 };

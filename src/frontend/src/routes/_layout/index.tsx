@@ -9,11 +9,13 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/_layout/")({
     beforeLoad: async () => {
         const searchParams = new URLSearchParams(location.hash.slice(1));
+        const state = useGraphInputStore.getState();
         if (searchParams.size > 0) {
-            useGraphInputStore.getState().getStoreFromHash(searchParams);
+            state.getStoreFromHash(searchParams);
         } else {
             // This happens when being redirected from login
-            useGraphInputStore.getState().setHashFromStore();
+            state.setHashFromStore();
+            state.stateHash = undefined;
         }
     },
     component: Index,

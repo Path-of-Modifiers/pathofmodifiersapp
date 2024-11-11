@@ -71,6 +71,22 @@ export const ModifierInput = () => {
                 if (prevSelectedModifier === undefined) {
                     return selectedModifiers;
                 }
+                if (selectedModifiers.length === 0) {
+                    return [
+                        {
+                            ...prevSelectedModifier,
+                            isSelected: wantedModifier.isSelected,
+                            index: wantedModifier.index,
+                        },
+                    ];
+                }
+
+                if (
+                    selectedModifiers[selectedModifiers.length - 1].index ===
+                    wantedModifier.index
+                ) {
+                    return selectedModifiers;
+                }
 
                 return [
                     ...selectedModifiers,
@@ -93,6 +109,7 @@ export const ModifierInput = () => {
     // const ref = useOutsideClick(() => {
     //     const store = useGraphInputStore.getState();
     //     console.log("STORE", store);
+    //     console.log(selectedModifiers);
     //     // console.log("query ->", store.wantedModifierExtended);
     // });
 
