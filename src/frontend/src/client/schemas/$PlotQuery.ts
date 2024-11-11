@@ -27,7 +27,10 @@ export const $PlotQuery = {
         wantedModifiers: {
             type: 'array',
             contains: {
-                type: 'WantedModifier',
+                type: 'array',
+                contains: {
+                    type: 'WantedModifier',
+                },
             },
             isRequired: true,
         },

@@ -31,5 +31,6 @@ export type ItemCreate = {
     prefixes?: (number | null);
     suffixes?: (number | null);
     foilVariation?: (number | null);
+    createdAt?: (string | null);
 };
 

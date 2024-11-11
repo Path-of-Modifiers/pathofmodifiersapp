@@ -9,6 +9,6 @@ export type PlotQuery = {
     league: string;
     itemSpecifications?: (ItemSpecs | null);
     baseSpecifications?: (BaseSpecs | null);
-    wantedModifiers: Array<WantedModifier>;
+    wantedModifiers: Array<Array<WantedModifier>>;
 };
 
