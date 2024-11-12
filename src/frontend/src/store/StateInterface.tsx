@@ -40,6 +40,7 @@ export interface ItemSpecState {
 
 export interface BaseSpecState {
     itemBaseTypeId?: number | null;
+    baseType?: string | null;
     category?: string | null;
     subCategory?: string | null;
 }
@@ -145,7 +146,7 @@ export interface GraphInputState {
     setItemSubCategory: (subCategory: string | undefined) => void;
 
     setWantedModifierExtended: (
-        wantedModifierExtended: WantedModifierExtended[]
+        wantedModifierExtended: WantedModifierExtended[],
     ) => void;
     addWantedModifierExtended: (
         wantedModifier: WantedModifier,

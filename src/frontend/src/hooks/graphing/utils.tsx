@@ -51,7 +51,7 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
                 return newUniqueCandidates;
             }
             return prev.filter((prevCandidate) =>
-                newUniqueCandidates.includes(prevCandidate)
+                newUniqueCandidates.includes(prevCandidate),
             );
         }, [] as string[]);
     if (possibleUniques.length === 0) {
@@ -62,14 +62,10 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
     }
     if (itemName != null) {
         if (!possibleUniques.includes(itemName)) {
-            useErrorStore
-                .getState()
-                .setItemDoesNotHaveSelectedModifiersError(true);
+            useErrorStore.getState().setItemDoesNotHaveSelectedModifiersError(true);
             return;
         } else {
-            useErrorStore
-                .getState()
-                .setItemDoesNotHaveSelectedModifiersError(false);
+            useErrorStore.getState().setItemDoesNotHaveSelectedModifiersError(false);
         }
         possibleUniques = [itemName];
     }
@@ -82,19 +78,12 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
                 return prev;
             }
             const relatedUniques = cur.relatedUniques.split("|");
-            if (
-                possibleUniques.some((unique) =>
-                    relatedUniques.includes(unique)
-                )
-            ) {
+            if (possibleUniques.some((unique) => relatedUniques.includes(unique))) {
                 if (
                     !baseSpec ||
-                    ((!baseSpec.baseType ||
-                        baseSpec.baseType === cur.baseType) &&
-                        (!baseSpec.category ||
-                            baseSpec.category === cur.category) &&
-                        (!baseSpec.subCategory ||
-                            baseSpec.subCategory === cur.subCategory))
+                    ((!baseSpec.baseType || baseSpec.baseType === cur.baseType) &&
+                        (!baseSpec.category || baseSpec.category === cur.category) &&
+                        (!baseSpec.subCategory || baseSpec.subCategory === cur.subCategory))
                 ) {
                     return [
                         ...prev,
@@ -129,7 +118,7 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
         wantedModifiers: useGraphInputStore
             .getState()
             .wantedModifierExtended.filter(
-                (wantedModifier) => wantedModifier.isSelected
+                (wantedModifier) => wantedModifier.isSelected,
             )
             .map((wantedModifier) => ({
                 modifierId: wantedModifier.modifierId,
