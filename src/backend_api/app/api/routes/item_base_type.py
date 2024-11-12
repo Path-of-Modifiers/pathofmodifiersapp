@@ -27,7 +27,7 @@ item_base_type_prefix = "itemBaseType"
 
 
 @router.get(
-    "/{baseType}",
+    "/{itemBaseTypeId}",
     response_model=schemas.ItemBaseType,
     dependencies=[Depends(get_current_active_user)],
 )
@@ -40,16 +40,16 @@ item_base_type_prefix = "itemBaseType"
 async def get_item_base_type(
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
-    baseType: str,
+    itemBaseTypeId: str,
     db: Session = Depends(get_db),
 ):
     """
-    Get item base type by key and value for "baseType".
+    Get item base type by key and value for "itemBaseTypeId".
 
     Always returns one item base type.
     """
 
-    item_base_type_map = {"baseType": baseType}
+    item_base_type_map = {"itemBaseTypeId": itemBaseTypeId}
     itemBaseType = await CRUD_itemBaseType.get(db=db, filter=item_base_type_map)
 
     return itemBaseType
@@ -107,28 +107,29 @@ async def create_item_base_type(
         db=db,
         obj_in=itemBaseType,
         on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing,
+        on_conflict_constraint=f"{ItemBaseType.__tablename__}_baseType_key",  # REF:"item_base_type_baseType_key" UNIQUE CONSTRAINT, btree ("baseType")
         return_nothing=return_nothing,
     )
 
 
 @router.put(
-    "/{baseType}",
+    "/{itemBaseTypeId}",
     response_model=schemas.ItemBaseType,
     dependencies=[
         Depends(get_current_active_superuser),
     ],
 )
 async def update_item_base_type(
-    baseType: str,
+    itemBaseTypeId: int,
     item_base_type_update: schemas.ItemBaseTypeUpdate,
     db: Session = Depends(get_db),
 ):
     """
-    Update an item base type by key and value for "baseType".
+    Update an item base type by key and value for "itemBaseTypeId".
 
     Returns the updated item base type.
     """
-    item_base_type_map = {"baseType": baseType}
+    item_base_type_map = {"itemBaseTypeId": itemBaseTypeId}
     itemBaseType = await CRUD_itemBaseType.get(
         db=db,
         filter=item_base_type_map,
@@ -140,22 +141,22 @@ async def update_item_base_type(
 
 
 @router.delete(
-    "/{baseType}",
+    "/{itemBaseTypeId}",
     response_model=str,
     dependencies=[Depends(get_current_active_superuser)],
 )
 async def delete_item_base_type(
-    baseType: str,
+    itemBaseTypeId: int,
     db: Session = Depends(get_db),
 ):
     """
-    Delete an item base type by key and value for "baseType".
+    Delete an item base type by key and value for "itemBaseTypeId".
 
     Returns a message that the item base type was deleted successfully.
     Always deletes one item base type.
     """
 
-    item_base_type_map = {"baseType": baseType}
+    item_base_type_map = {"itemBaseTypeId": itemBaseTypeId}
     await CRUD_itemBaseType.remove(
         db=db,
         filter=item_base_type_map,
