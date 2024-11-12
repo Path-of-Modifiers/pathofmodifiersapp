@@ -45,15 +45,12 @@ async def create_random_item_modifier_dict(
     itemId = item.itemId
     modifier_dict, modifier = await generate_random_modifier(db)
     modifierId = modifier.modifierId
-    orderId = random_int(small_int=True)
-    position = modifier.position
 
     item_modifier_dict = {
         "itemId": itemId,
         "modifierId": modifierId,
-        "orderId": orderId,
-        "position": position,
         "roll": roll_value,
+        "createdHoursSinceLaunch": random_int(small_int=True),
     }
     if not retrieve_dependencies:
         return item_modifier_dict

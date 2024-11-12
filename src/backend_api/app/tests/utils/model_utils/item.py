@@ -11,7 +11,6 @@ from app.tests.utils.utils import (
     random_int,
     random_json,
     random_lower_string,
-    random_url,
 )
 
 
@@ -55,16 +54,18 @@ async def create_random_item_dict(
     prefixes = random_int(small_int=True)
     suffixes = random_int(small_int=True)
     foilVariation = random_int(small_int=True)
+    createdHoursSinceLaunch = random_int(small_int=True)
 
     item_base_type_dict, item_base_type = await generate_random_item_base_type(db)
-    baseType = item_base_type.baseType
+    itemBaseTypeId = item_base_type.itemBaseTypeId
     currency_dict, currency = await generate_random_currency(db)
     currencyId = currency.currencyId
 
     item = {
         "name": name,
         "league": league,
-        "baseType": baseType,
+        "itemBaseTypeId": itemBaseTypeId,
+        "createdHoursSinceLaunch": createdHoursSinceLaunch,
         "typeLine": typeLine,
         "ilvl": ilvl,
         "rarity": rarity,

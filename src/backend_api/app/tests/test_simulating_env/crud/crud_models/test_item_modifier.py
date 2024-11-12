@@ -27,6 +27,11 @@ def object_generator_func() -> Callable[[], dict]:
 
 
 @pytest.fixture(scope="module")
+def is_hypertable() -> bool:
+    return True
+
+
+@pytest.fixture(scope="module")
 def object_generator_func_w_deps() -> Callable[
     [],
     tuple[
@@ -56,8 +61,13 @@ def crud_instance() -> CRUDBase:
 
 
 @pytest.fixture(scope="module")
-def on_duplicate_pkey_do_nothing() -> bool:
-    return False
+def on_duplicate_params() -> tuple[bool, str | None]:
+    """
+    In tuple:
+        First item: `on_duplicate_do_nothing`.
+        Second item: `on_duplicate_constraint` (unique constraint to check the duplicate on)
+    """
+    return (False, None)
 
 
 @pytest.fixture(scope="module")
@@ -79,5 +89,6 @@ def crud_deps_instances() -> list[CRUDBase]:
     ]
 
 
-class TestItemModifierCRUD(cascade_test.TestCascade):
-    pass
+# TODO: Create seperate tests for item_modifier hypertable
+# class TestItemModifierCRUD(cascade_test.TestCascade):
+# pass

@@ -13,14 +13,10 @@ from app.api.routes import (
     item_base_type_prefix,
     item_prefix,
 )
-from app.api.routes.item import get_item
 from app.core.config import settings
 from app.core.models.models import Currency, Item, ItemBaseType
 from app.crud import CRUD_item
 from app.crud.base import CRUDBase, ModelType
-from app.tests.test_simulating_env.api.api_routes_test_slowapi_rate_limit import (
-    TestRateLimitSlowAPI as RateLimitSlowAPITestClass,
-)
 from app.tests.test_simulating_env.crud.cascade_tests import (
     TestCascade as UtilTestCascadeCRUD,
 )
@@ -28,10 +24,6 @@ from app.tests.test_simulating_env.crud.crud_test_base import TestCRUD as UtilTe
 from app.tests.utils.model_utils.item import (
     create_random_item_dict,
     generate_random_item,
-)
-from app.tests.utils.rate_limit import (
-    RateLimitPerTimeInterval,
-    get_function_decorator_rate_limit_per_time_interval,
 )
 from app.tests.utils.utils import get_model_table_name, get_model_unique_identifier
 
@@ -42,13 +34,23 @@ def route_prefix() -> str:
 
 
 @pytest.fixture(scope="module")
+def is_hypertable() -> bool:
+    return True
+
+
+@pytest.fixture(scope="module")
 def crud_instance() -> CRUDBase:
     return CRUD_item
 
 
 @pytest.fixture(scope="module")
-def on_duplicate_pkey_do_nothing() -> bool:
-    return False
+def on_duplicate_params() -> tuple[bool, str | None]:
+    """
+    In tuple:
+        First item: `on_duplicate_do_nothing`.
+        Second item: `on_duplicate_constraint` (unique constraint to check the duplicate on)
+    """
+    return (False, None)
 
 
 @pytest.fixture(scope="module")
@@ -181,19 +183,10 @@ async def get_object_from_api_normal_user(
     return _get_object
 
 
-@pytest.fixture
-def get_request_all_rate_limits_per_interval() -> list[RateLimitPerTimeInterval]:
-    return get_function_decorator_rate_limit_per_time_interval(get_item)
-
-
 @pytest.fixture(scope="module")
 def update_request_params_deps() -> list[str]:
     return []
 
 
 class TestItem(test_cascade_api.TestCascadeAPI):
-    pass
-
-
-class TestItemRateLimit(RateLimitSlowAPITestClass):
     pass

@@ -110,7 +110,7 @@ class TestUserAPI(BaseTest):
         ):
             email = random_email()
             password = random_lower_string()
-            username = random_lower_string()
+            username = random_lower_string(small_string=True)
             data = {"email": email, "password": password, "username": username}
             r = await async_client.post(
                 f"{settings.API_V1_STR}/{user_prefix}/",
@@ -133,7 +133,7 @@ class TestUserAPI(BaseTest):
     ) -> None:
         email = random_email()
         password = random_lower_string()
-        username = random_lower_string()
+        username = random_lower_string(small_string=True)
         user_in = UserCreate(email=email, password=password, username=username)
         user = CRUD_user.create(db=db, user_create=user_in)
         user_id = user.userId
@@ -154,7 +154,7 @@ class TestUserAPI(BaseTest):
     ) -> None:
         email = random_email()
         password = random_lower_string()
-        username = random_lower_string()
+        username = random_lower_string(small_string=True)
         user_in = UserCreate(email=email, password=password, username=username)
         user = CRUD_user.create(db=db, user_create=user_in)
         user_id = user.userId
@@ -192,7 +192,7 @@ class TestUserAPI(BaseTest):
         # Create a user
         email = random_email()
         password = random_lower_string()
-        username = random_lower_string()
+        username = random_lower_string(small_string=True)
         user_in = UserCreate(email=email, password=password, username=username)
         user = CRUD_user.create(db=db, user_create=user_in)
         user_id = user.userId
@@ -219,7 +219,7 @@ class TestUserAPI(BaseTest):
     ) -> None:
         email = random_email()
         password = random_lower_string()
-        username = random_lower_string()
+        username = random_lower_string(small_string=True)
         user_in = UserCreate(email=email, password=password, username=username)
         CRUD_user.create(db=db, user_create=user_in)
         data = {"email": email, "password": password, "username": username}
@@ -241,7 +241,7 @@ class TestUserAPI(BaseTest):
     ) -> None:
         email = random_email()
         password = random_lower_string()
-        username = random_lower_string()
+        username = random_lower_string(small_string=True)
         user_in = UserCreate(email=email, password=password, username=username)
         CRUD_user.create(db=db, user_create=user_in)
         data = {"email": random_email(), "password": password, "username": username}
@@ -260,7 +260,7 @@ class TestUserAPI(BaseTest):
     ) -> None:
         email = random_email()
         password = random_lower_string()
-        username = random_lower_string()
+        username = random_lower_string(small_string=True)
         data = {"email": email, "password": password, "username": username}
         r = await async_client.post(
             f"{settings.API_V1_STR}/{user_prefix}/",
@@ -278,13 +278,13 @@ class TestUserAPI(BaseTest):
     ) -> None:
         email = random_email()
         password = random_lower_string()
-        username = random_lower_string()
+        username = random_lower_string(small_string=True)
         user_in = UserCreate(email=email, password=password, username=username)
         CRUD_user.create(db=db, user_create=user_in)
 
         email2 = random_email()
         password2 = random_lower_string()
-        username2 = random_lower_string()
+        username2 = random_lower_string(small_string=True)
         user_in2 = UserCreate(email=email2, password=password2, username=username2)
         CRUD_user.create(db=db, user_create=user_in2)
 
@@ -363,7 +363,7 @@ class TestUserAPI(BaseTest):
         normal_user = await self._get_current_normal_user(
             async_client, normal_user_token_headers, db
         )
-        update_username = random_lower_string()
+        update_username = random_lower_string(small_string=True)
         update_data = {"username": update_username}
         assert normal_user.username != update_data["username"]
 
@@ -467,7 +467,7 @@ class TestUserAPI(BaseTest):
     ) -> None:
         email = random_email()
         password = random_lower_string()
-        username = random_lower_string()
+        username = random_lower_string(small_string=True)
         user_in = UserCreate(email=email, password=password, username=username)
         user = CRUD_user.create(db=db, user_create=user_in)
 
@@ -497,7 +497,7 @@ class TestUserAPI(BaseTest):
     ) -> None:
         email = random_email()
         password = random_lower_string()
-        username = random_lower_string()
+        username = random_lower_string(small_string=True)
         user_in = UserCreate(email=email, password=password, username=username)
         user = CRUD_user.create(db=db, user_create=user_in)
 
@@ -550,7 +550,7 @@ class TestUserAPI(BaseTest):
     ) -> None:
         email = random_email()
         password = random_lower_string()
-        username = random_lower_string()
+        username = random_lower_string(small_string=True)
         data = {"email": email, "password": password, "username": username}
         r_pre_confirm = await async_client.post(
             f"{settings.API_V1_STR}/{user_prefix}/signup-send-confirmation",
@@ -593,7 +593,7 @@ class TestUserAPI(BaseTest):
         self, async_client: AsyncClient
     ) -> None:
         password = random_lower_string()
-        username = random_lower_string()
+        username = random_lower_string(small_string=True)
         data = {
             "email": settings.FIRST_SUPERUSER,
             "password": password,
@@ -649,7 +649,7 @@ class TestUserAPI(BaseTest):
     ) -> None:
         email = random_email()
         password = random_lower_string()
-        username = random_lower_string()
+        username = random_lower_string(small_string=True)
         data = {"email": email, "password": password, "username": username}
         r_pre_confirm = await async_client.post(
             f"{settings.API_V1_STR}/{user_prefix}/signup-send-confirmation",
@@ -699,10 +699,10 @@ class TestUserAPI(BaseTest):
     ) -> None:
         email = random_email()
         password = random_lower_string()
-        username = random_lower_string()
+        username = random_lower_string(small_string=True)
         user_in = UserCreate(email=email, password=password, username=username)
         user = CRUD_user.create(db=db, user_create=user_in)
-        updated_username = random_lower_string()
+        updated_username = random_lower_string(small_string=True)
 
         data = {"username": updated_username}
         r = await async_client.patch(
@@ -751,13 +751,13 @@ class TestUserAPI(BaseTest):
     ) -> None:
         email = random_email()
         password = random_lower_string()
-        username = random_lower_string()
+        username = random_lower_string(small_string=True)
         user_in = UserCreate(email=email, password=password, username=username)
         user = CRUD_user.create(db=db, user_create=user_in)
 
         email2 = random_email()
         password2 = random_lower_string()
-        username2 = random_lower_string()
+        username2 = random_lower_string(small_string=True)
         user_in2 = UserCreate(email=email2, password=password2, username=username2)
         user2 = CRUD_user.create(db=db, user_create=user_in2)
 
@@ -782,7 +782,7 @@ class TestUserAPI(BaseTest):
     async def test_delete_user_me(self, async_client: AsyncClient, db: Session) -> None:
         email = random_email()
         password = random_lower_string()
-        username = random_lower_string()
+        username = random_lower_string(small_string=True)
         user_in = UserCreate(email=email, password=password, username=username)
         user = CRUD_user.create(db=db, user_create=user_in)
         user_id = user.userId
@@ -902,7 +902,7 @@ class TestUserAPI(BaseTest):
     ) -> None:
         email = random_email()
         password = random_lower_string()
-        username = random_lower_string()
+        username = random_lower_string(small_string=True)
         user_in = UserCreate(email=email, password=password, username=username)
         user = CRUD_user.create(db=db, user_create=user_in)
         user_id = user.userId
@@ -971,7 +971,7 @@ class TestUserAPI(BaseTest):
     ) -> None:
         email = random_email()
         password = random_lower_string()
-        username = random_lower_string()
+        username = random_lower_string(small_string=True)
         user_in = UserCreate(
             email=email, password=password, username=username, isActive=True
         )
@@ -1002,7 +1002,7 @@ class TestUserAPI(BaseTest):
     ) -> None:
         email = random_email()
         password = random_lower_string()
-        username = random_lower_string()
+        username = random_lower_string(small_string=True)
         data = {"email": email, "password": password, "username": username}
         r = await async_client.post(
             f"{settings.API_V1_STR}/{user_prefix}/signup-send-confirmation",
@@ -1039,9 +1039,7 @@ class TestUserAPI(BaseTest):
 
         # Test login with expired token
         await get_cache.flushall()
-        with (
-            patch("app.core.config.settings.ACCESS_SESSION_EXPIRE_SECONDS", 1),
-        ):
+        with (patch("app.core.config.settings.ACCESS_SESSION_EXPIRE_SECONDS", 1),):
             login_data = {
                 "email": email,
                 "password": password,
@@ -1074,7 +1072,7 @@ class TestUserAPI(BaseTest):
     ) -> None:
         email = random_email()
         password = random_lower_string()
-        username = random_lower_string()
+        username = random_lower_string(small_string=True)
         user_create = UserCreate(
             email=email, password=password, username=username, isActive=True
         )
@@ -1107,7 +1105,7 @@ class TestUserAPI(BaseTest):
     ) -> None:
         email = random_email()
         password = random_lower_string()
-        username = random_lower_string()
+        username = random_lower_string(small_string=True)
         user_create = UserCreate(
             email=email, password=password, username=username, rateLimitTier=0
         )
@@ -1174,7 +1172,7 @@ class TestUserRateLimitAPI(TestRateLimitBase):
         def create_register_user_object() -> dict[str, str]:
             email = random_email()
             password = random_lower_string()
-            username = random_lower_string()
+            username = random_lower_string(small_string=True)
             return {
                 "email": email,
                 "password": password,

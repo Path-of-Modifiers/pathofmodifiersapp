@@ -10,7 +10,7 @@ import app.tests.test_simulating_env.api.api_routes_test_base as test_api
 from app.api.routes import item_base_type_prefix
 from app.api.routes.item_base_type import get_item_base_type
 from app.core.config import settings
-from app.core.models.models import ItemBaseType
+from app.core.models.models import ItemBaseType as model_ItemBaseType
 from app.crud import CRUD_itemBaseType
 from app.crud.base import CRUDBase, ModelType
 from app.tests.test_simulating_env.api.api_routes_test_slowapi_rate_limit import (
@@ -34,18 +34,28 @@ def route_prefix() -> str:
 
 
 @pytest.fixture(scope="module")
+def is_hypertable() -> bool:
+    return False
+
+
+@pytest.fixture(scope="module")
 def crud_instance() -> CRUDBase:
     return CRUD_itemBaseType
 
 
 @pytest.fixture(scope="module")
-def on_duplicate_pkey_do_nothing() -> bool:
-    return True
+def on_duplicate_params() -> tuple[bool, str | None]:
+    """
+    In tuple:
+        First item: `on_duplicate_do_nothing`.
+        Second item: `on_duplicate_constraint` (unique constraint to check the duplicate on)
+    """
+    return (True, f"{model_ItemBaseType.__tablename__}_baseType_key")
 
 
 @pytest.fixture(scope="module")
 def model_table_name() -> str:
-    return get_model_table_name(ItemBaseType)
+    return get_model_table_name(model_ItemBaseType)
 
 
 @pytest.fixture(scope="module")
@@ -68,7 +78,7 @@ def ignore_test_columns() -> list[str]:
     Returns:
         List[str]: List of columns to ignore
     """
-    return ["updatedAt", "createdAt"]
+    return ["itemBaseTypeId"]
 
 
 @pytest.fixture(scope="module")
@@ -79,7 +89,7 @@ def get_crud_test_model() -> UtilTestCRUD:
 
 @pytest.fixture(scope="module")
 def unique_identifier() -> str:
-    unique_identifier = get_model_unique_identifier(ItemBaseType)
+    unique_identifier = get_model_unique_identifier(model_ItemBaseType)
     return unique_identifier
 
 

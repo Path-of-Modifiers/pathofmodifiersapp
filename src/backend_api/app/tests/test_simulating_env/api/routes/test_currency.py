@@ -37,13 +37,23 @@ def route_prefix() -> str:
 
 
 @pytest.fixture(scope="module")
+def is_hypertable() -> bool:
+    return False
+
+
+@pytest.fixture(scope="module")
 def crud_instance() -> CRUDBase:
     return CRUD_currency
 
 
 @pytest.fixture(scope="module")
-def on_duplicate_pkey_do_nothing() -> bool:
-    return False
+def on_duplicate_params() -> tuple[bool, str | None]:
+    """
+    In tuple:
+        First item: `on_duplicate_do_nothing`.
+        Second item: `on_duplicate_constraint` (unique constraint to check the duplicate on)
+    """
+    return (False, None)
 
 
 @pytest.fixture(scope="module")
@@ -71,7 +81,7 @@ def ignore_test_columns() -> list[str]:
     Returns:
         List[str]: List of columns to ignore
     """
-    return ["currencyId", "createdAt"]
+    return ["currencyId", "createdHoursSinceLaunch"]
 
 
 @pytest.fixture(scope="module")

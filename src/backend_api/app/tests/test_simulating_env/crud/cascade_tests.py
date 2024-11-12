@@ -24,6 +24,7 @@ class TestCascade(TestCRUD):
         object_generator_func_w_deps: Callable[
             [], tuple[dict, ModelType, list[dict | ModelType]]
         ],
+        is_hypertable: bool,
     ) -> None:
         """
         A test function.
@@ -35,6 +36,9 @@ class TestCascade(TestCRUD):
         5. Deletes a dependency
         6. Checks if a query for the dependent results in a specified HTTPException
         """
+        if is_hypertable:
+            pytest.skip("Hypertables doesn't support delete cascade operations")
+
         _, obj, deps = await self._create_object_cascade_crud(
             db, object_generator_func_w_deps, retrieve_dependencies=True
         )
@@ -83,6 +87,7 @@ class TestCascade(TestCRUD):
         object_generator_func_w_deps: Callable[
             [], tuple[dict, ModelType, list[dict | ModelType]]
         ],
+        is_hypertable: bool,
     ) -> None:
         """
         A test function.
@@ -94,6 +99,9 @@ class TestCascade(TestCRUD):
         5. Updates a dependency
         6. Checks if the update affects the dependent
         """
+        if is_hypertable:
+            pytest.skip("Hypertables doesn't support update cascade operations")
+
         _, obj, deps = await self._create_object_cascade_crud(
             db, object_generator_func_w_deps, retrieve_dependencies=True
         )

@@ -26,6 +26,7 @@ class TestCascadeAPI(TestAPI):
         ignore_test_columns: list[str],
         superuser_token_headers: dict[str, str],
         api_deps_instances: list[list[str]],
+        is_hypertable: bool,
     ) -> None:
         """Test cascade delete function for the API.
 
@@ -51,6 +52,9 @@ class TestCascadeAPI(TestAPI):
             superuser_token_headers: (dict[str, str]): Superuser headers
             api_deps_instances (List[List[str]]): API dependencies instances
         """
+        if is_hypertable:
+            pytest.skip("Hypertables doesn't support delete cascade operations")
+
         _, object_out, deps = await self._create_object_cascade_crud(
             db,
             object_generator_func_w_deps,
@@ -135,6 +139,7 @@ class TestCascadeAPI(TestAPI):
         ignore_test_columns: list[str],
         superuser_token_headers: dict[str, str],
         api_deps_instances: list[list[str]],
+        is_hypertable: bool,
     ) -> None:
         """Test cascade update function for the API.
 
@@ -163,6 +168,10 @@ class TestCascadeAPI(TestAPI):
             superuser_token_headers: (dict[str, str]): Superuser headers
             api_deps_instances (List[List[str]]): API dependencies instances
         """
+
+        if is_hypertable:
+            pytest.skip("Hypertables doesn't support update cascade operations")
+
         _, object_out, deps = await self._create_object_cascade_crud(
             db,
             object_generator_func_w_deps,
