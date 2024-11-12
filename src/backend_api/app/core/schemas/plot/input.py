@@ -22,7 +22,7 @@ class ItemSpecs(_pydantic.BaseModel):
 
 
 class BaseSpecs(_pydantic.BaseModel):
-    baseType: str | None = None
+    itemBaseTypeId: int | None = None
     category: str | None = None
     subCategory: str | None = None
 
