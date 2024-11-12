@@ -393,13 +393,13 @@
         ]
       }
     },
-    "/api/api_v1/itemBaseType/{baseType}": {
+    "/api/api_v1/itemBaseType/{itemBaseTypeId}": {
       "get": {
         "tags": [
           "itemBaseTypes"
         ],
         "summary": "Get Item Base Type",
-        "description": "Get item base type by key and value for \"baseType\".\n\nAlways returns one item base type.",
+        "description": "Get item base type by key and value for \"itemBaseTypeId\".\n\nAlways returns one item base type.",
         "operationId": "get_item_base_type",
         "security": [
           {
@@ -408,12 +408,12 @@
         ],
         "parameters": [
           {
-            "name": "baseType",
+            "name": "itemBaseTypeId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
-              "title": "Basetype"
+              "title": "Itembasetypeid"
             }
           }
         ],
@@ -445,7 +445,7 @@
           "itemBaseTypes"
         ],
         "summary": "Update Item Base Type",
-        "description": "Update an item base type by key and value for \"baseType\".\n\nReturns the updated item base type.",
+        "description": "Update an item base type by key and value for \"itemBaseTypeId\".\n\nReturns the updated item base type.",
         "operationId": "update_item_base_type",
         "security": [
           {
@@ -454,12 +454,12 @@
         ],
         "parameters": [
           {
-            "name": "baseType",
+            "name": "itemBaseTypeId",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "title": "Basetype"
+              "type": "integer",
+              "title": "Itembasetypeid"
             }
           }
         ],
@@ -501,7 +501,7 @@
           "itemBaseTypes"
         ],
         "summary": "Delete Item Base Type",
-        "description": "Delete an item base type by key and value for \"baseType\".\n\nReturns a message that the item base type was deleted successfully.\nAlways deletes one item base type.",
+        "description": "Delete an item base type by key and value for \"itemBaseTypeId\".\n\nReturns a message that the item base type was deleted successfully.\nAlways deletes one item base type.",
         "operationId": "delete_item_base_type",
         "security": [
           {
@@ -510,12 +510,12 @@
         ],
         "parameters": [
           {
-            "name": "baseType",
+            "name": "itemBaseTypeId",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "title": "Basetype"
+              "type": "integer",
+              "title": "Itembasetypeid"
             }
           }
         ],
@@ -768,180 +768,6 @@
         }
       }
     },
-    "/api/api_v1/itemModifier/{itemId}": {
-      "get": {
-        "tags": [
-          "itemModifiers"
-        ],
-        "summary": "Get Item Modifier",
-        "description": "Get item modifier or list of item modifiers by key and\nvalue for optional \"itemId\", optional \"modifierId\" and optional \"orderId\".\nOne key must be provided.\n\nReturns one or a list of item modifiers.",
-        "operationId": "get_item_modifier",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "itemId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Itemid"
-            }
-          },
-          {
-            "name": "modifierId",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Modifierid"
-            }
-          },
-          {
-            "name": "orderId",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Orderid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/ItemModifier"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/ItemModifier"
-                      }
-                    }
-                  ],
-                  "title": "Response Itemmodifiers-Get Item Modifier"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "itemModifiers"
-        ],
-        "summary": "Delete Item Modifier",
-        "description": "Delete an item modifier by key and value for \"itemId\", optional \"modifierId\" and optional \"orderId\".\n\nCan delete multiple item modifiers one one request if not modifierId or orderId is provided.\n\nDominant key is \"itemId\".\n\nReturns a message that the item modifier was deleted successfully.",
-        "operationId": "delete_item_modifier",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "itemId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Itemid"
-            }
-          },
-          {
-            "name": "modifierId",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Modifierid"
-            }
-          },
-          {
-            "name": "orderId",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Orderid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/api_v1/itemModifier/": {
       "get": {
         "tags": [
@@ -1133,231 +959,6 @@
                     }
                   ],
                   "title": "Response Itemmodifiers-Create Item Modifier"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "itemModifiers"
-        ],
-        "summary": "Update Item Modifier",
-        "description": "Update an item modifier by key and value for\n\"itemId\", \"modifierId\" and \"orderId\".\n\nReturns the updated item modifier.",
-        "operationId": "update_item_modifier",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "itemId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Itemid"
-            }
-          },
-          {
-            "name": "modifierId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Modifierid"
-            }
-          },
-          {
-            "name": "orderId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Orderid"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ItemModifierUpdate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ItemModifier"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/api_v1/item/{itemId}": {
-      "get": {
-        "tags": [
-          "items"
-        ],
-        "summary": "Get Item",
-        "description": "Get item by key and value for \"itemId\".\n\nAlways returns one item.",
-        "operationId": "get_item",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "itemId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Itemid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Item"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "items"
-        ],
-        "summary": "Update Item",
-        "description": "Update an item by key and value for \"itemId\".\n\nReturns the updated item.",
-        "operationId": "update_item",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "itemId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Itemid"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ItemUpdate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Item"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "items"
-        ],
-        "summary": "Delete Item",
-        "description": "Delete an item by key and value for \"itemId\".\n\nReturns a message indicating the item was deleted.\nAlways deletes one item.",
-        "operationId": "delete_item",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "itemId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Itemid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "title": "Response Items-Delete Item"
                 }
               }
             }
@@ -3198,16 +2799,16 @@
     "schemas": {
       "BaseSpecs": {
         "properties": {
-          "baseType": {
+          "itemBaseTypeId": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "integer"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Basetype"
+            "title": "Itembasetypeid"
           },
           "category": {
             "anyOf": [
@@ -3302,14 +2903,9 @@
             "type": "number",
             "title": "Valueinchaos"
           },
-          "iconUrl": {
-            "type": "string",
-            "title": "Iconurl"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Createdat"
+          "createdHoursSinceLaunch": {
+            "type": "integer",
+            "title": "Createdhourssincelaunch"
           },
           "currencyId": {
             "type": "integer",
@@ -3320,8 +2916,7 @@
         "required": [
           "tradeName",
           "valueInChaos",
-          "iconUrl",
-          "createdAt",
+          "createdHoursSinceLaunch",
           "currencyId"
         ],
         "title": "Currency"
@@ -3336,16 +2931,16 @@
             "type": "number",
             "title": "Valueinchaos"
           },
-          "iconUrl": {
-            "type": "string",
-            "title": "Iconurl"
+          "createdHoursSinceLaunch": {
+            "type": "integer",
+            "title": "Createdhourssincelaunch"
           }
         },
         "type": "object",
         "required": [
           "tradeName",
           "valueInChaos",
-          "iconUrl"
+          "createdHoursSinceLaunch"
         ],
         "title": "CurrencyCreate"
       },
@@ -3358,17 +2953,12 @@
           "valueInChaos": {
             "type": "number",
             "title": "Valueinchaos"
-          },
-          "iconUrl": {
-            "type": "string",
-            "title": "Iconurl"
           }
         },
         "type": "object",
         "required": [
           "tradeName",
-          "valueInChaos",
-          "iconUrl"
+          "valueInChaos"
         ],
         "title": "CurrencyUpdate"
       },
@@ -3536,10 +3126,6 @@
       },
       "Item": {
         "properties": {
-          "gameItemId": {
-            "type": "string",
-            "title": "Gameitemid"
-          },
           "name": {
             "anyOf": [
               {
@@ -3555,9 +3141,9 @@
             "type": "string",
             "title": "League"
           },
-          "baseType": {
-            "type": "string",
-            "title": "Basetype"
+          "itemBaseTypeId": {
+            "type": "integer",
+            "title": "Itembasetypeid"
           },
           "typeLine": {
             "type": "string",
@@ -3729,10 +3315,9 @@
             ],
             "title": "Foilvariation"
           },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Createdat"
+          "createdHoursSinceLaunch": {
+            "type": "integer",
+            "title": "Createdhourssincelaunch"
           },
           "itemId": {
             "type": "integer",
@@ -3741,13 +3326,12 @@
         },
         "type": "object",
         "required": [
-          "gameItemId",
           "league",
-          "baseType",
+          "itemBaseTypeId",
           "typeLine",
           "ilvl",
           "rarity",
-          "createdAt",
+          "createdHoursSinceLaunch",
           "itemId"
         ],
         "title": "Item"
@@ -3783,12 +3367,17 @@
               }
             ],
             "title": "Relateduniques"
+          },
+          "itemBaseTypeId": {
+            "type": "integer",
+            "title": "Itembasetypeid"
           }
         },
         "type": "object",
         "required": [
           "baseType",
-          "category"
+          "category",
+          "itemBaseTypeId"
         ],
         "title": "ItemBaseType"
       },
@@ -3874,10 +3463,6 @@
       },
       "ItemCreate": {
         "properties": {
-          "gameItemId": {
-            "type": "string",
-            "title": "Gameitemid"
-          },
           "name": {
             "anyOf": [
               {
@@ -3893,9 +3478,9 @@
             "type": "string",
             "title": "League"
           },
-          "baseType": {
-            "type": "string",
-            "title": "Basetype"
+          "itemBaseTypeId": {
+            "type": "integer",
+            "title": "Itembasetypeid"
           },
           "typeLine": {
             "type": "string",
@@ -4067,27 +3652,19 @@
             ],
             "title": "Foilvariation"
           },
-          "createdAt": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Createdat"
+          "createdHoursSinceLaunch": {
+            "type": "integer",
+            "title": "Createdhourssincelaunch"
           }
         },
         "type": "object",
         "required": [
-          "gameItemId",
           "league",
-          "baseType",
+          "itemBaseTypeId",
           "typeLine",
           "ilvl",
-          "rarity"
+          "rarity",
+          "createdHoursSinceLaunch"
         ],
         "title": "ItemCreate"
       },
@@ -4101,14 +3678,6 @@
             "type": "integer",
             "title": "Modifierid"
           },
-          "orderId": {
-            "type": "integer",
-            "title": "Orderid"
-          },
-          "position": {
-            "type": "integer",
-            "title": "Position"
-          },
           "roll": {
             "anyOf": [
               {
@@ -4120,19 +3689,16 @@
             ],
             "title": "Roll"
           },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Createdat"
+          "createdHoursSinceLaunch": {
+            "type": "integer",
+            "title": "Createdhourssincelaunch"
           }
         },
         "type": "object",
         "required": [
           "itemId",
           "modifierId",
-          "orderId",
-          "position",
-          "createdAt"
+          "createdHoursSinceLaunch"
         ],
         "title": "ItemModifier"
       },
@@ -4146,14 +3712,6 @@
             "type": "integer",
             "title": "Modifierid"
           },
-          "orderId": {
-            "type": "integer",
-            "title": "Orderid"
-          },
-          "position": {
-            "type": "integer",
-            "title": "Position"
-          },
           "roll": {
             "anyOf": [
               {
@@ -4164,55 +3722,19 @@
               }
             ],
             "title": "Roll"
+          },
+          "createdHoursSinceLaunch": {
+            "type": "integer",
+            "title": "Createdhourssincelaunch"
           }
         },
         "type": "object",
         "required": [
           "itemId",
           "modifierId",
-          "orderId",
-          "position"
+          "createdHoursSinceLaunch"
         ],
         "title": "ItemModifierCreate"
-      },
-      "ItemModifierUpdate": {
-        "properties": {
-          "itemId": {
-            "type": "integer",
-            "title": "Itemid"
-          },
-          "modifierId": {
-            "type": "integer",
-            "title": "Modifierid"
-          },
-          "orderId": {
-            "type": "integer",
-            "title": "Orderid"
-          },
-          "position": {
-            "type": "integer",
-            "title": "Position"
-          },
-          "roll": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Roll"
-          }
-        },
-        "type": "object",
-        "required": [
-          "itemId",
-          "modifierId",
-          "orderId",
-          "position"
-        ],
-        "title": "ItemModifierUpdate"
       },
       "ItemSpecs": {
         "properties": {
@@ -4383,213 +3905,6 @@
         },
         "type": "object",
         "title": "ItemSpecs"
-      },
-      "ItemUpdate": {
-        "properties": {
-          "gameItemId": {
-            "type": "string",
-            "title": "Gameitemid"
-          },
-          "name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Name"
-          },
-          "league": {
-            "type": "string",
-            "title": "League"
-          },
-          "baseType": {
-            "type": "string",
-            "title": "Basetype"
-          },
-          "typeLine": {
-            "type": "string",
-            "title": "Typeline"
-          },
-          "ilvl": {
-            "type": "integer",
-            "title": "Ilvl"
-          },
-          "rarity": {
-            "type": "string",
-            "title": "Rarity"
-          },
-          "identified": {
-            "type": "boolean",
-            "title": "Identified",
-            "default": true
-          },
-          "currencyAmount": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Currencyamount"
-          },
-          "currencyId": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Currencyid"
-          },
-          "corrupted": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Corrupted"
-          },
-          "delve": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Delve"
-          },
-          "fractured": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Fractured"
-          },
-          "synthesised": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Synthesised"
-          },
-          "replica": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Replica"
-          },
-          "influences": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/Influences"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "searing": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Searing"
-          },
-          "tangled": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tangled"
-          },
-          "isRelic": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Isrelic"
-          },
-          "prefixes": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Prefixes"
-          },
-          "suffixes": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Suffixes"
-          },
-          "foilVariation": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Foilvariation"
-          }
-        },
-        "type": "object",
-        "required": [
-          "gameItemId",
-          "league",
-          "baseType",
-          "typeLine",
-          "ilvl",
-          "rarity"
-        ],
-        "title": "ItemUpdate"
       },
       "Message": {
         "properties": {
@@ -5495,6 +4810,7 @@
         "properties": {
           "username": {
             "type": "string",
+            "maxLength": 30,
             "pattern": "^[\\p{L}\\p{N}_]+$",
             "title": "Username"
           },
@@ -5569,6 +4885,7 @@
         "properties": {
           "username": {
             "type": "string",
+            "maxLength": 30,
             "pattern": "^[\\p{L}\\p{N}_]+$",
             "title": "Username"
           },
@@ -5643,6 +4960,7 @@
         "properties": {
           "username": {
             "type": "string",
+            "maxLength": 30,
             "pattern": "^[\\p{L}\\p{N}_]+$",
             "title": "Username"
           },
@@ -5671,6 +4989,7 @@
             "anyOf": [
               {
                 "type": "string",
+                "maxLength": 30,
                 "pattern": "^[\\p{L}\\p{N}_]+$"
               },
               {
@@ -5773,6 +5092,7 @@
             "anyOf": [
               {
                 "type": "string",
+                "maxLength": 30,
                 "pattern": "^[\\p{L}\\p{N}_]+$"
               },
               {

@@ -28,5 +28,9 @@ export const $ItemBaseType = {
                 type: 'null',
             }],
         },
+        itemBaseTypeId: {
+            type: 'number',
+            isRequired: true,
+        },
     },
 } as const;

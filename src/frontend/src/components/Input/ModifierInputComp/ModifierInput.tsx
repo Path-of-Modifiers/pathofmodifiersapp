@@ -33,7 +33,7 @@ export const ModifierInput = () => {
     } = useGraphInputStore();
 
     const mapChoosableModifiersExtendedtoModifierOption = (
-        choosableModifiersExtended: ChoosableModifiersExtended[]
+        choosableModifiersExtended: ChoosableModifiersExtended[],
     ) =>
         choosableModifiersExtended.map((prefetchedModifier) => ({
             value: prefetchedModifier.effect,
@@ -41,8 +41,7 @@ export const ModifierInput = () => {
             regex: prefetchedModifier.regex,
             static: prefetchedModifier.static ?? undefined,
             relatedUniques: prefetchedModifier.relatedUniques ?? undefined,
-            groupedModifierProperties:
-                prefetchedModifier.groupedModifierProperties,
+            groupedModifierProperties: prefetchedModifier.groupedModifierProperties,
         }));
     const [choosableModifierOptions, setChoosableModifierOptions] = useState<
         ModifierOption[]
@@ -51,10 +50,8 @@ export const ModifierInput = () => {
     useEffect(() => {
         setChoosableModifierOptions(
             mapChoosableModifiersExtendedtoModifierOption(
-                choosableModifiers.filter(
-                    (modifier) => !modifier.isNotChoosable
-                )
-            )
+                choosableModifiers.filter((modifier) => !modifier.isNotChoosable),
+            ),
         );
     }, [choosableModifiers]);
 
@@ -62,11 +59,10 @@ export const ModifierInput = () => {
     if (wantedModifierExtended.length > 0) {
         prevSelectedModifiers = wantedModifierExtended.reduce(
             (selectedModifiers, wantedModifier) => {
-                const prevSelectedModifier = choosableModifierOptions.find(
-                    (modifier) =>
-                        modifier.groupedModifierProperties.modifierId.includes(
-                            wantedModifier.modifierId
-                        )
+                const prevSelectedModifier = choosableModifierOptions.find((modifier) =>
+                    modifier.groupedModifierProperties.modifierId.includes(
+                        wantedModifier.modifierId,
+                    ),
                 );
                 if (prevSelectedModifier === undefined) {
                     return selectedModifiers;
@@ -81,13 +77,13 @@ export const ModifierInput = () => {
                     },
                 ];
             },
-            [] as ModifierOption[]
+            [] as ModifierOption[],
         );
     }
 
-    const [selectedModifiers, setSelectedModifiers] = useState<
-        ModifierOption[]
-    >(prevSelectedModifiers);
+    const [selectedModifiers, setSelectedModifiers] = useState<ModifierOption[]>(
+        prevSelectedModifiers,
+    );
 
     // For debugging purposes
     // const ref = useOutsideClick(() => {
@@ -103,10 +99,10 @@ export const ModifierInput = () => {
     // by extension.
     const handleModifierSelect: HandleChangeEventFunction = (
         newValue,
-        overrideIndex?: number
+        overrideIndex?: number,
     ) => {
         const newlySelectedModifier = choosableModifierOptions.find(
-            (modifier) => modifier.label === newValue?.label
+            (modifier) => modifier.label === newValue?.label,
         );
         if (!newlySelectedModifier) {
             return;
@@ -129,9 +125,9 @@ export const ModifierInput = () => {
                     addWantedModifierExtended(
                         { modifierId: modifierId },
                         overrideIndex,
-                        newlySelectedModifier.relatedUniques
+                        newlySelectedModifier.relatedUniques,
                     );
-                }
+                },
             );
         } else {
             setSelectedModifiers((currentSelectedModifiers) => [
@@ -143,16 +139,16 @@ export const ModifierInput = () => {
                     addWantedModifierExtended(
                         { modifierId: modifierId },
                         selectedModifiers.length,
-                        newlySelectedModifier.relatedUniques
+                        newlySelectedModifier.relatedUniques,
                     );
-                }
+                },
             );
         }
     };
 
     const { setExpandedModifiers } = useExpandedComponentStore();
     const expandedModifiers = useExpandedComponentStore(
-        (state) => state.expandedModifiers
+        (state) => state.expandedModifiers,
     );
     const handleExpanded = () => {
         setExpandedModifiers(!expandedModifiers);
@@ -160,19 +156,19 @@ export const ModifierInput = () => {
 
     const handleCheckboxChange = (
         selectedModifier: ModifierOption,
-        index_to_handle: number
+        index_to_handle: number,
     ) => {
         selectedModifier.isSelected = !selectedModifier.isSelected;
         updateSelectedWantedModifierExtended(
             index_to_handle,
-            selectedModifier.isSelected
+            selectedModifier.isSelected,
         );
     };
 
     // Removes the modifier
     const handleRemoveModifier = (indexToRemove: number) => {
         const modifierToRemove = selectedModifiers.find(
-            (modifier) => modifier.index === indexToRemove
+            (modifier) => modifier.index === indexToRemove,
         );
         if (modifierToRemove) {
             setSelectedModifiers((currentSelectedModifiers) =>
@@ -181,8 +177,8 @@ export const ModifierInput = () => {
                         cur.index !== indexToRemove
                             ? [...prev, { ...cur, index: prev.length }]
                             : prev,
-                    [] as ModifierOption[]
-                )
+                    [] as ModifierOption[],
+                ),
             );
             removeWantedModifierExtended(indexToRemove);
         }
@@ -212,13 +208,9 @@ export const ModifierInput = () => {
                     key={selectedIndex}
                     onChange={() => {
                         if (
-                            selectedModifier.groupedModifierProperties
-                                .modifierId[0] !== null
+                            selectedModifier.groupedModifierProperties.modifierId[0] !== null
                         ) {
-                            handleCheckboxChange(
-                                selectedModifier,
-                                selectedIndex
-                            );
+                            handleCheckboxChange(selectedModifier, selectedIndex);
                         }
                     }}
                 />
@@ -234,7 +226,7 @@ export const ModifierInput = () => {
                     }}
                 />
             </Flex>
-        )
+        ),
     );
 
     return (
@@ -259,7 +251,7 @@ export const ModifierInput = () => {
                         maxWidth="95vw"
                         alignItems={"center"}
                         gap={2}
-                        // ref={ref}
+                    // ref={ref}
                     >
                         <AddIconCheckbox dontshow />
                         <SelectBoxInput

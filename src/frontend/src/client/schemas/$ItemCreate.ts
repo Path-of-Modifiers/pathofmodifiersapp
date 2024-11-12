@@ -4,10 +4,6 @@
 /* eslint-disable */
 export const $ItemCreate = {
     properties: {
-        gameItemId: {
-            type: 'string',
-            isRequired: true,
-        },
         name: {
             type: 'any-of',
             contains: [{
@@ -20,8 +16,8 @@ export const $ItemCreate = {
             type: 'string',
             isRequired: true,
         },
-        baseType: {
-            type: 'string',
+        itemBaseTypeId: {
+            type: 'number',
             isRequired: true,
         },
         typeLine: {
@@ -151,14 +147,9 @@ export const $ItemCreate = {
                 type: 'null',
             }],
         },
-        createdAt: {
-            type: 'any-of',
-            contains: [{
-                type: 'string',
-                format: 'date-time',
-            }, {
-                type: 'null',
-            }],
+        createdHoursSinceLaunch: {
+            type: 'number',
+            isRequired: true,
         },
     },
 } as const;

@@ -4,10 +4,9 @@
 /* eslint-disable */
 import type { Influences } from './Influences';
 export type Item = {
-    gameItemId: string;
     name?: (string | null);
     league: string;
-    baseType: string;
+    itemBaseTypeId: number;
     typeLine: string;
     ilvl: number;
     rarity: string;
@@ -26,7 +25,7 @@ export type Item = {
     prefixes?: (number | null);
     suffixes?: (number | null);
     foilVariation?: (number | null);
-    createdAt: string;
+    createdHoursSinceLaunch: number;
     itemId: number;
 };
 

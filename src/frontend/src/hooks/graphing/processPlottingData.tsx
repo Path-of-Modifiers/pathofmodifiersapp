@@ -29,7 +29,7 @@ function useGetPlotData(plotQuery: PlotQuery): {
             setResultError(false);
         }
     }, [isError, isFetched, setResultError]);
-
+    console.log("PLOT", plotQuery);
     if (isError || leagueError || modifiersError) {
         return {
             result: undefined,

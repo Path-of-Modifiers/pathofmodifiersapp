@@ -21,25 +21,25 @@ export interface InfluenceSpecState {
 }
 
 export interface ItemSpecState {
-  name?: string | null;
-  identified?: boolean | null;
-  minIlvl?: number | null;
-  maxIlvl?: number | null;
-  rarity?: string | null;
-  corrupted?: boolean | null;
-  delve?: boolean | null;
-  fractured?: boolean | null;
-  synthesised?: boolean | null;
-  replica?: boolean | null;
-  influences?: InfluenceSpecState | null;
-  searing?: boolean | null;
-  tangled?: boolean | null;
-  isRelic?: boolean | null;
-  foilVariation?: number | null;
+    name?: string | null;
+    identified?: boolean | null;
+    minIlvl?: number | null;
+    maxIlvl?: number | null;
+    rarity?: string | null;
+    corrupted?: boolean | null;
+    delve?: boolean | null;
+    fractured?: boolean | null;
+    synthesised?: boolean | null;
+    replica?: boolean | null;
+    influences?: InfluenceSpecState | null;
+    searing?: boolean | null;
+    tangled?: boolean | null;
+    isRelic?: boolean | null;
+    foilVariation?: number | null;
 }
 
 export interface BaseSpecState {
-    baseType?: string | null;
+    itemBaseTypeId?: number | null;
     category?: string | null;
     subCategory?: string | null;
 }
@@ -106,7 +106,7 @@ export interface GraphInputState {
     setFetchStatus: (fetchStatus: string | undefined) => void;
 
     setChoosableModifiers: (
-        choosableModifiers: GroupedModifierByEffect[]
+        choosableModifiers: GroupedModifierByEffect[],
     ) => void;
     setChoosableItemBaseType: (choosableItemBaseType: ItemBaseType[]) => void;
     setChoosableItemNames: (choosableItemNames: string[]) => void;
@@ -140,7 +140,7 @@ export interface GraphInputState {
     setItemSpecFoilVariation: (foilVariation: number | undefined) => void;
 
     setBaseSpec: (baseSpec: BaseSpecState) => void;
-    setBaseType: (baseType: string | undefined) => void;
+    setBaseType: (itemBaseTypeId: number | undefined) => void;
     setItemCategory: (category: string | undefined) => void;
     setItemSubCategory: (subCategory: string | undefined) => void;
 
@@ -150,27 +150,27 @@ export interface GraphInputState {
     addWantedModifierExtended: (
         wantedModifier: WantedModifier,
         index: number,
-        relatedUniques?: string
+        relatedUniques?: string,
     ) => void;
     removeWantedModifierExtended: (index_to_remove: number) => void;
     updateSelectedWantedModifierExtended: (
         index_to_update: number,
-        isSelected: boolean
+        isSelected: boolean,
     ) => void;
     setWantedModifierMinRoll: (
         modifierId: number,
         minRoll: number | undefined,
-        index: number
+        index: number,
     ) => void;
     setWantedModifierMaxRoll: (
         modifierId: number,
         maxRoll: number | undefined,
-        index: number
+        index: number,
     ) => void;
     setWantedModifierTextRoll: (
         modifierId: number,
         textRoll: number | undefined,
-        index: number
+        index: number,
     ) => void;
 }
 
@@ -198,7 +198,7 @@ export interface ErrorState {
     setResultError: (resultError: boolean) => void;
     setNoRelatedUniqueError: (noRelatedUniqueError: boolean) => void;
     setItemDoesNotHaveSelectedModifiersError: (
-        itemDoesNotHaveSelectedModifiersError: boolean
+        itemDoesNotHaveSelectedModifiersError: boolean,
     ) => void;
     setBaseSpecDoesNotMatchError: (baseSpecDoesNotMatchError: boolean) => void;
 }
@@ -206,6 +206,6 @@ export interface ErrorState {
 export interface TurnstileState {
     turnstileResponse: TurnstileResponse | undefined;
     setTurnstileResponse: (
-        turnstileResponse: TurnstileResponse | undefined
+        turnstileResponse: TurnstileResponse | undefined,
     ) => void;
 }

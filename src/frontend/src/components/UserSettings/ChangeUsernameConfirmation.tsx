@@ -28,7 +28,8 @@ interface DeleteProps {
 const ChangeUsernameConfirmation = ({ isOpen, onClose }: DeleteProps) => {
     const queryClient = useQueryClient();
     const showToast = useCustomToast();
-    const [inputUsernameErrorMessage, setInputUsernameErrorMessage] = useState<string>("");
+    const [inputUsernameErrorMessage, setInputUsernameErrorMessage] =
+        useState<string>("");
     const color = useColorModeValue("inherit", "ui.light");
     const cancelRef = React.useRef<HTMLButtonElement | null>(null);
     const {
@@ -47,7 +48,11 @@ const ChangeUsernameConfirmation = ({ isOpen, onClose }: DeleteProps) => {
                 requestBody: { username: data.username },
             }),
         onSuccess: () => {
-            showToast("Success", "Successfully updated to the new username.", "success");
+            showToast(
+                "Success",
+                "Successfully updated to the new username.",
+                "success",
+            );
             onClose();
         },
         onError: (err: ApiError) => {
@@ -58,16 +63,19 @@ const ChangeUsernameConfirmation = ({ isOpen, onClose }: DeleteProps) => {
         },
     });
 
-
     const handleClose = () => {
         reset();
         setInputUsernameErrorMessage("");
         onClose();
     };
 
-    const { usernameExists, checkUsernameExistsErrorMessage, checkUsernameExistsMutation } = useCheckUsernameExists();
-    const isErrorUsernameExists: boolean = usernameExists || inputUsernameErrorMessage.length > 0;
-
+    const {
+        usernameExists,
+        checkUsernameExistsErrorMessage,
+        checkUsernameExistsMutation,
+    } = useCheckUsernameExists();
+    const isErrorUsernameExists: boolean =
+        usernameExists || inputUsernameErrorMessage.length > 0;
 
     const handleInputUsername = (username: string) => {
         checkUsernameExistsMutation.mutate(username);
@@ -84,14 +92,20 @@ const ChangeUsernameConfirmation = ({ isOpen, onClose }: DeleteProps) => {
         } else if (checkUsernameExistsMutation.isError) {
             setInputUsernameErrorMessage(checkUsernameExistsErrorMessage);
         }
-    }, [inputUsernameErrorMessage, isErrorUsernameExists, checkUsernameExistsMutation.isSuccess, checkUsernameExistsMutation.isError, usernameExists, checkUsernameExistsErrorMessage]);
+    }, [
+        inputUsernameErrorMessage,
+        isErrorUsernameExists,
+        checkUsernameExistsMutation.isSuccess,
+        checkUsernameExistsMutation.isError,
+        usernameExists,
+        checkUsernameExistsErrorMessage,
+    ]);
 
     const onSubmit: SubmitHandler<UserUpdateMe> = async (data) => {
         if (!isErrorUsernameExists) {
             mutation.mutate(data);
         }
     };
-
 
     return (
         <AlertDialog
@@ -115,7 +129,10 @@ const ChangeUsernameConfirmation = ({ isOpen, onClose }: DeleteProps) => {
                         Can only be done once a month.
                     </AlertDialogBody>
                     <AlertDialogBody>
-                        <FormControl minWidth={"100%"} isInvalid={!!errors.username || isErrorUsernameExists}>
+                        <FormControl
+                            minWidth={"100%"}
+                            isInvalid={!!errors.username || isErrorUsernameExists}
+                        >
                             <FormLabel color={color} htmlFor="name">
                                 Username
                             </FormLabel>
@@ -126,8 +143,8 @@ const ChangeUsernameConfirmation = ({ isOpen, onClose }: DeleteProps) => {
                                 w="auto"
                                 {...register("username", {
                                     maxLength: {
-                                        value: 50,
-                                        message: "Username cannot exceed 50 characters",
+                                        value: 30,
+                                        message: "Username cannot exceed 30 characters",
                                     },
                                     pattern: usernamePattern,
                                     required: "Username is required",

@@ -12,14 +12,9 @@ export const $Currency = {
             type: 'number',
             isRequired: true,
         },
-        iconUrl: {
-            type: 'string',
+        createdHoursSinceLaunch: {
+            type: 'number',
             isRequired: true,
-        },
-        createdAt: {
-            type: 'string',
-            isRequired: true,
-            format: 'date-time',
         },
         currencyId: {
             type: 'number',

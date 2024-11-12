@@ -137,29 +137,26 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             let choosableModifiers: ChoosableModifiersExtended[];
             let choosableItemBaseType: ChoosableItemBaseTypesExtended[];
             if (itemName === undefined) {
-                choosableModifiers = state.choosableModifiers.map(
-                    (modifier) => ({ ...modifier, isNotChoosable: false })
-                );
+                choosableModifiers = state.choosableModifiers.map((modifier) => ({
+                    ...modifier,
+                    isNotChoosable: false,
+                }));
                 choosableItemBaseType = state.choosableItemBaseType.map(
                     (itemBaseType) => ({
                         ...itemBaseType,
                         isNotChoosable: false,
-                    })
+                    }),
                 );
             } else {
-                choosableModifiers = state.choosableModifiers.map(
-                    (modifier) => ({
-                        ...modifier,
-                        isNotChoosable:
-                            !modifier.relatedUniques?.includes(itemName),
-                    })
-                );
+                choosableModifiers = state.choosableModifiers.map((modifier) => ({
+                    ...modifier,
+                    isNotChoosable: !modifier.relatedUniques?.includes(itemName),
+                }));
                 choosableItemBaseType = state.choosableItemBaseType.map(
                     (itemBaseType) => ({
                         ...itemBaseType,
-                        isNotChoosable:
-                            !itemBaseType.relatedUniques?.includes(itemName),
-                    })
+                        isNotChoosable: !itemBaseType.relatedUniques?.includes(itemName),
+                    }),
                 );
             }
             return {
@@ -299,9 +296,9 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             itemSpec: { ...state.itemSpec, fractured: fractured },
         })),
 
-    setItemSpecSynthesized: (synthesized: boolean | undefined) =>
+    setItemSpecSynthesised: (synthesised: boolean | undefined) =>
         set((state) => ({
-            itemSpec: { ...state.itemSpec, synthesized: synthesized },
+            itemSpec: { ...state.itemSpec, synthesised: synthesised },
         })),
 
     setItemSpecSearing: (searing: boolean | undefined) =>
@@ -339,9 +336,12 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
     setBaseSpec: (baseSpec: BaseSpecState) =>
         set(() => ({ baseSpec: baseSpec })),
 
-    setBaseType: (baseType: string | undefined) =>
+    setBaseType: (itemBaseTypeId: number | undefined) =>
         set((state) => ({
-            baseSpec: { ...state.baseSpec, baseType: baseType },
+            baseSpec: {
+                ...state.baseSpec,
+                itemBaseTypeId: itemBaseTypeId,
+            },
         })),
 
     setItemCategory: (category: string | undefined) =>
@@ -361,7 +361,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
     addWantedModifierExtended: (
         wantedModifier: WantedModifier,
         index: number,
-        relatedUniques?: string
+        relatedUniques?: string,
     ) =>
         set((state) => ({
             wantedModifierExtended: [
@@ -377,24 +377,21 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
 
     updateSelectedWantedModifierExtended: (
         index_to_update: number,
-        isSelected: boolean
+        isSelected: boolean,
     ) =>
         set((state) => {
             const chosenModifiersExtended = state.wantedModifierExtended.filter(
-                (modifierExtended) => modifierExtended.index === index_to_update
+                (modifierExtended) => modifierExtended.index === index_to_update,
             );
             return {
                 wantedModifierExtended: [
                     ...state.wantedModifierExtended.filter(
-                        (modifierExtended) =>
-                            modifierExtended.index !== index_to_update
+                        (modifierExtended) => modifierExtended.index !== index_to_update,
                     ),
-                    ...chosenModifiersExtended.map(
-                        (chosenModifierExtended) => ({
-                            ...chosenModifierExtended,
-                            isSelected: isSelected,
-                        })
-                    ),
+                    ...chosenModifiersExtended.map((chosenModifierExtended) => ({
+                        ...chosenModifierExtended,
+                        isSelected: isSelected,
+                    })),
                 ],
             };
         }),
@@ -406,14 +403,14 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
                     cur.index !== indexToRemove
                         ? [...prev, { ...cur, index: prev.length }]
                         : prev,
-                [] as WantedModifierExtended[]
+                [] as WantedModifierExtended[],
             ),
         })),
 
     setWantedModifierMinRoll: (
         modifierId: number,
         minRoll: number | undefined,
-        index: number
+        index: number,
     ) =>
         set((state) => {
             const updatedModifiersExtended = state.wantedModifierExtended.map(
@@ -423,16 +420,10 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
                         wantedModifierExtended.index === index
                     ) {
                         if (minRoll === undefined) {
-                            if (
-                                !wantedModifierExtended.modifierLimitations
-                                    ?.maxRoll
-                            ) {
-                                delete wantedModifierExtended[
-                                    "modifierLimitations"
-                                ];
+                            if (!wantedModifierExtended.modifierLimitations?.maxRoll) {
+                                delete wantedModifierExtended["modifierLimitations"];
                             } else {
-                                delete wantedModifierExtended
-                                    .modifierLimitations["minRoll"];
+                                delete wantedModifierExtended.modifierLimitations["minRoll"];
                             }
                             return wantedModifierExtended;
                         }
@@ -446,7 +437,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
                     } else {
                         return wantedModifierExtended;
                     }
-                }
+                },
             );
             return { wantedModifierExtended: updatedModifiersExtended };
         }),
@@ -454,7 +445,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
     setWantedModifierMaxRoll: (
         modifierId: number,
         maxRoll: number | undefined,
-        index: number
+        index: number,
     ) =>
         set((state) => {
             const updatedModifiersExtended = state.wantedModifierExtended.map(
@@ -464,16 +455,10 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
                         wantedModifierExtended.index === index
                     ) {
                         if (maxRoll === undefined) {
-                            if (
-                                !wantedModifierExtended.modifierLimitations
-                                    ?.minRoll
-                            ) {
-                                delete wantedModifierExtended[
-                                    "modifierLimitations"
-                                ];
+                            if (!wantedModifierExtended.modifierLimitations?.minRoll) {
+                                delete wantedModifierExtended["modifierLimitations"];
                             } else {
-                                delete wantedModifierExtended
-                                    .modifierLimitations["maxRoll"];
+                                delete wantedModifierExtended.modifierLimitations["maxRoll"];
                             }
                             return wantedModifierExtended;
                         }
@@ -487,7 +472,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
                     } else {
                         return wantedModifierExtended;
                     }
-                }
+                },
             );
             return { wantedModifierExtended: updatedModifiersExtended };
         }),
@@ -495,24 +480,24 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
     setWantedModifierTextRoll: (
         modifierId: number,
         textRoll: number | undefined,
-        index: number
+        index: number,
     ) =>
         set((state) => {
             const updatedModifiersExtended = state.wantedModifierExtended.map(
                 (wantedModifierExtended) =>
                     wantedModifierExtended.modifierId === modifierId &&
-                    wantedModifierExtended.index === index
+                        wantedModifierExtended.index === index
                         ? {
-                              ...wantedModifierExtended,
-                              modifierLimitations:
-                                  textRoll !== undefined
-                                      ? {
-                                            ...wantedModifierExtended.modifierLimitations,
-                                            textRoll: textRoll,
-                                        }
-                                      : undefined,
-                          }
-                        : wantedModifierExtended
+                            ...wantedModifierExtended,
+                            modifierLimitations:
+                                textRoll !== undefined
+                                    ? {
+                                        ...wantedModifierExtended.modifierLimitations,
+                                        textRoll: textRoll,
+                                    }
+                                    : undefined,
+                        }
+                        : wantedModifierExtended,
             );
             return { wantedModifierExtended: updatedModifiersExtended };
         }),

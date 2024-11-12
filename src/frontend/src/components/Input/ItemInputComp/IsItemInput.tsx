@@ -68,7 +68,7 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
       setItemSpecMisc = setItemSpecFractured;
       break;
     case "synthesised":
-      presetValue = itemSpec?.synthesized;
+      presetValue = itemSpec?.synthesised;
       setItemSpecMisc = setItemSpecSynthesised;
       break;
     case "replica":

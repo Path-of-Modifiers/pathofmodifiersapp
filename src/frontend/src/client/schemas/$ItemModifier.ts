@@ -12,14 +12,6 @@ export const $ItemModifier = {
             type: 'number',
             isRequired: true,
         },
-        orderId: {
-            type: 'number',
-            isRequired: true,
-        },
-        position: {
-            type: 'number',
-            isRequired: true,
-        },
         roll: {
             type: 'any-of',
             contains: [{
@@ -28,10 +20,9 @@ export const $ItemModifier = {
                 type: 'null',
             }],
         },
-        createdAt: {
-            type: 'string',
+        createdHoursSinceLaunch: {
+            type: 'number',
             isRequired: true,
-            format: 'date-time',
         },
     },
 } as const;
