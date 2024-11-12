@@ -8,7 +8,7 @@ from data_retrieval_app.external_data_retrieval.transforming_data.roll_processor
 )
 from data_retrieval_app.logs.logger import transform_logger as logger
 from data_retrieval_app.pom_api_authentication import get_superuser_token_headers
-from data_retrieval_app.utils import insert_data
+from data_retrieval_app.utils import find_hours_since_launch, insert_data
 
 pd.options.mode.chained_assignment = None  # default="warn"
 
@@ -16,8 +16,8 @@ pd.options.mode.chained_assignment = None  # default="warn"
 class PoEAPIDataTransformerBase:
     def __init__(self) -> None:
         logger.debug("Initializing PoEAPIDataTransformer")
-        if "localhost" not in settings.BASEURL:
-            self.url = f"https://{settings.BASEURL}"
+        if "localhost" not in settings.DOMAIN:
+            self.url = f"https://{settings.DOMAIN}"
         else:
             self.url = "http://src-backend-1"
         self.url += "/api/api_v1"
@@ -68,7 +68,11 @@ class PoEAPIDataTransformerBase:
         return item_df
 
     def _transform_item_table(
-        self, item_df: pd.DataFrame, currency_df: pd.DataFrame
+        self,
+        item_df: pd.DataFrame,
+        currency_df: pd.DataFrame,
+        item_base_types: dict[str, int],
+        hours_since_launch: int,
     ) -> pd.DataFrame:
         """
         The `item` table requires a foreign key to the `currency` table.
@@ -78,6 +82,9 @@ class PoEAPIDataTransformerBase:
         There are two types of listings in PoE, exact price and asking price which are
         represented by `price` and `b/o` respectively.
         """
+
+        def transform_base_types(element):
+            return item_base_types[element]
 
         def get_currency_amount(element):
             if isinstance(element, list):
@@ -100,10 +107,13 @@ class PoEAPIDataTransformerBase:
                 influence_dict = {}
                 for influence_column in influence_columns:
                     if row[influence_column]:
-                        influence_dict[
-                            influence_column.replace("influences.", "")
-                        ] = True
+                        influence_dict[influence_column.replace("influences.", "")] = (
+                            True
+                        )
                 return influence_dict
+
+        base_type_series = item_df["baseType"]
+        item_df["itemBaseTypeId"] = base_type_series.apply(transform_base_types)
 
         influence_columns = [
             column for column in item_df.columns if "influences" in column
@@ -144,6 +154,8 @@ class PoEAPIDataTransformerBase:
             right_on="tradeName",
         )
 
+        item_df["createdHoursSinceLaunch"] = hours_since_launch
+
         return item_df
 
     @property
@@ -158,13 +170,12 @@ class PoEAPIDataTransformerBase:
                 "influences.hunter",
                 "influences.redeemer",
                 "influences.warlord",
+                "baseType",
                 "stash",
                 "currencyType",
                 "tradeName",
                 "valueInChaos",
                 "itemId",
-                "createdAt",
-                "iconUrl",
             }
             self._item_table_columns_to_drop = drop_columns
         return drop_columns
@@ -212,10 +223,16 @@ class PoEAPIDataTransformerBase:
         return item_id
 
     def _process_item_table(
-        self, df: pd.DataFrame, currency_df: pd.DataFrame
+        self,
+        df: pd.DataFrame,
+        currency_df: pd.DataFrame,
+        item_base_types: dict[str, int],
+        hours_since_launch: int,
     ) -> pd.Series:
         item_df = self._create_item_table(df)
-        item_df = self._transform_item_table(item_df, currency_df)
+        item_df = self._transform_item_table(
+            item_df, currency_df, item_base_types, hours_since_launch
+        )
         item_df = self._clean_item_table(item_df)
         insert_data(
             item_df,
@@ -238,7 +255,9 @@ class PoEAPIDataTransformerBase:
         raise NotImplementedError("Only available in child classes")
 
     def _transform_item_modifier_table(
-        self, item_modifier_df: pd.DataFrame
+        self,
+        item_modifier_df: pd.DataFrame,
+        hours_since_launch: int,
     ) -> pd.DataFrame:
         """
         The `item_modifier` table heavily relies on what type of item the modifiers
@@ -258,10 +277,15 @@ class PoEAPIDataTransformerBase:
         raise NotImplementedError("Only available in child classes")
 
     def _process_item_modifier_table(
-        self, df: pd.DataFrame, item_id: pd.Series
+        self,
+        df: pd.DataFrame,
+        item_id: pd.Series,
+        hours_since_launch: int,
     ) -> None:
         item_modifier_df = self._create_item_modifier_table(df, item_id=item_id)
-        item_modifier_df = self._transform_item_modifier_table(item_modifier_df)
+        item_modifier_df = self._transform_item_modifier_table(
+            item_modifier_df, hours_since_launch
+        )
         item_modifier_df = self._clean_item_modifier_table(item_modifier_df)
 
         insert_data(
@@ -277,15 +301,24 @@ class PoEAPIDataTransformerBase:
         df: pd.DataFrame,
         modifier_df: pd.DataFrame,
         currency_df: pd.DataFrame,
+        item_base_types: dict[str, int],
     ) -> None:
         self.roll_processor.add_modifier_df(modifier_df)
         try:
             logger.debug("Transforming data into tables.")
             logger.debug("Processing data tables.")
+            hours_since_launch = find_hours_since_launch()
             item_id = self._process_item_table(
-                df.copy(deep=True), currency_df=currency_df
+                df.copy(deep=True),
+                currency_df=currency_df,
+                item_base_types=item_base_types,
+                hours_since_launch=hours_since_launch,
             )
-            self._process_item_modifier_table(df.copy(deep=True), item_id=item_id)
+            self._process_item_modifier_table(
+                df.copy(deep=True),
+                item_id=item_id,
+                hours_since_launch=hours_since_launch,
+            )
             logger.debug("Successfully transformed data into tables.")
 
         except HTTPError as e:
@@ -313,9 +346,10 @@ class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
         return item_modifier_df
 
     def _transform_item_modifier_table(
-        self, item_modifier_df: pd.DataFrame
+        self, item_modifier_df: pd.DataFrame, hours_since_launch: int
     ) -> pd.DataFrame:
         item_modifier_df = self.roll_processor.add_rolls(df=item_modifier_df)
+        item_modifier_df["createdHoursSinceLaunch"] = hours_since_launch
         return item_modifier_df
 
     @property
@@ -323,7 +357,12 @@ class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
         try:
             dont_drop_columns = self._item_modifier_table_columns_to_not_drop
         except AttributeError:
-            dont_drop_columns = {"itemId", "modifierId", "orderId", "position", "roll"}
+            dont_drop_columns = {
+                "itemId",
+                "modifierId",
+                "roll",
+                "createdHoursSinceLaunch",
+            }
             self._item_modifier_table_columns_to_not_drop = dont_drop_columns
         return dont_drop_columns
 

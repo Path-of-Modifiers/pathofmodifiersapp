@@ -40,11 +40,12 @@ class ContinuousDataRetrieval:
     current_league = settings.CURRENT_SOFTCORE_LEAGUE
     url = "https://api.pathofexile.com/public-stash-tabs"
 
-    if "localhost" not in settings.BASEURL:
-        base_pom_api_url = f"https://{settings.BASEURL}/api/api_v1"
+    if "localhost" not in settings.DOMAIN:
+        base_pom_api_url = f"https://{settings.DOMAIN}/api/api_v1"
     else:
         base_pom_api_url = "http://src-backend-1/api/api_v1"
     modifier_url = base_pom_api_url + "/modifier/"
+    item_base_type_url = base_pom_api_url + "/itemBaseType/"
     pom_auth_headers = get_superuser_token_headers(base_pom_api_url)
 
     def __init__(
@@ -73,10 +74,12 @@ class ContinuousDataRetrieval:
         response = requests.get(self.modifier_url, headers=self.pom_auth_headers)
         # Check if the request was successful
         modifier_df = pd.DataFrame()
-        if response.status_code == 200:
-            # Load the JSON data into a pandas DataFrame
-            json_io = StringIO(response.content.decode("utf-8"))
-            modifier_df = pd.read_json(json_io, dtype=str)
+        if response.status_code != 200:
+            logger.error(f"Recieved response code {response} when retrieving modifiers")
+            response.raise_for_status()
+        # Load the JSON data into a pandas DataFrame
+        json_io = StringIO(response.content.decode("utf-8"))
+        modifier_df = pd.read_json(json_io, dtype=str)
 
         modifier_types = [
             "implicit",
@@ -96,6 +99,27 @@ class ContinuousDataRetrieval:
                     ~modifier_df[modifier_type].isna()
                 ]
         return modifier_dfs
+
+    def _get_item_base_types(self) -> dict[str, int]:
+        response = requests.get(self.item_base_type_url, headers=self.pom_auth_headers)
+        item_base_type_mapped = {}
+        item_base_types = []
+
+        if response.status_code != 200:
+            logger.error(
+                f"Recieved response code {response} when retrieving item base types"
+            )
+            response.raise_for_status()
+
+        item_base_types = response.json()
+        if not isinstance(item_base_types, list):
+            item_base_types = [item_base_types]
+        for item_base_type in item_base_types:
+            item_base_type_id = item_base_type["itemBaseTypeId"]
+            base_type = item_base_type["baseType"]
+            item_base_type_mapped[base_type] = item_base_type_id
+
+        return item_base_type_mapped
 
     def _categorize_new_items(self, df: pd.DataFrame) -> dict[str, pd.DataFrame]:
         split_dfs = {}
@@ -141,6 +165,7 @@ class ContinuousDataRetrieval:
         try:
             logger.info("Retrieving modifiers from db.")
             modifier_dfs = self._get_modifiers()
+            item_base_types = self._get_item_base_types()
             get_df = self.poe_api_handler.dump_stream()
             for i, df in enumerate(get_df):
                 split_dfs = self._categorize_new_items(df)
@@ -151,6 +176,7 @@ class ContinuousDataRetrieval:
                         df=split_dfs[data_transformer_type],
                         modifier_df=modifier_dfs[data_transformer_type],
                         currency_df=currency_df.copy(deep=True),
+                        item_base_types=item_base_types,
                     )
         except Exception:
             logger.exception(

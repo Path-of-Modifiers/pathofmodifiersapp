@@ -32,8 +32,8 @@ class PoEAPIHandler:
         "User-Agent": f"OAuth pathofmodifiers/0.1.0 (contact: {settings.OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
     }
 
-    if "localhost" not in settings.BASEURL:
-        base_pom_api_url = f"https://{settings.BASEURL}"
+    if "localhost" not in settings.DOMAIN:
+        base_pom_api_url = f"https://{settings.DOMAIN}"
     else:
         base_pom_api_url = "http://src-backend-1"
 

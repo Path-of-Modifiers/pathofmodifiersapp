@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 from collections.abc import Generator
 from typing import Any
@@ -6,6 +7,7 @@ import pandas as pd
 import requests
 
 from data_retrieval_app.logs.logger import main_logger as logger
+from data_retrieval_app.external_data_retrieval.config import settings
 
 
 def _chunks(lst: list[Any], n: int) -> Generator[Any, None, None]:
@@ -49,6 +51,21 @@ def df_to_JSON(
         raise NotImplementedError(
             f"df to json for the request method {request_method} is not implemented."
         )
+
+
+def find_hours_since_launch() -> int:
+    current_time = datetime.now()
+    league_launch_time = settings.LEAGUE_LAUNCH_DATETIME_OBJECT
+
+    time_since_launch = current_time - league_launch_time
+
+    days_since_launch, seconds_since_launch = (
+        time_since_launch.days,
+        time_since_launch.seconds,
+    )
+    hours_since_launch = days_since_launch * 24 + seconds_since_launch // 3600
+
+    return hours_since_launch
 
 
 def insert_data(

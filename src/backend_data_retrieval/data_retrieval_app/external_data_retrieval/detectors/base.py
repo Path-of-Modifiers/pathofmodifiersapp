@@ -40,6 +40,13 @@ class DetectorBase:
             df = df.loc[df["hybrid"].isnull()]
         if "ultimatumMods" in columns:
             df = df.loc[df["ultimatumMods"].isnull()]
+        if "stash" in columns or "note" in columns:
+            if "stash" in columns and "note" in columns:
+                df = df.loc[df["stash"].notna() | df["note"].notna()]
+            elif "stash" in columns:
+                df = df.loc[df["stash"].notna()]
+            else:
+                df = df.loc[df["note"].notna()]
 
         df = df.loc[df["league"] == self.current_league]
 
