@@ -15,6 +15,7 @@ from app.exceptions.model_exceptions.plot_exception import (
 )
 from app.plotting.utils import find_conversion_value, summarize_function
 from app.utils.timing_tracker import async_timing_tracker, sync_timing_tracker
+from app.logs.logger import plot_logger
 
 
 class Plotter:
@@ -71,13 +72,13 @@ class Plotter:
         statement = (
             select(
                 model_Item.itemId,
-                model_Item.createdAt,
-                model_Item.baseType,
+                model_Item.createdHoursSinceLaunch,
+                model_Item.itemBaseTypeId,
                 model_Item.currencyId,
                 model_Item.currencyAmount,
                 model_Currency.tradeName,
                 model_Currency.valueInChaos,
-                model_Currency.createdAt.label("currencyCreatedAt"),
+                model_Currency.createdHoursSinceLaunch.label("currencyCreatedAt"),
             )
             .join_from(model_Currency, model_Item)
             .where(and_(model_Item.itemId.in_(subquery), model_Item.league == league))
@@ -105,9 +106,11 @@ class Plotter:
         self, statement: Select, *, base_spec_query: BaseSpecs
     ) -> Select:
         base_spec_conditions = []
-        if base_spec_query.baseType is not None:
-            # Using baseType without joining saves performance
-            base_spec_conditions.append(model_Item.baseType == base_spec_query.baseType)
+        if base_spec_query.itemBaseTypeId is not None:
+            # Using itemBaseType without joining saves performance
+            base_spec_conditions.append(
+                model_Item.itemBaseTypeId == base_spec_query.itemBaseTypeId
+            )
 
         if (
             base_spec_query.category is not None
@@ -200,7 +203,7 @@ class Plotter:
     @sync_timing_tracker
     def _create_plot_data(self, df: pd.DataFrame) -> tuple:
         # Sort values by date
-        df.sort_values(by="createdAt", inplace=True)
+        df.sort_values(by="createdHoursSinceLaunch", inplace=True)
 
         # Find most common currency
         most_common_currency_used = df.tradeName.mode()[0]
@@ -209,7 +212,7 @@ class Plotter:
         value_in_chaos = df["currencyAmount"] * df["valueInChaos"]
 
         # Get timestamps of when the items were retrieved
-        time_stamps = df["createdAt"]
+        time_stamps = df["createdHoursSinceLaunch"]
 
         # Find conversion value between chaos and most common currency
         conversion_value = find_conversion_value(
@@ -245,10 +248,10 @@ class Plotter:
         df = pd.DataFrame(plot_data)
 
         # Group by hour
-        grouped_by_date_df = df.groupby(pd.Grouper(key="timeStamp", axis=0, freq="h"))
+        grouped_by_created_hours_since_launch_df = df.groupby("timeStamp")
 
         # Aggregate by custom function
-        agg_by_date_df = grouped_by_date_df.agg(
+        agg_by_date_df = grouped_by_created_hours_since_launch_df.agg(
             {
                 "valueInChaos": lambda values: summarize_function(values, 2),
                 "valueInMostCommonCurrencyUsed": lambda values: summarize_function(
@@ -269,6 +272,7 @@ class Plotter:
 
     @async_timing_tracker
     async def plot(self, db: AsyncSession, *, query: PlotQuery) -> PlotData:
+        plot_logger.info(f"plot_query_executed={query}")
         result = await self._perform_plot_db_query(db, query=query)
         df = self._convert_result_to_df(result)
 
