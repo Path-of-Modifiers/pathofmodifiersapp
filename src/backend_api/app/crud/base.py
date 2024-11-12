@@ -161,13 +161,17 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         *,
         model_dict_list: list[dict[str, Any]],
         return_nothing: bool | None = None,
+        constraint: str | None = None,
     ) -> list[ModelType] | None:
         """
         Create objects with on_conflict_do_nothing and batching.
         """
-        created_objects = []
         logger.debug(f"Total objects to create: {len(model_dict_list)}")
 
+        created_objects = []
+        constraint = (
+            f"{self.model.__tablename__}_pkey" if not constraint else constraint
+        )
         for batch in self._batch_iterable(
             model_dict_list, self.create_batch_size_on_conflict
         ):
@@ -175,9 +179,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
                 create_stmt = (
                     insert(self.model)
                     .values(batch)
-                    .on_conflict_do_nothing(
-                        constraint=f"{self.model.__tablename__}_pkey"
-                    )
+                    .on_conflict_do_nothing(constraint=constraint)
                 )
                 if return_nothing:
                     db.execute(create_stmt)
@@ -242,6 +244,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         obj_in: CreateSchemaType | list[CreateSchemaType],
         on_duplicate_pkey_do_nothing: bool | None = None,
         return_nothing: bool | None = None,
+        on_conflict_constraint: str | None = None,
     ) -> ModelType | list[ModelType] | None:
         """
         Create an object in the database.
@@ -274,7 +277,10 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
         if on_duplicate_pkey_do_nothing:
             created_objects = self._create_with_on_conflict_do_nothing(
-                db, model_dict_list=model_dict_list, return_nothing=return_nothing
+                db,
+                model_dict_list=model_dict_list,
+                return_nothing=return_nothing,
+                constraint=on_conflict_constraint,
             )
         else:
             created_objects = self._create_bulk_insert(
