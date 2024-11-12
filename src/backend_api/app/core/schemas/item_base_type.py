@@ -23,7 +23,7 @@ class ItemBaseTypeUpdate(_BaseItemBaseType):
 
 # Properties shared by models stored in DB
 class ItemBaseTypeInDBBase(_BaseItemBaseType):
-    pass
+    itemBaseTypeId: int
 
 
 # Properties to return to client

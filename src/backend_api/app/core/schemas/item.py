@@ -18,7 +18,7 @@ class _BaseItem(_pydantic.BaseModel):
 
     name: str | None = None
     league: str
-    baseType: str
+    itemBaseTypeId: int
     typeLine: str
     ilvl: int
     rarity: str
@@ -41,7 +41,7 @@ class _BaseItem(_pydantic.BaseModel):
 
 # Properties to receive on item creation
 class ItemCreate(_BaseItem):
-    createdAt: _dt.datetime | None = None
+    createdHoursSinceLaunch: int
 
 
 # Properties to receive on update
@@ -51,7 +51,7 @@ class ItemUpdate(_BaseItem):
 
 # Properties shared by models stored in DB
 class ItemInDBBase(_BaseItem):
-    createdAt: _dt.datetime
+    createdHoursSinceLaunch: int
     itemId: int
 
 
