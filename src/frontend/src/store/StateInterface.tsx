@@ -1,5 +1,16 @@
-import { PlotQuery, TurnstileResponse } from "../client";
+import {
+    GroupedModifierByEffect,
+    ItemBaseType,
+    PlotQuery,
+    TurnstileResponse,
+} from "../client";
 
+export interface ChoosableModifiersExtended extends GroupedModifierByEffect {
+    isNotChoosable?: boolean;
+}
+export interface ChoosableItemBaseTypesExtended extends ItemBaseType {
+    isNotChoosable?: boolean;
+}
 export interface InfluenceSpecState {
     elder?: boolean | null;
     shaper?: boolean | null;
@@ -47,6 +58,7 @@ export interface WantedModifier {
 export interface WantedModifierExtended extends WantedModifier {
     index: number;
     isSelected: boolean;
+    relatedUniques?: string;
 }
 
 export interface PlotSettingsState {
@@ -57,23 +69,56 @@ export interface PlotSettingsState {
 }
 export type SetItemSpecMisc = (isItemSpecType: boolean | undefined) => void;
 
+export interface StateHash {
+    league?: string;
+    itemName?: string;
+    baseSpec?: string;
+    itemSpec?: string;
+    wantedModifierExtended?: string;
+}
+
 export interface GraphInputState {
+    stateHash: StateHash | undefined;
+
     clearClicked: boolean;
     queryClicked: boolean;
     fetchStatus: string | undefined;
+
+    choosableModifiers: ChoosableModifiersExtended[];
+    choosableItemBaseType: ChoosableItemBaseTypesExtended[];
+    choosableItemNames: string[];
+
     league: string;
+
     itemName: string | undefined;
     itemSpec: ItemSpecState | undefined;
     baseSpec: BaseSpecState | undefined;
-    wantedModifiers: WantedModifier[];
+
     wantedModifierExtended: WantedModifierExtended[];
+
     plotQuery: PlotQuery;
+
+    getStoreFromHash: (searchParams: URLSearchParams) => void;
+    setHashFromStore: () => void;
+
+    setClearClicked: () => void;
     setQueryClicked: () => void;
     setFetchStatus: (fetchStatus: string | undefined) => void;
-    setPlotQuery: () => void;
-    setClearClicked: () => void;
+
+    setChoosableModifiers: (
+        choosableModifiers: GroupedModifierByEffect[]
+    ) => void;
+    setChoosableItemBaseType: (choosableItemBaseType: ItemBaseType[]) => void;
+    setChoosableItemNames: (choosableItemNames: string[]) => void;
+    updateChoosable: (itemName: string | undefined) => void;
+
+    setPlotQuery: (plotQuery: PlotQuery) => void;
+
     setLeague: (league: string) => void;
+
     setItemName: (name: string | undefined) => void;
+
+    setItemSpec: (itemSpec: ItemSpecState) => void;
     setItemRarity: (rarity: string | undefined) => void;
     setItemSpecMinIlvl: (minIlvl: number | undefined) => void;
     setItemSpecMaxIlvl: (maxIlvl: number | undefined) => void;
@@ -93,12 +138,19 @@ export interface GraphInputState {
     setItemSpecTangled: SetItemSpecMisc;
     setItemSpecIsRelic: SetItemSpecMisc;
     setItemSpecFoilVariation: (foilVariation: number | undefined) => void;
+
+    setBaseSpec: (baseSpec: BaseSpecState) => void;
     setBaseType: (baseType: string | undefined) => void;
     setItemCategory: (category: string | undefined) => void;
     setItemSubCategory: (subCategory: string | undefined) => void;
+
+    setWantedModifierExtended: (
+        wantedModifierExtended: WantedModifierExtended[]
+    ) => void;
     addWantedModifierExtended: (
         wantedModifier: WantedModifier,
-        index: number
+        index: number,
+        relatedUniques?: string
     ) => void;
     removeWantedModifierExtended: (index_to_remove: number) => void;
     updateSelectedWantedModifierExtended: (
@@ -138,9 +190,17 @@ export interface ErrorState {
     leagueError: boolean;
     modifiersError: boolean;
     resultError: boolean;
+    noRelatedUniqueError: boolean;
+    itemDoesNotHaveSelectedModifiersError: boolean;
+    baseSpecDoesNotMatchError: boolean;
     setLeagueError: (leagueError: boolean) => void;
     setModifiersError: (modifiersError: boolean) => void;
     setResultError: (resultError: boolean) => void;
+    setNoRelatedUniqueError: (noRelatedUniqueError: boolean) => void;
+    setItemDoesNotHaveSelectedModifiersError: (
+        itemDoesNotHaveSelectedModifiersError: boolean
+    ) => void;
+    setBaseSpecDoesNotMatchError: (baseSpecDoesNotMatchError: boolean) => void;
 }
 
 export interface TurnstileState {

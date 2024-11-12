@@ -1,28 +1,112 @@
 import { create } from "zustand";
 import {
+    BaseSpecState,
+    ChoosableItemBaseTypesExtended,
+    ChoosableModifiersExtended,
     GraphInputState,
     ItemSpecState,
+    StateHash,
     WantedModifier,
     WantedModifierExtended,
 } from "./StateInterface";
+import { GroupedModifierByEffect, ItemBaseType, PlotQuery } from "../client";
+import { encodeHash, decodeHash } from "./utils";
 
 const defaultLeague = import.meta.env.VITE_APP_DEFAULT_LEAGUE;
 
 // Graph Input Store  -  This store is used to store graph input data.
 export const useGraphInputStore = create<GraphInputState>((set) => ({
+    stateHash: undefined,
+
     clearClicked: false,
     queryClicked: false,
     fetchStatus: undefined,
+
+    choosableModifiers: [],
+    choosableItemBaseType: [],
+    choosableItemNames: [],
+
     league: defaultLeague,
+
     itemName: undefined,
     itemSpec: undefined,
     baseSpec: undefined,
-    wantedModifiers: [],
+
     wantedModifierExtended: [],
+
     plotQuery: {
         league: defaultLeague,
         wantedModifiers: [],
     },
+
+    getStoreFromHash: (searchParams: URLSearchParams) =>
+        set((state) => {
+            const internalState: GraphInputState = { ...state };
+            searchParams.forEach((value, key) => {
+                if (key === "league") {
+                    internalState.league = value;
+                }
+                if (key === "itemName") {
+                    internalState.itemName = value;
+                }
+                if (key === "baseSpec") {
+                    const baseSpec: BaseSpecState = JSON.parse(
+                        decodeHash(value)
+                    );
+                    internalState.baseSpec = baseSpec;
+                }
+                if (key === "itemSpec") {
+                    const itemSpec: ItemSpecState = JSON.parse(
+                        decodeHash(value)
+                    );
+                    internalState.itemSpec = itemSpec;
+                }
+                if (key === "wantedModifierExtended") {
+                    const wantedModifierExtended: WantedModifierExtended[] =
+                        JSON.parse(decodeHash(value));
+                    internalState.wantedModifierExtended =
+                        wantedModifierExtended;
+                }
+            });
+            return { ...internalState };
+        }),
+    setHashFromStore: () =>
+        set((state) => {
+            if (state.stateHash != null) return {};
+            const searchParams = new URLSearchParams(location.hash.slice(1));
+            const stateHash: StateHash = {};
+            if (state.league != null) {
+                stateHash.league = state.league;
+                searchParams.set("league", state.league);
+            }
+            if (state.itemName != null) {
+                stateHash.itemName = state.itemName;
+                searchParams.set("itemName", state.itemName);
+            }
+            if (state.baseSpec != null) {
+                const baseSpecHash = encodeHash(JSON.stringify(state.baseSpec));
+                stateHash.baseSpec = baseSpecHash;
+                searchParams.set("baseSpec", baseSpecHash);
+            }
+            if (state.itemSpec != null) {
+                const itemSpecHash = encodeHash(JSON.stringify(state.itemSpec));
+                stateHash.itemSpec = itemSpecHash;
+                searchParams.set("itemSpec", itemSpecHash);
+            }
+            if (state.wantedModifierExtended.length > 0) {
+                const wantedModifierExtendedHash = encodeHash(
+                    JSON.stringify(state.wantedModifierExtended)
+                );
+                stateHash.wantedModifierExtended = wantedModifierExtendedHash;
+                searchParams.set(
+                    "wantedModifierExtended",
+                    wantedModifierExtendedHash
+                );
+            }
+
+            location.hash = searchParams.toString();
+            return { stateHash: stateHash };
+        }),
 
     setQueryClicked: () =>
         set(() => ({
@@ -34,19 +118,59 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             fetchStatus: fetchStatus,
         })),
 
-    setPlotQuery: () =>
-        set((state) => ({
-            plotQuery: {
-                league: state.league,
-                itemSpecifications: state.itemSpec,
-                baseSpec: state.baseSpec,
-                wantedModifiers: state.wantedModifierExtended
-                    .filter((wantedModifier) => wantedModifier.isSelected)
-                    .map((wantedModifier) => ({
-                        modifierId: wantedModifier.modifierId,
-                        modifierLimitations: wantedModifier.modifierLimitations,
-                    })),
-            },
+    setChoosableModifiers: (choosableModifiers: GroupedModifierByEffect[]) =>
+        set(() => ({
+            choosableModifiers: choosableModifiers,
+        })),
+
+    setChoosableItemBaseType: (choosableItemBaseType: ItemBaseType[]) =>
+        set(() => ({
+            choosableItemBaseType: choosableItemBaseType,
+        })),
+    setChoosableItemNames: (choosableItemNames: string[]) =>
+        set(() => ({
+            choosableItemNames: choosableItemNames,
+        })),
+
+    updateChoosable: (itemName: string | undefined) =>
+        set((state) => {
+            let choosableModifiers: ChoosableModifiersExtended[];
+            let choosableItemBaseType: ChoosableItemBaseTypesExtended[];
+            if (itemName === undefined) {
+                choosableModifiers = state.choosableModifiers.map(
+                    (modifier) => ({ ...modifier, isNotChoosable: false })
+                );
+                choosableItemBaseType = state.choosableItemBaseType.map(
+                    (itemBaseType) => ({
+                        ...itemBaseType,
+                        isNotChoosable: false,
+                    })
+                );
+            } else {
+                choosableModifiers = state.choosableModifiers.map(
+                    (modifier) => ({
+                        ...modifier,
+                        isNotChoosable:
+                            !modifier.relatedUniques?.includes(itemName),
+                    })
+                );
+                choosableItemBaseType = state.choosableItemBaseType.map(
+                    (itemBaseType) => ({
+                        ...itemBaseType,
+                        isNotChoosable:
+                            !itemBaseType.relatedUniques?.includes(itemName),
+                    })
+                );
+            }
+            return {
+                choosableModifiers: choosableModifiers,
+                choosableItemBaseType: choosableItemBaseType,
+            };
+        }),
+
+    setPlotQuery: (plotQuery: PlotQuery) =>
+        set(() => ({
+            plotQuery: plotQuery,
         })),
 
     setClearClicked: () =>
@@ -61,6 +185,9 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
 
     setLeague: (league: string) => set(() => ({ league: league })),
 
+    setItemSpec: (itemSpec: ItemSpecState) =>
+        set(() => ({ itemSpec: itemSpec })),
+
     setItemSpecIdentified: (identified: boolean | undefined) =>
         set((state) => ({
             itemSpec: { ...state.itemSpec, identified: identified },
@@ -71,7 +198,6 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             itemSpec: { ...state.itemSpec, name: name },
             itemName: name,
         })),
-
     setItemSpecElderInfluence: (elder: boolean | undefined) =>
         set((state) => ({
             itemSpec: {
@@ -173,9 +299,9 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             itemSpec: { ...state.itemSpec, fractured: fractured },
         })),
 
-    setItemSpecSynthesised: (synthesised: boolean | undefined) =>
+    setItemSpecSynthesized: (synthesized: boolean | undefined) =>
         set((state) => ({
-            itemSpec: { ...state.itemSpec, synthesised: synthesised },
+            itemSpec: { ...state.itemSpec, synthesized: synthesized },
         })),
 
     setItemSpecSearing: (searing: boolean | undefined) =>
@@ -210,8 +336,8 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             itemSpec: { ...state.itemSpec, rarity: rarity },
         })),
 
-    setItemSpec: (itemSpec: ItemSpecState) =>
-        set(() => ({ itemSpec: itemSpec })),
+    setBaseSpec: (baseSpec: BaseSpecState) =>
+        set(() => ({ baseSpec: baseSpec })),
 
     setBaseType: (baseType: string | undefined) =>
         set((state) => ({
@@ -228,18 +354,26 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             baseSpec: { ...state.baseSpec, subCategory: subCategory },
         })),
 
+    setWantedModifierExtended: (
+        wantedModifierExtended: WantedModifierExtended[]
+    ) => set(() => ({ wantedModifierExtended: wantedModifierExtended })),
+
     addWantedModifierExtended: (
         wantedModifier: WantedModifier,
-        index: number
+        index: number,
+        relatedUniques?: string
     ) =>
-        set((state) => {
-            return {
-                wantedModifierExtended: [
-                    ...state.wantedModifierExtended,
-                    { ...wantedModifier, index: index, isSelected: true },
-                ],
-            };
-        }),
+        set((state) => ({
+            wantedModifierExtended: [
+                ...state.wantedModifierExtended,
+                {
+                    ...wantedModifier,
+                    index: index,
+                    isSelected: true,
+                    relatedUniques: relatedUniques,
+                },
+            ],
+        })),
 
     updateSelectedWantedModifierExtended: (
         index_to_update: number,
