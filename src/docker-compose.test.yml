@@ -1,6 +1,6 @@
 services:
   test-db:
-    image: postgres:16.1
+    image: timescale/timescaledb:latest-pg16
     ports:
       - 5433:5432
     restart: no
@@ -22,7 +22,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
 
 volumes:
   pom-db-test-data:
