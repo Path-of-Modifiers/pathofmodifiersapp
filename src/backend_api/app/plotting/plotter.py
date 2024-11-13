@@ -1,14 +1,29 @@
 import pandas as pd
 from pydantic import TypeAdapter
-from sqlalchemy import Boolean, Result, and_, intersect, or_, select
+from sqlalchemy import (
+    BinaryExpression,
+    Boolean,
+    ColumnElement,
+    Result,
+    and_,
+    or_,
+    select,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql.expression import CompoundSelect, Select
+from sqlalchemy.sql.expression import Select
 
 from app.core.models.models import Currency as model_Currency
 from app.core.models.models import Item as model_Item
 from app.core.models.models import ItemBaseType as model_ItemBaseType
 from app.core.models.models import ItemModifier as model_ItemModifier
-from app.core.schemas.plot import BaseSpecs, ItemSpecs, PlotData, PlotQuery
+from app.core.schemas.plot import (
+    BaseSpecs,
+    ItemSpecs,
+    ModifierLimitations,
+    PlotData,
+    PlotQuery,
+    WantedModifier,
+)
 from app.exceptions.model_exceptions.plot_exception import (
     PlotNoModifiersProvidedError,
     PlotQueryDataNotFoundError,
@@ -22,51 +37,16 @@ class Plotter:
     def __init__(self):
         self.validate = TypeAdapter(PlotData).validate_python
 
-    def _create_wanted_modifier_subquery(self, query: PlotQuery):
+    def _init_stmt(
+        self, query: PlotQuery, *, before: int | None, after: int | None
+    ) -> Select:
         if len(query.wantedModifiers) == 0:
             raise PlotNoModifiersProvidedError(
                 query_data=query,
-                function_name=self._create_wanted_modifier_subquery.__name__,
+                function_name=self._init_stmt.__name__,
                 class_name=self.__class__.__name__,
             )
 
-        base_subquery_stmt = select(
-            model_ItemModifier.itemId.label("itemModifierItemId")
-        )
-
-        wanted_modifier_conditions = []
-        for wanted_modifier in query.wantedModifiers:
-            modifier_id = wanted_modifier.modifierId
-            modifier_limitation = wanted_modifier.modifierLimitations
-
-            limitations = []
-            if modifier_limitation is not None:
-                # Adds limitations if they exist
-                if wanted_modifier.modifierLimitations.minRoll is not None:
-                    limitations.append(
-                        model_ItemModifier.roll
-                        >= wanted_modifier.modifierLimitations.minRoll
-                    )
-                if wanted_modifier.modifierLimitations.maxRoll is not None:
-                    limitations.append(
-                        model_ItemModifier.roll
-                        <= wanted_modifier.modifierLimitations.maxRoll
-                    )
-                if wanted_modifier.modifierLimitations.textRoll is not None:
-                    limitations.append(
-                        model_ItemModifier.roll
-                        == (wanted_modifier.modifierLimitations.textRoll)
-                    )
-            intersect_wanted_modifier_statement = base_subquery_stmt.where(
-                model_ItemModifier.modifierId == modifier_id, *limitations
-            )
-            wanted_modifier_conditions.append(intersect_wanted_modifier_statement)
-
-        subquery_stmt = intersect(*wanted_modifier_conditions)
-
-        return subquery_stmt
-
-    def _init_stmt(self, query: PlotQuery, *, subquery: CompoundSelect) -> Select:
         league = query.league
 
         statement = (
@@ -81,12 +61,105 @@ class Plotter:
                 model_Currency.createdHoursSinceLaunch.label("currencyCreatedAt"),
             )
             .join_from(model_Currency, model_Item)
-            .where(and_(model_Item.itemId.in_(subquery), model_Item.league == league))
+            .where(model_Item.league == league)
         )
+
+        if before is not None:
+            statement = statement.where(model_ItemModifier.createdHoursSinceLaunch <= before)
+        if after is not None:
+            statement = statement.where(model_ItemModifier.createdHoursSinceLaunch >= after)
 
         return statement
 
-    def _apply_priority_filters(self, statement: Select, *, query: PlotQuery) -> Select:
+    def _check_rolls(
+        self, modifier_limitations: ModifierLimitations
+    ) -> ColumnElement[bool] | BinaryExpression[bool]:
+        if modifier_limitations.textRoll is not None:
+            return model_ItemModifier.roll == modifier_limitations.textRoll
+        else:
+            and_conditions = []
+            if modifier_limitations.minRoll is not None:
+                and_conditions.append(
+                    model_ItemModifier.roll >= modifier_limitations.minRoll
+                )
+            if modifier_limitations.maxRoll is not None:
+                and_conditions.append(
+                    model_ItemModifier.roll <= modifier_limitations.maxRoll
+                )
+            return and_(*and_conditions)
+
+    def _add_wanted_modifiers(
+        self,
+        statement: Select,
+        *,
+        wanted_modifier_query: list[list[WantedModifier]],
+        before: int | None,
+        after: int | None,
+    ) -> Select:
+        """
+        Uses as few modifier ids as possible to filter. One modifier effect has multiple
+        modifier ids assosiated with it. Here, the ones with a roll limitation from the user
+        are prioritized. If none are found (modifier_roll_limitation_found=False), a random
+        one is chosen.
+        """
+        exists_conditions = []
+        for grouped_wanted_modifier in wanted_modifier_query:
+            modifier_roll_limitation_found = False
+            for wanted_modifier in grouped_wanted_modifier:
+                if wanted_modifier.modifierLimitations is not None:
+                    modifier_roll_limitation_found = True
+                    roll_condition = self._check_rolls(
+                        wanted_modifier.modifierLimitations
+                    )
+                    and_conditions = [
+                        model_Item.itemId == model_ItemModifier.itemId,
+                        model_ItemModifier.modifierId == wanted_modifier.modifierId,
+                        roll_condition,
+                    ]
+                    if before is not None:
+                        and_conditions.append(model_ItemModifier.createdHoursSinceLaunch <= before)
+                    if after is not None:
+                        and_conditions.append(model_ItemModifier.createdHoursSinceLaunch >= after)
+
+                    exists_conditions.append(
+                        select(1)
+                        .where(
+                            and_(
+                                *and_conditions,
+                            )
+                        )
+                        .exists()
+                    )
+
+            if not modifier_roll_limitation_found:
+                and_conditions = [
+                    model_Item.itemId == model_ItemModifier.itemId,
+                    model_ItemModifier.modifierId == wanted_modifier.modifierId,
+                ]
+                if before is not None:
+                    and_conditions.append(model_ItemModifier.createdHoursSinceLaunch <= before)
+                if after is not None:
+                    and_conditions.append(model_ItemModifier.createdHoursSinceLaunch >= after)
+                exists_conditions.append(
+                    select(1).where(and_(*and_conditions)).exists()
+                )
+
+        return statement.where(and_(*exists_conditions))
+
+    def _apply_priority_filters(
+        self,
+        statement: Select,
+        *,
+        query: PlotQuery,
+        before: int | None,
+        after: int | None,
+    ) -> Select:
+        statement = self._add_wanted_modifiers(
+            statement,
+            wanted_modifier_query=query.wantedModifiers,
+            before=before,
+            after=after,
+        )
         if query.itemSpecifications is not None:
             if query.itemSpecifications.name is not None:
                 if "|" in query.itemSpecifications.name:
@@ -105,18 +178,15 @@ class Plotter:
     def _apply_base_specs(
         self, statement: Select, *, base_spec_query: BaseSpecs
     ) -> Select:
-        base_spec_conditions = []
         if base_spec_query.itemBaseTypeId is not None:
-            # Using itemBaseType without joining saves performance
-            base_spec_conditions.append(
-                model_Item.itemBaseTypeId == base_spec_query.itemBaseTypeId
-            )
+            return statement.where(model_Item.itemBaseTypeId == base_spec_query.itemBaseTypeId)
 
-        if (
+        elif (
             base_spec_query.category is not None
             or base_spec_query.subCategory is not None
         ):
-            statement = statement.join(model_ItemBaseType)
+            subquery = select(model_ItemBaseType.itemBaseTypeId)
+            base_spec_conditions = []
             if base_spec_query.category is not None:
                 base_spec_conditions.append(
                     model_ItemBaseType.category == base_spec_query.category
@@ -126,8 +196,12 @@ class Plotter:
                 base_spec_conditions.append(
                     model_ItemBaseType.subCategory == base_spec_query.subCategory
                 )
+            subquery = subquery.where(and_(*base_spec_conditions))
 
-        return statement.where(and_(*base_spec_conditions))
+            return statement.where(model_Item.itemBaseTypeId.in_(subquery))
+
+        else:
+            return statement
 
     def _apply_item_specs(
         self, statement: Select, *, item_spec_query: ItemSpecs
@@ -164,11 +238,20 @@ class Plotter:
 
         return statement.where(and_(*item_specifications))
 
-    def _filter_from_query(self, statement: Select, *, query: PlotQuery) -> Select:
+    def _filter_from_query(
+        self,
+        statement: Select,
+        *,
+        query: PlotQuery,
+        before: int | None,
+        after: int | None,
+    ) -> Select:
         """
         Prioritizes filtering the largest amount of rows
         """
-        statement = self._apply_priority_filters(statement, query=query)
+        statement = self._apply_priority_filters(
+            statement, query=query, before=before, after=after
+        )
         if query.baseSpecifications is not None:
             statement = self._apply_base_specs(
                 statement, base_spec_query=query.baseSpecifications
@@ -185,9 +268,11 @@ class Plotter:
     async def _perform_plot_db_query(
         self, db: AsyncSession, *, query: PlotQuery
     ) -> Result:
-        subquery_stmt = self._create_wanted_modifier_subquery(query)
-        statement = self._init_stmt(query, subquery=subquery_stmt)
-        statement = self._filter_from_query(statement, query=query)
+        before, after = query.before, query.after
+        statement = self._init_stmt(query, before=before, after=after)
+        statement = self._filter_from_query(
+            statement, query=query, before=before, after=after
+        )
 
         async with db.begin():
             result = await db.execute(statement)

@@ -42,4 +42,6 @@ class PlotQuery(_pydantic.BaseModel):
     league: str
     itemSpecifications: ItemSpecs | None = None
     baseSpecifications: BaseSpecs | None = None
-    wantedModifiers: list[WantedModifier]
+    wantedModifiers: list[list[WantedModifier]]
+    before: int | None = None
+    after: int | None = None

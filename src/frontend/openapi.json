@@ -4633,10 +4633,35 @@
           },
           "wantedModifiers": {
             "items": {
-              "$ref": "#/components/schemas/WantedModifier"
+              "items": {
+                "$ref": "#/components/schemas/WantedModifier"
+              },
+              "type": "array"
             },
             "type": "array",
             "title": "Wantedmodifiers"
+          },
+          "before": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Before"
+          },
+          "after": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "After"
           }
         },
         "type": "object",
