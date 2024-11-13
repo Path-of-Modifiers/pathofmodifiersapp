@@ -71,7 +71,7 @@ class Item(Base):
     itemId: Mapped[int] = mapped_column(
         BigInteger,
         Identity(start=1, increment=1, cycle=True),
-        primary_key=True,  # Dummy pk, will be removed during hypertable creation
+        primary_key=True,  # Primary key constraint gets removed on hypertable creation
     )
     currencyId: Mapped[int] = mapped_column(
         Integer,
@@ -216,10 +216,10 @@ class ItemModifier(Base):
     itemId: Mapped[int] = mapped_column(
         BigInteger,
         nullable=False,
+        primary_key=True,  # Primary key constraint gets removed on hypertable creation
     )
     roll: Mapped[float | None] = mapped_column(
         Float(4),
-        primary_key=True,  # Dummy pk since we removing the pks on hypertable creation Doesn't have FK to item, since both are hypertable
     )
     __table_args__ = (
         Index(

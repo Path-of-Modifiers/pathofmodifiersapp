@@ -1,8 +1,8 @@
-"""v8_baseline_Create layout for hypertable setup
+"""V8 Create baseline for hypertables refactoring
 
-Revision ID: 14c8e1e053e4
+Revision ID: dc80323aadb2
 Revises: 
-Create Date: 2024-11-12 07:39:32.417144
+Create Date: 2024-11-13 08:18:46.529576
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '14c8e1e053e4'
+revision: str = 'dc80323aadb2'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
