@@ -46,7 +46,6 @@ const QueryButtons = (props: FlexProps) => {
     const handlePlotQuery = () => {
         if (isFetching) return;
         if (stateHash) return;
-        setHashFromStore();
         setResultError(false);
         const plotQuery = getOptimizedPlotQuery();
         if (plotQuery === undefined) return;
@@ -55,6 +54,7 @@ const QueryButtons = (props: FlexProps) => {
         const modifierValid = checkGraphQueryModifierInput();
         if (leagueValid && modifierValid) {
             useGraphInputStore.getState().setQueryClicked();
+            setHashFromStore();
 
             // This is a hack to make sure the clearClicked is set to false after the
             // state is updated.

@@ -8,5 +8,6 @@ export type ItemModifierCreate = {
     orderId: number;
     position: number;
     roll?: (number | null);
+    createdAt?: (string | null);
 };
 

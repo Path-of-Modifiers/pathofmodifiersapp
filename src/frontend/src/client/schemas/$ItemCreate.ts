@@ -187,5 +187,14 @@ export const $ItemCreate = {
                 type: 'null',
             }],
         },
+        createdAt: {
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+                format: 'date-time',
+            }, {
+                type: 'null',
+            }],
+        },
     },
 } as const;

@@ -177,10 +177,10 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
         set(() => ({
             clearClicked: true,
             itemName: undefined,
-            itemSpec: {},
+            itemSpec: undefined,
             wantedModifierExtended: [],
             wantedModifiers: [],
-            baseSpec: {},
+            baseSpec: undefined,
         })),
 
     setLeague: (league: string) => set(() => ({ league: league })),
