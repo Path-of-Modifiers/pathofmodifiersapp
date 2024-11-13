@@ -5,28 +5,28 @@ import {
     HandleChangeEventFunction,
 } from "../StandardLayoutInput/SelectBoxInput";
 
+export interface BaseType {
+    itemBaseTypeId: number;
+    baseType: string;
+}
+
 interface BaseTypeInputProps {
-    baseTypes: string[];
+    baseTypes: BaseType[];
     presetValue: string | undefined;
 }
 
 // Base Type Input Component  -  This component is used to select the base type of an item.
 export const BaseTypeInput = (props: BaseTypeInputProps) => {
-    const { choosableItemBaseType, setBaseType } = useGraphInputStore();
+    const { setBaseType } = useGraphInputStore();
 
     const handleBaseTypeChange: HandleChangeEventFunction = (newValue) => {
         if (newValue) {
-            const baseType = newValue?.value;
-            const itemBaseType = choosableItemBaseType.find(
-                (choosableItemBaseType) => choosableItemBaseType.baseType === baseType,
-            );
-            if (itemBaseType == null) {
-                throw "Couldn't find the base type in choosable item base type array";
-            }
+            const itemBaseTypeId = Number(newValue?.value);
+            const baseType = newValue.label;
             if (baseType === "Any") {
-                setBaseType(undefined);
+                setBaseType(undefined, undefined);
             } else {
-                setBaseType(itemBaseType.itemBaseTypeId);
+                setBaseType(itemBaseTypeId, baseType);
             }
         }
     };
@@ -34,9 +34,9 @@ export const BaseTypeInput = (props: BaseTypeInputProps) => {
     const baseTypeOptions: Array<SelectBoxOptionValue> = props.baseTypes.map(
         (baseType) => {
             return {
-                value: baseType,
-                label: baseType,
-                regex: baseType,
+                value: baseType.itemBaseTypeId.toString(),
+                label: baseType.baseType,
+                regex: baseType.baseType,
             };
         },
     );

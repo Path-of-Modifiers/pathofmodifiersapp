@@ -1,6 +1,6 @@
 import { Flex } from "@chakra-ui/layout";
 import { useEffect } from "react";
-import { BaseTypeInput } from "./ItemBaseTypeInputComp/BaseTypeInput";
+import { BaseTypeInput, BaseType } from "./ItemBaseTypeInputComp/BaseTypeInput";
 import { CategoryInput } from "./ItemBaseTypeInputComp/CategoryInput";
 import { SubCategoryInput } from "./ItemBaseTypeInputComp/SubCategoryInput";
 import { useGraphInputStore } from "../../store/GraphInputStore";
@@ -26,14 +26,17 @@ export const BaseInput = () => {
         }
     }
 
-    const baseTypes = choosableItemBaseType
+    const baseTypes: BaseType[] = choosableItemBaseType
         .filter((itemBaseType) => !itemBaseType.isNotChoosable)
-        .map((itemBaseType) => itemBaseType.baseType);
+        .map((itemBaseType) => ({
+            itemBaseTypeId: itemBaseType.itemBaseTypeId,
+            baseType: itemBaseType.baseType,
+        }));
     const categories = [
         ...new Set(
             choosableItemBaseType
                 .filter((itemBaseType) => !itemBaseType.isNotChoosable)
-                .map((itemBaseType) => itemBaseType.category)
+                .map((itemBaseType) => itemBaseType.category),
         ),
     ];
     const subCategories = [
@@ -41,12 +44,11 @@ export const BaseInput = () => {
             choosableItemBaseType
                 .filter((itemBaseType) => !itemBaseType.isNotChoosable)
                 .map((itemBaseType) => itemBaseType.subCategory)
-                .filter((subCategory) => subCategory != null)
+                .filter((subCategory) => subCategory != null),
         ),
     ];
 
-    const { expandedBaseType, setExpandedBaseType } =
-        useExpandedComponentStore();
+    const { expandedBaseType, setExpandedBaseType } = useExpandedComponentStore();
 
     const handleExpanded = () => {
         setExpandedBaseType(!expandedBaseType);
@@ -66,20 +68,9 @@ export const BaseInput = () => {
                 text="Base Type"
             />
             {expandedBaseType && choosableItemBaseType.length !== 0 && (
-                <Flex
-                    flexWrap={"wrap"}
-                    justifyContent={"flex-start"}
-                    ml={10}
-                    gap={2}
-                >
-                    <BaseTypeInput
-                        baseTypes={baseTypes}
-                        presetValue={presetBaseType}
-                    />
-                    <CategoryInput
-                        categories={categories}
-                        presetValue={presetCategory}
-                    />
+                <Flex flexWrap={"wrap"} justifyContent={"flex-start"} ml={10} gap={2}>
+                    <BaseTypeInput baseTypes={baseTypes} presetValue={presetBaseType} />
+                    <CategoryInput categories={categories} presetValue={presetCategory} />
                     <SubCategoryInput
                         subCategories={subCategories}
                         presetValue={presetSubCategory}

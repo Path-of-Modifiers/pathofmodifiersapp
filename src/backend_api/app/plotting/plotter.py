@@ -59,7 +59,7 @@ class Plotter:
                 model_Currency.tradeName,
                 model_Currency.valueInChaos,
                 model_Currency.createdHoursSinceLaunch.label(
-                    "createdCurrencyHoursSinceLaunch"
+                    "currencyCreatedHoursSinceLaunch"
                 ),
             )
             .join_from(model_Currency, model_Item)

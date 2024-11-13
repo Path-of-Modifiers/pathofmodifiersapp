@@ -141,7 +141,10 @@ export interface GraphInputState {
     setItemSpecFoilVariation: (foilVariation: number | undefined) => void;
 
     setBaseSpec: (baseSpec: BaseSpecState) => void;
-    setBaseType: (itemBaseTypeId: number | undefined) => void;
+    setBaseType: (
+        itemBaseTypeId: number | undefined,
+        baseType: string | undefined,
+    ) => void;
     setItemCategory: (category: string | undefined) => void;
     setItemSubCategory: (subCategory: string | undefined) => void;
 

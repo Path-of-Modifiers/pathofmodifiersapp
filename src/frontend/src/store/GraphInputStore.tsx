@@ -50,22 +50,18 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
                     internalState.itemName = value;
                 }
                 if (key === "baseSpec") {
-                    const baseSpec: BaseSpecState = JSON.parse(
-                        decodeHash(value)
-                    );
+                    const baseSpec: BaseSpecState = JSON.parse(decodeHash(value));
                     internalState.baseSpec = baseSpec;
                 }
                 if (key === "itemSpec") {
-                    const itemSpec: ItemSpecState = JSON.parse(
-                        decodeHash(value)
-                    );
+                    const itemSpec: ItemSpecState = JSON.parse(decodeHash(value));
                     internalState.itemSpec = itemSpec;
                 }
                 if (key === "wantedModifierExtended") {
-                    const wantedModifierExtended: WantedModifierExtended[] =
-                        JSON.parse(decodeHash(value));
-                    internalState.wantedModifierExtended =
-                        wantedModifierExtended;
+                    const wantedModifierExtended: WantedModifierExtended[] = JSON.parse(
+                        decodeHash(value),
+                    );
+                    internalState.wantedModifierExtended = wantedModifierExtended;
                 }
             });
             return { ...internalState };
@@ -95,13 +91,10 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             }
             if (state.wantedModifierExtended.length > 0) {
                 const wantedModifierExtendedHash = encodeHash(
-                    JSON.stringify(state.wantedModifierExtended)
+                    JSON.stringify(state.wantedModifierExtended),
                 );
                 stateHash.wantedModifierExtended = wantedModifierExtendedHash;
-                searchParams.set(
-                    "wantedModifierExtended",
-                    wantedModifierExtendedHash
-                );
+                searchParams.set("wantedModifierExtended", wantedModifierExtendedHash);
             }
 
             location.hash = searchParams.toString();
@@ -182,8 +175,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
 
     setLeague: (league: string) => set(() => ({ league: league })),
 
-    setItemSpec: (itemSpec: ItemSpecState) =>
-        set(() => ({ itemSpec: itemSpec })),
+    setItemSpec: (itemSpec: ItemSpecState) => set(() => ({ itemSpec: itemSpec })),
 
     setItemSpecIdentified: (identified: boolean | undefined) =>
         set((state) => ({
@@ -333,14 +325,17 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             itemSpec: { ...state.itemSpec, rarity: rarity },
         })),
 
-    setBaseSpec: (baseSpec: BaseSpecState) =>
-        set(() => ({ baseSpec: baseSpec })),
+    setBaseSpec: (baseSpec: BaseSpecState) => set(() => ({ baseSpec: baseSpec })),
 
-    setBaseType: (itemBaseTypeId: number | undefined) =>
+    setBaseType: (
+        itemBaseTypeId: number | undefined,
+        baseType: string | undefined,
+    ) =>
         set((state) => ({
             baseSpec: {
                 ...state.baseSpec,
                 itemBaseTypeId: itemBaseTypeId,
+                baseType: baseType,
             },
         })),
 
@@ -355,7 +350,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
         })),
 
     setWantedModifierExtended: (
-        wantedModifierExtended: WantedModifierExtended[]
+        wantedModifierExtended: WantedModifierExtended[],
     ) => set(() => ({ wantedModifierExtended: wantedModifierExtended })),
 
     addWantedModifierExtended: (
