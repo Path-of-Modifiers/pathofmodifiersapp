@@ -28,9 +28,7 @@ class RollProcessor:
             self.modifier_df = modifier_df
 
     def _pre_processing(self, df: pd.DataFrame) -> pd.DataFrame:
-        df.loc[:, "modifier"] = df[
-            "modifier"
-        ].replace(
+        df.loc[:, "modifier"] = df["modifier"].replace(
             r"\\n|\n", " ", regex=True
         )  # Replaces newline with a space, so that it does not mess up the regex and matches modifiers in the `modifier` table
 
@@ -97,9 +95,9 @@ class RollProcessor:
             matched_modifiers_mask = matched_modifiers.str.contains("matched", na=False)
 
             dynamic_w_rolls_df.loc[matched_modifiers_mask, "effect"] = effect
-            dynamic_w_rolls_df.loc[
-                matched_modifiers_mask, "roll"
-            ] = matched_modifiers.loc[matched_modifiers_mask]
+            dynamic_w_rolls_df.loc[matched_modifiers_mask, "roll"] = (
+                matched_modifiers.loc[matched_modifiers_mask]
+            )
 
             dynamic_df.loc[matched_modifiers_mask, "modifier"] = pd.NA
 
@@ -181,19 +179,6 @@ class RollProcessor:
 
         return merged_dynamic_df
 
-    def _add_order_id(
-        self, ready_static_df: pd.DataFrame, ready_dynamic_df: pd.DataFrame
-    ) -> tuple[pd.DataFrame]:
-        # Lets you easily identify static modifiers in the item modifier table
-        ready_static_df["orderId"] = -1
-
-        # Uses cumcount, which is similiar to range(n_duplicate_mods)
-        ready_dynamic_df["orderId"] = ready_dynamic_df.groupby(
-            ["itemId", "modifierId"]
-        ).cumcount()
-
-        return ready_static_df, ready_dynamic_df
-
     def add_rolls(self, df: pd.DataFrame) -> pd.DataFrame:
         df = self._pre_processing(df.copy())
 
@@ -201,10 +186,6 @@ class RollProcessor:
 
         ready_static_df = self._process_static(df.copy(), static_modifers_mask)
         ready_dynamic_df = self._process_dynamic(df.copy(), static_modifers_mask)
-
-        ready_static_df, ready_dynamic_df = self._add_order_id(
-            ready_static_df.copy(), ready_dynamic_df.copy()
-        )
 
         processed_df = pd.concat(
             (ready_static_df, ready_dynamic_df), axis=0, ignore_index=True

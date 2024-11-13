@@ -3,8 +3,7 @@ from collections.abc import Awaitable, Callable
 from typing import Any
 
 import pytest
-from fastapi import Response
-from httpx import AsyncClient
+from httpx import AsyncClient, Response
 from sqlalchemy.orm import Session
 
 from app.api.api_message_util import (
@@ -30,7 +29,7 @@ class TestAPI(BaseTest):
         create_object: dict,
         route_prefix: str,
         superuser_token_headers: dict[str, str],
-        on_duplicate_pkey_do_nothing: bool,
+        on_duplicate_params: tuple[bool, str | None],
     ) -> Response:
         """Try to create an object using the API
 
@@ -44,6 +43,7 @@ class TestAPI(BaseTest):
             Response: Response from the API
 
         """
+        on_duplicate_pkey_do_nothing = on_duplicate_params[0]
         if on_duplicate_pkey_do_nothing:
             response = await async_client.post(
                 f"{settings.API_V1_STR}/{route_prefix}/",
@@ -173,13 +173,15 @@ class TestAPI(BaseTest):
         route_prefix: str,
         db: Session,
         create_random_object_func: Callable[[], tuple[dict, ModelType]],
-        on_duplicate_pkey_do_nothing: bool,
+        on_duplicate_params: tuple[bool, str | None],
     ) -> None:
         """Test create found duplicate instance"""
-        if not on_duplicate_pkey_do_nothing:
-            pytest.skip(
-                f"CRUD test for route {route_prefix} does not support primary key on duplicate create test"
-            )
+        on_duplicate_pkey_do_nothing = on_duplicate_params[0]
+        # if not on_duplicate_pkey_do_nothing:
+        # TODO: Make test database mock with unique constraints
+        pytest.skip(
+            f"CRUD test for route {route_prefix} does not support primary key on duplicate create test"
+        )
 
         create_obj, response = await self._create_random_object_api(
             db=db,
@@ -195,7 +197,7 @@ class TestAPI(BaseTest):
             create_object=create_obj,
             route_prefix=route_prefix,
             superuser_token_headers=superuser_token_headers,
-            on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing,
+            on_duplicate_params=on_duplicate_params,
         )
         assert response_create_same_obj_with_dup_pkey.status_code == 200
 
@@ -204,7 +206,7 @@ class TestAPI(BaseTest):
             create_object=create_obj,
             route_prefix=route_prefix,
             superuser_token_headers=superuser_token_headers,
-            on_duplicate_pkey_do_nothing=False,
+            on_duplicate_params=on_duplicate_params,
         )
 
         obj_value_pk_filter = crud_instance._map_obj_pks_to_value(create_obj)
@@ -233,6 +235,7 @@ class TestAPI(BaseTest):
         ignore_test_columns: list[str],
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         route_prefix: str,
+        is_hypertable: bool,
     ) -> None:
         """Test get instance
 
@@ -249,6 +252,9 @@ class TestAPI(BaseTest):
 
             route_prefix (str): Route name
         """
+        if is_hypertable:
+            pytest.skip("Hypertables doesn't support get individual object operations")
+
         _, object_out = await self._create_random_object_crud(db, object_generator_func)
         obj_out_pk_map = self._create_primary_key_map(object_out)
         response = await async_client.get(
@@ -272,6 +278,7 @@ class TestAPI(BaseTest):
         model_table_name: str,
         route_prefix: str,
         unique_identifier: str,
+        is_hypertable: bool,
     ) -> None:
         """Test get instance not found
 
@@ -282,6 +289,9 @@ class TestAPI(BaseTest):
             route_prefix (str): Route name
             unique_identifier (str): Unique identifier for the model
         """
+        if is_hypertable:
+            pytest.skip("Hypertables doesn't support get individual object operations")
+
         not_found_object = 999
         response = await async_client.get(
             f"{settings.API_V1_STR}/{route_prefix}/{not_found_object}",
@@ -306,6 +316,7 @@ class TestAPI(BaseTest):
         get_high_permissions: bool,
         route_prefix: str,
         unique_identifier: str,
+        is_hypertable: bool,
     ) -> None:
         """Test get instance not enough permissions
 
@@ -322,6 +333,9 @@ class TestAPI(BaseTest):
             route_prefix (str): Route name
             unique_identifier (str): Unique identifier for the model
         """
+        if is_hypertable:
+            pytest.skip("Hypertables doesn't support get individual object operations")
+
         if not get_high_permissions:
             return 0
 
@@ -347,6 +361,7 @@ class TestAPI(BaseTest):
         db: Session,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         route_prefix: str,
+        is_hypertable: bool,
     ) -> None:
         """Test get instances
 
@@ -360,6 +375,9 @@ class TestAPI(BaseTest):
 
             route_prefix (str): Route name
         """
+        if is_hypertable:
+            pytest.skip("Hypertables doesn't support get individual object operations")
+
         object_count = 5
         await self._create_multiple_random_objects_crud(
             db, object_generator_func, object_count
@@ -383,6 +401,7 @@ class TestAPI(BaseTest):
         unique_identifier: str,
         update_request_params: bool,
         ignore_test_columns: list[str],
+        is_hypertable: bool,
     ) -> None:
         """Test update instance
 
@@ -396,6 +415,9 @@ class TestAPI(BaseTest):
             update_request_params (bool): Whether the update request requires params
             ignore_test_columns (List[str]): Columns to ignore
         """
+        if is_hypertable:
+            pytest.skip("Hypertables doesn't support update object operations")
+
         _, object_out = await self._create_random_object_crud(db, object_generator_func)
         obj_out_pk_map = self._create_primary_key_map(object_out)
 
@@ -435,7 +457,6 @@ class TestAPI(BaseTest):
                 headers=superuser_token_headers,
                 json=update_object_dict,
             )
-
         assert response.status_code == 200
         content = response.json()
 
@@ -457,6 +478,7 @@ class TestAPI(BaseTest):
         model_table_name: str,
         update_request_params: bool,
         unique_identifier: str,
+        is_hypertable: bool,
     ) -> None:
         """Test update instance not found
 
@@ -474,6 +496,9 @@ class TestAPI(BaseTest):
             update_request_params (bool): Whether the update request requires params
             unique_identifier (str): Unique identifier
         """
+        if is_hypertable:
+            pytest.skip("Hypertables doesn't support update object operations")
+
         update_object_dict, update_object_out = await self._create_random_object_crud(
             db, object_generator_func
         )  # create the object to update and add to the db
@@ -535,6 +560,7 @@ class TestAPI(BaseTest):
         superuser_token_headers: dict[str, str],
         unique_identifier: str,
         update_request_params: bool,
+        is_hypertable: bool,
     ) -> None:
         """Test update instance not enough permissions
 
@@ -550,6 +576,9 @@ class TestAPI(BaseTest):
             unique_identifier (str): Unique identifier
             update_request_params (bool): Whether the update request requires params
         """
+        if is_hypertable:
+            pytest.skip("Hypertables doesn't support update object operations")
+
         _, object_out = await self._create_random_object_crud(db, object_generator_func)
 
         obj_pk_map = self._create_primary_key_map(object_out)
@@ -607,6 +636,7 @@ class TestAPI(BaseTest):
         route_prefix: str,
         model_table_name: str,
         unique_identifier: str,
+        is_hypertable: bool,
     ) -> None:
         """Test delete instance
 
@@ -621,6 +651,9 @@ class TestAPI(BaseTest):
             route_prefix (str): Route name
             unique_identifier (str): Unique identifier
         """
+        if is_hypertable:
+            pytest.skip("Hypertables doesn't support delete object operations")
+
         _, update_object_out = await self._create_random_object_crud(
             db, object_generator_func
         )
@@ -650,6 +683,7 @@ class TestAPI(BaseTest):
         model_table_name: str,
         unique_identifier: str,
         crud_instance: CRUDBase,
+        is_hypertable: bool,
     ) -> None:
         """Test delete instance not found
 
@@ -660,6 +694,9 @@ class TestAPI(BaseTest):
             model_table_name (str): Model table name
             unique_identifier (str): Unique identifier for the model
         """
+        if is_hypertable:
+            pytest.skip("Hypertables doesn't support delete object operations")
+
         not_found_object = 999
         response = await async_client.delete(
             f"{settings.API_V1_STR}/{route_prefix}/{not_found_object}",
@@ -683,6 +720,7 @@ class TestAPI(BaseTest):
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         route_prefix: str,
         unique_identifier: str,
+        is_hypertable: bool,
     ) -> None:
         """Test delete instance not enough permissions
 
@@ -696,6 +734,9 @@ class TestAPI(BaseTest):
             route_prefix (str): Route name
             unique_identifier (str): Unique identifier
         """
+        if is_hypertable:
+            pytest.skip("Hypertables doesn't support delete object operations")
+
         _, object_out = await self._create_random_object_crud(db, object_generator_func)
         obj_out_pk_map = self._create_primary_key_map(object_out)
         response = await async_client.delete(

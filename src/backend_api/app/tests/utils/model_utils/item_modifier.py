@@ -2,13 +2,11 @@ from sqlalchemy.orm import Session
 
 from app import crud
 from app.core.models.models import (
-    Account,
     Currency,
     Item,
     ItemBaseType,
     ItemModifier,
     Modifier,
-    Stash,
 )
 from app.core.schemas.item_modifier import ItemModifierCreate
 from app.tests.utils.model_utils.item import generate_random_item
@@ -22,7 +20,7 @@ async def create_random_item_modifier_dict(
     dict
     | tuple[
         dict,
-        list[dict | Stash | Account | ItemBaseType | Currency | Item | Modifier] | None,
+        list[dict | ItemBaseType | Currency | Item | Modifier] | None,
     ]
 ):
     """Create a random item modifier dictionary.
@@ -47,15 +45,12 @@ async def create_random_item_modifier_dict(
     itemId = item.itemId
     modifier_dict, modifier = await generate_random_modifier(db)
     modifierId = modifier.modifierId
-    orderId = random_int(small_int=True)
-    position = modifier.position
 
     item_modifier_dict = {
         "itemId": itemId,
         "modifierId": modifierId,
-        "orderId": orderId,
-        "position": position,
         "roll": roll_value,
+        "createdHoursSinceLaunch": random_int(small_int=True),
     }
     if not retrieve_dependencies:
         return item_modifier_dict
@@ -69,7 +64,7 @@ async def generate_random_item_modifier(
 ) -> tuple[
     dict,
     ItemModifier,
-    list[dict | Stash | Account | ItemBaseType | Currency | Item | Modifier] | None,
+    list[dict | ItemBaseType | Currency | Item | Modifier] | None,
 ]:
     """Generate a random item modifier.
 
@@ -78,7 +73,7 @@ async def generate_random_item_modifier(
         retrieve_dependencies (bool, optional): Whether to retrieve dependencies. Defaults to False.
 
     Returns:
-        Tuple[ Dict, ItemModifier, List[Union[Dict, Stash, Account, ItemBaseType, Currency, Item, Modifier]]], ]: \n
+        Tuple[ Dict, ItemModifier, List[Union[Dict, ItemBaseType, Currency, Item, Modifier]]], ]: \n
         Random item modifier dictionary, ItemModifier db object and optional dependencies.
     """
     output = await create_random_item_modifier_dict(db, retrieve_dependencies)

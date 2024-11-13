@@ -12,7 +12,7 @@ class ItemSpecs(_pydantic.BaseModel):
     corrupted: bool | None = None
     delve: bool | None = None
     fractured: bool | None = None
-    synthesized: bool | None = None
+    synthesised: bool | None = None
     replica: bool | None = None
     influences: Influences | None = None
     searing: bool | None = None
@@ -22,7 +22,7 @@ class ItemSpecs(_pydantic.BaseModel):
 
 
 class BaseSpecs(_pydantic.BaseModel):
-    baseType: str | None = None
+    itemBaseTypeId: int | None = None
     category: str | None = None
     subCategory: str | None = None
 

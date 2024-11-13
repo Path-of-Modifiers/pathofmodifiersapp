@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app import crud
-from app.core.models.models import ItemBaseType
+from app.core.models.models import ItemBaseType as model_ItemBaseType
 from app.core.schemas.item_base_type import ItemBaseTypeCreate
 from app.tests.utils.utils import random_int, random_lower_string
 
@@ -29,7 +29,9 @@ def create_random_item_base_type_dict() -> dict:
     return item_base_type
 
 
-async def generate_random_item_base_type(db: Session) -> tuple[dict, ItemBaseType]:
+async def generate_random_item_base_type(
+    db: Session,
+) -> tuple[dict, model_ItemBaseType]:
     """Generate a random item base type.
 
     Args:

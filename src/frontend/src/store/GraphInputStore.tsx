@@ -138,7 +138,10 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             let choosableItemBaseType: ChoosableItemBaseTypesExtended[];
             if (itemName === undefined) {
                 choosableModifiers = state.choosableModifiers.map(
-                    (modifier) => ({ ...modifier, isNotChoosable: false })
+                    (modifier) => ({
+                        ...modifier,
+                        isNotChoosable: false,
+                    })
                 );
                 choosableItemBaseType = state.choosableItemBaseType.map(
                     (itemBaseType) => ({
@@ -299,9 +302,9 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             itemSpec: { ...state.itemSpec, fractured: fractured },
         })),
 
-    setItemSpecSynthesized: (synthesized: boolean | undefined) =>
+    setItemSpecSynthesised: (synthesised: boolean | undefined) =>
         set((state) => ({
-            itemSpec: { ...state.itemSpec, synthesized: synthesized },
+            itemSpec: { ...state.itemSpec, synthesised: synthesised },
         })),
 
     setItemSpecSearing: (searing: boolean | undefined) =>
@@ -339,9 +342,16 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
     setBaseSpec: (baseSpec: BaseSpecState) =>
         set(() => ({ baseSpec: baseSpec })),
 
-    setBaseType: (baseType: string | undefined) =>
+    setBaseType: (
+        itemBaseTypeId: number | undefined,
+        baseType: string | undefined
+    ) =>
         set((state) => ({
-            baseSpec: { ...state.baseSpec, baseType: baseType },
+            baseSpec: {
+                ...state.baseSpec,
+                itemBaseTypeId: itemBaseTypeId,
+                baseType: baseType,
+            },
         })),
 
     setItemCategory: (category: string | undefined) =>

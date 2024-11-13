@@ -15,8 +15,8 @@ from data_retrieval_app.utils import df_to_JSON
 
 class DataDepositorBase:
     def __init__(self, data_type: Literal["modifier", "item_base_type"]) -> None:
-        if "localhost" not in settings.BASEURL:
-            self.base_url = f"https://{settings.BASEURL}"
+        if "localhost" not in settings.DOMAIN:
+            self.base_url = f"https://{settings.DOMAIN}"
         else:
             self.base_url = "http://src-backend-1"
 

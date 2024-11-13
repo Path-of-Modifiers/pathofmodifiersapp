@@ -5,6 +5,5 @@
 export type CurrencyUpdate = {
     tradeName: string;
     valueInChaos: number;
-    iconUrl: string;
 };
 

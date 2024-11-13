@@ -29,7 +29,7 @@ export interface ItemSpecState {
     corrupted?: boolean | null;
     delve?: boolean | null;
     fractured?: boolean | null;
-    synthesized?: boolean | null;
+    synthesised?: boolean | null;
     replica?: boolean | null;
     influences?: InfluenceSpecState | null;
     searing?: boolean | null;
@@ -39,6 +39,7 @@ export interface ItemSpecState {
 }
 
 export interface BaseSpecState {
+    itemBaseTypeId?: number | null;
     baseType?: string | null;
     category?: string | null;
     subCategory?: string | null;
@@ -106,7 +107,7 @@ export interface GraphInputState {
     setFetchStatus: (fetchStatus: string | undefined) => void;
 
     setChoosableModifiers: (
-        choosableModifiers: GroupedModifierByEffect[]
+        choosableModifiers: GroupedModifierByEffect[],
     ) => void;
     setChoosableItemBaseType: (choosableItemBaseType: ItemBaseType[]) => void;
     setChoosableItemNames: (choosableItemNames: string[]) => void;
@@ -126,7 +127,7 @@ export interface GraphInputState {
     setItemSpecCorrupted: SetItemSpecMisc;
     setItemSpecDelve: SetItemSpecMisc;
     setItemSpecFractured: SetItemSpecMisc;
-    setItemSpecSynthesized: SetItemSpecMisc;
+    setItemSpecSynthesised: SetItemSpecMisc;
     setItemSpecElderInfluence: SetItemSpecMisc;
     setItemSpecShaperInfluence: SetItemSpecMisc;
     setItemSpecCrusaderInfluence: SetItemSpecMisc;
@@ -140,37 +141,40 @@ export interface GraphInputState {
     setItemSpecFoilVariation: (foilVariation: number | undefined) => void;
 
     setBaseSpec: (baseSpec: BaseSpecState) => void;
-    setBaseType: (baseType: string | undefined) => void;
+    setBaseType: (
+        itemBaseTypeId: number | undefined,
+        baseType: string | undefined,
+    ) => void;
     setItemCategory: (category: string | undefined) => void;
     setItemSubCategory: (subCategory: string | undefined) => void;
 
     setWantedModifierExtended: (
-        wantedModifierExtended: WantedModifierExtended[]
+        wantedModifierExtended: WantedModifierExtended[],
     ) => void;
     addWantedModifierExtended: (
         wantedModifier: WantedModifier,
         index: number,
-        relatedUniques?: string
+        relatedUniques?: string,
     ) => void;
     removeWantedModifierExtended: (index_to_remove: number) => void;
     updateSelectedWantedModifierExtended: (
         index_to_update: number,
-        isSelected: boolean
+        isSelected: boolean,
     ) => void;
     setWantedModifierMinRoll: (
         modifierId: number,
         minRoll: number | undefined,
-        index: number
+        index: number,
     ) => void;
     setWantedModifierMaxRoll: (
         modifierId: number,
         maxRoll: number | undefined,
-        index: number
+        index: number,
     ) => void;
     setWantedModifierTextRoll: (
         modifierId: number,
         textRoll: number | undefined,
-        index: number
+        index: number,
     ) => void;
 }
 
@@ -198,7 +202,7 @@ export interface ErrorState {
     setResultError: (resultError: boolean) => void;
     setNoRelatedUniqueError: (noRelatedUniqueError: boolean) => void;
     setItemDoesNotHaveSelectedModifiersError: (
-        itemDoesNotHaveSelectedModifiersError: boolean
+        itemDoesNotHaveSelectedModifiersError: boolean,
     ) => void;
     setBaseSpecDoesNotMatchError: (baseSpecDoesNotMatchError: boolean) => void;
 }
@@ -206,6 +210,6 @@ export interface ErrorState {
 export interface TurnstileState {
     turnstileResponse: TurnstileResponse | undefined;
     setTurnstileResponse: (
-        turnstileResponse: TurnstileResponse | undefined
+        turnstileResponse: TurnstileResponse | undefined,
     ) => void;
 }

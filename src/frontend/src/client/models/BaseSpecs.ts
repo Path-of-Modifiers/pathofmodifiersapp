@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type BaseSpecs = {
-    baseType?: (string | null);
+    itemBaseTypeId?: (number | null);
     category?: (string | null);
     subCategory?: (string | null);
 };

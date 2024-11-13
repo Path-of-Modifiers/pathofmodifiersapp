@@ -20,8 +20,11 @@ class PoEPublicStashesTestDataSettings(BaseSettings):
     def dispersed_timing_enabled(self) -> bool:
         return bool(self.CREATE_DATA_DIFFERENT_TIMING_INTERVAL and self.TIMING_PERIOD)
 
-    ITEM_NOTE_CURRENCY_TYPES: list[str] = ["chaos"]  # "chaos", "divine", "mirror", etc.
-    MAXIMUM_ITEM_PRICE: int = 50
+    ITEM_NOTE_CURRENCY_TYPES: list[str] = [
+        "chaos",
+        "divine",
+    ]  # "chaos", "divine", "mirror", etc.
+    MAXIMUM_ITEM_PRICE: int = 30
 
 
 script_settings = PoEPublicStashesTestDataSettings()

@@ -34,7 +34,7 @@ handlers:
     formatter: simple
 loggers:
   dataret:
-    level: INFO
+    level: DEBUG
     handlers:
       - stdout
       - file

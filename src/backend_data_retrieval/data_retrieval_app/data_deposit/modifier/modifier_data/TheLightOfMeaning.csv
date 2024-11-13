@@ -2,8 +2,8 @@
 # Base Types: Prismatic Jewel
 # Total modifiers on each item: 1
 # Can have duplicate modifiers: False
-# Modifier distrubution: "rest":1 
-# Source: https://poedb.tw/The_Light_of_Meaningp
+# Modifier distrubution: "rest":1
+# Source: https://poedb.tw/The_Light_of_Meaning
 position,effect,static,unique
 0,"Passive Skills in Radius also grant +5 to maximum Life",True,True
 0,"Passive Skills in Radius also grant +5 to maximum Mana",True,True
