@@ -4,8 +4,7 @@
 /* eslint-disable */
 export type PlotData = {
     valueInChaos: Array<number>;
-    timeStamp: Array<string>;
+    hoursSinceLaunch: Array<number>;
     valueInMostCommonCurrencyUsed: Array<number>;
     mostCommonCurrencyUsed: string;
 };
-

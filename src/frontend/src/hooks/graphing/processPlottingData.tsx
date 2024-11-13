@@ -1,7 +1,7 @@
 import usePostPlottingData from "./postPlottingData";
 import { PlotQuery } from "../../client";
 import Datum from "../../schemas/Datum";
-import formatDateToLocal from "./utils";
+import formatHoursSinceLaunch from "./utils";
 import { useErrorStore } from "../../store/ErrorStore";
 import { useEffect } from "react";
 
@@ -39,9 +39,9 @@ function useGetPlotData(plotQuery: PlotQuery): {
         };
     } else if (plotData !== undefined) {
         const data: Datum[] = [];
-        for (let i = 0; i < plotData?.timeStamp.length; i++) {
+        for (let i = 0; i < plotData?.hoursSinceLaunch.length; i++) {
             data.push({
-                date: formatDateToLocal(plotData.timeStamp[i]),
+                timestamp: formatHoursSinceLaunch(plotData.hoursSinceLaunch[i]),
                 valueInChaos: plotData.valueInChaos[i],
                 valueInMostCommonCurrencyUsed:
                     plotData.valueInMostCommonCurrencyUsed[i],

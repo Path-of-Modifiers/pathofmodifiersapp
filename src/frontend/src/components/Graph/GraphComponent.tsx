@@ -85,7 +85,7 @@ function GraphComponent(props: BoxProps) {
                         }}
                     >
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" />
+                        <XAxis dataKey="timestamp" />
                         {/* Set Y-axis label */}
                         <YAxis
                             label={{
