@@ -2,7 +2,7 @@ from collections.abc import Callable
 
 import pytest
 
-import app.tests.test_simulating_env.crud.cascade_tests as cascade_test
+import app.tests.test_simulating_env.crud.crud_test_base as test_crud
 from app.core.models.models import Currency, Item, ItemBaseType
 from app.crud import (
     CRUD_currency,
@@ -74,5 +74,5 @@ def crud_deps_instances() -> CRUDBase:
     ]
 
 
-class TestItemCRUD(cascade_test.TestCascade):
+class TestItemCRUD(test_crud.TestCRUD):
     pass

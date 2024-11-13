@@ -42,11 +42,14 @@ class DetectorBase:
             df = df.loc[df["ultimatumMods"].isnull()]
         if "stash" in columns or "note" in columns:
             if "stash" in columns and "note" in columns:
-                df = df.loc[df["stash"].str.startswith("~") | df["note"].notna()]
+                df = df.loc[
+                    df["stash"].str.startswith(("~b/o", "~price"))
+                    | df["note"].str.startswith(("~b/o", "~price"))
+                ]
             elif "stash" in columns:
-                df = df.loc[df["stash"].str.startswith("~")]
+                df = df.loc[df["stash"].str.startswith(("~b/o", "~price"))]
             else:
-                df = df.loc[df["note"].notna()]
+                df = df.loc[df["note"].str.startswith(("~b/o", "~price"))]
         else:
             return pd.DataFrame(columns=df.columns)
 

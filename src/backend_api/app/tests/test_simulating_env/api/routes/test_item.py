@@ -17,10 +17,6 @@ from app.core.config import settings
 from app.core.models.models import Currency, Item, ItemBaseType
 from app.crud import CRUD_item
 from app.crud.base import CRUDBase, ModelType
-from app.tests.test_simulating_env.crud.cascade_tests import (
-    TestCascade as UtilTestCascadeCRUD,
-)
-from app.tests.test_simulating_env.crud.crud_test_base import TestCRUD as UtilTestCRUD
 from app.tests.utils.model_utils.item import (
     create_random_item_dict,
     generate_random_item,
@@ -85,18 +81,6 @@ def ignore_test_columns() -> list[str]:
 def unique_identifier() -> str:
     unique_identifier = get_model_unique_identifier(Item)
     return unique_identifier
-
-
-@pytest.fixture(scope="module")
-def get_crud_test_model() -> UtilTestCRUD:
-    model = UtilTestCRUD()
-    return model
-
-
-@pytest.fixture(scope="module")
-def get_crud_test_cascade_model() -> UtilTestCascadeCRUD:
-    model = UtilTestCascadeCRUD()
-    return model
 
 
 @pytest.fixture(scope="module")
