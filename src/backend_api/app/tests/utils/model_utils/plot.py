@@ -46,9 +46,11 @@ async def create_minimal_random_plot_query_dict(db: Session) -> dict[str, Any]:
     }
 
     wanted_modifiers = [
-        {
-            "modifierId": modifier_dep.modifierId,
-        }
+        [
+            {
+                "modifierId": modifier_dep.modifierId,
+            }
+        ]
     ]
 
     plot_query = {
