@@ -20,16 +20,19 @@ handlers:
   stdout:
     class: logging.StreamHandler
     level: DEBUG
+    filters: [sensitive_data_filter]
     formatter: simple
     stream: "ext://sys.stdout"
   stdout-api-formatter:
     class: logging.StreamHandler
     level: DEBUG
+    filters: [sensitive_data_filter]
     formatter: json
     stream: "ext://sys.stdout"
   file:
     class: logging.handlers.RotatingFileHandler
     level: DEBUG
+    filters: [sensitive_data_filter]
     formatter: simple
     filename: "app/logs/backend-api.log"
     maxBytes: 504857600 # 500 MB

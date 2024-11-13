@@ -58,16 +58,22 @@ class Plotter:
                 model_Item.currencyAmount,
                 model_Currency.tradeName,
                 model_Currency.valueInChaos,
-                model_Currency.createdHoursSinceLaunch.label("currencyCreatedAt"),
+                model_Currency.createdHoursSinceLaunch.label(
+                    "createdCurrencyHoursSinceLaunch"
+                ),
             )
             .join_from(model_Currency, model_Item)
             .where(model_Item.league == league)
         )
 
         if before is not None:
-            statement = statement.where(model_ItemModifier.createdHoursSinceLaunch <= before)
+            statement = statement.where(
+                model_ItemModifier.createdHoursSinceLaunch <= before
+            )
         if after is not None:
-            statement = statement.where(model_ItemModifier.createdHoursSinceLaunch >= after)
+            statement = statement.where(
+                model_ItemModifier.createdHoursSinceLaunch >= after
+            )
 
         return statement
 
@@ -117,9 +123,13 @@ class Plotter:
                         roll_condition,
                     ]
                     if before is not None:
-                        and_conditions.append(model_ItemModifier.createdHoursSinceLaunch <= before)
+                        and_conditions.append(
+                            model_ItemModifier.createdHoursSinceLaunch <= before
+                        )
                     if after is not None:
-                        and_conditions.append(model_ItemModifier.createdHoursSinceLaunch >= after)
+                        and_conditions.append(
+                            model_ItemModifier.createdHoursSinceLaunch >= after
+                        )
 
                     exists_conditions.append(
                         select(1)
@@ -137,9 +147,13 @@ class Plotter:
                     model_ItemModifier.modifierId == wanted_modifier.modifierId,
                 ]
                 if before is not None:
-                    and_conditions.append(model_ItemModifier.createdHoursSinceLaunch <= before)
+                    and_conditions.append(
+                        model_ItemModifier.createdHoursSinceLaunch <= before
+                    )
                 if after is not None:
-                    and_conditions.append(model_ItemModifier.createdHoursSinceLaunch >= after)
+                    and_conditions.append(
+                        model_ItemModifier.createdHoursSinceLaunch >= after
+                    )
                 exists_conditions.append(
                     select(1).where(and_(*and_conditions)).exists()
                 )
@@ -179,7 +193,9 @@ class Plotter:
         self, statement: Select, *, base_spec_query: BaseSpecs
     ) -> Select:
         if base_spec_query.itemBaseTypeId is not None:
-            return statement.where(model_Item.itemBaseTypeId == base_spec_query.itemBaseTypeId)
+            return statement.where(
+                model_Item.itemBaseTypeId == base_spec_query.itemBaseTypeId
+            )
 
         elif (
             base_spec_query.category is not None

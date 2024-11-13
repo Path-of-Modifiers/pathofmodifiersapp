@@ -194,7 +194,7 @@ class PoEAPIDataTransformerBase:
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
 
-        drop_columns = self._item_table_columns_to_drop
+        drop_columns = self.item_table_columns_to_drop
 
         item_df.drop(
             item_df.columns.intersection(drop_columns),

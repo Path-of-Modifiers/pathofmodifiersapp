@@ -1,8 +1,8 @@
-"""V8 Create baseline for hypertables refactoring
+"""V8 Create baseline for hypertable refactor tables
 
-Revision ID: dc80323aadb2
+Revision ID: 35736bccbe58
 Revises: 
-Create Date: 2024-11-13 08:18:46.529576
+Create Date: 2024-11-13 11:49:35.765942
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = 'dc80323aadb2'
+revision: str = '35736bccbe58'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -28,7 +28,7 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('currencyId')
     )
     op.create_table('item_base_type',
-    sa.Column('itemBaseTypeId', sa.SmallInteger(), sa.Identity(always=False, start=1, increment=1, cycle=True), nullable=False),
+    sa.Column('itemBaseTypeId', sa.SmallInteger(), sa.Identity(always=False, start=1, increment=1), nullable=False),
     sa.Column('baseType', sa.Text(), nullable=False),
     sa.Column('category', sa.Text(), nullable=False),
     sa.Column('subCategory', sa.Text(), nullable=True),
@@ -75,16 +75,16 @@ def upgrade() -> None:
     sa.Column('createdAt', sa.DateTime(timezone=True), nullable=False),
     sa.Column('updatedAt', sa.DateTime(timezone=True), nullable=True),
     sa.CheckConstraint("username ~* '^[[:alnum:]_]+$'", name='check_username_letters_numbers_and_underscores'),
-    sa.PrimaryKeyConstraint('userId')
+    sa.PrimaryKeyConstraint('userId'),
+    sa.UniqueConstraint('email'),
+    sa.UniqueConstraint('username')
     )
-    op.create_index(op.f('ix_pom_user_email'), 'pom_user', ['email'], unique=True)
-    op.create_index(op.f('ix_pom_user_username'), 'pom_user', ['username'], unique=True)
     op.create_table('item',
     sa.Column('name', sa.Text(), nullable=False),
     sa.Column('itemBaseTypeId', sa.SmallInteger(), nullable=False),
     sa.Column('createdHoursSinceLaunch', sa.SmallInteger(), nullable=False),
     sa.Column('league', sa.Text(), nullable=False),
-    sa.Column('itemId', sa.BigInteger(), sa.Identity(always=False, start=1, increment=1, cycle=True), nullable=False),
+    sa.Column('itemId', sa.BigInteger(), sa.Identity(always=False, start=1, increment=1), nullable=False),
     sa.Column('currencyId', sa.Integer(), nullable=False),
     sa.Column('ilvl', sa.SmallInteger(), nullable=False),
     sa.Column('prefixes', sa.SmallInteger(), nullable=True),
@@ -110,7 +110,7 @@ def upgrade() -> None:
     op.create_index(op.f('ix_item_currencyId'), 'item', ['currencyId'], unique=False)
     op.create_index('ix_item_name_itemBaseTypeId_createdHoursSinceLaunch_league', 'item', ['name', 'itemBaseTypeId', 'createdHoursSinceLaunch', 'league'], unique=False)
     op.create_table('item_modifier',
-    sa.Column('modifierId', sa.BigInteger(), nullable=False),
+    sa.Column('modifierId', sa.SmallInteger(), nullable=False),
     sa.Column('createdHoursSinceLaunch', sa.SmallInteger(), nullable=False),
     sa.Column('itemId', sa.BigInteger(), nullable=False),
     sa.Column('roll', sa.Float(precision=4), nullable=True),
@@ -128,8 +128,6 @@ def downgrade() -> None:
     op.drop_index('ix_item_name_itemBaseTypeId_createdHoursSinceLaunch_league', table_name='item')
     op.drop_index(op.f('ix_item_currencyId'), table_name='item')
     op.drop_table('item')
-    op.drop_index(op.f('ix_pom_user_username'), table_name='pom_user')
-    op.drop_index(op.f('ix_pom_user_email'), table_name='pom_user')
     op.drop_table('pom_user')
     op.drop_table('modifier')
     op.drop_table('item_base_type')

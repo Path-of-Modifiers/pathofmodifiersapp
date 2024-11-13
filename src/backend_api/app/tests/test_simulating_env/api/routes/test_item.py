@@ -7,7 +7,7 @@ from fastapi import Response
 from httpx import AsyncClient
 from sqlalchemy.orm import Session
 
-import app.tests.test_simulating_env.api.api_routes_cascade_tests as test_cascade_api
+import app.tests.test_simulating_env.api.api_routes_test_base as test_api
 from app.api.routes import (
     currency_prefix,
     item_base_type_prefix,
@@ -188,5 +188,5 @@ def update_request_params_deps() -> list[str]:
     return []
 
 
-class TestItem(test_cascade_api.TestCascadeAPI):
+class TestItem(test_api.TestAPI):
     pass

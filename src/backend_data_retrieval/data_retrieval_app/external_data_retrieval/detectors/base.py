@@ -42,11 +42,13 @@ class DetectorBase:
             df = df.loc[df["ultimatumMods"].isnull()]
         if "stash" in columns or "note" in columns:
             if "stash" in columns and "note" in columns:
-                df = df.loc[df["stash"].notna() | df["note"].notna()]
+                df = df.loc[df["stash"].str.startswith("~") | df["note"].notna()]
             elif "stash" in columns:
-                df = df.loc[df["stash"].notna()]
+                df = df.loc[df["stash"].str.startswith("~")]
             else:
                 df = df.loc[df["note"].notna()]
+        else:
+            return pd.DataFrame(columns=df.columns)
 
         df = df.loc[df["league"] == self.current_league]
 
@@ -65,6 +67,8 @@ class DetectorBase:
         """
 
         df = self._general_filter(df)
+        if df.empty:
+            return df, 0, self.n_unique_items_found, df
         df_filtered = self._specialized_filter(df)
         df_leftover = df.loc[~df.index.isin(df_filtered.index)]
 

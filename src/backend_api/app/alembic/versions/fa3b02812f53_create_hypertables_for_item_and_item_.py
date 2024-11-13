@@ -1,8 +1,8 @@
 """Create hypertables for item and item_modifier
 
-Revision ID: d45c11604cc8
-Revises: dc80323aadb2
-Create Date: 2024-11-13 08:19:54.718279
+Revision ID: fa3b02812f53
+Revises: 35736bccbe58
+Create Date: 2024-11-13 11:50:03.745989
 
 """
 
@@ -13,8 +13,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = "d45c11604cc8"
-down_revision: Union[str, None] = "dc80323aadb2"
+revision: str = "fa3b02812f53"
+down_revision: Union[str, None] = "35736bccbe58"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

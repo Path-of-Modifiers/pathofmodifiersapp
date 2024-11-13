@@ -37,7 +37,7 @@ class ItemBaseType(Base):
 
     itemBaseTypeId: Mapped[int] = mapped_column(
         SmallInteger,
-        Identity(start=1, increment=1, cycle=True),
+        Identity(start=1, increment=1),
         primary_key=True,
     )
     baseType: Mapped[str] = mapped_column(
@@ -70,7 +70,7 @@ class Item(Base):
     )
     itemId: Mapped[int] = mapped_column(
         BigInteger,
-        Identity(start=1, increment=1, cycle=True),
+        Identity(start=1, increment=1),
         primary_key=True,  # Primary key constraint gets removed on hypertable creation
     )
     currencyId: Mapped[int] = mapped_column(
@@ -111,10 +111,6 @@ class Item(Base):
 
 
 class Modifier(Base):
-    # Timescale hypertable (see alembic revisions timescale definitions)
-    # SQLAlchemy timescale dialect is limited and not regularily updated
-    # We have baseTypeId a part of pkey, since the table segments on this attribute
-    # TODO: Add dialect if the sqlalchemy timescale library gets updated
     __tablename__ = "modifier"
 
     modifierId: Mapped[int] = mapped_column(
@@ -204,7 +200,7 @@ class ItemModifier(Base):
     __tablename__ = "item_modifier"
 
     modifierId: Mapped[int] = mapped_column(
-        BigInteger,
+        SmallInteger,
         ForeignKey(
             "modifier.modifierId",
             ondelete="CASCADE",
@@ -240,12 +236,8 @@ class User(Base):
         default=uuid.uuid4,
         nullable=False,
     )
-    username: Mapped[str] = mapped_column(
-        String(30), unique=True, index=True, nullable=False
-    )
-    email: Mapped[str] = mapped_column(
-        String(255), unique=True, index=True, nullable=False
-    )
+    username: Mapped[str] = mapped_column(String(30), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     rateLimitTier: Mapped[int | None] = mapped_column(
         SmallInteger
     )  # 0 = basic limit usage
