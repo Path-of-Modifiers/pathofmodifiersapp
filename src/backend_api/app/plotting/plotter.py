@@ -76,9 +76,16 @@ class Plotter:
         if modifier_limitations.textRoll is not None:
             return model_ItemModifier.roll == modifier_limitations.textRoll
         else:
-            return model_ItemModifier.roll.between(
-                modifier_limitations.minRoll, modifier_limitations.maxRoll
-            )
+            and_conditions = []
+            if modifier_limitations.minRoll is not None:
+                and_conditions.append(
+                    model_ItemModifier.roll >= modifier_limitations.minRoll
+                )
+            if modifier_limitations.maxRoll is not None:
+                and_conditions.append(
+                    model_ItemModifier.roll <= modifier_limitations.maxRoll
+                )
+            return and_(*and_conditions)
 
     def _add_wanted_modifiers(
         self,
