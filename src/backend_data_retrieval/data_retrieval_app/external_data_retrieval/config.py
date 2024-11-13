@@ -30,5 +30,8 @@ class Settings(BaseSettings):
     def LEAGUE_LAUNCH_DATETIME_OBJECT(self) -> datetime:
         return datetime.strptime(self.LEAGUE_LAUNCH_TIME, "%H-%d-%m-%Y")
 
+    MINI_BATCH_SIZE: int = 30
+    N_CHECKPOINTS_PER_TRANSFORMATION: int = 10
+
 
 settings = Settings()  # type: ignore
