@@ -27,10 +27,10 @@ def upgrade() -> None:
     op.execute("""ALTER TABLE item_modifier DROP CONSTRAINT item_modifier_pkey""")
 
     op.execute(
-        "SELECT create_hypertable('item_modifier', by_range('createdHoursSinceLaunch'), migrate_data => TRUE);"  # 7 days interval
+        "SELECT create_hypertable('item_modifier', by_range('createdHoursSinceLaunch', 168), migrate_data => TRUE);"  # 7 days interval
     )
     op.execute(
-        "SELECT create_hypertable('item', 'createdHoursSinceLaunch', migrate_data => TRUE);"  # 7 days interval
+        "SELECT create_hypertable('item', by_range('createdHoursSinceLaunch', 168), migrate_data => TRUE);"  # 7 days interval
     )
     op.execute(
         "SELECT add_dimension('item_modifier', by_hash('modifierId', 20));"
