@@ -21,7 +21,7 @@ class UsernameValidationError(ValueError):
         exc: Exception | None,
     ) -> Exception:
         return cls(
-            f"The field {field_name} can not contain special symbols or white/empty space.",
+            f"Username must be less than 30 characters and can not contain special symbols or white/empty space.",
         )
 
 
@@ -29,7 +29,7 @@ string_username_pattern = r"^[\p{L}\p{N}_]+$"
 
 UsernameStr = Annotated[
     str,
-    StringConstraints(pattern=string_username_pattern),
+    StringConstraints(pattern=string_username_pattern, max_length=30),
     custom_error_msg(UsernameValidationError.from_validator_exc),
 ]
 

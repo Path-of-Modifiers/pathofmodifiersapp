@@ -16,7 +16,6 @@ from app.crud.base import CRUDBase, ModelType
 from app.tests.test_simulating_env.api.api_routes_test_slowapi_rate_limit import (
     TestRateLimitSlowAPI as RateLimitSlowAPITestClass,
 )
-from app.tests.test_simulating_env.crud.crud_test_base import TestCRUD as UtilTestCRUD
 from app.tests.utils.model_utils.currency import (
     create_random_currency_dict,
     generate_random_currency,
@@ -37,13 +36,23 @@ def route_prefix() -> str:
 
 
 @pytest.fixture(scope="module")
+def is_hypertable() -> bool:
+    return False
+
+
+@pytest.fixture(scope="module")
 def crud_instance() -> CRUDBase:
     return CRUD_currency
 
 
 @pytest.fixture(scope="module")
-def on_duplicate_pkey_do_nothing() -> bool:
-    return False
+def on_duplicate_params() -> tuple[bool, str | None]:
+    """
+    In tuple:
+        First item: `on_duplicate_do_nothing`.
+        Second item: `on_duplicate_constraint` (unique constraint to check the duplicate on)
+    """
+    return (False, None)
 
 
 @pytest.fixture(scope="module")
@@ -71,19 +80,13 @@ def ignore_test_columns() -> list[str]:
     Returns:
         List[str]: List of columns to ignore
     """
-    return ["currencyId", "createdAt"]
+    return ["currencyId", "createdHoursSinceLaunch"]
 
 
 @pytest.fixture(scope="module")
 def unique_identifier() -> str:
     unique_identifier = get_model_unique_identifier(Currency)
     return unique_identifier
-
-
-@pytest.fixture(scope="module")
-def get_crud_test_model() -> UtilTestCRUD:
-    model = UtilTestCRUD()
-    return model
 
 
 @pytest.fixture(scope="module")

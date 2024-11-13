@@ -15,7 +15,7 @@ export type Modifier = {
     explicit?: (boolean | null);
     delve?: (boolean | null);
     fractured?: (boolean | null);
-    synthesized?: (boolean | null);
+    synthesised?: (boolean | null);
     unique?: (boolean | null);
     corrupted?: (boolean | null);
     enchanted?: (boolean | null);

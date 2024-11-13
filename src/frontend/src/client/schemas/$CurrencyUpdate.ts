@@ -12,9 +12,5 @@ export const $CurrencyUpdate = {
             type: 'number',
             isRequired: true,
         },
-        iconUrl: {
-            type: 'string',
-            isRequired: true,
-        },
     },
 } as const;

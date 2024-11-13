@@ -5,8 +5,7 @@
 export type Currency = {
     tradeName: string;
     valueInChaos: number;
-    iconUrl: string;
-    createdAt: string;
+    createdHoursSinceLaunch: number;
     currencyId: number;
 };
 

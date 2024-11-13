@@ -7,5 +7,6 @@ export type ItemBaseType = {
     category: string;
     subCategory?: (string | null);
     relatedUniques?: (string | null);
+    itemBaseTypeId: number;
 };
 

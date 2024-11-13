@@ -14,7 +14,7 @@ The purpose of `test_simulating_env` is to check if base case usage of all the r
 
 We test base cases and some outliers for all the crud and route models.
 
-The routes for `account`, `currency`, `item_base_type`, `item_modifier`, `item`, `modifier` and `stash` all inherit from the same generalized crud `base` class. These uses the same test files and classes with specified fixtures for each route and crud.
+The routes for `currency`, `item_base_type`, `item_modifier`, `item` and `modifier` all inherit from the same generalized crud `base` class. These uses the same test files and classes with specified fixtures for each route and crud.
 
 There are also specialized tests for routes that doesn't use the crud `base` class. These are `login`, `user`, `plot` and `turnstile`. It doesn't make sence to inherit a base test class with these routes.
 

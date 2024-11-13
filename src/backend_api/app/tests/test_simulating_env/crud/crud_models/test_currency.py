@@ -19,8 +19,18 @@ def db() -> Generator:
 
 
 @pytest.fixture(scope="module")
-def on_duplicate_pkey_do_nothing() -> bool:
+def is_hypertable() -> bool:
     return False
+
+
+@pytest.fixture(scope="module")
+def on_duplicate_params() -> tuple[bool, str | None]:
+    """
+    In tuple:
+        First item: `on_duplicate_do_nothing`.
+        Second item: `on_duplicate_constraint` (unique constraint to check the duplicate on)
+    """
+    return (False, None)
 
 
 @pytest.fixture(scope="module")

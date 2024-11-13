@@ -32,8 +32,8 @@ class DataDepositTestDataCreator:
         )
         self.output_test_data_location_path = "data_retrieval_app/tests/test_data/"
 
-        if "localhost" not in settings.BASEURL:
-            self.base_url = f"https://{settings.BASEURL}"
+        if "localhost" not in settings.DOMAIN:
+            self.base_url = f"https://{settings.DOMAIN}"
         else:
             self.base_url = "http://src-backend-1"
         self.pom_auth_headers = get_superuser_token_headers(

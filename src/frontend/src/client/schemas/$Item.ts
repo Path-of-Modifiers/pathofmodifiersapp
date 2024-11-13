@@ -4,23 +4,7 @@
 /* eslint-disable */
 export const $Item = {
     properties: {
-        stashId: {
-            type: 'string',
-            isRequired: true,
-        },
-        gameItemId: {
-            type: 'string',
-            isRequired: true,
-        },
         name: {
-            type: 'any-of',
-            contains: [{
-                type: 'string',
-            }, {
-                type: 'null',
-            }],
-        },
-        iconUrl: {
             type: 'any-of',
             contains: [{
                 type: 'string',
@@ -32,11 +16,11 @@ export const $Item = {
             type: 'string',
             isRequired: true,
         },
-        typeLine: {
-            type: 'string',
+        itemBaseTypeId: {
+            type: 'number',
             isRequired: true,
         },
-        baseType: {
+        typeLine: {
             type: 'string',
             isRequired: true,
         },
@@ -50,14 +34,6 @@ export const $Item = {
         },
         identified: {
             type: 'boolean',
-        },
-        forumNote: {
-            type: 'any-of',
-            contains: [{
-                type: 'string',
-            }, {
-                type: 'null',
-            }],
         },
         currencyAmount: {
             type: 'any-of',
@@ -99,7 +75,7 @@ export const $Item = {
                 type: 'null',
             }],
         },
-        synthesized: {
+        synthesised: {
             type: 'any-of',
             contains: [{
                 type: 'boolean',
@@ -108,22 +84,6 @@ export const $Item = {
             }],
         },
         replica: {
-            type: 'any-of',
-            contains: [{
-                type: 'boolean',
-            }, {
-                type: 'null',
-            }],
-        },
-        elder: {
-            type: 'any-of',
-            contains: [{
-                type: 'boolean',
-            }, {
-                type: 'null',
-            }],
-        },
-        shaper: {
             type: 'any-of',
             contains: [{
                 type: 'boolean',
@@ -187,10 +147,9 @@ export const $Item = {
                 type: 'null',
             }],
         },
-        createdAt: {
-            type: 'string',
+        createdHoursSinceLaunch: {
+            type: 'number',
             isRequired: true,
-            format: 'date-time',
         },
         itemId: {
             type: 'number',

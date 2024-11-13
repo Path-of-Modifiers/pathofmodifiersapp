@@ -20,7 +20,7 @@ from data_retrieval_app.external_data_retrieval.utils import (
     ProgramRunTooLongException,
     ProgramTooSlowException,
     WrongLeagueSetException,
-    sync_timing_tracker,
+    # sync_timing_tracker,
 )
 from data_retrieval_app.logs.logger import data_retrieval_logger as logger
 
@@ -32,8 +32,8 @@ class PoEAPIHandler:
         "User-Agent": f"OAuth pathofmodifiers/0.1.0 (contact: {settings.OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
     }
 
-    if "localhost" not in settings.BASEURL:
-        base_pom_api_url = f"https://{settings.BASEURL}"
+    if "localhost" not in settings.DOMAIN:
+        base_pom_api_url = f"https://{settings.DOMAIN}"
     else:
         base_pom_api_url = "http://src-backend-1"
 
@@ -100,7 +100,6 @@ class PoEAPIHandler:
         df_temp = df_temp.loc[~df_temp["items"].isnull()]
 
         df_temp.drop("items", axis=1, inplace=True)
-        df_temp.rename(columns={"id": "stashId"}, inplace=True)
 
         df = pd.json_normalize(stashes, record_path=["items"])
 
@@ -109,8 +108,6 @@ class PoEAPIHandler:
         df_temp.index = df.index
 
         df[df_temp.columns.to_list()] = df_temp
-
-        df.rename(columns={"id": "gameItemId"}, inplace=True)
 
         return df
 
@@ -364,7 +361,7 @@ class PoEAPIHandler:
             )
         )
 
-    @sync_timing_tracker
+    # @sync_timing_tracker
     def _process_stream(
         self,
         stashes_ready_event: threading.Event,

@@ -3,7 +3,11 @@ from sqlalchemy.orm import Session
 from app import crud
 from app.core.models.models import Currency
 from app.core.schemas import CurrencyCreate
-from app.tests.utils.utils import random_float, random_lower_string, random_url
+from app.tests.utils.utils import (
+    random_float,
+    random_int,
+    random_lower_string,
+)
 
 
 def create_random_currency_dict() -> dict:
@@ -14,12 +18,12 @@ def create_random_currency_dict() -> dict:
     """
     tradeName = random_lower_string()
     valueInChaos = random_float()
-    iconUrl = random_url()
+    createdHoursSinceLaunch = random_int(small_int=True)
 
     currency = {
         "tradeName": tradeName,
         "valueInChaos": valueInChaos,
-        "iconUrl": iconUrl,
+        "createdHoursSinceLaunch": createdHoursSinceLaunch,
     }
 
     return currency
