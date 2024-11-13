@@ -107,9 +107,9 @@ class PoEAPIDataTransformerBase:
                 influence_dict = {}
                 for influence_column in influence_columns:
                     if row[influence_column]:
-                        influence_dict[influence_column.replace("influences.", "")] = (
-                            True
-                        )
+                        influence_dict[
+                            influence_column.replace("influences.", "")
+                        ] = True
                 return influence_dict
 
         base_type_series = item_df["baseType"]
