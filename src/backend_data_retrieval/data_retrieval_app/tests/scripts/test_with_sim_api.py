@@ -75,6 +75,7 @@ class TestUniquePoEAPIDataTransformer(UniquePoEAPIDataTransformer):
         df: pd.DataFrame,
         modifier_df: pd.DataFrame,
         currency_df: pd.DataFrame,
+        item_base_types: dict[str, int],
     ) -> None:
         if script_settings.dispersed_timing_enabled:
             self.time_column = self._create_random_time_column(length=len(df))
@@ -82,7 +83,7 @@ class TestUniquePoEAPIDataTransformer(UniquePoEAPIDataTransformer):
         test_logger.info(
             f"Transforming {len(df)} items, making them ready to insert into db"
         )
-        super().transform_into_tables(df, modifier_df, currency_df)
+        super().transform_into_tables(df, modifier_df, currency_df, item_base_types)
 
 
 class PoEMockAPIHandler(PoEAPIHandler):

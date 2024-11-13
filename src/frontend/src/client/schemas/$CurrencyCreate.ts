@@ -12,8 +12,8 @@ export const $CurrencyCreate = {
             type: 'number',
             isRequired: true,
         },
-        iconUrl: {
-            type: 'string',
+        createdHoursSinceLaunch: {
+            type: 'number',
             isRequired: true,
         },
     },

@@ -1,8 +1,6 @@
 from fastapi import APIRouter
 
 from app.api.routes import (
-    account,
-    account_prefix,
     currency,
     currency_prefix,
     item,
@@ -17,8 +15,6 @@ from app.api.routes import (
     modifier_prefix,
     plot,
     plot_prefix,
-    stash,
-    stash_prefix,
     test,
     test_prefix,
     turnstile,
@@ -30,9 +26,6 @@ from app.api.routes import (
 api_router = APIRouter()
 
 
-api_router.include_router(
-    account.router, prefix=f"/{account_prefix}", tags=[f"{account_prefix}s"]
-)
 api_router.include_router(
     currency.router, prefix=f"/{currency_prefix}", tags=[f"{currency_prefix}s"]
 )
@@ -54,9 +47,6 @@ api_router.include_router(
 )
 api_router.include_router(
     modifier.router, prefix=f"/{modifier_prefix}", tags=[f"{modifier_prefix}s"]
-)
-api_router.include_router(
-    stash.router, prefix=f"/{stash_prefix}", tags=[f"{stash_prefix}s"]
 )
 api_router.include_router(
     plot.router, prefix=f"/{plot_prefix}", tags=[f"{plot_prefix}s"]

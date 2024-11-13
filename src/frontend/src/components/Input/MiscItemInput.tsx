@@ -40,7 +40,7 @@ export const MiscItemInput = () => {
           <MinMaxIlvlInput text="Item level" />
           <IsItemInput itemSpecKey={"delve"} text={"Delve"} />
           <IsItemInput itemSpecKey={"fractured"} text={"Fracture"} />
-          <IsItemInput itemSpecKey={"synthesized"} text={"Synthesize"} />
+          <IsItemInput itemSpecKey={"synthesised"} text={"Synthesise"} />
           <IsItemInput itemSpecKey={"replica"} text={"Replica"} />
           <IsItemInput itemSpecKey={"searing"} text={"Exarch influence"} />
           <IsItemInput itemSpecKey={"tangled"} text={"Eater influence"} />

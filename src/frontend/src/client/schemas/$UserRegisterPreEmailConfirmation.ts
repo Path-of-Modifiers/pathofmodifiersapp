@@ -7,6 +7,7 @@ export const $UserRegisterPreEmailConfirmation = {
         username: {
             type: 'string',
             isRequired: true,
+            maxLength: 30,
             pattern: '^[\\p{L}\\p{N}_]+$',
         },
         email: {

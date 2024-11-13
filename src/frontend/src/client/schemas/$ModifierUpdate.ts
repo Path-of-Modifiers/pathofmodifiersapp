@@ -92,7 +92,7 @@ export const $ModifierUpdate = {
                 type: 'null',
             }],
         },
-        synthesized: {
+        synthesised: {
             type: 'any-of',
             contains: [{
                 type: 'boolean',

@@ -26,7 +26,7 @@ class ModifierDataDepositor(DataDepositorBase):
             "explicit",
             "delve",
             "fractured",
-            "synthesized",
+            "synthesised",
             "unique",
             "corrupted",
             "enchanted",

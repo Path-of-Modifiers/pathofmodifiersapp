@@ -7,7 +7,7 @@ from data_retrieval_app.external_data_retrieval.data_retrieval.poe_ninja_currenc
 )
 from data_retrieval_app.logs.logger import transform_logger as logger
 from data_retrieval_app.pom_api_authentication import get_superuser_token_headers
-from data_retrieval_app.utils import insert_data
+from data_retrieval_app.utils import find_hours_since_launch, insert_data
 
 
 def load_currency_data():
@@ -26,8 +26,8 @@ def load_currency_data():
 class TransformPoENinjaCurrencyAPIData:
     def __init__(self) -> None:
         logger.debug("Initializing TransformPoENinjaCurrencyAPIData.")
-        if "localhost" not in settings.BASEURL:
-            self.url = f"https://{settings.BASEURL}"
+        if "localhost" not in settings.DOMAIN:
+            self.url = f"https://{settings.DOMAIN}"
         else:
             self.url = "http://src-backend-1"
         self.url += "/api/api_v1"
@@ -44,25 +44,25 @@ class TransformPoENinjaCurrencyAPIData:
             columns={
                 "tradeId": "tradeName",
                 "chaosEquivalent": "valueInChaos",
-                "icon": "iconUrl",
             },
             inplace=True,
         )
         return currency_df
 
-    def _transform_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
+    def _transform_currency_table(
+        self, currency_df: pd.DataFrame, hours_since_launch: int
+    ) -> pd.DataFrame:
         """
         Since a chaos orb is always worth one chaos orb, ninja does not include it in its price api.
         """
         chaos_dict = {
             "tradeName": ["chaos"],
             "valueInChaos": [1],
-            "iconUrl": [
-                "https://web.poecdn.com/gen/image/WzI1LDE0LHsiZiI6IjJESXRlbXMvQ3VycmVuY3kvQ3VycmVuY3lSZXJvbGxSYXJlIiwidyI6MSwiaCI6MSwic2NhbGUiOjF9XQ/d119a0d734/CurrencyRerollRare.png"
-            ],
         }
         chaos_df = pd.DataFrame.from_dict(chaos_dict)
         currency_df = pd.concat((currency_df, chaos_df), ignore_index=True)
+
+        currency_df["createdHoursSinceLaunch"] = hours_since_launch
         return currency_df
 
     def _clean_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
@@ -71,7 +71,9 @@ class TransformPoENinjaCurrencyAPIData:
         """
 
         currency_df.drop(
-            currency_df.columns.difference(["tradeName", "valueInChaos", "iconUrl"]),
+            currency_df.columns.difference(
+                ["tradeName", "valueInChaos", "createdHoursSinceLaunch"]
+            ),
             axis=1,
             inplace=True,
         )
@@ -99,9 +101,10 @@ class TransformPoENinjaCurrencyAPIData:
         """
         Transforms the data into tables and transforms with help functions.
         """
+        hours_since_launch = find_hours_since_launch()
         logger.debug("Transforming data into tables.")
         currency_df = self._create_currency_table(currency_df)
-        currency_df = self._transform_currency_table(currency_df)
+        currency_df = self._transform_currency_table(currency_df, hours_since_launch)
         logger.debug("Successfully transformed data into tables.")
 
         logger.debug("Cleaning currency table data.")

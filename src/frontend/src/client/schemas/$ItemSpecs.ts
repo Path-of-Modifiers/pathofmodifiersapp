@@ -68,7 +68,7 @@ export const $ItemSpecs = {
                 type: 'null',
             }],
         },
-        synthesized: {
+        synthesised: {
             type: 'any-of',
             contains: [{
                 type: 'boolean',

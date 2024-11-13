@@ -8,6 +8,7 @@ export const $UserUpdate = {
             type: 'any-of',
             contains: [{
                 type: 'string',
+                maxLength: 30,
                 pattern: '^[\\p{L}\\p{N}_]+$',
             }, {
                 type: 'null',

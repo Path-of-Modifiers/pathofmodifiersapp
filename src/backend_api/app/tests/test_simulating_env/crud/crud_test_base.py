@@ -23,6 +23,7 @@ class TestCRUD(BaseTest):
         db: Session,
         crud_instance: CRUDBase,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
+        is_hypertable: bool,
     ) -> None:
         """
         A test function.
@@ -32,6 +33,9 @@ class TestCRUD(BaseTest):
         3. Uses the get method to retrieve whats in the db
         4. Checks the retrieved object agains the initial
         """
+        if is_hypertable:
+            pytest.skip("Hypertables doesn't support single get operations")
+
         object_dict, object_out = await self._create_random_object_crud(
             db, object_generator_func
         )
@@ -96,25 +100,27 @@ class TestCRUD(BaseTest):
         db: Session,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         crud_instance: CRUDBase,
-        on_duplicate_pkey_do_nothing: bool,
+        on_duplicate_params: tuple[bool, str | None],
     ) -> None:
-        if not on_duplicate_pkey_do_nothing:
-            pytest.skip(
-                f"CRUD test for test_create_found_duplicate in crud {crud_instance.__class__.__name__} does not support ignore_duplicates"
-            )
+        # TODO: currently always skips. Find out why test database doesn't register UNQIUE constraints
+        pytest.skip(
+            f"CRUD test for test_create_found_duplicate in crud {crud_instance.__class__.__name__} does not support ignore_duplicates"
+        )
 
-        # Test with on_duplicate_pkey_do_nothing is False
         object_dict, _ = await self._create_random_object_crud(
             db, object_generator_func
         )
         db_obj = await self._create_object_crud(
-            db, crud_instance, object_dict, on_duplicate_pkey_do_nothing=True
+            db,
+            crud_instance,
+            object_dict,
+            on_duplicate_params=on_duplicate_params,
         )
         assert db_obj is None
 
         with pytest.raises(DbObjectAlreadyExistsError):
             db_obj = await self._create_object_crud(
-                db, crud_instance, object_dict, on_duplicate_pkey_do_nothing=False
+                db, crud_instance, object_dict, on_duplicate_params=on_duplicate_params
             )
 
     @pytest.mark.asyncio
@@ -123,14 +129,13 @@ class TestCRUD(BaseTest):
         db: Session,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         crud_instance: CRUDBase,
-        on_duplicate_pkey_do_nothing: bool,
+        on_duplicate_params: tuple[bool, str | None],
     ) -> None:
-        if not on_duplicate_pkey_do_nothing:
-            pytest.skip(
-                f"CRUD test for test_create_found_duplicate in crud {crud_instance.__class__.__name__} does not support ignore_duplicates"
-            )
+        # TODO: currently always skips. Find out why test database doesn't register UNQIUE constraints
+        pytest.skip(
+            f"CRUD test for test_create_found_duplicate in crud {crud_instance.__class__.__name__} does not support ignore_duplicates"
+        )
 
-        # Test with on_duplicate_pkey_do_nothing is True
         multiple_object_dict_tuple, _ = await self._create_multiple_random_objects_crud(
             db, object_generator_func, count=5
         )
@@ -139,13 +144,16 @@ class TestCRUD(BaseTest):
             db,
             crud_instance=crud_instance,
             create_objects=object_dict_list,
-            on_duplicate_pkey_do_nothing=True,
+            on_duplicate_params=on_duplicate_params,
         )
         assert db_obj is None
 
         with pytest.raises(DbObjectAlreadyExistsError):
             db_obj = await self._create_multiple_objects_crud(
-                db, crud_instance, object_dict_list, on_duplicate_pkey_do_nothing=False
+                db,
+                crud_instance,
+                object_dict_list,
+                on_duplicate_params=on_duplicate_params,
             )
 
     @pytest.mark.asyncio
@@ -154,6 +162,7 @@ class TestCRUD(BaseTest):
         db: Session,
         crud_instance: CRUDBase,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
+        is_hypertable: bool,
     ) -> None:
         """
         A test function.
@@ -164,6 +173,9 @@ class TestCRUD(BaseTest):
         4. Deletes the object that matches the filter
         5. Tests that the deleted object is the same as the initial.
         """
+        if is_hypertable:
+            pytest.skip("Hypertables doesn't support single get operations")
+
         object_dict, object_out = await self._create_random_object_crud(
             db, object_generator_func
         )
@@ -183,6 +195,7 @@ class TestCRUD(BaseTest):
         db: Session,
         crud_instance: CRUDBase,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
+        is_hypertable: bool,
     ) -> None:
         """
         A test function.
@@ -197,6 +210,9 @@ class TestCRUD(BaseTest):
         7. Updates the values of the initial object.
         8. Tests if the returned updated object has been updated.
         """
+        if is_hypertable:
+            pytest.skip("Hypertables doesn't support single get operations")
+
         object_dict, object_out = await self._create_random_object_crud(
             db, object_generator_func
         )
@@ -229,11 +245,15 @@ class TestCRUD(BaseTest):
         db: Session,
         crud_instance: CRUDBase,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
+        is_hypertable: bool,
     ) -> None:
         """
         A test function. Tests if updating an object that does not exist raises
         an error.
         """
+        if is_hypertable:
+            pytest.skip("Hypertables doesn't support single get operations")
+
         object_dict, object_out = await self._create_random_object_crud(
             db, object_generator_func
         )

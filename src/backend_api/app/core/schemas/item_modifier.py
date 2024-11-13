@@ -9,14 +9,12 @@ class _BaseItemModifier(_pydantic.BaseModel):
 
     itemId: int
     modifierId: int
-    orderId: int
-    position: int
     roll: float | None = None
 
 
 # Properties to receive on item modifier creation
 class ItemModifierCreate(_BaseItemModifier):
-    createdAt: _dt.datetime | None = None
+    createdHoursSinceLaunch: int
 
 
 # Properties to receive on update
@@ -26,8 +24,7 @@ class ItemModifierUpdate(_BaseItemModifier):
 
 # Properties shared by models stored in DB
 class ItemModifierInDBBase(_BaseItemModifier):
-    createdAt: _dt.datetime
-    updatedAt: _dt.datetime | None = None
+    createdHoursSinceLaunch: int
 
 
 # Properties to return to client

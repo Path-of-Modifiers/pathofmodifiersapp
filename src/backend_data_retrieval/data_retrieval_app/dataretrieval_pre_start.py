@@ -20,10 +20,10 @@ wait_seconds = 6
 def init() -> None:
     try:
         pom_api_headers = {}
-        if "localhost" not in settings.BASEURL:
-            test_url = "https://" + settings.BASEURL + "/api/api_v1/modifier/"
+        if "localhost" not in settings.DOMAIN:
+            test_url = "https://" + settings.DOMAIN + "/api/api_v1/modifier/"
             pom_api_headers = get_superuser_token_headers(
-                "https://" + settings.BASEURL + "/api/api_v1"
+                "https://" + settings.DOMAIN + "/api/api_v1"
             )
         else:
             test_url = "http://src-backend-1/api/api_v1/modifier/"
