@@ -3,7 +3,6 @@ from collections.abc import Awaitable, Callable
 import pytest
 from sqlalchemy.orm import Session
 
-import app.tests.test_simulating_env.api.api_routes_test_base as test_api
 from app.api.routes import (
     currency_prefix,
     item_base_type_prefix,
@@ -20,10 +19,6 @@ from app.core.models.models import (
 )
 from app.crud import CRUD_itemModifier
 from app.crud.base import CRUDBase, ModelType
-from app.tests.test_simulating_env.crud.cascade_tests import (
-    TestCascade as UtilTestCascadeCRUD,
-)
-from app.tests.test_simulating_env.crud.crud_test_base import TestCRUD as UtilTestCRUD
 from app.tests.utils.model_utils.item_modifier import (
     create_random_item_modifier_dict,
     generate_random_item_modifier,
@@ -68,12 +63,6 @@ def unique_identifier() -> str:
 
 
 @pytest.fixture(scope="module")
-def get_crud_test_model() -> UtilTestCRUD:
-    model = UtilTestCRUD()
-    return model
-
-
-@pytest.fixture(scope="module")
 def skip_update_test() -> bool:
     return True
 
@@ -99,12 +88,6 @@ def ignore_test_columns() -> list[str]:
         List[str]: List of columns to ignore
     """
     return ["itemId", "modifierId", "updatedAt", "createdAt"]
-
-
-@pytest.fixture(scope="module")
-def get_crud_test_cascade_model() -> UtilTestCascadeCRUD:
-    model = UtilTestCascadeCRUD()
-    return model
 
 
 @pytest.fixture(scope="module")

@@ -87,17 +87,13 @@ class PoEAPIDataTransformerBase:
             return item_base_types[element]
 
         def get_currency_amount(element):
-            if isinstance(element, list):
-                if len(element) == 3:
-                    return element[1] if element[0] in ["~b/o", "~price"] else pd.NA
-
+            if len(element) == 3:
+                return element[1]
             return pd.NA
 
         def get_currency_type(element):
-            if isinstance(element, list):
-                if len(element) == 3:
-                    return element[2] if element[0] in ["~b/o", "~price"] else ""
-
+            if len(element) == 3:
+                return element[2]
             return ""
 
         def transform_influences(row: pd.DataFrame, influence_columns: list[str]):
@@ -107,9 +103,9 @@ class PoEAPIDataTransformerBase:
                 influence_dict = {}
                 for influence_column in influence_columns:
                     if row[influence_column]:
-                        influence_dict[
-                            influence_column.replace("influences.", "")
-                        ] = True
+                        influence_dict[influence_column.replace("influences.", "")] = (
+                            True
+                        )
                 return influence_dict
 
         base_type_series = item_df["baseType"]
@@ -153,6 +149,10 @@ class PoEAPIDataTransformerBase:
             left_on="currencyType",
             right_on="tradeName",
         )
+
+        self.price_found_mask = ~item_df["tradeName"].isna()
+
+        item_df = item_df.loc[self.price_found_mask]
 
         item_df["createdHoursSinceLaunch"] = hours_since_launch
 
@@ -336,7 +336,9 @@ class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
         """
         item_modifier_columns = ["name", "explicitMods"]
 
-        item_modifier_df = df.loc[:, item_modifier_columns].reset_index()
+        item_modifier_df = df.loc[
+            self.price_found_mask, item_modifier_columns
+        ].reset_index()
 
         item_modifier_df["itemId"] = item_id
         item_modifier_df = item_modifier_df.explode("explicitMods", ignore_index=True)

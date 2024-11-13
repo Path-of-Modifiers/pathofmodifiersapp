@@ -16,7 +16,6 @@ from app.crud.base import CRUDBase, ModelType
 from app.tests.test_simulating_env.api.api_routes_test_slowapi_rate_limit import (
     TestRateLimitSlowAPI as RateLimitSlowAPITestClass,
 )
-from app.tests.test_simulating_env.crud.cascade_tests import TestCRUD as UtilTestCRUD
 from app.tests.utils.model_utils.modifier import (
     create_random_modifier_dict,
     generate_random_modifier,
@@ -56,12 +55,6 @@ def on_duplicate_params() -> tuple[bool, str | None]:
 @pytest.fixture(scope="module")
 def model_table_name() -> str:
     return get_model_table_name(Modifier)
-
-
-@pytest.fixture(scope="module")
-def get_crud_test_model() -> UtilTestCRUD:
-    model = UtilTestCRUD()
-    return model
 
 
 @pytest.fixture(scope="module")

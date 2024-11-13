@@ -22,11 +22,11 @@ def find_conversion_value(
             df["currencyId"] == id, "valueInChaos"
         ].iloc[0]
         most_common_currency_timestamp = df.loc[
-            df["currencyId"] == id, "currencyCreatedAt"
+            df["currencyId"] == id, "currencyCreatedHoursSinceLaunch"
         ].iloc[0]
 
         current_timestamp_mask = (
-            df["currencyCreatedAt"] == most_common_currency_timestamp
+            df["currencyCreatedHoursSinceLaunch"] == most_common_currency_timestamp
         )
         conversion_value[current_timestamp_mask] = most_common_currency_value
 

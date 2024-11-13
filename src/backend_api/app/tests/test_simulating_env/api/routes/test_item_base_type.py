@@ -16,7 +16,6 @@ from app.crud.base import CRUDBase, ModelType
 from app.tests.test_simulating_env.api.api_routes_test_slowapi_rate_limit import (
     TestRateLimitSlowAPI as RateLimitSlowAPITestClass,
 )
-from app.tests.test_simulating_env.crud.cascade_tests import TestCRUD as UtilTestCRUD
 from app.tests.utils.model_utils.item_base_type import (
     create_random_item_base_type_dict,
     generate_random_item_base_type,
@@ -79,12 +78,6 @@ def ignore_test_columns() -> list[str]:
         List[str]: List of columns to ignore
     """
     return ["itemBaseTypeId"]
-
-
-@pytest.fixture(scope="module")
-def get_crud_test_model() -> UtilTestCRUD:
-    model = UtilTestCRUD()
-    return model
 
 
 @pytest.fixture(scope="module")

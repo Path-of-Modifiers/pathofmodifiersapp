@@ -2,7 +2,6 @@ from collections.abc import Callable
 
 import pytest
 
-import app.tests.test_simulating_env.crud.cascade_tests as cascade_test
 from app.core.models.models import (
     Currency,
     Item,
