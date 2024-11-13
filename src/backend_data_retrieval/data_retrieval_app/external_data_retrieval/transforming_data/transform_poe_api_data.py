@@ -29,7 +29,9 @@ class PoEAPIDataTransformerBase:
 
         self.roll_processor = RollProcessor()
 
-    def _create_item_table(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _create_item_table(
+        self, df: pd.DataFrame, hours_since_launch: int
+    ) -> pd.DataFrame:
         """
         Creates the basis of the `item` table.
         """
@@ -65,6 +67,8 @@ class PoEAPIDataTransformerBase:
         item_df = df.loc[
             :, [column for column in self.item_columns if column in df.columns]
         ]  # Can't guarantee all columns are present
+
+        item_df["createdHoursSinceLaunch"] = hours_since_launch
         return item_df
 
     def _transform_item_table(
@@ -72,7 +76,6 @@ class PoEAPIDataTransformerBase:
         item_df: pd.DataFrame,
         currency_df: pd.DataFrame,
         item_base_types: dict[str, int],
-        hours_since_launch: int,
     ) -> pd.DataFrame:
         """
         The `item` table requires a foreign key to the `currency` table.
@@ -103,9 +106,9 @@ class PoEAPIDataTransformerBase:
                 influence_dict = {}
                 for influence_column in influence_columns:
                     if row[influence_column]:
-                        influence_dict[influence_column.replace("influences.", "")] = (
-                            True
-                        )
+                        influence_dict[
+                            influence_column.replace("influences.", "")
+                        ] = True
                 return influence_dict
 
         base_type_series = item_df["baseType"]
@@ -148,13 +151,12 @@ class PoEAPIDataTransformerBase:
             how="left",
             left_on="currencyType",
             right_on="tradeName",
+            suffixes=(None, "_y"),
         )
 
         self.price_found_mask = ~item_df["tradeName"].isna()
 
         item_df = item_df.loc[self.price_found_mask]
-
-        item_df["createdHoursSinceLaunch"] = hours_since_launch
 
         return item_df
 
@@ -176,6 +178,7 @@ class PoEAPIDataTransformerBase:
                 "tradeName",
                 "valueInChaos",
                 "itemId",
+                "createdHoursSinceLaunch_y",
             }
             self._item_table_columns_to_drop = drop_columns
         return drop_columns
@@ -229,10 +232,8 @@ class PoEAPIDataTransformerBase:
         item_base_types: dict[str, int],
         hours_since_launch: int,
     ) -> pd.Series:
-        item_df = self._create_item_table(df)
-        item_df = self._transform_item_table(
-            item_df, currency_df, item_base_types, hours_since_launch
-        )
+        item_df = self._create_item_table(df, hours_since_launch=hours_since_launch)
+        item_df = self._transform_item_table(item_df, currency_df, item_base_types)
         item_df = self._clean_item_table(item_df)
         insert_data(
             item_df,
@@ -282,10 +283,10 @@ class PoEAPIDataTransformerBase:
         item_id: pd.Series,
         hours_since_launch: int,
     ) -> None:
-        item_modifier_df = self._create_item_modifier_table(df, item_id=item_id)
-        item_modifier_df = self._transform_item_modifier_table(
-            item_modifier_df, hours_since_launch
+        item_modifier_df = self._create_item_modifier_table(
+            df, item_id=item_id, hours_since_launch=hours_since_launch
         )
+        item_modifier_df = self._transform_item_modifier_table(item_modifier_df)
         item_modifier_df = self._clean_item_modifier_table(item_modifier_df)
 
         insert_data(
@@ -328,7 +329,7 @@ class PoEAPIDataTransformerBase:
 
 class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
     def _create_item_modifier_table(
-        self, df: pd.DataFrame, *, item_id: pd.Series
+        self, df: pd.DataFrame, *, item_id: pd.Series, hours_since_launch: int
     ) -> pd.DataFrame:
         """
         A similiar process to creating the item table, only this time the
@@ -345,13 +346,14 @@ class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
 
         item_modifier_df.rename({"explicitMods": "modifier"}, axis=1, inplace=True)
 
+        item_modifier_df["createdHoursSinceLaunch"] = hours_since_launch
+
         return item_modifier_df
 
     def _transform_item_modifier_table(
-        self, item_modifier_df: pd.DataFrame, hours_since_launch: int
+        self, item_modifier_df: pd.DataFrame
     ) -> pd.DataFrame:
         item_modifier_df = self.roll_processor.add_rolls(df=item_modifier_df)
-        item_modifier_df["createdHoursSinceLaunch"] = hours_since_launch
         return item_modifier_df
 
     @property
