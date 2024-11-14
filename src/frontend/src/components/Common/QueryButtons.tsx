@@ -49,9 +49,9 @@ const QueryButtons = (props: FlexProps) => {
     setResultError(false);
     const leagueValid = checkGraphQueryLeagueInput();
     const modifierValid = checkGraphQueryModifierInput();
+    if (!leagueValid || !modifierValid) return;
     const plotQuery = getOptimizedPlotQuery();
     if (plotQuery === undefined) return;
-    if (!leagueValid || !modifierValid) return;
     setPlotQuery(plotQuery);
     useGraphInputStore.getState().setQueryClicked();
     setHashFromStore();
@@ -63,7 +63,6 @@ const QueryButtons = (props: FlexProps) => {
       useGraphInputStore.getState().stateHash = undefined;
     }, 20);
   };
-  console.log(modifiersError);
   return (
     <Flex
       {...props}
