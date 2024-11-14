@@ -57,7 +57,7 @@ function UpdateUserEmail() {
     },
     retry: (failureCount, error) =>
       failureCount < 3 &&
-      error instanceof ApiError  &&
+      error instanceof ApiError &&
       error.status !== 401 &&
       error.status !== 429,
     retryDelay: 1500,
@@ -109,17 +109,29 @@ function UpdateUserEmail() {
           </VStack>
         ) : (
           <Heading size="lg" textAlign="center" mb={2}>
-            Activating user...
+            Changing email of user...
           </Heading>
         )}
-        <Link
-          as={RouterLink}
-          to="/login"
-          from="update-user-email"
-          color="blue.500"
-        >
-          Back to Log In Page
-        </Link>
+        {isLoggedIn() ? (
+          <Link
+            as={RouterLink}
+            to="/"
+            from="update-user-email"
+            color="blue.500"
+          >
+            Back to Main Page
+          </Link>
+        ) : (
+          <Link
+            as={RouterLink}
+            to="/login"
+            from="update-user-email"
+            key={(Math.random() + 1).toString(36).substring(7)} // Forces reload to make login work
+            color="blue.500"
+          >
+            Back to Login Page
+          </Link>
+        )}
       </Container>
     </Flex>
   );

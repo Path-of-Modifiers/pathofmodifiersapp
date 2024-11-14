@@ -67,7 +67,7 @@ function RecoverPassword() {
       showToast(
         "Email sent.",
         "We sent an email with a link to get back into your account.",
-        "success"
+        "success",
       );
       reset();
     },
@@ -133,6 +133,7 @@ function RecoverPassword() {
             as={RouterLink}
             to="/login"
             from="recover-password"
+            key={(Math.random() + 1).toString(36).substring(7)} // Forces reload to make login work
             color="blue.500"
           >
             Back to Log In Page
