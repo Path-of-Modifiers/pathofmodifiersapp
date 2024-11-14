@@ -2,7 +2,6 @@ import usePostPlottingData from "./postPlottingData";
 import { PlotQuery } from "../../client";
 import Datum from "../../schemas/Datum";
 import formatHoursSinceLaunch from "./utils";
-import { useErrorStore } from "../../store/ErrorStore";
 import { useEffect } from "react";
 import useCustomToast from "../useCustomToast";
 
