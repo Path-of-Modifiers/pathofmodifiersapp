@@ -17,8 +17,7 @@ function useGetPlotData(plotQuery: PlotQuery): {
   fetchStatus: string;
   isError: boolean;
 } {
-  const { leagueError, modifiersError, setResultError } =
-    useErrorStore.getState();
+  const { leagueError, modifiersError } = useErrorStore.getState();
 
   const { plotData, fetchStatus, isFetched, isError, error } =
     usePostPlottingData(plotQuery);
@@ -31,7 +30,7 @@ function useGetPlotData(plotQuery: PlotQuery): {
         showToast("Plotting error", error.message, "error");
       }
     }
-  }, [isError, isFetched, setResultError, error, showToast]);
+  }, [isError, isFetched, error, showToast]);
 
   if (isError || leagueError || modifiersError) {
     return {

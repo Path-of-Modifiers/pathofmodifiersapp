@@ -14,6 +14,7 @@ function usePostPlottingData(plotQuery: PlotQuery): {
   fetchStatus: string;
   isError: boolean;
   isFetched: boolean;
+  error: Error | null;
 } {
   const [plotData, setPlotData] = useState<PlotData>();
   const { queryClicked } = useGraphInputStore();

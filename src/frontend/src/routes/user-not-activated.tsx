@@ -47,7 +47,7 @@ function UserIsNotActivated() {
       showToast(
         "Email sent.",
         "We sent an email with a link to get back into your account.",
-        "success"
+        "success",
       );
       reset();
     },
