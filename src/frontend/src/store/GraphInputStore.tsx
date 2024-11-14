@@ -100,6 +100,10 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       location.hash = searchParams.toString();
       return { stateHash: stateHash };
     }),
+  setStateHash: (stateHash: StateHash | undefined) =>
+    set(() => ({
+      stateHash: stateHash,
+    })),
 
   setQueryClicked: () =>
     set(() => ({
