@@ -44,14 +44,8 @@ const QueryButtons = (props: FlexProps) => {
   };
 
   const handlePlotQuery = () => {
-    if (isFetching) {
-      console.log("ALREADY FETCHING BITCHED");
-      return;
-    }
-    if (stateHash) {
-      console.log("I HAVE STATEHASH  BITCH");
-      return;
-    }
+    if (isFetching) return;
+    if (stateHash) return;
     setResultError(false);
     const plotQuery = getOptimizedPlotQuery();
     if (plotQuery === undefined) return;
