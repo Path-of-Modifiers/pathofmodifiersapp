@@ -69,7 +69,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
   setHashFromStore: () =>
     set((state) => {
       if (state.stateHash != null) return {};
-      const searchParams = new URLSearchParams(location.hash.slice(1));
+      const searchParams = new URLSearchParams();
       const stateHash: StateHash = {};
       if (state.league != null) {
         stateHash.league = state.league;
