@@ -28,9 +28,9 @@ from app.exceptions.model_exceptions.plot_exception import (
     PlotNoModifiersProvidedError,
     PlotQueryDataNotFoundError,
 )
+from app.logs.logger import plot_logger
 from app.plotting.utils import find_conversion_value, summarize_function
 from app.utils.timing_tracker import async_timing_tracker, sync_timing_tracker
-from app.logs.logger import plot_logger
 
 
 class Plotter:
@@ -312,7 +312,7 @@ class Plotter:
         # Find value in chaos
         value_in_chaos = df["currencyAmount"] * df["valueInChaos"]
 
-        # Get timestamps of when the items were retrieved
+        # Get hoursSinceLaunchs of when the items were retrieved
         time_stamps = df["createdHoursSinceLaunch"]
 
         # Find conversion value between chaos and most common currency
@@ -341,7 +341,7 @@ class Plotter:
         # Convert to dict
         plot_data = {
             "valueInChaos": value_in_chaos,
-            "timeStamp": time_stamps,
+            "hoursSinceLaunch": time_stamps,
             "valueInMostCommonCurrencyUsed": value_in_most_common_currency_used,
             "mostCommonCurrencyUsed": mostCommonCurrencyUsed,
         }
@@ -349,7 +349,7 @@ class Plotter:
         df = pd.DataFrame(plot_data)
 
         # Group by hour
-        grouped_by_created_hours_since_launch_df = df.groupby("timeStamp")
+        grouped_by_created_hours_since_launch_df = df.groupby("hoursSinceLaunch")
 
         # Aggregate by custom function
         agg_by_date_df = grouped_by_created_hours_since_launch_df.agg(
@@ -363,7 +363,7 @@ class Plotter:
         agg_by_date_df = agg_by_date_df.loc[~agg_by_date_df["valueInChaos"].isna()]
 
         # Update the values in the dict
-        plot_data["timeStamp"] = agg_by_date_df.index
+        plot_data["hoursSinceLaunch"] = agg_by_date_df.index
         plot_data["valueInChaos"] = agg_by_date_df["valueInChaos"].values
         plot_data["valueInMostCommonCurrencyUsed"] = agg_by_date_df[
             "valueInMostCommonCurrencyUsed"

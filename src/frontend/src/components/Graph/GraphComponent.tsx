@@ -81,11 +81,20 @@ function GraphComponent(props: BoxProps) {
                             top: 5,
                             right: 30,
                             left: 20,
-                            bottom: 5,
+                            bottom: 25,
                         }}
                     >
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" />
+                        <XAxis
+                            dataKey="timestamp"
+                            label={{
+                                value: "Days and hours since launch",
+                                position: "bottom",
+                            }}
+                            angle={-45}
+                            tickMargin={11}
+                            minTickGap={12}
+                        />
                         {/* Set Y-axis label */}
                         <YAxis
                             label={{
@@ -95,7 +104,22 @@ function GraphComponent(props: BoxProps) {
                             }}
                             hide={!showChaos}
                         />
-                        <Tooltip />
+                        <Tooltip
+                            labelFormatter={(value, payload) => {
+                                if (payload.length === 0) {
+                                    return value;
+                                }
+                                const daysAndHours =
+                                    payload[0]?.payload.timestamp.split("T");
+                                const days = daysAndHours[0];
+                                const hours = daysAndHours[1];
+                                return `${days} days and ${hours} hours since launch`;
+                            }}
+                            formatter={(value, name) => [
+                                (value as number).toFixed(2),
+                                name,
+                            ]}
+                        />
                         <Legend verticalAlign="top" height={36} />
                         {/* Update the Line dataKey to match "Chaos value" */}
                         <Line

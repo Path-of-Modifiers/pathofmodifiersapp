@@ -24,29 +24,28 @@ class TestUniquePoEAPIDataTransformer(UniquePoEAPIDataTransformer):
     def __init__(self):
         super().__init__()
 
-        self._update_item_table_columns_to_drop(dont_drop={"createdAt"})
-        self._update_item_modifier_table_columns_to_not_drop(dont_drop={"createdAt"})
-
     def _create_random_time_column(self, length: int) -> pd.Series:
-        start = pd.to_datetime("1990-01-01")
+        start = 300 * 24
 
-        timedelta_series = pd.to_timedelta(
-            np.random.randint(0, script_settings.TIMING_PERIOD, length), unit="D"
-        )
+        random_times = np.random.randint(0, script_settings.TIMING_PERIOD * 24, length)
 
-        time_column = timedelta_series + start
+        time_column = random_times + start
 
-        return time_column.astype(str)
+        return pd.Series(time_column, dtype=str)
 
-    def _create_item_table(self, df):
-        item_df = super()._create_item_table(df)
+    def _create_item_table(self, df, hours_since_launch: int):
+        item_df = super()._create_item_table(df, hours_since_launch)
         if script_settings.dispersed_timing_enabled:
-            item_df["createdAt"] = self.time_column
+            item_df["createdHoursSinceLaunch"] = self.time_column
 
         return item_df
 
     def _create_item_modifier_table(
-        self, df: pd.DataFrame, *, item_id: pd.Series
+        self,
+        df: pd.DataFrame,
+        *,
+        item_id: pd.Series,
+        hours_since_launch: int,  # type: ignore
     ) -> pd.DataFrame:
         """
         A similiar process to creating the item table, only this time the
@@ -55,8 +54,8 @@ class TestUniquePoEAPIDataTransformer(UniquePoEAPIDataTransformer):
         item_modifier_columns = ["name", "explicitMods"]
 
         if script_settings.dispersed_timing_enabled:
-            df["createdAt"] = self.time_column
-            item_modifier_columns.append("createdAt")
+            df["createdHoursSinceLaunch"] = self.time_column
+            item_modifier_columns.append("createdHoursSinceLaunch")
 
         item_modifier_df = df.loc[:, item_modifier_columns].reset_index()
 
