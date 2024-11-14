@@ -101,7 +101,6 @@ export interface GraphInputState {
 
   getStoreFromHash: (searchParams: URLSearchParams) => void;
   setHashFromStore: () => void;
-  /* eslint-disable @typescript-eslint/no-explicit-any */
   setStateHash: (stateHash: StateHash | undefined) => void;
 
   setClearClicked: () => void;
