@@ -47,7 +47,7 @@ function UserIsNotActivated() {
       showToast(
         "Email sent.",
         "We sent an email with a link to get back into your account.",
-        "success"
+        "success",
       );
       reset();
     },
@@ -103,6 +103,7 @@ function UserIsNotActivated() {
             as={RouterLink}
             to="/login"
             onClick={logout}
+            key={(Math.random() + 1).toString(36).substring(7)} // Forces reload to make login work
             from="user-not-activated"
             color="blue.500"
           >

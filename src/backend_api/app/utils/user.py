@@ -98,7 +98,9 @@ def generate_user_registration_email(
     return EmailData(html_content=html_content, subject=subject)
 
 
-def generate_user_email_update(email_to: EmailStr, token: str) -> EmailData:
+def generate_user_email_update(
+    email_to: EmailStr, username: str, token: str
+) -> EmailData:
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - Update user email information for user {email_to}"
     link = f"{settings.server_host}/update-user-email?token={token}"
@@ -107,6 +109,7 @@ def generate_user_email_update(email_to: EmailStr, token: str) -> EmailData:
         context={
             "project_name": settings.PROJECT_NAME,
             "email": email_to,
+            "username": username,
             "valid_hours": settings.EMAIL_RESET_TOKEN_EXPIRE_SECONDS // 3600,
             "link": link,
         },

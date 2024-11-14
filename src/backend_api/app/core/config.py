@@ -45,9 +45,9 @@ class Settings(BaseSettings):
             return f"http://{self.DOMAIN}"
         return f"https://{self.DOMAIN}"
 
-    BACKEND_CORS_ORIGINS: Annotated[
-        list[AnyUrl] | str, BeforeValidator(parse_cors)
-    ] = []
+    BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = (
+        []
+    )
 
     PROJECT_NAME: str = "Path of Modifiers"
     SENTRY_DSN: HttpUrl | None = None
@@ -113,7 +113,7 @@ class Settings(BaseSettings):
             self.EMAILS_FROM_NAME = self.PROJECT_NAME
         return self
 
-    EMAIL_RESET_TOKEN_EXPIRE_SECONDS: int = 60 * 10 * 1  # 10 minutes
+    EMAIL_RESET_TOKEN_EXPIRE_SECONDS: int = 60 * 60 * 1  # 60 minutes
 
     @computed_field  # type: ignore[prop-decorator]
     @property
