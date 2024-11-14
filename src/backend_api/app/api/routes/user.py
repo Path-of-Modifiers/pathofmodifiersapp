@@ -161,6 +161,7 @@ async def update_me_email_send_confirmation(
     if settings.emails_enabled:
         email_data = generate_user_email_update(
             email_to=user_update_me_email.email,
+            username=current_user.username,
             token=user_update_token,
         )
         background_tasks.add_task(

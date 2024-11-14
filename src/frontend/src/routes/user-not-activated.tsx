@@ -103,6 +103,7 @@ function UserIsNotActivated() {
             as={RouterLink}
             to="/login"
             onClick={logout}
+            key={(Math.random() + 1).toString(36).substring(7)} // Forces reload to make login work
             from="user-not-activated"
             color="blue.500"
           >
