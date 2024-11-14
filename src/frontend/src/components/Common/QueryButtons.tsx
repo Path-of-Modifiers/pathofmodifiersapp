@@ -15,11 +15,9 @@ const QueryButtons = (props: FlexProps) => {
   const {
     modifiersError,
     leagueError,
-    resultError,
     noRelatedUniqueError,
     itemDoesNotHaveSelectedModifiersError,
     baseSpecDoesNotMatchError,
-    setResultError,
   } = useErrorStore();
   const { stateHash, fetchStatus, setHashFromStore, setPlotQuery } =
     useGraphInputStore();
@@ -46,7 +44,6 @@ const QueryButtons = (props: FlexProps) => {
   const handlePlotQuery = () => {
     if (isFetching) return;
     if (stateHash) return;
-    setResultError(false);
     const leagueValid = checkGraphQueryLeagueInput();
     const modifierValid = checkGraphQueryModifierInput();
     if (!leagueValid || !modifierValid) return;
@@ -136,12 +133,6 @@ const QueryButtons = (props: FlexProps) => {
         <ErrorMessage
           alertTitle="No League Selected"
           alertDescription="Please select a league."
-        />
-      )}
-      {resultError && (
-        <ErrorMessage
-          alertTitle="No Results Found"
-          alertDescription="No results were found for the current query."
         />
       )}
       {noRelatedUniqueError && !modifiersError && (
