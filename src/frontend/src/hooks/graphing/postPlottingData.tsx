@@ -10,36 +10,36 @@ import { useGraphInputStore } from "../../store/GraphInputStore";
  * @returns The Plot Data or undefined if no query yet, and the fetch status
  */
 function usePostPlottingData(plotQuery: PlotQuery): {
-    plotData: PlotData | undefined;
-    fetchStatus: string;
-    isError: boolean;
-    isFetched: boolean;
+  plotData: PlotData | undefined;
+  fetchStatus: string;
+  isError: boolean;
+  isFetched: boolean;
 } {
-    const [plotData, setPlotData] = useState<PlotData>();
-    const { queryClicked } = useGraphInputStore();
-    const { setFetchStatus } = useGraphInputStore();
-    const { fetchStatus, refetch, isFetched, isError } = useQuery({
-        queryKey: ["allPlotData"],
-        queryFn: async () => {
-            const returnBody = await PlotsService.getPlotData({
-                requestBody: plotQuery,
-            });
+  const [plotData, setPlotData] = useState<PlotData>();
+  const { queryClicked } = useGraphInputStore();
+  const { setFetchStatus } = useGraphInputStore();
+  const { fetchStatus, refetch, isFetched, isError, error } = useQuery({
+    queryKey: ["allPlotData"],
+    queryFn: async () => {
+      const returnBody = await PlotsService.getPlotData({
+        requestBody: plotQuery,
+      });
 
-            setPlotData(returnBody);
-            return 1;
-        },
-        retry: false,
-        enabled: false, // stops constant refreshes
-    });
+      setPlotData(returnBody);
+      return 1;
+    },
+    retry: false,
+    enabled: false, // stops constant refreshes
+  });
 
-    useEffect(() => {
-        // Only refetches data if the query button is clicked
-        setFetchStatus(fetchStatus);
-        if (queryClicked && fetchStatus === "idle") {
-            refetch();
-        }
-    }, [queryClicked, refetch, fetchStatus, setFetchStatus, plotQuery]);
-    return { plotData, fetchStatus, isFetched, isError };
+  useEffect(() => {
+    // Only refetches data if the query button is clicked
+    setFetchStatus(fetchStatus);
+    if (queryClicked && fetchStatus === "idle") {
+      refetch();
+    }
+  }, [queryClicked, refetch, fetchStatus, setFetchStatus, plotQuery]);
+  return { plotData, fetchStatus, isFetched, isError, error };
 }
 
 export default usePostPlottingData;
