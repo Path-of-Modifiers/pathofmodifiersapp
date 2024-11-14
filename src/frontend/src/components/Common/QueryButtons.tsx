@@ -3,7 +3,7 @@ import { MdExpandMore, MdExpandLess } from "react-icons/md";
 import { useExpandedComponentStore } from "../../store/ExpandedComponentStore";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 import {
-  checkGraphQueryLeageInput,
+  checkGraphQueryLeagueInput,
   checkGraphQueryModifierInput,
 } from "../../hooks/graphing/checkGraphQueryInput";
 import { useErrorStore } from "../../store/ErrorStore";
@@ -47,22 +47,21 @@ const QueryButtons = (props: FlexProps) => {
     if (isFetching) return;
     if (stateHash) return;
     setResultError(false);
+    const leagueValid = checkGraphQueryLeagueInput();
+    const modifierValid = checkGraphQueryModifierInput();
+    if (!leagueValid || !modifierValid) return;
     const plotQuery = getOptimizedPlotQuery();
     if (plotQuery === undefined) return;
     setPlotQuery(plotQuery);
-    const leagueValid = checkGraphQueryLeageInput();
-    const modifierValid = checkGraphQueryModifierInput();
-    if (leagueValid && modifierValid) {
-      useGraphInputStore.getState().setQueryClicked();
-      setHashFromStore();
+    useGraphInputStore.getState().setQueryClicked();
+    setHashFromStore();
 
-      // This is a hack to make sure the clearClicked is set to false after the
-      // state is updated.
-      setTimeout(() => {
-        useGraphInputStore.getState().queryClicked = false;
-        useGraphInputStore.getState().stateHash = undefined;
-      }, 20);
-    }
+    // This is a hack to make sure the clearClicked is set to false after the
+    // state is updated.
+    setTimeout(() => {
+      useGraphInputStore.getState().queryClicked = false;
+      useGraphInputStore.getState().stateHash = undefined;
+    }, 20);
   };
   return (
     <Flex
@@ -127,8 +126,7 @@ const QueryButtons = (props: FlexProps) => {
           {filterExpanded ? "Hide Filters" : "Show Filters"}
         </Button>
       </Flex>
-
-      {modifiersError && !noRelatedUniqueError && (
+      {modifiersError && (
         <ErrorMessage
           alertTitle="No Modifiers Selected"
           alertDescription="Please select at least one modifier."
@@ -146,7 +144,7 @@ const QueryButtons = (props: FlexProps) => {
           alertDescription="No results were found for the current query."
         />
       )}
-      {noRelatedUniqueError && (
+      {noRelatedUniqueError && !modifiersError && (
         <ErrorMessage
           alertTitle="No query performed"
           alertDescription="The modifiers you have chosen cannot appear on the same Unique."
