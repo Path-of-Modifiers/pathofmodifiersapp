@@ -17,8 +17,6 @@ function useGetPlotData(plotQuery: PlotQuery): {
   fetchStatus: string;
   isError: boolean;
 } {
-  const { leagueError, modifiersError } = useErrorStore.getState();
-
   const { plotData, fetchStatus, isFetched, isError, error } =
     usePostPlottingData(plotQuery);
 
@@ -32,14 +30,7 @@ function useGetPlotData(plotQuery: PlotQuery): {
     }
   }, [isError, isFetched, error, showToast]);
 
-  if (isError || leagueError || modifiersError) {
-    return {
-      result: undefined,
-      mostCommonCurrencyUsed: undefined,
-      fetchStatus,
-      isError: true,
-    };
-  } else if (plotData !== undefined) {
+  if (plotData !== undefined) {
     const data: Datum[] = [];
     for (let i = 0; i < plotData?.hoursSinceLaunch.length; i++) {
       data.push({
