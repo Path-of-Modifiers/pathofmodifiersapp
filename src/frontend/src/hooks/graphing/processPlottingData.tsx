@@ -14,13 +14,11 @@ function useGetPlotData(plotQuery: PlotQuery): {
   result: Datum[] | undefined;
   mostCommonCurrencyUsed: string | undefined;
   fetchStatus: string;
-  isError: boolean;
+  error: Error | null;
 } {
   const { plotData, fetchStatus, isFetched, isError, error } =
     usePostPlottingData(plotQuery);
-
   const showToast = useCustomToast();
-
   useEffect(() => {
     if (isError && isFetched) {
       if (error != null) {
@@ -29,8 +27,8 @@ function useGetPlotData(plotQuery: PlotQuery): {
     }
   }, [isError, isFetched, error, showToast]);
 
+  const data: Datum[] = [];
   if (plotData !== undefined) {
-    const data: Datum[] = [];
     for (let i = 0; i < plotData?.hoursSinceLaunch.length; i++) {
       data.push({
         timestamp: formatHoursSinceLaunch(plotData.hoursSinceLaunch[i]),
@@ -43,16 +41,15 @@ function useGetPlotData(plotQuery: PlotQuery): {
       result: data,
       mostCommonCurrencyUsed: plotData.mostCommonCurrencyUsed,
       fetchStatus,
-      isError: false,
-    };
-  } else {
-    return {
-      result: undefined,
-      mostCommonCurrencyUsed: undefined,
-      fetchStatus,
-      isError: true,
+      error,
     };
   }
+  return {
+    result: undefined,
+    mostCommonCurrencyUsed: undefined,
+    fetchStatus,
+    error,
+  };
 }
 
 export default useGetPlotData;

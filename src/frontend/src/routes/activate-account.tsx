@@ -45,7 +45,7 @@ function ActivateAccount() {
     isError,
     error,
   } = useQuery({
-    queryKey: ["checkActive", token],
+    queryKey: ["userConfirm"],
     queryFn: async () => {
       if (!token) return;
       const response = await UsersService.registerUserConfirm({
