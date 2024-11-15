@@ -46,7 +46,7 @@ function GraphComponent(props: BoxProps) {
   const isLowConfidence = confidenceRating === "low";
   const isMediumConfidence = confidenceRating === "medium";
   const confidenceColor = isLowConfidence
-    ? "#bf0118"
+    ? "#FF2424"
     : isMediumConfidence
       ? "#facc14"
       : "ui.input";
@@ -95,7 +95,7 @@ function GraphComponent(props: BoxProps) {
                 color: confidenceColor,
                 size: "1.5rem",
               }}
-              alertProps={{ bgColor: "#db6960", color: "white" }}
+              alertProps={{ bgColor: "#c00000", color: "white" }}
             />
           )}
           {isMediumConfidence && (
@@ -107,7 +107,7 @@ function GraphComponent(props: BoxProps) {
                 color: confidenceColor,
                 size: "1.5rem",
               }}
-              alertProps={{ bgColor: "#614e03", color: "white" }}
+              alertProps={{ bgColor: "#9b7e08", color: "white" }}
             />
           )}
           <PlotCustomizationButtons
@@ -136,7 +136,7 @@ function GraphComponent(props: BoxProps) {
                 value: "Days and hours since launch",
                 position: "bottom",
               }}
-              angle={-45}
+              angle={0}
               tickMargin={11}
               minTickGap={13}
               tickFormatter={(value) => formatHoursSinceLaunch(value)}

@@ -21,7 +21,7 @@ export const CustomTooltip = ({
     const isLowConfidence = confidence === "low";
     const isMediumConfidence = confidence === "medium";
     const confidenceColor = isLowConfidence
-      ? "#bf0118"
+      ? "#FF2424"
       : isMediumConfidence
         ? "#facc14"
         : "ui.input";
@@ -40,7 +40,7 @@ export const CustomTooltip = ({
       >
         <Box my="5px">
           {`${days} days`}
-          {hours && ` and ${hours} hours`}
+          {hours > 0 && ` and ${hours} hours`}
           {" since launch"}
         </Box>
         <Divider />
