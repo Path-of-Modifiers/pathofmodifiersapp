@@ -1,8 +1,8 @@
 import usePostPlottingData from "./postPlottingData";
 import { PlotQuery } from "../../client";
 import Datum from "../../schemas/Datum";
-import { useErrorStore } from "../../store/ErrorStore";
 import { useEffect } from "react";
+import useCustomToast from "../useCustomToast";
 
 /**
  * A hook that takes the current plot query and returns
@@ -16,29 +16,20 @@ function useGetPlotData(plotQuery: PlotQuery): {
   fetchStatus: string;
   isError: boolean;
 } {
-  const { leagueError, modifiersError, setResultError } =
-    useErrorStore.getState();
-
-  const { plotData, fetchStatus, isFetched, isError } =
+  const { plotData, fetchStatus, isFetched, isError, error } =
     usePostPlottingData(plotQuery);
+
+  const showToast = useCustomToast();
 
   useEffect(() => {
     if (isError && isFetched) {
-      setResultError(true);
-    } else {
-      setResultError(false);
+      if (error != null) {
+        showToast("Plotting error", error.message, "error");
+      }
     }
-  }, [isError, isFetched, setResultError]);
+  }, [isError, isFetched, error, showToast]);
 
-  if (isError || leagueError || modifiersError) {
-    return {
-      result: undefined,
-      mostCommonCurrencyUsed: undefined,
-      confidenceRating: undefined,
-      fetchStatus,
-      isError: true,
-    };
-  } else if (plotData !== undefined) {
+  if (plotData !== undefined) {
     const data: Datum[] = [];
     for (let i = 0; i < plotData?.hoursSinceLaunch.length; i++) {
       data.push({

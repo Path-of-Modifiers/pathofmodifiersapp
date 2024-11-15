@@ -89,12 +89,11 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
   } else {
     useErrorStore.getState().setBaseSpecDoesNotMatchError(false);
   }
-  if (baseSpec != null) {
-    if (possibleBaseSpecs.length === 1) {
-      baseSpec = possibleBaseSpecs[0];
-    } else {
-      delete baseSpec["baseType"];
-    }
+  if (possibleBaseSpecs.length === 1) {
+    baseSpec = possibleBaseSpecs[0];
+  }
+  if (baseSpec?.baseType != null) {
+    delete baseSpec["baseType"];
   }
 
   itemSpec = { ...itemSpec, name: possibleUniques.join("|") };
