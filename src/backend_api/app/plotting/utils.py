@@ -1,9 +1,17 @@
+from typing import Literal
+
 import pandas as pd
 
 
 def summarize_function(*args) -> int:
     values = args[0]
     return values.get(0)
+
+
+def determine_confidence(
+    values: pd.Series,  # noqa: ARG001
+) -> Literal["low", "medium", "high"]:
+    return "high"
 
 
 def find_conversion_value(

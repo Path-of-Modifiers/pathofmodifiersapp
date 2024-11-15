@@ -4576,13 +4576,12 @@
             "type": "array",
             "title": "Valueinchaos"
           },
-          "timeStamp": {
+          "hoursSinceLaunch": {
             "items": {
-              "type": "string",
-              "format": "date-time"
+              "type": "integer"
             },
             "type": "array",
-            "title": "Timestamp"
+            "title": "Hourssincelaunch"
           },
           "valueInMostCommonCurrencyUsed": {
             "items": {
@@ -4590,6 +4589,27 @@
             },
             "type": "array",
             "title": "Valueinmostcommoncurrencyused"
+          },
+          "confidence": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "type": "array",
+            "title": "Confidence"
+          },
+          "confidenceRating": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "title": "Confidencerating"
           },
           "mostCommonCurrencyUsed": {
             "type": "string",
@@ -4599,8 +4619,10 @@
         "type": "object",
         "required": [
           "valueInChaos",
-          "timeStamp",
+          "hoursSinceLaunch",
           "valueInMostCommonCurrencyUsed",
+          "confidence",
+          "confidenceRating",
           "mostCommonCurrencyUsed"
         ],
         "title": "PlotData"
