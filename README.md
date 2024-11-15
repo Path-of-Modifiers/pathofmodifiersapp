@@ -2,16 +2,17 @@
 
 Website application for analyzing prices on items with customized parameters plotted on graphs in Path of Exile.
 
-Not officially released, but currently testing in production :smiley:
-
 ## :pencil: Technology Stack and Features
 
 - [FastAPI](https://fastapi.tiangolo.com/) for the Python backend API.
 - [SQLAlchemy](https://www.sqlalchemy.org/) for the Python SQL database interactions (ORM).
 - [Pydantic](https://docs.pydantic.dev/latest/) for data validation and settings management.
-- [PostgreSQL](https://www.postgresql.org/) as the SQL database.
+- [TimescaleDB](https://www.timescale.com/) for both transactional and analytical processing database.
+- [Redis](https://redis.io/) as a cache for tokens and rate limit tracking
 - [Alembic](https://alembic.sqlalchemy.org/en/latest/front.html) to automate migrations to database
 - Continous stream requests to official [PoE API endpoints](https://www.pathofexile.com/developer/docs) written in threaded Python
+- Unit testing with Pytest
+- Homemade scripts to insert test data and test the backend
 - [React](https://react.dev/) for the frontend.
 - Using TypeScript, hooks, Vite, Tanstack and other tools for the frontend stack.
 - [Chakra UI](https://v2.chakra-ui.com/) for the frontend components.
@@ -24,20 +25,17 @@ Not officially released, but currently testing in production :smiley:
 - [Vector](https://vector.dev/) for observability pipeliner, centralising all logs and metrics
 - [Grafana Loki](https://grafana.com/docs/loki/latest/#grafana-loki) for storage and [Grafana](https://grafana.com/grafana/) for visualization of logs and metrics
 
+
 ## :bike: Current goals we are working towards:
 
 - Production testing through the Settlers PoE league
 - Comprehensive application testing end-to-end
-- Rate limit security for the API
-- Secure user account storage for tracking rates
-- Improving the data stream consumer
 
 ## :checkered_flag: Future goals:
 
 - Introduce other uniques where rolls matter
 - Introduce synthesis implicit tracking
 - Introduce fractured explicit tracking
-- Confidence checking
 
 ## Dashboard - Front page
 
