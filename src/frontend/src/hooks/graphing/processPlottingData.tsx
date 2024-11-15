@@ -27,8 +27,8 @@ function useGetPlotData(plotQuery: PlotQuery): {
     }
   }, [isError, isFetched, error, showToast]);
 
-  const data: Datum[] = [];
   if (plotData !== undefined) {
+    const data: Datum[] = [];
     for (let i = 0; i < plotData?.hoursSinceLaunch.length; i++) {
       data.push({
         timestamp: formatHoursSinceLaunch(plotData.hoursSinceLaunch[i]),
