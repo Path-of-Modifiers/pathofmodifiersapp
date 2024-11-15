@@ -30,7 +30,7 @@ const useAuth = () => {
     isLoading: isLoadingUser,
     isError,
   } = useQuery<UserPublic | null, Error>({
-    queryKey: ["currentUser", isLoggedIn()],
+    queryKey: ["currentUser"],
     queryFn: async () => {
       const user = await UsersService.getUserMe();
 
@@ -55,7 +55,6 @@ const useAuth = () => {
     navigate({ to: from ? "/" + `${from}` : "/login" });
   }
 
-  // TODO: Fix UserRegisterPreEmailConfirmation here
   const signUpMutation = useMutation({
     mutationFn: (data: UserRegisterPreEmailConfirmation) =>
       UsersService.registerUserSendConfirmation({ requestBody: data }),
@@ -65,7 +64,7 @@ const useAuth = () => {
       showToast(
         "Account created.",
         "Your account has been created successfully. Please check your email for confirmation.",
-        "success"
+        "success",
       );
     },
     onError: (err: ApiError) => {
@@ -78,7 +77,7 @@ const useAuth = () => {
       showToast("Something went wrong.", errDetail, "error");
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ["currentUser"] });
     },
   });
 
@@ -86,6 +85,7 @@ const useAuth = () => {
     const response = await LoginsService.loginAccessSession({
       formData: data,
     });
+    queryClient.clear();
     localStorage.setItem("access_token", response.access_token);
   };
 
@@ -121,6 +121,7 @@ const useAuth = () => {
 
   const logout = () => {
     localStorage.removeItem("access_token");
+    queryClient.clear();
     navigate({ to: "/login" });
   };
 
