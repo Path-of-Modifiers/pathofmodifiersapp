@@ -14,13 +14,11 @@ function useGetPlotData(plotQuery: PlotQuery): {
   mostCommonCurrencyUsed: string | undefined;
   confidenceRating: "low" | "medium" | "high" | undefined;
   fetchStatus: string;
-  isError: boolean;
+  error: Error | null;
 } {
   const { plotData, fetchStatus, isFetched, isError, error } =
     usePostPlottingData(plotQuery);
-
   const showToast = useCustomToast();
-
   useEffect(() => {
     if (isError && isFetched) {
       if (error != null) {
@@ -45,17 +43,16 @@ function useGetPlotData(plotQuery: PlotQuery): {
       mostCommonCurrencyUsed: plotData.mostCommonCurrencyUsed,
       confidenceRating: plotData.confidenceRating,
       fetchStatus,
-      isError: false,
-    };
-  } else {
-    return {
-      result: undefined,
-      mostCommonCurrencyUsed: undefined,
-      confidenceRating: undefined,
-      fetchStatus,
-      isError: true,
+      error,
     };
   }
+  return {
+    result: undefined,
+    mostCommonCurrencyUsed: undefined,
+    confidenceRating: undefined,
+    fetchStatus,
+    error,
+  };
 }
 
 export default useGetPlotData;

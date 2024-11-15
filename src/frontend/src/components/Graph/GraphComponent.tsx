@@ -34,10 +34,15 @@ function GraphComponent(props: BoxProps) {
     mostCommonCurrencyUsed,
     confidenceRating,
     fetchStatus,
-    isError,
+    error,
   } = useGetPlotData(plotQuery);
 
-  const renderGraph = result && mostCommonCurrencyUsed && !isError;
+  const renderGraph = result && mostCommonCurrencyUsed && !error;
+  const showChaos = usePlotSettingsStore((state) => state.showChaos);
+  const showSecondary = usePlotSettingsStore((state) => state.showSecondary);
+
+  if (error) return;
+
   const isLowConfidence = confidenceRating === "low";
   const isMediumConfidence = confidenceRating === "medium";
   const confidenceColor = isLowConfidence
@@ -45,9 +50,6 @@ function GraphComponent(props: BoxProps) {
     : isMediumConfidence
       ? "#facc14"
       : "ui.input";
-
-  const showChaos = usePlotSettingsStore((state) => state.showChaos);
-  const showSecondary = usePlotSettingsStore((state) => state.showSecondary);
 
   const chaosVisuals: CurrencyVisuals = {
     stroke: "#f99619",
@@ -78,6 +80,8 @@ function GraphComponent(props: BoxProps) {
       </Center>
     );
   }
+  if (error) return;
+
   return (
     renderGraph && (
       <Box {...props}>
@@ -113,7 +117,6 @@ function GraphComponent(props: BoxProps) {
             secondaryVisuals={secondaryVisuals}
           />
         </Box>
-
         <ResponsiveContainer>
           <LineChart
             width={500}
@@ -133,7 +136,7 @@ function GraphComponent(props: BoxProps) {
                 value: "Days and hours since launch",
                 position: "bottom",
               }}
-              angle={-30}
+              angle={-45}
               tickMargin={11}
               minTickGap={13}
               tickFormatter={(value) => formatHoursSinceLaunch(value)}
