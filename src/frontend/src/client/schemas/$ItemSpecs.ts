@@ -108,14 +108,6 @@ export const $ItemSpecs = {
                 type: 'null',
             }],
         },
-        isRelic: {
-            type: 'any-of',
-            contains: [{
-                type: 'boolean',
-            }, {
-                type: 'null',
-            }],
-        },
         foilVariation: {
             type: 'any-of',
             contains: [{

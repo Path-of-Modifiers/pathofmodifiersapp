@@ -22,8 +22,7 @@ interface IsItemInputProps {
     | "hunter"
     | "warlord"
     | "searing"
-    | "tangled"
-    | "isRelic";
+    | "tangled";
   text: string;
 }
 
@@ -45,7 +44,6 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
     setItemSpecWarlordInfluence,
     setItemSpecSearing,
     setItemSpecTangled,
-    setItemSpecIsRelic,
   } = useGraphInputStore();
 
   let presetValue: boolean | undefined | null;
@@ -107,10 +105,6 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
       presetValue = itemSpec?.tangled;
       setItemSpecMisc = setItemSpecTangled;
       break;
-    case "isRelic":
-      presetValue = itemSpec?.isRelic;
-      setItemSpecMisc = setItemSpecIsRelic;
-      break;
     default:
       throw "Couldn't match 'itemSpecKey' with item spec set function.";
   }
@@ -129,7 +123,7 @@ export const IsItemInput = ({ itemSpecKey, text }: IsItemInputProps) => {
   ];
 
   const defaultOption = optionsList.find(
-    (option) => convertToBoolean(option.value) === presetValue
+    (option) => convertToBoolean(option.value) === presetValue,
   );
 
   return (

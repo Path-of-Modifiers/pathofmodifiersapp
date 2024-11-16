@@ -17,7 +17,6 @@ export type ItemSpecs = {
     influences?: (Influences | null);
     searing?: (boolean | null);
     tangled?: (boolean | null);
-    isRelic?: (boolean | null);
     foilVariation?: (number | null);
 };
 

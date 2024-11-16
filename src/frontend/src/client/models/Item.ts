@@ -7,7 +7,6 @@ export type Item = {
     name?: (string | null);
     league: string;
     itemBaseTypeId: number;
-    typeLine: string;
     ilvl: number;
     rarity: string;
     identified?: boolean;
@@ -21,7 +20,6 @@ export type Item = {
     influences?: (Influences | null);
     searing?: (boolean | null);
     tangled?: (boolean | null);
-    isRelic?: (boolean | null);
     prefixes?: (number | null);
     suffixes?: (number | null);
     foilVariation?: (number | null);
