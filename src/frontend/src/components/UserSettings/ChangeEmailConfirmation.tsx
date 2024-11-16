@@ -48,7 +48,7 @@ const ChangeEmailConfirmation = ({ isOpen, onClose }: DeleteProps) => {
       showToast(
         "Success",
         "A confirmation email has been sent to the new email to update your email.",
-        "success"
+        "success",
       );
       onClose();
     },
@@ -126,6 +126,8 @@ const ChangeEmailConfirmation = ({ isOpen, onClose }: DeleteProps) => {
                 variant="danger"
                 type="submit"
                 isLoading={isSubmitting}
+                isActive={mutation.status === "idle"}
+                isDisabled={mutation.status === "pending"}
               >
                 Update
               </Button>

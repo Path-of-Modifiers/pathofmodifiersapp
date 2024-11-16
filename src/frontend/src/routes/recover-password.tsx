@@ -125,8 +125,10 @@ function RecoverPassword() {
           variant="primary"
           type="submit"
           isLoading={isSubmitting}
+          isActive={mutation.status === "idle"}
+          isDisabled={mutation.status === "pending"}
         >
-          Continue
+          Send password recovery email
         </Button>
         <Text>
           <Link

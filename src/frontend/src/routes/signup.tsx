@@ -180,6 +180,8 @@ function SignUp() {
             variant="primary"
             type="submit"
             isLoading={isSubmitting}
+            isActive={signUpMutation.status === "idle"}
+            isDisabled={signUpMutation.status === "pending"}
           >
             Sign Up
           </Button>

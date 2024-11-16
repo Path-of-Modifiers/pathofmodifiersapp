@@ -41,11 +41,6 @@ export const Route = createFileRoute("/reset-password")({
         search: () => ({ from: "reset-password" }), // Pass the query parameter using search
       });
     }
-    if (isLoggedIn()) {
-      throw redirect({
-        to: "/",
-      });
-    }
   },
 });
 
@@ -153,6 +148,8 @@ function ResetPassword() {
           _hover={{ bg: "ui.queryMainInput" }}
           variant="primary"
           type="submit"
+          isActive={mutation.status === "idle"}
+          isDisabled={mutation.status === "pending"}
         >
           Reset Password
         </Button>

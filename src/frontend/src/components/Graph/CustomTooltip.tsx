@@ -1,5 +1,7 @@
-import { Box, Divider } from "@chakra-ui/layout";
+import { Box, Divider, Text } from "@chakra-ui/layout";
 import { TooltipProps } from "recharts";
+import { Icon } from "@chakra-ui/react";
+
 // for recharts v2.1 and above
 import {
   ValueType,
@@ -38,29 +40,31 @@ export const CustomTooltip = ({
         w="100%"
         flexDirection="column"
       >
-        <Box my="5px">
+        <Text my="5px">
           {`${days} days`}
           {hours > 0 && ` and ${hours} hours`}
           {" since launch"}
-        </Box>
+        </Text>
         <Divider />
-        <Box display="flex" flexDirection="row">
-          <Box>Confidence: </Box>
-          <Box textAlign="right" ml="auto">
+        <Box alignItems="center" display="flex" flexDirection="row">
+          <Text>Confidence: </Text>
+          <Text textAlign="right" ml="auto">
             {capitalizeFirstLetter(confidence)}
-          </Box>
-          <Box>
+          </Text>
+          <Box mt={1}>
             {isLowConfidence && (
-              <BiError
+              <Icon
+                as={BiError}
                 color={confidenceColor}
-                size="1.5rem"
+                boxSize="1.5rem"
                 key="low-confidence"
               />
             )}
             {isMediumConfidence && (
-              <BiError
+              <Icon
+                as={BiError}
                 color={confidenceColor}
-                size="1.5rem"
+                boxSize="1.5rem"
                 key="medium-confidence"
               />
             )}

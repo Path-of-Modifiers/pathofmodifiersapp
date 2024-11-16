@@ -37,7 +37,7 @@ const DeleteConfirmation = ({ isOpen, onClose }: DeleteProps) => {
       showToast(
         "Success",
         "Your account has been successfully deleted.",
-        "success"
+        "success",
       );
       logout();
       onClose();
@@ -86,6 +86,8 @@ const DeleteConfirmation = ({ isOpen, onClose }: DeleteProps) => {
                 variant="danger"
                 type="submit"
                 isLoading={isSubmitting}
+                isActive={mutation.status === "idle"}
+                isDisabled={mutation.status === "pending"}
               >
                 Confirm
               </Button>
