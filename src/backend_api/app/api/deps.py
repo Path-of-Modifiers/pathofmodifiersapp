@@ -205,7 +205,7 @@ def get_username_by_request(request: Request) -> str:
     """Get username by request."""
     token = get_token_from_headers(request.headers)
 
-    return UserCache.extract_username_from_token(token=token)
+    return UserCache.extract_user_id_from_token(token=token)
 
 
 def get_rate_limit_amount_by_tier(tier: int) -> int:
