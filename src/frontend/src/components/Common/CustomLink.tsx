@@ -11,6 +11,7 @@ const CustomLink = ({
   children,
   hrefRoute,
   internalRoute,
+  from,
   ...props
 }: CustomLinkProps) => {
   return (
@@ -18,6 +19,7 @@ const CustomLink = ({
       {...props}
       as={RouterLink}
       to={internalRoute ? internalRoute : hrefRoute}
+      from={from}
     >
       {children}
     </Link>
