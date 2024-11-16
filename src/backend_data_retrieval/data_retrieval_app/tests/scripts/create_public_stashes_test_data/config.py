@@ -24,7 +24,7 @@ class PoEPublicStashesTestDataSettings(BaseSettings):
         "chaos",
         "divine",
     ]  # "chaos", "divine", "mirror", etc.
-    MAXIMUM_ITEM_PRICE: int = 30
+    MEAN_ITEM_PRICE: int = 30
 
 
 script_settings = PoEPublicStashesTestDataSettings()
