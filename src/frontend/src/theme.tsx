@@ -30,6 +30,10 @@ const theme = extendTheme({
       queryMainInput: "#72AE8E",
       darkSlate: "#252D3D",
       darkBrown: "#572214",
+      lowConfidencePrimary: "#FF2424",
+      lowConfidenceSecondary: "#c00000",
+      mediumConfidencePrimary: "#facc14",
+      mediumConfidenceSecondary: "#9b7e08",
     },
   },
   fonts: {

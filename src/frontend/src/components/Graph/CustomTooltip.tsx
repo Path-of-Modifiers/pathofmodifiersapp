@@ -21,9 +21,9 @@ export const CustomTooltip = ({
     const isLowConfidence = confidence === "low";
     const isMediumConfidence = confidence === "medium";
     const confidenceColor = isLowConfidence
-      ? "#FF2424"
+      ? "ui.lowConfidencePrimary"
       : isMediumConfidence
-        ? "#facc14"
+        ? "ui.mediumConfidencePrimary"
         : "ui.input";
     return (
       <Box

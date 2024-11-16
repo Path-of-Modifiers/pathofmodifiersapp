@@ -46,9 +46,9 @@ function GraphComponent(props: BoxProps) {
   const isLowConfidence = confidenceRating === "low";
   const isMediumConfidence = confidenceRating === "medium";
   const confidenceColor = isLowConfidence
-    ? "#FF2424"
+    ? "ui.lowConfidencePrimary"
     : isMediumConfidence
-      ? "#facc14"
+      ? "ui.mediumConfidencePrimary"
       : "ui.input";
 
   const chaosVisuals: CurrencyVisuals = {
@@ -95,7 +95,10 @@ function GraphComponent(props: BoxProps) {
                 color: confidenceColor,
                 size: "1.5rem",
               }}
-              alertProps={{ bgColor: "#c00000", color: "white" }}
+              alertProps={{
+                bgColor: "ui.lowConfidenceSecondary",
+                color: "white",
+              }}
             />
           )}
           {isMediumConfidence && (
@@ -107,7 +110,10 @@ function GraphComponent(props: BoxProps) {
                 color: confidenceColor,
                 size: "1.5rem",
               }}
-              alertProps={{ bgColor: "#9b7e08", color: "white" }}
+              alertProps={{
+                bgColor: "ui.mediumConfidenceSecondary",
+                color: "white",
+              }}
             />
           )}
           <PlotCustomizationButtons
