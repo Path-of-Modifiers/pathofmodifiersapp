@@ -8,7 +8,7 @@ import {
 import { type SubmitHandler, useForm } from "react-hook-form";
 
 import { type ApiError, UsersService } from "../client";
-import useAuth, { isLoggedIn } from "../hooks/validation/useAuth";
+import useAuth, { isLoggedIn, isActive } from "../hooks/validation/useAuth";
 import useCustomToast from "../hooks/useCustomToast";
 import { handleError } from "../utils";
 
@@ -22,6 +22,11 @@ export const Route = createFileRoute("/user-not-activated")({
     if (!isLoggedIn()) {
       throw redirect({
         to: "/login",
+      });
+    }
+    if (isActive()) {
+      throw redirect({
+        to: "/",
       });
     }
   },
@@ -95,6 +100,8 @@ function UserIsNotActivated() {
           type="submit"
           isLoading={isSubmitting}
           p={7}
+          isActive={mutation.status === "idle"}
+          isDisabled={mutation.status === "pending"}
         >
           Send activation email to <br /> {user?.email}
         </Button>

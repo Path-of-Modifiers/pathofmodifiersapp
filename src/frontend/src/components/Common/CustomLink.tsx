@@ -4,14 +4,12 @@ import { Link as RouterLink } from "@tanstack/react-router";
 interface CustomLinkProps extends LinkProps {
   internalRoute?: string;
   hrefRoute?: string;
-  from?: string;
 }
 
 const CustomLink = ({
   children,
   hrefRoute,
   internalRoute,
-  from,
   ...props
 }: CustomLinkProps) => {
   return (
@@ -19,7 +17,6 @@ const CustomLink = ({
       {...props}
       as={RouterLink}
       to={internalRoute ? internalRoute : hrefRoute}
-      from={from}
     >
       {children}
     </Link>

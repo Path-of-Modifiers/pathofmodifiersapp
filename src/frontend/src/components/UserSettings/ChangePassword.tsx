@@ -113,6 +113,8 @@ const ChangePassword = () => {
             mt={4}
             type="submit"
             isLoading={isSubmitting}
+            isActive={mutation.status === "idle"}
+            isDisabled={mutation.status === "pending"}
           >
             Save
           </Button>

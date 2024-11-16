@@ -13,8 +13,12 @@ import {
 } from "../../client";
 import useCustomToast from "../useCustomToast";
 
-const isLoggedIn = () => {
+export const isLoggedIn = () => {
   return localStorage.getItem("access_token") !== null;
+};
+
+export const isActive = () => {
+  return localStorage.getItem("is_active") !== null;
 };
 
 const useAuth = () => {
@@ -41,6 +45,7 @@ const useAuth = () => {
         }
       }
       if (!user.isActive) {
+        localStorage.setItem("is_active", "true");
         navigate({ to: "/user-not-activated" });
       }
 
@@ -113,9 +118,11 @@ const useAuth = () => {
   const checkIsActiveMutation = async () => {
     const response = await UsersService.checkCurrentUserActive();
     if (!response) {
+      localStorage.setItem("is_active", "");
       navigate({ to: "/user-not-activated" });
       return;
     }
+    localStorage.setItem("is_active", "true");
     return response;
   };
 
@@ -137,5 +144,4 @@ const useAuth = () => {
   };
 };
 
-export { isLoggedIn };
 export default useAuth;
