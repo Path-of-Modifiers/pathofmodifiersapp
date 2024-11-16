@@ -2,7 +2,6 @@ import pandas as pd
 from pydantic import TypeAdapter
 from sqlalchemy import (
     BinaryExpression,
-    Boolean,
     ColumnElement,
     Result,
     and_,
@@ -238,12 +237,17 @@ class Plotter:
             item_spec_query_fields.pop("maxIlvl")
 
         if item_spec_query.influences is not None:
-            item_specifications += [
-                model_Item.influences[key].cast(Boolean)
-                == item_spec_query.influences.__dict__[key]
-                for key in item_spec_query.influences.model_fields
-                if (item_spec_query.influences.__dict__[key] is not None)
-            ]
+            # item_specifications += [
+            #     (
+            #         model_Item.influences[key].isnot(None).cast(Boolean)
+            #         if model_Item.influences[key].is_not(None)
+            #         else model_Item.influences[key]
+            #         == item_spec_query.influences.__dict__[key]
+            #     )
+            #     for key in item_spec_query.influences.model_fields
+            #     if item_spec_query.influences.__dict__[key] is not None
+            # ]
+            # TODO: Fix influences query and uncomment above
             item_spec_query_fields.pop("influences")
 
         item_specifications += [
