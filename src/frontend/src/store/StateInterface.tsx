@@ -34,7 +34,6 @@ export interface ItemSpecState {
   influences?: InfluenceSpecState | null;
   searing?: boolean | null;
   tangled?: boolean | null;
-  isRelic?: boolean | null;
   foilVariation?: number | null;
 }
 
@@ -138,7 +137,6 @@ export interface GraphInputState {
   setItemSpecReplica: SetItemSpecMisc;
   setItemSpecSearing: SetItemSpecMisc;
   setItemSpecTangled: SetItemSpecMisc;
-  setItemSpecIsRelic: SetItemSpecMisc;
   setItemSpecFoilVariation: (foilVariation: number | undefined) => void;
 
   setBaseSpec: (baseSpec: BaseSpecState) => void;

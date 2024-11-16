@@ -3145,10 +3145,6 @@
             "type": "integer",
             "title": "Itembasetypeid"
           },
-          "typeLine": {
-            "type": "string",
-            "title": "Typeline"
-          },
           "ilvl": {
             "type": "integer",
             "title": "Ilvl"
@@ -3271,17 +3267,6 @@
             ],
             "title": "Tangled"
           },
-          "isRelic": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Isrelic"
-          },
           "prefixes": {
             "anyOf": [
               {
@@ -3328,7 +3313,6 @@
         "required": [
           "league",
           "itemBaseTypeId",
-          "typeLine",
           "ilvl",
           "rarity",
           "createdHoursSinceLaunch",
@@ -3482,10 +3466,6 @@
             "type": "integer",
             "title": "Itembasetypeid"
           },
-          "typeLine": {
-            "type": "string",
-            "title": "Typeline"
-          },
           "ilvl": {
             "type": "integer",
             "title": "Ilvl"
@@ -3608,17 +3588,6 @@
             ],
             "title": "Tangled"
           },
-          "isRelic": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Isrelic"
-          },
           "prefixes": {
             "anyOf": [
               {
@@ -3661,7 +3630,6 @@
         "required": [
           "league",
           "itemBaseTypeId",
-          "typeLine",
           "ilvl",
           "rarity",
           "createdHoursSinceLaunch"
@@ -3879,17 +3847,6 @@
               }
             ],
             "title": "Tangled"
-          },
-          "isRelic": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Isrelic"
           },
           "foilVariation": {
             "anyOf": [

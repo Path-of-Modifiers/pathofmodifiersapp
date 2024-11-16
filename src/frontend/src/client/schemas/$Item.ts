@@ -20,10 +20,6 @@ export const $Item = {
             type: 'number',
             isRequired: true,
         },
-        typeLine: {
-            type: 'string',
-            isRequired: true,
-        },
         ilvl: {
             type: 'number',
             isRequired: true,
@@ -108,14 +104,6 @@ export const $Item = {
             }],
         },
         tangled: {
-            type: 'any-of',
-            contains: [{
-                type: 'boolean',
-            }, {
-                type: 'null',
-            }],
-        },
-        isRelic: {
             type: 'any-of',
             contains: [{
                 type: 'boolean',

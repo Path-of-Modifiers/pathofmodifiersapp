@@ -17,7 +17,6 @@ class ItemSpecs(_pydantic.BaseModel):
     influences: Influences | None = None
     searing: bool | None = None
     tangled: bool | None = None
-    isRelic: bool | None = None
     foilVariation: int | None = None
 
 

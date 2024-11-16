@@ -272,11 +272,6 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       itemSpec: { ...state.itemSpec, tangled: tangled },
     })),
 
-  setItemSpecIsRelic: (isRelic: boolean | undefined) =>
-    set((state) => ({
-      itemSpec: { ...state.itemSpec, isRelic: isRelic },
-    })),
-
   setItemSpecCorrupted: (corrupted: boolean | undefined) =>
     set((state) => ({
       itemSpec: { ...state.itemSpec, corrupted: corrupted },

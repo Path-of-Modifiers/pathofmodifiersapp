@@ -12,7 +12,7 @@ type HandleChangeEventFunction = (
   value: string | undefined,
   selectedModifierIndex: number,
   numericalType?: "min" | "max",
-  textRolls?: string
+  textRolls?: string,
 ) => void;
 
 export type TakingInputEventFunction = (orderIndex: number) => void;
@@ -44,7 +44,7 @@ const InputChangeHandler = (props: InputChangeHandler) => {
             props.modifierId,
             value,
             props.selectedModifierIndex,
-            numericalType
+            numericalType,
           )
         }
         flexProps={{
@@ -53,6 +53,7 @@ const InputChangeHandler = (props: InputChangeHandler) => {
         }}
         defaultValues={defaultMinMaxValues}
         tight={true}
+        autoFocus={true}
       />
     );
   } else if (textRolls == null) {
@@ -73,7 +74,7 @@ const InputChangeHandler = (props: InputChangeHandler) => {
             value,
             props.selectedModifierIndex,
             undefined,
-            textRolls
+            textRolls,
           )
         }
         defaultValue={defaultTextValue}
@@ -153,7 +154,7 @@ export const FancyModifierInput = (props: FancyModifierInputProps) => {
     value: string | undefined,
     selectedModifierIndex: number,
     numericalType?: "min" | "max",
-    textRolls?: string
+    textRolls?: string,
   ): void => {
     if (numericalType && textRolls) {
       throw "'numericalType' and 'textRolls' cannot both be defined";
@@ -180,7 +181,7 @@ export const FancyModifierInput = (props: FancyModifierInputProps) => {
     throw `Couldnt find the current 'wantedModifierExtended' with the index ${props.selectedModifierIndex}`;
   }
   const currentWantedModifierExtended = wantedModifierExtended.filter(
-    (spec) => spec.index == props.selectedModifierIndex
+    (spec) => spec.index == props.selectedModifierIndex,
   );
 
   const currentRelevantModifierSpec =

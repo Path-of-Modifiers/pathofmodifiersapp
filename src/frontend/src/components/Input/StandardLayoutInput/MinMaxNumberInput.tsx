@@ -9,7 +9,7 @@ import {
 
 export type HandleNumberChangeEventFunction = (
   value: string,
-  numericalType: "min" | "max"
+  numericalType: "min" | "max",
 ) => void;
 
 export interface DefaultMinMaxValues {
@@ -25,6 +25,7 @@ export interface MinMaxNumberProps {
   isDimmed?: boolean;
   defaultValues?: DefaultMinMaxValues;
   tight?: boolean;
+  autoFocus?: boolean;
 }
 
 export const MinMaxNumberInput = (props: MinMaxNumberProps) => {
@@ -64,7 +65,7 @@ export const MinMaxNumberInput = (props: MinMaxNumberProps) => {
           <NumberInputField
             h={props.tight ? 5 : undefined}
             w={props.tight ? 10 : undefined}
-            autoFocus={props.defaultValues ? true : false}
+            autoFocus={props.autoFocus}
             p={1}
             placeholder={"Min"}
             bgColor="ui.input"

@@ -41,7 +41,6 @@ async def create_minimal_random_plot_query_dict(db: Session) -> dict[str, Any]:
         "influences": None,
         "searing": None,
         "tangled": None,
-        "isRelic": None,
         "foilVariation": None,
     }
 

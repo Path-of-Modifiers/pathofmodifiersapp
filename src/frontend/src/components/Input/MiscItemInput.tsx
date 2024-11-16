@@ -11,7 +11,7 @@ export const MiscItemInput = () => {
   const clearClicked = useGraphInputStore((state) => state.clearClicked);
 
   const miscItemExpanded = useExpandedComponentStore(
-    (state) => state.expandedMiscItem
+    (state) => state.expandedMiscItem,
   );
 
   const { setExpandedMiscItem } = useExpandedComponentStore();
@@ -35,22 +35,21 @@ export const MiscItemInput = () => {
       />
       {miscItemExpanded && (
         <Flex flexWrap={"wrap"} justifyContent={"flex-start"} gap={2} ml={10}>
-          <IsItemInput itemSpecKey={"identified"} text={"Identified"} />
+          {/**<IsItemInput itemSpecKey={"identified"} text={"Identified"} /> **/}
           <IsItemInput itemSpecKey={"corrupted"} text={"Corrupted"} />
           <MinMaxIlvlInput text="Item level" />
-          <IsItemInput itemSpecKey={"delve"} text={"Delve"} />
+          {/**<IsItemInput itemSpecKey={"delve"} text={"Delve"} />
           <IsItemInput itemSpecKey={"fractured"} text={"Fracture"} />
           <IsItemInput itemSpecKey={"synthesised"} text={"Synthesise"} />
-          <IsItemInput itemSpecKey={"replica"} text={"Replica"} />
-          <IsItemInput itemSpecKey={"searing"} text={"Exarch influence"} />
+          <IsItemInput itemSpecKey={"replica"} text={"Replica"} />**/}
+          {/**< IsItemInput itemSpecKey={"searing"} text={"Exarch influence"} />
           <IsItemInput itemSpecKey={"tangled"} text={"Eater influence"} />
           <IsItemInput itemSpecKey={"elder"} text={"Elder influence"} />
           <IsItemInput itemSpecKey={"shaper"} text={"Shaper influence"} />
           <IsItemInput itemSpecKey={"crusader"} text={"Crusader influence"} />
           <IsItemInput itemSpecKey={"redeemer"} text={"Redeemer influence"} />
           <IsItemInput itemSpecKey={"hunter"} text={"Hunter influence"} />
-          <IsItemInput itemSpecKey={"warlord"} text={"Warlord influence"} />
-          <IsItemInput itemSpecKey={"isRelic"} text={"Relic"} />
+          <IsItemInput itemSpecKey={"warlord"} text={"Warlord influence"} />**/}
         </Flex>
       )}
     </Flex>
