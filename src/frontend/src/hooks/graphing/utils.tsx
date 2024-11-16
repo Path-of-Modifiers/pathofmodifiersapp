@@ -73,7 +73,6 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
           ...prev,
           {
             itemBaseTypeId: cur.itemBaseTypeId,
-            baseType: cur.baseType,
             category: cur.category,
             subCategory: cur.subCategory,
           },
