@@ -6,7 +6,7 @@ from pydantic import TypeAdapter
 
 from app.core.cache.cache import cache
 from app.core.models.models import User as model_User
-from app.core.schemas.user import UserInCache, UsernameStr
+from app.core.schemas.user import UserInCache
 from app.exceptions import (
     InvalidCacheUpdateParamsError,
     InvalidTokenError,
@@ -28,15 +28,15 @@ class UserCache:
     Some UserCache mechanics:
 
     The UUID or String `token` belongs to the client side.
-    Format of `token` is  '*{username}:{cache_key}*'
+    Format of `token` is  '*{user_id}:{cache_key}*'
 
-    We need the username on the client side to use it in key_func on each request during rate limit,
-    so the username is always in the headers of the request
+    We need the user_id on the client side to use it in key_func on each request during rate limit,
+    so the user_id is always in the headers of the request
 
     A subset string of `token` called `cache_key`, is stored as the key inside the cache.
     Format of `cache_key` is '*{user_token_type}:{token_uuid}*'
 
-    We don't need username when storing the key inside the cache.
+    We don't need user_id when storing the key inside the cache.
     """
 
     def __init__(self, user_token_type: UserCacheTokenType) -> None:
