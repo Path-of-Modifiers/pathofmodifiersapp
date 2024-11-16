@@ -6,5 +6,8 @@ export type PlotData = {
     valueInChaos: Array<number>;
     hoursSinceLaunch: Array<number>;
     valueInMostCommonCurrencyUsed: Array<number>;
+    confidence: Array<'low' | 'medium' | 'high'>;
+    confidenceRating: 'low' | 'medium' | 'high';
     mostCommonCurrencyUsed: string;
 };
+

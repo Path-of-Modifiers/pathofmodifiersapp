@@ -45,7 +45,7 @@ class TestUniquePoEAPIDataTransformer(UniquePoEAPIDataTransformer):
         df: pd.DataFrame,
         *,
         item_id: pd.Series,
-        hours_since_launch: int,  # type: ignore
+        hours_since_launch: int,  # noqa: ARG003
     ) -> pd.DataFrame:
         """
         A similiar process to creating the item table, only this time the
@@ -57,7 +57,9 @@ class TestUniquePoEAPIDataTransformer(UniquePoEAPIDataTransformer):
             df["createdHoursSinceLaunch"] = self.time_column
             item_modifier_columns.append("createdHoursSinceLaunch")
 
-        item_modifier_df = df.loc[:, item_modifier_columns].reset_index()
+        item_modifier_df = df.loc[
+            self.price_found_mask, item_modifier_columns
+        ].reset_index()
 
         item_modifier_df["itemId"] = item_id
         item_modifier_df = item_modifier_df.explode("explicitMods", ignore_index=True)

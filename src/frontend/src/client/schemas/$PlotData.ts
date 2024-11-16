@@ -11,11 +11,10 @@ export const $PlotData = {
             },
             isRequired: true,
         },
-        timeStamp: {
+        hoursSinceLaunch: {
             type: 'array',
             contains: {
-                type: 'string',
-                format: 'date-time',
+                type: 'number',
             },
             isRequired: true,
         },
@@ -24,6 +23,17 @@ export const $PlotData = {
             contains: {
                 type: 'number',
             },
+            isRequired: true,
+        },
+        confidence: {
+            type: 'array',
+            contains: {
+                type: 'Enum',
+            },
+            isRequired: true,
+        },
+        confidenceRating: {
+            type: 'Enum',
             isRequired: true,
         },
         mostCommonCurrencyUsed: {

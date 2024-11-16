@@ -34,10 +34,10 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
         return newUniqueCandidates;
       }
       return prev.filter((prevCandidate) =>
-        newUniqueCandidates.includes(prevCandidate),
+        newUniqueCandidates.includes(prevCandidate)
       );
     },
-    [] as string[],
+    [] as string[]
   );
   if (possibleUniques.length === 0) {
     useErrorStore.getState().setNoRelatedUniqueError(true);
@@ -73,8 +73,8 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
           ...prev,
           {
             itemBaseTypeId: cur.itemBaseTypeId,
-            category: baseSpec?.category,
-            subCategory: baseSpec?.subCategory,
+            category: cur.category,
+            subCategory: cur.subCategory,
           },
         ];
       }
@@ -120,7 +120,7 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
       groupedWantedModifierExtended.map((wantedModifierExtended) => ({
         modifierId: wantedModifierExtended.modifierId,
         modifierLimitations: wantedModifierExtended.modifierLimitations,
-      })),
+      }))
     );
 
   return {
