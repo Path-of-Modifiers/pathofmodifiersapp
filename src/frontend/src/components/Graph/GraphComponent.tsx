@@ -147,7 +147,6 @@ function GraphComponent(props: BoxProps) {
               minTickGap={13}
               tickFormatter={(value) => formatHoursSinceLaunch(value)}
               type="number"
-              domain={[300 * 24, "auto"]}
             />
             {/* Set Y-axis label */}
             <YAxis
