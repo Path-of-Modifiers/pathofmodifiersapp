@@ -18,7 +18,7 @@ export const isLoggedIn = () => {
 };
 
 export const isActive = () => {
-  return localStorage.getItem("is_active") !== null;
+  return localStorage.getItem("is_active") === "true";
 };
 
 const useAuth = () => {
@@ -118,7 +118,7 @@ const useAuth = () => {
   const checkIsActiveMutation = async () => {
     const response = await UsersService.checkCurrentUserActive();
     if (!response) {
-      localStorage.setItem("is_active", "");
+      localStorage.removeItem("is_active");
       navigate({ to: "/user-not-activated" });
       return;
     }
