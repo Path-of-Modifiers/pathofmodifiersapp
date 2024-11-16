@@ -29,7 +29,6 @@ async def create_random_item_dict(
     """
     name = random_lower_string()
     league = random_lower_string()
-    typeLine = random_lower_string()
     ilvl = random_int(small_int=True)
     rarity = random_lower_string()
     identified = random_bool()
@@ -50,7 +49,6 @@ async def create_random_item_dict(
     influences = random_json(influences_type_dict)
     searing = random_bool()
     tangled = random_bool()
-    isRelic = random_bool()
     prefixes = random_int(small_int=True)
     suffixes = random_int(small_int=True)
     foilVariation = random_int(small_int=True)
@@ -66,7 +64,6 @@ async def create_random_item_dict(
         "league": league,
         "itemBaseTypeId": itemBaseTypeId,
         "createdHoursSinceLaunch": createdHoursSinceLaunch,
-        "typeLine": typeLine,
         "ilvl": ilvl,
         "rarity": rarity,
         "identified": identified,
@@ -80,7 +77,6 @@ async def create_random_item_dict(
         "influences": influences,
         "searing": searing,
         "tangled": tangled,
-        "isRelic": isRelic,
         "prefixes": prefixes,
         "suffixes": suffixes,
         "foilVariation": foilVariation,
