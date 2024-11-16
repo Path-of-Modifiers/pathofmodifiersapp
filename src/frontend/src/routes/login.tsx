@@ -27,6 +27,7 @@ import useAuth, { isLoggedIn } from "../hooks/validation/useAuth";
 import useTurnstileValidation, {
   hasCompletedCaptcha,
 } from "../hooks/validation/turnstileValidation";
+import TermsOfUseOrPrivacyPolicyButtons from "../components/Common/TermsOfUseOrPrivacyPolicyButtons";
 
 export const Route = createFileRoute("/login")({
   component: Login,
@@ -99,7 +100,7 @@ function Login() {
           mb={4}
         />
         <Text fontSize={"20px"} alignSelf="center">
-          Use your Path of Modifiers account
+          Login
         </Text>
         <FormControl
           id="emailOrUsername"
@@ -165,15 +166,11 @@ function Login() {
         </Button>
         <Text>
           Don't have an account?{" "}
-          <Link
-            as={RouterLink}
-            to="/signup"
-            from="login"
-            color="blue.500"
-          >
+          <Link as={RouterLink} to="/signup" from="login" color="blue.500">
             Sign up
           </Link>
         </Text>
+        <TermsOfUseOrPrivacyPolicyButtons mt="2rem" from="/login" />
       </Container>
     </Flex>
   );

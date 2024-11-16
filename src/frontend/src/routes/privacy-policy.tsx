@@ -1,57 +1,65 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link as RouterLink } from "@tanstack/react-router";
+
 import {
   Flex,
   Box,
+  UnorderedList,
   VStack,
   Text,
-  ListItem,
-  UnorderedList,
+  Link,
   OrderedList,
-} from "@chakra-ui/layout";
+  ListItem,
+} from "@chakra-ui/react";
 
-import Header from "../../components/Common/Header";
-import Footer from "../../components/Common/Footer";
-import { TextWithUnderline } from "../../components/Text/TextWithUnderline";
+import Footer from "../components/Common/Footer";
 
-export const Route = createFileRoute("/_layout/privacy-policy")({
-  component: PrivacyPolicy,
+export const Route = createFileRoute("/privacy-policy")({
+  component: TermsOfUse,
 });
 
 // About Route  - This component is the main component for the about route.
-function PrivacyPolicy() {
+function TermsOfUse() {
   return (
     <Flex
       direction="column"
-      minHeight="100rem"
       bg="ui.main"
       width="99vw"
       minWidth="bgBoxes.miniPBox"
+      alignItems="center"
     >
-      <Box mb={"7rem"}>
-        <Header />
+      <Box width="full" padding="1rem">
+        <Link
+          color="ui.white"
+          fontSize="30px"
+          fontWeight="medium"
+          as={RouterLink}
+          to="/"
+          from="privacy-policy"
+          key={(Math.random() + 1).toString(36).substring(7)} // Forces reload to make login work
+          _hover={{
+            color: "ui.inputChanged",
+            textDecoration: "underline",
+          }}
+        >
+          Path of Modifiers
+        </Link>
       </Box>
-
       <Flex
-        direction="row"
-        bg="ui.secondary"
+        direction="column"
+        minHeight="140vh"
         width={"bgBoxes.defaultBox"}
         maxWidth={"98vw"}
-        minHeight="100vh"
-        height="100rem"
         p={2}
-        borderTopRadius={10}
-        borderTopColor={"ui.darkBrown"}
-        borderTopWidth={1}
-        alignSelf="center"
         color="ui.white"
       >
+        <VStack alignItems="center">
+          <Text justifySelf="center" fontSize={50}>
+            Privacy Policy
+          </Text>
+          <Text fontWeight={"bold"}>Effective date: 15.11.2024</Text>
+        </VStack>
         <VStack width="100%" align="left">
           <Box width="100%" mb="3rem">
-            <TextWithUnderline
-              text="Privacy Policy"
-              textProps={{ fontSize: "2xl", marginBottom: "1rem" }}
-            />
-            <Text mb="1rem">Effective Date: October 17th, 2024</Text>
             <Text whiteSpace="pre-line">
               This Privacy Policy explains how Path of Modifiers ("we," "us," or
               "our") collects, uses, stores, and protects your information when
@@ -210,8 +218,8 @@ function PrivacyPolicy() {
               </ListItem>
             </OrderedList>
           </Box>
-          <Footer />
         </VStack>
+        <Footer bgColor="ui.main" />
       </Flex>
     </Flex>
   );

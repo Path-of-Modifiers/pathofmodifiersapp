@@ -27,6 +27,7 @@ import {
   passwordRules,
 } from "../utils";
 import { hasCompletedCaptcha } from "../hooks/validation/turnstileValidation";
+import TermsOfUseOrPrivacyPolicyButtons from "../components/Common/TermsOfUseOrPrivacyPolicyButtons";
 
 export const Route = createFileRoute("/signup")({
   component: SignUp,
@@ -96,6 +97,9 @@ function SignUp() {
             alignSelf="center"
             mb={4}
           />
+          <Text fontSize={"20px"} alignSelf="center">
+            Sign up
+          </Text>
           <FormControl id="username" isInvalid={!!errors.username}>
             <FormLabel htmlFor="username" srOnly>
               Username
@@ -191,6 +195,7 @@ function SignUp() {
               Log In
             </Link>
           </Text>
+          <TermsOfUseOrPrivacyPolicyButtons mt="2rem" from="/signup" />
         </Container>
       </Flex>
     </>

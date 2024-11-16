@@ -1,15 +1,16 @@
 import {
   Flex,
-  Link,
   Text,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
 } from "@chakra-ui/react";
+
 import SettingsIcon from "../Icon/SettingsIcon";
 import LogoutIcon from "../Icon/LogoutIcon";
 import useAuth from "../../hooks/validation/useAuth";
+import CustomLink from "./CustomLink";
 
 // Header component for the application
 const Header = () => {
@@ -18,7 +19,7 @@ const Header = () => {
 
   return (
     <Flex as="header" align="center" justify="space-between" padding="1rem">
-      <Link href={"/"}>
+      <CustomLink internalRoute={"/"}>
         <Text
           color="ui.white"
           fontSize="30px"
@@ -27,7 +28,7 @@ const Header = () => {
         >
           Path of Modifiers
         </Text>
-      </Link>
+      </CustomLink>
 
       {/* Menu for user actions */}
       <Menu placement="bottom-end">
@@ -40,15 +41,16 @@ const Header = () => {
           <Text>{currentUser?.username}</Text>
         </MenuButton>
         <MenuList bgColor="ui.secondary" border={0} p={2} minW="150px">
-          <MenuItem
-            color="ui.white"
-            bgColor="ui.secondary"
-            icon={<SettingsIcon />}
-            onClick={() => (window.location.href = "/settings")}
-            _hover={{ bgColor: "ui.lighterSecondary.100" }}
-          >
-            Settings
-          </MenuItem>
+          <CustomLink internalRoute="/settings">
+            <MenuItem
+              color="ui.white"
+              bgColor="ui.secondary"
+              icon={<SettingsIcon />}
+              _hover={{ bgColor: "ui.lighterSecondary.100" }}
+            >
+              Settings
+            </MenuItem>
+          </CustomLink>
           <MenuItem
             color="ui.white"
             bgColor="ui.secondary"
