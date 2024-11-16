@@ -161,46 +161,53 @@ class PoEAPIDataTransformerBase:
         return item_df
 
     @property
-    def item_table_columns_to_drop(self) -> set[str]:
+    def item_table_columns_to_not_drop(self) -> set[str]:
         try:
-            drop_columns = self._item_table_columns_to_drop
+            dont_drop_columns = self._item_table_columns_to_not_drop
         except AttributeError:
-            drop_columns = {
-                "influences.shaper",
-                "influences.elder",
-                "influences.crusader",
-                "influences.hunter",
-                "influences.redeemer",
-                "influences.warlord",
-                "baseType",
-                "stash",
-                "currencyType",
-                "tradeName",
-                "valueInChaos",
-                "itemId",
-                "createdHoursSinceLaunch_y",
+            dont_drop_columns = {
+                "name",
+                "league",
+                "itemBaseTypeId",
+                "ilvl",
+                "rarity",
+                "identified",
+                "currencyAmount",
+                "currencyId",
+                "corrupted",
+                "delve",
+                "fractured",
+                "synthesised",
+                "replica",
+                "influences",
+                "searing",
+                "tangled",
+                "prefixes",
+                "suffixes",
+                "foilVariation",
+                "createdHoursSinceLaunch",
             }
-            self._item_table_columns_to_drop = drop_columns
-        return drop_columns
+            self._item_table_columns_to_not_drop = dont_drop_columns
+        return dont_drop_columns
 
-    @item_table_columns_to_drop.setter
-    def item_table_columns_to_drop(self, columns_to_drop: set[str]) -> set[str]:
-        self._item_table_columns_to_drop = columns_to_drop
+    @item_table_columns_to_not_drop.setter
+    def item_table_columns_to_not_drop(self, columns_to_not_drop: set[str]) -> set[str]:
+        self._item_table_columns_to_not_drop = columns_to_not_drop
 
-    def _update_item_table_columns_to_drop(self, *, dont_drop: set[str]) -> None:
-        columns_to_drop = self.item_table_columns_to_drop
+    def _update_item_table_columns_to_not_drop(self, *, dont_drop: set[str]) -> None:
+        columns_to_not_drop = self.item_table_columns_to_not_drop
 
-        self.item_table_columns_to_drop = columns_to_drop.difference(dont_drop)
+        self.item_table_columns_to_not_drop = columns_to_not_drop | dont_drop
 
     def _clean_item_table(self, item_df: pd.DataFrame) -> pd.DataFrame:
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
 
-        drop_columns = self.item_table_columns_to_drop
+        dont_drop_columns = self.item_table_columns_to_not_drop
 
         item_df.drop(
-            item_df.columns.intersection(drop_columns),
+            item_df.columns.difference(dont_drop_columns),
             axis=1,
             inplace=True,
             errors="ignore",
@@ -372,15 +379,15 @@ class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
 
     @item_modifier_table_columns_to_not_drop.setter
     def item_modifier_table_columns_to_not_drop(
-        self, columns_to_drop: set[str]
+        self, columns_to_not_drop: set[str]
     ) -> set[str]:
-        self._item_modifier_table_columns_to_not_drop = columns_to_drop
+        self._item_modifier_table_columns_to_not_drop = columns_to_not_drop
 
     def _update_item_modifier_table_columns_to_not_drop(
         self, *, dont_drop: set[str]
     ) -> None:
-        columns_to_drop = self.item_modifier_table_columns_to_not_drop
-        self.item_modifier_table_columns_to_not_drop = columns_to_drop | dont_drop
+        columns_to_not_drop = self.item_modifier_table_columns_to_not_drop
+        self.item_modifier_table_columns_to_not_drop = columns_to_not_drop | dont_drop
 
     def _clean_item_modifier_table(
         self, item_modifier_df: pd.DataFrame

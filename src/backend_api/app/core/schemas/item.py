@@ -1,5 +1,3 @@
-import datetime as _dt
-
 import pydantic as _pydantic
 
 
@@ -19,7 +17,6 @@ class _BaseItem(_pydantic.BaseModel):
     name: str | None = None
     league: str
     itemBaseTypeId: int
-    typeLine: str
     ilvl: int
     rarity: str
     identified: bool = True
@@ -33,7 +30,6 @@ class _BaseItem(_pydantic.BaseModel):
     influences: Influences | None = None
     searing: bool | None = None
     tangled: bool | None = None
-    isRelic: bool | None = None
     prefixes: int | None = None
     suffixes: int | None = None
     foilVariation: int | None = None

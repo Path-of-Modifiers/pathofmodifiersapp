@@ -306,7 +306,8 @@ class DataDepositTestDataCreator:
     def _create_random_note_text(self) -> str:
         cur_types = script_settings.ITEM_NOTE_CURRENCY_TYPES
         r_cur_type = cur_types[random_int(0, len(cur_types) - 1)]
-        r_int = random_int(1, script_settings.MAXIMUM_ITEM_PRICE)
+
+        r_int = round(random.gauss(script_settings.MEAN_ITEM_PRICE, 10), 2)
 
         note = f"~price {r_int} {r_cur_type}"
         return note

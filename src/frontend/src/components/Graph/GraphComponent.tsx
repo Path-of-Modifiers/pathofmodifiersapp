@@ -15,6 +15,10 @@ import { usePlotSettingsStore } from "../../store/PlotSettingsStore";
 import PlotCustomizationButtons from "../Common/PlotCustomizationButtons";
 import { capitalizeFirstLetter } from "../../hooks/utils";
 import { CurrencyVisuals } from "../../schemas/CurrencyVisuals";
+import { CustomTooltip } from "./CustomTooltip";
+import formatHoursSinceLaunch from "../../hooks/graphing/utils";
+import { BiError } from "react-icons/bi";
+import { ErrorMessage } from "../Input/StandardLayoutInput/ErrorMessage";
 
 /**
  * Uses the globally stored plotQuery state to send a request,
@@ -25,14 +29,27 @@ import { CurrencyVisuals } from "../../schemas/CurrencyVisuals";
  */
 function GraphComponent(props: BoxProps) {
   const { plotQuery } = useGraphInputStore();
-  const { result, mostCommonCurrencyUsed, fetchStatus, error } =
-    useGetPlotData(plotQuery);
+  const {
+    result,
+    mostCommonCurrencyUsed,
+    confidenceRating,
+    fetchStatus,
+    error,
+  } = useGetPlotData(plotQuery);
 
   const renderGraph = result && mostCommonCurrencyUsed && !error;
   const showChaos = usePlotSettingsStore((state) => state.showChaos);
   const showSecondary = usePlotSettingsStore((state) => state.showSecondary);
 
   if (error) return;
+
+  const isLowConfidence = confidenceRating === "low";
+  const isMediumConfidence = confidenceRating === "medium";
+  const confidenceColor = isLowConfidence
+    ? "ui.lowConfidencePrimary"
+    : isMediumConfidence
+      ? "ui.mediumConfidencePrimary"
+      : "ui.input";
 
   const chaosVisuals: CurrencyVisuals = {
     stroke: "#f99619",
@@ -63,18 +80,49 @@ function GraphComponent(props: BoxProps) {
       </Center>
     );
   }
-
   if (error) return;
 
   return (
     renderGraph && (
       <Box {...props}>
-        <PlotCustomizationButtons
-          flexProps={{ justifyContent: "center" }}
-          mostCommonCurrencyUsed={mostCommonCurrencyUsed}
-          chaosVisuals={chaosVisuals}
-          secondaryVisuals={secondaryVisuals}
-        />
+        <Box>
+          {isLowConfidence && (
+            <ErrorMessage
+              alertTitle="Low confidence"
+              alertDescription="Prices are based on a low number of listings."
+              alertIcon={BiError}
+              iconProps={{
+                color: confidenceColor,
+                size: "1.5rem",
+              }}
+              alertProps={{
+                bgColor: "ui.lowConfidenceSecondary",
+                color: "white",
+              }}
+            />
+          )}
+          {isMediumConfidence && (
+            <ErrorMessage
+              alertTitle="Medium confidence"
+              alertDescription="Prices are based on a relatively low number of listings."
+              alertIcon={BiError}
+              iconProps={{
+                color: confidenceColor,
+                size: "1.5rem",
+              }}
+              alertProps={{
+                bgColor: "ui.mediumConfidenceSecondary",
+                color: "white",
+              }}
+            />
+          )}
+          <PlotCustomizationButtons
+            flexProps={{ justifyContent: "center", mt: "10px" }}
+            mostCommonCurrencyUsed={mostCommonCurrencyUsed}
+            chaosVisuals={chaosVisuals}
+            secondaryVisuals={secondaryVisuals}
+          />
+        </Box>
         <ResponsiveContainer>
           <LineChart
             width={500}
@@ -94,9 +142,11 @@ function GraphComponent(props: BoxProps) {
                 value: "Days and hours since launch",
                 position: "bottom",
               }}
-              angle={-45}
+              angle={0}
               tickMargin={11}
-              minTickGap={12}
+              minTickGap={13}
+              tickFormatter={(value) => formatHoursSinceLaunch(value)}
+              type="number"
             />
             {/* Set Y-axis label */}
             <YAxis
@@ -107,18 +157,7 @@ function GraphComponent(props: BoxProps) {
               }}
               hide={!showChaos}
             />
-            <Tooltip
-              labelFormatter={(value, payload) => {
-                if (payload.length === 0) {
-                  return value;
-                }
-                const daysAndHours = payload[0]?.payload.timestamp.split("T");
-                const days = daysAndHours[0];
-                const hours = daysAndHours[1];
-                return `${days} days and ${hours} hours since launch`;
-              }}
-              formatter={(value, name) => [(value as number).toFixed(2), name]}
-            />
+            <Tooltip content={<CustomTooltip />} />
             <Legend verticalAlign="top" height={36} />
             {/* Update the Line dataKey to match "Chaos value" */}
             <Line
@@ -128,6 +167,8 @@ function GraphComponent(props: BoxProps) {
               stroke={chaosVisuals.stroke}
               yAxisId={chaosVisuals.yAxisId}
               hide={!showChaos}
+              isAnimationActive={false}
+              dot={{ fill: chaosVisuals.stroke }}
             />
 
             <YAxis
@@ -147,6 +188,8 @@ function GraphComponent(props: BoxProps) {
               stroke={secondaryVisuals.stroke}
               yAxisId={secondaryVisuals.yAxisId}
               hide={!showSecondary}
+              isAnimationActive={false}
+              dot={{ fill: secondaryVisuals.stroke }}
             />
           </LineChart>
         </ResponsiveContainer>

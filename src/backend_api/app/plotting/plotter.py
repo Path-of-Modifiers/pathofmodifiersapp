@@ -28,7 +28,11 @@ from app.exceptions.model_exceptions.plot_exception import (
     PlotQueryDataNotFoundError,
 )
 from app.logs.logger import plot_logger
-from app.plotting.utils import find_conversion_value, summarize_function
+from app.plotting.utils import (
+    determine_confidence,
+    find_conversion_value,
+    summarize_function,
+)
 from app.utils.timing_tracker import async_timing_tracker, sync_timing_tracker
 
 
@@ -307,9 +311,6 @@ class Plotter:
 
     @sync_timing_tracker
     def _create_plot_data(self, df: pd.DataFrame) -> tuple:
-        # Sort values by date
-        df.sort_values(by="createdHoursSinceLaunch", inplace=True)
-
         # Find most common currency
         most_common_currency_used = df.tradeName.mode()[0]
 
@@ -351,18 +352,19 @@ class Plotter:
         }
         # Then as a dataframe
         df = pd.DataFrame(plot_data)
+        df = df.sort_values(by="valueInChaos")
 
         # Group by hour
         grouped_by_created_hours_since_launch_df = df.groupby("hoursSinceLaunch")
 
         # Aggregate by custom function
         agg_by_date_df = grouped_by_created_hours_since_launch_df.agg(
-            {
-                "valueInChaos": lambda values: summarize_function(values, 2),
-                "valueInMostCommonCurrencyUsed": lambda values: summarize_function(
-                    values, 2
-                ),
-            }
+            valueInChaos=("valueInChaos", lambda values: summarize_function(values, 2)),
+            valueInMostCommonCurrencyUsed=(
+                "valueInMostCommonCurrencyUsed",
+                lambda values: summarize_function(values, 2),
+            ),
+            confidence=("valueInChaos", determine_confidence),
         )
         agg_by_date_df = agg_by_date_df.loc[~agg_by_date_df["valueInChaos"].isna()]
 
@@ -372,6 +374,8 @@ class Plotter:
         plot_data["valueInMostCommonCurrencyUsed"] = agg_by_date_df[
             "valueInMostCommonCurrencyUsed"
         ].values
+        plot_data["confidence"] = agg_by_date_df["confidence"].values
+        plot_data["confidenceRating"] = agg_by_date_df["confidence"].mode()[0]
 
         return plot_data
 

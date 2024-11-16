@@ -1,18 +1,18 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link as RouterLink } from "@tanstack/react-router";
+
 import {
   Flex,
   Box,
   VStack,
   Text,
+  Link,
   OrderedList,
   ListItem,
-} from "@chakra-ui/layout";
+} from "@chakra-ui/react";
 
-import Header from "../../components/Common/Header";
-import Footer from "../../components/Common/Footer";
-import { TextWithUnderline } from "../../components/Text/TextWithUnderline";
+import Footer from "../components/Common/Footer";
 
-export const Route = createFileRoute("/_layout/terms-of-use")({
+export const Route = createFileRoute("/terms-of-use")({
   component: TermsOfUse,
 });
 
@@ -21,35 +21,45 @@ function TermsOfUse() {
   return (
     <Flex
       direction="column"
-      minHeight="100rem"
       bg="ui.main"
       width="99vw"
       minWidth="bgBoxes.miniPBox"
+      alignItems="center"
     >
-      <Box mb={"7rem"}>
-        <Header />
+      <Box width="full" padding="1rem">
+        <Link
+          color="ui.white"
+          fontSize="30px"
+          fontWeight="medium"
+          as={RouterLink}
+          to="/"
+          from="terms-of-use"
+          key={(Math.random() + 1).toString(36).substring(7)} // Forces reload to make login work
+          _hover={{
+            color: "ui.inputChanged",
+            textDecoration: "underline",
+          }}
+        >
+          Path of Modifiers
+        </Link>
       </Box>
-
       <Flex
-        direction="row"
-        bg="ui.secondary"
+        direction="column"
         minHeight="100vh"
         height="100rem"
         width={"bgBoxes.defaultBox"}
         maxWidth={"98vw"}
         p={2}
-        borderTopRadius={10}
-        borderTopColor={"ui.darkBrown"}
-        borderTopWidth={1}
-        alignSelf="center"
         color="ui.white"
       >
         <VStack width="100%" align="left">
           <Box width="100%">
-            <TextWithUnderline
-              text="Terms of Use"
-              textProps={{ fontSize: "2xl", marginBottom: "1rem" }}
-            />
+            <VStack alignItems="center" mb="2rem">
+              <Text justifySelf="center" fontSize={50}>
+                Terms of Use
+              </Text>
+              <Text fontWeight={"bold"}>Effective date: 15.11.2024</Text>
+            </VStack>
             <Text whiteSpace="pre-line">
               These Terms of Use (the "Terms") govern your use of the Path of
               Modifiers website and services (the "Services") provided by the
@@ -145,8 +155,8 @@ function TermsOfUse() {
               </ListItem>
             </OrderedList>
           </Box>
-          <Footer />
         </VStack>
+        <Footer bgColor="ui.main" />
       </Flex>
     </Flex>
   );

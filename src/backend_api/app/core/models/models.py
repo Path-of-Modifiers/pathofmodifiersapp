@@ -2,8 +2,6 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import (
-    String,
-    Index,
     BigInteger,
     Boolean,
     CheckConstraint,
@@ -11,8 +9,10 @@ from sqlalchemy import (
     Float,
     ForeignKey,
     Identity,
-    SmallInteger,
+    Index,
     Integer,
+    SmallInteger,
+    String,
     Text,
     UniqueConstraint,
     func,
@@ -92,8 +92,6 @@ class Item(Base):
     replica: Mapped[bool | None] = mapped_column(Boolean)
     searing: Mapped[bool | None] = mapped_column(Boolean)
     tangled: Mapped[bool | None] = mapped_column(Boolean)
-    isRelic: Mapped[bool | None] = mapped_column(Boolean)
-    typeLine: Mapped[str] = mapped_column(Text, nullable=False)
     rarity: Mapped[str] = mapped_column(Text, nullable=False)
     influences: Mapped[dict[str, str] | None] = mapped_column(
         JSONB

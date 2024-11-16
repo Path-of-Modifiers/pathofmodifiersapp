@@ -1,7 +1,6 @@
 import usePostPlottingData from "./postPlottingData";
 import { PlotQuery } from "../../client";
 import Datum from "../../schemas/Datum";
-import formatHoursSinceLaunch from "./utils";
 import { useEffect } from "react";
 import useCustomToast from "../useCustomToast";
 
@@ -13,6 +12,7 @@ import useCustomToast from "../useCustomToast";
 function useGetPlotData(plotQuery: PlotQuery): {
   result: Datum[] | undefined;
   mostCommonCurrencyUsed: string | undefined;
+  confidenceRating: "low" | "medium" | "high" | undefined;
   fetchStatus: string;
   error: Error | null;
 } {
@@ -31,15 +31,17 @@ function useGetPlotData(plotQuery: PlotQuery): {
     const data: Datum[] = [];
     for (let i = 0; i < plotData?.hoursSinceLaunch.length; i++) {
       data.push({
-        timestamp: formatHoursSinceLaunch(plotData.hoursSinceLaunch[i]),
+        timestamp: plotData.hoursSinceLaunch[i],
         valueInChaos: plotData.valueInChaos[i],
         valueInMostCommonCurrencyUsed:
           plotData.valueInMostCommonCurrencyUsed[i],
+        confidence: plotData.confidence[i],
       });
     }
     return {
       result: data,
       mostCommonCurrencyUsed: plotData.mostCommonCurrencyUsed,
+      confidenceRating: plotData.confidenceRating,
       fetchStatus,
       error,
     };
@@ -47,6 +49,7 @@ function useGetPlotData(plotQuery: PlotQuery): {
   return {
     result: undefined,
     mostCommonCurrencyUsed: undefined,
+    confidenceRating: undefined,
     fetchStatus,
     error,
   };
