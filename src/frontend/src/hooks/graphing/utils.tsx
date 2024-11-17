@@ -123,10 +123,12 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
       })),
     );
 
+  const last_fourteen_days_hours = 336;
   return {
     league: state.league,
     itemSpecifications: itemSpec,
     baseSpecifications: baseSpec,
     wantedModifiers: wantedModifier,
+    after: last_fourteen_days_hours,
   };
 };

@@ -65,18 +65,14 @@ class Plotter:
                     "currencyCreatedHoursSinceLaunch"
                 ),
             )
-            .join_from(model_Currency, model_Item)
+            .join_from(model_Item, model_Currency)
             .where(model_Item.league == league)
         )
 
         if before is not None:
-            statement = statement.where(
-                model_ItemModifier.createdHoursSinceLaunch <= before
-            )
+            statement = statement.where(model_Item.createdHoursSinceLaunch <= before)
         if after is not None:
-            statement = statement.where(
-                model_ItemModifier.createdHoursSinceLaunch >= after
-            )
+            statement = statement.where(model_Item.createdHoursSinceLaunch >= after)
 
         return statement
 
@@ -297,7 +293,7 @@ class Plotter:
         statement = self._filter_from_query(
             statement, query=query, before=before, after=after
         )
-
+        plot_logger.info(f"STATEMENT BOYS:: {statement}")
         async with db.begin():
             result = await db.execute(statement)
 
