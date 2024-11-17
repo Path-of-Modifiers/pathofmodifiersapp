@@ -44,7 +44,7 @@ const useAuth = () => {
           navigate({ to: "/login" });
         }
       }
-      if (!user.isActive) {
+      if (user.isActive) {
         localStorage.setItem("is_active", "true");
         navigate({ to: "/user-not-activated" });
       }
