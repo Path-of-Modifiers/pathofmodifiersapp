@@ -293,7 +293,6 @@ class Plotter:
         statement = self._filter_from_query(
             statement, query=query, before=before, after=after
         )
-        plot_logger.info(f"STATEMENT BOYS:: {statement}")
         async with db.begin():
             result = await db.execute(statement)
 
