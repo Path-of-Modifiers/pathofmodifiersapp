@@ -37,6 +37,7 @@ asyncio-redis-rate-limit = "^1.0.0"
 pytest-trio = "^0.8.0"
 pyyaml = "^6.0.2"
 asyncpg = "^0.29.0"
+starlette-context = "^0.3.6"
 
 
 

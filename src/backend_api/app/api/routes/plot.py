@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, Request
+from starlette_context import context
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import (
@@ -47,7 +48,7 @@ async def get_plot_data(
         rate_spec=rate_spec,
         prefix=plot_prefix,
     ), apply_custom_rate_limit(
-        unique_key="plot_" + request.client.host,
+        unique_key="plot_" + context.data["X-Forwarded-For"],
         rate_spec=rate_spec,
         prefix=plot_prefix,
     ):

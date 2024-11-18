@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 
+from starlette_context import middleware, plugins
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
@@ -65,3 +66,8 @@ app.add_exception_handler(HTTPException, http_exception_handler)
 app.add_exception_handler(Exception, unhandled_exception_handler)
 app.add_exception_handler(RateLimitExceeded, slow_api_rate_limit_exceeded_handler)
 app.add_exception_handler(RateLimitExceededError, custom_rate_limit_exceeded_handler)
+
+app.add_middleware(
+    middleware.ContextMiddleware,
+    plugins=(plugins.ForwardedForPlugin(),),
+)
