@@ -16,6 +16,9 @@ function formatHoursSinceLaunch(hoursSinceLaunch: number): string {
 
 export default formatHoursSinceLaunch;
 
+const LEAGUE_LAUNCH_TIME = import.meta.env.VITE_APP_LEAGUE_LAUNCH_TIME;
+const LEAGUE_LAUNCH_DATETIME = new Date(LEAGUE_LAUNCH_TIME);
+
 export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
   // currently always runs, needs to be in if check
   // when Non-unique rarity is possible
@@ -123,10 +126,19 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
       })),
     );
 
+  const currentTime = new Date().getTime();
+  const fourteenDaysHours = 336;
+
+  const end = Math.floor(
+    (currentTime - LEAGUE_LAUNCH_DATETIME.getTime()) / (1000 * 3600),
+  );
+  const start = end - fourteenDaysHours;
   return {
     league: state.league,
     itemSpecifications: itemSpec,
     baseSpecifications: baseSpec,
     wantedModifiers: wantedModifier,
+    start: start,
+    end: end,
   };
 };

@@ -1,7 +1,7 @@
 """V8 Create baseline for hypertable refactor tables
 
 Revision ID: 35736bccbe58
-Revises: 
+Revises:
 Create Date: 2024-11-13 11:49:35.765942
 
 """
@@ -169,9 +169,9 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("itemId"),
     )
     op.create_index(
-        "ix_item_modifierId_createdHoursSinceLaunch_itemId",
+        "ix_item_modifierId_createdHoursSinceLaunch_roll_itemId",
         "item_modifier",
-        ["modifierId", "createdHoursSinceLaunch", "itemId"],
+        ["modifierId", "createdHoursSinceLaunch", "roll", "itemId"],
         unique=False,
     )
     # ### end Alembic commands ###

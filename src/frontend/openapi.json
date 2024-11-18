@@ -4620,7 +4620,7 @@
             "type": "array",
             "title": "Wantedmodifiers"
           },
-          "before": {
+          "end": {
             "anyOf": [
               {
                 "type": "integer"
@@ -4629,9 +4629,9 @@
                 "type": "null"
               }
             ],
-            "title": "Before"
+            "title": "End"
           },
-          "after": {
+          "start": {
             "anyOf": [
               {
                 "type": "integer"
@@ -4640,7 +4640,7 @@
                 "type": "null"
               }
             ],
-            "title": "After"
+            "title": "Start"
           }
         },
         "type": "object",

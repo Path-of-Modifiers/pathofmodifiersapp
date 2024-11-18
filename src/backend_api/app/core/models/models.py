@@ -217,9 +217,10 @@ class ItemModifier(Base):
     )
     __table_args__ = (
         Index(
-            "ix_item_modifierId_createdHoursSinceLaunch_itemId",
+            "ix_item_modifierId_createdHoursSinceLaunch_roll_itemId",
             "modifierId",
             "createdHoursSinceLaunch",
+            "roll",
             "itemId",
         ),
     )

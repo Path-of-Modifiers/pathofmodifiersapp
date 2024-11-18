@@ -34,7 +34,7 @@ export const $PlotQuery = {
             },
             isRequired: true,
         },
-        before: {
+        end: {
             type: 'any-of',
             contains: [{
                 type: 'number',
@@ -42,7 +42,7 @@ export const $PlotQuery = {
                 type: 'null',
             }],
         },
-        after: {
+        start: {
             type: 'any-of',
             contains: [{
                 type: 'number',
