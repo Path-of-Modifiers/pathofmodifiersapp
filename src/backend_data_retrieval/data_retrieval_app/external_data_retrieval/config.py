@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     @computed_field  # type: ignore[prop-decorator]
     @property
     def LEAGUE_LAUNCH_DATETIME_OBJECT(self) -> datetime:
-        return datetime.strptime(self.LEAGUE_LAUNCH_TIME, "%H-%d-%m-%Y")
+        return datetime.fromisoformat(self.LEAGUE_LAUNCH_TIME)
 
     MINI_BATCH_SIZE: int = 30
     N_CHECKPOINTS_PER_TRANSFORMATION: int = 10
