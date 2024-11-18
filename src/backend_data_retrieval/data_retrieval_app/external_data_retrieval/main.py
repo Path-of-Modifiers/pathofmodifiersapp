@@ -204,8 +204,7 @@ class ContinuousDataRetrieval:
                     crashed_future = list(done_futures)[0]
                     future_job = futures.pop(crashed_future)
                     logger.info(
-                        f"The future '{future_job}' has crashed. Finding exception...",
-                        f"{done_futures=}",
+                        f"The future '{future_job}' has crashed. Finding exception..."
                     )
                     if future_job == "data_processing":
                         crashed_future_exception = crashed_future.exception()
