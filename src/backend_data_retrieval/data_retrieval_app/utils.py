@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 from collections.abc import Generator
 from typing import Any
@@ -54,7 +54,7 @@ def df_to_JSON(
 
 
 def find_hours_since_launch() -> int:
-    current_time = datetime.now()
+    current_time = datetime.now(timezone.utc)
     league_launch_time = settings.LEAGUE_LAUNCH_DATETIME_OBJECT
 
     time_since_launch = current_time - league_launch_time

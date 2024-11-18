@@ -42,5 +42,5 @@ class PlotQuery(_pydantic.BaseModel):
     itemSpecifications: ItemSpecs | None = None
     baseSpecifications: BaseSpecs | None = None
     wantedModifiers: list[list[WantedModifier]]
-    before: int | None = None
-    after: int | None = None
+    end: int | None = None
+    start: int | None = None

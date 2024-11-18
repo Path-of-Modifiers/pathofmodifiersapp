@@ -41,7 +41,7 @@ class Plotter:
         self.validate = TypeAdapter(PlotData).validate_python
 
     def _init_stmt(
-        self, query: PlotQuery, *, before: int | None, after: int | None
+        self, query: PlotQuery, *, start: int | None, end: int | None
     ) -> Select:
         if len(query.wantedModifiers) == 0:
             raise PlotNoModifiersProvidedError(
@@ -69,10 +69,10 @@ class Plotter:
             .where(model_Item.league == league)
         )
 
-        if before is not None:
-            statement = statement.where(model_Item.createdHoursSinceLaunch <= before)
-        if after is not None:
-            statement = statement.where(model_Item.createdHoursSinceLaunch >= after)
+        if start is not None:
+            statement = statement.where(model_Item.createdHoursSinceLaunch <= start)
+        if end is not None:
+            statement = statement.where(model_Item.createdHoursSinceLaunch >= end)
 
         return statement
 
@@ -98,8 +98,8 @@ class Plotter:
         statement: Select,
         *,
         wanted_modifier_query: list[list[WantedModifier]],
-        before: int | None,
-        after: int | None,
+        start: int | None,
+        end: int | None,
     ) -> Select:
         """
         Uses as few modifier ids as possible to filter. One modifier effect has multiple
@@ -121,13 +121,13 @@ class Plotter:
                         model_ItemModifier.modifierId == wanted_modifier.modifierId,
                         roll_condition,
                     ]
-                    if before is not None:
+                    if start is not None:
                         and_conditions.append(
-                            model_ItemModifier.createdHoursSinceLaunch <= before
+                            model_ItemModifier.createdHoursSinceLaunch <= start
                         )
-                    if after is not None:
+                    if end is not None:
                         and_conditions.append(
-                            model_ItemModifier.createdHoursSinceLaunch >= after
+                            model_ItemModifier.createdHoursSinceLaunch >= end
                         )
 
                     exists_conditions.append(
@@ -145,13 +145,13 @@ class Plotter:
                     model_Item.itemId == model_ItemModifier.itemId,
                     model_ItemModifier.modifierId == wanted_modifier.modifierId,
                 ]
-                if before is not None:
+                if start is not None:
                     and_conditions.append(
-                        model_ItemModifier.createdHoursSinceLaunch <= before
+                        model_ItemModifier.createdHoursSinceLaunch <= start
                     )
-                if after is not None:
+                if end is not None:
                     and_conditions.append(
-                        model_ItemModifier.createdHoursSinceLaunch >= after
+                        model_ItemModifier.createdHoursSinceLaunch >= end
                     )
                 exists_conditions.append(
                     select(1).where(and_(*and_conditions)).exists()
@@ -164,14 +164,14 @@ class Plotter:
         statement: Select,
         *,
         query: PlotQuery,
-        before: int | None,
-        after: int | None,
+        start: int | None,
+        end: int | None,
     ) -> Select:
         statement = self._add_wanted_modifiers(
             statement,
             wanted_modifier_query=query.wantedModifiers,
-            before=before,
-            after=after,
+            start=start,
+            end=end,
         )
         if query.itemSpecifications is not None:
             if query.itemSpecifications.name is not None:
@@ -263,14 +263,14 @@ class Plotter:
         statement: Select,
         *,
         query: PlotQuery,
-        before: int | None,
-        after: int | None,
+        start: int | None,
+        end: int | None,
     ) -> Select:
         """
         Prioritizes filtering the largest amount of rows
         """
         statement = self._apply_priority_filters(
-            statement, query=query, before=before, after=after
+            statement, query=query, start=start, end=end
         )
         if query.baseSpecifications is not None:
             statement = self._apply_base_specs(
@@ -288,10 +288,10 @@ class Plotter:
     async def _perform_plot_db_query(
         self, db: AsyncSession, *, query: PlotQuery
     ) -> Result:
-        before, after = query.before, query.after
-        statement = self._init_stmt(query, before=before, after=after)
+        start, end = query.start, query.end
+        statement = self._init_stmt(query, start=start, end=end)
         statement = self._filter_from_query(
-            statement, query=query, before=before, after=after
+            statement, query=query, start=start, end=end
         )
         async with db.begin():
             result = await db.execute(statement)
