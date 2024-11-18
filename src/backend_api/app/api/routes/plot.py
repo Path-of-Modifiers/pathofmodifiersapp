@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, Request
+from starlette_context import context
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import (
@@ -13,6 +14,7 @@ from app.core.rate_limit.rate_limit_config import rate_limit_settings
 from app.core.rate_limit.rate_limiters import apply_custom_rate_limit
 from app.core.schemas.plot import PlotData, PlotQuery
 from app.plotting import plotter_tool
+from app.logs.logger import plot_logger
 
 router = APIRouter()
 
@@ -47,10 +49,13 @@ async def get_plot_data(
         rate_spec=rate_spec,
         prefix=plot_prefix,
     ), apply_custom_rate_limit(
-        unique_key="plot_" + request.client.host,
+        unique_key="plot_" + context.data["X-Forwarded-For"],
         rate_spec=rate_spec,
         prefix=plot_prefix,
     ):
+        ip = context.data["X-Forwarded-For"]
+        plot_logger.info(f"CLIENT IP {ip}")
+        plot_logger.info(f"CLIENT REQUEST IP {request.client.host}")
         plot_data = await plotter_tool.plot(
             db,
             query=query,
