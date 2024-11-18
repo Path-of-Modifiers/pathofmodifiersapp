@@ -181,7 +181,7 @@ class PoEAPIHandler:
             )
             response.raise_for_status()
         except Exception as e:
-            logger.error("The following error occurred while making request:", e)
+            logger.error(f"The following error occurred while making request: {e}")
             raise e
         response_json = response.json()
         next_change_id = response_json["psapi"]
