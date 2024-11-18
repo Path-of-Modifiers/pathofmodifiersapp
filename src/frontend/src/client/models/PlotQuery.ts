@@ -10,7 +10,7 @@ export type PlotQuery = {
     itemSpecifications?: (ItemSpecs | null);
     baseSpecifications?: (BaseSpecs | null);
     wantedModifiers: Array<Array<WantedModifier>>;
-    before?: (number | null);
-    after?: (number | null);
+    end?: (number | null);
+    start?: (number | null);
 };
 
