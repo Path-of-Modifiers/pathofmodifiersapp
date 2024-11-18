@@ -80,6 +80,8 @@ class PoEAPIHandler:
         self.n_unique_wanted_items = n_unique_wanted_items
         logger.debug("Unique items wanted set to: " + str(self.n_unique_wanted_items))
 
+        self.recently_caught_up_to_stream = False
+
         self._program_too_slow = False
         self.time_of_launch = time.perf_counter()
         self.run_program_for_n_seconds = 3600
@@ -248,6 +250,7 @@ class PoEAPIHandler:
 
                 new_next_change_id = headers["X-Next-Change-Id"]
                 if new_next_change_id == self.next_change_id:
+                    self.recently_caught_up_to_stream = True
                     logger.info("We sucessfully caught up to the stream!")
                     await asyncio.sleep(
                         30
@@ -412,8 +415,13 @@ class PoEAPIHandler:
 
             time_per_mini_batch = end_time - start_time
             if time_per_mini_batch > (2 * 60):
-                # Does not allow a batch to take longer than 2 minutes
-                raise ProgramTooSlowException
+                if self.recently_caught_up_to_stream:
+                    # Program sleeps when we have caught up to stream, making it
+                    # too easy to trigger `ProgramTooSlowException`
+                    self.recently_caught_up_to_stream = False
+                else:
+                    # Does not allow a batch to take longer than 2 minutes
+                    raise ProgramTooSlowException
 
         return df
 
