@@ -70,9 +70,9 @@ class Plotter:
         )
 
         if start is not None:
-            statement = statement.where(model_Item.createdHoursSinceLaunch <= start)
+            statement = statement.where(model_Item.createdHoursSinceLaunch >= start)
         if end is not None:
-            statement = statement.where(model_Item.createdHoursSinceLaunch >= end)
+            statement = statement.where(model_Item.createdHoursSinceLaunch <= end)
 
         return statement
 
@@ -123,11 +123,12 @@ class Plotter:
                     ]
                     if start is not None:
                         and_conditions.append(
-                            model_ItemModifier.createdHoursSinceLaunch <= start
+                            model_ItemModifier.createdHoursSinceLaunch >= start
                         )
+
                     if end is not None:
                         and_conditions.append(
-                            model_ItemModifier.createdHoursSinceLaunch >= end
+                            model_ItemModifier.createdHoursSinceLaunch <= end
                         )
 
                     exists_conditions.append(
@@ -147,11 +148,11 @@ class Plotter:
                 ]
                 if start is not None:
                     and_conditions.append(
-                        model_ItemModifier.createdHoursSinceLaunch <= start
+                        model_ItemModifier.createdHoursSinceLaunch >= start
                     )
                 if end is not None:
                     and_conditions.append(
-                        model_ItemModifier.createdHoursSinceLaunch >= end
+                        model_ItemModifier.createdHoursSinceLaunch <= end
                     )
                 exists_conditions.append(
                     select(1).where(and_(*and_conditions)).exists()
