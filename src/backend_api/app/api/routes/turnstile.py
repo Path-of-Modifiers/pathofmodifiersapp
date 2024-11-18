@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request
+from starlette_context import context
 
 import app.core.schemas as schemas
 from app.core.rate_limit.custom_rate_limiter import RateSpec
@@ -36,7 +37,7 @@ async def get_turnstile_validation(
     )
 
     # Use a fallback IP if request.client is None (e.g., during testing)
-    client_ip = request.client.host if request.client else "127.0.0.1"
+    client_ip = context.data["X-Forwarded-For"] if request.client else "127.0.0.1"
 
     async with apply_custom_rate_limit(
         unique_key="turnstile_" + client_ip,

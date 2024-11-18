@@ -3,6 +3,7 @@ from typing import Annotated
 
 from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordBearer
+from starlette_context import context
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 from starlette.datastructures import Headers
@@ -206,6 +207,10 @@ def get_username_by_request(request: Request) -> str:
     token = get_token_from_headers(request.headers)
 
     return UserCache.extract_user_id_from_token(token=token)
+
+
+def get_user_ip_with_context(request: Request) -> str:  # noqa: ARG001
+    return context.data["X-Forwarded-For"]
 
 
 def get_rate_limit_amount_by_tier(tier: int) -> int:
