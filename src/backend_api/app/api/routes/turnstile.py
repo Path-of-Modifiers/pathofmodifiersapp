@@ -37,7 +37,11 @@ async def get_turnstile_validation(
     )
 
     # Use a fallback IP if request.client is None (e.g., during testing)
-    client_ip = context.data["X-Forwarded-For"] if request.client else "127.0.0.1"
+    client_ip = (
+        context.data["X-Forwarded-For"]
+        if context.data["X-Forwarded-For"]
+        else "127.0.0.1"
+    )
 
     async with apply_custom_rate_limit(
         unique_key="turnstile_" + client_ip,

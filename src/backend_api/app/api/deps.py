@@ -210,7 +210,12 @@ def get_username_by_request(request: Request) -> str:
 
 
 def get_user_ip_with_context(request: Request) -> str:  # noqa: ARG001
-    return context.data["X-Forwarded-For"]
+    local_host = request.client.host if request.client else "127.0.0.1"
+    return (
+        context.data["X-Forwarded-For"]
+        if context.data["X-Forwarded-For"]
+        else local_host
+    )
 
 
 def get_rate_limit_amount_by_tier(tier: int) -> int:

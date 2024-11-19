@@ -43,12 +43,18 @@ async def get_plot_data(
         cooldown_seconds=rate_limit_settings.PLOT_RATE_LIMIT_COOLDOWN_SECONDS,
     )
 
+    client_ip = (
+        context.data["X-Forwarded-For"]
+        if context.data["X-Forwarded-For"]
+        else "127.0.0.1"
+    )
+
     async with apply_custom_rate_limit(
         unique_key="plot_" + get_username_by_request(request),
         rate_spec=rate_spec,
         prefix=plot_prefix,
     ), apply_custom_rate_limit(
-        unique_key="plot_" + context.data["X-Forwarded-For"],
+        unique_key="plot_" + client_ip,
         rate_spec=rate_spec,
         prefix=plot_prefix,
     ):
