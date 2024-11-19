@@ -1,12 +1,12 @@
 from contextlib import asynccontextmanager
 
-from starlette_context import middleware, plugins
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
 from slowapi.errors import RateLimitExceeded
 from starlette.exceptions import HTTPException
 from starlette.middleware.cors import CORSMiddleware
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from app.api.api import api_router
 from app.core.config import settings
@@ -67,7 +67,4 @@ app.add_exception_handler(Exception, unhandled_exception_handler)
 app.add_exception_handler(RateLimitExceeded, slow_api_rate_limit_exceeded_handler)
 app.add_exception_handler(RateLimitExceededError, custom_rate_limit_exceeded_handler)
 
-app.add_middleware(
-    middleware.ContextMiddleware,
-    plugins=(plugins.ForwardedForPlugin(),),
-)
+app.add_middleware(ProxyHeadersMiddleware)
