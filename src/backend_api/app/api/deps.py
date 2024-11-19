@@ -3,7 +3,6 @@ from typing import Annotated
 
 from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordBearer
-from starlette_context import context
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 from starlette.datastructures import Headers
@@ -209,13 +208,9 @@ def get_username_by_request(request: Request) -> str:
     return UserCache.extract_user_id_from_token(token=token)
 
 
-def get_user_ip_with_context(request: Request) -> str:  # noqa: ARG001
-    local_host = request.client.host if request.client else "127.0.0.1"
-    return (
-        context.data["X-Forwarded-For"]
-        if context.data["X-Forwarded-For"]
-        else local_host
-    )
+def get_user_ip_from_header(request: Request) -> str:
+    client_ip = request.headers.get("X-Forwarded-For")
+    return client_ip if client_ip is not None else "127.0.0.1"
 
 
 def get_rate_limit_amount_by_tier(tier: int) -> int:

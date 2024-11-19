@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, Request
-from starlette_context import context
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import (
@@ -7,6 +6,7 @@ from app.api.deps import (
     get_async_current_active_user,
     get_async_db,
     get_rate_limit_tier_by_request,
+    get_user_ip_from_header,
     get_username_by_request,
 )
 from app.core.rate_limit.custom_rate_limiter import RateSpec
@@ -43,11 +43,7 @@ async def get_plot_data(
         cooldown_seconds=rate_limit_settings.PLOT_RATE_LIMIT_COOLDOWN_SECONDS,
     )
 
-    client_ip = (
-        context.data["X-Forwarded-For"]
-        if context.data["X-Forwarded-For"]
-        else "127.0.0.1"
-    )
+    client_ip = get_user_ip_from_header(request)
 
     async with apply_custom_rate_limit(
         unique_key="plot_" + get_username_by_request(request),
