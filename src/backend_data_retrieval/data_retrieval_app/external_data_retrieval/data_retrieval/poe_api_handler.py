@@ -20,9 +20,8 @@ from data_retrieval_app.external_data_retrieval.utils import (
     ProgramRunTooLongException,
     ProgramTooSlowException,
     WrongLeagueSetException,
+    sync_timing_tracker,
 )
-
-# sync_timing_tracker,
 from data_retrieval_app.logs.logger import data_retrieval_logger as logger
 
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -366,7 +365,7 @@ class PoEAPIHandler:
             )
         )
 
-    # @sync_timing_tracker
+    @sync_timing_tracker
     def _process_stream(
         self,
         stashes_ready_event: threading.Event,
