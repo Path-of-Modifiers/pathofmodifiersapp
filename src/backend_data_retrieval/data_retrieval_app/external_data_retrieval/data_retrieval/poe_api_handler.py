@@ -20,8 +20,9 @@ from data_retrieval_app.external_data_retrieval.utils import (
     ProgramRunTooLongException,
     ProgramTooSlowException,
     WrongLeagueSetException,
-    # sync_timing_tracker,
 )
+
+# sync_timing_tracker,
 from data_retrieval_app.logs.logger import data_retrieval_logger as logger
 
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -80,7 +81,7 @@ class PoEAPIHandler:
         self.n_unique_wanted_items = n_unique_wanted_items
         logger.debug("Unique items wanted set to: " + str(self.n_unique_wanted_items))
 
-        self.recently_caught_up_to_stream = False
+        self.skip_program_too_slow = False
 
         self._program_too_slow = False
         self.time_of_launch = time.perf_counter()
@@ -250,7 +251,7 @@ class PoEAPIHandler:
 
                 new_next_change_id = headers["X-Next-Change-Id"]
                 if new_next_change_id == self.next_change_id:
-                    self.recently_caught_up_to_stream = True
+                    self.skip_program_too_slow = True
                     logger.info("We sucessfully caught up to the stream!")
                     await asyncio.sleep(
                         30
@@ -269,6 +270,7 @@ class PoEAPIHandler:
                     headers["X-Rate-Limit-Ip"].split(":")[0]
                     == headers["X-Rate-Limit-Ip-State"].split(":")[0]
                 ):
+                    self.skip_program_too_slow = True
                     logger.info("Hit ratelimit, cooling down for one test period")
                     await asyncio.sleep(int(headers["X-Rate-Limit-Ip"].split(":")[1]))
                 waiting_for_next_id_lock.release()
@@ -415,10 +417,10 @@ class PoEAPIHandler:
 
             time_per_mini_batch = end_time - start_time
             if time_per_mini_batch > (2 * 60):
-                if self.recently_caught_up_to_stream:
+                if self.skip_program_too_slow:
                     # Program sleeps when we have caught up to stream, making it
                     # too easy to trigger `ProgramTooSlowException`
-                    self.recently_caught_up_to_stream = False
+                    self.skip_program_too_slow = False
                 else:
                     # Does not allow a batch to take longer than 2 minutes
                     raise ProgramTooSlowException
