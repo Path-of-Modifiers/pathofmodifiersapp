@@ -4,7 +4,7 @@ from typing import Any
 
 from slowapi import Limiter
 
-from app.api.deps import get_username_by_request, get_user_ip_with_context
+from app.api.deps import get_username_by_request, get_user_ip_from_header
 from app.core.cache.cache import cache
 from app.core.config import settings
 from app.core.rate_limit.custom_rate_limiter import RateLimiter, RateSpec
@@ -31,7 +31,7 @@ limiter_user = Limiter(
 
 # Limiter for IP
 limiter_ip = Limiter(
-    key_func=get_user_ip_with_context,
+    key_func=get_user_ip_from_header,
     default_limits=default_limit_provider(),
     storage_uri=str(settings.CACHE_URI),
     headers_enabled=True,
