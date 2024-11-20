@@ -100,7 +100,7 @@ class DetectorBase:
         n_items_filtered = n_items_before_filter - len(df)
 
         logger.info(
-            f'detector="{self}" {n_items_before_filter=} {n_items_filtered=} percent_of_total={1-n_items_filtered/n_items_before_filter:.2%}'
+            f'detector="{self}" {n_items_before_filter=} {n_items_filtered=} percent_of_total={1-n_items_filtered/max(1, n_items_before_filter):.2%}'
         )
 
         return df
