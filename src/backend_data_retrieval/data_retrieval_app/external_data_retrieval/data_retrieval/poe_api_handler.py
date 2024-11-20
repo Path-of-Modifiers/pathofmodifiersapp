@@ -67,6 +67,7 @@ class PoEAPIHandler:
         logger.debug("Url set to: " + self.url)
         self.auth_token = auth_token
         self.headers["Authorization"] = "Bearer " + auth_token
+
         logger.debug("Headers set to: " + str(self.headers))
 
         self.item_detectors = item_detectors
@@ -175,9 +176,12 @@ class PoEAPIHandler:
             next_change_id = settings.NEXT_CHANGE_ID
             return next_change_id
         try:
+            headers = {
+                "User-Agent": f"OAuth pathofmodifiers/0.1.0 (contact: {settings.OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
+            }
             response = requests.get(
                 "https://www.pathofexile.com/api/trade/data/change-ids",
-                headers=self.headers,
+                headers=headers,
             )
             response.raise_for_status()
         except Exception as e:
@@ -187,6 +191,7 @@ class PoEAPIHandler:
             raise e
         response_json = response.json()
         next_change_id = response_json["psapi"]
+        logger.info(f"Retrieved latest change id: {next_change_id}. Sleeping for 310s")
         time.sleep(
             310
         )  # Sleeps for 5 minutes and 10 seconds (for safety) for the latest change id to be populated
