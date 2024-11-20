@@ -176,6 +176,7 @@ class PoEAPIHandler:
             next_change_id = settings.NEXT_CHANGE_ID
             return next_change_id
         try:
+            # Can't have authorization header, so we make a new header
             headers = {
                 "User-Agent": f"OAuth pathofmodifiers/0.1.0 (contact: {settings.OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
             }
