@@ -20,7 +20,7 @@ class DetectorBase:
         """
         self.n_unique_items_found = 0
 
-        self.prev_items_found = {}
+        self.prev_item_hashes_found = {}
 
     def _general_filter(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -78,19 +78,21 @@ class DetectorBase:
         the most recent listings from the database instead of resetting.
         """
         n_items_before_filter = len(df)
+
         df = df.drop_duplicates(["id", "note"])
+
         game_item_id = df["id"].apply(int, base=16)
         note = df["note"].apply(hash)
 
         hashes: pd.Series[int] = game_item_id + note
 
-        unique_hashes = set(hashes.unique())
+        unique_hashes = set(hashes)
 
-        if not self.prev_items_found:
-            self.prev_items_found = unique_hashes
+        if not self.prev_item_hashes_found:
+            self.prev_item_hashes_found = unique_hashes
         else:
-            duplicate_hashes = self.prev_items_found.intersection(unique_hashes)
-            self.prev_items_found |= unique_hashes.difference(duplicate_hashes)
+            duplicate_hashes = self.prev_item_hashes_found.intersection(unique_hashes)
+            self.prev_item_hashes_found |= unique_hashes
 
             items_to_drop_mask = ~hashes.isin(duplicate_hashes)
             df = df.loc[items_to_drop_mask]
