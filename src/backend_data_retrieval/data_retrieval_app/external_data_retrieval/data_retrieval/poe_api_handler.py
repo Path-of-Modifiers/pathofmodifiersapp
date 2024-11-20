@@ -84,7 +84,7 @@ class PoEAPIHandler:
 
         self._program_too_slow = False
         self.time_of_launch = time.perf_counter()
-        self.run_program_for_n_seconds = 3600
+        self.run_program_for_n_seconds = settings.TIME_BETWEEN_RESTART
         logger.info("PoEAPIHandler successfully initialized.")
 
         self.n_checkpoints_per_transfromation = (
@@ -226,6 +226,7 @@ class PoEAPIHandler:
                 headers = response.headers
                 if response.status >= 300:
                     if response.status == 429:
+                        self.skip_program_too_slow = False
                         logger.exception(
                             f"Received a 429 with the response  {response.text}"
                         )
@@ -415,7 +416,7 @@ class PoEAPIHandler:
             end_time = time.perf_counter()
 
             time_per_mini_batch = end_time - start_time
-            if time_per_mini_batch > (2 * 60):
+            if time_per_mini_batch > settings.MAX_TIME_PER_MINI_BATCH:
                 if self.skip_program_too_slow:
                     # Program sleeps when we have caught up to stream, making it
                     # too easy to trigger `ProgramTooSlowException`
