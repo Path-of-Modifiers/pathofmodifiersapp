@@ -38,7 +38,9 @@ class PoENinjaCurrencyAPIHandler:
             response = requests.get(self.url)
             response.raise_for_status()
         except Exception as e:
-            logger.error("The following error occurred while making request:", e)
+            logger.error(
+                f"The following error occurred while making request in poe ninja currency handler: {e}"
+            )
             raise e
         response_json = response.json()
 

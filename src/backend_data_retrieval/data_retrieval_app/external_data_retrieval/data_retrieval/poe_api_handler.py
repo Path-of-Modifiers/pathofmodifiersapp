@@ -146,9 +146,9 @@ class PoEAPIHandler:
 
                 df = df_leftover.copy(deep=True)
                 del df_leftover
-        except:
+        except Exception as e:
             logger.exception(
-                f"While checking stashes (detector: {item_detector}), the exception below occured:"
+                f"While checking stashes (detector: {item_detector}), this exception occured: {e}"
             )
             raise
 
@@ -181,7 +181,9 @@ class PoEAPIHandler:
             )
             response.raise_for_status()
         except Exception as e:
-            logger.error(f"The following error occurred while making request: {e}")
+            logger.error(
+                f"The following error occurred while making request _get_latest_change_id: {e}"
+            )
             raise e
         response_json = response.json()
         next_change_id = response_json["psapi"]
@@ -282,12 +284,12 @@ class PoEAPIHandler:
                 stashes += response_json["stashes"]
                 del response_json
                 return stashes
-        except:
+        except Exception as e:
             logger.info(
                 f"Exiting {self._send_n_recursion_requests.__name__} gracefully"
             )
             logger.exception(
-                f"The following exception occured during {self._send_n_recursion_requests.__name__}"
+                f"The following exception occured during {self._send_n_recursion_requests.__name__}: {e}"
             )
             if waiting_for_next_id_lock.locked():
                 logger.info("Released lock after crash")

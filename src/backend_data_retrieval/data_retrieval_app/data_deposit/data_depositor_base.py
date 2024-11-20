@@ -75,7 +75,7 @@ class DataDepositorBase:
             )
             response.raise_for_status()
         except Exception as e:
-            logger.error("The following error occurred while making request:", e)
+            logger.error(f"The following error occurred while inserting data: {e}")
             raise e
 
         logger.info("Successfully inserted data into database.")
