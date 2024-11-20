@@ -42,7 +42,6 @@ class SensitiveDataFilter(DataFilterBase):
         return True
 
     def mask_sensitive_data(self, message: Any):
-        print("MESSAGE", message)
         mask = "Details contains sensitive information."
         return self.mask_data(
             message=message, compile_patterns=self.compile_sensitive_patterns, mask=mask
