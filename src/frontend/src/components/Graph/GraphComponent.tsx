@@ -147,6 +147,7 @@ function GraphComponent(props: BoxProps) {
               minTickGap={13}
               tickFormatter={(value) => formatHoursSinceLaunch(value)}
               type="number"
+              domain={["dataMin", "dataMax + 10"]}
             />
             {/* Set Y-axis label */}
             <YAxis
@@ -156,6 +157,8 @@ function GraphComponent(props: BoxProps) {
                 position: "insideLeft",
               }}
               hide={!showChaos}
+              type="number"
+              dataKey={chaosVisuals.datakey}
             />
             <Tooltip content={<CustomTooltip />} />
             <Legend verticalAlign="top" height={36} />
@@ -180,6 +183,7 @@ function GraphComponent(props: BoxProps) {
               orientation="right"
               yAxisId={secondaryVisuals.yAxisId}
               hide={!showSecondary}
+              type="number"
             />
             <Line
               type="monotone"
