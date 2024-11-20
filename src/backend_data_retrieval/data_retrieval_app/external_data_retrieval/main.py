@@ -188,7 +188,7 @@ class ContinuousDataRetrieval:
         logger.info("Program starting up.")
         logger.info("Initiating data stream.")
         max_workers = 3
-        listeners = max_workers - 1  # minus one because of transformation threa
+        listeners = max_workers - 1  # minus one because of transformation threads
         try:
             with ThreadPoolExecutor(max_workers=max_workers) as executor:
                 futures = self._initialize_data_stream_threads(
