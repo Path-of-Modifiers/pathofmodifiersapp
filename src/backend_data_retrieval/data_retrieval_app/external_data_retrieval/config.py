@@ -20,8 +20,11 @@ class Settings(BaseSettings):
     OAUTH_CLIENT_ID: str
     OAUTH_CLIENT_SECRET: str
 
-    MINI_BATCH_SIZE: int = 30
-    N_CHECKPOINTS_PER_TRANSFORMATION: int = 10
+    MINI_BATCH_SIZE: int = 5
+    N_CHECKPOINTS_PER_TRANSFORMATION: int = 1
+
+    TIME_BETWEEN_RESTART: int = 3600
+    MAX_TIME_PER_MINI_BATCH: int = 3 * 60
 
     LEAGUE_LAUNCH_TIME: str
 
@@ -29,9 +32,6 @@ class Settings(BaseSettings):
     @property
     def LEAGUE_LAUNCH_DATETIME_OBJECT(self) -> datetime:
         return datetime.fromisoformat(self.LEAGUE_LAUNCH_TIME)
-
-    MINI_BATCH_SIZE: int = 30
-    N_CHECKPOINTS_PER_TRANSFORMATION: int = 10
 
 
 settings = Settings()  # type: ignore
