@@ -71,6 +71,9 @@ class DetectorBase:
         because the user listed/changed another item in the same tab. We do not want to store these,
         as they pain the wrong picture of the market.
 
+        To make sure that only updated items are kept, we also add the note, which contains the price.
+        Please note that this does not consider relisting of entire tab.
+
         However, as of right now, these identifiers reset every ~hour. In the future we may pull
         the most recent listings from the database instead of resetting.
         """
