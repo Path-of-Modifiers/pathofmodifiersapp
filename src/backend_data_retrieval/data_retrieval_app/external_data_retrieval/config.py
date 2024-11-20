@@ -23,15 +23,15 @@ class Settings(BaseSettings):
     MINI_BATCH_SIZE: int = 30
     N_CHECKPOINTS_PER_TRANSFORMATION: int = 10
 
+    TIME_BETWEEN_RESTART: int = 3600
+    MAX_TIME_PER_MINI_BATCH: int = 3 * 60
+
     LEAGUE_LAUNCH_TIME: str
 
     @computed_field  # type: ignore[prop-decorator]
     @property
     def LEAGUE_LAUNCH_DATETIME_OBJECT(self) -> datetime:
         return datetime.fromisoformat(self.LEAGUE_LAUNCH_TIME)
-
-    MINI_BATCH_SIZE: int = 30
-    N_CHECKPOINTS_PER_TRANSFORMATION: int = 10
 
 
 settings = Settings()  # type: ignore

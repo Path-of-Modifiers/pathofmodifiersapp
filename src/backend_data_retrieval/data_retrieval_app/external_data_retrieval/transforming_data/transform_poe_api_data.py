@@ -6,6 +6,7 @@ from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.external_data_retrieval.transforming_data.roll_processor import (
     RollProcessor,
 )
+from data_retrieval_app.external_data_retrieval.utils import sync_timing_tracker
 from data_retrieval_app.logs.logger import transform_logger as logger
 from data_retrieval_app.pom_api_authentication import get_superuser_token_headers
 from data_retrieval_app.utils import find_hours_since_launch, insert_data
@@ -71,6 +72,7 @@ class PoEAPIDataTransformerBase:
         item_df["createdHoursSinceLaunch"] = hours_since_launch
         return item_df
 
+    @sync_timing_tracker
     def _transform_item_table(
         self,
         item_df: pd.DataFrame,
@@ -254,7 +256,7 @@ class PoEAPIDataTransformerBase:
         return item_id
 
     def _create_item_modifier_table(
-        self, df: pd.DataFrame, *, item_id: pd.Series
+        self, df: pd.DataFrame, *, item_id: pd.Series, hours_since_launch: int
     ) -> pd.DataFrame:
         """
         The `item_modifier` table heavily relies on what type of item the modifiers
@@ -335,6 +337,7 @@ class PoEAPIDataTransformerBase:
 
 
 class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
+    @sync_timing_tracker
     def _create_item_modifier_table(
         self, df: pd.DataFrame, *, item_id: pd.Series, hours_since_launch: int
     ) -> pd.DataFrame:
@@ -357,6 +360,7 @@ class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
 
         return item_modifier_df
 
+    @sync_timing_tracker
     def _transform_item_modifier_table(
         self, item_modifier_df: pd.DataFrame
     ) -> pd.DataFrame:
