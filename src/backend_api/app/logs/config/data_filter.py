@@ -21,23 +21,6 @@ class DataFilterBase(Filter):
 
 class SensitiveDataFilter(DataFilterBase):
     sensitive_patterns = [
-        r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",  # Email addresses
-        r"username",  # Matches 'username'
-        r"cache",  # Matches 'cache'
-        r"user",  # Matches 'user'
-        r"email",  # Matches 'email'
-        r"password",  # Matches 'password'
-        r"new_password",  # Matches 'new_password'
-        r"token",  # Matches 'token'
-        r"api_key",  # Matches 'api_key'
-        r"secret",  # Matches 'secret'
-        r"key",  # Matches 'key'
-        r"access_token",  # Matches 'access_token'
-        r"hashedPassword",  # Matches 'hashedPassword'
-        r"passwordHash",  # Matches 'passwordHash'
-        r"refresh_token",  # Matches 'refresh_token'
-        r"auth_token",  # Matches 'auth token'
-        r"oauth_token",  # Matches 'authorization token'
         r"SECRET_KEY",  # Matches 'SECRET_KEY'
         r"FIRST_SUPERUSER",  # Matches 'FIRST_SUPERUSER'
         r"FIRST_SUPERUSER_USERNAME",  # Matches 'FIRST_SUPERUSER_USERNAME'

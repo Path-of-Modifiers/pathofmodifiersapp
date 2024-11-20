@@ -144,7 +144,6 @@ async def update_me_email_send_confirmation(
         )
     if user_update_me_email.email == current_user.email:
         raise UpdateExisitingMeValuesError(
-            value=user_update_me_email.email,
             function_name=update_me_email_send_confirmation.__name__,
         )
     CRUD_user.check_exists_raise(
@@ -208,7 +207,6 @@ async def update_me_email_confirmation(
         )
     if update_email == current_user.email:
         raise UpdateExisitingMeValuesError(
-            value=update_email,
             function_name=update_me_email_confirmation.__name__,
         )
     CRUD_user.check_exists_raise(
@@ -262,7 +260,6 @@ async def update_me_username(
         )
     if user_update_me_username.username == current_user.username:
         raise UpdateExisitingMeValuesError(
-            value=user_update_me_username.username,
             function_name=update_me_username.__name__,
         )
     CRUD_user.check_exists_raise(
@@ -402,7 +399,6 @@ async def delete_user_me(
     """
     if current_user.isSuperuser:
         raise SuperUserNotAllowedToDeleteSelfError(
-            username_or_email=current_user.username,
             function_name=delete_user_me.__name__,
         )
     db.delete(current_user)
@@ -535,7 +531,6 @@ async def get_user_by_id(
         return db_user
     if not current_user.isSuperuser:
         raise UserWithNotEnoughPrivilegesError(
-            username_or_email=current_user.username,
             function_name=get_user_by_id.__name__,
         )
     return db_user
@@ -583,7 +578,6 @@ async def delete_user(
         )
     if db_user == current_user:
         raise SuperUserNotAllowedToDeleteSelfError(
-            username_or_email=current_user.username,
             function_name=delete_user.__name__,
         )
     db.delete(db_user)
@@ -618,7 +612,6 @@ async def change_is_active_user(
         )
     if db_user == current_user:
         raise SuperUserNotAllowedToChangeActiveSelfError(
-            username_or_email=current_user.username,
             function_name=change_is_active_user.__name__,
         )
     CRUD_user.set_active(db, user_id=user_id, active=is_active)
@@ -690,7 +683,6 @@ async def set_active_user_send_confirmation(
     """
     if current_user.isActive:
         raise UserIsAlreadyActiveError(
-            username_or_email=current_user.username,
             function_name=set_active_user_send_confirmation.__name__,
         )
     user_register_token = await user_cache_register_user.create_user_cache_instance(

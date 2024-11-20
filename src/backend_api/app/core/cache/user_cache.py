@@ -89,8 +89,6 @@ class UserCache:
                 update_params.keys() - user_in_cache.__dict__.keys()
             ):  # Check if update_params has any keys that are not in user_in_cache
                 raise InvalidCacheUpdateParamsError(
-                    update_params=update_params,
-                    object=user_in_cache,
                     function_name=self._create_user_cache_by_user_model.__name__,
                     class_name="UserCache",
                 )

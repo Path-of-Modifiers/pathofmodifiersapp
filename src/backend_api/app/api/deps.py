@@ -103,7 +103,6 @@ async def get_current_user(
         )
     if not user.isActive:
         raise UserIsNotActiveError(
-            username_or_email=user.username,
             function_name=get_current_user.__name__,
         )
     return user
@@ -143,7 +142,6 @@ async def get_async_current_user(
             )
         if not await user.awaitable_attrs.isActive:
             raise UserIsNotActiveError(
-                username_or_email=user.username,
                 function_name=get_current_user.__name__,
             )
     return user
@@ -157,7 +155,6 @@ AsyncCurrentUser = Annotated[User, Depends(get_async_current_user)]
 async def get_current_active_superuser(current_user: CurrentUser) -> User:
     if not current_user.isSuperuser:
         raise UserWithNotEnoughPrivilegesError(
-            username_or_email=current_user.username,
             function_name=get_current_active_superuser.__name__,
         )
     return current_user

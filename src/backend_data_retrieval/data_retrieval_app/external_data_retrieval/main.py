@@ -178,9 +178,9 @@ class ContinuousDataRetrieval:
                         currency_df=currency_df.copy(deep=True),
                         item_base_types=item_base_types,
                     )
-        except Exception:
+        except Exception as e:
             logger.exception(
-                "The following exception occured during '_follow_data_dump_stream'"
+                f"The following exception occured during '_follow_data_dump_stream': {e}"
             )
             raise
 

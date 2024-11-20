@@ -343,7 +343,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         filter: Any,
         sort_key: str | None = None,
         sort_method: Literal["asc", "dec"] | None = None,
-        max_deletion_limit: int | None = 12,
+        max_deletion_limit: int = 12,
     ) -> ModelType:
         db_objs = db.query(self.model).filter_by(**filter).all()
         if not db_objs:
@@ -357,8 +357,8 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             len(db_objs) > max_deletion_limit
         ):  # Arbitrary number, not too large, but should allow deleting all modifiers assosiated with an item
             raise DbTooManyItemsDeleteError(
+                max_deletion_number=max_deletion_limit,
                 model_table_name=self.model.__tablename__,
-                filter=filter,
                 function_name=self.remove.__name__,
                 class_name=self.__class__.__name__,
             )

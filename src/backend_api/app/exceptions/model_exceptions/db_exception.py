@@ -2,8 +2,11 @@ from typing import Any
 
 import starlette.status as status
 
+from app.core.models.models import User as model_User
 from app.exceptions.exception_base import PathOfModifiersAPIError
 from app.logs.logger import logger
+
+HIDDEN_TABLE_LIST = [model_User.__tablename__]
 
 
 class _DBErrorLogBase(PathOfModifiersAPIError):
@@ -35,14 +38,19 @@ class GeneralDBError(_DBErrorLogBase):
     def __init__(
         self,
         *,
+        model_table_name: str,
         headers: dict[str, str] | None = None,
         function_name: str | None = None,
         class_name: str | None = None,
         detail: str | None = None,
         exception: Exception | None = None,
     ):
-        if exception is not None and detail is None:
-            detail = str(exception)
+        if model_table_name in HIDDEN_TABLE_LIST:
+            detail = f"A general error occured in {model_table_name} table"
+        elif exception is not None and detail is None:
+            detail = f"Details: {detail}. The DB exception occured: {exception}"
+        elif detail is None:
+            detail = "An error occured during operations to the database"
 
         super().__init__(
             function_name=function_name,
@@ -69,11 +77,18 @@ class DbObjectAlreadyExistsError(_DBErrorLogBase):
                 f"Object(s) try to be created in '{model_table_name}' already exists"
             )
         else:
-            detail = (
-                f"Query in table '{model_table_name}' with filter "
-                f"({', '.join([key + ': ' + str(item) for key, item in filter.items()])}) "
-                f"already exists"
-            )
+            if model_table_name in HIDDEN_TABLE_LIST:
+                detail = (
+                    f"Query in {model_table_name} table with filter "
+                    f"({', '.join([key + ': hidden_value' for key in filter.keys()])}) "
+                    f"already exists"
+                )
+            else:
+                detail = (
+                    f"Query in table '{model_table_name}' with filter "
+                    f"({', '.join([key + ': ' + str(item) for key, item in filter.items()])}) "
+                    f"already exists"
+                )
         super().__init__(
             status_code=status_code,
             function_name=function_name,
@@ -92,7 +107,7 @@ class DbObjectDoesNotExistError(PathOfModifiersAPIError):
         self,
         *,
         model_table_name: str,
-        filter: dict[str, str] | None = None,
+        filter: dict[str, Any] | None = None,
         function_name: str | None = "Unknown function",
         class_name: str | None = None,
         status_code: int | None = status.HTTP_404_NOT_FOUND,
@@ -100,11 +115,18 @@ class DbObjectDoesNotExistError(PathOfModifiersAPIError):
         if filter is None:
             detail = f"No object matching the query in the table {model_table_name} was found."
         else:
-            detail = (
-                f"No object matching the query with filter "
-                f"({', '.join([key + ': ' + str(item) for key, item in filter.items()])}) "
-                f"in the table '{model_table_name}' was found."
-            )
+            if model_table_name in HIDDEN_TABLE_LIST:
+                detail = (
+                    f"No {model_table_name} object matching the query with filter "
+                    f"({', '.join([key + ': hidden_value' for key in filter.keys()])}) "
+                    f"in the table '{model_table_name}' was found."
+                )
+            else:
+                detail = (
+                    f"No object matching the query with filter "
+                    f"({', '.join([key + ': ' + str(item) for key, item in filter.items()])}) "
+                    f"in the table '{model_table_name}' was found."
+                )
 
         super().__init__(
             status_code=status_code,
@@ -124,7 +146,6 @@ class DbTooManyItemsDeleteError(_DBErrorLogBase):
     def __init__(
         self,
         model_table_name: str,
-        filter: dict[str, str],
         max_deletion_number: int,
         function_name: str | None = "Unknown function",
         class_name: str | None = None,
@@ -132,7 +153,6 @@ class DbTooManyItemsDeleteError(_DBErrorLogBase):
     ):
         detail = (
             f"Too many objects matching the query "
-            f"({', '.join([key + ': ' + str(item) for key, item in filter.items()])}), "
             f"cannot delete and guarantee safety in the table '{model_table_name}'. "
             f"Maximum of {max_deletion_number} deletions allowed in one query."
         )

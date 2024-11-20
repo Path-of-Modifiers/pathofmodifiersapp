@@ -87,7 +87,9 @@ class TransformPoENinjaCurrencyAPIData:
             )
             response.raise_for_status()
         except Exception as e:
-            logger.error("The following error occurred while making request:", e)
+            logger.error(
+                f"The following error occurred while making request _get_latest_currency_id_series: {e}"
+            )
             raise e
         latest_currency_id = int(response.text)
 
