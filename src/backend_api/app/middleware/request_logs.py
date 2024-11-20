@@ -40,7 +40,7 @@ async def log_request_middleware(request: Request, call_next):
         f"method={request.method} "
         f"url={url} "
         f"status_code={response.status_code} "
-        f"status_phrase={status_phrase} "
+        f"""status_phrase="{status_phrase}" """
         f"process_time_ms={formatted_process_time}"
     )
 

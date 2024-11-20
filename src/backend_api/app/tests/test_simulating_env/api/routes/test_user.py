@@ -205,7 +205,6 @@ class TestUserAPI(BaseTest):
         assert (
             r.json()["detail"]
             == UserWithNotEnoughPrivilegesError(
-                username_or_email=settings.TEST_USER_USERNAME,
                 function_name=get_user_by_id.__name__,
             ).detail
         )
@@ -837,11 +836,9 @@ class TestUserAPI(BaseTest):
         )
         assert r.status_code == 403
         response = r.json()
-        current_user_email = settings.FIRST_SUPERUSER_USERNAME
         assert (
             response["detail"]
             == SuperUserNotAllowedToDeleteSelfError(
-                username_or_email=current_user_email,
                 function_name=delete_user_me.__name__,
             ).detail
         )
@@ -878,7 +875,6 @@ class TestUserAPI(BaseTest):
         assert (
             response["detail"]
             == UserIsNotActiveError(
-                username_or_email=normal_user.username,
                 function_name=get_current_user.__name__,
             ).detail
         )
@@ -957,7 +953,6 @@ class TestUserAPI(BaseTest):
         assert (
             r.json()["detail"]
             == SuperUserNotAllowedToDeleteSelfError(
-                username_or_email=super_user.username,
                 function_name=delete_user.__name__,
             ).detail
         )
@@ -982,11 +977,9 @@ class TestUserAPI(BaseTest):
             headers=normal_user_token_headers,
         )
         assert r.status_code == 403
-        current_user_username = settings.TEST_USER_USERNAME
         assert (
             r.json()["detail"]
             == UserWithNotEnoughPrivilegesError(
-                username_or_email=current_user_username,
                 function_name=get_current_active_superuser.__name__,
             ).detail
         )
@@ -1039,7 +1032,9 @@ class TestUserAPI(BaseTest):
 
         # Test login with expired token
         await get_cache.flushall()
-        with (patch("app.core.config.settings.ACCESS_SESSION_EXPIRE_SECONDS", 1),):
+        with (
+            patch("app.core.config.settings.ACCESS_SESSION_EXPIRE_SECONDS", 1),
+        ):
             login_data = {
                 "email": email,
                 "password": password,
