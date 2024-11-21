@@ -28,14 +28,10 @@ const DateDaysHoursSinceLaunchStats = (props: StatProps) => {
   });
 
   useEffect(() => {
-    // Update currentTime every minute (60000 ms)
-
     const updateWaitTime = msToNextHour();
     const intervalId = setInterval(() => {
       setCurrentTime(new Date());
-    }, updateWaitTime); // You can adjust the interval time as needed (e.g., 1000 for every second)
-
-    // Clean up the interval when the component unmounts
+    }, updateWaitTime);
     return () => clearInterval(intervalId);
   }, []);
 
