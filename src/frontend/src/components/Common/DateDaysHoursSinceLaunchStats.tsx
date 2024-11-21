@@ -1,4 +1,5 @@
 import { Stat, StatProps, StatNumber, StatHelpText } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 
 import {
   getHoursSinceLaunch,
@@ -6,6 +7,7 @@ import {
   LEAGUE_LAUNCH_DATETIME,
 } from "../../hooks/graphing/utils";
 import { DEFAULT_LEAGUE } from "../../config";
+import { msToNextHour } from "../../utils";
 
 const DateDaysHoursSinceLaunchStats = (props: StatProps) => {
   const defaultLeague = DEFAULT_LEAGUE;
@@ -19,13 +21,23 @@ const DateDaysHoursSinceLaunchStats = (props: StatProps) => {
     month: "short",
   });
 
-  const currentTime = new Date();
+  const [currentTime, setCurrentTime] = useState(new Date());
   const currentDay = currentTime.getDate();
   const currentMonth = currentTime.toLocaleString("default", {
     month: "short",
   });
 
-  console.log(leagueLaunchMonth);
+  useEffect(() => {
+    // Update currentTime every minute (60000 ms)
+
+    const updateWaitTime = msToNextHour();
+    const intervalId = setInterval(() => {
+      setCurrentTime(new Date());
+    }, updateWaitTime); // You can adjust the interval time as needed (e.g., 1000 for every second)
+
+    // Clean up the interval when the component unmounts
+    return () => clearInterval(intervalId);
+  }, []);
 
   return (
     <Stat {...props}>

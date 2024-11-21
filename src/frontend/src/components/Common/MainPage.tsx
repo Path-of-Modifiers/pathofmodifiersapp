@@ -5,7 +5,6 @@ import GraphComponent from "../../components/Graph/GraphComponent";
 import Footer from "../../components/Common/Footer";
 
 import { Flex, Box, VStack } from "@chakra-ui/layout";
-import DateDaysHoursSinceLaunchStats from "./DateDaysHoursSinceLaunchStats";
 
 interface MainPageProps {
   isReady: boolean;

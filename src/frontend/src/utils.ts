@@ -63,3 +63,7 @@ export const handleError = (err: ApiError, showToast: Toast) => {
   }
   showToast("Error", errorMessage, "error");
 };
+
+export function msToNextHour() {
+  return 3600000 - (new Date().getTime() % 3600000);
+}
