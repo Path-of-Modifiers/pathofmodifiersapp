@@ -7,8 +7,9 @@ import { routeTree } from "./routeTree.gen";
 import { StrictMode } from "react";
 import { OpenAPI } from "./client";
 import theme from "./theme";
+import { VITE_API_URL } from "./config";
 
-OpenAPI.BASE = import.meta.env.VITE_API_URL;
+OpenAPI.BASE = VITE_API_URL;
 OpenAPI.TOKEN = async () => {
   return localStorage.getItem("access_token") || "";
 };
