@@ -5,8 +5,11 @@ import {
   BaseSpecState,
   WantedModifierExtended,
 } from "../../store/StateInterface";
+import { LEAGUE_LAUNCH_TIME } from "../../config";
 
-function formatHoursSinceLaunch(hoursSinceLaunch: number): string {
+export const LEAGUE_LAUNCH_DATETIME = new Date(LEAGUE_LAUNCH_TIME);
+
+export function formatHoursSinceLaunch(hoursSinceLaunch: number): string {
   const daysSinceLaunch = Math.floor(hoursSinceLaunch / 24);
   const remainder = hoursSinceLaunch % 24;
 
@@ -14,10 +17,13 @@ function formatHoursSinceLaunch(hoursSinceLaunch: number): string {
   return `${daysSinceLaunch}T${remainder}`;
 }
 
-export default formatHoursSinceLaunch;
-
-const LEAGUE_LAUNCH_TIME = import.meta.env.VITE_APP_LEAGUE_LAUNCH_TIME;
-const LEAGUE_LAUNCH_DATETIME = new Date(LEAGUE_LAUNCH_TIME);
+export const getHoursSinceLaunch = (currentTime: Date): number => {
+  const getCurrentTimeDate = currentTime.getTime();
+  const hoursSinceLaunch = Math.floor(
+    (getCurrentTimeDate - LEAGUE_LAUNCH_DATETIME.getTime()) / (1000 * 3600),
+  );
+  return hoursSinceLaunch;
+};
 
 export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
   // currently always runs, needs to be in if check
@@ -125,14 +131,11 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
         modifierLimitations: wantedModifierExtended.modifierLimitations,
       })),
     );
-
-  const currentTime = new Date().getTime();
+  const currentTime = new Date();
+  const end = getHoursSinceLaunch(currentTime);
   const fourteenDaysHours = 336;
-
-  const end = Math.floor(
-    (currentTime - LEAGUE_LAUNCH_DATETIME.getTime()) / (1000 * 3600),
-  );
   const start = end - fourteenDaysHours;
+
   return {
     league: state.league,
     itemSpecifications: itemSpec,

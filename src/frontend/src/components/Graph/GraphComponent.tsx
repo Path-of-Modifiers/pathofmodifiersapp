@@ -16,7 +16,7 @@ import PlotCustomizationButtons from "../Common/PlotCustomizationButtons";
 import { capitalizeFirstLetter } from "../../hooks/utils";
 import { CurrencyVisuals } from "../../schemas/CurrencyVisuals";
 import { CustomTooltip } from "./CustomTooltip";
-import formatHoursSinceLaunch from "../../hooks/graphing/utils";
+import { formatHoursSinceLaunch } from "../../hooks/graphing/utils";
 import { BiError } from "react-icons/bi";
 import { ErrorMessage } from "../Input/StandardLayoutInput/ErrorMessage";
 

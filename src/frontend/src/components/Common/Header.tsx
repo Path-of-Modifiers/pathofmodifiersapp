@@ -11,6 +11,7 @@ import SettingsIcon from "../Icon/SettingsIcon";
 import LogoutIcon from "../Icon/LogoutIcon";
 import useAuth from "../../hooks/validation/useAuth";
 import CustomLink from "./CustomLink";
+import DateDaysHoursSinceLaunchStats from "./DateDaysHoursSinceLaunchStats";
 
 // Header component for the application
 const Header = () => {
@@ -29,6 +30,12 @@ const Header = () => {
           Path of Modifiers
         </Text>
       </CustomLink>
+
+      <DateDaysHoursSinceLaunchStats
+        style={{ transform: "translateY(5px)" }}
+        textAlign="center"
+        color="white"
+      />
 
       {/* Menu for user actions */}
       <Menu placement="bottom-end">

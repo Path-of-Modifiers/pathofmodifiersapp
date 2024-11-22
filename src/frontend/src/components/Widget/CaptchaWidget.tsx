@@ -3,8 +3,9 @@ import { useState } from "react";
 import { Text } from "@chakra-ui/react";
 import useTurnstileValidation from "../../hooks/validation/turnstileValidation";
 import useGetIp from "../../hooks/validation/getIp";
+import { TURNSTILE_SITE_KEY } from "../../config";
 
-const siteKey = import.meta.env.VITE_APP_TURNSTILE_SITE_KEY || "";
+const siteKey = TURNSTILE_SITE_KEY;
 
 // Cloudfare turnstile widget for captcha
 const CaptchaWidget = () => {

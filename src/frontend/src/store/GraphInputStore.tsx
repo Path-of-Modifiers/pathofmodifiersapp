@@ -11,8 +11,9 @@ import {
 } from "./StateInterface";
 import { GroupedModifierByEffect, ItemBaseType, PlotQuery } from "../client";
 import { encodeHash, decodeHash } from "./utils";
+import { DEFAULT_LEAGUE } from "../config";
 
-const defaultLeague = import.meta.env.VITE_APP_DEFAULT_LEAGUE;
+const defaultLeague = DEFAULT_LEAGUE;
 
 // Graph Input Store  -  This store is used to store graph input data.
 export const useGraphInputStore = create<GraphInputState>((set) => ({
