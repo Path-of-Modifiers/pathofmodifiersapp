@@ -11,10 +11,6 @@ import { msToNextHour } from "../../utils";
 
 const DateDaysHoursSinceLaunchStats = (props: StatProps) => {
   const defaultLeague = DEFAULT_LEAGUE;
-  const hoursSinceLaunch = getHoursSinceLaunch();
-  const daysHoursSinceLaunchFormat = formatHoursSinceLaunch(hoursSinceLaunch);
-  const [sinceLaunchDays, sinceLaunchHours] =
-    daysHoursSinceLaunchFormat.split("T");
 
   const leagueLaunchDay = LEAGUE_LAUNCH_DATETIME.getDate();
   const leagueLaunchMonth = LEAGUE_LAUNCH_DATETIME.toLocaleString("default", {
@@ -26,6 +22,11 @@ const DateDaysHoursSinceLaunchStats = (props: StatProps) => {
   const currentMonth = currentTime.toLocaleString("default", {
     month: "short",
   });
+
+  const hoursSinceLaunch = getHoursSinceLaunch(currentTime);
+  const daysHoursSinceLaunchFormat = formatHoursSinceLaunch(hoursSinceLaunch);
+  const [sinceLaunchDays, sinceLaunchHours] =
+    daysHoursSinceLaunchFormat.split("T");
 
   useEffect(() => {
     const updateWaitTime = msToNextHour();

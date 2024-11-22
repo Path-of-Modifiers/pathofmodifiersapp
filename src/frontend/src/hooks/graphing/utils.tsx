@@ -17,11 +17,10 @@ export function formatHoursSinceLaunch(hoursSinceLaunch: number): string {
   return `${daysSinceLaunch}T${remainder}`;
 }
 
-export const getHoursSinceLaunch = (): number => {
-  const currentTime = new Date().getTime();
-
+export const getHoursSinceLaunch = (currentTime: Date): number => {
+  const getCurrentTimeDate = currentTime.getTime();
   const hoursSinceLaunch = Math.floor(
-    (currentTime - LEAGUE_LAUNCH_DATETIME.getTime()) / (1000 * 3600),
+    (getCurrentTimeDate - LEAGUE_LAUNCH_DATETIME.getTime()) / (1000 * 3600),
   );
   return hoursSinceLaunch;
 };
@@ -132,7 +131,8 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
         modifierLimitations: wantedModifierExtended.modifierLimitations,
       })),
     );
-  const end = getHoursSinceLaunch();
+  const currentTime = new Date();
+  const end = getHoursSinceLaunch(currentTime);
   const fourteenDaysHours = 336;
   const start = end - fourteenDaysHours;
 
