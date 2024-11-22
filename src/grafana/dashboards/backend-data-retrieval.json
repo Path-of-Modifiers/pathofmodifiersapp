@@ -109,7 +109,7 @@
             "uid": "pomodifiers-loki"
           },
           "editorMode": "code",
-          "expr": "{job=\"vector\"} |= dataret.ext.timing |= create_item_modifier_table | json | keep timing_time_diff | line_format \"{{.timing_time_diff | float64}}\"",
+          "expr": "{job=\"vector\"} |= \"dataret.ext.timing\" |= \"create_item_modifier_table\" | json | keep timing_time_diff | line_format \"{{.timing_time_diff | float64}}\"",
           "queryType": "range",
           "refId": "A"
         }
@@ -219,7 +219,7 @@
             "uid": "pomodifiers-loki"
           },
           "editorMode": "code",
-          "expr": "{job=\"vector\"} |= dataret.ext.timing |= process_stream | json  | keep timing_time_diff | line_format \"{{.timing_time_diff | float64}}\"",
+          "expr": "{job=\"vector\"} |= \"dataret.ext.timing\" |= \"process_stream\" | json  | keep timing_time_diff | line_format \"{{.timing_time_diff | float64}}\"",
           "queryType": "range",
           "refId": "A"
         }
@@ -275,7 +275,7 @@
             "uid": "pomodifiers-loki"
           },
           "editorMode": "code",
-          "expr": "{job=\"vector\"} |= src-backend-data-retrieval != INFO | json | keep message, level, exc_info | line_format {{.level}}: {{.message}}: {{alignRight 50 .exc_info}}",
+          "expr": "{job=\"vector\"} |= \"src-backend-data-retrieval\" != \"INFO\" | json | keep message, level, exc_info | line_format \"{{.level}}: {{.message}}: {{alignRight 50 .exc_info}}\"",
           "queryType": "range",
           "refId": "A"
         }
@@ -356,7 +356,7 @@
             "uid": "pomodifiers-loki"
           },
           "editorMode": "code",
-          "expr": "{job=\"vector\"} |= src-backend-data-retrieval != INFO | json | keep message, level, exc_info | line_format {{.level}}: {{.message}}: {{.exc_info}}",
+          "expr": "{job=\"vector\"} |= \"src-backend-data-retrieval\" != \"INFO\" | json | keep message, level, exc_info | line_format \"{{.level}}: {{.message}}: {{.exc_info}}\"",
           "queryType": "range",
           "refId": "A"
         }
@@ -379,6 +379,6 @@
   "timezone": "browser",
   "title": "Backend Data Retrieval",
   "uid": "fe4c6i7cxq5moc",
-  "version": 20,
+  "version": 25,
   "weekStart": ""
 }
