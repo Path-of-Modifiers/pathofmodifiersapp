@@ -78,7 +78,7 @@ class ScrapAndMockPoEAPIDocs:
 
     def _check_obj_key_value_type(self, obj: dict, key: str, value_type: Any):
         if "id" == key:
-            obj[key] = str(uuid.uuid4())
+            obj[key] = str(uuid.uuid4()).replace("-", "")
         elif "league" == key:
             obj[key] = settings.CURRENT_SOFTCORE_LEAGUE
         elif "string" == value_type:

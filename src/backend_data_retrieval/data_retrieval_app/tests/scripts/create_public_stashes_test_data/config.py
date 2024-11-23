@@ -2,12 +2,12 @@ from pydantic_settings import BaseSettings
 
 
 class PoEPublicStashesTestDataSettings(BaseSettings):
-    N_OF_ITEMS_PER_MODIFIER_FILE: int = 20
+    N_OF_ITEMS_PER_MODIFIER_FILE: int = 1
     MODIFIER_CSV_FILES_TO_ITERATE: list[
         str
     ] = []  # For instance: ["AulsUprising.csv", "ThreadOfHope.csv"]
 
-    MINI_BATCH_SIZE: int = 10
+    MINI_BATCH_SIZE: int = 1
     N_CHECKPOINTS_PER_TRANSFORMATION: int = 1
 
     CREATE_TEST_DATA_FOR_N_SECONDS: int = 10 * 60  # 10 min
@@ -21,10 +21,9 @@ class PoEPublicStashesTestDataSettings(BaseSettings):
         return bool(self.CREATE_DATA_DIFFERENT_TIMING_INTERVAL and self.TIMING_PERIOD)
 
     ITEM_NOTE_CURRENCY_TYPES: list[str] = [
-        "chaos",
-        "divine",
+        "mirror",
     ]  # "chaos", "divine", "mirror", etc.
-    MEAN_ITEM_PRICE: int = 30
+    MEAN_ITEM_PRICE: int = 12
 
 
 script_settings = PoEPublicStashesTestDataSettings()

@@ -72,6 +72,27 @@ class PoEAPIDataTransformerBase:
         item_df["createdHoursSinceLaunch"] = hours_since_launch
         return item_df
 
+    def _find_not_too_highly_priced_item_mask(
+        self, currency_df: pd.DataFrame, item_currency_merged_df: pd.DataFrame
+    ) -> pd.Series:
+        """
+        Some items are too highly priced to be legitimate. A boundary of the price equivelant to
+        >= 10 mirrors are seen to be too high priced.
+
+        1. Find currency type and amount equiveland in chaos
+        """
+
+        mirror_row = currency_df.loc[currency_df["tradeName"] == "mirror"]
+        mirror_value = mirror_row["valueInChaos"].get(0)
+
+        currency_too_high_mask = (
+            item_currency_merged_df["valueInChaos"]
+            * item_currency_merged_df["currencyAmount"].astype("float")
+            > mirror_value * 10
+        )
+
+        return ~currency_too_high_mask
+
     @sync_timing_tracker
     def _transform_item_table(
         self,
@@ -156,9 +177,18 @@ class PoEAPIDataTransformerBase:
             suffixes=(None, "_y"),
         )
 
-        self.price_found_mask = ~item_df["tradeName"].isna()
+        price_found_mask = ~item_df["tradeName"].isna()
+
+        self.price_found_mask = price_found_mask
 
         item_df = item_df.loc[self.price_found_mask]
+
+        not_too_high_priced_item_mask = self._find_not_too_highly_priced_item_mask(
+            currency_df, item_df
+        )
+        self.items_not_too_high_priced_mask = not_too_high_priced_item_mask
+
+        item_df = item_df.loc[self.items_not_too_high_priced_mask]
 
         return item_df
 
@@ -269,7 +299,6 @@ class PoEAPIDataTransformerBase:
     def _transform_item_modifier_table(
         self,
         item_modifier_df: pd.DataFrame,
-        hours_since_launch: int,
     ) -> pd.DataFrame:
         """
         The `item_modifier` table heavily relies on what type of item the modifiers
@@ -348,9 +377,13 @@ class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
         relevant column contains a list and not a JSON-object
         """
         item_modifier_columns = ["name", "explicitMods"]
-
         item_modifier_df = df.loc[
-            self.price_found_mask, item_modifier_columns
+            self.price_found_mask,
+            item_modifier_columns,
+        ]
+
+        item_modifier_df = item_modifier_df.loc[
+            self.items_not_too_high_priced_mask
         ].reset_index()
 
         item_modifier_df["itemId"] = item_id
