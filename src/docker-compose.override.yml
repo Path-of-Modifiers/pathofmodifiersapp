@@ -107,6 +107,12 @@ services:
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - default
+    labels:
+      - traefik.enable=true
+      - traefik.constraint-label=traefik-public
+      - traefik.http.routers.loki.rule=Host(`loki.localhost`)
+      - traefik.http.services.loki.loadbalancer.server.port=3100
+      - traefik.http.routers.loki.entrypoints=http
 
   grafana:
     restart: "no" # or use `on-failure` if you prefer automatic restarts on crashes
@@ -114,6 +120,8 @@ services:
     env_file:
       - .env
     environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USERNAME?Grafana username not set}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD?Grafan password not set}
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_AUTH_ANONYMOUS_ENABLED=false
       - GF_AUTH_BASIC_ENABLED=false
@@ -122,13 +130,23 @@ services:
     ports:
       - ${GRAFANA_PORT}:${GRAFANA_PORT}
     volumes:
-      - grafana-data:/etc/grafana/provisioning # single volume for provisioning
+      - ./grafana/provisioning:/etc/grafana/provisioning # single volume for provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - default
     entrypoint: >
       sh -c "mkdir -p /etc/grafana/provisioning/datasources /etc/grafana/provisioning/dashboards /etc/grafana/provisioning/plugins /etc/grafana/provisioning/alerting &&
       /run.sh"  # ensure directories exist
+    labels:
+      - traefik.enable=true
+      - traefik.constraint-label=traefik-public
+      - traefik.http.routers.grafana.rule=Host(`grafana.localhost`)
+      - traefik.http.services.grafana.loadbalancer.server.port=3000
+      - traefik.http.routers.grafana.entrypoints=http
+      - traefik.http.middlewares.grafana-websockets.headers.customrequestheaders.Upgrade=websocket
+      - traefik.http.middlewares.grafana-websockets.headers.customrequestheaders.Connection=Upgrade
+      - traefik.http.routers.grafana.middlewares=grafana-websockets
 
 networks:
   traefik-public:
