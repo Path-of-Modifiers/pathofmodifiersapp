@@ -160,7 +160,7 @@ function GraphComponent(props: BoxProps) {
               type="number"
               dataKey={chaosVisuals.datakey}
             />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<CustomTooltip />} isAnimationActive={false} />
             <Legend verticalAlign="top" height={36} />
             {/* Update the Line dataKey to match "Chaos value" */}
             <Line
