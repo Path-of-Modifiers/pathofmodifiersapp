@@ -58,7 +58,12 @@ class TestUniquePoEAPIDataTransformer(UniquePoEAPIDataTransformer):
             item_modifier_columns.append("createdHoursSinceLaunch")
 
         item_modifier_df = df.loc[
-            self.price_found_mask, item_modifier_columns
+            self.price_found_mask,
+            item_modifier_columns,
+        ]
+
+        item_modifier_df = item_modifier_df.loc[
+            self.items_not_too_high_priced_mask
         ].reset_index()
 
         item_modifier_df["itemId"] = item_id
