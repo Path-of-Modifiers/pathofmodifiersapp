@@ -33,6 +33,8 @@ function GraphComponent(props: BoxProps) {
     result,
     mostCommonCurrencyUsed,
     confidenceRating,
+    upperBoundryChaos,
+    upperBoundrySecondary,
     fetchStatus,
     error,
   } = useGetPlotData(plotQuery);
@@ -59,6 +61,7 @@ function GraphComponent(props: BoxProps) {
     buttonColor: "#000000",
     buttonBorderColor: "#000000",
     buttonBackground: showChaos ? "#f99619" : "ui.lightInput",
+    upperBoundry: upperBoundryChaos,
   };
 
   const secondaryVisuals: CurrencyVisuals = {
@@ -71,6 +74,7 @@ function GraphComponent(props: BoxProps) {
     buttonColor: showSecondary ? "#ff0000" : "#000000",
     buttonBorderColor: showSecondary ? "#ff0000" : "#000000",
     buttonBackground: showSecondary ? "ui.white" : "ui.lightInput",
+    upperBoundry: upperBoundrySecondary,
   };
 
   if (fetchStatus === "fetching") {
@@ -159,8 +163,12 @@ function GraphComponent(props: BoxProps) {
               hide={!showChaos}
               type="number"
               dataKey={chaosVisuals.datakey}
+              domain={[0, chaosVisuals.upperBoundry]}
+              allowDataOverflow
             />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip
+              content={<CustomTooltip upperBoundry={upperBoundryChaos} />}
+            />
             <Legend verticalAlign="top" height={36} />
             {/* Update the Line dataKey to match "Chaos value" */}
             <Line
@@ -184,6 +192,8 @@ function GraphComponent(props: BoxProps) {
               yAxisId={secondaryVisuals.yAxisId}
               hide={!showSecondary}
               type="number"
+              domain={[0, secondaryVisuals.upperBoundry]}
+              allowDataOverflow
             />
             <Line
               type="monotone"

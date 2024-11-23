@@ -10,11 +10,16 @@ import {
 import { capitalizeFirstLetter } from "../../hooks/utils";
 import { BiError } from "react-icons/bi";
 
+interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
+  upperBoundry: number;
+}
+
 export const CustomTooltip = ({
   active,
   payload,
   label,
-}: TooltipProps<ValueType, NameType>) => {
+  upperBoundry,
+}: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     const days = Math.floor(label / 24);
     const hours = label % 24;
@@ -70,6 +75,28 @@ export const CustomTooltip = ({
             )}
           </Box>
         </Box>
+        {(payload[0].value as number) > upperBoundry && (
+          <Box>
+            <Divider />
+            <Box display="flex" flexDirection="row" alignContent="center">
+              <Icon
+                as={BiError}
+                color="ui.lowConfidencePrimary"
+                boxSize="1.5rem"
+                key="medium-confidence"
+              />
+              <Text mx="auto" color="ui.lowConfidencePrimary">
+                This is an outlier
+              </Text>
+              <Icon
+                as={BiError}
+                color="ui.lowConfidencePrimary"
+                boxSize="1.5rem"
+                key="medium-confidence"
+              />
+            </Box>
+          </Box>
+        )}
 
         <Divider mb="5px" />
         {payload.map((value, index) => (
