@@ -168,6 +168,7 @@ function GraphComponent(props: BoxProps) {
             />
             <Tooltip
               content={<CustomTooltip upperBoundry={upperBoundryChaos} />}
+              isAnimationActive={false}
             />
             <Legend verticalAlign="top" height={36} />
             {/* Update the Line dataKey to match "Chaos value" */}
