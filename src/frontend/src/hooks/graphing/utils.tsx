@@ -9,6 +9,26 @@ import { LEAGUE_LAUNCH_TIME } from "../../config";
 
 export const LEAGUE_LAUNCH_DATETIME = new Date(LEAGUE_LAUNCH_TIME);
 
+const calcMean = (values: number[]) => {
+  const sumValues = values.reduce((prev, cur) => prev + cur, 0);
+  return sumValues / values.length;
+};
+
+const calcSTD = (values: number[], mean: number) => {
+  return Math.sqrt(
+    values.reduce((prev, cur) => prev + (cur - mean) * (cur - mean), 0) /
+      values.length
+  );
+};
+
+export const findWinsorUpperBound = (values: number[]) => {
+  const mean = calcMean(values);
+  const std = calcSTD(values, mean);
+
+  const upperBoundry = Math.ceil(mean + 1.96 * std);
+  return upperBoundry;
+};
+
 export function formatHoursSinceLaunch(hoursSinceLaunch: number): string {
   const daysSinceLaunch = Math.floor(hoursSinceLaunch / 24);
   const remainder = hoursSinceLaunch % 24;
@@ -20,7 +40,7 @@ export function formatHoursSinceLaunch(hoursSinceLaunch: number): string {
 export const getHoursSinceLaunch = (currentTime: Date): number => {
   const getCurrentTimeDate = currentTime.getTime();
   const hoursSinceLaunch = Math.floor(
-    (getCurrentTimeDate - LEAGUE_LAUNCH_DATETIME.getTime()) / (1000 * 3600),
+    (getCurrentTimeDate - LEAGUE_LAUNCH_DATETIME.getTime()) / (1000 * 3600)
   );
   return hoursSinceLaunch;
 };
@@ -43,10 +63,10 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
         return newUniqueCandidates;
       }
       return prev.filter((prevCandidate) =>
-        newUniqueCandidates.includes(prevCandidate),
+        newUniqueCandidates.includes(prevCandidate)
       );
     },
-    [] as string[],
+    [] as string[]
   );
   if (possibleUniques.length === 0) {
     useErrorStore.getState().setNoRelatedUniqueError(true);
@@ -129,7 +149,7 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
       groupedWantedModifierExtended.map((wantedModifierExtended) => ({
         modifierId: wantedModifierExtended.modifierId,
         modifierLimitations: wantedModifierExtended.modifierLimitations,
-      })),
+      }))
     );
   const currentTime = new Date();
   const end = getHoursSinceLaunch(currentTime);
