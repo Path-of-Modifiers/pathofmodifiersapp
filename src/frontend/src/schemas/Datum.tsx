@@ -3,9 +3,9 @@
  */
 interface Datum {
   timestamp: number;
-  valueInChaos: number;
-  valueInMostCommonCurrencyUsed: number;
-  confidence: "low" | "medium" | "high";
+  valueInChaos: number | null;
+  valueInMostCommonCurrencyUsed: number | null;
+  confidence: "low" | "medium" | "high" | null;
 }
 
 export default Datum;
