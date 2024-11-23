@@ -348,17 +348,16 @@ class Plotter:
         }
         # Then as a dataframe
         df = pd.DataFrame(plot_data)
-        df = df.sort_values(by="valueInChaos")
 
         # Group by hour
         grouped_by_created_hours_since_launch_df = df.groupby("hoursSinceLaunch")
 
         # Aggregate by custom function
         agg_by_date_df = grouped_by_created_hours_since_launch_df.agg(
-            valueInChaos=("valueInChaos", lambda values: summarize_function(values, 2)),
+            valueInChaos=("valueInChaos", summarize_function),
             valueInMostCommonCurrencyUsed=(
                 "valueInMostCommonCurrencyUsed",
-                lambda values: summarize_function(values, 2),
+                summarize_function,
             ),
             confidence=("valueInChaos", determine_confidence),
         )
