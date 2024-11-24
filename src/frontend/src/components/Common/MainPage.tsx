@@ -17,6 +17,7 @@ export const MainPage = (props: MainPageProps) => {
       bg="ui.main"
       width="99vw"
       minWidth="bgBoxes.miniPBox"
+      minH="100vh"
     >
       <>
         <Box mb={"7rem"}>
@@ -29,7 +30,6 @@ export const MainPage = (props: MainPageProps) => {
           justifyContent="center"
           maxWidth={"100%"}
           flexWrap="wrap"
-          minHeight="100vh"
           p={3}
           pl={10}
           pr={10}
@@ -37,9 +37,14 @@ export const MainPage = (props: MainPageProps) => {
           borderTopColor={"ui.darkBrown"}
           borderTopWidth={1}
           alignSelf="center"
+          minH="96vh"
         >
           {props.isReady && (
-            <VStack width={"bgBoxes.defaultBox"} height={"100%"} maxW={"100%"}>
+            <VStack
+              width={"bgBoxes.defaultBox"}
+              minHeight={"100vh"}
+              maxW={"100%"}
+            >
               <GraphInput />
               <QueryButtons />
 
@@ -48,10 +53,9 @@ export const MainPage = (props: MainPageProps) => {
                 minH={"bgBoxes.smallBox"}
                 height={"bgBoxes.smallBox"}
                 maxW="98vw"
-                mb="10rem"
                 justifyItems={"center"}
               />
-              <Footer />
+              <Footer minH="15rem" />
             </VStack>
           )}
         </Flex>
