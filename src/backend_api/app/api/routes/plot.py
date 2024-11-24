@@ -3,11 +3,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import (
     UserCacheSession,
-    get_async_current_active_user,
     get_async_db,
     get_rate_limit_tier_by_request,
     get_user_ip_from_header,
-    get_username_by_request,
 )
 from app.core.rate_limit.custom_rate_limiter import RateSpec
 from app.core.rate_limit.rate_limit_config import rate_limit_settings
@@ -23,12 +21,10 @@ plot_prefix = "plot"
 @router.post(
     "/",
     response_model=PlotData,
-    dependencies=[Depends(get_async_current_active_user)],
 )
 async def get_plot_data(
     request: Request,
     query: PlotQuery,
-    user_cache_session: UserCacheSession,
     db: AsyncSession = Depends(get_async_db),
 ):
     """
@@ -37,19 +33,15 @@ async def get_plot_data(
 
     The 'PlotQuery' schema allows for modifier restriction and item specifications.
     """
-    rate_limit_tier = await get_rate_limit_tier_by_request(request, user_cache_session)
+    request_limit = 4
     rate_spec = RateSpec(
-        requests=rate_limit_tier,
+        requests=request_limit,
         cooldown_seconds=rate_limit_settings.PLOT_RATE_LIMIT_COOLDOWN_SECONDS,
     )
 
     client_ip = get_user_ip_from_header(request)
 
     async with apply_custom_rate_limit(
-        unique_key="plot_" + get_username_by_request(request),
-        rate_spec=rate_spec,
-        prefix=plot_prefix,
-    ), apply_custom_rate_limit(
         unique_key="plot_" + client_ip,
         rate_spec=rate_spec,
         prefix=plot_prefix,

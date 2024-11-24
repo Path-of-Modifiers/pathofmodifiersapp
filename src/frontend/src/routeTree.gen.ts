@@ -11,56 +11,18 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as UserNotActivatedImport } from './routes/user-not-activated'
-import { Route as UpdateUserEmailImport } from './routes/update-user-email'
 import { Route as TermsOfUseImport } from './routes/terms-of-use'
-import { Route as SignupImport } from './routes/signup'
-import { Route as ResetPasswordImport } from './routes/reset-password'
-import { Route as RecoverPasswordImport } from './routes/recover-password'
 import { Route as PrivacyPolicyImport } from './routes/privacy-policy'
-import { Route as LoginImport } from './routes/login'
 import { Route as CaptchaImport } from './routes/captcha'
-import { Route as ActivateAccountImport } from './routes/activate-account'
 import { Route as AboutImport } from './routes/about'
 import { Route as LayoutImport } from './routes/_layout'
-import { Route as LayoutIndexImport } from './routes/_layout/index'
-import { Route as LayoutSettingsImport } from './routes/_layout/settings'
+import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
-
-const UserNotActivatedRoute = UserNotActivatedImport.update({
-  id: '/user-not-activated',
-  path: '/user-not-activated',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const UpdateUserEmailRoute = UpdateUserEmailImport.update({
-  id: '/update-user-email',
-  path: '/update-user-email',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const TermsOfUseRoute = TermsOfUseImport.update({
   id: '/terms-of-use',
   path: '/terms-of-use',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const SignupRoute = SignupImport.update({
-  id: '/signup',
-  path: '/signup',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const ResetPasswordRoute = ResetPasswordImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const RecoverPasswordRoute = RecoverPasswordImport.update({
-  id: '/recover-password',
-  path: '/recover-password',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -70,21 +32,9 @@ const PrivacyPolicyRoute = PrivacyPolicyImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const LoginRoute = LoginImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const CaptchaRoute = CaptchaImport.update({
   id: '/captcha',
   path: '/captcha',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const ActivateAccountRoute = ActivateAccountImport.update({
-  id: '/activate-account',
-  path: '/activate-account',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -99,22 +49,23 @@ const LayoutRoute = LayoutImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const LayoutIndexRoute = LayoutIndexImport.update({
+const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => LayoutRoute,
-} as any)
-
-const LayoutSettingsRoute = LayoutSettingsImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => LayoutRoute,
+  getParentRoute: () => rootRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
     '/_layout': {
       id: '/_layout'
       path: ''
@@ -129,25 +80,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutImport
       parentRoute: typeof rootRoute
     }
-    '/activate-account': {
-      id: '/activate-account'
-      path: '/activate-account'
-      fullPath: '/activate-account'
-      preLoaderRoute: typeof ActivateAccountImport
-      parentRoute: typeof rootRoute
-    }
     '/captcha': {
       id: '/captcha'
       path: '/captcha'
       fullPath: '/captcha'
       preLoaderRoute: typeof CaptchaImport
-      parentRoute: typeof rootRoute
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
     '/privacy-policy': {
@@ -157,27 +94,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyPolicyImport
       parentRoute: typeof rootRoute
     }
-    '/recover-password': {
-      id: '/recover-password'
-      path: '/recover-password'
-      fullPath: '/recover-password'
-      preLoaderRoute: typeof RecoverPasswordImport
-      parentRoute: typeof rootRoute
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordImport
-      parentRoute: typeof rootRoute
-    }
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupImport
-      parentRoute: typeof rootRoute
-    }
     '/terms-of-use': {
       id: '/terms-of-use'
       path: '/terms-of-use'
@@ -185,182 +101,77 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsOfUseImport
       parentRoute: typeof rootRoute
     }
-    '/update-user-email': {
-      id: '/update-user-email'
-      path: '/update-user-email'
-      fullPath: '/update-user-email'
-      preLoaderRoute: typeof UpdateUserEmailImport
-      parentRoute: typeof rootRoute
-    }
-    '/user-not-activated': {
-      id: '/user-not-activated'
-      path: '/user-not-activated'
-      fullPath: '/user-not-activated'
-      preLoaderRoute: typeof UserNotActivatedImport
-      parentRoute: typeof rootRoute
-    }
-    '/_layout/settings': {
-      id: '/_layout/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof LayoutSettingsImport
-      parentRoute: typeof LayoutImport
-    }
-    '/_layout/': {
-      id: '/_layout/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof LayoutIndexImport
-      parentRoute: typeof LayoutImport
-    }
   }
 }
 
 // Create and export the route tree
 
-interface LayoutRouteChildren {
-  LayoutSettingsRoute: typeof LayoutSettingsRoute
-  LayoutIndexRoute: typeof LayoutIndexRoute
-}
-
-const LayoutRouteChildren: LayoutRouteChildren = {
-  LayoutSettingsRoute: LayoutSettingsRoute,
-  LayoutIndexRoute: LayoutIndexRoute,
-}
-
-const LayoutRouteWithChildren =
-  LayoutRoute._addFileChildren(LayoutRouteChildren)
-
 export interface FileRoutesByFullPath {
-  '': typeof LayoutRouteWithChildren
+  '/': typeof IndexRoute
+  '': typeof LayoutRoute
   '/about': typeof AboutRoute
-  '/activate-account': typeof ActivateAccountRoute
   '/captcha': typeof CaptchaRoute
-  '/login': typeof LoginRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
-  '/recover-password': typeof RecoverPasswordRoute
-  '/reset-password': typeof ResetPasswordRoute
-  '/signup': typeof SignupRoute
   '/terms-of-use': typeof TermsOfUseRoute
-  '/update-user-email': typeof UpdateUserEmailRoute
-  '/user-not-activated': typeof UserNotActivatedRoute
-  '/settings': typeof LayoutSettingsRoute
-  '/': typeof LayoutIndexRoute
 }
 
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '': typeof LayoutRoute
   '/about': typeof AboutRoute
-  '/activate-account': typeof ActivateAccountRoute
   '/captcha': typeof CaptchaRoute
-  '/login': typeof LoginRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
-  '/recover-password': typeof RecoverPasswordRoute
-  '/reset-password': typeof ResetPasswordRoute
-  '/signup': typeof SignupRoute
   '/terms-of-use': typeof TermsOfUseRoute
-  '/update-user-email': typeof UpdateUserEmailRoute
-  '/user-not-activated': typeof UserNotActivatedRoute
-  '/settings': typeof LayoutSettingsRoute
-  '/': typeof LayoutIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/_layout': typeof LayoutRouteWithChildren
+  '/': typeof IndexRoute
+  '/_layout': typeof LayoutRoute
   '/about': typeof AboutRoute
-  '/activate-account': typeof ActivateAccountRoute
   '/captcha': typeof CaptchaRoute
-  '/login': typeof LoginRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
-  '/recover-password': typeof RecoverPasswordRoute
-  '/reset-password': typeof ResetPasswordRoute
-  '/signup': typeof SignupRoute
   '/terms-of-use': typeof TermsOfUseRoute
-  '/update-user-email': typeof UpdateUserEmailRoute
-  '/user-not-activated': typeof UserNotActivatedRoute
-  '/_layout/settings': typeof LayoutSettingsRoute
-  '/_layout/': typeof LayoutIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | ''
     | '/about'
-    | '/activate-account'
     | '/captcha'
-    | '/login'
     | '/privacy-policy'
-    | '/recover-password'
-    | '/reset-password'
-    | '/signup'
     | '/terms-of-use'
-    | '/update-user-email'
-    | '/user-not-activated'
-    | '/settings'
-    | '/'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/about'
-    | '/activate-account'
-    | '/captcha'
-    | '/login'
-    | '/privacy-policy'
-    | '/recover-password'
-    | '/reset-password'
-    | '/signup'
-    | '/terms-of-use'
-    | '/update-user-email'
-    | '/user-not-activated'
-    | '/settings'
-    | '/'
+  to: '/' | '' | '/about' | '/captcha' | '/privacy-policy' | '/terms-of-use'
   id:
     | '__root__'
+    | '/'
     | '/_layout'
     | '/about'
-    | '/activate-account'
     | '/captcha'
-    | '/login'
     | '/privacy-policy'
-    | '/recover-password'
-    | '/reset-password'
-    | '/signup'
     | '/terms-of-use'
-    | '/update-user-email'
-    | '/user-not-activated'
-    | '/_layout/settings'
-    | '/_layout/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  LayoutRoute: typeof LayoutRouteWithChildren
+  IndexRoute: typeof IndexRoute
+  LayoutRoute: typeof LayoutRoute
   AboutRoute: typeof AboutRoute
-  ActivateAccountRoute: typeof ActivateAccountRoute
   CaptchaRoute: typeof CaptchaRoute
-  LoginRoute: typeof LoginRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
-  RecoverPasswordRoute: typeof RecoverPasswordRoute
-  ResetPasswordRoute: typeof ResetPasswordRoute
-  SignupRoute: typeof SignupRoute
   TermsOfUseRoute: typeof TermsOfUseRoute
-  UpdateUserEmailRoute: typeof UpdateUserEmailRoute
-  UserNotActivatedRoute: typeof UserNotActivatedRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  LayoutRoute: LayoutRouteWithChildren,
+  IndexRoute: IndexRoute,
+  LayoutRoute: LayoutRoute,
   AboutRoute: AboutRoute,
-  ActivateAccountRoute: ActivateAccountRoute,
   CaptchaRoute: CaptchaRoute,
-  LoginRoute: LoginRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
-  RecoverPasswordRoute: RecoverPasswordRoute,
-  ResetPasswordRoute: ResetPasswordRoute,
-  SignupRoute: SignupRoute,
   TermsOfUseRoute: TermsOfUseRoute,
-  UpdateUserEmailRoute: UpdateUserEmailRoute,
-  UserNotActivatedRoute: UserNotActivatedRoute,
 }
 
 export const routeTree = rootRoute
@@ -373,67 +184,31 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
+        "/",
         "/_layout",
         "/about",
-        "/activate-account",
         "/captcha",
-        "/login",
         "/privacy-policy",
-        "/recover-password",
-        "/reset-password",
-        "/signup",
-        "/terms-of-use",
-        "/update-user-email",
-        "/user-not-activated"
+        "/terms-of-use"
       ]
     },
+    "/": {
+      "filePath": "index.tsx"
+    },
     "/_layout": {
-      "filePath": "_layout.tsx",
-      "children": [
-        "/_layout/settings",
-        "/_layout/"
-      ]
+      "filePath": "_layout.tsx"
     },
     "/about": {
       "filePath": "about.tsx"
     },
-    "/activate-account": {
-      "filePath": "activate-account.tsx"
-    },
     "/captcha": {
       "filePath": "captcha.tsx"
-    },
-    "/login": {
-      "filePath": "login.tsx"
     },
     "/privacy-policy": {
       "filePath": "privacy-policy.tsx"
     },
-    "/recover-password": {
-      "filePath": "recover-password.tsx"
-    },
-    "/reset-password": {
-      "filePath": "reset-password.tsx"
-    },
-    "/signup": {
-      "filePath": "signup.tsx"
-    },
     "/terms-of-use": {
       "filePath": "terms-of-use.tsx"
-    },
-    "/update-user-email": {
-      "filePath": "update-user-email.tsx"
-    },
-    "/user-not-activated": {
-      "filePath": "user-not-activated.tsx"
-    },
-    "/_layout/settings": {
-      "filePath": "_layout/settings.tsx",
-      "parent": "/_layout"
-    },
-    "/_layout/": {
-      "filePath": "_layout/index.tsx",
-      "parent": "/_layout"
     }
   }
 }

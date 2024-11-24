@@ -8,7 +8,6 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { AxiosError } from "axios";
-import { isLoggedIn } from "./useAuth";
 import useGetIp from "./getIp";
 
 export const hasCompletedCaptcha = () => {
@@ -36,7 +35,7 @@ const useTurnstileValidation = (requestBody?: TurnstileQuery) => {
     isError: isErrorTurnstile,
     isSuccess: isSuccessTurnstile,
   } = useQuery<TurnstileResponse | null, Error>({
-    queryKey: ["turnstile", hasCompletedCaptcha(), isLoggedIn()],
+    queryKey: ["turnstile", hasCompletedCaptcha()],
     queryFn: async (): Promise<TurnstileResponse | null> => {
       const turnstileResponse = await TurnstilesService.getTurnstileValidation({
         requestBody: {
@@ -48,10 +47,9 @@ const useTurnstileValidation = (requestBody?: TurnstileQuery) => {
       return turnstileResponse;
     },
     retry: false,
-    enabled: isLoggedIn(),
   });
 
-  if (!isLoggedIn() && isErrorTurnstile) {
+  if (isErrorTurnstile) {
     localStorage.removeItem("turnstile_captcha_token");
   }
 
@@ -59,9 +57,6 @@ const useTurnstileValidation = (requestBody?: TurnstileQuery) => {
     setToken(requestBody?.token ?? "");
     if (requestBody?.token) {
       localStorage.setItem("turnstile_captcha_token", requestBody.token);
-    }
-    if (!isLoggedIn()) {
-      navigate({ to: from ? "/" + `${from}` : "/login" });
     }
   }
 
