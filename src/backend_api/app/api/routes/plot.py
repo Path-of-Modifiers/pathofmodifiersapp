@@ -31,7 +31,7 @@ async def get_plot_data(
 
     The 'PlotQuery' schema allows for modifier restriction and item specifications.
     """
-    request_limit = 4
+    request_limit = rate_limit_settings.TIER_0_PLOT_RATE_LIMIT
     rate_spec = RateSpec(
         requests=request_limit,
         cooldown_seconds=rate_limit_settings.PLOT_RATE_LIMIT_COOLDOWN_SECONDS,

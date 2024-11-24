@@ -15,7 +15,10 @@ from app.api.deps import (
 from app.api.params import FilterParams
 from app.core.models.models import Modifier
 from app.core.rate_limit.rate_limit_config import rate_limit_settings
-from app.core.rate_limit.rate_limiters import apply_ip_rate_limits
+from app.core.rate_limit.rate_limiters import (
+    apply_ip_rate_limits,
+    apply_user_rate_limits,
+)
 from app.crud import CRUD_modifier
 
 router = APIRouter()
@@ -29,7 +32,7 @@ modifier_prefix = "modifier"
     response_model=schemas.Modifier | list[schemas.Modifier],
     dependencies=[Depends(get_current_active_user)],
 )
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     rate_limit_settings.DEFAULT_USER_RATE_LIMIT_SECOND,
     rate_limit_settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
     rate_limit_settings.DEFAULT_USER_RATE_LIMIT_HOUR,
@@ -61,7 +64,7 @@ async def get_modifier(
     response_model=schemas.Modifier | list[schemas.Modifier],
     dependencies=[Depends(get_current_active_user)],
 )
-@apply_ip_rate_limits(
+@apply_user_rate_limits(
     rate_limit_settings.DEFAULT_USER_RATE_LIMIT_SECOND,
     rate_limit_settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
     rate_limit_settings.DEFAULT_USER_RATE_LIMIT_HOUR,
