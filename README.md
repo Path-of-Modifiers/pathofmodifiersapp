@@ -2,7 +2,23 @@
 
 Website application for analyzing prices on items with customized parameters plotted on graphs in Path of Exile.
 
-## :pencil: Technology Stack and Features
+## :clapper: How it works trailer :clapper:
+
+https://github.com/user-attachments/assets/0efa4c0e-808c-4223-9a4f-781f886527e3
+
+## :star: Features :star:
+- Choose between 31 different uniques
+- Search for modifiers you are interested in  
+- Use ~ for advanced searches, as you would on trade site
+- Select specific rolls, both numerical and text based.
+- Combine multiple modifiers (currently only support "and" based queries)
+- Choose between prices in Chaos or the most common currency (E.g Divines, Mirros, ect)
+- Confidence indicators (still being finetuned)
+- Share queries you have made, by sharing the (very big) url
+- An API for easier exporting of data (requires login)
+- No ads (for now at least)
+
+## :pencil: Technology Stack
 
 - [FastAPI](https://fastapi.tiangolo.com/) for the Python backend API.
 - [SQLAlchemy](https://www.sqlalchemy.org/) for the Python SQL database interactions (ORM).
@@ -33,23 +49,14 @@ Website application for analyzing prices on items with customized parameters plo
 
 ## :checkered_flag: Future goals:
 
-- Introduce other uniques where rolls matter
-- Introduce synthesis implicit tracking
-- Introduce fractured explicit tracking
+- More uniques where rolls matter
+- Tracking for popular fractures for Non-Unique items
+- Tracking for popular synthesis implicit
+- Tracking for uniques with corrupted implicits
+- Tracking for unidentified uniques
+- Smarter queries (E.g count, or, not)
+- Support for comparing multiple leagues (kinda hard without a new league)
 
-## Dashboard - Front page
-
-![Screenshot from 2024-08-13 13-34-17](https://github.com/user-attachments/assets/d76d8eb4-a2c0-412d-88d3-ddeaeb1ee58b)
-
-
-## Dashboard - Query Parameters for Glorious Vanity
-
-![Screenshot from 2024-08-13 13-35-25](https://github.com/user-attachments/assets/31c6a824-b490-4988-8f2c-19a773a74e44)
-
-
-## Dashboard - Plot graph
-
-![Screenshot from 2024-08-13 13-36-01](https://github.com/user-attachments/assets/381764e4-8b3e-46dd-9a63-0903eb9b6392)
 
 
 ## How it works
