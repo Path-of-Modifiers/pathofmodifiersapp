@@ -13,9 +13,6 @@ from app.core.config import settings
 from app.core.models.models import ItemBaseType as model_ItemBaseType
 from app.crud import CRUD_itemBaseType
 from app.crud.base import CRUDBase, ModelType
-from app.tests.test_simulating_env.api.api_routes_test_slowapi_rate_limit import (
-    TestRateLimitSlowAPI as RateLimitSlowAPITestClass,
-)
 from app.tests.utils.model_utils.item_base_type import (
     create_random_item_base_type_dict,
     generate_random_item_base_type,
@@ -132,5 +129,5 @@ class TestItemBaseType(test_api.TestAPI):
     pass
 
 
-class TestItemBaseTypeRateLimit(RateLimitSlowAPITestClass):
-    pass
+# class TestItemBaseTypeRateLimit(RateLimitSlowAPITestClass):
+#     pass

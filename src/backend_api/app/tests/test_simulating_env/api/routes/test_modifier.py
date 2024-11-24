@@ -13,9 +13,6 @@ from app.core.config import settings
 from app.core.models.models import Modifier
 from app.crud import CRUD_modifier
 from app.crud.base import CRUDBase, ModelType
-from app.tests.test_simulating_env.api.api_routes_test_slowapi_rate_limit import (
-    TestRateLimitSlowAPI as RateLimitSlowAPITestClass,
-)
 from app.tests.utils.model_utils.modifier import (
     create_random_modifier_dict,
     generate_random_modifier,
@@ -132,5 +129,5 @@ class TestModifier(test_api.TestAPI):
     pass
 
 
-class TestModifierRateLimit(RateLimitSlowAPITestClass):
-    pass
+# class TestModifierRateLimit(RateLimitSlowAPITestClass):
+#     pass

@@ -28,7 +28,9 @@ class RollProcessor:
             self.modifier_df = modifier_df
 
     def _pre_processing(self, df: pd.DataFrame) -> pd.DataFrame:
-        df.loc[:, "modifier"] = df["modifier"].replace(
+        df.loc[:, "modifier"] = df[
+            "modifier"
+        ].replace(
             r"\\n|\n", " ", regex=True
         )  # Replaces newline with a space, so that it does not mess up the regex and matches modifiers in the `modifier` table
 
@@ -95,9 +97,9 @@ class RollProcessor:
             matched_modifiers_mask = matched_modifiers.str.contains("matched", na=False)
 
             dynamic_w_rolls_df.loc[matched_modifiers_mask, "effect"] = effect
-            dynamic_w_rolls_df.loc[matched_modifiers_mask, "roll"] = (
-                matched_modifiers.loc[matched_modifiers_mask]
-            )
+            dynamic_w_rolls_df.loc[
+                matched_modifiers_mask, "roll"
+            ] = matched_modifiers.loc[matched_modifiers_mask]
 
             dynamic_df.loc[matched_modifiers_mask, "modifier"] = pd.NA
 

@@ -3,12 +3,11 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import CaptchaPage from "../components/Common/CaptchaPage";
 import { hasCompletedCaptcha } from "../hooks/validation/turnstileValidation";
 import useGetIp from "../hooks/validation/getIp";
-import { isLoggedIn } from "../hooks/validation/useAuth";
 
 export const Route = createFileRoute("/captcha")({
   component: Captcha,
   beforeLoad: async () => {
-    if (hasCompletedCaptcha() && isLoggedIn()) {
+    if (hasCompletedCaptcha()) {
       throw redirect({
         to: "/",
       });

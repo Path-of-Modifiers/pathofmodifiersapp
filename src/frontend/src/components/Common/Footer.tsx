@@ -37,7 +37,6 @@ const Footer = (props: StackProps) => {
     <Stack
       {...props}
       width="100%"
-      minHeight="10rem"
       mt="auto"
       direction="column"
       color="ui.white"

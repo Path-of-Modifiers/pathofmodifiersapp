@@ -1,12 +1,12 @@
-import { MainPage } from "../../components/Common/MainPage";
-import { useGraphInputStore } from "../../store/GraphInputStore";
-import { useGetGroupedModifiers } from "../../hooks/getData/prefetchGroupedModifiers";
-import { useGetItemBaseTypes } from "../../hooks/getData/getBaseTypeCategories";
+import { MainPage } from "../components/Common/MainPage";
+import { useGraphInputStore } from "../store/GraphInputStore";
+import { useGetGroupedModifiers } from "../hooks/getData/prefetchGroupedModifiers";
+import { useGetItemBaseTypes } from "../hooks/getData/getBaseTypeCategories";
 
 import { useEffect, useRef } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_layout/")({
+export const Route = createFileRoute("/")({
   beforeLoad: async () => {
     const searchParams = new URLSearchParams(location.hash.slice(1));
     const state = useGraphInputStore.getState();

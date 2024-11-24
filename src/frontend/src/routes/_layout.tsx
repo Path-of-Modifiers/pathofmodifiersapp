@@ -5,7 +5,6 @@ import useTurnstileValidation, {
   hasCompletedCaptcha,
 } from "../hooks/validation/turnstileValidation";
 
-import useAuth, { isLoggedIn, isActive } from "../hooks/validation/useAuth";
 import { useGraphInputStore } from "../store/GraphInputStore";
 
 const security_ip = localStorage.getItem("security_ip");
@@ -20,16 +19,6 @@ export const Route = createFileRoute("/_layout")({
         to: "/captcha",
       });
     }
-    if (!isLoggedIn()) {
-      throw redirect({
-        to: "/login",
-      });
-    }
-    if (!isActive()) {
-      throw redirect({
-        to: "/user-not-activated",
-      });
-    }
   },
 });
 
@@ -39,11 +28,9 @@ function Layout() {
     ip: security_ip ?? "",
   });
 
-  const { isLoadingUser } = useAuth();
-
   return (
     <Flex maxW="large" h="auto" position="relative" bgColor="ui.main">
-      {isLoadingTurnstile || isLoadingUser ? (
+      {isLoadingTurnstile ? (
         <Flex justify="center" align="center" height="100vh" width="full">
           <Spinner size="xl" color={"ui.white"} />
         </Flex>

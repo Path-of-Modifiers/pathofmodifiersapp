@@ -3,9 +3,9 @@ from collections.abc import Callable
 import pytest
 
 import app.tests.test_simulating_env.crud.crud_test_base as test_crud
+from app.core.models.models import ItemBaseType as model_ItemBaseType
 from app.crud import CRUD_itemBaseType
 from app.crud.base import CRUDBase
-from app.core.models.models import ItemBaseType as model_ItemBaseType
 from app.tests.utils.model_utils.item_base_type import generate_random_item_base_type
 
 
