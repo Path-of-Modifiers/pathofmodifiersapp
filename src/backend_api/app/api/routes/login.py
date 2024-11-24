@@ -1,34 +1,20 @@
 # From FastAPI Fullstack Template https://github.com/fastapi/full-stack-fastapi-template/blob/master/backend/app/api/routes/login.py
-from typing import Annotated, Any
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, Request, Response
-from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
-from pydantic import EmailStr
 from sqlalchemy.orm import Session
 
-from app.api.api_message_util import (
-    get_password_rec_email_sent_success_msg,
-    get_user_psw_change_msg,
-)
 from app.api.deps import (
-    UserCachePasswordResetSession,
     UserCacheSession,
-    get_current_active_superuser,
     get_db,
 )
 from app.core.config import settings
-from app.core.models.models import User
 from app.core.rate_limit.rate_limit_config import rate_limit_settings
 from app.core.rate_limit.rate_limiters import (
     apply_ip_rate_limits,
 )
-from app.core.schemas import Message, NewPassword, Token
-from app.core.schemas.token import RecoverPassword
-from app.core.security import (
-    get_password_hash,
-    verify_password,
-)
+from app.core.schemas import Token
 from app.crud import CRUD_user
 from app.exceptions import (
     BadLoginCredentialsError,

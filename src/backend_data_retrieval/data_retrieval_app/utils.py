@@ -1,13 +1,13 @@
-from datetime import datetime, timezone
 import logging
 from collections.abc import Generator
+from datetime import datetime, timezone
 from typing import Any
 
 import pandas as pd
 import requests
 
-from data_retrieval_app.logs.logger import main_logger as logger
 from data_retrieval_app.external_data_retrieval.config import settings
+from data_retrieval_app.logs.logger import main_logger as logger
 
 
 def _chunks(lst: list[Any], n: int) -> Generator[Any, None, None]:

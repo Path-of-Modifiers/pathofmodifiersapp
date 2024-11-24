@@ -2,9 +2,7 @@ from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import (
-    UserCacheSession,
     get_async_db,
-    get_rate_limit_tier_by_request,
     get_user_ip_from_header,
 )
 from app.core.rate_limit.custom_rate_limiter import RateSpec

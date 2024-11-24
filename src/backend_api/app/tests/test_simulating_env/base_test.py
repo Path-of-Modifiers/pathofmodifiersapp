@@ -1,7 +1,7 @@
 import asyncio
 import math
-from collections.abc import Callable
-from typing import Any, Awaitable
+from collections.abc import Awaitable, Callable
+from typing import Any
 
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import Session

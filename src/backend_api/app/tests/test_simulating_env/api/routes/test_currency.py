@@ -13,9 +13,6 @@ from app.core.config import settings
 from app.core.models.models import Currency
 from app.crud import CRUD_currency
 from app.crud.base import CRUDBase, ModelType
-from app.tests.test_simulating_env.api.api_routes_test_slowapi_rate_limit import (
-    TestRateLimitSlowAPI as RateLimitSlowAPITestClass,
-)
 from app.tests.utils.model_utils.currency import (
     create_random_currency_dict,
     generate_random_currency,

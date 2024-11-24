@@ -9,6 +9,8 @@ from app.api.routes import (
     item_modifier,
     item_modifier_prefix,
     item_prefix,
+    login,
+    login_prefix,
     modifier,
     modifier_prefix,
     plot,
@@ -17,8 +19,6 @@ from app.api.routes import (
     test_prefix,
     turnstile,
     turnstile_prefix,
-    login,
-    login_prefix,
 )
 
 api_router = APIRouter()
