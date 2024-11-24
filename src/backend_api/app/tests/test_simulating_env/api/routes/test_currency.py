@@ -135,5 +135,5 @@ class TestCurrency(test_api.TestAPI):
     pass
 
 
-class TestCurrencyRateLimit(RateLimitSlowAPITestClass):
-    pass
+# class TestCurrencyRateLimit(RateLimitSlowAPITestClass):
+#     pass

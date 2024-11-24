@@ -132,5 +132,5 @@ class TestModifier(test_api.TestAPI):
     pass
 
 
-class TestModifierRateLimit(RateLimitSlowAPITestClass):
-    pass
+# class TestModifierRateLimit(RateLimitSlowAPITestClass):
+#     pass

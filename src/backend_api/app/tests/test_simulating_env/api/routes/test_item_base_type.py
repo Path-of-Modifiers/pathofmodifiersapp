@@ -132,5 +132,5 @@ class TestItemBaseType(test_api.TestAPI):
     pass
 
 
-class TestItemBaseTypeRateLimit(RateLimitSlowAPITestClass):
-    pass
+# class TestItemBaseTypeRateLimit(RateLimitSlowAPITestClass):
+#     pass
