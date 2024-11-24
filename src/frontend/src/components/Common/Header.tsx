@@ -5,7 +5,13 @@ import DateDaysHoursSinceLaunchStats from "./DateDaysHoursSinceLaunchStats";
 // Header component for the application
 const Header = () => {
   return (
-    <Flex as="header" align="center" justify="space-between" padding="1rem">
+    <Flex
+      as="header"
+      align="center"
+      justify="space-between"
+      padding="1rem"
+      direction={{ base: "column", md: "row" }}
+    >
       <CustomLink internalRoute={"/"}>
         <Text
           color="ui.white"
