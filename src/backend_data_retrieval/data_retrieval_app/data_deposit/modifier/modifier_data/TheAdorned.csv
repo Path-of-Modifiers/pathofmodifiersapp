@@ -1,3 +1,8 @@
+# Unique Name: The Adorned
+# Base Types: Crimson Jewel
+# Total modifiers on each item: 1
+# Can have duplicate modifiers: False
+# Modifier distrubution: "rest":1 
 # Source: https://poedb.tw/us/The_Adorned
 minRoll,maxRoll,position,effect,unique
 0,100,0,"#% increased Effect of Jewel Socket Passive Skills containing Corrupted Magic Jewels",True
