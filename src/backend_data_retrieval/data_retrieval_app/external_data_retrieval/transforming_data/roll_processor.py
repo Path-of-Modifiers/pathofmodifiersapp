@@ -14,12 +14,12 @@ class RollProcessor:
 
     @modifier_df.setter
     def modifier_df(self, modifier_df: pd.DataFrame):
-        self._modifier_df = modifier_df
+        self._modifier_df = modifier_df.drop(["createdAt"], axis=1)
 
-        static_modifier_mask = modifier_df["static"] == "True"
-        self.static_modifier_df = modifier_df.loc[static_modifier_mask]
+        static_modifier_mask = self._modifier_df["static"] == "True"
+        self.static_modifier_df = self._modifier_df.loc[static_modifier_mask]
 
-        self.dynamic_modifier_df = modifier_df.loc[~static_modifier_mask]
+        self.dynamic_modifier_df = self._modifier_df.loc[~static_modifier_mask]
 
     def add_modifier_df(self, modifier_df: pd.DataFrame):
         try:
@@ -46,6 +46,10 @@ class RollProcessor:
         static_modifier_df = self.static_modifier_df
 
         static_df = df.loc[static_modifers_mask]
+        if static_df.empty:
+            return pd.DataFrame(
+                columns=static_df.columns.append(static_modifier_df.columns)
+            )
         static_df.loc[:, "position"] = "0"
         static_df.loc[:, "effect"] = static_df.loc[:, "modifier"]
 
@@ -132,6 +136,8 @@ class RollProcessor:
         """
         dynamic_modifier_df = self.dynamic_modifier_df
         dynamic_df = df.loc[~static_modifers_mask]  # Everything not static is dynamic
+        if dynamic_df.empty:
+            raise Exception("ASDHSDHASDHHSADDSHAD")
 
         dynamic_df.loc[:, "effect"] = dynamic_df.loc[:, "modifier"]
 
@@ -175,19 +181,6 @@ class RollProcessor:
 
         return merged_dynamic_df
 
-    def _add_order_id(
-        self, ready_static_df: pd.DataFrame, ready_dynamic_df: pd.DataFrame
-    ) -> tuple[pd.DataFrame]:
-        # Lets you easily identify static modifiers in the item modifier table
-        ready_static_df["orderId"] = -1
-
-        # Uses cumcount, which is similiar to range(n_duplicate_mods)
-        ready_dynamic_df["orderId"] = ready_dynamic_df.groupby(
-            ["itemId", "modifierId"]
-        ).cumcount()
-
-        return ready_static_df, ready_dynamic_df
-
     def add_rolls(self, df: pd.DataFrame) -> pd.DataFrame:
         df = self._pre_processing(df.copy())
 
@@ -195,10 +188,6 @@ class RollProcessor:
 
         ready_static_df = self._process_static(df.copy(), static_modifers_mask)
         ready_dynamic_df = self._process_dynamic(df.copy(), static_modifers_mask)
-
-        ready_static_df, ready_dynamic_df = self._add_order_id(
-            ready_static_df.copy(), ready_dynamic_df.copy()
-        )
 
         processed_df = pd.concat(
             (ready_static_df, ready_dynamic_df), axis=0, ignore_index=True

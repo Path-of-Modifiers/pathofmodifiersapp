@@ -1,94 +1,103 @@
+import { FlexProps } from "@chakra-ui/layout";
 import {
   Flex,
   Text,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
+  NumberInputProps,
   NumberInput,
   NumberInputField,
-  NumberInputStepper,
 } from "@chakra-ui/react";
-import {
-  GetValueFunction,
-  HandleChangeStringFunction,
-} from "../../../schemas/function/InputFunction";
 
-interface MinMaxNumberInputProps {
-  descriptionText?: string;
-  minSpecKey: string;
-  maxSpecKey: string;
-  getMinValue: GetValueFunction;
-  getMaxValue: GetValueFunction;
-  handleMinChange: HandleChangeStringFunction;
-  handleMaxChange: HandleChangeStringFunction;
-  width?: string | number;
-  height?: string | number;
-  isDimmed?: boolean;
+export type HandleNumberChangeEventFunction = (
+  value: string,
+  numericalType: "min" | "max",
+) => void;
+
+export interface DefaultMinMaxValues {
+  min?: number | undefined;
+  max?: number | undefined;
 }
 
-// Min Max Item Lvl Input Component  -  This component is used to input the min and max ilvl of an item.
-export const MinMaxNumberInput = ({
-  descriptionText,
-  minSpecKey,
-  maxSpecKey,
-  getMinValue,
-  getMaxValue,
-  handleMinChange,
-  handleMaxChange,
-  width,
-  height,
-  isDimmed,
-}: MinMaxNumberInputProps) => {
+export interface MinMaxNumberProps {
+  flexProps?: FlexProps;
+  numberInputProps?: NumberInputProps;
+  descriptionText?: string;
+  handleNumberChange: HandleNumberChangeEventFunction;
+  isDimmed?: boolean;
+  defaultValues?: DefaultMinMaxValues;
+  tight?: boolean;
+  autoFocus?: boolean;
+}
+
+export const MinMaxNumberInput = (props: MinMaxNumberProps) => {
   return (
     <Flex
-      color={"ui.white"}
-      width={width || "inputSizes.smallPPBox"}
-      height={height || "lineHeights.tall"}
+      {...props.flexProps}
       flexDirection={"column"}
+      width={props.flexProps ? props.flexProps.width : "inputSizes.smallPPBox"}
+      height={props.flexProps ? props.flexProps.height : "lineHeights.tall"}
+      color="ui.white"
     >
-      {descriptionText && (
-        <Text mb={2} fontSize={15}>
-          {descriptionText}
+      {props.descriptionText && (
+        <Text mb={2} fontSize="fontSizes.defaultRead" color="ui.white">
+          {props.descriptionText}
         </Text>
       )}
-
-      <Flex opacity={isDimmed ? 0.5 : 1}>
+      <Flex opacity={props.isDimmed ? 0.5 : 1}>
         <NumberInput
-          value={getMinValue() ?? ""}
-          step={1}
-          key={minSpecKey}
-          borderWidth={getMinValue() !== "" ? 1 : 0}
-          borderRadius={getMinValue() !== "" ? 9 : 0}
-          borderColor={getMinValue() !== "" ? "ui.inputChanged" : "ui.grey"}
-          precision={0}
-          focusBorderColor={"ui.white"}
-          onChange={(e) => handleMinChange(e)}
-          _placeholder={{ color: "ui.white" }}
-          textAlign={"center"}
+          {...props.numberInputProps}
+          id="number-input-min"
+          onChange={(e) => props.handleNumberChange(e, "min")}
+          mr={1}
+          defaultValue={
+            props.defaultValues?.min !== undefined
+              ? props.defaultValues.min
+              : undefined
+          }
+          onBlurCapture={(e) => {
+            if (e.relatedTarget != null) {
+              if (e.relatedTarget.id === "number-input-max") {
+                e.stopPropagation();
+              }
+            }
+          }}
+          focusBorderColor="ui.white"
         >
-          <NumberInputField pl={2} placeholder={"Min"} bgColor="ui.input" />
-          <NumberInputStepper width="inputSizes.tinyBox">
-            <NumberIncrementStepper color="ui.grey" />
-            <NumberDecrementStepper color="ui.grey" />
-          </NumberInputStepper>
+          <NumberInputField
+            h={props.tight ? 5 : undefined}
+            w={props.tight ? 10 : undefined}
+            autoFocus={props.autoFocus}
+            p={1}
+            placeholder={"Min"}
+            bgColor="ui.input"
+            textAlign="center"
+          />
         </NumberInput>
-
         <NumberInput
-          value={getMaxValue() ?? ""}
-          step={1}
-          key={maxSpecKey}
-          borderWidth={getMaxValue() !== "" ? 1 : 0}
-          borderRadius={getMaxValue() !== "" ? 9 : 0}
-          focusBorderColor={"ui.white"}
-          borderColor={getMaxValue() !== "" ? "ui.inputChanged" : "ui.grey"}
-          onChange={(e) => handleMaxChange(e)}
-          _placeholder={{ color: "ui.white" }}
-          textAlign={"center"}
+          {...props.numberInputProps}
+          id="number-input-max"
+          onChange={(e) => props.handleNumberChange(e, "max")}
+          defaultValue={
+            props.defaultValues?.max !== undefined
+              ? props.defaultValues.max
+              : undefined
+          }
+          onBlurCapture={(e) => {
+            if (e.relatedTarget != null) {
+              if (e.relatedTarget.id === "number-input-min") {
+                e.stopPropagation();
+              }
+            }
+          }}
+          focusBorderColor="ui.white"
         >
-          <NumberInputField pl={2} placeholder={"Max"} bgColor="ui.input" />
-          <NumberInputStepper width="inputSizes.tinyBox">
-            <NumberIncrementStepper color="ui.grey" />
-            <NumberDecrementStepper color="ui.grey" />
-          </NumberInputStepper>
+          <NumberInputField
+            h={props.tight ? 5 : undefined}
+            w={props.tight ? 10 : undefined}
+            p={1}
+            placeholder={"Max"}
+            bgColor="ui.input"
+            textAlign="center"
+          />
         </NumberInput>
       </Flex>
     </Flex>

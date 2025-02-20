@@ -1,67 +1,54 @@
-import { QueryClient } from "@tanstack/react-query";
-import {
-  BaseType,
-  ItemBaseTypeCategory,
-  ItemBaseTypeSubCategory,
-  ItemBaseTypesService,
-} from "../../client";
+import { useQueryClient } from "@tanstack/react-query";
+import { ItemBaseTypesService, ItemBaseType } from "../../client";
 
-// Prefetches all item base type data
-export const prefetchAllBaseTypeData = async (queryClient: QueryClient) => {
-  let baseTypes: BaseType[] = [];
-  let itemBaseTypeCategory: ItemBaseTypeCategory[] = [];
-  let itemBaseTypeSubCategory: ItemBaseTypeSubCategory[] = [];
-  try {
-    // Prefetch all base type data
-    await queryClient.prefetchQuery({
-      queryKey: ["baseTypes"],
-      queryFn: async () => {
-        const data =
-          await ItemBaseTypesService.getAllItemBaseTypes();
-        if (Array.isArray(data)) {
-          baseTypes = data;
-        } else {
-          baseTypes = [data];
-        }
-        return 1;
-      },
-      staleTime: 10 * 1000, // only prefetch if older than 10 seconds
-    });
+// Fetches all item base type data and processes related unique item names
+export const useGetItemBaseTypes = async () => {
+    const queryClient = useQueryClient();
 
-    // Prefetch all unique categories
-    await queryClient.prefetchQuery({
-      queryKey: ["itemBaseTypeCategory"],
-      queryFn: async () => {
-        const data =
-          await ItemBaseTypesService.getUniqueCategories();
-        if (Array.isArray(data)) {
-          itemBaseTypeCategory = data;
-        } else {
-          itemBaseTypeCategory = [data];
-        }
-        return 1;
-      },
-      staleTime: 10 * 1000, // only prefetch if older than 10 seconds
-    });
+    try {
+        // Fetch and return item base types directly
+        const itemBaseTypes = await queryClient.fetchQuery({
+            queryKey: ["baseTypeValues"],
+            queryFn: async () => {
+                const data = await ItemBaseTypesService.getAllItemBaseTypes({});
+                return Array.isArray(data) ? data : [data];
+            },
+        });
 
-    // Prefetch all unique sub categories
-    await queryClient.prefetchQuery({
-      queryKey: ["itemBaseTypeSubCategory"],
-      queryFn: async () => {
-        const data =
-          await ItemBaseTypesService.getUniqueSubCategories();
-        if (Array.isArray(data)) {
-          itemBaseTypeSubCategory = data;
-        } else {
-          itemBaseTypeSubCategory = [data];
-        }
-        return 1;
-      },
-      staleTime: 10 * 1000, // only prefetch if older than 10 seconds
-    });
-  } catch (error) {
-    console.log(error);
-  }
+        const createItemNameArray = (itemBaseType: ItemBaseType[]): string[] => {
+            const reduceItemNameArray = (
+                prev: string[] | undefined,
+                cur: string[] | undefined
+            ): string[] => {
+                prev = prev || [];
+                if (cur) {
+                    const newItemNames = cur.filter((value) => !prev.includes(value));
+                    prev.push(...newItemNames);
+                }
+                return prev;
+            };
 
-  return { baseTypes, itemBaseTypeCategory, itemBaseTypeSubCategory };
+            const arrayOfRelatedUniques = itemBaseType.map((baseType) => {
+                const relatedUniques = baseType.relatedUniques;
+                return relatedUniques ? relatedUniques.split("|") : [];
+            });
+
+            return arrayOfRelatedUniques.reduce(reduceItemNameArray, []);
+        };
+
+        const itemNames = createItemNameArray(itemBaseTypes);
+
+        return {
+            itemBaseTypes,
+            itemNames,
+        };
+
+    } catch (error) {
+        console.error("Error fetching item base types:", error);
+        return {
+            itemBaseTypes: [],
+            itemNames: [],
+        };
+    }
 };
+

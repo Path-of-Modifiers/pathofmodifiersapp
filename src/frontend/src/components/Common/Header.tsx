@@ -1,12 +1,18 @@
-import { Flex, Link, Text } from "@chakra-ui/react";
-import useAuth from "../../hooks/validation/useAuth";
+import { Flex, Text } from "@chakra-ui/react";
+import CustomLink from "./CustomLink";
+import DateDaysHoursSinceLaunchStats from "./DateDaysHoursSinceLaunchStats";
 
 // Header component for the application
 const Header = () => {
-  const { user: currentUser } = useAuth();
   return (
-    <Flex as="header" align="center" justify="space-between" padding="1rem">
-      <Link href={"/"}>
+    <Flex
+      as="header"
+      align="center"
+      justify="space-between"
+      padding="1rem"
+      direction={{ base: "column", md: "row" }}
+    >
+      <CustomLink internalRoute={"/"}>
         <Text
           color="ui.white"
           fontSize="30px"
@@ -15,17 +21,13 @@ const Header = () => {
         >
           Path of Modifiers
         </Text>
-      </Link>
-      <Link href={"/settings"}>
-        <Text
-          color="ui.white"
-          fontSize="20px"
-          fontWeight="medium"
-          _hover={{ color: "ui.inputChanged", textDecoration: "underline" }}
-        >
-          {currentUser?.username}
-        </Text>
-      </Link>
+      </CustomLink>
+
+      <DateDaysHoursSinceLaunchStats
+        style={{ transform: "translateY(5px)" }}
+        textAlign="center"
+        color="white"
+      />
     </Flex>
   );
 };

@@ -1,3 +1,8 @@
+# Unique Name: Precursor's Emblem
+# Base Types: Ruby Ring|Sapphire Ring|Topaz Ring|Prismatic Ring|Two-Stone Ring
+# Total modifiers on each item: 6
+# Can have duplicate modifiers: False|True
+# Modifier distrubution: 9:3,"rest":3
 # Source: https://poedb.tw/Precursors_Emblem#PrecursorsEmblemUnique
 minRoll,maxRoll,textRolls,position,effect,static,unique
 20,20,,0,"+# to Strength",,True

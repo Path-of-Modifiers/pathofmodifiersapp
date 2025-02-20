@@ -12,13 +12,23 @@ def object_generator_func():
 
 
 @pytest.fixture(scope="module")
+def is_hypertable() -> bool:
+    return False
+
+
+@pytest.fixture(scope="module")
 def crud_instance() -> CRUDBase:
     return CRUD_modifier
 
 
 @pytest.fixture(scope="module")
-def on_duplicate_pkey_do_nothing() -> bool:
-    return False
+def on_duplicate_params() -> tuple[bool, str | None]:
+    """
+    In tuple:
+        First item: `on_duplicate_do_nothing`.
+        Second item: `on_duplicate_constraint` (unique constraint to check the duplicate on)
+    """
+    return (False, None)
 
 
 class TestModifierCRUD(test_crud.TestCRUD):

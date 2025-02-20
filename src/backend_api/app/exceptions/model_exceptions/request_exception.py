@@ -17,9 +17,9 @@ class InvalidTokenError(PathOfModifiersAPIError):
         status_code: int | None = status.HTTP_401_UNAUTHORIZED,
     ):
         if not token:
-            detail = f"Invalid token: '{token}'. Token is empty, false or None."
+            detail = "Invalid token. Token is empty, false or None."
         else:
-            detail = f"Invalid token: '{token}'. Something went wrong."
+            detail = "Invalid token. Something went wrong."
 
         # Call the parent constructor with a specific status code
         super().__init__(
@@ -42,9 +42,9 @@ class InvalidHeaderProvidedError(PathOfModifiersAPIError):
         status_code: int | None = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
     ):
         if not header:
-            detail = f"Invalid header: {header}. Header is empty, false or None."
+            detail = "Invalid header. Header is empty, false or None."
         else:
-            detail = f"Invalid header: {header}. Something went wrong."
+            detail = "Invalid header. Something went wrong."
         super().__init__(
             status_code=status_code,
             function_name=function_name,

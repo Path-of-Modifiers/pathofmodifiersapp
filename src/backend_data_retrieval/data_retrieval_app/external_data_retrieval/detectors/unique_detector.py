@@ -32,7 +32,7 @@ class UniqueJewelDetector(UniqueDetector):
             "The Adorned",
         ],
         "Viridian Jewel": ["Impossible Escape", "Grand Spectrum"],
-        "Prismatic Jewel": ["Watcher's Eye", "Sublime Vision", "The Light Of Meaning"],
+        "Prismatic Jewel": ["Watcher's Eye", "Sublime Vision", "The Light of Meaning"],
         "Timeless Jewel": [
             "Glorious Vanity",
             "Lethal Pride",
@@ -54,7 +54,7 @@ class UniqueJewelDetector(UniqueDetector):
         "Impossible Escape",
         "Watcher's Eye",
         "Sublime Vision",
-        "The Light Of Meaning",
+        "The Light of Meaning",
         "Glorious Vanity",
         "Lethal Pride",
         "Brutal Restraint",

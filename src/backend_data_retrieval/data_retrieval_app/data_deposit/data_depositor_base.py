@@ -15,8 +15,8 @@ from data_retrieval_app.utils import df_to_JSON
 
 class DataDepositorBase:
     def __init__(self, data_type: Literal["modifier", "item_base_type"]) -> None:
-        if "localhost" not in settings.BASEURL:
-            self.base_url = f"https://{settings.BASEURL}"
+        if "localhost" not in settings.DOMAIN:
+            self.base_url = f"https://{settings.DOMAIN}"
         else:
             self.base_url = "http://src-backend-1"
 
@@ -38,6 +38,7 @@ class DataDepositorBase:
         for filename in os.listdir(self.new_data_location):
             filepath = os.path.join(self.new_data_location, filename)
 
+            self.logged_file_comments = {}
             logger.info(f"Loading new data from '{filename}'.")
             df = pd.read_csv(filepath, dtype=str, comment="#", index_col=False)
             logger.info("Successfully loaded new data.")
@@ -46,6 +47,10 @@ class DataDepositorBase:
                 for line in infile:
                     if "#" == line[0]:
                         logger.info(line.rstrip())
+                        split_line = line[1:].split(":")
+                        self.logged_file_comments[split_line[0].strip()] = split_line[
+                            1
+                        ].strip()
                     else:
                         logger.info("End of attached comments.")
                         break
@@ -62,12 +67,16 @@ class DataDepositorBase:
         logger.info("Inserting data into database.")
         headers = {"accept": "application/json", "Content-Type": "application/json"}
         headers.update(self.pom_auth_headers)
-        response = requests.post(
-            self.data_url,
-            json=df_json,
-            headers=headers,
-        )
-        response.raise_for_status()
+        try:
+            response = requests.post(
+                self.data_url,
+                json=df_json,
+                headers=headers,
+            )
+            response.raise_for_status()
+        except Exception as e:
+            logger.error(f"The following error occurred while inserting data: {e}")
+            raise e
 
         logger.info("Successfully inserted data into database.")
 

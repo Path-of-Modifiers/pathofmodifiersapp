@@ -4,6 +4,7 @@
 /* eslint-disable */
 export type Modifier = {
     position: number;
+    relatedUniques?: (string | null);
     minRoll?: (number | null);
     maxRoll?: (number | null);
     textRolls?: (string | null);
@@ -14,7 +15,7 @@ export type Modifier = {
     explicit?: (boolean | null);
     delve?: (boolean | null);
     fractured?: (boolean | null);
-    synthesized?: (boolean | null);
+    synthesised?: (boolean | null);
     unique?: (boolean | null);
     corrupted?: (boolean | null);
     enchanted?: (boolean | null);

@@ -6,4 +6,5 @@ export interface CurrencyVisuals {
   buttonColor: string;
   buttonBorderColor: string;
   buttonBackground: string;
+  upperBoundry: number;
 }

@@ -5,7 +5,7 @@ from pathlib import Path
 import yaml
 
 
-def setup_logging():
+def setup_logging() -> None:
     # Determine the path to config.yml relative to the current directory
     config_path = Path(__file__).parent / "config" / "config.yml"
 
@@ -19,10 +19,15 @@ def setup_logging():
 
 main_logger = logging.getLogger("dataret")
 
+
 external_data_retrieval_logger = main_logger.getChild("ext")
+
+timing_logger = external_data_retrieval_logger.getChild("timing")
 
 transform_logger = external_data_retrieval_logger.getChild("transform")
 
 data_retrieval_logger = external_data_retrieval_logger.getChild("dataret")
 
 data_deposit_logger = main_logger.getChild("datadepo")
+
+test_logger = main_logger.getChild("test")

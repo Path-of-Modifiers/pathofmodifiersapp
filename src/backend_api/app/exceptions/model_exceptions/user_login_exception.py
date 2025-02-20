@@ -9,12 +9,11 @@ class UserWithNotEnoughPrivilegesError(PathOfModifiersAPIError):
     def __init__(
         self,
         *,
-        username_or_email: str,
         function_name: str | None = "Unknown function",
         class_name: str | None = None,
         status_code: int | None = status.HTTP_403_FORBIDDEN,
     ):
-        detail = f"Cannot perform action with user '{username_or_email}'. User doesn't have enough privileges to perform this action"
+        detail = "Cannot perform action with user. User doesn't have enough privileges to perform this action"
         super().__init__(
             status_code=status_code,
             function_name=function_name,
@@ -29,14 +28,32 @@ class UserIsNotActiveError(PathOfModifiersAPIError):
     def __init__(
         self,
         *,
-        username_or_email: str,
         function_name: str | None = "Unknown function",
         class_name: str | None = None,
         status_code: int | None = status.HTTP_403_FORBIDDEN,
     ):
         detail = (
-            f"Cannot perform action with user '{username_or_email}'. User is not active"
+            "Cannot perform action with user. "
+            "User is not active. Please check your email for activation link"
         )
+        super().__init__(
+            status_code=status_code,
+            function_name=function_name,
+            class_name=class_name,
+            detail=detail,
+        )
+
+
+class UserIsAlreadyActiveError(PathOfModifiersAPIError):
+    """Exception raised when user tries to perform actions and is already active."""
+
+    def __init__(
+        self,
+        function_name: str | None = "Unknown function",
+        class_name: str | None = None,
+        status_code: int | None = status.HTTP_403_FORBIDDEN,
+    ):
+        detail = "Cannot perform action with user. User is already active."
         super().__init__(
             status_code=status_code,
             function_name=function_name,
@@ -51,15 +68,11 @@ class SuperUserNotAllowedToDeleteSelfError(PathOfModifiersAPIError):
     def __init__(
         self,
         *,
-        username_or_email: str,
         function_name: str | None = "Unknown function",
         class_name: str | None = None,
         status_code: int | None = status.HTTP_403_FORBIDDEN,
     ):
-        detail = (
-            f"Cannot delete user '{username_or_email}'. "
-            f"Superuser is not allowed to delete themselves"
-        )
+        detail = "Cannot delete user. Superuser is not allowed to delete themselves"
 
         super().__init__(
             status_code=status_code,
@@ -75,14 +88,13 @@ class SuperUserNotAllowedToChangeActiveSelfError(PathOfModifiersAPIError):
     def __init__(
         self,
         *,
-        username_or_email: str,
         function_name: str | None = "Unknown function",
         class_name: str | None = None,
         status_code: int | None = status.HTTP_403_FORBIDDEN,
     ):
         detail = (
-            f"Cannot change user '{username_or_email}' active status. "
-            f"Superuser is not allowed to change their active status"
+            "Cannot change user active status. "
+            "Superuser is not allowed to change their active status"
         )
         super().__init__(
             status_code=status_code,
@@ -197,14 +209,13 @@ class UpdateExisitingMeValuesError(PathOfModifiersAPIError):
     def __init__(
         self,
         *,
-        value: str,
         function_name: str | None = "Unknown function",
         class_name: str | None = None,
         status_code: int | None = status.HTTP_400_BAD_REQUEST,
     ):
         detail = (
-            f"Cannot update user with value '{value}' to be "
-            f"the same as their own existing values."
+            "Cannot update user with value to be "
+            "the same as their own existing values."
         )
         super().__init__(
             status_code=status_code,

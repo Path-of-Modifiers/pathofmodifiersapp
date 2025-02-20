@@ -7,10 +7,9 @@ export const emailPattern = {
 };
 
 export const usernamePattern = {
-  value: /^[\p{L},.0-9\s-]+$/u,
+  value: /^[\p{L}0-9_]+$/u,
   message: "Invalid username",
 };
-
 
 interface PasswordRules {
   password?: string;
@@ -40,7 +39,7 @@ export const passwordRules = (isRequired = true) => {
 
 export const confirmPasswordRules = (
   getValues: () => PasswordRules,
-  isRequired = true
+  isRequired = true,
 ) => {
   const rules: PasswordRules = {
     validate: (value: string) => {
@@ -64,3 +63,7 @@ export const handleError = (err: ApiError, showToast: Toast) => {
   }
   showToast("Error", errorMessage, "error");
 };
+
+export function msToNextHour() {
+  return 3600000 - (new Date().getTime() % 3600000);
+}

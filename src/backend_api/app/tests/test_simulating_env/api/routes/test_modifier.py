@@ -13,10 +13,6 @@ from app.core.config import settings
 from app.core.models.models import Modifier
 from app.crud import CRUD_modifier
 from app.crud.base import CRUDBase, ModelType
-from app.tests.test_simulating_env.api.api_routes_test_slowapi_rate_limit import (
-    TestRateLimitSlowAPI as RateLimitSlowAPITestClass,
-)
-from app.tests.test_simulating_env.crud.cascade_tests import TestCRUD as UtilTestCRUD
 from app.tests.utils.model_utils.modifier import (
     create_random_modifier_dict,
     generate_random_modifier,
@@ -39,19 +35,23 @@ def crud_instance() -> CRUDBase:
 
 
 @pytest.fixture(scope="module")
-def on_duplicate_pkey_do_nothing() -> bool:
+def is_hypertable() -> bool:
     return False
+
+
+@pytest.fixture(scope="module")
+def on_duplicate_params() -> tuple[bool, str | None]:
+    """
+    In tuple:
+        First item: `on_duplicate_do_nothing`.
+        Second item: `on_duplicate_constraint` (unique constraint to check the duplicate on)
+    """
+    return (False, None)
 
 
 @pytest.fixture(scope="module")
 def model_table_name() -> str:
     return get_model_table_name(Modifier)
-
-
-@pytest.fixture(scope="module")
-def get_crud_test_model() -> UtilTestCRUD:
-    model = UtilTestCRUD()
-    return model
 
 
 @pytest.fixture(scope="module")
@@ -129,5 +129,5 @@ class TestModifier(test_api.TestAPI):
     pass
 
 
-class TestModifierRateLimit(RateLimitSlowAPITestClass):
-    pass
+# class TestModifierRateLimit(RateLimitSlowAPITestClass):
+#     pass

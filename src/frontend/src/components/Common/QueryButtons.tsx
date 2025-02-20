@@ -3,18 +3,28 @@ import { MdExpandMore, MdExpandLess } from "react-icons/md";
 import { useExpandedComponentStore } from "../../store/ExpandedComponentStore";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 import {
-  checkGraphQueryLeageInput,
+  checkGraphQueryLeagueInput,
   checkGraphQueryModifierInput,
 } from "../../hooks/graphing/checkGraphQueryInput";
 import { useErrorStore } from "../../store/ErrorStore";
+import { ErrorMessage } from "../../components/Input/StandardLayoutInput/ErrorMessage";
+import { getOptimizedPlotQuery } from "../../hooks/graphing/utils";
 
 const QueryButtons = (props: FlexProps) => {
   const { setExpandedGraphInputFilters } = useExpandedComponentStore();
-  const { setResultError } = useErrorStore();
-  const { setPlotQuery } = useGraphInputStore();
+  const {
+    modifiersError,
+    leagueError,
+    noRelatedUniqueError,
+    itemDoesNotHaveSelectedModifiersError,
+    baseSpecDoesNotMatchError,
+  } = useErrorStore();
+  const { stateHash, fetchStatus, setHashFromStore, setPlotQuery } =
+    useGraphInputStore();
+  const isFetching = fetchStatus === "fetching";
 
   const filterExpanded = useExpandedComponentStore(
-    (state) => state.expandedGraphInputFilters
+    (state) => state.expandedGraphInputFilters,
   );
 
   const handleShowingFilter = () => {
@@ -32,19 +42,23 @@ const QueryButtons = (props: FlexProps) => {
   };
 
   const handlePlotQuery = () => {
-    setResultError(false);
-    setPlotQuery();
-    const leagueValid = checkGraphQueryLeageInput();
+    if (isFetching) return;
+    if (stateHash) return;
+    const leagueValid = checkGraphQueryLeagueInput();
     const modifierValid = checkGraphQueryModifierInput();
-    if (leagueValid && modifierValid) {
-      useGraphInputStore.getState().setQueryClicked();
+    if (!leagueValid || !modifierValid) return;
+    const plotQuery = getOptimizedPlotQuery();
+    if (plotQuery === undefined) return;
+    setPlotQuery(plotQuery);
+    useGraphInputStore.getState().setQueryClicked();
+    setHashFromStore();
 
-      // This is a hack to make sure the clearClicked is set to false after the
-      // state is updated.
-      setTimeout(() => {
-        useGraphInputStore.getState().queryClicked = false;
-      }, 20);
-    }
+    // This is a hack to make sure the clearClicked is set to false after the
+    // state is updated.
+    setTimeout(() => {
+      useGraphInputStore.getState().queryClicked = false;
+      useGraphInputStore.getState().stateHash = undefined;
+    }, 20);
   };
   return (
     <Flex
@@ -60,19 +74,24 @@ const QueryButtons = (props: FlexProps) => {
         flex={["none", "1"]}
         mb={[4, 20]}
         alignContent={"center"}
-      ></Box>{" "}
+      />
       {/* Empty space for centering the middle item */}
       <Box textAlign="center" mb={[4, 0]}>
         <Button
           variant="solid"
           bg="ui.queryBaseInput"
           color="ui.white"
-          _hover={{ bg: "ui.queryMainInput" }}
+          _hover={{
+            bg: isFetching ? "ui.queryBaseInput" : "ui.queryMainInput",
+          }}
           borderWidth={1}
           borderColor="ui.grey"
           width={["inputSizes.defaultBox", "inputSizes.lgBox"]}
           maxW="98vw"
           onClick={handlePlotQuery}
+          disabled={isFetching}
+          opacity={isFetching ? 0.5 : 1}
+          cursor={isFetching ? "not-allowed" : "pointer"}
         >
           Query and Plot
         </Button>
@@ -104,6 +123,36 @@ const QueryButtons = (props: FlexProps) => {
           {filterExpanded ? "Hide Filters" : "Show Filters"}
         </Button>
       </Flex>
+      {modifiersError && (
+        <ErrorMessage
+          alertTitle="No Modifiers Selected"
+          alertDescription="Please select at least one modifier."
+        />
+      )}
+      {leagueError && (
+        <ErrorMessage
+          alertTitle="No League Selected"
+          alertDescription="Please select a league."
+        />
+      )}
+      {noRelatedUniqueError && !modifiersError && (
+        <ErrorMessage
+          alertTitle="No query performed"
+          alertDescription="The modifiers you have chosen cannot appear on the same Unique."
+        />
+      )}
+      {itemDoesNotHaveSelectedModifiersError && (
+        <ErrorMessage
+          alertTitle="No query performed"
+          alertDescription="The chosen unique cannot have the currently selected modifiers."
+        />
+      )}
+      {baseSpecDoesNotMatchError && (
+        <ErrorMessage
+          alertTitle="No query performed"
+          alertDescription="The chosen base type filter cannot have the currently selected modifiers."
+        />
+      )}
     </Flex>
   );
 };

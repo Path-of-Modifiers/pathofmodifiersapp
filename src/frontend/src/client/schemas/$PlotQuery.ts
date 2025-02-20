@@ -9,8 +9,12 @@ export const $PlotQuery = {
             isRequired: true,
         },
         itemSpecifications: {
-            type: 'ItemSpecs',
-            isRequired: true,
+            type: 'any-of',
+            contains: [{
+                type: 'ItemSpecs',
+            }, {
+                type: 'null',
+            }],
         },
         baseSpecifications: {
             type: 'any-of',
@@ -23,9 +27,28 @@ export const $PlotQuery = {
         wantedModifiers: {
             type: 'array',
             contains: {
-                type: 'WantedModifier',
+                type: 'array',
+                contains: {
+                    type: 'WantedModifier',
+                },
             },
             isRequired: true,
+        },
+        end: {
+            type: 'any-of',
+            contains: [{
+                type: 'number',
+            }, {
+                type: 'null',
+            }],
+        },
+        start: {
+            type: 'any-of',
+            contains: [{
+                type: 'number',
+            }, {
+                type: 'null',
+            }],
         },
     },
 } as const;

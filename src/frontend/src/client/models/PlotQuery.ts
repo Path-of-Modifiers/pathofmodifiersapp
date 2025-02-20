@@ -7,8 +7,10 @@ import type { ItemSpecs } from './ItemSpecs';
 import type { WantedModifier } from './WantedModifier';
 export type PlotQuery = {
     league: string;
-    itemSpecifications: ItemSpecs;
+    itemSpecifications?: (ItemSpecs | null);
     baseSpecifications?: (BaseSpecs | null);
-    wantedModifiers: Array<WantedModifier>;
+    wantedModifiers: Array<Array<WantedModifier>>;
+    end?: (number | null);
+    start?: (number | null);
 };
 

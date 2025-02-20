@@ -3,64 +3,50 @@ import { useEffect } from "react";
 import {
   SelectBoxInput,
   SelectBoxOptionValue,
+  HandleChangeEventFunction,
 } from "./StandardLayoutInput/SelectBoxInput";
-import { getEventTextContent } from "../../hooks/utils";
+import { DEFAULT_LEAGUE } from "../../config";
 
 // Set the default league in the environment variables file.
 // League Input Component  -  This component is used to select the league of the game.
 export const LeagueInput = () => {
   // FUTURE IMPLEMENTATION: Add default hardcore league
   //   const defaultHardcoreLeague = import.meta.env.CURRENT_HARDCORE_LEAGUE;
-  const { setLeague } = useGraphInputStore();
-
+  const { league, setLeague } = useGraphInputStore();
+  const defaultLeague = DEFAULT_LEAGUE;
   const clearClicked = useGraphInputStore((state) => state.clearClicked);
 
-  const defaultLeague = import.meta.env.VITE_APP_DEFAULT_LEAGUE || "";
-
-  const handleLeagueChange = (
-    event: React.FormEvent<HTMLElement> | React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const league = getEventTextContent(event);
-    setLeague(league || defaultLeague);
-  };
-
-  const getLeagueValue = () => {
-    const league = useGraphInputStore.getState().league;
-    if (league) {
-      return league;
-    } else {
-      return "";
+  const handleLeagueChange: HandleChangeEventFunction = (newValue) => {
+    if (newValue) {
+      setLeague(newValue.label || DEFAULT_LEAGUE);
     }
   };
 
   useEffect(() => {
-    useGraphInputStore.setState({ league: defaultLeague });
-
     if (clearClicked) {
       useGraphInputStore.setState({ league: defaultLeague });
     }
   }, [clearClicked, defaultLeague]);
 
   const selectLeagueOptions: Array<SelectBoxOptionValue> = [
-    { value: defaultLeague, text: defaultLeague },
+    { value: defaultLeague, label: defaultLeague, regex: defaultLeague },
     /* FUTURE IMPLEMENTATION: Add more leagues here */
     // ,
-    // { value: defaultHardcoreLeague, text: defaultHardcoreLeague },
+    // { value: defaultHardcoreLeague, label: defaultHardcoreLeague },
     // ,
-    // { value: "Standard", text: "Standard" },
+    // { value: "Standard", label: "Standard" },
     // ,
-    // { value: "Hardcore", text: "Hardcore" },
+    // { value: "Hardcore", label: "Hardcore" },
   ];
 
   return (
     <SelectBoxInput
-      descriptionText={"League"}
       optionsList={selectLeagueOptions}
-      itemKeyId={"LeagueInput"}
-      defaultValue={defaultLeague}
-      defaultText={defaultLeague}
-      getSelectTextValue={getLeagueValue()}
-      handleChange={(e) => handleLeagueChange(e)}
+      handleChange={handleLeagueChange}
+      descriptionText={"League"}
+      defaultText={league}
+      multipleValues={false}
+      id={`leagueInput-0`}
     />
   );
 };

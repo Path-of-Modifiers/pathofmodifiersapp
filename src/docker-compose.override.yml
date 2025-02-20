@@ -50,7 +50,7 @@ services:
   backend:
     restart: "no"
     ports:
-      - "8888:8888"
+      - "8000:8000"
     volumes:
       - ./backend_api/:/app
     build:
@@ -84,7 +84,77 @@ services:
         - VITE_API_URL=http://${DOMAIN?Variable not set}
         - NODE_ENV=development
 
+  vector:
+    restart: "no"
+    volumes:
+      - ./vector-override.yaml:/etc/vector/vector.yaml:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - default
+
+  loki:
+    restart: "no"
+    image: grafana/loki:main
+    env_file:
+      - .env
+    ports:
+      - "${LOKI_PORT}:${LOKI_PORT}"
+    volumes:
+      - ./loki.yaml:/etc/loki/local-config.yaml
+      - loki-data:/var/lib/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - default
+    labels:
+      - traefik.enable=true
+      - traefik.constraint-label=traefik-public
+      - traefik.http.routers.loki.rule=Host(`loki.localhost`)
+      - traefik.http.services.loki.loadbalancer.server.port=3100
+      - traefik.http.routers.loki.entrypoints=http
+
+  grafana:
+    restart: "no" # or use `on-failure` if you prefer automatic restarts on crashes
+    image: grafana/grafana:latest
+    env_file:
+      - .env
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USERNAME?Grafana username not set}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD?Grafan password not set}
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_AUTH_BASIC_ENABLED=false
+      - GF_FEATURE_TOGGLES_ENABLE=accessControlOnCall
+      - GF_INSTALL_PLUGINS=https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip;grafana-lokiexplore-app
+    ports:
+      - ${GRAFANA_PORT}:${GRAFANA_PORT}
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning # single volume for provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - default
+    entrypoint: >
+      sh -c "mkdir -p /etc/grafana/provisioning/datasources /etc/grafana/provisioning/dashboards /etc/grafana/provisioning/plugins /etc/grafana/provisioning/alerting &&
+      /run.sh"  # ensure directories exist
+    labels:
+      - traefik.enable=true
+      - traefik.constraint-label=traefik-public
+      - traefik.http.routers.grafana.rule=Host(`grafana.localhost`)
+      - traefik.http.services.grafana.loadbalancer.server.port=3000
+      - traefik.http.routers.grafana.entrypoints=http
+      - traefik.http.middlewares.grafana-websockets.headers.customrequestheaders.Upgrade=websocket
+      - traefik.http.middlewares.grafana-websockets.headers.customrequestheaders.Connection=Upgrade
+      - traefik.http.routers.grafana.middlewares=grafana-websockets
+
 networks:
   traefik-public:
     # For local dev, don't expect an external Traefik network
     external: false
+
+volumes:
+  grafana-data:
+    name: "grafana-data"
+  loki-data:
+    name: "loki-data"

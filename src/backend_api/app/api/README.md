@@ -2,12 +2,6 @@
 
 ## Table of contents
 - [API documentation for POM](#api-documentation-for-pom)
-  - [/account](#account)
-    - [\[GET\] "/account/{accountName}"  Get Account](#get-accountaccountname--get-account)
-    - [\[GET\] "/account/" Get All Accounts](#get-account-get-all-accounts)
-    - [\[POST\] "/account/" Create Account](#post-account-create-account)
-    - [\[PUT\] "/account/{accountName}" Update Account](#put-accountaccountname-update-account)
-    - [\[DELETE\] "/account/{accountName}" Delete Account](#delete-accountaccountname-delete-account)
   - [/currency](#currency)
     - [\[GET\] "/currency/{currencyId}" Get Currency](#get-currencycurrencyid-get-currency)
     - [\[GET\] "/currency/" Get All Currencies](#get-currency-get-all-currencies)
@@ -38,13 +32,6 @@
     - [\[POST\] "/modifier/" Create Modifier](#post-modifier-create-modifier)
     - [\[PUT\] "/modifier/{modifierId}" Update Modifier](#put-modifiermodifierid-update-modifier)
     - [\[DELETE\] "/modifier/{modifierId}" Delete Modifier](#delete-modifiermodifierid-delete-modifier)
-  - [/stash](#stash)
-    - [\[GET\] "/stash/{stashId}"  Get Stash](#get-stashstashid--get-stash)
-    - [\[GET\] "/stash/" Get All Stashes](#get-stash-get-all-stashes)
-    - [\[POST\] "/stash/" Create Stash](#post-stash-create-stash)
-    - [\[PUT\] "/stash/{stashId}" Update Stash](#put-stashstashid-update-stash)
-    - [\[DELETE\] "/stash/{stashId}" Delete Stash](#delete-stashstashid-delete-stash)
-
 
 # API documentation for POM
 
@@ -53,54 +40,6 @@ This section covers the API functions for version 1 in the POM app.
 Each function serves one of five basic operations: retrieving specific data ``Get X``, retrieving all data ``Get All X``, creating data ``Create X``, updating data ``Update X``, and deleting data ``Delete X``.
 
 The ``Get X`` function retrieves an object by mapping to its primary key. Some primary key attributes are essential and can't be null, while others in the query can be nullable. For ``Get X``, if any or all of the non-essential attributes are null, the query fetches all objects with non-null values for the primary key. It's worth noting that this feature is currently limited to ``Get X`` and isn't available for ``Update X`` and ``Delete X``. However, these capabilities are planned for future releases.
-
-
-## /account
-
-### [GET] "/account/{accountName}"  Get Account
-
-Get the account by mapping with key and value for "accountName".
-
-Always returns one account.
-
-![get_account](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/a2a7108a-8da6-4a28-a4a1-a2244edb6e45)
-
-### [GET] "/account/" Get All Accounts
-
-Get all accounts.
-
-Returns a list of all accounts.
-
-![get_all_accounts](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/21d1145c-6cb9-4d7b-838a-6398a888b0bf)
-
-### [POST] "/account/" Create Account
-
-Create one or a list of accounts.
-
-Returns the created account or list of accounts.
-
-![create_account](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/83de3d02-177d-432d-90c1-8756df2ced87)
-
-
-### [PUT] "/account/{accountName}" Update Account
-
-Update an account by key and value for "accountName".
-
-Returns the updated account.
-
-![update_account](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/e3a277d9-da25-4952-a0f3-5814f2dca61a)
-
-
-### [DELETE] "/account/{accountName}" Delete Account
-
-Delete an account by key and value "accountName".
-
-Returns a message indicating the account was deleted.
-
-Always deletes one account.
-
-![delete_account](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/5caaab74-ce9f-4384-b1d6-c6251c6a05bf)
-
 
 
 ## /currency
@@ -361,49 +300,3 @@ Always deletes one modifier.
 ![delete_modifier](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/e906d3ef-d7ae-4154-90a2-c1d047262422)
 
 
-
-## /stash
-
-### [GET] "/stash/{stashId}"  Get Stash
-
-Get stash by key and value for "stashId".
-
-Always returns one stash.
-
-![get_stash](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/d5e8657e-d05c-4e68-8aaa-5336a8334c75)
-
-### [GET] "/stash/" Get All Stashes
-
-Get all stashes.
-
-Returns a list of all stashes.
-
-![get_all_stashes](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/77e3f60e-0fd1-4a22-aaa1-85b3c7c4f40b)
-
-### [POST] "/stash/" Create Stash
-
-Create one or a list of new stashes.
-
-Returns the created stash or list of stashes.
-
-![create_stash](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/d5985a2a-9cb0-45e4-a0ad-ad6067031a9d)
-
-
-### [PUT] "/stash/{stashId}" Update Stash
-
-Update a stash by key and value for "stashId".
-
-Returns the updated stash.
-
-![update_stash](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/817d289c-0d64-47d3-accc-1abc8ba9b1d6)
-
-
-### [DELETE] "/stash/{stashId}" Delete Stash
-
-Delete a stash by key and value for "stashId".
-
-Returns a message that the stash was deleted successfully.
-
-Always deletes one stash.
-
-![delete_stash](https://github.com/Ivareh/pathofmodifiersapp/assets/69577035/ad38bd4d-6edf-47dc-9cc6-904e261b868c)

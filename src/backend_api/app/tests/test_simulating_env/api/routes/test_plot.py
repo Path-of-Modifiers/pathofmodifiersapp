@@ -11,13 +11,13 @@ from sqlalchemy.orm import Session
 
 from app.api.routes.plot import plot_prefix
 from app.core.config import settings
+from app.core.rate_limit.rate_limit_config import rate_limit_settings
 from app.tests.test_simulating_env.api.api_test_rate_limit_base import TestRateLimitBase
 from app.tests.utils.model_utils.plot import create_minimal_random_plot_query_dict
 from app.tests.utils.rate_limit import RateLimitPerTimeInterval
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
-@pytest.mark.usefixtures("clear_cache", autouse=True)
 class TestPlotAPI(TestRateLimitBase):
     @pytest.mark.anyio
     async def test_post_multiple_plots_with_different_users(
@@ -57,7 +57,6 @@ class TestPlotAPI(TestRateLimitBase):
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)
-@pytest.mark.usefixtures("clear_cache", autouse=True)
 @pytest.mark.skipif(
     settings.SKIP_RATE_LIMIT_TEST is True or settings.SKIP_RATE_LIMIT_TEST == "True",
     reason="Rate limit test is disabled",
@@ -68,7 +67,6 @@ class TestPlotRateLimitAPI(TestRateLimitBase):
         self,
         db: Session,
         async_client: AsyncClient,
-        superuser_token_headers: dict[str, str],
     ) -> None:
         """
         Perform rate limit test for POST plot endpoint.
@@ -76,22 +74,21 @@ class TestPlotRateLimitAPI(TestRateLimitBase):
         plot_query = await create_minimal_random_plot_query_dict(db)
 
         # Create API function for POST plot request
-        async def post_plot_query_from_api_super_user(
+        async def post_plot_query_from_api(
             query: dict[str, Any],
         ) -> Awaitable[Response]:
             return await async_client.post(
                 f"{settings.API_V1_STR}/{plot_prefix}/",
-                headers=superuser_token_headers,
                 json=query,
             )
 
         # Get rate limit per time interval for POST plot request
         rate_limits_per_interval_format = RateLimitPerTimeInterval(
-            rate_per_interval=f"{settings.TIER_SUPERUSER_PLOT_RATE_LIMIT}/second"
+            rate_per_interval=f"{rate_limit_settings.TIER_0_PLOT_RATE_LIMIT}/second"
         )
 
         await self.perform_time_interval_requests_with_api_function(
-            api_function=post_plot_query_from_api_super_user,
+            api_function=post_plot_query_from_api,
             all_rate_limits_per_interval=rate_limits_per_interval_format,
             query=plot_query,
         )

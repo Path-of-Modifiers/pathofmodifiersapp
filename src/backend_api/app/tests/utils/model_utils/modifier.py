@@ -18,6 +18,9 @@ def create_random_modifier_dict() -> dict:
         Dict: Modifier dictionary with random values.
     """
     position = random_int(small_int=True)
+    relatedUniques = "|".join(
+        [random_lower_string() for _ in range(random_int(max_value=3))]
+    )
     static = random_bool()
     if not static:
         if random_bool():  # Random chance to choose numeric rolls or text rolls
@@ -45,7 +48,7 @@ def create_random_modifier_dict() -> dict:
     explicit = random_bool()
     delve = random_bool()
     fractured = random_bool()
-    synthesized = random_bool()
+    synthesised = random_bool()
     unique = random_bool()
     corrupted = random_bool()
     enchanted = random_bool()
@@ -53,6 +56,7 @@ def create_random_modifier_dict() -> dict:
 
     modifier_dict = {
         "position": position,
+        "relatedUniques": relatedUniques,
         "minRoll": minRoll,
         "maxRoll": maxRoll,
         "textRolls": textRolls,
@@ -63,7 +67,7 @@ def create_random_modifier_dict() -> dict:
         "explicit": explicit,
         "delve": delve,
         "fractured": fractured,
-        "synthesized": synthesized,
+        "synthesised": synthesised,
         "unique": unique,
         "corrupted": corrupted,
         "enchanted": enchanted,

@@ -6,18 +6,19 @@ from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.external_data_retrieval.transforming_data.roll_processor import (
     RollProcessor,
 )
+from data_retrieval_app.external_data_retrieval.utils import sync_timing_tracker
 from data_retrieval_app.logs.logger import transform_logger as logger
 from data_retrieval_app.pom_api_authentication import get_superuser_token_headers
-from data_retrieval_app.utils import insert_data
+from data_retrieval_app.utils import find_hours_since_launch, insert_data
 
 pd.options.mode.chained_assignment = None  # default="warn"
 
 
 class PoEAPIDataTransformerBase:
-    def __init__(self):
+    def __init__(self) -> None:
         logger.debug("Initializing PoEAPIDataTransformer")
-        if "localhost" not in settings.BASEURL:
-            self.url = f"https://{settings.BASEURL}"
+        if "localhost" not in settings.DOMAIN:
+            self.url = f"https://{settings.DOMAIN}"
         else:
             self.url = "http://src-backend-1"
         self.url += "/api/api_v1"
@@ -29,135 +30,96 @@ class PoEAPIDataTransformerBase:
 
         self.roll_processor = RollProcessor()
 
-    def _create_account_table(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _create_item_table(
+        self, df: pd.DataFrame, hours_since_launch: int
+    ) -> pd.DataFrame:
         """
-        Creates the basis of the `account` table.
-        It is not immediately processed in order to save compute power later.
-        """
-        self.account_columns = ["accountName"]
-        account_df = df.loc[:, self.account_columns]
-
-        return account_df
-
-    def _clean_account_table(self, account_df: pd.DataFrame) -> pd.DataFrame:
-        account_df.drop_duplicates(inplace=True)
-
-        return account_df
-
-    def _transform_account_table(self, account_df: pd.DataFrame) -> pd.DataFrame:
-        account_df.drop_duplicates("accountName", inplace=True)
-
-        account_df["isBanned"] = None
-
-        return account_df
-
-    def _process_account_table(self, df: pd.DataFrame) -> None:
-        account_df = self._create_account_table(df)
-        account_df = self._transform_account_table(account_df)
-        insert_data(
-            account_df,
-            url=self.url,
-            table_name="account",
-            logger=logger,
-            on_duplicate_pkey_do_nothing=True,
-            headers=self.pom_auth_headers,
-        )
-
-    def _create_stash_table(self, df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Creates the basis of the `stash` table.
-        It is not immediately processed in order to save compute power later.
-        """
-        self.stash_columns = ["stashId", "accountName", "public", "league"]
-        stash_df = df.loc[:, self.stash_columns]
-
-        return stash_df
-
-    def _clean_stash_table(self, stash_df: pd.DataFrame) -> pd.DataFrame:
-        stash_df = stash_df.drop_duplicates(["stashId"])
-
-        return stash_df
-
-    def _process_stash_table(self, df: pd.DataFrame) -> None:
-        stash_df = self._create_stash_table(df)
-        stash_df = self._clean_stash_table(stash_df)
-        insert_data(
-            stash_df,
-            url=self.url,
-            table_name="stash",
-            logger=logger,
-            on_duplicate_pkey_do_nothing=True,
-            headers=self.pom_auth_headers,
-        )
-
-    def _create_item_table(self, df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Creates the basis of the `item` table, using parts of `stash` table.
-
-        The `item` table requires the `stashId` as a foreign key. This is
-        why the `stash` table was not immediately processed.
+        Creates the basis of the `item` table.
         """
         self.item_columns = [
             "itemId",
-            "gameItemId",
-            "stashId",
             "name",
-            "icon",
             "league",
-            "typeLine",
             "baseType",
+            "typeLine",
+            "ilvl",
             "rarity",
             "identified",
-            "ilvl",
             "note",
-            "forum_note",
             "corrupted",
             "delve",
             "fractured",
-            "synthesized",
+            "synthesised",
             "replica",
-            "elder",
-            "shaper",
             "influences.shaper",
             "influences.elder",
             "influences.crusader",
             "influences.hunter",
             "influences.redeemer",
             "influences.warlord",
+            "extended.prefixes",
+            "extended.suffixes",
             "searing",
             "tangled",
             "foilVariation",
+            "isRelic",
             "stash",
         ]
         item_df = df.loc[
             :, [column for column in self.item_columns if column in df.columns]
         ]  # Can't guarantee all columns are present
+
+        item_df["createdHoursSinceLaunch"] = hours_since_launch
         return item_df
 
+    def _find_not_too_highly_priced_item_mask(
+        self, currency_df: pd.DataFrame, item_currency_merged_df: pd.DataFrame
+    ) -> pd.Series:
+        """
+        Some items are too highly priced to be legitimate. A boundary of the price equivelant to
+        >= 10 mirrors are seen to be too high priced.
+
+        1. Find currency type and amount equiveland in chaos
+        """
+
+        mirror_row = currency_df.loc[currency_df["tradeName"] == "mirror"]
+        mirror_value = mirror_row["valueInChaos"].get(0)
+
+        currency_too_high_mask = (
+            item_currency_merged_df["valueInChaos"]
+            * item_currency_merged_df["currencyAmount"].astype("float")
+            > mirror_value * 10
+        )
+
+        return ~currency_too_high_mask
+
+    @sync_timing_tracker
     def _transform_item_table(
-        self, item_df: pd.DataFrame, currency_df: pd.DataFrame
+        self,
+        item_df: pd.DataFrame,
+        currency_df: pd.DataFrame,
+        item_base_types: dict[str, int],
     ) -> pd.DataFrame:
         """
         The `item` table requires a foreign key to the `currency` table.
-        Everything related to the price of the item is stored in the `node`
+        Everything related to the price of the item is stored in the `note`
         attribute.
 
         There are two types of listings in PoE, exact price and asking price which are
         represented by `price` and `b/o` respectively.
         """
 
-        def get_currency_amount(element):
-            if isinstance(element, list):
-                if len(element) == 3:
-                    return element[1] if element[0] in ["~b/o", "~price"] else pd.NA
+        def transform_base_types(element):
+            return item_base_types[element]
 
+        def get_currency_amount(element):
+            if len(element) == 3:
+                return element[1]
             return pd.NA
 
         def get_currency_type(element):
-            if isinstance(element, list):
-                if len(element) == 3:
-                    return element[2] if element[0] in ["~b/o", "~price"] else ""
-
+            if len(element) == 3:
+                return element[2]
             return ""
 
         def transform_influences(row: pd.DataFrame, influence_columns: list[str]):
@@ -172,12 +134,24 @@ class PoEAPIDataTransformerBase:
                         ] = True
                 return influence_dict
 
+        base_type_series = item_df["baseType"]
+        item_df["itemBaseTypeId"] = base_type_series.apply(transform_base_types)
+
         influence_columns = [
             column for column in item_df.columns if "influences" in column
         ]
         item_df["influences"] = item_df.apply(
             lambda row: transform_influences(row, influence_columns), axis=1
         )
+
+        rename_extended_map = {}
+        if "extended.prefixes" in item_df.columns:
+            rename_extended_map["extended.prefixes"] = "prefixes"
+        if "extended.suffixes" in item_df.columns:
+            rename_extended_map["extended.suffixes"] = "suffixes"
+
+        if rename_extended_map:
+            item_df = item_df.rename(columns=rename_extended_map)
 
         stash_series = item_df["stash"].str.split(" ")
         currency_series = item_df["note"].str.split(" ")
@@ -196,45 +170,94 @@ class PoEAPIDataTransformerBase:
         item_df.loc[invalid_amount_mask, "currencyType"] = ""
 
         item_df = item_df.merge(
-            currency_df, how="left", left_on="currencyType", right_on="tradeName"
+            currency_df,
+            how="left",
+            left_on="currencyType",
+            right_on="tradeName",
+            suffixes=(None, "_y"),
         )
 
+        price_found_mask = ~item_df["tradeName"].isna()
+
+        self.price_found_mask = price_found_mask
+
+        item_df = item_df.loc[self.price_found_mask]
+
+        not_too_high_priced_item_mask = self._find_not_too_highly_priced_item_mask(
+            currency_df, item_df
+        )
+        self.items_not_too_high_priced_mask = not_too_high_priced_item_mask
+
+        item_df = item_df.loc[self.items_not_too_high_priced_mask]
+
         return item_df
+
+    @property
+    def item_table_columns_to_not_drop(self) -> set[str]:
+        try:
+            dont_drop_columns = self._item_table_columns_to_not_drop
+        except AttributeError:
+            dont_drop_columns = {
+                "name",
+                "league",
+                "itemBaseTypeId",
+                "ilvl",
+                "rarity",
+                "identified",
+                "currencyAmount",
+                "currencyId",
+                "corrupted",
+                "delve",
+                "fractured",
+                "synthesised",
+                "replica",
+                "influences",
+                "searing",
+                "tangled",
+                "prefixes",
+                "suffixes",
+                "foilVariation",
+                "createdHoursSinceLaunch",
+            }
+            self._item_table_columns_to_not_drop = dont_drop_columns
+        return dont_drop_columns
+
+    @item_table_columns_to_not_drop.setter
+    def item_table_columns_to_not_drop(self, columns_to_not_drop: set[str]) -> set[str]:
+        self._item_table_columns_to_not_drop = columns_to_not_drop
+
+    def _update_item_table_columns_to_not_drop(self, *, dont_drop: set[str]) -> None:
+        columns_to_not_drop = self.item_table_columns_to_not_drop
+
+        self.item_table_columns_to_not_drop = columns_to_not_drop | dont_drop
 
     def _clean_item_table(self, item_df: pd.DataFrame) -> pd.DataFrame:
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
-        drop_list = [
-            "influences.shaper",
-            "influences.elder",
-            "influences.crusader",
-            "influences.hunter",
-            "influences.redeemer",
-            "influences.warlord",
-            "stash",
-            "currencyType",
-            "tradeName",
-            "valueInChaos",
-            "itemId",
-            "createdAt",
-            "iconUrl",
-        ]
+
+        dont_drop_columns = self.item_table_columns_to_not_drop
+
         item_df.drop(
-            drop_list,
+            item_df.columns.difference(dont_drop_columns),
             axis=1,
             inplace=True,
             errors="ignore",
         )
 
-        item_df.rename({"icon": "iconUrl"}, axis=1, inplace=True)
         return item_df
 
     def _get_latest_item_id_series(self, item_df: pd.DataFrame) -> pd.Series:
-        response = requests.get(
-            self.url + "/item/latest_item_id/", headers=self.pom_auth_headers
-        )
-        response.raise_for_status()
+        try:
+            response = requests.get(
+                self.url + "/item/latest_item_id/", headers=self.pom_auth_headers
+            )
+            response.raise_for_status()
+        except Exception as e:
+            logger.error(
+                f"The following error occurred while making request _get_latest_item_id_series: {e}"
+            )
+            raise e
         latest_item_id = int(response.text)
 
         item_id = pd.Series(
@@ -244,10 +267,14 @@ class PoEAPIDataTransformerBase:
         return item_id
 
     def _process_item_table(
-        self, df: pd.DataFrame, currency_df: pd.DataFrame
+        self,
+        df: pd.DataFrame,
+        currency_df: pd.DataFrame,
+        item_base_types: dict[str, int],
+        hours_since_launch: int,
     ) -> pd.Series:
-        item_df = self._create_item_table(df)
-        item_df = self._transform_item_table(item_df, currency_df)
+        item_df = self._create_item_table(df, hours_since_launch=hours_since_launch)
+        item_df = self._transform_item_table(item_df, currency_df, item_base_types)
         item_df = self._clean_item_table(item_df)
         insert_data(
             item_df,
@@ -261,7 +288,7 @@ class PoEAPIDataTransformerBase:
         return item_id
 
     def _create_item_modifier_table(
-        self, df: pd.DataFrame, *, item_id: pd.Series
+        self, df: pd.DataFrame, *, item_id: pd.Series, hours_since_launch: int
     ) -> pd.DataFrame:
         """
         The `item_modifier` table heavily relies on what type of item the modifiers
@@ -270,7 +297,8 @@ class PoEAPIDataTransformerBase:
         raise NotImplementedError("Only available in child classes")
 
     def _transform_item_modifier_table(
-        self, item_modifier_df: pd.DataFrame
+        self,
+        item_modifier_df: pd.DataFrame,
     ) -> pd.DataFrame:
         """
         The `item_modifier` table heavily relies on what type of item the modifiers
@@ -290,9 +318,14 @@ class PoEAPIDataTransformerBase:
         raise NotImplementedError("Only available in child classes")
 
     def _process_item_modifier_table(
-        self, df: pd.DataFrame, item_id: pd.Series
+        self,
+        df: pd.DataFrame,
+        item_id: pd.Series,
+        hours_since_launch: int,
     ) -> None:
-        item_modifier_df = self._create_item_modifier_table(df, item_id=item_id)
+        item_modifier_df = self._create_item_modifier_table(
+            df, item_id=item_id, hours_since_launch=hours_since_launch
+        )
         item_modifier_df = self._transform_item_modifier_table(item_modifier_df)
         item_modifier_df = self._clean_item_modifier_table(item_modifier_df)
 
@@ -309,17 +342,24 @@ class PoEAPIDataTransformerBase:
         df: pd.DataFrame,
         modifier_df: pd.DataFrame,
         currency_df: pd.DataFrame,
+        item_base_types: dict[str, int],
     ) -> None:
         self.roll_processor.add_modifier_df(modifier_df)
         try:
             logger.debug("Transforming data into tables.")
             logger.debug("Processing data tables.")
-            self._process_account_table(df.copy(deep=True))
-            self._process_stash_table(df.copy(deep=True))
+            hours_since_launch = find_hours_since_launch()
             item_id = self._process_item_table(
-                df.copy(deep=True), currency_df=currency_df
+                df.copy(deep=True),
+                currency_df=currency_df,
+                item_base_types=item_base_types,
+                hours_since_launch=hours_since_launch,
             )
-            self._process_item_modifier_table(df.copy(deep=True), item_id=item_id)
+            self._process_item_modifier_table(
+                df.copy(deep=True),
+                item_id=item_id,
+                hours_since_launch=hours_since_launch,
+            )
             logger.debug("Successfully transformed data into tables.")
 
         except HTTPError as e:
@@ -328,40 +368,78 @@ class PoEAPIDataTransformerBase:
 
 
 class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
+    @sync_timing_tracker
     def _create_item_modifier_table(
-        self, df: pd.DataFrame, *, item_id: pd.Series
+        self, df: pd.DataFrame, *, item_id: pd.Series, hours_since_launch: int
     ) -> pd.DataFrame:
         """
         A similiar process to creating the item table, only this time the
         relevant column contains a list and not a JSON-object
         """
-        self.item_modifier_columns = ["name", "explicitMods"]
+        item_modifier_columns = ["name", "explicitMods"]
+        item_modifier_df = df.loc[
+            self.price_found_mask,
+            item_modifier_columns,
+        ]
 
-        item_modifier_df = df.loc[:, self.item_modifier_columns].reset_index()
+        item_modifier_df = item_modifier_df.loc[
+            self.items_not_too_high_priced_mask
+        ].reset_index()
 
         item_modifier_df["itemId"] = item_id
         item_modifier_df = item_modifier_df.explode("explicitMods", ignore_index=True)
 
         item_modifier_df.rename({"explicitMods": "modifier"}, axis=1, inplace=True)
 
+        item_modifier_df["createdHoursSinceLaunch"] = hours_since_launch
+
         return item_modifier_df
 
+    @sync_timing_tracker
     def _transform_item_modifier_table(
         self, item_modifier_df: pd.DataFrame
     ) -> pd.DataFrame:
         item_modifier_df = self.roll_processor.add_rolls(df=item_modifier_df)
-
         return item_modifier_df
 
-    def _clean_item_modifier_table(self, item_modifer_df: pd.DataFrame):
+    @property
+    def item_modifier_table_columns_to_not_drop(self) -> set[str]:
+        try:
+            dont_drop_columns = self._item_modifier_table_columns_to_not_drop
+        except AttributeError:
+            dont_drop_columns = {
+                "itemId",
+                "modifierId",
+                "roll",
+                "createdHoursSinceLaunch",
+            }
+            self._item_modifier_table_columns_to_not_drop = dont_drop_columns
+        return dont_drop_columns
+
+    @item_modifier_table_columns_to_not_drop.setter
+    def item_modifier_table_columns_to_not_drop(
+        self, columns_to_not_drop: set[str]
+    ) -> set[str]:
+        self._item_modifier_table_columns_to_not_drop = columns_to_not_drop
+
+    def _update_item_modifier_table_columns_to_not_drop(
+        self, *, dont_drop: set[str]
+    ) -> None:
+        columns_to_not_drop = self.item_modifier_table_columns_to_not_drop
+        self.item_modifier_table_columns_to_not_drop = columns_to_not_drop | dont_drop
+
+    def _clean_item_modifier_table(
+        self, item_modifier_df: pd.DataFrame
+    ) -> pd.DataFrame:
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
         """
-        item_modifer_df.drop(
-            item_modifer_df.columns.difference(
-                ["itemId", "modifierId", "orderId", "position", "roll"]
-            ),
+        dont_drop_columns = self.item_modifier_table_columns_to_not_drop
+
+        item_modifier_df.drop(
+            item_modifier_df.columns.difference(dont_drop_columns),
             axis=1,
             inplace=True,
         )
-        return item_modifer_df
+
+        return item_modifier_df

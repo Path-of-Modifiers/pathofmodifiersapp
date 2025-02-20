@@ -24,7 +24,7 @@ from app.core.cache.cache import cache
 from app.core.cache.user_cache import UserCache, UserCacheTokenType
 from app.core.config import settings
 from app.core.models.init_db import init_db
-from app.limiter import limiter_ip, limiter_user
+from app.core.rate_limit.rate_limiters import limiter_ip, limiter_user
 from app.main import app as actual_app
 from app.tests.test_simulating_env.setup_test_database import (
     ASYNC_TEST_DATABASE_URL,
@@ -98,7 +98,7 @@ async def async_client(app: FastAPI) -> AsyncGenerator[AsyncClient, None]:
         yield c
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest_asyncio.fixture(scope="function", autouse=True)
 async def session_override(
     app: FastAPI, engine: Engine, async_engine: AsyncEngine
 ) -> None:
@@ -145,7 +145,6 @@ def anyio_backend():
 @pytest_asyncio.fixture
 async def get_cache() -> AsyncGenerator[Redis, None]:
     yield cache
-    # await cache.flushall()
     await cache.aclose()
 
 
@@ -179,14 +178,6 @@ async def user_cache_update_me() -> AsyncGenerator[UserCache, None]:
 def clear_db(engine: Engine) -> Generator:
     # Remove any data from database (even data not created by this session)
     clear_all_tables(engine)
-    yield
-
-
-@pytest_asyncio.fixture
-async def clear_cache(get_cache: Redis) -> AsyncGenerator:
-    # Remove any data from cache
-    # await get_cache.flushall()
-    await get_cache.aclose()
     yield
 
 

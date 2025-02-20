@@ -1,3 +1,8 @@
+# Unique Name: Shroud of the Lightless
+# Base Types: Carnal Armour
+# Total modifiers on each item: 6
+# Can have duplicate modifiers: True
+# Modifier distrubution: "rest":6 
 # Source: https://poedb.tw/Shroud_of_the_Lightless
 minRoll,maxRoll,textRolls,position,effect,static,unique
 1,3,,0,"Has # Abyssal Sockets",,True

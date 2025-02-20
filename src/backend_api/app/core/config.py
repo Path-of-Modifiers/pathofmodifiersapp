@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 
     TURNSTILE_SECRET_KEY: str
 
-    ACCESS_SESSION_EXPIRE_SECONDS: int = 60 * 60 * 24 * 1  # 1 day
+    ACCESS_SESSION_EXPIRE_SECONDS: int = 60 * 60 * 24 * 3  # 3 days
     DOMAIN: str
     ENVIRONMENT: Literal["local", "staging", "production"] = "production"
 
@@ -45,9 +45,9 @@ class Settings(BaseSettings):
             return f"http://{self.DOMAIN}"
         return f"https://{self.DOMAIN}"
 
-    BACKEND_CORS_ORIGINS: Annotated[
-        list[AnyUrl] | str, BeforeValidator(parse_cors)
-    ] = []
+    BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = (
+        []
+    )
 
     PROJECT_NAME: str = "Path of Modifiers"
     SENTRY_DSN: HttpUrl | None = None
@@ -113,7 +113,7 @@ class Settings(BaseSettings):
             self.EMAILS_FROM_NAME = self.PROJECT_NAME
         return self
 
-    EMAIL_RESET_TOKEN_EXPIRE_SECONDS: int = 60 * 10 * 1  # 10 minutes
+    EMAIL_RESET_TOKEN_EXPIRE_SECONDS: int = 60 * 60 * 1  # 60 minutes
 
     @computed_field  # type: ignore[prop-decorator]
     @property
@@ -167,70 +167,9 @@ class Settings(BaseSettings):
 
         return self
 
-    SKIP_RATE_LIMIT_TEST: bool = False
-
-    # Rate limiting
-    RATE_LIMIT: bool = False
-
-    # Default user rate limits
-    DEFAULT_USER_RATE_LIMIT_SECOND: str = "4/second"  # Default rate limit seconds
-    DEFAULT_USER_RATE_LIMIT_MINUTE: str = "20/minute"  # Default rate limit minutes
-    DEFAULT_USER_RATE_LIMIT_HOUR: str = "200/hour"  # Default rate limit hours
-    DEFAULT_USER_RATE_LIMIT_DAY: str = "1000/day"  # Default rate limit days
-
-    # Stricter default rate limits
-    STRICT_DEFAULT_USER_RATE_LIMIT_SECOND: str = (
-        "1/second"  # Default rate limit seconds
-    )
-    STRICT_DEFAULT_USER_RATE_LIMIT_MINUTE: str = (
-        "1/minute"  # Default rate limit minutes
-    )
-    STRICT_DEFAULT_USER_RATE_LIMIT_HOUR: str = "3/hour"  # Default rate limit hours
-    STRICT_DEFAULT_USER_RATE_LIMIT_DAY: str = "5/day"  # Default rate limit days
-
-    # Login rate limits
-    LOGIN_RATE_LIMIT_SECOND: str = "1/second"  # Default rate limit seconds
-    LOGIN_RATE_LIMIT_MINUTE: str = "7/minute"  # Default rate limit minutes
-    LOGIN_RATE_LIMIT_HOUR: str = "50/hour"  # Default rate limit hours
-    LOGIN_RATE_LIMIT_DAY: str = "1000/day"  # Default rate limit days
-
-    # Recovery password rate limits
-    RECOVERY_PASSWORD_RATE_LIMIT_SECOND: str = "1/second"  # Default rate limit seconds
-    RECOVERY_PASSWORD_RATE_LIMIT_MINUTE: str = "5/minute"  # Default rate limit minutes
-    RECOVERY_PASSWORD_RATE_LIMIT_HOUR: str = "10/hour"  # Default rate limit hours
-    RECOVERY_PASSWORD_RATE_LIMIT_DAY: str = "10/day"  # Default rate limit days
-
-    # Reset password rate limits
-    RESET_PASSWORD_RATE_LIMIT_SECOND: str = "1/second"  # Default rate limit seconds
-    RESET_PASSWORD_RATE_LIMIT_MINUTE: str = "5/minute"  # Default rate limit minutes
-    RESET_PASSWORD_RATE_LIMIT_HOUR: str = "10/hour"  # Default rate limit hours
-    RESET_PASSWORD_RATE_LIMIT_DAY: str = "10/day"  # Default rate limit days
-
-    # Update me rate limits
-    UPDATE_ME_RATE_LIMIT_SECOND: str = "1/second"  # Default rate limit seconds
-    UPDATE_ME_RATE_LIMIT_MINUTE: str = "1/minute"  # Default rate limit minutes
-    UPDATE_ME_RATE_LIMIT_HOUR: str = "2/hour"  # Default rate limit hours
-    UPDATE_ME_RATE_LIMIT_DAY: str = "2/day"  # Default rate limit days
-
-    # Update password me rate limits
-    UPDATE_PASSWORD_ME_RATE_LIMIT_SECOND: str = "1/second"  # Default rate limit seconds
-    UPDATE_PASSWORD_ME_RATE_LIMIT_MINUTE: str = "1/minute"  # Default rate limit minutes
-    UPDATE_PASSWORD_ME_RATE_LIMIT_HOUR: str = "3/hour"  # Default rate limit hours
-    UPDATE_PASSWORD_ME_RATE_LIMIT_DAY: str = "5/day"  # Default rate limit days
-
-    # Plotting rate limits
-    PLOT_RATE_LIMIT_COOLDOWN_SECONDS: int = (
-        30  # Cooldown amount for requests in seconds
-    )
-    TIER_SUPERUSER_PLOT_RATE_LIMIT: int = (
-        30  # Superuser plots every PLOT_RATE_LIMIT_COOLDOWN_SECONDS
-    )
-    TIER_0_PLOT_RATE_LIMIT: int = (
-        2  # Default plots every PLOT_RATE_LIMIT_COOLDOWN_SECONDS
-    )
-    TIER_1_PLOT_RATE_LIMIT: int = (
-        3  # Default plots every PLOT_RATE_LIMIT_COOLDOWN_SECONDS
-    )
+    # API Rate Limiting
+    RATE_LIMIT: bool = False  # Activate or deactivate rate limiting in app
+    SKIP_RATE_LIMIT_TEST: bool = False  # Skip rate limiting in tests
 
 
 settings = Settings()  # type: ignore

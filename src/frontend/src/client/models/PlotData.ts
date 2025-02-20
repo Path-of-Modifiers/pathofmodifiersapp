@@ -4,8 +4,10 @@
 /* eslint-disable */
 export type PlotData = {
     valueInChaos: Array<number>;
-    timeStamp: Array<string>;
+    hoursSinceLaunch: Array<number>;
     valueInMostCommonCurrencyUsed: Array<number>;
+    confidence: Array<'low' | 'medium' | 'high'>;
+    confidenceRating: 'low' | 'medium' | 'high';
     mostCommonCurrencyUsed: string;
 };
 

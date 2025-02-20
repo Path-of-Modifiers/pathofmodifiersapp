@@ -2,11 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { BaseType } from '../models/BaseType';
 import type { ItemBaseType } from '../models/ItemBaseType';
-import type { ItemBaseTypeCategory } from '../models/ItemBaseTypeCategory';
 import type { ItemBaseTypeCreate } from '../models/ItemBaseTypeCreate';
-import type { ItemBaseTypeSubCategory } from '../models/ItemBaseTypeSubCategory';
 import type { ItemBaseTypeUpdate } from '../models/ItemBaseTypeUpdate';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -14,22 +11,22 @@ import { request as __request } from '../core/request';
 export class ItemBaseTypesService {
     /**
      * Get Item Base Type
-     * Get item base type by key and value for "baseType".
+     * Get item base type by key and value for "itemBaseTypeId".
      *
      * Always returns one item base type.
      * @returns ItemBaseType Successful Response
      * @throws ApiError
      */
     public static getItemBaseType({
-        baseType,
+        itemBaseTypeId,
     }: {
-        baseType: string,
+        itemBaseTypeId: string,
     }): CancelablePromise<ItemBaseType> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/api_v1/itemBaseType/{baseType}',
+            url: '/api/api_v1/itemBaseType/{itemBaseTypeId}',
             path: {
-                'baseType': baseType,
+                'itemBaseTypeId': itemBaseTypeId,
             },
             errors: {
                 422: `Validation Error`,
@@ -38,24 +35,24 @@ export class ItemBaseTypesService {
     }
     /**
      * Update Item Base Type
-     * Update an item base type by key and value for "baseType".
+     * Update an item base type by key and value for "itemBaseTypeId".
      *
      * Returns the updated item base type.
      * @returns ItemBaseType Successful Response
      * @throws ApiError
      */
     public static updateItemBaseType({
-        baseType,
+        itemBaseTypeId,
         requestBody,
     }: {
-        baseType: string,
+        itemBaseTypeId: number,
         requestBody: ItemBaseTypeUpdate,
     }): CancelablePromise<ItemBaseType> {
         return __request(OpenAPI, {
             method: 'PUT',
-            url: '/api/api_v1/itemBaseType/{baseType}',
+            url: '/api/api_v1/itemBaseType/{itemBaseTypeId}',
             path: {
-                'baseType': baseType,
+                'itemBaseTypeId': itemBaseTypeId,
             },
             body: requestBody,
             mediaType: 'application/json',
@@ -66,7 +63,7 @@ export class ItemBaseTypesService {
     }
     /**
      * Delete Item Base Type
-     * Delete an item base type by key and value for "baseType".
+     * Delete an item base type by key and value for "itemBaseTypeId".
      *
      * Returns a message that the item base type was deleted successfully.
      * Always deletes one item base type.
@@ -74,15 +71,15 @@ export class ItemBaseTypesService {
      * @throws ApiError
      */
     public static deleteItemBaseType({
-        baseType,
+        itemBaseTypeId,
     }: {
-        baseType: string,
+        itemBaseTypeId: number,
     }): CancelablePromise<string> {
         return __request(OpenAPI, {
             method: 'DELETE',
-            url: '/api/api_v1/itemBaseType/{baseType}',
+            url: '/api/api_v1/itemBaseType/{itemBaseTypeId}',
             path: {
-                'baseType': baseType,
+                'itemBaseTypeId': itemBaseTypeId,
             },
             errors: {
                 422: `Validation Error`,
@@ -97,10 +94,29 @@ export class ItemBaseTypesService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAllItemBaseTypes(): CancelablePromise<(ItemBaseType | Array<ItemBaseType>)> {
+    public static getAllItemBaseTypes({
+        limit,
+        skip,
+        sortKey,
+        sortMethod,
+    }: {
+        limit?: (number | null),
+        skip?: (number | null),
+        sortKey?: (string | null),
+        sortMethod?: ('asc' | 'desc' | null),
+    }): CancelablePromise<(ItemBaseType | Array<ItemBaseType>)> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/itemBaseType/',
+            query: {
+                'limit': limit,
+                'skip': skip,
+                'sort_key': sortKey,
+                'sort_method': sortMethod,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
         });
     }
     /**
@@ -132,48 +148,6 @@ export class ItemBaseTypesService {
             errors: {
                 422: `Validation Error`,
             },
-        });
-    }
-    /**
-     * Get Base Types
-     * Get all base types.
-     *
-     * Returns a list of all base types.
-     * @returns any Successful Response
-     * @throws ApiError
-     */
-    public static getBaseTypes(): CancelablePromise<(BaseType | Array<BaseType>)> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/api/api_v1/itemBaseType/baseTypes/',
-        });
-    }
-    /**
-     * Get Unique Categories
-     * Get all unique categories.
-     *
-     * Returns a list of all categories.
-     * @returns any Successful Response
-     * @throws ApiError
-     */
-    public static getUniqueCategories(): CancelablePromise<(ItemBaseTypeCategory | Array<ItemBaseTypeCategory>)> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/api/api_v1/itemBaseType/uniqueCategories/',
-        });
-    }
-    /**
-     * Get Unique Sub Categories
-     * Get all unique sub categories.
-     *
-     * Returns a list of all sub categories.
-     * @returns any Successful Response
-     * @throws ApiError
-     */
-    public static getUniqueSubCategories(): CancelablePromise<(ItemBaseTypeSubCategory | Array<ItemBaseTypeSubCategory>)> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/api/api_v1/itemBaseType/uniqueSubCategories/',
         });
     }
 }

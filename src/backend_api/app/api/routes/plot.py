@@ -2,15 +2,12 @@ from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import (
-    UserCacheSession,
-    get_async_current_active_user,
     get_async_db,
-    get_rate_limit_tier_by_request,
-    get_username_by_request,
+    get_user_ip_from_header,
 )
-from app.api.rate_limit.rate_limiter import RateLimiter, RateSpec
-from app.core.cache.cache import cache
-from app.core.config import settings
+from app.core.rate_limit.custom_rate_limiter import RateSpec
+from app.core.rate_limit.rate_limit_config import rate_limit_settings
+from app.core.rate_limit.rate_limiters import apply_custom_rate_limit
 from app.core.schemas.plot import PlotData, PlotQuery
 from app.plotting import plotter_tool
 
@@ -22,12 +19,10 @@ plot_prefix = "plot"
 @router.post(
     "/",
     response_model=PlotData,
-    dependencies=[Depends(get_async_current_active_user)],
 )
 async def get_plot_data(
     request: Request,
     query: PlotQuery,
-    user_cache_session: UserCacheSession,
     db: AsyncSession = Depends(get_async_db),
 ):
     """
@@ -36,16 +31,18 @@ async def get_plot_data(
 
     The 'PlotQuery' schema allows for modifier restriction and item specifications.
     """
+    request_limit = rate_limit_settings.TIER_0_PLOT_RATE_LIMIT
+    rate_spec = RateSpec(
+        requests=request_limit,
+        cooldown_seconds=rate_limit_settings.PLOT_RATE_LIMIT_COOLDOWN_SECONDS,
+    )
 
-    async with RateLimiter(
-        unique_key=get_username_by_request(request),
-        backend=cache,
-        rate_spec=RateSpec(
-            requests=await get_rate_limit_tier_by_request(request, user_cache_session),
-            cooldown_seconds=settings.PLOT_RATE_LIMIT_COOLDOWN_SECONDS,
-        ),
-        cache_prefix=plot_prefix,
-        enabled=settings.RATE_LIMIT,
+    client_ip = get_user_ip_from_header(request)
+
+    async with apply_custom_rate_limit(
+        unique_key="plot_" + client_ip,
+        rate_spec=rate_spec,
+        prefix=plot_prefix,
     ):
         plot_data = await plotter_tool.plot(
             db,

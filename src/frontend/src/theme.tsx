@@ -1,15 +1,27 @@
 import { extendTheme } from "@chakra-ui/react";
-import '@fontsource/asap';
+import "@fontsource/asap";
 
 const theme = extendTheme({
   colors: {
     ui: {
       main: "#1B1B1B",
       secondary: "#282828",
+      lighterSecondary: {
+        100: "#373737",
+        200: "#414141",
+      },
       success: "#215918",
       danger: "#FF1D1D",
       white: "#FFFFFF",
       grey: "#B3B3B3",
+      greyShade: {
+        100: "#6b6b6b",
+        200: "#8d8d8d",
+        300: "#a0a0a0",
+        400: "#c2c2c2",
+        500: "#d5d5d5",
+        600: "#e7e7e7",
+      },
       dark: "#1A202C",
       input: "#2d3333",
       inputChanged: "#bea06a",
@@ -18,6 +30,10 @@ const theme = extendTheme({
       queryMainInput: "#72AE8E",
       darkSlate: "#252D3D",
       darkBrown: "#572214",
+      lowConfidencePrimary: "#FF2424",
+      lowConfidenceSecondary: "#c00000",
+      mediumConfidencePrimary: "#facc14",
+      mediumConfidenceSecondary: "#9b7e08",
     },
   },
   fonts: {
@@ -27,7 +43,7 @@ const theme = extendTheme({
   styles: {
     global: {
       "html, body": {
-        fontSize: "15px",
+        fontSize: "14px",
       },
     },
   },
@@ -43,8 +59,8 @@ const theme = extendTheme({
     black: 900,
   },
   fontSizes: {
-    mini: 13,
-    defaultRead: 15,
+    mini: 10,
+    defaultRead: 14,
     input: 16,
     menu: 17,
     heading: 50,
@@ -84,6 +100,7 @@ const theme = extendTheme({
       smallPPBox: "10rem",
       defaultBox: "13rem",
       mdBox: "15rem",
+      mdPlusBox: "18rem",
       lgBox: "345px",
       xlBox: "25rem",
       xlPlusBox: "40rem",
@@ -102,6 +119,10 @@ const theme = extendTheme({
       defaultBox: "95rem",
       largeBox: "98rem",
       gigaBox: "130rem",
+    },
+    loginPages: {
+      standardHeight: "100vh",
+      standardMinHeight: "600px",
     },
   },
 });

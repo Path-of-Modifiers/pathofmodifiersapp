@@ -68,7 +68,7 @@ export const $ItemSpecs = {
                 type: 'null',
             }],
         },
-        synthesized: {
+        synthesised: {
             type: 'any-of',
             contains: [{
                 type: 'boolean',
@@ -101,14 +101,6 @@ export const $ItemSpecs = {
             }],
         },
         tangled: {
-            type: 'any-of',
-            contains: [{
-                type: 'boolean',
-            }, {
-                type: 'null',
-            }],
-        },
-        isRelic: {
             type: 'any-of',
             contains: [{
                 type: 'boolean',

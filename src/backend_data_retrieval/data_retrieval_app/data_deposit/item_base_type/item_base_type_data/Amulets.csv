@@ -1,12 +1,12 @@
 # Source: https://poedb.tw/us/Amulets#AmuletsItem
-baseType,category
-"Paua Amulet",amulet
-"Coral Amulet",amulet
-"Amber Amulet",amulet
-"Jade Amulet",amulet
-"Lapis Amulet",amulet
-"Gold Amulet",amulet
-"Onyx Amulet",amulet
-"Turquoise Amulet",amulet
-"Agate Amulet",amulet
-"Citrine Amulet",amulet
+baseType,category,relatedUniques
+"Paua Amulet",amulet,
+"Coral Amulet",amulet,
+"Amber Amulet",amulet,
+"Jade Amulet",amulet,
+"Lapis Amulet",amulet,
+"Gold Amulet",amulet,"The Utmost"
+"Onyx Amulet",amulet,"Replica Dragonfang's Flight|Aul's Uprising"
+"Turquoise Amulet",amulet,
+"Agate Amulet",amulet,
+"Citrine Amulet",amulet,

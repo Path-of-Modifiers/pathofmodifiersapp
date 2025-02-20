@@ -6,7 +6,7 @@ from pydantic import TypeAdapter
 
 from app.core.cache.cache import cache
 from app.core.models.models import User as model_User
-from app.core.schemas.user import UserInCache, UsernameStr
+from app.core.schemas.user import UserInCache
 from app.exceptions import (
     InvalidCacheUpdateParamsError,
     InvalidTokenError,
@@ -28,15 +28,15 @@ class UserCache:
     Some UserCache mechanics:
 
     The UUID or String `token` belongs to the client side.
-    Format of `token` is  '*{username}:{cache_key}*'
+    Format of `token` is  '*{user_id}:{cache_key}*'
 
-    We need the username on the client side to use it in key_func on each request during rate limit,
-    so the username is always in the headers of the request
+    We need the user_id on the client side to use it in key_func on each request during rate limit,
+    so the user_id is always in the headers of the request
 
     A subset string of `token` called `cache_key`, is stored as the key inside the cache.
-    Format of `cache_key` is '*{user_token_type}:{token}*'
+    Format of `cache_key` is '*{user_token_type}:{token_uuid}*'
 
-    We don't need username when storing the key inside the cache.
+    We don't need user_id when storing the key inside the cache.
     """
 
     def __init__(self, user_token_type: UserCacheTokenType) -> None:
@@ -49,17 +49,15 @@ class UserCache:
         await cache.aclose()
 
     @staticmethod
-    def extract_username_from_token(token: str) -> str:
+    def extract_user_id_from_token(token: str) -> str:
         return token.split(":", 1)[0]
 
     def _create_cache_key_format(self, uuid_instance: UUID | str) -> str:
         return f"{self.user_token_type.value}:{uuid_instance}"
 
-    def _create_token_format(
-        self, username: UsernameStr, uuid_instance: UUID | str
-    ) -> str:
+    def _create_token_format(self, user_id: UUID, uuid_instance: UUID | str) -> str:
         cache_key_format = self._create_cache_key_format(uuid_instance)
-        return f"{username}:{cache_key_format}"
+        return f"{user_id}:{cache_key_format}"
 
     def _extract_cache_key_from_token(self, token: str) -> str:
         return token.split(":", 1)[1]
@@ -91,10 +89,8 @@ class UserCache:
                 update_params.keys() - user_in_cache.__dict__.keys()
             ):  # Check if update_params has any keys that are not in user_in_cache
                 raise InvalidCacheUpdateParamsError(
-                    update_params=update_params,
-                    object=user_in_cache,
                     function_name=self._create_user_cache_by_user_model.__name__,
-                    class_name=self.__,
+                    class_name="UserCache",
                 )
             user_in_cache.__dict__.update(update_params)
 
@@ -121,7 +117,7 @@ class UserCache:
         update_params: dict[str, Any] | None = None,
     ) -> str:
         """
-        Creates a cache instance for the given user. Returns the access token.
+        Creates a cache instance for the given user. Returns the token.
 
         ``user`` is the user db object.
         ``expire_seconds`` is the number of seconds until the cache entry expires.
@@ -142,13 +138,14 @@ class UserCache:
         )
 
         token = self._create_token_format(
-            username=user.username, uuid_instance=uuid_instance
+            user_id=user.userId, uuid_instance=uuid_instance
         )
 
         return token
 
     async def verify_token(
-        self, token: str, updating_user: bool | None = None
+        self,
+        token: str,
     ) -> UserInCache | None:
         """
         Verify token and return the cached user.
@@ -169,14 +166,12 @@ class UserCache:
                 token=token,
             )
 
-        username = UserCache.extract_username_from_token(token)
-
-        # If someone is trying to manipulate with another username in token to bypass verification
-        if not username == user_cache_instance.username and not updating_user:
+        user_id = UserCache.extract_user_id_from_token(token)
+        # If someone is trying to manipulate with another user_id in token to bypass verification
+        if user_id != str(user_cache_instance.userId):
             raise InvalidTokenError(
                 function_name=self.verify_token.__name__,
                 class_name=self.__class__.__name__,
                 token=token,
             )
-
         return user_cache_instance

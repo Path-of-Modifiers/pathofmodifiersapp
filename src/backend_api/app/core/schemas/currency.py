@@ -1,5 +1,3 @@
-import datetime as _dt
-
 import pydantic as _pydantic
 
 
@@ -9,12 +7,11 @@ class _BaseCurrency(_pydantic.BaseModel):
 
     tradeName: str
     valueInChaos: float
-    iconUrl: str
 
 
 # Properties to receive on currency creation
 class CurrencyCreate(_BaseCurrency):
-    pass
+    createdHoursSinceLaunch: int
 
 
 # Properties to receive on update
@@ -24,7 +21,7 @@ class CurrencyUpdate(_BaseCurrency):
 
 # Properties shared by models stored in DB
 class CurrencyInDBBase(_BaseCurrency):
-    createdAt: _dt.datetime
+    createdHoursSinceLaunch: int
     currencyId: int
 
 

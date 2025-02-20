@@ -1,13 +1,16 @@
 import logging
+from collections.abc import Generator
+from datetime import datetime, timezone
 from typing import Any
 
 import pandas as pd
 import requests
 
+from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.logs.logger import main_logger as logger
 
 
-def _chunks(lst, n):
+def _chunks(lst: list[Any], n: int) -> Generator[Any, None, None]:
     """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
         yield lst[i : i + n]
@@ -25,7 +28,7 @@ def remove_empty_fields(json_in: list[dict[str, str]]) -> list[dict[str, Any]]:
 
 def df_to_JSON(
     df: pd.DataFrame | pd.Series, request_method: str
-) -> list[dict[str, Any]] | dict:
+) -> list[dict[str, Any]] | dict[str, Any] | Any:
     logger.debug(f"Transforming data into JSON with request method {request_method}.")
     if isinstance(df, pd.Series):
         df = df.to_frame().transpose()
@@ -50,6 +53,21 @@ def df_to_JSON(
         )
 
 
+def find_hours_since_launch() -> int:
+    current_time = datetime.now(timezone.utc)
+    league_launch_time = settings.LEAGUE_LAUNCH_DATETIME_OBJECT
+
+    time_since_launch = current_time - league_launch_time
+
+    days_since_launch, seconds_since_launch = (
+        time_since_launch.days,
+        time_since_launch.seconds,
+    )
+    hours_since_launch = days_since_launch * 24 + seconds_since_launch // 3600
+
+    return hours_since_launch
+
+
 def insert_data(
     df: pd.DataFrame,
     *,
@@ -57,7 +75,7 @@ def insert_data(
     table_name: str,
     logger: logging.Logger,
     on_duplicate_pkey_do_nothing: bool = False,
-    headers: dict[str, str] = None,
+    headers: dict[str, str] | None = None,
 ) -> None:
     logger.debug("Inserting data into database.")
     if df.empty:
@@ -99,4 +117,7 @@ def insert_data(
         response.raise_for_status()
 
     elif response.status_code >= 300:
+        logger.exception(
+            f"Recieved a {response.status_code} response. Error msg: {response.text[:10000]}"
+        )
         response.raise_for_status()

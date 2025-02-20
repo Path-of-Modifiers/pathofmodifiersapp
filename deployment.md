@@ -41,7 +41,7 @@ Copy the content and use that as password / secret key. And run that again to ge
 
 ## Change decoy content files with hidden ones
 
-In `src/frontend/src/hooks/graphing`, replace the decoy files with hidden `*.tsx` graphing hooks.
+In `src\backend_api\app\plotting\utils.py`, replace the decoy files with hidden `*.py` utils.
 
 ## Traefik network
 
@@ -110,7 +110,7 @@ export DOMAIN=pathofmodifiers.com
 Create an environment variable with the email for Let's Encrypt:
 
 ```bash
-export EMAIL=pomodifiers@outlook.com
+export EMAIL=team@pathofmodifiers.com
 ```
 
 Create an environment variable with the CF_DNS_API_TOKEN for cloudfare api token:

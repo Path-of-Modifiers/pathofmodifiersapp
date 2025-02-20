@@ -1,6 +1,8 @@
 import pandas as pd
 import requests
 
+from data_retrieval_app.logs.logger import external_data_retrieval_logger as logger
+
 
 class PoENinjaCurrencyAPIHandler:
     def __init__(self, url: str) -> None:
@@ -32,9 +34,14 @@ class PoENinjaCurrencyAPIHandler:
         """
         Makes an initial, synchronous, API call.
         """
-        response = requests.get(self.url)
-        if response.status_code >= 300:
+        try:
+            response = requests.get(self.url)
             response.raise_for_status()
+        except Exception as e:
+            logger.error(
+                f"The following error occurred while making request in poe ninja currency handler: {e}"
+            )
+            raise e
         response_json = response.json()
 
         currencies = response_json["lines"]

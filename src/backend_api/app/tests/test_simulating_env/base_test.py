@@ -1,6 +1,6 @@
 import asyncio
 import math
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from typing import Any
 
 from sqlalchemy.inspection import inspect
@@ -34,7 +34,7 @@ class BaseTest:
         db: Session,
         crud_instance: CRUDBase,
         create_object: dict,
-        on_duplicate_pkey_do_nothing: bool | None = None,
+        on_duplicate_params: tuple[bool, str | None] | None = None,
     ) -> ModelType:
         """
         A private method used to create objects
@@ -42,10 +42,16 @@ class BaseTest:
         create_obj = crud_instance.create_schema(
             **create_object
         )  # Create object conversion to crud format
+
+        on_duplicate_do_nothing = (
+            on_duplicate_params[0] if on_duplicate_params else None
+        )
+        on_conflict_constraint = on_duplicate_params[1] if on_duplicate_params else None
         object_out = await crud_instance.create(
             db=db,
             obj_in=create_obj,
-            on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing,
+            on_duplicate_pkey_do_nothing=on_duplicate_do_nothing,
+            on_conflict_constraint=on_conflict_constraint,
         )
 
         return object_out
@@ -55,7 +61,7 @@ class BaseTest:
         db: Session,
         crud_instance: CRUDBase,
         create_objects: list[dict],
-        on_duplicate_pkey_do_nothing: bool | None = None,
+        on_duplicate_params: tuple[bool, str | None] | None = None,
     ) -> list[ModelType]:
         """
         A private method used to create multiple objects
@@ -64,10 +70,15 @@ class BaseTest:
             crud_instance.create_schema(**create_object)
             for create_object in create_objects
         ]
+        on_duplicate_do_nothing = (
+            on_duplicate_params[0] if on_duplicate_params else None
+        )
+        on_conflict_constraint = on_duplicate_params[1] if on_duplicate_params else None
         object_out = await crud_instance.create(
             db=db,
             obj_in=create_objs,
-            on_duplicate_pkey_do_nothing=on_duplicate_pkey_do_nothing,
+            on_duplicate_pkey_do_nothing=on_duplicate_do_nothing,
+            on_conflict_constraint=on_conflict_constraint,
         )
 
         return object_out
@@ -75,7 +86,9 @@ class BaseTest:
     async def _create_random_object_crud(
         self,
         db: Session,
-        object_generator_func: Callable[[], tuple[dict, ModelType]] | Any,
+        object_generator_func: (
+            Callable[[Session], Awaitable[tuple[dict, ModelType]]] | Any
+        ),
     ) -> tuple[dict, ModelType]:
         """
         A private method used to create a random object
@@ -160,7 +173,7 @@ class BaseTest:
                             )
                         else:
                             # print(
-                            #     f"{extract_value(compare_obj, field)} == {getattr(obj, field)}"
+                            #    f"{extract_value(compare_obj, field)} == {getattr(obj, field)}"
                             # )
                             assert extract_value(compare_obj, field) == getattr(
                                 obj, field

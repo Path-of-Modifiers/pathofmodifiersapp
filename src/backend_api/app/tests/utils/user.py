@@ -23,7 +23,7 @@ async def user_authentication_headers(
 def create_random_user(db: Session) -> User:
     email = random_email()
     password = random_lower_string()
-    username = random_lower_string()
+    username = random_lower_string(small_string=True)
     user_in = UserCreate(email=email, password=password, username=username)
     user = CRUD_user.create(db=db, user_create=user_in)
     return user

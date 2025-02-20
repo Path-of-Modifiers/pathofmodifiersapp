@@ -6,36 +6,41 @@ import { useGraphInputStore } from "../../store/GraphInputStore";
 /**
  * Posts the request body (a plot query) and returns the
  * corresponding plot data from the data base.
- * @param requestBody The Plot Query
+ * @param plotQuery The Plot Query
  * @returns The Plot Data or undefined if no query yet, and the fetch status
  */
-function usePostPlottingData(requestBody: PlotQuery): {
+function usePostPlottingData(plotQuery: PlotQuery): {
   plotData: PlotData | undefined;
   fetchStatus: string;
   isError: boolean;
   isFetched: boolean;
+  error: Error | null;
 } {
   const [plotData, setPlotData] = useState<PlotData>();
-  const queryClicked = useGraphInputStore((state) => state.queryClicked);
-  const { fetchStatus, refetch, isFetched, isError } = useQuery({
+  const { queryClicked } = useGraphInputStore();
+  const { setFetchStatus } = useGraphInputStore();
+  const { fetchStatus, refetch, isFetched, isError, error } = useQuery({
     queryKey: ["allPlotData"],
     queryFn: async () => {
       const returnBody = await PlotsService.getPlotData({
-        requestBody,
+        requestBody: plotQuery,
       });
 
       setPlotData(returnBody);
       return 1;
     },
+    retry: false,
     enabled: false, // stops constant refreshes
   });
+
   useEffect(() => {
     // Only refetches data if the query button is clicked
-    if (queryClicked) {
+    setFetchStatus(fetchStatus);
+    if (queryClicked && fetchStatus === "idle") {
       refetch();
     }
-  }, [queryClicked, refetch]);
-  return { plotData, fetchStatus, isFetched, isError };
+  }, [queryClicked, refetch, fetchStatus, setFetchStatus, plotQuery]);
+  return { plotData, fetchStatus, isFetched, isError, error };
 }
 
 export default usePostPlottingData;

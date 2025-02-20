@@ -8,6 +8,14 @@ export const $Modifier = {
             type: 'number',
             isRequired: true,
         },
+        relatedUniques: {
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+            }, {
+                type: 'null',
+            }],
+        },
         minRoll: {
             type: 'any-of',
             contains: [{
@@ -84,7 +92,7 @@ export const $Modifier = {
                 type: 'null',
             }],
         },
-        synthesized: {
+        synthesised: {
             type: 'any-of',
             contains: [{
                 type: 'boolean',

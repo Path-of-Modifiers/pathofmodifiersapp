@@ -2,24 +2,19 @@ from collections.abc import Callable
 
 import pytest
 
-import app.tests.test_simulating_env.crud.cascade_tests as cascade_test
 from app.core.models.models import (
-    Account,
     Currency,
     Item,
     ItemBaseType,
     ItemModifier,
     Modifier,
-    Stash,
 )
 from app.crud import (
-    CRUD_account,
     CRUD_currency,
     CRUD_item,
     CRUD_itemBaseType,
     CRUD_itemModifier,
     CRUD_modifier,
-    CRUD_stash,
 )
 from app.crud.base import CRUDBase
 from app.tests.utils.model_utils.item_modifier import generate_random_item_modifier
@@ -31,16 +26,19 @@ def object_generator_func() -> Callable[[], dict]:
 
 
 @pytest.fixture(scope="module")
-def object_generator_func_w_deps() -> (
-    Callable[
-        [],
-        tuple[
-            dict,
-            ItemModifier,
-            list[dict | Item | Stash | Account | ItemBaseType | Currency | Modifier],
-        ],
-    ]
-):
+def is_hypertable() -> bool:
+    return True
+
+
+@pytest.fixture(scope="module")
+def object_generator_func_w_deps() -> Callable[
+    [],
+    tuple[
+        dict,
+        ItemModifier,
+        list[dict | Item | ItemBaseType | Currency | Modifier],
+    ],
+]:
     def generate_random_item_modifier_w_deps(
         db,
     ) -> Callable[
@@ -48,7 +46,7 @@ def object_generator_func_w_deps() -> (
         tuple[
             dict,
             ItemModifier,
-            list[dict | Item | Stash | Account | ItemBaseType | Currency | Modifier],
+            list[dict | Item | ItemBaseType | Currency | Modifier],
         ],
     ]:
         return generate_random_item_modifier(db, retrieve_dependencies=True)
@@ -62,8 +60,13 @@ def crud_instance() -> CRUDBase:
 
 
 @pytest.fixture(scope="module")
-def on_duplicate_pkey_do_nothing() -> bool:
-    return False
+def on_duplicate_params() -> tuple[bool, str | None]:
+    """
+    In tuple:
+        First item: `on_duplicate_do_nothing`.
+        Second item: `on_duplicate_constraint` (unique constraint to check the duplicate on)
+    """
+    return (False, None)
 
 
 @pytest.fixture(scope="module")
@@ -78,8 +81,6 @@ def crud_deps_instances() -> list[CRUDBase]:
         CRUDBase: CRUD dependencies instances.
     """
     return [
-        CRUD_account,
-        CRUD_stash,
         CRUD_itemBaseType,
         CRUD_currency,
         CRUD_item,
@@ -87,5 +88,6 @@ def crud_deps_instances() -> list[CRUDBase]:
     ]
 
 
-class TestItemModifierCRUD(cascade_test.TestCascade):
-    pass
+# TODO: Create seperate tests for item_modifier hypertable
+# class TestItemModifierCRUD(cascade_test.TestCascade):
+# pass

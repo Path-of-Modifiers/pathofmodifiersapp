@@ -5,21 +5,18 @@ import useTurnstileValidation, {
   hasCompletedCaptcha,
 } from "../hooks/validation/turnstileValidation";
 
-import useAuth, { isLoggedIn } from "../hooks/validation/useAuth";
+import { useGraphInputStore } from "../store/GraphInputStore";
 
 const security_ip = localStorage.getItem("security_ip");
 
 export const Route = createFileRoute("/_layout")({
   component: Layout,
   beforeLoad: async () => {
+    const searchParams = new URLSearchParams(location.hash.slice(1));
+    useGraphInputStore.getState().getStoreFromHash(searchParams);
     if (!hasCompletedCaptcha()) {
       throw redirect({
         to: "/captcha",
-      });
-    }
-    if (!isLoggedIn()) {
-      throw redirect({
-        to: "/login",
       });
     }
   },
@@ -31,11 +28,9 @@ function Layout() {
     ip: security_ip ?? "",
   });
 
-  const { isLoadingUser } = useAuth();
-
   return (
     <Flex maxW="large" h="auto" position="relative" bgColor="ui.main">
-      {isLoadingTurnstile || isLoadingUser ? (
+      {isLoadingTurnstile ? (
         <Flex justify="center" align="center" height="100vh" width="full">
           <Spinner size="xl" color={"ui.white"} />
         </Flex>

@@ -1,31 +1,31 @@
 import {
   Stack,
   HStack,
-  Link,
   IconButton,
-  LinkProps,
   Flex,
   Text,
   StackProps,
   Box,
+  Link as ChakraLink,
 } from "@chakra-ui/react";
-// Here we have used react-icons package for the icons
 import { FaGithub, FaTwitter } from "react-icons/fa";
 
+import CustomLink from "./CustomLink";
+
 const links = [
-  { label: "About", url: "about" },
-  { label: "Terms of use", url: "terms-of-use" },
-  { label: "Privacy Policy", url: "privacy-policy" },
+  { label: "About", url: "/about" },
+  { label: "Terms of use", url: "/terms-of-use" },
+  { label: "Privacy Policy", url: "/privacy-policy" },
 ];
 const accounts = [
   {
-    url: "https://github.com/Ivareh/pathofmodifiersapp",
+    url: "https://github.com/Path-of-Modifiers/pathofmodifiersapp",
     label: "Github Repository",
     type: "gray",
     icon: <FaGithub />,
   },
   {
-    url: "https://twitter.com/PModifiers85473",
+    url: "https://x.com/PathOfMods",
     label: "POM twitter Account",
     type: "twitter",
     icon: <FaTwitter />,
@@ -37,10 +37,8 @@ const Footer = (props: StackProps) => {
     <Stack
       {...props}
       width="100%"
-      minHeight="10rem"
       mt="auto"
       direction="column"
-      bg="ui.secondary"
       color="ui.white"
       justifyContent="space-between"
       marginInline="auto"
@@ -61,7 +59,7 @@ const Footer = (props: StackProps) => {
           {accounts.map((sc, index) => (
             <IconButton
               key={index}
-              as={Link}
+              as={ChakraLink}
               isExternal
               href={sc.url}
               aria-label={sc.label}
@@ -75,7 +73,7 @@ const Footer = (props: StackProps) => {
         {/* Desktop Screen */}
         <HStack spacing={4} alignItems="center">
           {links.map((sc, index) => (
-            <CustomLink key={index} hrefRoute={sc.url}>
+            <CustomLink key={index} internalRoute={sc.url}>
               {sc.label}
             </CustomLink>
           ))}
@@ -95,23 +93,6 @@ const Footer = (props: StackProps) => {
         </Text>
       </Box>
     </Stack>
-  );
-};
-
-interface CustomLinkProps extends LinkProps {
-  hrefRoute: string;
-}
-
-const CustomLink = ({ children, hrefRoute, ...props }: CustomLinkProps) => {
-  return (
-    <Link
-      href={hrefRoute}
-      fontSize="sm"
-      _hover={{ textDecoration: "underline" }}
-      {...props}
-    >
-      {children}
-    </Link>
   );
 };
 

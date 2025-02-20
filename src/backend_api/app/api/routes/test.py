@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -29,8 +27,6 @@ def bulk_insert_raw_sql(db: Session, count: int):
     """Generate dummy data for `count` objects"""
     data = [
         ItemCreate(
-            stashId=f"Stash {i}",
-            gameItemId=f"GameItem {i}",
             currencyId=1,
             baseType=f"Base {i}",
             ilvl=100,
@@ -38,8 +34,6 @@ def bulk_insert_raw_sql(db: Session, count: int):
             typeLine="Type {i}",
             league="Settlers",
             currencyAmount=100.0,
-            valueInChaos=1.0,
-            iconUrl="https://example.com/icon.png",
         )
         for i in range(count)
     ]

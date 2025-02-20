@@ -15,6 +15,10 @@ import { usePlotSettingsStore } from "../../store/PlotSettingsStore";
 import PlotCustomizationButtons from "../Common/PlotCustomizationButtons";
 import { capitalizeFirstLetter } from "../../hooks/utils";
 import { CurrencyVisuals } from "../../schemas/CurrencyVisuals";
+import { CustomTooltip } from "./CustomTooltip";
+import { formatHoursSinceLaunch } from "../../hooks/graphing/utils";
+import { BiError } from "react-icons/bi";
+import { ErrorMessage } from "../Input/StandardLayoutInput/ErrorMessage";
 
 /**
  * Uses the globally stored plotQuery state to send a request,
@@ -24,14 +28,30 @@ import { CurrencyVisuals } from "../../schemas/CurrencyVisuals";
  * and a graph if there has been
  */
 function GraphComponent(props: BoxProps) {
-  const plotQuery = useGraphInputStore((state) => state.plotQuery);
-  const { result, mostCommonCurrencyUsed, fetchStatus, isError } =
-    useGetPlotData(plotQuery);
+  const { plotQuery } = useGraphInputStore();
+  const {
+    result,
+    mostCommonCurrencyUsed,
+    confidenceRating,
+    upperBoundryChaos,
+    upperBoundrySecondary,
+    fetchStatus,
+    error,
+  } = useGetPlotData(plotQuery);
 
-  const renderGraph = result && mostCommonCurrencyUsed && !isError;
-
+  const renderGraph = result && mostCommonCurrencyUsed && !error;
   const showChaos = usePlotSettingsStore((state) => state.showChaos);
   const showSecondary = usePlotSettingsStore((state) => state.showSecondary);
+
+  if (error) return;
+
+  const isLowConfidence = confidenceRating === "low";
+  const isMediumConfidence = confidenceRating === "medium";
+  const confidenceColor = isLowConfidence
+    ? "ui.lowConfidencePrimary"
+    : isMediumConfidence
+      ? "ui.mediumConfidencePrimary"
+      : "ui.input";
 
   const chaosVisuals: CurrencyVisuals = {
     stroke: "#f99619",
@@ -41,6 +61,7 @@ function GraphComponent(props: BoxProps) {
     buttonColor: "#000000",
     buttonBorderColor: "#000000",
     buttonBackground: showChaos ? "#f99619" : "ui.lightInput",
+    upperBoundry: upperBoundryChaos,
   };
 
   const secondaryVisuals: CurrencyVisuals = {
@@ -53,6 +74,7 @@ function GraphComponent(props: BoxProps) {
     buttonColor: showSecondary ? "#ff0000" : "#000000",
     buttonBorderColor: showSecondary ? "#ff0000" : "#000000",
     buttonBackground: showSecondary ? "ui.white" : "ui.lightInput",
+    upperBoundry: upperBoundrySecondary,
   };
 
   if (fetchStatus === "fetching") {
@@ -62,16 +84,49 @@ function GraphComponent(props: BoxProps) {
       </Center>
     );
   }
+  if (error) return;
 
   return (
     renderGraph && (
       <Box {...props}>
-        <PlotCustomizationButtons
-          flexProps={{ justifyContent: "center" }}
-          mostCommonCurrencyUsed={mostCommonCurrencyUsed}
-          chaosVisuals={chaosVisuals}
-          secondaryVisuals={secondaryVisuals}
-        />
+        <Box>
+          {isLowConfidence && (
+            <ErrorMessage
+              alertTitle="Low confidence"
+              alertDescription="Prices are based on a low number of listings."
+              alertIcon={BiError}
+              iconProps={{
+                color: confidenceColor,
+                size: "1.5rem",
+              }}
+              alertProps={{
+                bgColor: "ui.lowConfidenceSecondary",
+                color: "white",
+              }}
+            />
+          )}
+          {isMediumConfidence && (
+            <ErrorMessage
+              alertTitle="Medium confidence"
+              alertDescription="Prices are based on a relatively low number of listings."
+              alertIcon={BiError}
+              iconProps={{
+                color: confidenceColor,
+                size: "1.5rem",
+              }}
+              alertProps={{
+                bgColor: "ui.mediumConfidenceSecondary",
+                color: "white",
+              }}
+            />
+          )}
+          <PlotCustomizationButtons
+            flexProps={{ justifyContent: "center", mt: "10px" }}
+            mostCommonCurrencyUsed={mostCommonCurrencyUsed}
+            chaosVisuals={chaosVisuals}
+            secondaryVisuals={secondaryVisuals}
+          />
+        </Box>
         <ResponsiveContainer>
           <LineChart
             width={500}
@@ -81,11 +136,23 @@ function GraphComponent(props: BoxProps) {
               top: 5,
               right: 30,
               left: 20,
-              bottom: 5,
+              bottom: 25,
             }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
+            <XAxis
+              dataKey="timestamp"
+              label={{
+                value: "Days and hours since launch",
+                position: "bottom",
+              }}
+              angle={0}
+              tickMargin={11}
+              minTickGap={13}
+              tickFormatter={(value) => formatHoursSinceLaunch(value)}
+              type="number"
+              domain={["dataMin", "dataMax + 10"]}
+            />
             {/* Set Y-axis label */}
             <YAxis
               label={{
@@ -94,8 +161,15 @@ function GraphComponent(props: BoxProps) {
                 position: "insideLeft",
               }}
               hide={!showChaos}
+              type="number"
+              dataKey={chaosVisuals.datakey}
+              domain={[0, chaosVisuals.upperBoundry]}
+              allowDataOverflow
             />
-            <Tooltip />
+            <Tooltip
+              content={<CustomTooltip upperBoundry={upperBoundryChaos} />}
+              isAnimationActive={false}
+            />
             <Legend verticalAlign="top" height={36} />
             {/* Update the Line dataKey to match "Chaos value" */}
             <Line
@@ -105,6 +179,8 @@ function GraphComponent(props: BoxProps) {
               stroke={chaosVisuals.stroke}
               yAxisId={chaosVisuals.yAxisId}
               hide={!showChaos}
+              isAnimationActive={false}
+              dot={{ fill: chaosVisuals.stroke }}
             />
 
             <YAxis
@@ -116,6 +192,9 @@ function GraphComponent(props: BoxProps) {
               orientation="right"
               yAxisId={secondaryVisuals.yAxisId}
               hide={!showSecondary}
+              type="number"
+              domain={[0, secondaryVisuals.upperBoundry]}
+              allowDataOverflow
             />
             <Line
               type="monotone"
@@ -124,6 +203,8 @@ function GraphComponent(props: BoxProps) {
               stroke={secondaryVisuals.stroke}
               yAxisId={secondaryVisuals.yAxisId}
               hide={!showSecondary}
+              isAnimationActive={false}
+              dot={{ fill: secondaryVisuals.stroke }}
             />
           </LineChart>
         </ResponsiveContainer>

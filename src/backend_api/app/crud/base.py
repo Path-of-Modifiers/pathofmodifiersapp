@@ -1,16 +1,17 @@
 from collections.abc import Generator, Iterable
 from itertools import islice
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, Literal, TypeVar
 
 from pydantic import BaseModel, TypeAdapter
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
+# from app.api.params import FilterParams
+from app.api.params import FilterParams
 from app.exceptions import (
     ArgValueNotSupportedError,
     DbObjectDoesNotExistError,
     DbTooManyItemsDeleteError,
-    SortingMethodNotSupportedError,
 )
 from app.exceptions.model_exceptions.db_exception import (
     DbObjectAlreadyExistsError,
@@ -53,30 +54,26 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
     def _sort_objects(
         self,
         objs: list[ModelType],
-        key: str | None = None,
-        sort: str | None = None,
+        sort_key: str | None = None,
+        sort_method: Literal["asc", "dec"] | None = None,
     ) -> list[ModelType]:
-        available_sorting_choices = ["asc", "dec"]
-        if sort is None:
+        """
+        `sort_key` is the column name to sort on. For example `createdAt`.
+        """
+        if sort_key is None:
             return objs
-        elif sort not in available_sorting_choices:
-            raise SortingMethodNotSupportedError(
-                sort=sort,
-                available_sorting_choices=available_sorting_choices,
-                function_name=self._sort_objects.__name__,
-                class_name=self.__class__.__name__,
-            )
-        if sort in ["asc", "dec"]:
-            unsorted_extracted_column = []
-            for obj in objs:
-                unsorted_extracted_column.append(getattr(obj, key))
+        if sort_method is None:
+            sort_method = "asc"
+        unsorted_extracted_column = []
+        for obj in objs:
+            unsorted_extracted_column.append(getattr(obj, sort_key))
 
-            sorted_objs = sort_with_reference(objs, unsorted_extracted_column)
+        sorted_objs = sort_with_reference(objs, unsorted_extracted_column)
 
-            if sort == "asc":
-                return sorted_objs
-            else:
-                return sorted_objs[::-1]
+        if sort_method == "asc":
+            return sorted_objs
+        else:
+            return sorted_objs[::-1]
 
     def _map_obj_pks_to_value(
         self,
@@ -164,13 +161,17 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         *,
         model_dict_list: list[dict[str, Any]],
         return_nothing: bool | None = None,
+        constraint: str | None = None,
     ) -> list[ModelType] | None:
         """
         Create objects with on_conflict_do_nothing and batching.
         """
-        created_objects = []
         logger.debug(f"Total objects to create: {len(model_dict_list)}")
 
+        created_objects = []
+        constraint = (
+            f"{self.model.__tablename__}_pkey" if not constraint else constraint
+        )
         for batch in self._batch_iterable(
             model_dict_list, self.create_batch_size_on_conflict
         ):
@@ -178,9 +179,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
                 create_stmt = (
                     insert(self.model)
                     .values(batch)
-                    .on_conflict_do_nothing(
-                        constraint=f"{self.model.__tablename__}_pkey"
-                    )
+                    .on_conflict_do_nothing(constraint=constraint)
                 )
                 if return_nothing:
                     db.execute(create_stmt)
@@ -204,13 +203,18 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         db: Session,
         filter: dict[str, Any] | None = None,
         *,
-        sort_key: str | None = None,
-        sort: str | None = None,
+        filter_params: FilterParams | None = None,
     ) -> ModelType | list[ModelType] | None:
-        if filter is None:
-            db_obj = db.query(self.model).all()
-        else:
-            db_obj = db.query(self.model).filter_by(**filter).all()
+        query = db.query(self.model)
+        if filter is not None:
+            query = query.filter_by(**filter)
+        if filter_params is not None:
+            if filter_params.skip is not None:
+                query = query.offset(filter_params.skip)
+            if filter_params.limit is not None:
+                query = query.limit(filter_params.limit)
+        db_obj = query.all()
+
         if not db_obj and not filter:  # Get all objs on an empty db
             pass
         elif not db_obj:
@@ -223,7 +227,14 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         if len(db_obj) == 1 and filter:
             db_obj = db_obj[0]
         else:
-            db_obj = self._sort_objects(db_obj, key=sort_key, sort=sort)
+            if filter_params is None:
+                db_obj = self._sort_objects(db_obj)
+            else:
+                db_obj = self._sort_objects(
+                    db_obj,
+                    sort_key=filter_params.sort_key,
+                    sort_method=filter_params.sort_method,
+                )
         return self.validate(db_obj)
 
     async def create(
@@ -233,6 +244,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         obj_in: CreateSchemaType | list[CreateSchemaType],
         on_duplicate_pkey_do_nothing: bool | None = None,
         return_nothing: bool | None = None,
+        on_conflict_constraint: str | None = None,
     ) -> ModelType | list[ModelType] | None:
         """
         Create an object in the database.
@@ -265,7 +277,10 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
 
         if on_duplicate_pkey_do_nothing:
             created_objects = self._create_with_on_conflict_do_nothing(
-                db, model_dict_list=model_dict_list, return_nothing=return_nothing
+                db,
+                model_dict_list=model_dict_list,
+                return_nothing=return_nothing,
+                constraint=on_conflict_constraint,
             )
         else:
             created_objects = self._create_bulk_insert(
@@ -327,8 +342,8 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         *,
         filter: Any,
         sort_key: str | None = None,
-        sort: str | None = None,
-        max_deletion_limit: int | None = 12,
+        sort_method: Literal["asc", "dec"] | None = None,
+        max_deletion_limit: int = 12,
     ) -> ModelType:
         db_objs = db.query(self.model).filter_by(**filter).all()
         if not db_objs:
@@ -342,8 +357,8 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             len(db_objs) > max_deletion_limit
         ):  # Arbitrary number, not too large, but should allow deleting all modifiers assosiated with an item
             raise DbTooManyItemsDeleteError(
+                max_deletion_number=max_deletion_limit,
                 model_table_name=self.model.__tablename__,
-                filter=filter,
                 function_name=self.remove.__name__,
                 class_name=self.__class__.__name__,
             )
@@ -352,7 +367,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             db_objs = db_objs[0]
             db.delete(db_objs)
         else:
-            db_objs = self._sort_objects(db_objs, key=sort_key, sort=sort)
+            db_objs = self._sort_objects(db_objs, key=sort_key, sort_method=sort_method)
             [db.delete(obj) for obj in db_objs]
         db.commit()
         return self.validate(db_objs)

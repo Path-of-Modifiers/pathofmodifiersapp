@@ -11,6 +11,7 @@ from app.core.cache.user_cache import UserCache, UserCacheTokenType
 from app.core.config import settings
 from app.core.models.database import AsyncSessionLocal, SessionLocal
 from app.core.models.models import User
+from app.core.rate_limit.rate_limit_config import rate_limit_settings
 from app.exceptions import (
     DbObjectDoesNotExistError,
     InvalidHeaderProvidedError,
@@ -102,7 +103,24 @@ async def get_current_user(
         )
     if not user.isActive:
         raise UserIsNotActiveError(
-            username_or_email=user.username,
+            function_name=get_current_user.__name__,
+        )
+    return user
+
+
+async def get_current_user_not_active(
+    token: TokenDep,
+    user_cache_session: UserCacheSession,
+    db: Session = Depends(get_db),
+) -> User:
+    """Use if user is not active yet."""
+    user_cached = await user_cache_session.verify_token(token)
+
+    user = db.get(User, user_cached.userId)
+    if not user:
+        raise DbObjectDoesNotExistError(
+            model_table_name=User.__tablename__,
+            filter={"userId": user_cached.userId},
             function_name=get_current_user.__name__,
         )
     return user
@@ -124,20 +142,19 @@ async def get_async_current_user(
             )
         if not await user.awaitable_attrs.isActive:
             raise UserIsNotActiveError(
-                username_or_email=user.username,
                 function_name=get_current_user.__name__,
             )
     return user
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
+CurrentUserNotActive = Annotated[User, Depends(get_current_user_not_active)]
 AsyncCurrentUser = Annotated[User, Depends(get_async_current_user)]
 
 
 async def get_current_active_superuser(current_user: CurrentUser) -> User:
     if not current_user.isSuperuser:
         raise UserWithNotEnoughPrivilegesError(
-            username_or_email=current_user.username,
             function_name=get_current_active_superuser.__name__,
         )
     return current_user
@@ -185,14 +202,19 @@ def get_username_by_request(request: Request) -> str:
     """Get username by request."""
     token = get_token_from_headers(request.headers)
 
-    return UserCache.extract_username_from_token(token=token)
+    return UserCache.extract_user_id_from_token(token=token)
+
+
+def get_user_ip_from_header(request: Request) -> str:
+    client_ip = request.headers.get("X-Forwarded-For")
+    return client_ip if client_ip is not None else "127.0.0.1"
 
 
 def get_rate_limit_amount_by_tier(tier: int) -> int:
     if tier == 0:
-        return settings.TIER_0_PLOT_RATE_LIMIT
+        return rate_limit_settings.TIER_0_PLOT_RATE_LIMIT
     if tier == 1:
-        return settings.TIER_1_PLOT_RATE_LIMIT
+        return rate_limit_settings.TIER_1_PLOT_RATE_LIMIT
 
 
 async def get_rate_limit_tier_by_request(
@@ -204,6 +226,6 @@ async def get_rate_limit_tier_by_request(
     user = await user_cache_session.verify_token(token)
 
     if user.isSuperuser:
-        return settings.TIER_SUPERUSER_PLOT_RATE_LIMIT
+        return rate_limit_settings.TIER_SUPERUSER_PLOT_RATE_LIMIT
 
     return get_rate_limit_amount_by_tier(user.rateLimitTier)

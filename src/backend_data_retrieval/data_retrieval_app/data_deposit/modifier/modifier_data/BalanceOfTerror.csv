@@ -1,3 +1,8 @@
+# Unique Name: The Balance of Terror
+# Base Types: Cobalt Jewel
+# Total modifiers on each item: 3
+# Can have duplicate modifiers: False|False
+# Modifier distrubution: 1:1,"rest":2 
 # Source: https://poedb.tw/The_Balance_of_Terror
 minRoll,maxRoll,position,effect,static,unique
 10,15,0,"#% to all Elemental Resistances",,True

@@ -1,3 +1,8 @@
+# Unique Name: Paradoxica
+# Base Types: Vaal Rapier
+# Total modifiers on each item: 3
+# Can have duplicate modifiers: False|False
+# Modifier distrubution: 1:1,"rest":2 
 # Source: https://www.poewiki.net/wiki/Paradoxica
 minRoll,maxRoll,textRolls,position,effect,static,unique,veiled
 ,,,0,"Attacks with this Weapon deal Double Damage",True,True,True

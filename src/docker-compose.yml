@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:16.1
+    image: timescale/timescaledb:latest-pg16
     restart: always
     volumes:
       - "pom-db-data:/var/lib/postgresql/data"
@@ -8,6 +8,7 @@ services:
       - .env
     environment:
       POSTGRES_DB: ${POSTGRES_DB?Variable not set}
+      PGDATA: /var/lib/postgresql/data
       POSTGRES_USER: ${POSTGRES_USER?Variable not set}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?Variable not set}
     deploy:
@@ -84,8 +85,8 @@ services:
         INSTALL_DEV: ${INSTALL_DEV-false}
     labels:
       - traefik.enable=true
-      - traefik.docker.network=traefik-public
-      - traefik.constraint-label=traefik-public
+      - traefik.docker.network=${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - traefik.constraint-label=${TRAEFIK_PUBLIC_NETWORK?Variable not set}
 
       - traefik.http.services.${STACK_NAME?Variable not set}-backend.loadbalancer.server.port=80
 
@@ -137,8 +138,8 @@ services:
       - default
     labels:
       - traefik.enable=true
-      - traefik.docker.network=traefik-public
-      - traefik.constraint-label=traefik-public
+      - traefik.docker.network=${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - traefik.constraint-label=${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-http.rule=Host(`pgadmin.${DOMAIN?Variable not set}`)
       - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-http.entrypoints=http
       - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-http.middlewares=https-redirect
@@ -152,7 +153,7 @@ services:
     image: "${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}"
     restart: always
     networks:
-      - traefik-public
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - default
     build:
       context: ./frontend
@@ -161,8 +162,8 @@ services:
         - NODE_ENV=production
     labels:
       - traefik.enable=true
-      - traefik.docker.network=traefik-public
-      - traefik.constraint-label=traefik-public
+      - traefik.docker.network=${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - traefik.constraint-label=${TRAEFIK_PUBLIC_NETWORK?Variable not set}
 
       - traefik.http.services.${STACK_NAME?Variable not set}-frontend.loadbalancer.server.port=80
 
@@ -177,6 +178,29 @@ services:
       # Enable www redirection for HTTP and HTTPS
       - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.middlewares=${STACK_NAME?Variable not set}-www-redirect
       - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect
+
+  autoheal:
+    restart: always
+    image: willfarrell/autoheal
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=all
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  vector:
+    image: timberio/vector:0.41.1-debian
+    container_name: vector
+    env_file:
+      - .env
+    volumes:
+      - ./vector.yaml:/etc/vector/vector.yaml:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "${VECTOR_PORT}:${VECTOR_PORT}"
+    restart: always
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - default
 
 volumes:
   pom-db-data:

@@ -32,8 +32,8 @@ class PoEAPIHandler:
         "User-Agent": f"OAuth pathofmodifiers/0.1.0 (contact: {settings.OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
     }
 
-    if "localhost" not in settings.BASEURL:
-        base_pom_api_url = f"https://{settings.BASEURL}"
+    if "localhost" not in settings.DOMAIN:
+        base_pom_api_url = f"https://{settings.DOMAIN}"
     else:
         base_pom_api_url = "http://src-backend-1"
 
@@ -67,6 +67,7 @@ class PoEAPIHandler:
         logger.debug("Url set to: " + self.url)
         self.auth_token = auth_token
         self.headers["Authorization"] = "Bearer " + auth_token
+
         logger.debug("Headers set to: " + str(self.headers))
 
         self.item_detectors = item_detectors
@@ -80,25 +81,36 @@ class PoEAPIHandler:
         self.n_unique_wanted_items = n_unique_wanted_items
         logger.debug("Unique items wanted set to: " + str(self.n_unique_wanted_items))
 
+        self.skip_program_too_slow = False
+
         self._program_too_slow = False
         self.time_of_launch = time.perf_counter()
+        self.run_program_for_n_seconds = settings.TIME_BETWEEN_RESTART
         logger.info("PoEAPIHandler successfully initialized.")
 
-    def _json_to_df(self, stashes: list) -> pd.DataFrame:
+        self.n_checkpoints_per_transfromation = (
+            settings.N_CHECKPOINTS_PER_TRANSFORMATION
+        )
+
+    def _json_to_df(self, stashes: list) -> pd.DataFrame | None:
         df_temp = pd.json_normalize(stashes)
+
         if "items" not in df_temp.columns:
             return None
+
         df_temp = df_temp.explode(["items"])
+
         df_temp = df_temp.loc[~df_temp["items"].isnull()]
+
         df_temp.drop("items", axis=1, inplace=True)
-        df_temp.rename(columns={"id": "stashId"}, inplace=True)
 
         df = pd.json_normalize(stashes, record_path=["items"])
+
         df["stash_index"] = df_temp.index
 
         df_temp.index = df.index
+
         df[df_temp.columns.to_list()] = df_temp
-        df.rename(columns={"id": "gameItemId"}, inplace=True)
 
         return df
 
@@ -110,7 +122,6 @@ class PoEAPIHandler:
         df_wanted = pd.DataFrame()
         n_new_items = 0
         n_total_unique_items = 0
-
         df = self._json_to_df(stashes)
         if df is None:
             return df_wanted
@@ -126,15 +137,19 @@ class PoEAPIHandler:
                 ) = item_detector.iterate_stashes(df)
 
                 df_wanted = pd.concat((df_wanted, df_filtered))
+
+                del df_filtered
+
                 n_new_items += item_count
                 n_total_unique_items += n_unique_found_items
                 if df_leftover.empty:
                     break
 
                 df = df_leftover.copy(deep=True)
-        except:
+                del df_leftover
+        except Exception as e:
             logger.exception(
-                f"While checking stashes (detector: {item_detector}), the exception below occured:"
+                f"While checking stashes (detector: {item_detector}), this exception occured: {e}"
             )
             raise
 
@@ -160,13 +175,24 @@ class PoEAPIHandler:
         ):  # For testing purposes, set manual next_change_id
             next_change_id = settings.NEXT_CHANGE_ID
             return next_change_id
-        response = requests.get(
-            "https://www.pathofexile.com/api/trade/data/change-ids",
-            headers=self.headers,
-        )
-        response.raise_for_status()
+        try:
+            # Can't have authorization header, so we make a new header
+            headers = {
+                "User-Agent": f"OAuth pathofmodifiers/0.1.0 (contact: {settings.OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
+            }
+            response = requests.get(
+                "https://www.pathofexile.com/api/trade/data/change-ids",
+                headers=headers,
+            )
+            response.raise_for_status()
+        except Exception as e:
+            logger.error(
+                f"The following error occurred while making request _get_latest_change_id: {e}"
+            )
+            raise e
         response_json = response.json()
         next_change_id = response_json["psapi"]
+        logger.info(f"Retrieved latest change id: {next_change_id}. Sleeping for 310s")
         time.sleep(
             310
         )  # Sleeps for 5 minutes and 10 seconds (for safety) for the latest change id to be populated
@@ -208,6 +234,7 @@ class PoEAPIHandler:
                 headers = response.headers
                 if response.status >= 300:
                     if response.status == 429:
+                        self.skip_program_too_slow = False
                         logger.exception(
                             f"Received a 429 with the response  {response.text}"
                         )
@@ -232,6 +259,7 @@ class PoEAPIHandler:
 
                 new_next_change_id = headers["X-Next-Change-Id"]
                 if new_next_change_id == self.next_change_id:
+                    self.skip_program_too_slow = True
                     logger.info("We sucessfully caught up to the stream!")
                     await asyncio.sleep(
                         30
@@ -250,6 +278,7 @@ class PoEAPIHandler:
                     headers["X-Rate-Limit-Ip"].split(":")[0]
                     == headers["X-Rate-Limit-Ip-State"].split(":")[0]
                 ):
+                    self.skip_program_too_slow = True
                     logger.info("Hit ratelimit, cooling down for one test period")
                     await asyncio.sleep(int(headers["X-Rate-Limit-Ip"].split(":")[1]))
                 waiting_for_next_id_lock.release()
@@ -262,12 +291,12 @@ class PoEAPIHandler:
                 stashes += response_json["stashes"]
                 del response_json
                 return stashes
-        except:
+        except Exception as e:
             logger.info(
                 f"Exiting {self._send_n_recursion_requests.__name__} gracefully"
             )
             logger.exception(
-                f"The following exception occured during {self._send_n_recursion_requests.__name__}"
+                f"The following exception occured during {self._send_n_recursion_requests.__name__}: {e}"
             )
             if waiting_for_next_id_lock.locked():
                 logger.info("Released lock after crash")
@@ -295,7 +324,7 @@ class PoEAPIHandler:
         stashes_ready_event: threading.Event,
         waiting_for_next_id_lock: threading.Lock,
         stash_lock: threading.Lock,
-    ):
+    ) -> None:
         """
         Follows the API stream for 30 requests before letting another thread take
         the stashes. Sends 5 requets before waiting to recieve the request body.
@@ -304,7 +333,7 @@ class PoEAPIHandler:
 
         timeout = aiohttp.ClientTimeout(total=60)
         session = aiohttp.ClientSession(headers=self.headers, timeout=timeout)
-        mini_batch_size = 30
+        mini_batch_size = settings.MINI_BATCH_SIZE
         try:
             while True:
                 while self.requests_since_last_checkpoint < mini_batch_size:
@@ -320,11 +349,11 @@ class PoEAPIHandler:
                 stashes = []
                 stashes_ready_event.set()
                 await asyncio.sleep(1)
-        except:
-            logger.exception(
-                f"The following exception occured during {self._follow_stream}"
+        except Exception as e:
+            logger.info(
+                f"The following exception occured during {self._follow_stream}: {e}"
             )
-            raise
+            raise e
         finally:
             logger.info(f"Exiting {self._follow_stream} gracefully")
 
@@ -395,9 +424,14 @@ class PoEAPIHandler:
             end_time = time.perf_counter()
 
             time_per_mini_batch = end_time - start_time
-            if time_per_mini_batch > (2 * 60):
-                # Does not allow a batch to take longer than 2 minutes
-                raise ProgramTooSlowException
+            if time_per_mini_batch > settings.MAX_TIME_PER_MINI_BATCH:
+                if self.skip_program_too_slow:
+                    # Program sleeps when we have caught up to stream, making it
+                    # too easy to trigger `ProgramTooSlowException`
+                    self.skip_program_too_slow = False
+                else:
+                    # Does not allow a batch to take longer than 2 minutes
+                    raise ProgramTooSlowException
 
         return df
 
@@ -472,7 +506,11 @@ class PoEAPIHandler:
             time.sleep(5)  # Waits for the listening threads to have time to start up.
             while True:
                 logger.info("Waiting for data from the stream")
-                df = self._gather_n_checkpoints(stashes_ready_event, stash_lock)
+                df = self._gather_n_checkpoints(
+                    stashes_ready_event,
+                    stash_lock,
+                    n=self.n_checkpoints_per_transfromation,
+                )
                 logger.info(
                     "Finished processing the stream, entering transformation phase"
                 )
@@ -481,5 +519,5 @@ class PoEAPIHandler:
                 logger.info("Finished transformation phase")
                 current_time = time.perf_counter()
                 time_since_launch = current_time - self.time_of_launch
-                if time_since_launch > 3600:
+                if time_since_launch > self.run_program_for_n_seconds:
                     raise ProgramRunTooLongException

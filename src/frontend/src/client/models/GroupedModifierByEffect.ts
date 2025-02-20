@@ -2,13 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { GroupedModifierProperties } from './GroupedModifierProperties';
 export type GroupedModifierByEffect = {
-    modifierId: Array<number>;
-    position: Array<number>;
-    minRoll: Array<(number | null)>;
-    maxRoll: Array<(number | null)>;
-    textRolls: Array<(string | null)>;
     effect: string;
-    static: Array<(boolean | null)>;
+    regex: string;
+    static: (boolean | null);
+    relatedUniques: (string | null);
+    groupedModifierProperties: GroupedModifierProperties;
 };
 
