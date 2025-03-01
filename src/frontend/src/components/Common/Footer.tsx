@@ -14,7 +14,6 @@ import CustomLink from "./CustomLink";
 
 const links = [
   { label: "About", url: "/about" },
-  { label: "Terms of use", url: "/terms-of-use" },
   { label: "Privacy Policy", url: "/privacy-policy" },
 ];
 const accounts = [
