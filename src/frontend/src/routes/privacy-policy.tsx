@@ -56,7 +56,7 @@ function TermsOfUse() {
           <Text justifySelf="center" fontSize={50}>
             Privacy Policy
           </Text>
-          <Text fontWeight={"bold"}>Effective date: 15.11.2024</Text>
+          <Text fontWeight={"bold"}>Effective date: 01.03.2025</Text>
         </VStack>
         <VStack width="100%" align="left">
           <Box width="100%" mb="3rem">
@@ -92,13 +92,6 @@ function TermsOfUse() {
                   </ListItem>
                 </UnorderedList>
                 <Text fontWeight="bold">1.3 Ad Data:</Text>
-                <UnorderedList>
-                  <ListItem>
-                    <b>Advertising Information:</b> Data collected through
-                    third-party advertisements, including demographic
-                    information, interests, and interaction data with the ads.
-                  </ListItem>
-                </UnorderedList>
               </ListItem>
               <ListItem>
                 <Text fontWeight="bold">How We Store Your Data</Text>
@@ -135,15 +128,15 @@ function TermsOfUse() {
                   <ListItem>
                     To detect, prevent, and address technical issues.
                   </ListItem>
-                  <ListItem>
-                    To show personalized advertisements based on your usage
-                    data.
-                  </ListItem>
                 </UnorderedList>
                 <Text>
                   <b>3.2 Future Uses:</b>
                 </Text>
                 <UnorderedList>
+                  <ListItem>
+                    We may use your data to show personalized advertisements based on your usage
+                    data.
+                  </ListItem>
                   <ListItem>
                     We may use your data to develop new services or enhance
                     existing ones.
@@ -167,16 +160,6 @@ function TermsOfUse() {
                     Ensure the security and stability of our website.
                   </ListItem>
                 </UnorderedList>
-              </ListItem>
-              <ListItem>
-                <Text fontWeight="bold">Third-Party Data Usage</Text>
-                <Text>
-                  We use third-party services, such as ad networks and analytics
-                  providers, which may collect, monitor, and analyze data to
-                  show relevant advertisements. These third parties adhere to
-                  their own privacy policies regarding how they use such
-                  information.
-                </Text>
               </ListItem>
               <ListItem>
                 <Text fontWeight="bold">Data Retention</Text>
