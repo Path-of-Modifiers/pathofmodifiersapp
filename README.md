@@ -26,7 +26,7 @@ https://github.com/user-attachments/assets/0efa4c0e-808c-4223-9a4f-781f886527e3
 - [TimescaleDB](https://www.timescale.com/) for both transactional and analytical processing database.
 - [Redis](https://redis.io/) as a cache for tokens and rate limit tracking
 - [Alembic](https://alembic.sqlalchemy.org/en/latest/front.html) to automate migrations to database
-- Continous stream requests to official [PoE API endpoints](https://www.pathofexile.com/developer/docs) written in threaded Python
+- Continuous stream requests to official [PoE API endpoints](https://www.pathofexile.com/developer/docs) written in threaded Python
 - Unit testing with Pytest
 - Homemade scripts to insert test data and test the backend
 - [React](https://react.dev/) for the frontend.
@@ -61,7 +61,7 @@ https://github.com/user-attachments/assets/0efa4c0e-808c-4223-9a4f-781f886527e3
 
 ## How it works
 
-Path of Modifiers uses a continous data retrieval system consuming [Path of Exile's Public Stashes Endpoint](https://www.pathofexile.com/developer/docs/reference#publicstashes), submitting new data to the database every ~10-15 minutes.
+Path of Modifiers uses a continuous data retrieval system consuming [Path of Exile's Public Stashes Endpoint](https://www.pathofexile.com/developer/docs/reference#publicstashes), submitting new data to the database every ~10-15 minutes.
 
 The data is stored with its parameters used for querying. When queried, the data is aggregated and uses several methods to calculate the exchange rates between currencies, items and their modifiers. Secret methods are used to calculate the prizes to counteract price manipulation. Currently prices are displayed for every 10 minutes.
 
