@@ -14,13 +14,15 @@ class DetectorBase:
 
     current_league = settings.CURRENT_SOFTCORE_LEAGUE
 
-    def __init__(self) -> None:
+    def __init__(self, enable_pbar: bool = False) -> None:
         """
         `self.n_unique_items_found` needs to be stored inbetween item detector sessions.
         """
         self.n_unique_items_found = 0
 
         self.prev_item_hashes_found = {}
+
+        self.pbar_enabled = enable_pbar
 
     def _general_filter(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -121,6 +123,7 @@ class DetectorBase:
         df_filtered = self._filter_on_game_item_id(df_filtered)
 
         item_count = len(df_filtered)
-        self.n_unique_items_found = len(self.found_items.keys())
+        if self.pbar_enabled:
+            self.n_unique_items_found = len(self.found_items.keys())
 
         return df_filtered, item_count, self.n_unique_items_found, df_leftover
