@@ -95,7 +95,8 @@ class UniqueUnidentifiedDetector(UniqueDetector):
         # df = df.loc[df["icon"].str.endswith(tuple(self.wanted_items.keys()))]
         for icon, name in self.wanted_item_icons.items():
             df.loc[df["icon"].str.endswith(icon), "name"] = name
-        df = df.loc[df["name"].str.len() == 0]
+        df = df.loc[df["name"].str.len() != 0]
+        # self._snapshot(df)
         return df
 
     def __str__(self):

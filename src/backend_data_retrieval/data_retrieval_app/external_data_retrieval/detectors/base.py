@@ -1,3 +1,6 @@
+import inspect
+import time
+
 import pandas as pd
 
 from data_retrieval_app.external_data_retrieval.config import settings
@@ -106,6 +109,19 @@ class DetectorBase:
         )
 
         return df
+
+    def _snapshot(self, df: pd.DataFrame, filepath: str = None) -> None:
+        """
+        A method for creating a snapshot for a given dataframe. If no filepath is given, it saves the class
+        this directory with the name `snapshot_{name_of_class}_{time}.csv`
+        """
+        if filepath is None:
+            filepath = (
+                inspect.getmodule(DetectorBase)
+                + f"snapshot_{self}_{time.time():.0f}.csv"
+            )
+        logger.info(f"Saving a snapshot, for the detector {self}")
+        df.to_csv(filepath, encoding="utf-8")
 
     def iterate_stashes(
         self, df: pd.DataFrame
