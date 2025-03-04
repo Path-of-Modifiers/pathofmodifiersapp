@@ -148,6 +148,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
                 )
             else:
                 raise GeneralDBError(
+                    model_table_name=self.model.__tablename__,
                     function_name=self.create.__name__,
                     class_name=self.__class__.__name__,
                     exception=e,
@@ -190,6 +191,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             except Exception as e:
                 db.rollback()
                 raise GeneralDBError(
+                    model_table_name=self.model.__tablename__,
                     function_name=self.create.__name__,
                     class_name=self.__class__.__name__,
                     exception=e,

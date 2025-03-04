@@ -108,6 +108,71 @@ class Item(Base):
     )
 
 
+class UnidentifiedItem(Base):
+    """
+    IS-A item relation, couldn't be bothered finding the actual way to implement it.
+    However, it is missing `suffixes` and `prefixes` attributes, and identified must be false.
+    """
+
+    __tablename__ = "unidentified_item"
+
+    name: Mapped[str | None] = mapped_column(Text, nullable=False)
+    itemBaseTypeId: Mapped[int] = mapped_column(
+        SmallInteger,
+        ForeignKey(
+            "item_base_type.itemBaseTypeId", ondelete="RESTRICT", onupdate="CASCADE"
+        ),
+        nullable=False,
+    )
+    createdHoursSinceLaunch: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    league: Mapped[str] = mapped_column(
+        Text,
+        nullable=False,
+    )
+    itemId: Mapped[int] = mapped_column(
+        BigInteger,
+        Identity(start=1, increment=1),
+        primary_key=True,  # Primary key constraint gets removed on hypertable creation
+    )
+    currencyId: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("currency.currencyId", ondelete="RESTRICT"),
+        index=True,
+        nullable=False,
+    )
+    ilvl: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    foilVariation: Mapped[int | None] = mapped_column(SmallInteger)
+    currencyAmount: Mapped[float] = mapped_column(Float(4), nullable=False)
+    identified: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    corrupted: Mapped[bool | None] = mapped_column(Boolean)
+    delve: Mapped[bool | None] = mapped_column(Boolean)
+    fractured: Mapped[bool | None] = mapped_column(Boolean)
+    synthesised: Mapped[bool | None] = mapped_column(Boolean)
+    replica: Mapped[bool | None] = mapped_column(Boolean)
+    searing: Mapped[bool | None] = mapped_column(Boolean)
+    tangled: Mapped[bool | None] = mapped_column(Boolean)
+    rarity: Mapped[str] = mapped_column(Text, nullable=False)
+    influences: Mapped[dict[str, str] | None] = mapped_column(
+        JSONB
+    )  # elder, shaper, warlord etc
+
+    __table_args__ = (
+        Index(
+            "ix_unid_item_name_itemBaseTypeId_createdHoursSinceLaunch_league",
+            "name",
+            "itemBaseTypeId",
+            "createdHoursSinceLaunch",
+            "league",
+        ),
+        CheckConstraint(
+            """
+            identified IS NOT TRUE
+            """,
+            "identified_is_false",
+        ),
+    )
+
+
 class Modifier(Base):
     __tablename__ = "modifier"
 
