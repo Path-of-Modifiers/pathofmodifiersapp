@@ -91,10 +91,16 @@ class UniqueUnidentifiedDetector(UniqueDetector):
     }
 
     def _check_if_wanted(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Uses the icon to identify which unique it is, then saving that name.
+        If the name attribute still has a length of 0 it means no matching unique
+        was found.
+        """
         df = df.loc[(~df["identified"] & df["baseType"].isin(self.wanted_base_types))]
-        # df = df.loc[df["icon"].str.endswith(tuple(self.wanted_items.keys()))]
+
         for icon, name in self.wanted_item_icons.items():
             df.loc[df["icon"].str.endswith(icon), "name"] = name
+
         df = df.loc[df["name"].str.len() != 0]
         # self._snapshot(df)
         return df

@@ -117,9 +117,10 @@ class DetectorBase:
         """
         if filepath is None:
             filepath = (
-                inspect.getmodule(DetectorBase)
+                inspect.getfile(DetectorBase)[:-7]
                 + f"snapshot_{self}_{time.time():.0f}.csv"
             )
+
         logger.info(f"Saving a snapshot, for the detector {self}")
         df.to_csv(filepath, encoding="utf-8")
 
