@@ -5,20 +5,19 @@ import {
   SelectBoxOptionValue,
   HandleChangeEventFunction,
 } from "./StandardLayoutInput/SelectBoxInput";
-import { DEFAULT_LEAGUE } from "../../config";
+import { CURRENT_SOFTCORE_LEAGUE, CURRENT_HARDCORE_LEAGUE } from "../../config";
 
 // Set the default league in the environment variables file.
 // League Input Component  -  This component is used to select the league of the game.
 export const LeagueInput = () => {
-  // FUTURE IMPLEMENTATION: Add default hardcore league
-  //   const defaultHardcoreLeague = import.meta.env.CURRENT_HARDCORE_LEAGUE;
   const { league, setLeague } = useGraphInputStore();
-  const defaultLeague = DEFAULT_LEAGUE;
+  const defaultLeague = CURRENT_SOFTCORE_LEAGUE;
+  const defaultHardcoreLeague = CURRENT_HARDCORE_LEAGUE;
   const clearClicked = useGraphInputStore((state) => state.clearClicked);
 
   const handleLeagueChange: HandleChangeEventFunction = (newValue) => {
     if (newValue) {
-      setLeague(newValue.label || DEFAULT_LEAGUE);
+      setLeague(newValue.label || CURRENT_SOFTCORE_LEAGUE);
     }
   };
 
@@ -30,9 +29,9 @@ export const LeagueInput = () => {
 
   const selectLeagueOptions: Array<SelectBoxOptionValue> = [
     { value: defaultLeague, label: defaultLeague, regex: defaultLeague },
+    { value: defaultHardcoreLeague, label: defaultHardcoreLeague, regex: defaultHardcoreLeague }
     /* FUTURE IMPLEMENTATION: Add more leagues here */
     // ,
-    // { value: defaultHardcoreLeague, label: defaultHardcoreLeague },
     // ,
     // { value: "Standard", label: "Standard" },
     // ,

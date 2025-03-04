@@ -17,7 +17,7 @@ const calcMean = (values: number[]) => {
 const calcSTD = (values: number[], mean: number) => {
   return Math.sqrt(
     values.reduce((prev, cur) => prev + (cur - mean) * (cur - mean), 0) /
-      values.length
+      values.length,
   );
 };
 
@@ -40,7 +40,7 @@ export function formatHoursSinceLaunch(hoursSinceLaunch: number): string {
 export const getHoursSinceLaunch = (currentTime: Date): number => {
   const getCurrentTimeDate = currentTime.getTime();
   const hoursSinceLaunch = Math.floor(
-    (getCurrentTimeDate - LEAGUE_LAUNCH_DATETIME.getTime()) / (1000 * 3600)
+    (getCurrentTimeDate - LEAGUE_LAUNCH_DATETIME.getTime()) / (1000 * 3600),
   );
   return hoursSinceLaunch;
 };
@@ -63,10 +63,10 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
         return newUniqueCandidates;
       }
       return prev.filter((prevCandidate) =>
-        newUniqueCandidates.includes(prevCandidate)
+        newUniqueCandidates.includes(prevCandidate),
       );
     },
-    [] as string[]
+    [] as string[],
   );
   if (possibleUniques.length === 0) {
     useErrorStore.getState().setNoRelatedUniqueError(true);
@@ -149,12 +149,10 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
       groupedWantedModifierExtended.map((wantedModifierExtended) => ({
         modifierId: wantedModifierExtended.modifierId,
         modifierLimitations: wantedModifierExtended.modifierLimitations,
-      }))
+      })),
     );
-  const currentTime = new Date();
-  const end = getHoursSinceLaunch(currentTime);
-  const fourteenDaysHours = 336;
-  const start = end - fourteenDaysHours;
+  const end = 999999999;
+  const start = 0;
 
   return {
     league: state.league,

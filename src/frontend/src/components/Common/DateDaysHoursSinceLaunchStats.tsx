@@ -6,11 +6,11 @@ import {
   formatHoursSinceLaunch,
   LEAGUE_LAUNCH_DATETIME,
 } from "../../hooks/graphing/utils";
-import { DEFAULT_LEAGUE } from "../../config";
+import { CURRENT_SOFTCORE_LEAGUE } from "../../config";
 import { msToNextHour } from "../../utils";
 
 const DateDaysHoursSinceLaunchStats = (props: StatProps) => {
-  const defaultLeague = DEFAULT_LEAGUE;
+  const defaultLeague = CURRENT_SOFTCORE_LEAGUE;
 
   const leagueLaunchDay = LEAGUE_LAUNCH_DATETIME.getDate();
   const leagueLaunchMonth = LEAGUE_LAUNCH_DATETIME.toLocaleString("default", {
