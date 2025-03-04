@@ -3,6 +3,7 @@ import json
 from collections.abc import Iterator
 from typing import Any
 
+from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.logs.logger import test_logger
 from data_retrieval_app.tests.scripts.create_public_stashes_test_data.config import (
     script_settings,
@@ -32,28 +33,36 @@ class PublicStashMockAPI:
             n_of_items=script_settings.N_OF_ITEMS_PER_MODIFIER_FILE
         )
         self.public_stashes_modifier_test_data_creator.create_templates()
+        self.leagues = [
+            settings.CURRENT_SOFTCORE_LEAGUE,
+            settings.CURRENT_HARDCORE_LEAGUE,
+        ]
 
     def get_test_data(self) -> list[dict[str, Any]]:
-        stashes = []
+        """Generates test data by modifying mock stashes and items based on league."""
 
+        # Create base stashes for each league
+        stashes = [
+            replace_false_values(copy.deepcopy(self.public_stashes_mock_obj))
+            | {"league": league}
+            for league in self.leagues
+        ]
+        league_to_idx = {league: i for i, league in enumerate(self.leagues)}
+
+        # Process modifier test data
         for (
-            modifier_file_name,
+            filename,
             items,
         ) in self.public_stashes_modifier_test_data_creator.create_test_data():
-            test_logger.debug(f"Creating test data for file '{modifier_file_name}'")
-            current_public_stashes_mock_modified = replace_false_values(
-                copy.deepcopy(self.public_stashes_mock_obj)
-            )
+            test_logger.debug(f"Creating test data for file '{filename}'")
             for item in items:
-                merged_complete_item_dict = {**self.item_mock_obj, **item}
-                merged_complete_item_dict_modified = replace_false_values(
-                    copy.deepcopy(merged_complete_item_dict)
+                # Merge mocks and process item
+                merged_item = replace_false_values(
+                    copy.deepcopy({**self.item_mock_obj, **item})
                 )
-                current_public_stashes_mock_modified["items"].append(
-                    merged_complete_item_dict_modified
+                stashes[league_to_idx[merged_item["league"]]]["items"].append(
+                    merged_item
                 )
-
-            stashes.append(current_public_stashes_mock_modified)
 
         return stashes
 
