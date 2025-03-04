@@ -273,6 +273,9 @@ class PoEAPIDataTransformerBase:
         item_base_types: dict[str, int],
         hours_since_launch: int,
     ) -> pd.Series:
+        """
+        Needs to return item ids, as it is used to connect the item modifiers
+        """
         item_df = self._create_item_table(df, hours_since_launch=hours_since_launch)
         item_df = self._transform_item_table(item_df, currency_df, item_base_types)
         item_df = self._clean_item_table(item_df)
@@ -286,6 +289,49 @@ class PoEAPIDataTransformerBase:
         item_id = self._get_latest_item_id_series(item_df)
         logger.debug("Latest item id found: " + str(item_id))
         return item_id
+
+    def _clean_unidentified_item_table(self, item_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Gets rid of unnecessay information, so that only fields needed for the DB remains.
+
+        Only selects unidentified items and always drops suffixes and prefixes
+        """
+
+        dont_drop_columns = self.item_table_columns_to_not_drop.difference(
+            {
+                "suffixes",
+                "prefixes",
+            }
+        )
+
+        item_df.drop(
+            item_df.columns.difference(dont_drop_columns),
+            axis=1,
+            inplace=True,
+            errors="ignore",
+        )
+
+        unidentified_item_df = item_df.loc[~item_df["identified"]]
+
+        return unidentified_item_df
+
+    def _process_unidentified_item_table(
+        self,
+        df: pd.DataFrame,
+        currency_df: pd.DataFrame,
+        item_base_types: dict[str, int],
+        hours_since_launch: int,
+    ) -> None:
+        item_df = self._create_item_table(df, hours_since_launch=hours_since_launch)
+        item_df = self._transform_item_table(item_df, currency_df, item_base_types)
+        item_df = self._clean_unidentified_item_table(item_df)
+        insert_data(
+            item_df,
+            url=self.url,
+            table_name="unidentifiedItem",
+            logger=logger,
+            headers=self.pom_auth_headers,
+        )
 
     def _create_item_modifier_table(
         self, df: pd.DataFrame, *, item_id: pd.Series, hours_since_launch: int
@@ -350,6 +396,12 @@ class PoEAPIDataTransformerBase:
             logger.debug("Processing data tables.")
             hours_since_launch = find_hours_since_launch()
             item_id = self._process_item_table(
+                df.copy(deep=True),
+                currency_df=currency_df,
+                item_base_types=item_base_types,
+                hours_since_launch=hours_since_launch,
+            )
+            self._process_unidentified_item_table(
                 df.copy(deep=True),
                 currency_df=currency_df,
                 item_base_types=item_base_types,
