@@ -5,37 +5,29 @@ import {
   SelectBoxOptionValue,
   HandleChangeEventFunction,
 } from "./StandardLayoutInput/SelectBoxInput";
-import { CURRENT_SOFTCORE_LEAGUE, CURRENT_HARDCORE_LEAGUE } from "../../config";
+import { DEFAULT_LEAGUE, ADDITIONAL_LEAGUES } from "../../config";
 
 // Set the default league in the environment variables file.
 // League Input Component  -  This component is used to select the league of the game.
 export const LeagueInput = () => {
   const { league, setLeague } = useGraphInputStore();
-  const defaultLeague = CURRENT_SOFTCORE_LEAGUE;
-  const defaultHardcoreLeague = CURRENT_HARDCORE_LEAGUE;
   const clearClicked = useGraphInputStore((state) => state.clearClicked);
 
   const handleLeagueChange: HandleChangeEventFunction = (newValue) => {
     if (newValue) {
-      setLeague(newValue.label || CURRENT_SOFTCORE_LEAGUE);
+      setLeague(newValue.label || DEFAULT_LEAGUE);
     }
   };
 
   useEffect(() => {
     if (clearClicked) {
-      useGraphInputStore.setState({ league: defaultLeague });
+      useGraphInputStore.setState({ league: DEFAULT_LEAGUE });
     }
-  }, [clearClicked, defaultLeague]);
+  }, [clearClicked]);
 
   const selectLeagueOptions: Array<SelectBoxOptionValue> = [
-    { value: defaultLeague, label: defaultLeague, regex: defaultLeague },
-    { value: defaultHardcoreLeague, label: defaultHardcoreLeague, regex: defaultHardcoreLeague }
-    /* FUTURE IMPLEMENTATION: Add more leagues here */
-    // ,
-    // ,
-    // { value: "Standard", label: "Standard" },
-    // ,
-    // { value: "Hardcore", label: "Hardcore" },
+    { value: DEFAULT_LEAGUE, label: DEFAULT_LEAGUE, regex: DEFAULT_LEAGUE },
+    ...ADDITIONAL_LEAGUES.map((league) => ({ value: league, label: league, regex: league }))
   ];
 
   return (

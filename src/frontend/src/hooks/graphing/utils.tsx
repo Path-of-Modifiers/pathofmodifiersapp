@@ -17,7 +17,7 @@ const calcMean = (values: number[]) => {
 const calcSTD = (values: number[], mean: number) => {
   return Math.sqrt(
     values.reduce((prev, cur) => prev + (cur - mean) * (cur - mean), 0) /
-      values.length,
+    values.length,
   );
 };
 
@@ -151,8 +151,11 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
         modifierLimitations: wantedModifierExtended.modifierLimitations,
       })),
     );
-  const end = 999999999;
-  const start = 0;
+  const currentTime = new Date();
+  const end = getHoursSinceLaunch(currentTime);
+  const fourteenDaysHours = 336;
+  const start = end - fourteenDaysHours;
+
 
   return {
     league: state.league,

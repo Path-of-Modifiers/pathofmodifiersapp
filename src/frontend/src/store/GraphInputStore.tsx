@@ -11,9 +11,7 @@ import {
 } from "./StateInterface";
 import { GroupedModifierByEffect, ItemBaseType, PlotQuery } from "../client";
 import { encodeHash, decodeHash } from "./utils";
-import { CURRENT_SOFTCORE_LEAGUE } from "../config";
-
-const defaultLeague = CURRENT_SOFTCORE_LEAGUE;
+import { DEFAULT_LEAGUE } from "../config";
 
 // Graph Input Store  -  This store is used to store graph input data.
 export const useGraphInputStore = create<GraphInputState>((set) => ({
@@ -27,7 +25,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
   choosableItemBaseType: [],
   choosableItemNames: [],
 
-  league: defaultLeague,
+  league: DEFAULT_LEAGUE,
 
   itemName: undefined,
   itemSpec: undefined,
@@ -36,7 +34,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
   wantedModifierExtended: [],
 
   plotQuery: {
-    league: defaultLeague,
+    league: DEFAULT_LEAGUE,
     wantedModifiers: [],
   },
 
