@@ -1,3 +1,4 @@
+import os
 from io import StringIO
 
 import pandas as pd
@@ -130,11 +131,12 @@ class ModifierDataDepositor(DataDepositorBase):
                 modifier_types=self.modifier_types,
             )
 
-            data, put_update = check_for_new_related_unique(
-                data=data,
-                put_update=put_update,
-                new_related_unique=self.logged_file_comments["Unique Name"],
-            )
+            if "Unique Name" in self.logged_file_comments:
+                data, put_update = check_for_new_related_unique(
+                    data=data,
+                    put_update=put_update,
+                    new_related_unique=self.logged_file_comments["Unique Name"],
+                )
 
             if put_update:
                 logger.info("Pushed updated modifier to the database.")
@@ -180,9 +182,15 @@ class ModifierDataDepositor(DataDepositorBase):
         return non_duplicate_df
 
     def _track_comments(self, df: pd.DataFrame) -> pd.DataFrame:
-        df["relatedUniques"] = self.logged_file_comments["Unique Name"]
+        if "Unique Name" in self.logged_file_comments:
+            df["relatedUniques"] = self.logged_file_comments["Unique Name"]
 
         return df
+
+    def _iterate_files(self):
+        for _, modifier_type_path in super()._iterate_files():
+            for filename in os.listdir(modifier_type_path):
+                yield filename, os.path.join(modifier_type_path, filename)
 
     def _process_data(self, df: pd.DataFrame) -> pd.DataFrame:
         df = self.regex_creator.add_regex(df.copy())

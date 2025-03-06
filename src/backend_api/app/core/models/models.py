@@ -125,6 +125,7 @@ class Modifier(Base):
     fractured: Mapped[bool | None] = mapped_column(Boolean)
     synthesised: Mapped[bool | None] = mapped_column(Boolean)
     unique: Mapped[bool | None] = mapped_column(Boolean)
+    idol: Mapped[bool | None] = mapped_column(Boolean)
     corrupted: Mapped[bool | None] = mapped_column(Boolean)
     enchanted: Mapped[bool | None] = mapped_column(Boolean)
     veiled: Mapped[bool | None] = mapped_column(Boolean)

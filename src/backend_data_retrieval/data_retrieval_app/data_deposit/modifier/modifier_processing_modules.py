@@ -185,14 +185,9 @@ class ModifierRegexCreator:
             if ser_contains_q.empty:
                 return ser
 
-            ser_split = ser_contains_q.str.split("?")
-            for index, str_parts in ser_split.items():
-                ser.iloc[index] = "".join(
-                    [
-                        part[:-1] if i < (len(str_parts) - 1) else part
-                        for i, part in enumerate(str_parts)
-                    ]
-                )
+            ser.iloc[ser_contains_q.index] = ser_contains_q.str.replace(
+                r"\(.*\)\?|.\?", "", regex=True
+            )
             return ser
 
         dynamic_modifier_df.loc[:, "effect"] = remove_quantifier(

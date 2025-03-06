@@ -53,9 +53,28 @@ class DataDepositTestDataCreator:
             test_logger.info(
                 f"Only iterating specified modifier csv files: {script_settings.MODIFIER_CSV_FILES_TO_ITERATE}"
             )
-            self.filenames = script_settings.MODIFIER_CSV_FILES_TO_ITERATE
+            self.filepaths += [
+                os.path.join(self.new_modifier_data_location, filename)
+                for filename in script_settings.MODIFIER_CSV_FILES_TO_ITERATE
+            ]
         else:
-            self.filenames = os.listdir(self.new_modifier_data_location)
+            self.filepaths = []
+            if script_settings.MODIFIER_CATEGORIES_TO_ITERATE:
+                for category in script_settings.MODIFIER_CATEGORIES_TO_ITERATE:
+                    self.filepaths += [
+                        os.path.join(
+                            self.new_modifier_data_location, category, filename
+                        )
+                        for filename in os.listdir()
+                    ]
+            else:
+                for category in os.listdir(self.new_modifier_data_location):
+                    self.filepaths += [
+                        os.path.join(
+                            self.new_modifier_data_location, category, filename
+                        )
+                        for filename in os.listdir()
+                    ]
 
     def _get_df_from_url(self, route: str) -> pd.DataFrame:
         headers = {"accept": "application/json", "Content-Type": "application/json"}
@@ -67,9 +86,7 @@ class DataDepositTestDataCreator:
     def _get_info_from_modifier_file(
         self,
     ) -> Iterator[tuple[str, dict[str, str], pd.DataFrame]]:
-        for filename in self.filenames:
-            filepath = os.path.join(self.new_modifier_data_location, filename)
-
+        for filepath in self.filepaths:
             comments = {}
             df = pd.read_csv(filepath, dtype=str, comment="#", index_col=False)
             with open(filepath) as infile:
@@ -80,7 +97,7 @@ class DataDepositTestDataCreator:
                     else:
                         break
 
-            yield filename, comments, df
+            yield filepath, comments, df
 
     def _parse_comment(
         self, comment: str

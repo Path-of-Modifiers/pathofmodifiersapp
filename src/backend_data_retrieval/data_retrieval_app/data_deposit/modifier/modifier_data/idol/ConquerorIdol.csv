@@ -63,7 +63,7 @@ minRoll,maxRoll,textRolls,position,effect,static,idol
 20,30,,0,"#% increased Stack size of Simulacrum Splinters found in your Maps",,True
 1,2,,0,"Delirious Unique Monsters in your Maps have a #% chance to drop an additional Delirium Orb",,True
 2,3,,0,"Delirious Unique Monsters in your Maps have a #% chance to drop an additional Cluster Jewel",,True
-,,,0,"Voltaxic Sulphite Veins and Chests in your Maps are guarded by Sulphite-hoarding Monsters",,True
+,,,0,"Voltaxic Sulphite Veins and Chests in your Maps are guarded by Sulphite-hoarding Monsters",True,True
 2,3,,0,"You Gain +#% to all maximum Elemental Resistances per stack of Sulphite Intoxication.",,True
 ,,,0,"Voltaxic Sulphite Veins and Chests found in your Maps contains Doomed Spirits",True,True
 ,,,0,"Shrines in your Maps are guarded by at least one Magic Pack",True,True
