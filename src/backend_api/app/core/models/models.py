@@ -141,20 +141,10 @@ class UnidentifiedItem(Base):
         nullable=False,
     )
     ilvl: Mapped[int] = mapped_column(SmallInteger, nullable=False)
-    foilVariation: Mapped[int | None] = mapped_column(SmallInteger)
     currencyAmount: Mapped[float] = mapped_column(Float(4), nullable=False)
+    nItems: Mapped[int] = mapped_column(SmallInteger, nullable=False)
     identified: Mapped[bool] = mapped_column(Boolean, nullable=False)
-    corrupted: Mapped[bool | None] = mapped_column(Boolean)
-    delve: Mapped[bool | None] = mapped_column(Boolean)
-    fractured: Mapped[bool | None] = mapped_column(Boolean)
-    synthesised: Mapped[bool | None] = mapped_column(Boolean)
-    replica: Mapped[bool | None] = mapped_column(Boolean)
-    searing: Mapped[bool | None] = mapped_column(Boolean)
-    tangled: Mapped[bool | None] = mapped_column(Boolean)
     rarity: Mapped[str] = mapped_column(Text, nullable=False)
-    influences: Mapped[dict[str, str] | None] = mapped_column(
-        JSONB
-    )  # elder, shaper, warlord etc
 
     __table_args__ = (
         Index(

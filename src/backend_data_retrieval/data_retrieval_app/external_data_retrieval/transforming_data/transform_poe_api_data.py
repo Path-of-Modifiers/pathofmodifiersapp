@@ -297,12 +297,17 @@ class PoEAPIDataTransformerBase:
         Only selects unidentified items and always drops suffixes and prefixes
         """
 
-        dont_drop_columns = self.item_table_columns_to_not_drop.difference(
-            {
-                "suffixes",
-                "prefixes",
-            }
-        )
+        dont_drop_columns = {
+            "name",
+            "itemBaseTypeId",
+            "createdHoursSinceLaunch",
+            "league",
+            "currencyId",
+            "ilvl",
+            "currencyAmount",
+            "identified",
+            "rarity",
+        }
 
         item_df.drop(
             item_df.columns.difference(dont_drop_columns),

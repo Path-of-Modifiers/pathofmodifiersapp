@@ -20,9 +20,9 @@ from app.core.schemas.modifier import Modifier, ModifierCreate
 from app.core.schemas.unidentified_item import (
     UnidentifiedItem,
     UnidentifiedItemCreate,
-    UnidentifiedItemUpdate,
 )
 from app.crud.extensions.crud_modifier import CRUDModifier
+from app.crud.extensions.unidentified_item import CRUDUnidentifiedItem
 from app.crud.user import CRUDUser
 
 from .base import CRUDBase
@@ -62,12 +62,7 @@ CRUD_item = CRUDBase[
     ItemUpdate,
 ](model=model_Item, schema=Item, create_schema=ItemCreate)
 
-CRUD_unidentifiedItem = CRUDBase[
-    model_UnidentifiedItem,
-    UnidentifiedItem,
-    UnidentifiedItemCreate,
-    UnidentifiedItemUpdate,
-](
+CRUD_unidentifiedItem = CRUDUnidentifiedItem(
     model=model_UnidentifiedItem,
     schema=UnidentifiedItem,
     create_schema=UnidentifiedItemCreate,
