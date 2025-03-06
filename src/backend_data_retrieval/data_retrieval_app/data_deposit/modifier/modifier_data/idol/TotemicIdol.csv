@@ -1,0 +1,95 @@
+# Base Types: Totemic Idol
+# Total modifiers on each item: 0|1|2|3|4
+# Can have duplicate modifiers: False|False
+# Modifier distrubution: 17:0|1|2,"rest":0|1|2
+# Source: https://poedb.tw/us/Totemic_Idol#ModifiersCalc
+minRoll,maxRoll,textRolls,position,effect,static,idol
+8,70,,0,"Your Maps have +#% chance to contain( an?)? #",,True
+,,"Abyss|Alva|Einhar|Niko|Jun|The Sacred Grove|Breaches|Ritual Altars|Rogue Exile|Blight Encounter|Mirror of Delirium|Shrine|Imprisoned Monster|Expedition Encounter|Smuggler's Cache|Legion Encounter|Ultimatum Encounter|Strongbox|Trial of Ascendancy",1,"Your Maps have +#% chance to contain( an?)? #",,True
+20,70,,0,"Your Maps have a #% chance to contain an additional #",,True
+,,"Rogue Exile|Harbinger",1,"Your Maps have a #% chance to contain an additional #",,True
+,,"Shrine|Harbinger|Imprisoned Monster|Strongbox",0,"Your Maps contain an additional #",,True
+,,,0,"Your Maps are haunted by an additional Tormented Spirit",True,True
+20,30,,0,"Your Maps have +#% chance to be haunted by a Tormented Spirit",,True
+224,280,,0,"Your Maps have #% increased chance to contain( an?)? #",,True
+,,"Abyss|Alva|Einhar|Niko|Jun|Blight Encounter|Breach|Mirror of Delirium|Expedition Encounter|The Sacred Grove|Smuggler's Cache|Legion Encounter|Ultimatum Encounter|Ritual Altars",1,"Your Maps have #% increased chance to contain( an?)? #",,True
+45,70,,0,"#% chance for your Maps to attract Beyond Demons",,True
+1,10,,0,"Your Maps which contain Breaches have #% chance to contain # additional Breaches",,True
+,,"an|two|three|ten",1,"Your Maps which contain Breaches have #% chance to contain # additional Breaches",,True
+4,6,,0,"Final Map Boss in each Map has #% chance to drop an additional connected Map",,True
+8,12,,0,"#% increased effect of Explicit Modifiers on your Maps",,True
+,,,0,"Up to 5 Rare Monsters in each of your Maps are Possessed and their Minions are Touched",True,True
+2,8,,0,"Your Maps have #% chance to grant an additional Kirac Mission on Completion",,True
+10,16,,0,"#% increased Rarity of Items found in your Maps",,True
+40,60,,0,"Abysses in your Maps that do not lead to an Abyssal Depths have #% increased chance to lead to a Stygian Spire",,True
+40,60,,0,"Abysses in your Maps have #% increased chance to lead to an Abyssal Depths",,True
+10,20,,0,"Abyss Cracks in your Maps have #% chance to spawn all Monsters as at least Magic",,True
+10,20,,0,"Abyss Pits in your Maps have #% chance to spawn all Monsters as at least Magic",,True
+30,50,,0,"Killing non-resident Architects in your Maps has #% chance to add an additional Upgrade Tier to the surviving Architect's Room",,True
+75,100,,0,"Wild Rogue Exiles in your Maps have #% chance to be Possessed by a Tormented Spirit",,True
+3,4,,0,"Your Maps that contain capturable Beasts contain # additional Yellow Beasts",,True
+40,60,,0,"Red Beasts captured in your Maps have a #% chance to gain a Modifier that provides a chance to not to be consumed when sacrificed at the Blood Altar",,True
+16,24,,0,"Red Beasts in your Maps have #% chance to appear in Pairs",,True
+25,30,,0,"Beyond Portals in your Maps have #% increased chance to spawn a Unique Boss",,True
+20,25,,0,"#% more # found from Beyond Demons in your Maps that are followers of #",,True
+,,"Divination Cards|Unique Items|Basic Currency Items",1,"#% more # found from Beyond Demons in your Maps that are followers of #",,True
+,,"K'Tash|Beidat|Ghorr",2,"#% more # found from Beyond Demons in your Maps that are followers of #",,True
+20,35,,0,"Blight Encounters in your Maps spawn #% more Non-Unique Monsters",,True
+20,25,,0,"Oils found in your Maps have #% chance to be 1 tier higher",,True
+30,40,,0,"Blight Monsters in your Maps take #% increased Damage",,True
+35,45,,0,"Breaches in your Maps have #% increased chance to contain a Boss",,True
+3,5,,0,"Breachstones dropped by Breach Bosses in your Maps have #% chance to be Flawless",,True
+6,30,,0,"Breaches in your Maps open and close #% #",,True
+,,"faster|slower",1,"Breaches in your Maps open and close #% #",,True
+10,15,,0,"Breaches in your Maps have #% chance to contain a Hand of Xesht-Ula",,True
+8,12,,0,"Breaches in your Maps have #% increased Monster density",,True
+40,60,,0,"#% chance to spawn a Searing Exarch Altar when the Influence of The Searing Exarch first appears in your Maps",,True
+35,50,,0,"Delirium in your Maps increases #% faster with distance from the mirror",,True
+10,15,,0,"Delirium Fog in your Maps lasts # additional seconds before dissipating",,True
+8,12,,0,"Delirium Rewards in your Maps have #% increased chance to give Delirium Orbs",,True
+4,6,,0,"Voltaxic Sulphite Veins and Chests in your Maps have #% chance to contain double Sulphite",,True
+30,40,,0,"You Gain #% increased Damage per stack of Sulphite Intoxication.",,True
+40,60,,0,"Shrines in your Maps have #% chance to be guarded by an additional Pack of Monsters",,True
+,,"Shaper|Elder",0,"Monster Packs Influenced by The # in your Maps have #% increased Pack Size",,True
+15,25,,1,"Monster Packs Influenced by The # in your Maps have #% increased Pack Size",,True
+12,17,,0,"Imprisoned Monsters in your Maps have #% chance to have 3 additional Essences",,True
+25,35,,0,"Remnants in your Maps have #% chance to have an additional Suffix Modifier",,True
+50,100,,0,"Expeditions in your Maps have #% increased chance to be led by #",,True
+,,"Tujen|Dannig|Rog|Gwennen",1,"Expeditions in your Maps have #% increased chance to be led by #",,True
+6,10,,0,"Expedition Monsters in your Maps spawn with an additional #% of Life missing",,True
+20,25,,0,"Harbingers in your Maps have #% chance to be replaced by a powerful Harbinger boss",,True
+12,18,,0,"Harvest Monsters in your Maps drop #% increased Quantity of Lifeforce",,True
+8,12,,0,"Harvests in your Maps have #% chance for the unchosen Crop to not wilt",,True
+40,60,,0,"The Sacred Grove in your Maps has #% chance to contain an additional Harvest",,True
+40,60,,0,"Smuggler's Caches in your Maps have #% increased chance to drop Contracts",,True
+8,12,,0,"Smuggler's Caches drop #% more Rogue Markers for each Smuggler's Cache opened in the Area",,True
+45,90,,0,"Heist Contracts found in your Maps are #% more likely to target # Targets",,True
+,,"High Value|Precious",1,"Heist Contracts found in your Maps are #% more likely to target # Targets",,True
+20,25,,0,"Immortal Syndicate Members in your Maps have #% increased chance to be accompanied by reinforcements",,True
+40,60,,0,"Immortal Syndicate Members in your Maps have #% chance to drop an additional Veiled Item",,True
+40,60,,0,"#% increased Rarity of Items Dropped by Immortal Syndicate Members in your Maps",,True
+60,150,,0,"Legion Encounters in your Maps have #% increased chance to include an? # army",,True
+,,"Karui|Eternal Empire|Vaal|Templar|Maraketh",1,"Legion Encounters in your Maps have #% increased chance to include an? # army",,True
+15,20,,0,"Splinters dropped by Legion Monsters or contained in Legion Chests in your Maps have #% chance to be Duplicated",,True
+20,25,,0,"Splinters contained in Legion Chests in your Maps have #% chance to be Duplicated",,True
+20,25,,0,"Splinters dropped by Legion Monsters in your Maps have #% chance to be Duplicated",,True
+8,12,,0,"Legion Monsters in your Maps which have Rewards have #% chance to gain two additional Rewards, and if not have #% chance to gain one additional Reward",,True
+15,20,,1,"Legion Monsters in your Maps which have Rewards have #% chance to gain two additional Rewards, and if not have #% chance to gain one additional Reward",,True
+5,20,,0,"#% increased # (in|of) your Maps affected by Fortune Favours the Brave",,True
+,,"Pack Size|Quantity of Items found|Rarity of Items found",1,"#% increased # (in|of) your Maps affected by Fortune Favours the Brave",,True
+15,20,,0,"Ultimatum Encounters in your Maps spawn #% increased number of Monsters",,True
+,,"Ultimatum Monsters|Beyond Demons|Abyss Monsters",0,"# in your Maps grant #% increased Experience",,True
+20,60,,1,"# in your Maps grant #% increased Experience",,True
+40,60,,0,"Inscribed Ultimatums found in your Maps have #% increased chance to reward #",,True
+,,"Unique Items|Currency Items|Divination Cards",1,"Inscribed Ultimatums found in your Maps have #% increased chance to reward #",,True
+20,25,,0,"Monsters Sacrificed at Ritual Altars in your Maps grant #% increased Tribute",,True
+15,20,,0,"Ritual Altars in your Maps spawn Monsters #% faster",,True
+15,20,,0,"Deferring Favours at Ritual Altars in your Maps costs #% reduced Tribute",,True
+20,25,,0,"Final Map Boss in each Map has #% chance to drop an additional Scarab",,True
+40,60,,0,"Rare Monsters in your Maps have #% increased chance to drop Scarabs per Monster Modifier affecting them",,True
+,,"Currency Items|Maps|Divination Cards|Gems",0,"# (from|in) Strongboxes in your Maps are Duplicated",,True
+0.8,1.2,,0,"Monsters Influenced by The Eater of Worlds in your Maps have #% chance to drop an item with an Eater of Worlds Implicit Modifier",,True
+15,20,,0,"#% increased chance to find Eater of Worlds Altars in your Maps",,True
+10,15,,0,"Items dropped by Unique Monsters have #% chance to be Corrupted",,True
+15,20,,0,"Vaal Side Areas in your Maps have #% chance for Rewards from Vaal Vessels to be Duplicated",,True
+25,35,,0,"#% increased Rarity of Maps found in your Maps",,True

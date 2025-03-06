@@ -1,0 +1,87 @@
+# Base Types: Noble Idol
+# Total modifiers on each item: 0|1|2|3|4
+# Can have duplicate modifiers: False|False
+# Modifier distrubution: 17:0|1|2,"rest":0|1|2
+# Source: https://poedb.tw/us/Noble_Idol#ModifiersCalc
+minRoll,maxRoll,textRolls,position,effect,static,idol
+8,70,,0,"Your Maps have +#% chance to contain( an?)? #",,True
+,,"Abyss|Alva|Einhar|Niko|Jun|The Sacred Grove|Breaches|Ritual Altars|Rogue Exile|Blight Encounter|Mirror of Delirium|Shrine|Imprisoned Monster|Expedition Encounter|Smuggler's Cache|Legion Encounter|Ultimatum Encounter|Strongbox|Trial of Ascendancy",1,"Your Maps have +#% chance to contain( an?)? #",,True
+20,70,,0,"Your Maps have a #% chance to contain an additional #",,True
+,,"Rogue Exile|Harbinger",1,"Your Maps have a #% chance to contain an additional #",,True
+,,"Shrine|Harbinger|Imprisoned Monster|Strongbox",0,"Your Maps contain an additional #",,True
+,,,0,"Your Maps are haunted by an additional Tormented Spirit",True,True
+20,30,,0,"Your Maps have +#% chance to be haunted by a Tormented Spirit",,True
+224,280,,0,"Your Maps have #% increased chance to contain( an?)? #",,True
+,,"Abyss|Alva|Einhar|Niko|Jun|Blight Encounter|Breach|Mirror of Delirium|Expedition Encounter|The Sacred Grove|Smuggler's Cache|Legion Encounter|Ultimatum Encounter|Ritual Altars",1,"Your Maps have #% increased chance to contain( an?)? #",,True
+45,70,,0,"#% chance for your Maps to attract Beyond Demons",,True
+1,10,,0,"Your Maps which contain Breaches have #% chance to contain # additional Breaches",,True
+,,"two|three|ten",1,"Your Maps which contain Breaches have #% chance to contain # additional Breaches",,True
+1.8,2.4,,0,"Final Map Boss in each Map has +#% chance to drop a Shaper Guardian Map (Tier 14+)",,True
+,,"Shaper|Elder",1,"Final Map Boss in each Map has +#% chance to drop an Elder Guardian Map (Tier 14+)",,True
+20,25,,0,"#% increased Blueprints found in your Maps",,True
+1.2,1.8,,0,"+#% chance for a Synthesis Map to drop from Final Map Boss in each Map (Tier 14+)",,True
+5,8,,0,"#% chance for one Monster in each of your Maps to drop an additional connected Map",,True
+,,"Ultimatum Monsters|Beyond Demons|Abyss Monsters",0,"# in your Maps grant #% increased Experience",,True
+20,60,,1,"# in your Maps grant #% increased Experience",,True
+,,"Cracks|Pits",0,"Abyss # in your Maps have #% chance to spawn 100% increased Monsters",,True
+8,12,,1,"Abyss # in your Maps have #% chance to spawn 100% increased Monsters",,True
+3,5,,0,"Abyss Cracks in your Maps have #% chance to spawn all Monsters as Magic for each prior Pit in that Abyss",,True
+15,25,,0,"Incursions in your Maps have #% chance for all Monsters to be at least Magic
+30,40,,0,"#% increased Rarity of Items Dropped by Wild Rogue Exiles in your Maps,,True
+15,20,,0,"Rogue Exiles in your Maps have #% chance to drop an additional Currency Item,,True
+12,18,,0,"Your Maps that contain capturable Beasts have #% chance to contain an additional Red Beast,,True
+600,800,,0,"Einhar deals #% more Damage to Unique Monsters in your Maps,,True
+60,80,,0,"Einhar has #% increased Cooldown Recovery Rate in your Maps,,True
+20,25,,0,"Beyond Portals in your Maps have #% increased Merging Radius,,True
+10,15,,0,"#% increased Quantity of Tainted Currency dropped by Beyond Demons in your Maps,,True
+6,8,,0,"Lanes of Blight Encounters in your Maps have #% chance for an additional Reward Chest,,True
+15,25,,0,"#% chance for Blight Chests to contain an additional Reward,,True
+14,18,,0,"Blight Bosses in your Maps have #% chance to add an additional Reward Chest when Defeated,,True
+25,35,,0,"Blighted Chests in your Maps have #% increased chance to contain an Oil,,True
+40,60,,0,"Blight Monsters in your Maps spawn #% faster,,True
+12,16,,0,"Breach Bosses in your Maps have #% chance to drop double Breach Splinters,,True
+20,25,,0,"#% increased Quantity of Breach Splinters found in Breach Hands in your Maps,,True
+60,120,,0,"Breaches in your Maps have #% increased chance to belong to #,,True
+,,"Xoph|Tul|Esh|Uul-Netol|Chayula",1,"Breaches in your Maps have #% increased chance to belong to #,,True
+20,25,,0,"#% increased Quantity of Breach Splinters dropped by Breach Monsters in your Maps,,True
+3,7,,0,"Breach Monsters in your Maps have #% increased chance to drop a Breach Unique Item,,True
+0.5,0.7,,0,"Monsters Influenced by The Searing Exarch in your Maps have #% chance to drop an Item with a Searing Exarch Implicit Modifier,,True
+8,12,,0,"Monster Packs Influenced by Conquerors in your Maps have #% increased Pack Size,,True
+2,5,,0,"Delirium Fog in your Maps dissipates #% slower,,True
+40,30,,0,"Delirium Bosses in your Maps have #% increased chance to drop Unique Cluster Jewels,,True
+15,25,,0,"Delirium Monsters in your Maps have #% increased chance to drop Cluster Jewels,,True
+6,8,,0,"Cluster Jewels from Delirium Rewards have a #% chance to be Rare and Corrupted,,True
+8,10,,0,"Voltaxic Sulphite Veins and Chests in your Maps contain #% increased Sulphite,,True
+8,12,,0,"You Gain #% increased Movement Speed per stack of Sulphite Intoxication.,,True
+25,35,,0,"#% increased Effect of Shrine Buffs on Players in your Maps,,True
+20,25,,0,"Monsters Imprisoned by Essences have a #% chance to contain a Remnant of Corruption,,True
+10,15,,0,"#% increased quantity of Artifacts dropped by Monsters,,True
+6,10,,0,"#% increased number of Explosives in your Maps,,True
+15,20,,0,"#% increased Quantity of Vendor Refresh Currencies dropped by Monsters in your Maps,,True
+12,18,,0,"Expedition Detonation Chains in your Maps travel #% slower,,True
+40,60,,0,"Harbingers in your Maps have #% chance to drop an additional Stack of Currency Shards,,True
+35,45,,0,"Harvest Crops in your Maps have #% increased chance to contain a # Plant,,True
+,,"Tier 4|Tier 3",1,"Harvest Crops in your Maps have #% increased chance to contain # Plants,,True
+75,125,,0,"Heist Contracts found in your Maps are #% more likely to require # Jobs,,True
+,,"level 3|level 4|level 5",1,"Heist Contracts found in your Maps are #% more likely to require # Jobs,,True
+25,35,,0,"Your Maps that contain Smuggler's Caches have a #% chance to contain an additional Smuggler's Cache,,True
+120,160,,0,"Immortal Syndicate Members in your Maps are #% more likely to offer to Bargain for Items,,True
+16,24,,0,"#% increased Rarity of items from Defeated Syndicate Members in your Maps per Equipment Item they have,,True
+100,250,,0,"#% increased Rarity of Items Dropped by Legion Sergeants in your Maps,,True
+40,60,,0,"Legion Encounters in your Maps have #% increased Duration,,True
+30,40,,0,"Legion Monsters in your Maps take #% increased Damage while in Stasis,,True
+10,15,,0,"Legion Monsters in your Maps have #% increased Pack Size,,True
+30,40,,0,"Ultimatum Altars in your Maps have #% increased Life,,True
+15,20,,0,"Ultimatum Stone Circles in your Maps have #% increased radius,,True
+25,35,,0,"Ultimatum Rewards in your Maps have #% increased chance to be Inscribed Ultimatums,,True
+3,5,,0,"Ultimatum Encounters in your Maps only requiring you to Survive have #% reduced duration,,True
+3,5,,0,"Ultimatum Encounters in your Maps requiring you to Defeat waves of Enemies require killing #% reduced number of Enemies,,True
+50,75,,0,"#% increased chance of Ritual Altars with Special Rewards,,True
+0.8,1.2,,0,"Favours Rerolled at Ritual Altars in your Maps have #% chance to cost no Tribute,,True
+15,25,,0,"Ritual Altars in your Maps can have #% increased number of Spawned Monsters at once,,True
+20,25,,0,"Ritual Splinters offered at Ritual Altars in your Maps have #% increased Stack Size,,True
+60,80,,0,"Scarabs (found|dropped) in your Maps are #% more likely to be # Scarabs,,True
+,,"Cartography|Ambush|Titanic|Harbinger|Beyond|Essence|Torment|Domination|Anarchy",1,"Scarabs dropped in your Maps are #% more likely to be # Scarabs,,True
+40,60,,0,"Strongboxes in your Maps have #% chance to be guarded by an additional Pack of Monsters,,True
+15,20,,0,"#% increased Quantity of Items contained in Strongboxes in your Maps,,True
+1,2,,0,"Tormented Spirits have a #% chance to be set free when Possessed Monsters are slain,,True
