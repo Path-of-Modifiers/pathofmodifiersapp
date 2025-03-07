@@ -34,10 +34,12 @@ class DataDepositorBase:
         self.data_type = data_type
         self.data_url = f"{self.base_url}/{data_type}/"
 
-    def _load_data(self) -> Iterator[pd.DataFrame]:
+    def _iterate_files(self) -> Iterator[str, str]:
         for filename in os.listdir(self.new_data_location):
-            filepath = os.path.join(self.new_data_location, filename)
+            yield filename, os.path.join(self.new_data_location, filename)
 
+    def _load_data(self) -> Iterator[pd.DataFrame]:
+        for filename, filepath in self._iterate_files():
             self.logged_file_comments = {}
             logger.info(f"Loading new data from '{filename}'.")
             df = pd.read_csv(filepath, dtype=str, comment="#", index_col=False)

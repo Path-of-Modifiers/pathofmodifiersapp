@@ -1,0 +1,85 @@
+# Base Types: Minor Idol
+# Total modifiers on each item: 0|1|2|3|4
+# Can have duplicate modifiers: False|False
+# Modifier distrubution: 19:0|1|2,"rest":0|1|2
+# Source: https://poedb.tw/us/Minor_Idol#ModifiersCalc
+minRoll,maxRoll,textRolls,position,effect,static,idol
+8,70,,0,"Your Maps have +#% chance to contain( an?)? #",,True
+,,"Abyss|Alva|Einhar|Niko|Jun|The Sacred Grove|Breaches|Ritual Altars|Rogue Exile|Blight Encounter|Mirror of Delirium|Shrine|Imprisoned Monster|Expedition Encounter|Smuggler's Cache|Legion Encounter|Ultimatum Encounter|Strongbox|Trial of Ascendancy",1,"Your Maps have +#% chance to contain( an?)? #",,True
+20,70,,0,"Your Maps have a #% chance to contain an additional #",,True
+,,"Rogue Exile|Harbinger",1,"Your Maps have a #% chance to contain an additional #",,True
+,,"Shrine|Harbinger|Imprisoned Monster|Strongbox",0,"Your Maps contain an additional #",,True
+,,,0,"Your Maps are haunted by an additional Tormented Spirit",True,True
+20,30,,0,"Your Maps have +#% chance to be haunted by a Tormented Spirit",,True
+224,280,,0,"Your Maps have #% increased chance to contain( an?)? #",,True
+,,"Abyss|Alva|Einhar|Niko|Jun|Blight Encounter|Breach|Mirror of Delirium|Expedition Encounter|The Sacred Grove|Smuggler's Cache|Legion Encounter|Ultimatum Encounter|Ritual Altars",1,"Your Maps have #% increased chance to contain( an?)? #",,True
+45,70,,0,"#% chance for your Maps to attract Beyond Demons",,True
+1,10,,0,"Your Maps which contain Breaches have #% chance to contain # additional Breaches",,True
+,,"an|two|three|ten",1,"Your Maps which contain Breaches have #% chance to contain # additional Breaches",,True
+40,60,,0,"Map Bosses have #% increased chance to drop a Conqueror Map",,True
+10,15,,0,"#% increased Heist Contracts found in your Maps",,True
+5,10,,0,"Tier 1-15 Maps found have #% chance to become 1 tier higher",,True
+5,10,,0,"#% increased Scarabs found in your Maps",,True
+10,15,,0,"#% increased Atlas Scouting Reports found in your Maps",,True
+2,3,,0,"#% increased Maps found in Area",,True
+3,5,,0,"Your Maps contain #% more Monster Packs consisting of difficult and rewarding Monsters",,True
+15,25,,0,"Abyssal Troves and Stygian Spires in your Maps have #% increased chance to contain or drop an Abyss Jewel",,True
+6,10,,0,"Abyssal Troves and Stygian Spires in your Maps have #% chance to drop a Rare Item with an Abyssal Socket",,True
+300,500,,0,"#% increased Rarity of Items Dropped by Abyssal Troves and Stygian Spires in your Maps",,True
+4,6,,0,"Incursions in your Maps have #% increased Pack Size",,True
+5,10,,0,"#% chance to create a copy of Beasts Captured in your Maps",,True
+40,60,,0,"Red Beasts in your Maps have #% increased chance to be from #",,True
+,,"The Deep|The Wilds|The Caverns|The Sands",1,"Red Beasts in your Maps have #% increased chance to be from #",,True
+30,45,,0,"Beyond Demons in your Maps have #% increased chance to be followers of #",,True
+,,"K'tash|Beidat|Ghorr",1,"Beyond Demons in your Maps have #% increased chance to be followers of #",,True
+15,20,,0,"#% reduced Cost of Building and Upgrading Towers",,True
+15,25,,0,"Blight Chests in your Maps have #% more chance to contain Blighted Maps",,True
+15,20,,0,"Breaches in your Maps spawn #% increased Magic Monsters",,True
+,,"Chayula, Who Dreamt|Esh, Forked Thought|Uul-Netol, Unburdened Flesh|Xoph, Dark Embers|Tul, Creeping Avalanche",0,"# in your Maps has a #% chance to be Duplicated",,True
+20,30,,1,"# in your Maps has a #% chance to be Duplicated",,True
+35,45,,0,"Breaches in your Maps have #% increased chance to contain a Breach Boss' Clasped Hand",,True
+4,6,,0,"Monster Packs Influenced by The Searing Exarch in your Maps have #% increased Pack Size",,True
+6,10,,0,"Delirium Encounters in your Maps have #% chance to generate an additional Reward type",,True
+35,50,,0,"Delirium Encounters in your Maps are #% more likely to spawn Unique Bosses",,True
+20,30,,0,"Delirium Bosses in your Maps drop #% increased Simulacrum Splinters",,True
+10,20,,0,"Delirious Monsters Killed in your Maps provide #% increased Reward Progress",,True
+5,10,,0,"Delirium Monsters in your Maps have #% increased Pack Size",,True
+3,5,,0,"Sulphite Veins and Chests in your Maps have #% chance to also contain an equal amount of Azurite",,True
+30,40,,0,"#% increased Duration of Shrine Effects on Players in your Maps",,True
+40,60,,0,"Imprisoned Monsters in your Maps have #% chance to drop an additional Rare Item with an Essence Modifier",,True
+8,12,,0,"Imprisoned Monsters in your Maps have #% chance to have an additional Essence",,True
+15,20,,0,"#% increased Explosive Radius in your Maps",,True
+15,20,,0,"#% increased Quantity of Expedition Logbooks dropped by Runic Monsters in your Maps",,True
+20,30,,0,"Harbingers in your Maps have #% increased Cooldown Recovery Rate",,True
+70,90,,0,"Harvest Monsters in your Maps grant #% increased Experience",,True
+10,15,,0,"Harvest Crops in your Maps have #% reduced chance to grow # Plants",,True
+,,"Yellow|Blue|Purple",1,"Harvest Crops in your Maps have #% reduced chance to grow # Plants",,True
+35,45,,0,"Smuggler's Caches in your Maps have #% increased chance to drop Blueprints",,True
+40,60,,0,"Heist Contracts found in your Maps are #% more likely to require #",,True
+,,"Lockpicking, Brute Force or Perception|Demolition, Counter-Thaumaturgy or Trap Disarmament|Agility, Deception or Engineering",1,"Heist Contracts found in your Maps are #% more likely to require #",,True
+40,60,,0,"Immortal Syndicate Members in your Maps are #% more likely to be accompanied by their Leader",,True
+40,60,,0,"Immortal Syndicate Members Executed in your Maps have #% chance to gain an additional Rank",,True
+6,10,,0,"Legion Sergeants in your Maps have #% additional chance to have Rewards",,True
+25,35,,0,"Legion Encounters in your Maps are #% more likely to include a General",,True
+35,50,,0,"Legion Chests released from Stasis in your Maps release other Monsters and Chests with #% increased Range",,True
+15,20,,0,"Ultimatum Encounters in your Maps have #% increased chance for the final Round to include a Boss",,True
+40,60,,0,"Ultimatum Encounters in your Maps have #% increased chance to require you to protect the Altar",,True
+20,30,,0,"Ultimatum Rewards in your Maps have #% increased chance to be #",,True
+,,"Unique Items|Jewellery|Currency Items|Divination Cards|Gems",1,"Ultimatum Rewards in your Maps have #% increased chance to be #",,True
+40,60,,0,"Ultimatum Encounters in your Maps have #% increased chance to require you to defeat waves of Enemies",,True
+40,50,,0,"Ultimatum Encounters in your Maps have #% increased chance to require you to Stand in the Stone Circles",,True
+40,50,,0,"Ultimatum Encounters in your Maps have #% increased chance to only require you to Survive",,True
+8,12,,0,"Rerolling Favours at Ritual Altars in your Maps costs #% reduced Tribute",,True
+20,30,,0,"Favours Deferred at Ritual Altars in your Maps reappear #% sooner",,True
+40,60,,0,"Unique Monsters slain at Ritual Altars in your Maps grant #% more Tribute",,True
+74,100,,0,"Unique Monsters in your Maps have #% increased chance to drop Scarabs",,True
+40,70,,0,"Strongboxes in your Maps have #% increased chance to be an Arcanist's Strongbox",,True
+,,"Arcanist's|Cartographer's|Diviner's|Gemcutter's",1,"Strongboxes in your Maps have #% increased chance to be a Cartographer's Strongbox",,True
+4,6,,0,"Your Maps have #% chance to award double progress towards encountering The Eater of Worlds",,True
+4,6,,0,"Eldritch Ichor found in your Maps influenced by The Eater of Worlds have #% chance to be Duplicated",,True
+40,60,,0,"Tormented Spirits in your Maps have #% increased Duration",,True
+1,2,,0,"Items found in your Corrupted Maps have #% chance to be Corrupted",,True
+6,10,,0,"Vaal Side Areas in your Maps have #% chance to be an Alluring Vaal Side Area",,True
+3,5,,0,"Items dropped by Rare Monsters have #% chance to be Corrupted",,True
+2,10,,0,"#% chance for Scouting Reports to drop as # Scouting Reports instead in your Maps",,True
+,,"Otherworldly|Delirious|Blighted|Comprehensive|Vaal|Operative's|Singular",1,"#% chance for Scouting Reports to drop as Delirious # Reports instead in your Maps",,True

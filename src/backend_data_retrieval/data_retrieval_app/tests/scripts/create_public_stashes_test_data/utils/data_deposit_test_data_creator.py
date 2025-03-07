@@ -58,9 +58,32 @@ class DataDepositTestDataCreator:
             test_logger.info(
                 f"Only iterating specified modifier csv files: {script_settings.MODIFIER_CSV_FILES_TO_ITERATE}"
             )
-            self.filenames = script_settings.MODIFIER_CSV_FILES_TO_ITERATE
+            self.filepaths += [
+                os.path.join(self.new_modifier_data_location, filename)
+                for filename in script_settings.MODIFIER_CSV_FILES_TO_ITERATE
+            ]
         else:
-            self.filenames = os.listdir(self.new_modifier_data_location)
+            self.filepaths = []
+            if script_settings.MODIFIER_CATEGORIES_TO_ITERATE:
+                for category in script_settings.MODIFIER_CATEGORIES_TO_ITERATE:
+                    self.filepaths += [
+                        os.path.join(
+                            self.new_modifier_data_location, category, filename
+                        )
+                        for filename in os.listdir(
+                            self.new_modifier_data_location + f"/{category}"
+                        )
+                    ]
+            else:
+                for category in os.listdir(self.new_modifier_data_location):
+                    self.filepaths += [
+                        os.path.join(
+                            self.new_modifier_data_location, category, filename
+                        )
+                        for filename in os.listdir(
+                            self.new_modifier_data_location + f"/{category}"
+                        )
+                    ]
 
     def _get_df_from_url(self, route: str) -> pd.DataFrame:
         headers = {"accept": "application/json", "Content-Type": "application/json"}
@@ -72,9 +95,7 @@ class DataDepositTestDataCreator:
     def _get_info_from_modifier_file(
         self,
     ) -> Iterator[tuple[str, dict[str, str], pd.DataFrame]]:
-        for filename in self.filenames:
-            filepath = os.path.join(self.new_modifier_data_location, filename)
-
+        for filepath in self.filepaths:
             comments = {}
             df = pd.read_csv(filepath, dtype=str, comment="#", index_col=False)
             with open(filepath) as infile:
@@ -85,7 +106,7 @@ class DataDepositTestDataCreator:
                     else:
                         break
 
-            yield filename, comments, df
+            yield filepath, comments, df
 
     def _parse_comment(
         self, comment: str
@@ -254,6 +275,7 @@ class DataDepositTestDataCreator:
                 )
                 modifier_template["is_unique"] = True
             else:
+                modifier_template["item_name"] = ["Non Unique item"]
                 modifier_template["is_unique"] = False
 
             if "Base Types" in modifier_comments:
@@ -263,6 +285,15 @@ class DataDepositTestDataCreator:
             else:
                 modifier_template["base_types"] = [
                     random.choice(self.base_type_df["baseType"].to_list())
+                ]
+
+            if "Category" in modifier_comments:
+                modifier_template["categories"] = self._parse_comment(
+                    modifier_comments["Category"]
+                )
+            else:
+                modifier_template["categories"] = [
+                    random.choice(self.base_type_df["category"].to_list())
                 ]
 
             modifier_template["can_duplicate"] = self._parse_comment(
@@ -407,6 +438,7 @@ class DataDepositTestDataCreator:
             else random.choice(["Normal", "Magic", "Rare"])
         )
         base_type = random.choice(template["base_types"])
+        category = random.choice(template["categories"])
         modifiers = self._choose_and_make_modifiers(template)
 
         item_dict = {
@@ -417,12 +449,11 @@ class DataDepositTestDataCreator:
             "rarity": rarity,
             "baseType": base_type,
             "note": self._create_random_note_text(),
-            "extended": [
-                {
-                    "prefixes": random_int(0, 99),
-                    "suffixes": random_int(0, 99),
-                }
-            ],
+            "extended": {
+                "prefixes": random_int(0, 99),
+                "suffixes": random_int(0, 99),
+                "category": category,
+            },
             "explicitMods": modifiers,
         }
 
