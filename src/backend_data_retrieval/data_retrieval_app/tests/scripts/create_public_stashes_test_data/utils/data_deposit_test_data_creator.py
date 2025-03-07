@@ -65,7 +65,9 @@ class DataDepositTestDataCreator:
                         os.path.join(
                             self.new_modifier_data_location, category, filename
                         )
-                        for filename in os.listdir()
+                        for filename in os.listdir(
+                            self.new_modifier_data_location + f"/{category}"
+                        )
                     ]
             else:
                 for category in os.listdir(self.new_modifier_data_location):
@@ -73,7 +75,9 @@ class DataDepositTestDataCreator:
                         os.path.join(
                             self.new_modifier_data_location, category, filename
                         )
-                        for filename in os.listdir()
+                        for filename in os.listdir(
+                            self.new_modifier_data_location + f"/{category}"
+                        )
                     ]
 
     def _get_df_from_url(self, route: str) -> pd.DataFrame:
@@ -266,6 +270,7 @@ class DataDepositTestDataCreator:
                 )
                 modifier_template["is_unique"] = True
             else:
+                modifier_template["item_name"] = ["Non Unique item"]
                 modifier_template["is_unique"] = False
 
             if "Base Types" in modifier_comments:
@@ -275,6 +280,15 @@ class DataDepositTestDataCreator:
             else:
                 modifier_template["base_types"] = [
                     random.choice(self.base_type_df["baseType"].to_list())
+                ]
+
+            if "Category" in modifier_comments:
+                modifier_template["categories"] = self._parse_comment(
+                    modifier_comments["Category"]
+                )
+            else:
+                modifier_template["categories"] = [
+                    random.choice(self.base_type_df["category"].to_list())
                 ]
 
             modifier_template["can_duplicate"] = self._parse_comment(
@@ -419,6 +433,7 @@ class DataDepositTestDataCreator:
             else random.choice(["Normal", "Magic", "Rare"])
         )
         base_type = random.choice(template["base_types"])
+        category = random.choice(template["categories"])
         modifiers = self._choose_and_make_modifiers(template)
 
         item_dict = {
@@ -429,12 +444,11 @@ class DataDepositTestDataCreator:
             "rarity": rarity,
             "baseType": base_type,
             "note": self._create_random_note_text(),
-            "extended": [
-                {
-                    "prefixes": random_int(0, 99),
-                    "suffixes": random_int(0, 99),
-                }
-            ],
+            "extended": {
+                "prefixes": random_int(0, 99),
+                "suffixes": random_int(0, 99),
+                "category": category,
+            },
             "explicitMods": modifiers,
         }
 

@@ -236,6 +236,8 @@ class ContinuousDataRetrieval:
                             )
                             futures[follow_future] = "data_processing"
                     elif future_job == "listener":
+                        print(crashed_future_exception)
+                        raise Exception("OLLLAH")
                         new_future = self._initialize_data_stream_threads(
                             executor,
                             listeners=1,
