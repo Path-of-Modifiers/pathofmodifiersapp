@@ -69,10 +69,6 @@ class CRUDModifier(
             "groupedModifierProperties"
         ] = grouped_modifier_properties_record
 
-        grouped_modifier_df["relatedUniques"] = (
-            grouped_modifier_df["relatedUniques"].fillna(pd.NA).replace(pd.NA, None)
-        )
-
         grouped_modifier_by_effect_record = grouped_modifier_df.to_dict("records")
 
         validate = TypeAdapter(
