@@ -12,8 +12,9 @@ class ReplaceableObject:
 
 
 class ReplaceableTrigger(ReplaceableObject):
-    def __init__(self, name, function, trigger):
+    def __init__(self, name, table, function, trigger):
         self.name = name
+        self.table = table
         self.function = function
         self.trigger = trigger
 
@@ -109,5 +110,7 @@ def create_trigger(operations: Operations, operation: CreateTriggerOp):
 
 @Operations.implementation_for(DropTriggerOp)
 def drop_trigger(operations: Operations, operation: DropTriggerOp):
-    operations.execute("DROP TRIGGER %s" % operation.target.name)
-    operations.execute("DROP FUNCTION %s()" % operation.target.name)
+    operations.execute(
+        "DROP TRIGGER {} ON {};".format(operation.target.name, operation.target.table)
+    )
+    operations.execute("DROP FUNCTION %s();" % operation.target.name)

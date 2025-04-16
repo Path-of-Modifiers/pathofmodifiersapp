@@ -402,12 +402,12 @@ class DataDepositTestDataCreator:
             else random.choice(["Normal", "Magic", "Rare"])
         )
         base_type = random.choice(template["base_types"])
-        modifiers = self._choose_and_make_modifiers(template)
+        identified = random.random() < 0.95  # 95% chance for identified item
 
         item_dict = {
             "verified": True,
             "name": name,
-            "identified": True,
+            "identified": identified,
             "league": settings.CURRENT_SOFTCORE_LEAGUE,
             "rarity": rarity,
             "baseType": base_type,
@@ -418,8 +418,11 @@ class DataDepositTestDataCreator:
                     "suffixes": random_int(0, 99),
                 }
             ],
-            "explicitMods": modifiers,
         }
+
+        if identified:
+            modifiers = self._choose_and_make_modifiers(template)
+            item_dict["explicitMods"] = modifiers
 
         return item_dict
 

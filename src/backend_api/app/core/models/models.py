@@ -131,7 +131,7 @@ class UnidentifiedItem(Base):
     )
     itemId: Mapped[int] = mapped_column(
         BigInteger,
-        Identity(start=1, increment=1),
+        Identity(start=1, increment=1, always=True),
         primary_key=True,  # Primary key constraint gets removed on hypertable creation
     )
     currencyId: Mapped[int] = mapped_column(
@@ -142,9 +142,10 @@ class UnidentifiedItem(Base):
     )
     ilvl: Mapped[int] = mapped_column(SmallInteger, nullable=False)
     currencyAmount: Mapped[float] = mapped_column(Float(4), nullable=False)
-    nItems: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    nItems: Mapped[int] = mapped_column(SmallInteger, nullable=False, default=1)
     identified: Mapped[bool] = mapped_column(Boolean, nullable=False)
     rarity: Mapped[str] = mapped_column(Text, nullable=False)
+    aggregated: Mapped[bool] = mapped_column(Boolean, default=False)
 
     __table_args__ = (
         Index(
