@@ -21,7 +21,6 @@ class _BaseModifier(_pydantic.BaseModel):
     fractured: bool | None = None
     synthesised: bool | None = None
     unique: bool | None = None
-    idol: bool | None = None
     corrupted: bool | None = None
     enchanted: bool | None = None
     veiled: bool | None = None

@@ -3,10 +3,9 @@ from pydantic_settings import BaseSettings
 
 class PoEPublicStashesTestDataSettings(BaseSettings):
     N_OF_ITEMS_PER_MODIFIER_FILE: int = 10
-    MODIFIER_CATEGORIES_TO_ITERATE: list[str] = []  # For instance ["unique", "idol"]
     MODIFIER_CSV_FILES_TO_ITERATE: list[
         str
-    ] = []  # For instance: ["unique/AulsUprising.csv", "unique/ThreadOfHope.csv"] (overrides categories)
+    ] = []  # For instance: ["AulsUprising.csv", "ThreadOfHope.csv"]
 
     MINI_BATCH_SIZE: int = 10
     N_CHECKPOINTS_PER_TRANSFORMATION: int = 1
