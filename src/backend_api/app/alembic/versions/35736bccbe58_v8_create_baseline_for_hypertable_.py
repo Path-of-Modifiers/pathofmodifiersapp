@@ -63,7 +63,6 @@ def upgrade() -> None:
         sa.Column("fractured", sa.Boolean(), nullable=True),
         sa.Column("synthesised", sa.Boolean(), nullable=True),
         sa.Column("unique", sa.Boolean(), nullable=True),
-        sa.Column("idol", sa.Boolean(), nullable=True),
         sa.Column("corrupted", sa.Boolean(), nullable=True),
         sa.Column("enchanted", sa.Boolean(), nullable=True),
         sa.Column("veiled", sa.Boolean(), nullable=True),

@@ -9,9 +9,6 @@ import pandas as pd
 import requests
 
 from data_retrieval_app.external_data_retrieval.config import settings
-from data_retrieval_app.external_data_retrieval.detectors.idol_detector import (
-    IdolDetector,
-)
 from data_retrieval_app.external_data_retrieval.detectors.unique_detector import (
     UniqueArmourDetector,
     UniqueDetector,
@@ -64,7 +61,6 @@ class PoEAPIHandler:
                 UniqueJewelDetector(),
                 UniqueJewelleryDetector(),
                 UniqueWeaponDetector(),
-                IdolDetector(),
             ]
         logger.debug("Item detectors set to: " + str(item_detectors))
         self.url = url
