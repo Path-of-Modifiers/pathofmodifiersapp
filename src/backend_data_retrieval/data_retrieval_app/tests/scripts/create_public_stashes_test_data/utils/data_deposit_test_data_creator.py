@@ -40,6 +40,11 @@ class DataDepositTestDataCreator:
             self.base_url + "/api/api_v1"
         )
 
+        self.leagues = [
+            settings.CURRENT_SOFTCORE_LEAGUE,
+            settings.CURRENT_HARDCORE_LEAGUE,
+        ]
+
         self.base_type_df = self._get_df_from_url("itemBaseType")
         self.grouped_modifier_df = self._get_df_from_url(
             "modifier/grouped_modifiers_by_effect/"
@@ -408,7 +413,7 @@ class DataDepositTestDataCreator:
             "verified": True,
             "name": name,
             "identified": identified,
-            "league": settings.CURRENT_SOFTCORE_LEAGUE,
+            "league": random.choice(self.leagues),
             "rarity": rarity,
             "baseType": base_type,
             "note": self._create_random_note_text(),

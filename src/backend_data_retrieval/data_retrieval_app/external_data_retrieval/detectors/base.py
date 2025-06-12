@@ -15,8 +15,6 @@ class DetectorBase:
     wanted_items = {}
     found_items = {}
 
-    current_league = settings.CURRENT_SOFTCORE_LEAGUE
-
     def __init__(self, enable_pbar: bool = False) -> None:
         """
         `self.n_unique_items_found` needs to be stored inbetween item detector sessions.
@@ -24,6 +22,11 @@ class DetectorBase:
         self.n_unique_items_found = 0
 
         self.prev_item_hashes_found = {}
+
+        self.leagues = [
+            settings.CURRENT_SOFTCORE_LEAGUE,
+            settings.CURRENT_HARDCORE_LEAGUE,
+        ]
 
         self.pbar_enabled = enable_pbar
 
@@ -61,7 +64,7 @@ class DetectorBase:
         else:
             return pd.DataFrame(columns=df.columns)
 
-        df = df.loc[df["league"] == self.current_league]
+        df = df.loc[df["league"].isin(self.leagues)]
 
         return df
 
@@ -105,7 +108,7 @@ class DetectorBase:
         n_items_filtered = n_items_before_filter - len(df)
 
         logger.info(
-            f'detector="{self}" {n_items_before_filter=} {n_items_filtered=} percent_of_total={1-n_items_filtered/max(1, n_items_before_filter):.2%}'
+            f'detector="{self}" {n_items_before_filter=} {n_items_filtered=} percent_of_total={1 - n_items_filtered / max(1, n_items_before_filter):.2%}'
         )
 
         return df

@@ -1,5 +1,7 @@
 # Path of Modifiers Application :game_die:
 
+**Important: Currently not retrieving data until the next POE league launch due to game inactivity**
+
 Website application for analyzing prices on items with customized parameters plotted on graphs in Path of Exile.
 
 ## :clapper: How it works trailer :clapper:
