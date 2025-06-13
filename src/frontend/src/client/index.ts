@@ -34,6 +34,8 @@ export type { PlotQuery } from './models/PlotQuery';
 export type { Token } from './models/Token';
 export type { TurnstileQuery } from './models/TurnstileQuery';
 export type { TurnstileResponse } from './models/TurnstileResponse';
+export type { UnidentifiedItem } from './models/UnidentifiedItem';
+export type { UnidentifiedItemCreate } from './models/UnidentifiedItemCreate';
 export type { ValidationError } from './models/ValidationError';
 export type { WantedModifier } from './models/WantedModifier';
 
@@ -64,6 +66,8 @@ export { $PlotQuery } from './schemas/$PlotQuery';
 export { $Token } from './schemas/$Token';
 export { $TurnstileQuery } from './schemas/$TurnstileQuery';
 export { $TurnstileResponse } from './schemas/$TurnstileResponse';
+export { $UnidentifiedItem } from './schemas/$UnidentifiedItem';
+export { $UnidentifiedItemCreate } from './schemas/$UnidentifiedItemCreate';
 export { $ValidationError } from './schemas/$ValidationError';
 export { $WantedModifier } from './schemas/$WantedModifier';
 
@@ -78,3 +82,4 @@ export { ModifiersService } from './services/ModifiersService';
 export { PlotsService } from './services/PlotsService';
 export { TestsService } from './services/TestsService';
 export { TurnstilesService } from './services/TurnstilesService';
+export { UnidentifiedItemsService } from './services/UnidentifiedItemsService';

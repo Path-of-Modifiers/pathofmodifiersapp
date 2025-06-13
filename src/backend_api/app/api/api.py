@@ -19,6 +19,8 @@ from app.api.routes import (
     test_prefix,
     turnstile,
     turnstile_prefix,
+    unidentified_item,
+    unidentified_item_prefix,
 )
 
 api_router = APIRouter()
@@ -39,6 +41,11 @@ api_router.include_router(
 )
 api_router.include_router(
     item.router, prefix=f"/{item_prefix}", tags=[f"{item_prefix}s"]
+)
+api_router.include_router(
+    unidentified_item.router,
+    prefix=f"/{unidentified_item_prefix}",
+    tags=[f"{unidentified_item_prefix}s"],
 )
 api_router.include_router(
     modifier.router, prefix=f"/{modifier_prefix}", tags=[f"{modifier_prefix}s"]

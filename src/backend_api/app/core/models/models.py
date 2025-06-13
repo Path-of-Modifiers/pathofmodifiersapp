@@ -50,11 +50,7 @@ class ItemBaseType(Base):
     relatedUniques: Mapped[str | None] = mapped_column(Text)
 
 
-class Item(Base):
-    # Hypertable
-    # For hypertable specs, see alembic revision `cc29b89156db'
-    __tablename__ = "item"
-
+class _ItemBase:
     name: Mapped[str | None] = mapped_column(Text, nullable=False)
     itemBaseTypeId: Mapped[int] = mapped_column(
         SmallInteger,
@@ -70,7 +66,7 @@ class Item(Base):
     )
     itemId: Mapped[int] = mapped_column(
         BigInteger,
-        Identity(start=1, increment=1),
+        Identity(start=1, increment=1, always=True),
         primary_key=True,  # Primary key constraint gets removed on hypertable creation
     )
     currencyId: Mapped[int] = mapped_column(
@@ -80,10 +76,18 @@ class Item(Base):
         nullable=False,
     )
     ilvl: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    currencyAmount: Mapped[float] = mapped_column(Float(4), nullable=False)
+    rarity: Mapped[str] = mapped_column(Text, nullable=False)
+
+
+class Item(_ItemBase, Base):
+    # Hypertable
+    # For hypertable specs, see alembic revision `cc29b89156db'
+    __tablename__ = "item"
+
     prefixes: Mapped[int | None] = mapped_column(SmallInteger)
     suffixes: Mapped[int | None] = mapped_column(SmallInteger)
     foilVariation: Mapped[int | None] = mapped_column(SmallInteger)
-    currencyAmount: Mapped[float] = mapped_column(Float(4), nullable=False)
     identified: Mapped[bool] = mapped_column(Boolean, nullable=False)
     corrupted: Mapped[bool | None] = mapped_column(Boolean)
     delve: Mapped[bool | None] = mapped_column(Boolean)
@@ -92,7 +96,6 @@ class Item(Base):
     replica: Mapped[bool | None] = mapped_column(Boolean)
     searing: Mapped[bool | None] = mapped_column(Boolean)
     tangled: Mapped[bool | None] = mapped_column(Boolean)
-    rarity: Mapped[str] = mapped_column(Text, nullable=False)
     influences: Mapped[dict[str, str] | None] = mapped_column(
         JSONB
     )  # elder, shaper, warlord etc
@@ -104,6 +107,35 @@ class Item(Base):
             "itemBaseTypeId",
             "createdHoursSinceLaunch",
             "league",
+        ),
+    )
+
+
+class UnidentifiedItem(_ItemBase, Base):
+    """
+    IS-A item relation, couldn't be bothered finding the actual way to implement it.
+    However, it is missing `suffixes` and `prefixes` attributes, and identified must be false.
+    """
+
+    __tablename__ = "unidentified_item"
+
+    nItems: Mapped[int] = mapped_column(SmallInteger, nullable=False, default=1)
+    identified: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    aggregated: Mapped[bool] = mapped_column(Boolean, default=False)
+
+    __table_args__ = (
+        Index(
+            "ix_unid_item_name_itemBaseTypeId_createdHoursSinceLaunch_league",
+            "name",
+            "itemBaseTypeId",
+            "createdHoursSinceLaunch",
+            "league",
+        ),
+        CheckConstraint(
+            """
+            identified IS NOT TRUE
+            """,
+            "identified_is_false",
         ),
     )
 
