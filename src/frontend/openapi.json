@@ -1215,6 +1215,250 @@
         }
       }
     },
+    "/api/api_v1/unidentifiedItem/latest_item_id/": {
+      "get": {
+        "tags": [
+          "unidentifiedItems",
+          "latest_item_id"
+        ],
+        "summary": "Get Latest Item Id",
+        "description": "Get the latest \"itemId\"\n\nCan only be used safely on an empty table or directly after an insertion.",
+        "operationId": "get_latest_item_id",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Unidentifieditems-Get Latest Item Id"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/api_v1/unidentifiedItem/": {
+      "get": {
+        "tags": [
+          "unidentifiedItems"
+        ],
+        "summary": "Get All Items",
+        "description": "Get all items.\n\nReturns a list of all items.",
+        "operationId": "get_all_items",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "sort_key",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort Key"
+            }
+          },
+          {
+            "name": "sort_method",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "asc",
+                    "desc"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort Method"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/UnidentifiedItem"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/UnidentifiedItem"
+                      }
+                    }
+                  ],
+                  "title": "Response Unidentifieditems-Get All Items"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "unidentifiedItems"
+        ],
+        "summary": "Create Item",
+        "description": "Create one or a list of new items.\n\nReturns the created item or list of items.",
+        "operationId": "create_item",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "return_nothing",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Return Nothing"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/UnidentifiedItemCreate"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/UnidentifiedItemCreate"
+                    }
+                  }
+                ],
+                "title": "Item"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/UnidentifiedItemCreate"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/UnidentifiedItemCreate"
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Unidentifieditems-Create Item"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/api_v1/modifier/{modifierId}": {
       "get": {
         "tags": [
@@ -3779,6 +4023,163 @@
           "success"
         ],
         "title": "TurnstileResponse"
+      },
+      "UnidentifiedItem": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "league": {
+            "type": "string",
+            "title": "League"
+          },
+          "itemBaseTypeId": {
+            "type": "integer",
+            "title": "Itembasetypeid"
+          },
+          "ilvl": {
+            "type": "integer",
+            "title": "Ilvl"
+          },
+          "rarity": {
+            "type": "string",
+            "title": "Rarity"
+          },
+          "identified": {
+            "type": "boolean",
+            "title": "Identified",
+            "default": false
+          },
+          "currencyAmount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currencyamount"
+          },
+          "currencyId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currencyid"
+          },
+          "createdHoursSinceLaunch": {
+            "type": "integer",
+            "title": "Createdhourssincelaunch"
+          },
+          "itemId": {
+            "type": "integer",
+            "title": "Itemid"
+          },
+          "nItems": {
+            "type": "integer",
+            "title": "Nitems"
+          },
+          "aggregated": {
+            "type": "boolean",
+            "title": "Aggregated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "league",
+          "itemBaseTypeId",
+          "ilvl",
+          "rarity",
+          "createdHoursSinceLaunch",
+          "itemId",
+          "nItems",
+          "aggregated"
+        ],
+        "title": "UnidentifiedItem"
+      },
+      "UnidentifiedItemCreate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "league": {
+            "type": "string",
+            "title": "League"
+          },
+          "itemBaseTypeId": {
+            "type": "integer",
+            "title": "Itembasetypeid"
+          },
+          "ilvl": {
+            "type": "integer",
+            "title": "Ilvl"
+          },
+          "rarity": {
+            "type": "string",
+            "title": "Rarity"
+          },
+          "identified": {
+            "type": "boolean",
+            "title": "Identified",
+            "default": false
+          },
+          "currencyAmount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currencyamount"
+          },
+          "currencyId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currencyid"
+          },
+          "createdHoursSinceLaunch": {
+            "type": "integer",
+            "title": "Createdhourssincelaunch"
+          }
+        },
+        "type": "object",
+        "required": [
+          "league",
+          "itemBaseTypeId",
+          "ilvl",
+          "rarity",
+          "createdHoursSinceLaunch"
+        ],
+        "title": "UnidentifiedItemCreate"
       },
       "ValidationError": {
         "properties": {
