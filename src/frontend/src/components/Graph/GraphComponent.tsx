@@ -9,16 +9,21 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Box, BoxProps, Center, Spinner } from "@chakra-ui/react";
-import useGetPlotData from "../../hooks/graphing/processPlottingData";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 import { usePlotSettingsStore } from "../../store/PlotSettingsStore";
 import PlotCustomizationButtons from "../Common/PlotCustomizationButtons";
 import { capitalizeFirstLetter } from "../../hooks/utils";
 import { CurrencyVisuals } from "../../schemas/CurrencyVisuals";
 import { CustomTooltip } from "./CustomTooltip";
-import { formatHoursSinceLaunch } from "../../hooks/graphing/utils";
+import {
+  findWinsorUpperBound,
+  formatHoursSinceLaunch,
+} from "../../hooks/graphing/utils";
 import { BiError } from "react-icons/bi";
 import { ErrorMessage } from "../Input/StandardLayoutInput/ErrorMessage";
+import usePostPlottingData from "../../hooks/graphing/postPlottingData";
+import useCustomToast from "../../hooks/useCustomToast";
+import { useEffect } from "react";
 
 /**
  * Uses the globally stored plotQuery state to send a request,
@@ -29,22 +34,27 @@ import { ErrorMessage } from "../Input/StandardLayoutInput/ErrorMessage";
  */
 function GraphComponent(props: BoxProps) {
   const { plotQuery } = useGraphInputStore();
-  const {
-    result,
-    mostCommonCurrencyUsed,
-    confidenceRating,
-    upperBoundryChaos,
-    upperBoundrySecondary,
-    fetchStatus,
-    error,
-  } = useGetPlotData(plotQuery);
+  const { plotData, fetchStatus, isFetched, isError, error } =
+    usePostPlottingData(plotQuery);
 
-  const renderGraph = result && mostCommonCurrencyUsed && !error;
+  const showToast = useCustomToast();
+  useEffect(() => {
+    if (isError && isFetched) {
+      if (error != null) {
+        showToast("Plotting error", error.message, "error");
+      }
+    }
+  }, [isError, isFetched, error, showToast]);
+
+  const mostCommonCurrencyUsed = plotData?.mostCommonCurrencyUsed;
+  const renderGraph =
+    plotData != undefined && mostCommonCurrencyUsed != undefined && !error;
   const showChaos = usePlotSettingsStore((state) => state.showChaos);
   const showSecondary = usePlotSettingsStore((state) => state.showSecondary);
 
-  if (error) return;
+  if (error || plotData == undefined) return;
 
+  const confidenceRating = plotData.data[0].confidenceRating;
   const isLowConfidence = confidenceRating === "low";
   const isMediumConfidence = confidenceRating === "medium";
   const confidenceColor = isLowConfidence
@@ -52,6 +62,18 @@ function GraphComponent(props: BoxProps) {
     : isMediumConfidence
       ? "ui.mediumConfidencePrimary"
       : "ui.input";
+  const upperBoundryChaos = findWinsorUpperBound(
+    plotData.data[0].data.reduce(
+      (prev, cur) => [...prev, cur.valueInChaos],
+      [] as number[]
+    )
+  );
+  const upperBoundrySecondary = findWinsorUpperBound(
+    plotData.data[0].data.reduce(
+      (prev, cur) => [...prev, cur.valueInMostCommonCurrencyUsed],
+      [] as number[]
+    )
+  );
 
   const chaosVisuals: CurrencyVisuals = {
     stroke: "#f99619",
@@ -84,7 +106,6 @@ function GraphComponent(props: BoxProps) {
       </Center>
     );
   }
-  if (error) return;
 
   return (
     renderGraph && (
@@ -131,7 +152,6 @@ function GraphComponent(props: BoxProps) {
           <LineChart
             width={500}
             height={300}
-            data={result}
             margin={{
               top: 5,
               right: 30,
@@ -141,7 +161,7 @@ function GraphComponent(props: BoxProps) {
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
-              dataKey="timestamp"
+              dataKey="hoursSinceLaunch"
               label={{
                 value: "Days and hours since launch",
                 position: "bottom",
@@ -153,7 +173,6 @@ function GraphComponent(props: BoxProps) {
               type="number"
               domain={["dataMin", "dataMax + 10"]}
             />
-            {/* Set Y-axis label */}
             <YAxis
               label={{
                 value: chaosVisuals.name,
@@ -171,18 +190,20 @@ function GraphComponent(props: BoxProps) {
               isAnimationActive={false}
             />
             <Legend verticalAlign="top" height={36} />
-            {/* Update the Line dataKey to match "Chaos value" */}
-            <Line
-              type="monotone"
-              dataKey={chaosVisuals.datakey}
-              name={chaosVisuals.name}
-              stroke={chaosVisuals.stroke}
-              yAxisId={chaosVisuals.yAxisId}
-              hide={!showChaos}
-              isAnimationActive={false}
-              dot={{ fill: chaosVisuals.stroke }}
-            />
-
+            {plotData.data.map((series) => (
+              <Line
+                type="monotone"
+                data={series.data}
+                dataKey={chaosVisuals.datakey}
+                key={series.name}
+                name={series.name + " - " + chaosVisuals.name}
+                stroke={chaosVisuals.stroke}
+                yAxisId={chaosVisuals.yAxisId}
+                hide={!showChaos}
+                isAnimationActive={false}
+                dot={{ fill: chaosVisuals.stroke }}
+              />
+            ))}
             <YAxis
               label={{
                 value: secondaryVisuals.name,
@@ -196,16 +217,20 @@ function GraphComponent(props: BoxProps) {
               domain={[0, secondaryVisuals.upperBoundry]}
               allowDataOverflow
             />
-            <Line
-              type="monotone"
-              dataKey={secondaryVisuals.datakey}
-              name={secondaryVisuals.name}
-              stroke={secondaryVisuals.stroke}
-              yAxisId={secondaryVisuals.yAxisId}
-              hide={!showSecondary}
-              isAnimationActive={false}
-              dot={{ fill: secondaryVisuals.stroke }}
-            />
+            {plotData.data.map((series) => (
+              <Line
+                type="monotone"
+                data={series.data}
+                dataKey={secondaryVisuals.datakey}
+                key={series.name}
+                name={series.name + " - " + secondaryVisuals.name}
+                stroke={secondaryVisuals.stroke}
+                yAxisId={secondaryVisuals.yAxisId}
+                hide={!showSecondary}
+                isAnimationActive={false}
+                dot={{ fill: secondaryVisuals.stroke }}
+              />
+            ))}
           </LineChart>
         </ResponsiveContainer>
       </Box>
