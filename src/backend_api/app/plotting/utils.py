@@ -1,16 +1,44 @@
 from typing import Literal
 
+import numpy as np
 import pandas as pd
 
 
-def summarize_function(values: pd.Series) -> int:
-    return values.iat[0]
+def summarize_function(values: pd.Series, *args) -> float:
+    return mean_of_bottom_p_wo_outliers(values, *args)
 
 
-def determine_confidence(
-    values: pd.Series,  # noqa: ARG001
-) -> Literal["low", "medium", "high"]:
-    return "high"
+GROUP_INTERVAL_MULTIPLIER = 1.2
+
+
+def mean_of_bottom_p_wo_outliers(values: pd.Series) -> float:
+    n_values = len(values)
+
+    min_value = min(values)
+    filtered_values = values.loc[
+        values.between(min_value, min_value * GROUP_INTERVAL_MULTIPLIER)
+    ]
+
+    while len(filtered_values) < min(5, np.ceil(n_values * 0.1)):
+        values = values.loc[values.gt(min_value * GROUP_INTERVAL_MULTIPLIER)]
+        n_values = len(values)
+
+        min_value = min(values)
+        filtered_values = values.loc[
+            values.between(min_value, min_value * GROUP_INTERVAL_MULTIPLIER)
+        ]
+
+    mean_filtered_value = np.mean(filtered_values)
+    return mean_filtered_value
+
+
+def determine_confidence(values: pd.Series) -> Literal["low", "medium", "high"]:
+    if len(values) < 20:
+        return "low"
+    elif len(values) < 30:
+        return "medium"
+    else:
+        return "high"
 
 
 def find_conversion_value(
