@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react"
+
 import { Box, Divider, Text } from "@chakra-ui/layout";
 import { TooltipProps } from "recharts";
 import { Icon } from "@chakra-ui/react";
@@ -9,6 +11,10 @@ import {
 } from "recharts/types/component/DefaultTooltipContent";
 import { capitalizeFirstLetter } from "../../hooks/utils";
 import { BiError } from "react-icons/bi";
+import {
+  getHoursSinceLaunch,
+} from "../../hooks/graphing/utils";
+import {setupHourlyUpdate } from "../../utils";
 
 interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
   upperBoundry: number;
@@ -20,9 +26,21 @@ export const CustomTooltip = ({
   label,
   upperBoundry,
 }: CustomTooltipProps) => {
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  const hoursAgo = getHoursSinceLaunch(currentTime) - label
+
+  const daysToDisplay = Math.floor(hoursAgo / 24)
+  const hoursToDisplay = hoursAgo % 24
+
+
+  useEffect(() => {
+    return setupHourlyUpdate(setCurrentTime)
+  }, []);
+
+
+
   if (active && payload && payload.length) {
-    const days = Math.floor(label / 24);
-    const hours = label % 24;
 
     const confidence = payload[0].payload.confidence;
     const isLowConfidence = confidence === "low";
@@ -46,9 +64,9 @@ export const CustomTooltip = ({
         flexDirection="column"
       >
         <Text my="5px">
-          {`${days} days`}
-          {hours > 0 && ` and ${hours} hours`}
-          {" since launch"}
+          {hoursAgo != 0 && daysToDisplay != 0 && ` ${daysToDisplay} days ago`}
+          {hoursAgo != 0 && hoursToDisplay != 0 && ` ${hoursToDisplay} hours ago`}
+          {hoursAgo == 0 && ` now`}
         </Text>
         <Divider />
         <Box alignItems="center" display="flex" flexDirection="row">

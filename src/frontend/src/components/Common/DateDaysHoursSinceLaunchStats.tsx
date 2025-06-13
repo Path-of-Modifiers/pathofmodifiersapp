@@ -7,7 +7,7 @@ import {
   LEAGUE_LAUNCH_DATETIME,
 } from "../../hooks/graphing/utils";
 import { DEFAULT_LEAGUE } from "../../config";
-import { msToNextHour } from "../../utils";
+import { setupHourlyUpdate } from "../../utils";
 
 const DateDaysHoursSinceLaunchStats = (props: StatProps) => {
   const defaultLeague = DEFAULT_LEAGUE;
@@ -29,11 +29,7 @@ const DateDaysHoursSinceLaunchStats = (props: StatProps) => {
     daysHoursSinceLaunchFormat.split("T");
 
   useEffect(() => {
-    const updateWaitTime = msToNextHour();
-    const intervalId = setInterval(() => {
-      setCurrentTime(new Date());
-    }, updateWaitTime);
-    return () => clearInterval(intervalId);
+    return setupHourlyUpdate(setCurrentTime);
   }, []);
 
   return (
