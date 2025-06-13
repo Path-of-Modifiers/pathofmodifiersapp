@@ -36,7 +36,7 @@ target_metadata = Base.metadata
 # ... etc.
 
 
-def include_object(object, name: str | None, type_, *args, **kwargs):
+def include_object(_, name: str | None, type_, *args, **kwargs) -> bool:
     return not (type_ == "table" and name.startswith("_"))
 
 
