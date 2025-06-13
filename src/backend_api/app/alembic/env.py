@@ -37,7 +37,7 @@ target_metadata = Base.metadata
 
 
 def include_object(object, name: str | None, type_, *args, **kwargs):
-    return not (type_ == "table" and not name.startswith("_"))
+    return not (type_ == "table" and name.startswith("_"))
 
 
 def run_migrations_offline() -> None:
