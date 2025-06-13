@@ -85,11 +85,6 @@ class Item(_ItemBase, Base):
     # For hypertable specs, see alembic revision `cc29b89156db'
     __tablename__ = "item"
 
-    itemId: Mapped[int] = mapped_column(
-        BigInteger,
-        Identity(start=1, increment=1),
-        primary_key=True,  # Primary key constraint gets removed on hypertable creation
-    )
     prefixes: Mapped[int | None] = mapped_column(SmallInteger)
     suffixes: Mapped[int | None] = mapped_column(SmallInteger)
     foilVariation: Mapped[int | None] = mapped_column(SmallInteger)
