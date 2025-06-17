@@ -1,3 +1,3 @@
-from .plotter import Plotter
+from .plotter import PlotterService, configure_plotter_by_query
 
-plotter_tool = Plotter()
+plotter_service = PlotterService()
