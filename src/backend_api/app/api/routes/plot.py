@@ -9,11 +9,22 @@ from app.core.rate_limit.custom_rate_limiter import RateSpec
 from app.core.rate_limit.rate_limit_config import rate_limit_settings
 from app.core.rate_limit.rate_limiters import apply_custom_rate_limit
 from app.core.schemas.plot import PlotData, PlotQuery
-from app.plotting import plotter_tool
+from app.plotting import configure_plotter_by_query, plotter_service
 
 router = APIRouter()
 
 plot_prefix = "plot"
+
+
+def _get_ratespec_ip(request: Request) -> tuple[RateSpec, str]:
+    request_limit = rate_limit_settings.TIER_0_PLOT_RATE_LIMIT
+    rate_spec = RateSpec(
+        requests=request_limit,
+        cooldown_seconds=rate_limit_settings.PLOT_RATE_LIMIT_COOLDOWN_SECONDS,
+    )
+
+    client_ip = get_user_ip_from_header(request)
+    return rate_spec, client_ip
 
 
 @router.post(
@@ -31,20 +42,17 @@ async def get_plot_data(
 
     The 'PlotQuery' schema allows for modifier restriction and item specifications.
     """
-    request_limit = rate_limit_settings.TIER_0_PLOT_RATE_LIMIT
-    rate_spec = RateSpec(
-        requests=request_limit,
-        cooldown_seconds=rate_limit_settings.PLOT_RATE_LIMIT_COOLDOWN_SECONDS,
-    )
 
-    client_ip = get_user_ip_from_header(request)
+    rate_spec, client_ip = _get_ratespec_ip(request)
 
     async with apply_custom_rate_limit(
         unique_key="plot_" + client_ip,
         rate_spec=rate_spec,
         prefix=plot_prefix,
     ):
-        plot_data = await plotter_tool.plot(
+        plotter = configure_plotter_by_query(query)
+        plot_data = await plotter_service.plot(
+            plotter,
             db,
             query=query,
         )
