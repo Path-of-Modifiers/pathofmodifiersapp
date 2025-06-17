@@ -1,4 +1,4 @@
-import { PlotQuery, WantedModifier } from "../../client";
+import { IdentifiedPlotQuery, WantedModifier } from "../../client";
 import { useErrorStore } from "../../store/ErrorStore";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 import {
@@ -45,7 +45,7 @@ export const getHoursSinceLaunch = (currentTime: Date): number => {
   return hoursSinceLaunch;
 };
 
-export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
+export const getOptimizedPlotQuery = (): IdentifiedPlotQuery | undefined => {
   // currently always runs, needs to be in if check
   // when Non-unique rarity is possible
   const state = useGraphInputStore.getState();
@@ -68,18 +68,18 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
     },
     [] as string[],
   );
-  if (possibleUniques.length === 0) {
+  if (possibleUniques.length === 0 && state.itemSpec?.identified !== false) {
     useErrorStore.getState().setNoRelatedUniqueError(true);
     return;
   } else {
     useErrorStore.getState().setNoRelatedUniqueError(false);
   }
   if (itemName != null) {
-    if (!possibleUniques.includes(itemName)) {
-      useErrorStore.getState().setItemDoesNotHaveSelectedModifiersError(true);
+    if (!possibleUniques.includes(itemName) && itemSpec?.identified !== false) {
+      useErrorStore.getState().setCurrentlySelectedModifiersError(true);
       return;
     } else {
-      useErrorStore.getState().setItemDoesNotHaveSelectedModifiersError(false);
+      useErrorStore.getState().setCurrentlySelectedModifiersError(false);
     }
     possibleUniques = [itemName];
   }
@@ -152,9 +152,9 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
       })),
     );
   const currentTime = new Date();
-  const end = getHoursSinceLaunch(currentTime);
-  const fourteenDaysHours = 336;
-  const start = end - fourteenDaysHours;
+  const end = 800;
+  const fourteenDaysHours = 730;
+  const start = 730;
 
 
   return {

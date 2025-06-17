@@ -1,7 +1,7 @@
 import { useErrorStore } from "../../store/ErrorStore";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 
-const { setLeagueError, setModifiersError } = useErrorStore.getState();
+const { setLeagueError, setNoSelectedModifiersError, setModifiersUnidentifiedError } = useErrorStore.getState();
 
 /**
  * Checks whether the League input for the graph query is valid
@@ -28,12 +28,22 @@ export const checkGraphQueryModifierInput = () => {
     .wantedModifierExtended.filter(
       (wantedModifierExtended) => wantedModifierExtended.isSelected,
     );
+  const falseItemSpecIdentified = useGraphInputStore.getState().itemSpec?.identified === false
 
   // If modifiers are empty, return false
-  if (wantedModifiersExtended.length === 0) {
-    setModifiersError(true);
+  if (wantedModifiersExtended.length === 0 && !falseItemSpecIdentified) {
+    setNoSelectedModifiersError(true);
     return false;
+  } else {
+    setNoSelectedModifiersError(false);
   }
-  setModifiersError(false);
+
+  if (wantedModifiersExtended.length !== 0 && falseItemSpecIdentified) {
+    setModifiersUnidentifiedError(true);
+    return false
+  } else {
+    setModifiersUnidentifiedError(false);
+  }
+
   return true;
 };

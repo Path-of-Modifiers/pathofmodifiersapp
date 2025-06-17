@@ -35,7 +35,7 @@ export const MiscItemInput = () => {
       />
       {miscItemExpanded && (
         <Flex flexWrap={"wrap"} justifyContent={"flex-start"} gap={2} ml={10}>
-          {/**<IsItemInput itemSpecKey={"identified"} text={"Identified"} /> **/}
+          <IsItemInput itemSpecKey={"identified"} text={"Identified"} />
           <IsItemInput itemSpecKey={"corrupted"} text={"Corrupted"} />
           <MinMaxIlvlInput text="Item level" />
           {/**<IsItemInput itemSpecKey={"delve"} text={"Delve"} />
