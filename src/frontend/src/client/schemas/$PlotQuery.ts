@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export const $PlotQuery = {
+    description: `Plots for items with or without modifiers`,
     properties: {
         league: {
             type: 'string',
@@ -24,16 +25,6 @@ export const $PlotQuery = {
                 type: 'null',
             }],
         },
-        wantedModifiers: {
-            type: 'array',
-            contains: {
-                type: 'array',
-                contains: {
-                    type: 'WantedModifier',
-                },
-            },
-            isRequired: true,
-        },
         end: {
             type: 'any-of',
             contains: [{
@@ -46,6 +37,20 @@ export const $PlotQuery = {
             type: 'any-of',
             contains: [{
                 type: 'number',
+            }, {
+                type: 'null',
+            }],
+        },
+        wantedModifiers: {
+            type: 'any-of',
+            contains: [{
+                type: 'array',
+                contains: {
+                    type: 'array',
+                    contains: {
+                        type: 'WantedModifier',
+                    },
+                },
             }, {
                 type: 'null',
             }],
