@@ -1,4 +1,4 @@
-import { IdentifiedPlotQuery, WantedModifier } from "../../client";
+import { PlotQuery, WantedModifier } from "../../client";
 import { useErrorStore } from "../../store/ErrorStore";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 import {
@@ -45,7 +45,7 @@ export const getHoursSinceLaunch = (currentTime: Date): number => {
   return hoursSinceLaunch;
 };
 
-export const getOptimizedPlotQuery = (): IdentifiedPlotQuery | undefined => {
+export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
   // currently always runs, needs to be in if check
   // when Non-unique rarity is possible
   const state = useGraphInputStore.getState();
@@ -152,9 +152,9 @@ export const getOptimizedPlotQuery = (): IdentifiedPlotQuery | undefined => {
       })),
     );
   const currentTime = new Date();
-  const end = 800;
-  const fourteenDaysHours = 730;
-  const start = 730;
+  const end = getHoursSinceLaunch(currentTime);
+  const fourteenDaysHours = 336;
+  const start = end - fourteenDaysHours;
 
 
   return {
