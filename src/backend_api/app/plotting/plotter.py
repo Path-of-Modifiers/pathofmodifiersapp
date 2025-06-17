@@ -146,7 +146,7 @@ class _BasePlotter(ABC, Generic[Q]):
                 base_spec_conditions.append(
                     model_ItemBaseType.subCategory == base_spec_query.subCategory
                 )
-            subquery = subquery.where(and_(*base_spec_conditions))
+            subquery = subquery.where(and_(True, *base_spec_conditions))
 
             return statement.where(item_model.itemBaseTypeId.in_(subquery))
 
@@ -293,7 +293,7 @@ class IdentifiedPlotter(_BasePlotter):
                 and_conditions.append(
                     model_ItemModifier.roll <= modifier_limitations.maxRoll
                 )
-            return and_(*and_conditions)
+            return and_(True, *and_conditions)
 
     def _add_wanted_modifiers(
         self,
@@ -338,6 +338,7 @@ class IdentifiedPlotter(_BasePlotter):
                         select(1)
                         .where(
                             and_(
+                                True,
                                 *and_conditions,
                             )
                         )
@@ -358,10 +359,10 @@ class IdentifiedPlotter(_BasePlotter):
                         model_ItemModifier.createdHoursSinceLaunch <= end
                     )
                 exists_conditions.append(
-                    select(1).where(and_(*and_conditions)).exists()
+                    select(1).where(and_(True, *and_conditions)).exists()
                 )
 
-        return statement.where(and_(*exists_conditions))
+        return statement.where(and_(True, *exists_conditions))
 
     def _apply_item_names(
         self,
@@ -422,7 +423,7 @@ class IdentifiedPlotter(_BasePlotter):
             if (item_spec_query.__dict__[key] is not None)
         ]
 
-        return statement.where(and_(*item_specifications))
+        return statement.where(and_(True, *item_specifications))
 
     def _filter_properties(
         self,
