@@ -6,12 +6,14 @@ from pydantic import TypeAdapter
 from sqlalchemy import (
     BinaryExpression,
     ColumnElement,
+    Label,
     Result,
     and_,
     or_,
     select,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.sql.expression import Select
 
 from app.core.models.database import engine
@@ -92,32 +94,35 @@ class _BasePlotter(ABC, Generic[Q]):
         item_model: type[model_Item | model_UniItem],
         start: int | None,
         end: int | None,
+        query_select_args: list[Any] | None = None,  # optional additions to select
     ) -> Select:
-        league = query.league
+        select_args: list[InstrumentedAttribute[Any] | Label[Any]] = [
+            item_model.itemId,
+            item_model.createdHoursSinceLaunch,
+            item_model.itemBaseTypeId,
+            item_model.currencyId,
+            item_model.currencyAmount,
+            model_Currency.tradeName,
+            model_Currency.valueInChaos,
+            model_Currency.createdHoursSinceLaunch.label(
+                "currencyCreatedHoursSinceLaunch"
+            ),
+        ]
+        if query_select_args:
+            select_args.extend(query_select_args)
 
-        statement = (
-            select(
-                item_model.itemId,
-                item_model.createdHoursSinceLaunch,
-                item_model.itemBaseTypeId,
-                item_model.currencyId,
-                item_model.currencyAmount,
-                model_Currency.tradeName,
-                model_Currency.valueInChaos,
-                model_Currency.createdHoursSinceLaunch.label(
-                    "currencyCreatedHoursSinceLaunch"
-                ),
-            )
-            .join_from(item_model, model_Currency)
-            .where(item_model.league == league)
+        stmt = (
+            select(*select_args)
+            .join(model_Currency, item_model.currencyId == model_Currency.currencyId)
+            .where(item_model.league == query.league)
         )
 
         if start is not None:
-            statement = statement.where(item_model.createdHoursSinceLaunch >= start)
+            stmt = stmt.where(item_model.createdHoursSinceLaunch >= start)
         if end is not None:
-            statement = statement.where(item_model.createdHoursSinceLaunch <= end)
+            stmt = stmt.where(item_model.createdHoursSinceLaunch <= end)
 
-        return statement
+        return stmt
 
     def _apply_base_specs(
         self,
@@ -215,7 +220,7 @@ class _BasePlotter(ABC, Generic[Q]):
     @sync_timing_tracker
     def _create_plot_data(
         self, df: pd.DataFrame
-    ) -> tuple[pd.Series, pd.Series, float, str]:
+    ) -> tuple[pd.Series, pd.Series, pd.Series, str]:
         most_common_currency_used = df.tradeName.mode()[0]
 
         value_in_chaos: pd.Series = df["currencyAmount"] * df["valueInChaos"]
@@ -586,8 +591,13 @@ class UnidentifiedPlotter(_BasePlotter):
 
     def _create_plot_statement(self, query: UnidentifiedPlotQuery) -> Select:
         start, end = query.start, query.end
+        q_add_args = [model_UnidentifiedItem.nItems]
         statement = self._init_stmt(
-            query, item_model=model_UnidentifiedItem, start=start, end=end
+            query,
+            item_model=model_UnidentifiedItem,
+            start=start,
+            end=end,
+            query_select_args=q_add_args,
         )
         statement = self._filter_basespecs(
             statement, item_model=model_UnidentifiedItem, query=query
@@ -595,7 +605,9 @@ class UnidentifiedPlotter(_BasePlotter):
         statement = self._filter_unidentified_agg(statement)
         return statement
 
-    async def _plot_execute(self, db: AsyncSession, *, statement: Select) -> tuple:
+    async def _plot_execute(
+        self, db: AsyncSession, *, statement: Select
+    ) -> tuple[pd.Series, pd.Series, pd.Series, pd.Series, str]:
         result = await self._perform_plot_db_stmt(db, statement=statement)
         df = self._convert_result_to_df(result)
 
@@ -606,25 +618,43 @@ class UnidentifiedPlotter(_BasePlotter):
                 class_name=self.__class__.__name__,
             )
 
-        return self._create_plot_data(df)
+        (
+            value_in_chaos,
+            time_stamps,
+            value_in_most_common_currency_used,
+            mostCommonCurrencyUsed,
+        ) = self._create_plot_data(df)
+
+        nItems = df.loc[:, "nItems"]
+
+        return (
+            value_in_chaos,
+            time_stamps,
+            nItems,
+            value_in_most_common_currency_used,
+            mostCommonCurrencyUsed,
+        )
 
     def _create_data_unidentified(
         self,
         value_in_chaos: pd.Series,
         time_stamps: pd.Series,
+        nItems: pd.Series,
         value_in_most_common_currency_used: pd.Series,
         mostCommonCurrencyUsed: str,
     ) -> dict[str, pd.Series | str]:
+        # Convert to dict, then as a dataframe
+
         plot_data = self._get_plot_dict(
             value_in_chaos,
             time_stamps,
             value_in_most_common_currency_used,
             mostCommonCurrencyUsed,
         )
-        # Convert to dict
-        # Then as a dataframe
+        plot_data["nItems"] = nItems
+
         df = pd.DataFrame(plot_data)
-        df["confidence"] = df["valueInChaos"].apply(determine_confidence)
+        df["confidence"] = plot_data["nItems"].apply(determine_confidence)
         df = df.loc[~df["valueInChaos"].isna()]
 
         plot_data = self._update_plot_data_by_processed_df(plot_data, df)
@@ -645,6 +675,7 @@ class UnidentifiedPlotter(_BasePlotter):
         (
             value_in_chaos,
             time_stamps,
+            nItems,
             value_in_most_common_currency_used,
             mostCommonCurrencyUsed,
         ) = await self._plot_execute(db, statement=statement)
@@ -656,6 +687,7 @@ class UnidentifiedPlotter(_BasePlotter):
         plot_data = self._create_data_unidentified(
             value_in_chaos,
             time_stamps,
+            nItems,
             value_in_most_common_currency_used,
             mostCommonCurrencyUsed,
         )
