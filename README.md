@@ -1,7 +1,5 @@
 # Path of Modifiers Application :game_die:
 
-**Important: Currently not retrieving data until the next POE league launch due to game inactivity**
-
 Website application for analyzing prices on items with customized parameters plotted on graphs in Path of Exile.
 
 ## :clapper: How it works trailer :clapper:
@@ -44,20 +42,14 @@ https://github.com/user-attachments/assets/0efa4c0e-808c-4223-9a4f-781f886527e3
 - [Grafana Loki](https://grafana.com/docs/loki/latest/#grafana-loki) for storage and [Grafana](https://grafana.com/grafana/) for visualization of logs and metrics
 
 
-## :bike: Current goals we are working towards:
-
-- Production testing through the Settlers PoE league
-- Comprehensive application testing end-to-end
-
 ## :checkered_flag: Future goals:
 
 - More uniques where rolls matter
 - Tracking for popular fractures for Non-Unique items
 - Tracking for popular synthesis implicit
 - Tracking for uniques with corrupted implicits
-- Tracking for unidentified uniques
 - Smarter queries (E.g count, or, not)
-- Support for comparing multiple leagues (kinda hard without a new league)
+- Support for comparing multiple leagues
 
 
 
