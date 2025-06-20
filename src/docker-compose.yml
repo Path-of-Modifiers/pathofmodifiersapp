@@ -124,31 +124,6 @@ services:
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin4_container
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL?Variable not set}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD?Variable not set}
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    networks:
-      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
-      - default
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=${TRAEFIK_PUBLIC_NETWORK?Variable not set}
-      - traefik.constraint-label=${TRAEFIK_PUBLIC_NETWORK?Variable not set}
-      - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-http.rule=Host(`pgadmin.${DOMAIN?Variable not set}`)
-      - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-http.entrypoints=http
-      - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-http.middlewares=https-redirect
-      - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-https.rule=Host(`pgadmin.${DOMAIN?Variable not set}`)
-      - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-https.entrypoints=https
-      - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-https.tls=true
-      - traefik.http.routers.${STACK_NAME?Variable not set}-pgadmin-https.tls.certresolver=le
-      - traefik.http.services.${STACK_NAME?Variable not set}-pgadmin.loadbalancer.server.port=5432
-
   frontend:
     image: "${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}"
     restart: always
@@ -194,6 +169,7 @@ services:
       - .env
     volumes:
       - ./vector.yaml:/etc/vector/vector.yaml:ro
+      - /run/user/1000/docker.sock:/var/run/docker.sock:ro
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "${VECTOR_PORT}:${VECTOR_PORT}"
@@ -204,7 +180,7 @@ services:
 
 volumes:
   pom-db-data:
-    name: "pom-db-data"
+    name: "pom-db-default-data"
   pom-cache-data:
     name: "pom-cache-data"
   pgadmin-data:
