@@ -37,7 +37,6 @@ from app.core.models.models import (
 )
 from app.core.schemas.plot import (
     BasePlotQuery,
-    BaseSpecs,
     IdentifiedPlotQuery,
     ItemSpecs,
     ModifierLimitations,
@@ -124,54 +123,57 @@ class _BasePlotter(ABC, Generic[Q]):
 
         return stmt
 
-    def _apply_base_specs(
-        self,
-        statement: Select,
-        *,
-        item_model: type[model_Item | model_UniItem],
-        base_spec_query: BaseSpecs,
-    ) -> Select:
-        if base_spec_query.itemBaseTypeId is not None:
-            return statement.where(
-                item_model.itemBaseTypeId == base_spec_query.itemBaseTypeId
-            )
-
-        elif (
-            base_spec_query.category is not None
-            or base_spec_query.subCategory is not None
-        ):
-            subquery = select(model_ItemBaseType.itemBaseTypeId)
-            base_spec_conditions = []
-            if base_spec_query.category is not None:
-                base_spec_conditions.append(
-                    model_ItemBaseType.category == base_spec_query.category
-                )
-
-            if base_spec_query.subCategory is not None:
-                base_spec_conditions.append(
-                    model_ItemBaseType.subCategory == base_spec_query.subCategory
-                )
-            subquery = subquery.where(and_(True, *base_spec_conditions))
-
-            return statement.where(item_model.itemBaseTypeId.in_(subquery))
-
-        else:
-            return statement
-
-    def _filter_basespecs(
+    def _filter_base_specs(
         self,
         statement: Select,
         *,
         item_model: type[model_Item | model_UniItem],
         query: Q,
     ) -> Select:
-        if query.baseSpecifications is not None:
-            statement = self._apply_base_specs(
-                statement,
-                item_model=item_model,
-                base_spec_query=query.baseSpecifications,
-            )
-        return statement
+        base_spec_query = query.baseSpecifications
+        if base_spec_query is not None:
+            if base_spec_query.itemBaseTypeId is not None:
+                return statement.where(
+                    item_model.itemBaseTypeId == base_spec_query.itemBaseTypeId
+                )
+
+            elif (
+                base_spec_query.category is not None
+                or base_spec_query.subCategory is not None
+            ):
+                subquery = select(model_ItemBaseType.itemBaseTypeId)
+                base_spec_conditions = []
+                if base_spec_query.category is not None:
+                    base_spec_conditions.append(
+                        model_ItemBaseType.category == base_spec_query.category
+                    )
+
+                if base_spec_query.subCategory is not None:
+                    base_spec_conditions.append(
+                        model_ItemBaseType.subCategory == base_spec_query.subCategory
+                    )
+                subquery = subquery.where(and_(True, *base_spec_conditions))
+
+                return statement.where(item_model.itemBaseTypeId.in_(subquery))
+
+        else:
+            return statement
+
+    def filter_item_lvl(
+        self,
+        statement: Select,
+        *,
+        query: Q,
+    ) -> Select:
+        item_spec_query = query.itemSpecifications
+        item_lvls = []
+        if item_spec_query:
+            if item_spec_query.minIlvl is not None:
+                item_lvls.append(model_Item.ilvl >= item_spec_query.minIlvl)
+            if item_spec_query.maxIlvl is not None:
+                item_lvls.append(model_Item.ilvl <= item_spec_query.maxIlvl)
+
+        return statement.where(and_(True, *item_lvls))
 
     def _get_plot_dict(
         self,
@@ -369,7 +371,7 @@ class IdentifiedPlotter(_BasePlotter):
 
         return statement.where(and_(True, *exists_conditions))
 
-    def _apply_item_names(
+    def _filter_item_names(
         self,
         statement: Select,
         *,
@@ -390,7 +392,7 @@ class IdentifiedPlotter(_BasePlotter):
 
         return statement
 
-    def _apply_item_specs(
+    def _filter_item_specs(
         self, statement: Select, *, item_spec_query: ItemSpecs
     ) -> Select:
         item_spec_query_fields = item_spec_query.model_fields.copy()
@@ -400,12 +402,10 @@ class IdentifiedPlotter(_BasePlotter):
             # name has already been applied
             item_spec_query_fields.pop("name")
 
+        # ilvl has already been applied
         if item_spec_query.minIlvl is not None:
-            item_specifications.append(model_Item.ilvl >= item_spec_query.minIlvl)
             item_spec_query_fields.pop("minIlvl")
-
         if item_spec_query.maxIlvl is not None:
-            item_specifications.append(model_Item.ilvl <= item_spec_query.maxIlvl)
             item_spec_query_fields.pop("maxIlvl")
 
         if item_spec_query.influences is not None:
@@ -449,7 +449,7 @@ class IdentifiedPlotter(_BasePlotter):
         )
 
         if query.itemSpecifications is not None:
-            statement = self._apply_item_specs(
+            statement = self._filter_item_specs(
                 statement, item_spec_query=query.itemSpecifications
             )
 
@@ -458,10 +458,11 @@ class IdentifiedPlotter(_BasePlotter):
     def _create_plot_statement(self, query: IdentifiedPlotQuery) -> Select:
         start, end = query.start, query.end
         statement = self._init_stmt(query, item_model=model_Item, start=start, end=end)
-        statement = self._filter_basespecs(
+        statement = self._filter_base_specs(
             statement, item_model=model_Item, query=query
         )
-        statement = self._apply_item_names(statement, query=query)
+        statement = self._filter_item_names(statement, query=query)
+        statement = self.filter_item_lvl(statement, query=query)
         statement = self._filter_properties(
             statement, query=query, start=start, end=end
         )
@@ -582,6 +583,7 @@ class UnidentifiedPlotter(_BasePlotter):
     def _filter_unidentified_agg(self, statement: Select) -> Select:
         statement = statement.where(
             and_(
+                True,
                 model_UnidentifiedItem.identified.is_(False),
                 model_UnidentifiedItem.aggregated.is_(True),
             )
@@ -599,9 +601,10 @@ class UnidentifiedPlotter(_BasePlotter):
             end=end,
             query_select_args=q_add_args,
         )
-        statement = self._filter_basespecs(
+        statement = self._filter_base_specs(
             statement, item_model=model_UnidentifiedItem, query=query
         )
+        statement = self.filter_item_lvl(statement, query=query)
         statement = self._filter_unidentified_agg(statement)
         return statement
 
