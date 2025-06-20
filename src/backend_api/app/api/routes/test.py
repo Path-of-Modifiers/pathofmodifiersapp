@@ -138,7 +138,7 @@ async def bulk_insert_users_and_verify(count: int, db: Session = Depends(get_db)
     tokens = []
     async with AsyncClient(
         app=app,
-        base_url="http://localhost"
+        base_url="http://localhost:8000"
         + settings.API_V1_STR,  # Only to be used in localhost testing
     ) as client:
         for user in users_create:
