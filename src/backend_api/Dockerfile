@@ -40,4 +40,6 @@ COPY ./app /app/app
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked
 
-CMD ["fastapi", "run", "--workers", "4", "app/main.py"]
+RUN chmod +x scripts/prestart.sh
+
+ENTRYPOINT ["scripts/prestart.sh"]
