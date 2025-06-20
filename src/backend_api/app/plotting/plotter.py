@@ -163,15 +163,16 @@ class _BasePlotter(ABC, Generic[Q]):
         self,
         statement: Select,
         *,
+        item_model: type[model_Item | model_UniItem],
         query: Q,
     ) -> Select:
         item_spec_query = query.itemSpecifications
         item_lvls = []
         if item_spec_query:
             if item_spec_query.minIlvl is not None:
-                item_lvls.append(model_Item.ilvl >= item_spec_query.minIlvl)
+                item_lvls.append(item_model.ilvl >= item_spec_query.minIlvl)
             if item_spec_query.maxIlvl is not None:
-                item_lvls.append(model_Item.ilvl <= item_spec_query.maxIlvl)
+                item_lvls.append(item_model.ilvl <= item_spec_query.maxIlvl)
 
         return statement.where(and_(True, *item_lvls))
 
@@ -462,7 +463,7 @@ class IdentifiedPlotter(_BasePlotter):
             statement, item_model=model_Item, query=query
         )
         statement = self._filter_item_names(statement, query=query)
-        statement = self.filter_item_lvl(statement, query=query)
+        statement = self.filter_item_lvl(statement, item_model=model_Item, query=query)
         statement = self._filter_properties(
             statement, query=query, start=start, end=end
         )
@@ -604,7 +605,9 @@ class UnidentifiedPlotter(_BasePlotter):
         statement = self._filter_base_specs(
             statement, item_model=model_UnidentifiedItem, query=query
         )
-        statement = self.filter_item_lvl(statement, query=query)
+        statement = self.filter_item_lvl(
+            statement, item_model=model_UnidentifiedItem, query=query
+        )
         statement = self._filter_unidentified_agg(statement)
         return statement
 
