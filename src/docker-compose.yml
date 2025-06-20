@@ -161,6 +161,7 @@ services:
       - AUTOHEAL_CONTAINER_LABEL=all
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - /run/user/1000/docker.sock:/var/run/docker.sock:ro
 
   vector:
     image: timberio/vector:0.41.1-debian
