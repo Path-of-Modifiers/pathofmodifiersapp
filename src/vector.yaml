@@ -27,8 +27,6 @@ transforms:
       # Check if the message is valid JSON before attempting to parse
       if starts_with!(.message, "{") {
         . = parse_json!(.message)
-      } else {
-        abort
       }
 
       .container_name = container_name
@@ -40,6 +38,12 @@ transforms:
         .request.process_time_ms = to_float!(.request.process_time_ms)
         .request.status_code = to_int!(.request.status_code)
         del(.message)
+      }
+
+      if .logger == "pom_app.plot" {
+      	if (contains(string!(.message), "&")) {
+          .message = parse_key_value!(.message, "=", "&")
+        }
       }
 
       if .logger == "dataret.ext.timing" {

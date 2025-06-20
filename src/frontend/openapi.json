@@ -3872,16 +3872,6 @@
               }
             ]
           },
-          "wantedModifiers": {
-            "items": {
-              "items": {
-                "$ref": "#/components/schemas/WantedModifier"
-              },
-              "type": "array"
-            },
-            "type": "array",
-            "title": "Wantedmodifiers"
-          },
           "end": {
             "anyOf": [
               {
@@ -3903,14 +3893,31 @@
               }
             ],
             "title": "Start"
+          },
+          "wantedModifiers": {
+            "anyOf": [
+              {
+                "items": {
+                  "items": {
+                    "$ref": "#/components/schemas/WantedModifier"
+                  },
+                  "type": "array"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wantedmodifiers"
           }
         },
         "type": "object",
         "required": [
-          "league",
-          "wantedModifiers"
+          "league"
         ],
-        "title": "PlotQuery"
+        "title": "PlotQuery",
+        "description": "Plots for items with or without modifiers"
       },
       "Token": {
         "properties": {

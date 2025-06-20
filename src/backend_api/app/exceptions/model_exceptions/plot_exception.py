@@ -9,10 +9,14 @@ class PlotQueryToDBError(PathOfModifiersAPIError):
         self,
         *,
         exception: Exception,
+        detail: str | None,
         function_name: str | None = "Unknown function",
         class_name: str | None = None,
     ):
-        detail = f"Failed to perform plot query to the database. Exception: {exception}"
+        if not detail:
+            detail = (
+                f"Failed to perform plot query to the database. Exception: {exception}"
+            )
         logger.error(detail)
 
         super().__init__(
@@ -20,6 +24,30 @@ class PlotQueryToDBError(PathOfModifiersAPIError):
             function_name=function_name,
             class_name=class_name,
             detail=detail,
+        )
+
+
+class PlotQueryInvalidError(PathOfModifiersAPIError):
+    def __init__(
+        self,
+        *,
+        query_data: str,
+        detail: str | None = None,
+        function_name: str | None = "Unknown function",
+        class_name: str | None = None,
+        status_code: int | None = status.HTTP_422_UNPROCESSABLE_ENTITY,
+    ):
+        if detail:
+            detail = f"{detail} | Query data: {query_data}"
+        else:
+            detail = f"Query invalid for the plot operation. Query data: {query_data}"
+
+        # Call the parent constructor with a specific status code
+        super().__init__(
+            detail=detail,
+            status_code=status_code,
+            function_name=function_name,
+            class_name=class_name,
         )
 
 

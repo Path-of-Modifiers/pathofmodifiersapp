@@ -5,12 +5,15 @@
 import type { BaseSpecs } from './BaseSpecs';
 import type { ItemSpecs } from './ItemSpecs';
 import type { WantedModifier } from './WantedModifier';
+/**
+ * Plots for items with or without modifiers
+ */
 export type PlotQuery = {
     league: string;
     itemSpecifications?: (ItemSpecs | null);
     baseSpecifications?: (BaseSpecs | null);
-    wantedModifiers: Array<Array<WantedModifier>>;
     end?: (number | null);
     start?: (number | null);
+    wantedModifiers?: (Array<Array<WantedModifier>> | null);
 };
 

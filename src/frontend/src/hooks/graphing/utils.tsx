@@ -68,18 +68,18 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
     },
     [] as string[],
   );
-  if (possibleUniques.length === 0) {
+  if (possibleUniques.length === 0 && state.itemSpec?.identified !== false) {
     useErrorStore.getState().setNoRelatedUniqueError(true);
     return;
   } else {
     useErrorStore.getState().setNoRelatedUniqueError(false);
   }
   if (itemName != null) {
-    if (!possibleUniques.includes(itemName)) {
-      useErrorStore.getState().setItemDoesNotHaveSelectedModifiersError(true);
+    if (!possibleUniques.includes(itemName) && itemSpec?.identified !== false) {
+      useErrorStore.getState().setCurrentlySelectedModifiersError(true);
       return;
     } else {
-      useErrorStore.getState().setItemDoesNotHaveSelectedModifiersError(false);
+      useErrorStore.getState().setCurrentlySelectedModifiersError(false);
     }
     possibleUniques = [itemName];
   }
