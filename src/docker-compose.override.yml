@@ -3,8 +3,7 @@ services:
   proxy:
     image: traefik:v3.0
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /run/user/1000/docker.sock:/var/run/docker.sock:ro
+      - ${OPTIONAL_DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock
     ports:
       - "80:80"
       - "8090:8080"
@@ -110,8 +109,7 @@ services:
   vector:
     restart: "no"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /run/user/1000/docker.sock:/var/run/docker.sock
+      - ${OPTIONAL_DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock
       - ./vector-override.yaml:/etc/vector/vector.yaml:ro
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}

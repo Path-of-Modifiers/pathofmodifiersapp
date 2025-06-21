@@ -160,8 +160,7 @@ services:
     environment:
       - AUTOHEAL_CONTAINER_LABEL=all
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /run/user/1000/docker.sock:/var/run/docker.sock:ro
+      - ${OPTIONAL_DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock
 
   vector:
     image: timberio/vector:0.41.1-debian
@@ -170,8 +169,7 @@ services:
       - .env
     volumes:
       - ./vector.yaml:/etc/vector/vector.yaml:ro
-      - /run/user/1000/docker.sock:/var/run/docker.sock:ro
-      - /var/run/docker.sock:/var/run/docker.sock
+      - ${OPTIONAL_DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock
     ports:
       - "${VECTOR_PORT}:${VECTOR_PORT}"
     restart: always
