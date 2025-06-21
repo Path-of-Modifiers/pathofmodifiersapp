@@ -1,7 +1,7 @@
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException
-from httpx import AsyncClient
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy import insert
 from sqlalchemy.orm import Session
 
@@ -137,8 +137,8 @@ async def bulk_insert_users_and_verify(count: int, db: Session = Depends(get_db)
 
     tokens = []
     async with AsyncClient(
-        app=app,
-        base_url="http://localhost"
+        transport=ASGITransport(app=app),
+        base_url="http://localhost:8000"
         + settings.API_V1_STR,  # Only to be used in localhost testing
     ) as client:
         for user in users_create:

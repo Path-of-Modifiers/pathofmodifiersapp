@@ -45,9 +45,9 @@ class Settings(BaseSettings):
             return f"http://{self.DOMAIN}"
         return f"https://{self.DOMAIN}"
 
-    BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = (
-        []
-    )
+    BACKEND_CORS_ORIGINS: Annotated[
+        list[AnyUrl] | str, BeforeValidator(parse_cors)
+    ] = []
 
     PROJECT_NAME: str = "Path of Modifiers"
     SENTRY_DSN: HttpUrl | None = None
@@ -61,7 +61,7 @@ class Settings(BaseSettings):
     @property
     def DATABASE_URI(self) -> PostgresDsn:
         return MultiHostUrl.build(
-            scheme="postgresql+psycopg",
+            scheme="postgresql+psycopg2",
             username=self.POSTGRES_USER,
             password=self.POSTGRES_PASSWORD,
             host=self.POSTGRES_SERVER,
@@ -123,7 +123,7 @@ class Settings(BaseSettings):
     TEST_USER_EMAIL: EmailStr = "test@example.com"
     TEST_USER_USERNAME: str = "testusername"
     TEST_DATABASE_URI: PostgresDsn | None = MultiHostUrl.build(
-        scheme="postgresql+psycopg",
+        scheme="postgresql+psycopg2",
         username="test-pom-oltp-user",
         password="test-pom-oltp-password",
         host="test-db",

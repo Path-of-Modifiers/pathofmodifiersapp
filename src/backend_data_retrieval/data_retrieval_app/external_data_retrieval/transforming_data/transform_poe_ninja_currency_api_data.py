@@ -26,13 +26,9 @@ def load_currency_data():
 class TransformPoENinjaCurrencyAPIData:
     def __init__(self) -> None:
         logger.debug("Initializing TransformPoENinjaCurrencyAPIData.")
-        if "localhost" not in settings.DOMAIN:
-            self.url = f"https://{settings.DOMAIN}"
-        else:
-            self.url = "http://src-backend-1"
-        self.url += "/api/api_v1"
-        logger.debug("Url set to: " + self.url)
-        self.pom_api_headers = get_superuser_token_headers(self.url)
+        self.base_url = settings.BACKEND_BASE_URL
+        logger.debug(f"Url set to: {self.base_url}")
+        self.pom_api_headers = get_superuser_token_headers(self.base_url)
         logger.debug("Headers set to: " + str(self.pom_api_headers))
         logger.debug("Initializing TransformPoENinjaCurrencyAPIData done.")
 
@@ -83,7 +79,8 @@ class TransformPoENinjaCurrencyAPIData:
     def _get_latest_currency_id_series(self, currency_df: pd.DataFrame) -> pd.Series:
         try:
             response = requests.get(
-                self.url + "/currency/latest_currency_id/", headers=self.pom_api_headers
+                f"{self.base_url}/currency/latest_currency_id/",
+                headers=self.pom_api_headers,
             )
             response.raise_for_status()
         except Exception as e:
@@ -116,7 +113,7 @@ class TransformPoENinjaCurrencyAPIData:
         logger.debug("Inserting currency data into database.")
         insert_data(
             currency_df,
-            url=self.url,
+            url=self.base_url,
             table_name="currency",
             logger=logger,
             headers=self.pom_api_headers,

@@ -17,18 +17,12 @@ pd.options.mode.chained_assignment = None  # default="warn"
 class PoEAPIDataTransformerBase:
     def __init__(self) -> None:
         logger.debug("Initializing PoEAPIDataTransformer")
-        if "localhost" not in settings.DOMAIN:
-            self.url = f"https://{settings.DOMAIN}"
-        else:
-            self.url = "http://src-backend-1"
-        self.url += "/api/api_v1"
-        logger.debug("Url set to: " + self.url)
 
-        self.pom_auth_headers = get_superuser_token_headers(self.url)
-        logger.debug("Headers set to: " + str(self.pom_auth_headers))
-        logger.debug("Initializing PoEAPIDataTransformer done.")
-
+        self.base_url = settings.BACKEND_BASE_URL
+        self.pom_auth_headers = get_superuser_token_headers(self.base_url)
         self.roll_processor = RollProcessor()
+
+        logger.debug("Initializing PoEAPIDataTransformer done.")
 
     def _create_item_table(
         self, df: pd.DataFrame, hours_since_launch: int
@@ -250,7 +244,7 @@ class PoEAPIDataTransformerBase:
     def _get_latest_item_id_series(self, item_df: pd.DataFrame) -> pd.Series:
         try:
             response = requests.get(
-                self.url + "/item/latest_item_id/", headers=self.pom_auth_headers
+                f"{self.base_url}/item/latest_item_id/", headers=self.pom_auth_headers
             )
             response.raise_for_status()
         except Exception as e:
@@ -281,7 +275,7 @@ class PoEAPIDataTransformerBase:
         item_df = self._clean_item_table(item_df)
         insert_data(
             item_df,
-            url=self.url,
+            url=self.base_url,
             table_name="item",
             logger=logger,
             headers=self.pom_auth_headers,
@@ -332,7 +326,7 @@ class PoEAPIDataTransformerBase:
         item_df = self._clean_unidentified_item_table(item_df)
         insert_data(
             item_df,
-            url=self.url,
+            url=self.base_url,
             table_name="unidentifiedItem",
             logger=logger,
             headers=self.pom_auth_headers,
@@ -382,7 +376,7 @@ class PoEAPIDataTransformerBase:
 
         insert_data(
             item_modifier_df,
-            url=self.url,
+            url=self.base_url,
             table_name="itemModifier",
             logger=logger,
             headers=self.pom_auth_headers,

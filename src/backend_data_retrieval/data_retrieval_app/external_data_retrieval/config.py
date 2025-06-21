@@ -1,6 +1,9 @@
 from datetime import datetime
 
-from pydantic import computed_field
+from pydantic import (
+    HttpUrl,
+    computed_field,
+)
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -10,6 +13,15 @@ class Settings(BaseSettings):
     )
 
     DOMAIN: str
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def BACKEND_BASE_URL(self) -> HttpUrl:
+        if "localhost" not in self.DOMAIN:
+            return HttpUrl(f"https://{self.DOMAIN}/api/api_v1")
+        else:
+            return HttpUrl("http://src-backend-1:8000/api/api_v1")
+
     MANUAL_NEXT_CHANGE_ID: bool
     NEXT_CHANGE_ID: str
     OATH_ACC_TOKEN_CONTACT_EMAIL: str

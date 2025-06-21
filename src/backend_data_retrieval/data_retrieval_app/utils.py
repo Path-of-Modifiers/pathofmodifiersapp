@@ -1,10 +1,11 @@
 import logging
 from collections.abc import Generator
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 import pandas as pd
 import requests
+from pydantic import HttpUrl
 
 from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.logs.logger import main_logger as logger
@@ -54,7 +55,7 @@ def df_to_JSON(
 
 
 def find_hours_since_launch() -> int:
-    current_time = datetime.now(timezone.utc)
+    current_time = datetime.now(UTC)
     league_launch_time = settings.LEAGUE_LAUNCH_DATETIME_OBJECT
 
     time_since_launch = current_time - league_launch_time
@@ -71,7 +72,7 @@ def find_hours_since_launch() -> int:
 def insert_data(
     df: pd.DataFrame,
     *,
-    url: str,
+    url: HttpUrl,
     table_name: str,
     logger: logging.Logger,
     on_duplicate_pkey_do_nothing: bool = False,
@@ -87,7 +88,7 @@ def insert_data(
         params["on_duplicate_pkey_do_nothing"] = True
     logger.debug("Sending data to database.")
     response = requests.post(
-        url + f"/{table_name}/", json=data, headers=headers, params=params
+        f"{url}/{table_name}/", json=data, headers=headers, params=params
     )
     logger.debug("Sent request to insert data into the database.")
     if response.status_code == 422:
@@ -96,7 +97,7 @@ def insert_data(
         )
         for data_chunk in _chunks(data, n=15):
             response = requests.post(
-                url + f"/{table_name}/", json=data_chunk, headers=headers
+                f"{url}/{table_name}/", json=data_chunk, headers=headers
             )
             if response.status_code == 422:
                 logger.warning(
@@ -104,7 +105,7 @@ def insert_data(
                 )
                 for individual_data in data_chunk:
                     response = requests.post(
-                        url + f"/{table_name}/", json=individual_data, headers=headers
+                        f"{url}/{table_name}/", json=individual_data, headers=headers
                     )
                     if response.status_code == 422:
                         logger.warning(
