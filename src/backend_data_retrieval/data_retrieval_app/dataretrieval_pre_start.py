@@ -19,17 +19,10 @@ wait_seconds = 6
 )
 def init() -> None:
     try:
+        base_url = settings.BACKEND_BASE_URL
         pom_api_headers = {}
-        if "localhost" not in settings.DOMAIN:
-            test_url = "https://" + settings.DOMAIN + "/api/api_v1/modifier/"
-            pom_api_headers = get_superuser_token_headers(
-                "https://" + settings.DOMAIN + "/api/api_v1"
-            )
-        else:
-            test_url = "http://src-backend-1/api/api_v1/modifier/"
-            pom_api_headers = get_superuser_token_headers(
-                "http://src-backend-1/api/api_v1"
-            )
+        test_url = f"{base_url}/modifier/"
+        pom_api_headers = get_superuser_token_headers(base_url)
         response = requests.get(test_url, headers=pom_api_headers)
         response.raise_for_status()
     except Exception as e:
