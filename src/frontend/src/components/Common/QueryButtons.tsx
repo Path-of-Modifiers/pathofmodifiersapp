@@ -13,10 +13,11 @@ import { getOptimizedPlotQuery } from "../../hooks/graphing/utils";
 const QueryButtons = (props: FlexProps) => {
   const { setExpandedGraphInputFilters } = useExpandedComponentStore();
   const {
-    modifiersError,
+    noSelectedModifiersError,
     leagueError,
     noRelatedUniqueError,
-    itemDoesNotHaveSelectedModifiersError,
+    currentlySelectedModifiersError,
+    modifiersUnidentifiedError,
     baseSpecDoesNotMatchError,
   } = useErrorStore();
   const { stateHash, fetchStatus, setHashFromStore, setPlotQuery } =
@@ -123,10 +124,10 @@ const QueryButtons = (props: FlexProps) => {
           {filterExpanded ? "Hide Filters" : "Show Filters"}
         </Button>
       </Flex>
-      {modifiersError && (
+      {noSelectedModifiersError && (
         <ErrorMessage
           alertTitle="No Modifiers Selected"
-          alertDescription="Please select at least one modifier."
+          alertDescription="Please select at least one modifier or set `Miscellaneous.Identified`=`No`."
         />
       )}
       {leagueError && (
@@ -135,16 +136,22 @@ const QueryButtons = (props: FlexProps) => {
           alertDescription="Please select a league."
         />
       )}
-      {noRelatedUniqueError && !modifiersError && (
+      {noRelatedUniqueError && !noSelectedModifiersError && (
         <ErrorMessage
           alertTitle="No query performed"
           alertDescription="The modifiers you have chosen cannot appear on the same Unique."
         />
       )}
-      {itemDoesNotHaveSelectedModifiersError && (
+      {currentlySelectedModifiersError && (
         <ErrorMessage
           alertTitle="No query performed"
           alertDescription="The chosen unique cannot have the currently selected modifiers."
+        />
+      )}
+      {modifiersUnidentifiedError && (
+        <ErrorMessage
+          alertTitle="No query performed"
+          alertDescription="Unidentified items can't have selected modifiers (please unselect modifiers)"
         />
       )}
       {baseSpecDoesNotMatchError && (

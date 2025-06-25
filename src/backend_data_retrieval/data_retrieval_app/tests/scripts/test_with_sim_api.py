@@ -130,7 +130,7 @@ class ContinuousMockDataRetrieval(ContinuousDataRetrieval):
         super().__init__(items_per_batch, data_transformers)
 
         self.poe_api_handler = PoEMockAPIHandler(
-            url=self.url,
+            url=self.stash_tab_url,
             auth_token=self.auth_token,
             n_wanted_items=items_per_batch,
             n_unique_wanted_items=10,

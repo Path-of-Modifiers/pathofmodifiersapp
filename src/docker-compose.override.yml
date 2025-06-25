@@ -3,7 +3,7 @@ services:
   proxy:
     image: traefik:v3.0
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - ${OPTIONAL_DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock
     ports:
       - "80:80"
       - "8090:8080"
@@ -51,25 +51,45 @@ services:
     restart: "no"
     ports:
       - "8000:8000"
-    volumes:
-      - ./backend_api/:/app
     build:
       context: ./backend_api
       args:
         INSTALL_DEV: ${INSTALL_DEV-true}
-    command: /start-reload.sh
+    command:
+      - fastapi
+      - run
+      - --reload
+      - "app/main.py"
+    develop:
+      watch:
+        - path: ./backend_api
+          action: sync
+          target: /app
+          ignore:
+            - ./backend_api/.venv
+            - .venv
+        - path: ./backend_api/pyproject.toml
+          action: rebuild
 
   pgadmin:
     restart: "no"
     ports:
       - "8881:80"
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL?Variable not set}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD?Variable not set}
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - default
 
   backend-data-retrieval:
     restart: "no"
     ports:
       - "8889:8889"
-    volumes:
-      - ./backend_data_retrieval/:/data_retrieval_app
     build:
       context: ./backend_data_retrieval
       args:
@@ -78,17 +98,19 @@ services:
 
   frontend:
     restart: "no"
+    ports:
+      - "5173:80"
     build:
       context: ./frontend
       args:
-        - VITE_API_URL=http://${DOMAIN?Variable not set}
+        - VITE_API_URL=http://localhost:8000
         - NODE_ENV=development
 
   vector:
     restart: "no"
     volumes:
+      - ${OPTIONAL_DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock
       - ./vector-override.yaml:/etc/vector/vector.yaml:ro
-      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - default

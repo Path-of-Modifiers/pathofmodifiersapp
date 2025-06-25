@@ -38,15 +38,12 @@ from data_retrieval_app.pom_api_authentication import (
 class ContinuousDataRetrieval:
     auth_token = settings.POE_PUBLIC_STASHES_AUTH_TOKEN
     current_league = settings.CURRENT_SOFTCORE_LEAGUE
-    url = "https://api.pathofexile.com/public-stash-tabs"
+    stash_tab_url = "https://api.pathofexile.com/public-stash-tabs"
 
-    if "localhost" not in settings.DOMAIN:
-        base_pom_api_url = f"https://{settings.DOMAIN}/api/api_v1"
-    else:
-        base_pom_api_url = "http://src-backend-1/api/api_v1"
-    modifier_url = base_pom_api_url + "/modifier/"
-    item_base_type_url = base_pom_api_url + "/itemBaseType/"
-    pom_auth_headers = get_superuser_token_headers(base_pom_api_url)
+    backend_base_url = settings.BACKEND_BASE_URL
+    modifier_url = f"{backend_base_url}/modifier/"
+    item_base_type_url = f"{backend_base_url}/itemBaseType/"
+    pom_auth_headers = get_superuser_token_headers(backend_base_url)
 
     def __init__(
         self,
@@ -59,7 +56,7 @@ class ContinuousDataRetrieval:
         }
 
         self.poe_api_handler = PoEAPIHandler(
-            url=self.url,
+            url=self.stash_tab_url,
             auth_token=self.auth_token,
             n_wanted_items=items_per_batch,
             n_unique_wanted_items=10,

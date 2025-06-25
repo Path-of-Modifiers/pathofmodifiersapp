@@ -9,7 +9,7 @@ else
     echo "Data deposit failed. Exiting..."
     exit 1
 fi
-# python data_retrieval_app/tests/scripts/create_public_stashes_test_data/utils/data_deposit_test_data_creator.py
+# python app/tests/scripts/create_public_stashes_test_data/utils/data_deposit_test_data_creator.py
 # exit 0
 
 # Test scripts in "tests" module

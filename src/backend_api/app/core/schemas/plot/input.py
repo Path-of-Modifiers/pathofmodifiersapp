@@ -37,10 +37,25 @@ class WantedModifier(_pydantic.BaseModel):
     modifierLimitations: ModifierLimitations | None = None
 
 
-class PlotQuery(_pydantic.BaseModel):
+class BasePlotQuery(_pydantic.BaseModel):
     league: str
     itemSpecifications: ItemSpecs | None = None
     baseSpecifications: BaseSpecs | None = None
-    wantedModifiers: list[list[WantedModifier]]
     end: int | None = None
     start: int | None = None
+
+
+class PlotQuery(BasePlotQuery):
+    "Plots for items with or without modifiers"
+
+    wantedModifiers: list[list[WantedModifier]] | None = None
+
+
+class IdentifiedPlotQuery(BasePlotQuery):
+    "Plots for items with modifiers"
+
+    wantedModifiers: list[list[WantedModifier]]
+
+
+class UnidentifiedPlotQuery(BasePlotQuery):
+    """Plots for unidentified items"""
