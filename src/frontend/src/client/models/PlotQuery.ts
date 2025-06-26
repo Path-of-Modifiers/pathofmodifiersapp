@@ -9,7 +9,7 @@ import type { WantedModifier } from './WantedModifier';
  * Plots for items with or without modifiers
  */
 export type PlotQuery = {
-    league: string;
+    league: (Array<string> | string);
     itemSpecifications?: (ItemSpecs | null);
     baseSpecifications?: (BaseSpecs | null);
     end?: (number | null);

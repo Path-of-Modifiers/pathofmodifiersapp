@@ -8,7 +8,7 @@ export const $Body_logins_login_access_session = {
             type: 'any-of',
             contains: [{
                 type: 'string',
-                pattern: 'password',
+                pattern: '^password$',
             }, {
                 type: 'null',
             }],
@@ -20,6 +20,7 @@ export const $Body_logins_login_access_session = {
         password: {
             type: 'string',
             isRequired: true,
+            format: 'password',
         },
         scope: {
             type: 'string',

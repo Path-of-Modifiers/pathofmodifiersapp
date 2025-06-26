@@ -70,7 +70,7 @@ export interface PlotSettingsState {
 export type SetItemSpecMisc = (isItemSpecType: boolean | undefined) => void;
 
 export interface StateHash {
-  league?: string;
+  leagues?: string[];
   itemName?: string;
   baseSpec?: string;
   itemSpec?: string;
@@ -88,7 +88,7 @@ export interface GraphInputState {
   choosableItemBaseType: ChoosableItemBaseTypesExtended[];
   choosableItemNames: string[];
 
-  league: string;
+  leagues: string[];
 
   itemName: string | undefined;
   itemSpec: ItemSpecState | undefined;
@@ -115,7 +115,9 @@ export interface GraphInputState {
 
   setPlotQuery: (plotQuery: PlotQuery) => void;
 
-  setLeague: (league: string) => void;
+  addLeague: (league: string) => void;
+  removeLeague: (league: string) => void;
+
 
   setItemName: (name: string | undefined) => void;
 

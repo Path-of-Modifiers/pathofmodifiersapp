@@ -95,6 +95,7 @@ class _BasePlotter(ABC, Generic[Q]):
         select_args: list[InstrumentedAttribute[Any] | Label[Any]] = [
             item_model.itemId,
             item_model.createdHoursSinceLaunch,
+            item_model.league,
             item_model.itemBaseTypeId,
             item_model.currencyId,
             item_model.currencyAmount,
@@ -110,15 +111,14 @@ class _BasePlotter(ABC, Generic[Q]):
         stmt = (
             select(*select_args)
             .join(model_Currency, item_model.currencyId == model_Currency.currencyId)
-            .where(item_model.league == query.league)
         )
 
-        if "|" in query.league:
-            stmt.where(
-                or_([model_Item.league == league for league in query.league.split("|")])
+        if isinstance(query.league, list):
+            stmt = stmt.where(
+                or_([model_Item.league == league for league in query.league])
             )
         else:
-            stmt.where(model_Item.league == query.league)
+            stmt = stmt.where(model_Item.league == query.league)
 
         if start is not None:
             stmt = stmt.where(item_model.createdHoursSinceLaunch >= start)
@@ -180,74 +180,11 @@ class _BasePlotter(ABC, Generic[Q]):
 
         return statement.where(and_(True, *item_lvls))
 
-    def _get_plot_dict(
-        self,
-        value_in_chaos: pd.Series,
-        time_stamps: pd.Series,
-        value_in_most_common_currency_used: pd.Series,
-        mostCommonCurrencyUsed: str,
-    ) -> dict[str, pd.Series | str]:
-        return {
-            "valueInChaos": value_in_chaos,
-            "hoursSinceLaunch": time_stamps,
-            "valueInMostCommonCurrencyUsed": value_in_most_common_currency_used,
-            "mostCommonCurrencyUsed": mostCommonCurrencyUsed,
-        }
-
-    def _update_plot_data_by_processed_df(
-        self,
-        plot_data: dict,
-        processed_df: pd.DataFrame,  # ← rename & re‑type to DataFrame
-    ) -> dict[str, Any]:
-        """
-        After processing rows like aggregates and `determine_confidence`, update `plot_data` before
-        validating with PlotData schema
-        """
-        # convert the Int64Index → list[int]
-        plot_data["hoursSinceLaunch"] = processed_df.index.astype(int).tolist()
-
-        # convert each column Series → list[...]
-        plot_data["valueInChaos"] = processed_df["valueInChaos"].tolist()
-        plot_data["valueInMostCommonCurrencyUsed"] = processed_df[
-            "valueInMostCommonCurrencyUsed"
-        ].tolist()
-        plot_data["confidence"] = processed_df["confidence"].tolist()
-
-        # get the most common confidence rating as a Python str
-        plot_data["confidenceRating"] = processed_df["confidence"].mode().tolist()[0]
-
-        return plot_data
-
     @sync_timing_tracker
     def _convert_result_to_df(self, result: Result) -> pd.DataFrame:
         rows = result.fetchall()
         df = pd.DataFrame(rows, columns=result.keys())
         return df
-
-    @sync_timing_tracker
-    def _create_plot_data(
-        self, df: pd.DataFrame
-    ) -> tuple[pd.Series, pd.Series, pd.Series, str]:
-        most_common_currency_used = df.tradeName.mode()[0]
-
-        value_in_chaos: pd.Series = df["currencyAmount"] * df["valueInChaos"]
-
-        time_stamps: pd.Series = df.loc[:, "createdHoursSinceLaunch"]
-
-        # Find conversion value between chaos and most common currency
-        conversion_value = find_conversion_value(
-            df,
-            value_in_chaos=value_in_chaos,
-            most_common_currency_used=most_common_currency_used,
-        )
-        value_in_most_common_currency_used = value_in_chaos / conversion_value
-
-        return (
-            value_in_chaos,
-            time_stamps,
-            value_in_most_common_currency_used,
-            most_common_currency_used,
-        )
 
     @async_timing_tracker
     async def _perform_plot_db_stmt(

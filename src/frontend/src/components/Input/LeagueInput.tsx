@@ -6,38 +6,50 @@ import {
   HandleChangeEventFunction,
 } from "./StandardLayoutInput/SelectBoxInput";
 import { DEFAULT_LEAGUE, ADDITIONAL_LEAGUES } from "../../config";
+import MultiSelectButtonGrid from "../Common/MultiSelectButtonGrid";
 
 // Set the default league in the environment variables file.
 // League Input Component  -  This component is used to select the league of the game.
 export const LeagueInput = () => {
-  const { league, setLeague } = useGraphInputStore();
-  const clearClicked = useGraphInputStore((state) => state.clearClicked);
+  const { leagues, addLeague, removeLeague } = useGraphInputStore();
+  // const clearClicked = useGraphInputStore((state) => state.clearClicked);
+  console.log(leagues);
+  // const handleLeagueChange: HandleChangeEventFunction = (newValue) => {
+  //   if (newValue) {
+  //     setLeague(newValue.label || DEFAULT_LEAGUE);
+  //   }
+  // };
 
-  const handleLeagueChange: HandleChangeEventFunction = (newValue) => {
-    if (newValue) {
-      setLeague(newValue.label || DEFAULT_LEAGUE);
-    }
-  };
+  // useEffect(() => {
+  //   if (clearClicked) {
+  //     useGraphInputStore.setState({ leagues: [DEFAULT_LEAGUE] });
+  //   }
+  // }, [clearClicked]);
 
-  useEffect(() => {
-    if (clearClicked) {
-      useGraphInputStore.setState({ league: DEFAULT_LEAGUE });
-    }
-  }, [clearClicked]);
-
-  const selectLeagueOptions: Array<SelectBoxOptionValue> = [
-    { value: DEFAULT_LEAGUE, label: DEFAULT_LEAGUE, regex: DEFAULT_LEAGUE },
-    ...ADDITIONAL_LEAGUES.map((league) => ({ value: league, label: league, regex: league }))
-  ];
-
+  const selectLeagueOptions: string[] = [DEFAULT_LEAGUE, ...ADDITIONAL_LEAGUES]
+  // const selectLeagueOptions: Array<SelectBoxOptionValue> = [
+  //   { value: DEFAULT_LEAGUE, label: DEFAULT_LEAGUE, regex: DEFAULT_LEAGUE },
+  //   ...ADDITIONAL_LEAGUES.map((league) => ({ value: league, label: league, regex: league }))
+  // ];
   return (
-    <SelectBoxInput
-      optionsList={selectLeagueOptions}
-      handleChange={handleLeagueChange}
-      descriptionText={"League"}
-      defaultText={league}
-      multipleValues={false}
-      id={`leagueInput-0`}
+    <MultiSelectButtonGrid
+      optionsName="Leagues"
+      options={selectLeagueOptions}
+      defaultSelectedOptions={leagues}
+      setValue={addLeague}
+      removeValue={removeLeague}
+      onClearClick={() => useGraphInputStore.setState({ leagues: [DEFAULT_LEAGUE] })}
     />
-  );
+  )
+
+  // return (
+  //   <SelectBoxInput
+  //     optionsList={selectLeagueOptions}
+  //     handleChange={handleLeagueChange}
+  //     descriptionText={"League"}
+  //     defaultText={league}
+  //     multipleValues={false}
+  //     id={`leagueInput-0`}
+  //   />
+  // );
 };

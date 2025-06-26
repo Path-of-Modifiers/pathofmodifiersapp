@@ -27,10 +27,12 @@ export const GraphInput = (props: WrapProps) => {
                         maxWidth="98vw"
                     >
                         <ItemInput />
-                        <LeagueInput />
+                        {/* <LeagueInput /> */}
                     </Flex>
                 </WrapItem>
-
+                <WrapItem>
+                    <LeagueInput />
+                </WrapItem>
                 <WrapItem bg="ui.secondary">
                     <Flex
                         justifyContent={"space-between"}
