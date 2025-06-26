@@ -1,11 +1,5 @@
 import { useGraphInputStore } from "../../store/GraphInputStore";
-import { useEffect } from "react";
-import {
-  SelectBoxInput,
-  SelectBoxOptionValue,
-  HandleChangeEventFunction,
-} from "./StandardLayoutInput/SelectBoxInput";
-import { DEFAULT_LEAGUE, ADDITIONAL_LEAGUES } from "../../config";
+import { DEFAULT_LEAGUES, ADDITIONAL_LEAGUES } from "../../config";
 import MultiSelectButtonGrid from "../Common/MultiSelectButtonGrid";
 
 // Set the default league in the environment variables file.
@@ -26,7 +20,7 @@ export const LeagueInput = () => {
   //   }
   // }, [clearClicked]);
 
-  const selectLeagueOptions: string[] = [DEFAULT_LEAGUE, ...ADDITIONAL_LEAGUES]
+  const selectLeagueOptions: string[] = [...DEFAULT_LEAGUES, ...ADDITIONAL_LEAGUES]
   // const selectLeagueOptions: Array<SelectBoxOptionValue> = [
   //   { value: DEFAULT_LEAGUE, label: DEFAULT_LEAGUE, regex: DEFAULT_LEAGUE },
   //   ...ADDITIONAL_LEAGUES.map((league) => ({ value: league, label: league, regex: league }))
@@ -38,18 +32,7 @@ export const LeagueInput = () => {
       defaultSelectedOptions={leagues}
       setValue={addLeague}
       removeValue={removeLeague}
-      onClearClick={() => useGraphInputStore.setState({ leagues: [DEFAULT_LEAGUE] })}
+      onClearClick={() => useGraphInputStore.setState({ leagues: DEFAULT_LEAGUES })}
     />
   )
-
-  // return (
-  //   <SelectBoxInput
-  //     optionsList={selectLeagueOptions}
-  //     handleChange={handleLeagueChange}
-  //     descriptionText={"League"}
-  //     defaultText={league}
-  //     multipleValues={false}
-  //     id={`leagueInput-0`}
-  //   />
-  // );
 };
