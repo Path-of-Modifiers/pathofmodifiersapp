@@ -1,3 +1,6 @@
+import inspect
+import time
+
 import pandas as pd
 
 from data_retrieval_app.external_data_retrieval.config import settings
@@ -12,15 +15,20 @@ class DetectorBase:
     wanted_items = {}
     found_items = {}
 
-    current_league = settings.CURRENT_SOFTCORE_LEAGUE
-
-    def __init__(self) -> None:
+    def __init__(self, enable_pbar: bool = False) -> None:
         """
         `self.n_unique_items_found` needs to be stored inbetween item detector sessions.
         """
         self.n_unique_items_found = 0
 
         self.prev_item_hashes_found = {}
+
+        self.leagues = [
+            settings.CURRENT_SOFTCORE_LEAGUE,
+            settings.CURRENT_HARDCORE_LEAGUE,
+        ]
+
+        self.pbar_enabled = enable_pbar
 
     def _general_filter(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -56,7 +64,7 @@ class DetectorBase:
         else:
             return pd.DataFrame(columns=df.columns)
 
-        df = df.loc[df["league"] == self.current_league]
+        df = df.loc[df["league"].isin(self.leagues)]
 
         return df
 
@@ -100,10 +108,24 @@ class DetectorBase:
         n_items_filtered = n_items_before_filter - len(df)
 
         logger.info(
-            f'detector="{self}" {n_items_before_filter=} {n_items_filtered=} percent_of_total={1-n_items_filtered/max(1, n_items_before_filter):.2%}'
+            f'detector="{self}" {n_items_before_filter=} {n_items_filtered=} percent_of_total={1 - n_items_filtered / max(1, n_items_before_filter):.2%}'
         )
 
         return df
+
+    def _snapshot(self, df: pd.DataFrame, filepath: str = None) -> None:
+        """
+        A method for creating a snapshot for a given dataframe. If no filepath is given, it saves the class
+        this directory with the name `snapshot_{name_of_class}_{time}.csv`
+        """
+        if filepath is None:
+            filepath = (
+                inspect.getfile(DetectorBase)[:-7]
+                + f"snapshot_{self}_{time.time():.0f}.csv"
+            )
+
+        logger.info(f"Saving a snapshot, for the detector {self}")
+        df.to_csv(filepath, encoding="utf-8")
 
     def iterate_stashes(
         self, df: pd.DataFrame
@@ -121,6 +143,7 @@ class DetectorBase:
         df_filtered = self._filter_on_game_item_id(df_filtered)
 
         item_count = len(df_filtered)
-        self.n_unique_items_found = len(self.found_items.keys())
+        if self.pbar_enabled:
+            self.n_unique_items_found = len(self.found_items.keys())
 
         return df_filtered, item_count, self.n_unique_items_found, df_leftover

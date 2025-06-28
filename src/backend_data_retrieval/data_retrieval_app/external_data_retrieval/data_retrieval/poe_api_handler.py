@@ -14,6 +14,7 @@ from data_retrieval_app.external_data_retrieval.detectors.unique_detector import
     UniqueDetector,
     UniqueJewelDetector,
     UniqueJewelleryDetector,
+    UniqueUnidentifiedDetector,
     UniqueWeaponDetector,
 )
 from data_retrieval_app.external_data_retrieval.utils import (
@@ -31,11 +32,6 @@ class PoEAPIHandler:
     headers = {
         "User-Agent": f"OAuth pathofmodifiers/0.1.0 (contact: {settings.OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
     }
-
-    if "localhost" not in settings.DOMAIN:
-        base_pom_api_url = f"https://{settings.DOMAIN}"
-    else:
-        base_pom_api_url = "http://src-backend-1"
 
     def __init__(
         self,
@@ -61,6 +57,7 @@ class PoEAPIHandler:
                 UniqueJewelDetector(),
                 UniqueJewelleryDetector(),
                 UniqueWeaponDetector(),
+                UniqueUnidentifiedDetector(),
             ]
         logger.debug("Item detectors set to: " + str(item_detectors))
         self.url = url

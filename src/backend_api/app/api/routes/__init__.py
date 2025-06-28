@@ -2,6 +2,7 @@ from app.api.routes.currency import currency_prefix
 from app.api.routes.item_base_type import item_base_type_prefix
 from app.api.routes.item_modifier import item_modifier_prefix
 from app.api.routes.item import item_prefix
+from app.api.routes.unidentified_item import unidentified_item_prefix
 from app.api.routes.login import login_prefix
 from app.api.routes.modifier import modifier_prefix
 from app.api.routes.plot import plot_prefix

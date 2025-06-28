@@ -21,6 +21,12 @@ from .item_modifier import (
     ItemModifierUpdate,
 )
 from .item import Item, ItemInDB, ItemCreate, ItemUpdate
+from .unidentified_item import (
+    UnidentifiedItem,
+    UnidentifiedItemInDB,
+    UnidentifiedItemCreate,
+    UnidentifiedItemUpdate,
+)
 from .turnstile import TurnstileQuery, TurnstileResponse
 from .user import (
     UserCreate,

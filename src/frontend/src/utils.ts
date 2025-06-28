@@ -67,3 +67,18 @@ export const handleError = (err: ApiError, showToast: Toast) => {
 export function msToNextHour() {
   return 3600000 - (new Date().getTime() % 3600000);
 }
+
+type SetDateFunction = (date: Date) => void;
+
+export const setupHourlyUpdate = (setCurrentTime: SetDateFunction) => {
+  let timeoutId: NodeJS.Timeout;
+
+  const updateTime = () => {
+    setCurrentTime(new Date());
+    timeoutId = setTimeout(updateTime, msToNextHour()); // Recalculate delay
+  };
+
+  timeoutId = setTimeout(updateTime, msToNextHour());
+
+  return () => clearTimeout(timeoutId);
+};

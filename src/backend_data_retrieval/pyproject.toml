@@ -1,50 +1,64 @@
-[tool.poetry]
-name = "pom_backend_data_retrieval"
-version = "0.1.0"
+[project]
+name = "app"
+version = "1.0.0"
 description = "Path of Modifiers backend data retrieval"
-authors = ["Path of Modifiers team <team@pathofmodifiers.com>"]
+requires-python = ">=3.12, <4.0"
+dependencies = [
+    "aiohttp>=3.12.13",
+    "alembic>=1.16.2",
+    "asyncio-redis-rate-limit>=1.0.0",
+    "asyncpg>=0.30.0",
+    "bcrypt>=4.3.0",
+    "beautifulsoup4>=4.13.4",
+    "email-validator>=2.2.0",
+    "emails>=0.6",
+    "fastapi[standard]>=0.115.2,<1.0.0",
+    "gunicorn>=23.0.0",
+    "httpx>=0.28.1",
+    "jinja2>=3.1.6",
+    "pandas>=2.3.0",
+    "passlib>=1.7.4",
+    "psycopg2>=2.9.10",
+    "pydantic>=2.11.7",
+    "pydantic-core>=2.33.2",
+    "pydantic-settings>=2.9.1",
+    "pyjwt>=2.10.1",
+    "python-multipart>=0.0.20",
+    "pyyaml>=6.0.2",
+    "redis>=6.2.0",
+    "requests>=2.32.4",
+    "sentry-sdk>=2.30.0",
+    "slowapi>=0.1.9",
+    "tenacity>=9.1.2",
+    "tqdm>=4.67.1",
+]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-python-multipart = "^0.0.7"
-email-validator = "^2.1.0.post1"
-tenacity = "^8.2.3"
-pydantic = ">2.0"
 
-jinja2 = "^3.1.4"
-httpx = "^0.25.1"
-pydantic-settings = "^2.2.1"
-sentry-sdk = {extras = ["fastapi"], version = "^1.40.6"}
-pandas = "2.2.0" # for dataframe processing
-requests = "^2.31.0"
-tqdm = "^4.66.2"
-aiohttp = "^3.9.3"
-pyjwt = "^2.9.0"
-pytest-asyncio = "^0.23.8"
-pyyaml = "^6.0.2"
-beautifulsoup4 = "^4.12.3"
-
-
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.4.3"
-mypy = "^1.8.0"
-ruff = "^0.2.2"
-pre-commit = "^3.6.2"
-types-passlib = "^1.7.7.20240106"
-coverage = "^7.4.3"
+[tool.uv]
+dev-dependencies = [
+    "pytest<8.0.0,>=7.4.3",
+    "mypy<2.0.0,>=1.8.0",
+    "ruff<1.0.0,>=0.2.2",
+    "pre-commit<4.0.0,>=3.6.2",
+    "types-passlib<2.0.0.0,>=1.7.7.20240106",
+    "coverage<8.0.0,>=7.4.3",
+]
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["backend_data_retrieval/app"]
+
 
 [tool.mypy]
 strict = true
 exclude = ["venv", ".venv", "alembic"]
 
+
 [tool.ruff]
-target-version = "py310"
-exclude = ["alembic"]
+target-version = "py312"
 
 [tool.ruff.lint]
 select = [

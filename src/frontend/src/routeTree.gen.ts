@@ -11,7 +11,6 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as TermsOfUseImport } from './routes/terms-of-use'
 import { Route as PrivacyPolicyImport } from './routes/privacy-policy'
 import { Route as CaptchaImport } from './routes/captcha'
 import { Route as AboutImport } from './routes/about'
@@ -19,12 +18,6 @@ import { Route as LayoutImport } from './routes/_layout'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
-
-const TermsOfUseRoute = TermsOfUseImport.update({
-  id: '/terms-of-use',
-  path: '/terms-of-use',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const PrivacyPolicyRoute = PrivacyPolicyImport.update({
   id: '/privacy-policy',
@@ -94,13 +87,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyPolicyImport
       parentRoute: typeof rootRoute
     }
-    '/terms-of-use': {
-      id: '/terms-of-use'
-      path: '/terms-of-use'
-      fullPath: '/terms-of-use'
-      preLoaderRoute: typeof TermsOfUseImport
-      parentRoute: typeof rootRoute
-    }
   }
 }
 
@@ -112,7 +98,6 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/captcha': typeof CaptchaRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
-  '/terms-of-use': typeof TermsOfUseRoute
 }
 
 export interface FileRoutesByTo {
@@ -121,7 +106,6 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/captcha': typeof CaptchaRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
-  '/terms-of-use': typeof TermsOfUseRoute
 }
 
 export interface FileRoutesById {
@@ -131,28 +115,14 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/captcha': typeof CaptchaRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
-  '/terms-of-use': typeof TermsOfUseRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | ''
-    | '/about'
-    | '/captcha'
-    | '/privacy-policy'
-    | '/terms-of-use'
+  fullPaths: '/' | '' | '/about' | '/captcha' | '/privacy-policy'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/about' | '/captcha' | '/privacy-policy' | '/terms-of-use'
-  id:
-    | '__root__'
-    | '/'
-    | '/_layout'
-    | '/about'
-    | '/captcha'
-    | '/privacy-policy'
-    | '/terms-of-use'
+  to: '/' | '' | '/about' | '/captcha' | '/privacy-policy'
+  id: '__root__' | '/' | '/_layout' | '/about' | '/captcha' | '/privacy-policy'
   fileRoutesById: FileRoutesById
 }
 
@@ -162,7 +132,6 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   CaptchaRoute: typeof CaptchaRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
-  TermsOfUseRoute: typeof TermsOfUseRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -171,7 +140,6 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   CaptchaRoute: CaptchaRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
-  TermsOfUseRoute: TermsOfUseRoute,
 }
 
 export const routeTree = rootRoute
@@ -188,8 +156,7 @@ export const routeTree = rootRoute
         "/_layout",
         "/about",
         "/captcha",
-        "/privacy-policy",
-        "/terms-of-use"
+        "/privacy-policy"
       ]
     },
     "/": {
@@ -206,9 +173,6 @@ export const routeTree = rootRoute
     },
     "/privacy-policy": {
       "filePath": "privacy-policy.tsx"
-    },
-    "/terms-of-use": {
-      "filePath": "terms-of-use.tsx"
     }
   }
 }

@@ -33,6 +33,9 @@ class RollProcessor:
         ].replace(
             r"\\n|\n", " ", regex=True
         )  # Replaces newline with a space, so that it does not mess up the regex and matches modifiers in the `modifier` table
+        # Removes all rows with no modifier (The Adorned)
+        no_modifiers_mask = df["modifier"].isna()
+        df = df.loc[~no_modifiers_mask]
 
         return df
 

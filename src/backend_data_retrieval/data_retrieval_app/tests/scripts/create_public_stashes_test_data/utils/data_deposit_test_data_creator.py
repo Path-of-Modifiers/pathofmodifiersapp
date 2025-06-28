@@ -32,15 +32,14 @@ class DataDepositTestDataCreator:
         )
         self.output_test_data_location_path = "data_retrieval_app/tests/test_data/"
 
-        if "localhost" not in settings.DOMAIN:
-            self.base_url = f"https://{settings.DOMAIN}"
-        else:
-            self.base_url = "http://src-backend-1"
-        self.pom_auth_headers = get_superuser_token_headers(
-            self.base_url + "/api/api_v1"
-        )
+        self.base_url = settings.BACKEND_BASE_URL
+        self.pom_auth_headers = get_superuser_token_headers(self.base_url)
+        self.leagues = [
+            settings.CURRENT_SOFTCORE_LEAGUE,
+            settings.CURRENT_HARDCORE_LEAGUE,
+        ]
 
-        self.base_type_df = self._get_df_from_url("itemBaseType")
+        self.base_type_df = self._get_df_from_url("itemBaseType/")
         self.grouped_modifier_df = self._get_df_from_url(
             "modifier/grouped_modifiers_by_effect/"
         )
@@ -60,7 +59,7 @@ class DataDepositTestDataCreator:
     def _get_df_from_url(self, route: str) -> pd.DataFrame:
         headers = {"accept": "application/json", "Content-Type": "application/json"}
         headers.update(self.pom_auth_headers)
-        response = requests.get(self.base_url + "/api/api_v1/" + route, headers=headers)
+        response = requests.get(f"{self.base_url}/{route}", headers=headers)
         df = pd.read_json(StringIO(response.text), orient="records")
         return df
 
@@ -402,13 +401,13 @@ class DataDepositTestDataCreator:
             else random.choice(["Normal", "Magic", "Rare"])
         )
         base_type = random.choice(template["base_types"])
-        modifiers = self._choose_and_make_modifiers(template)
+        identified = random.random() < 0.95  # 95% chance for identified item
 
         item_dict = {
             "verified": True,
             "name": name,
-            "identified": True,
-            "league": settings.CURRENT_SOFTCORE_LEAGUE,
+            "identified": identified,
+            "league": random.choice(self.leagues),
             "rarity": rarity,
             "baseType": base_type,
             "note": self._create_random_note_text(),
@@ -418,8 +417,11 @@ class DataDepositTestDataCreator:
                     "suffixes": random_int(0, 99),
                 }
             ],
-            "explicitMods": modifiers,
         }
+
+        if identified:
+            modifiers = self._choose_and_make_modifiers(template)
+            item_dict["explicitMods"] = modifiers
 
         return item_dict
 

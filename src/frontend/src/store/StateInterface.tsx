@@ -191,16 +191,16 @@ export interface ExpandedComponentState {
 
 export interface ErrorState {
   leagueError: boolean;
-  modifiersError: boolean;
+  noSelectedModifiersError: boolean;
+  modifiersUnidentifiedError: boolean,
+  currentlySelectedModifiersError: boolean,
   noRelatedUniqueError: boolean;
-  itemDoesNotHaveSelectedModifiersError: boolean;
   baseSpecDoesNotMatchError: boolean;
   setLeagueError: (leagueError: boolean) => void;
-  setModifiersError: (modifiersError: boolean) => void;
+  setNoSelectedModifiersError: (modifiersError: boolean) => void;
+  setModifiersUnidentifiedError: (modifiersError: boolean) => void;
+  setCurrentlySelectedModifiersError: (modifiersError: boolean) => void,
   setNoRelatedUniqueError: (noRelatedUniqueError: boolean) => void;
-  setItemDoesNotHaveSelectedModifiersError: (
-    itemDoesNotHaveSelectedModifiersError: boolean,
-  ) => void;
   setBaseSpecDoesNotMatchError: (baseSpecDoesNotMatchError: boolean) => void;
 }
 

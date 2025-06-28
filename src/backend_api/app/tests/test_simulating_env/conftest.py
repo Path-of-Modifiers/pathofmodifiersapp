@@ -8,7 +8,7 @@ import pytest
 import pytest_asyncio
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from httpx import AsyncClient
+from httpx import ASGITransport, AsyncClient
 from redis.asyncio import Redis
 from slowapi import Limiter
 from sqlalchemy import Engine, create_engine
@@ -45,15 +45,15 @@ def app() -> Generator[FastAPI, None, None]:
 
 
 @pytest.fixture(scope="session")
-def engine() -> Generator[AsyncEngine, None, None]:
-    test_db_engine = create_engine(TEST_DATABASE_URL)
+def engine() -> Generator[Engine, None, None]:
+    test_db_engine = create_engine(str(TEST_DATABASE_URL))
     mock_src_database_for_test_db(test_db_engine)
     yield test_db_engine
 
 
 @pytest_asyncio.fixture(scope="session")
-async def async_engine() -> AsyncGenerator[AsyncEngine, None, None]:
-    engine = create_async_engine(ASYNC_TEST_DATABASE_URL)
+async def async_engine() -> AsyncGenerator[AsyncEngine, None]:
+    engine = create_async_engine(str(ASYNC_TEST_DATABASE_URL))
     yield engine
     await engine.dispose()
 
@@ -86,15 +86,17 @@ async def async_db(
     yield setup_async_db
 
 
-@pytest_asyncio.fixture(scope="function")
-def client(app: FastAPI) -> Generator[TestClient, None, None]:
+@pytest.fixture(scope="function")
+def client(app: FastAPI) -> Generator[TestClient, None]:
     with TestClient(app=app) as c:
         yield c
 
 
 @pytest_asyncio.fixture(scope="function")
 async def async_client(app: FastAPI) -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(app=app, base_url="http://testserver-asyncio") as c:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://testserver-asyncio"
+    ) as c:
         yield c
 
 
