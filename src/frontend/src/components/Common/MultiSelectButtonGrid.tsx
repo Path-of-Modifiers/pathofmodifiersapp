@@ -33,9 +33,8 @@ const MultiSelectButtonGrid = (props: MultiSelectProps) => {
 
   useEffect(() => {
     if (clearClicked && props.onClearClick) {
-      console.log("clear clicked!");
       props.onClearClick();
-      setSelectedOptions(selectedOptions.fill(false));
+      setSelectedOptions(defaultSelectedOptionsBoolean);
     }
   }, [clearClicked])
 
@@ -53,11 +52,12 @@ const MultiSelectButtonGrid = (props: MultiSelectProps) => {
         maxW="bgBoxes.mediumPPBox"
         fontWeight="normal"
         onClick={() => {
+          console.log(options[idx] + selectedOptions[idx])
           setSelectedOptions((currentSelectedOptions) => [
             ...currentSelectedOptions.slice(0, idx),
             !selectedOptions[idx],
             ...currentSelectedOptions.slice(idx + 1)])
-          if (selectedOptions[idx]) {
+          if (!selectedOptions[idx]) {
             props.setValue(val);
           } else {
             props.removeValue(val)
