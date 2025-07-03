@@ -66,8 +66,8 @@ services:
           action: sync
           target: /app
           ignore:
-            - ./backend_api/.venv
             - .venv
+            - uv.lock
         - path: ./backend_api/pyproject.toml
           action: rebuild
 
@@ -95,6 +95,16 @@ services:
       args:
         INSTALL_DEV: ${INSTALL_DEV-true}
     command: /data_retrieval_app/prestart.sh
+    develop:
+      watch:
+        - path: ./backend_data_retrieval
+          action: sync+restart
+          target: /data_retrieval_app
+          ignore:
+            - .venv/
+            - uv.lock
+        - path: ./backend_data_retrieval/pyproject.toml
+          action: rebuild
 
   frontend:
     restart: "no"
