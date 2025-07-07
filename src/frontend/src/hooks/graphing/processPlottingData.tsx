@@ -45,7 +45,7 @@ function useGetPlotData(plotQuery: PlotQuery): {
             data: []
           }))
     };
-    const currentIdxArray = plotData.data.reduce((prev, cur) => [...prev, 0], [] as number[]);
+    const currentIdxArray = plotData.data.reduce((prev) => [...prev, 0], [] as number[]);
     let currentIdx: number;
     // Makes a filled plot data object, meaning that every hour has an entry
     // Missing entries from the original plot data is replaced by a "null" entry

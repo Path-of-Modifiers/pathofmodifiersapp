@@ -9,8 +9,8 @@ const { setLeagueError, setNoSelectedModifiersError, setModifiersUnidentifiedErr
  */
 export const checkGraphQueryLeagueInput = () => {
   // If league is empty, return false
-  const league = useGraphInputStore.getState().league;
-  if (league === "") {
+  const leagues = useGraphInputStore.getState().leagues;
+  if (leagues.length === 0) {
     setLeagueError(true);
     return false;
   }
