@@ -14,21 +14,18 @@ import { BiError } from "react-icons/bi";
 import {
   getHoursSinceLaunch,
 } from "../../hooks/graphing/utils";
-import {setupHourlyUpdate } from "../../utils";
+import { setupHourlyUpdate } from "../../utils";
 
 interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
   upperBoundry: number;
+  fetchedLeagues: string[];
+  colors: string[]
 }
 
-export const CustomTooltip = ({
-  active,
-  payload,
-  label,
-  upperBoundry,
-}: CustomTooltipProps) => {
+export const CustomTooltip = (props: CustomTooltipProps) => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  const hoursAgo = getHoursSinceLaunch(currentTime) - label
+  const hoursAgo = getHoursSinceLaunch(currentTime) - props.label
 
   const daysToDisplay = Math.floor(hoursAgo / 24)
   const hoursToDisplay = hoursAgo % 24
@@ -40,9 +37,9 @@ export const CustomTooltip = ({
 
 
 
-  if (active && payload && payload.length) {
+  if (props.active && props.payload && props.payload.length) {
 
-    const confidence = payload[0].payload.confidence;
+    const confidence = props.payload[0].payload.confidence;
     const isLowConfidence = confidence === "low";
     const isMediumConfidence = confidence === "medium";
     const confidenceColor = isLowConfidence
@@ -64,9 +61,9 @@ export const CustomTooltip = ({
         flexDirection="column"
       >
         <Text my="5px">
-          {hoursAgo != 0 && daysToDisplay != 0 && ` ${daysToDisplay} days ago`}
-          {hoursAgo != 0 && hoursToDisplay != 0 && ` ${hoursToDisplay} hours ago`}
-          {hoursAgo == 0 && ` now`}
+          {hoursAgo !== 0 && daysToDisplay !== 0 && ` ${daysToDisplay} days ago`}
+          {hoursAgo !== 0 && hoursToDisplay !== 0 && ` ${hoursToDisplay} hours ago`}
+          {hoursAgo === 0 && ` now`}
         </Text>
         <Divider />
         <Box alignItems="center" display="flex" flexDirection="row">
@@ -93,7 +90,7 @@ export const CustomTooltip = ({
             )}
           </Box>
         </Box>
-        {(payload[0].value as number) > upperBoundry && (
+        {(props.payload[0].value as number) > props.upperBoundry && (
           <Box>
             <Divider />
             <Box display="flex" flexDirection="row" alignContent="center">
@@ -117,8 +114,8 @@ export const CustomTooltip = ({
         )}
 
         <Divider mb="5px" />
-        {payload.map((value, index) => (
-          <Box display="flex" flexDirection="row" key={`value-${index}`}>
+        {props.payload.map((value, index) => (
+          <Box display="flex" flexDirection="row" key={`value-${index}`} color={props.colors[props.fetchedLeagues.indexOf((value.name as string).split(" - ")[0])]}>
             <Box>{`${value.name}: `}</Box>
             <Box
               textAlign="right"

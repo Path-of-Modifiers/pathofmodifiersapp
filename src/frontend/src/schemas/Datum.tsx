@@ -1,11 +1,20 @@
 /**
  * A single instance of data point containing date, value in chaos and eventually other measures
  */
-interface Datum {
-  timestamp: number;
+type Datum = {
+  hoursSinceLaunch: number;
   valueInChaos: number | null;
   valueInMostCommonCurrencyUsed: number | null;
   confidence: "low" | "medium" | "high" | null;
 }
 
-export default Datum;
+type TimeseriesData = {
+  name: string;
+  data: Array<Datum>;
+  confidenceRating: 'low' | 'medium' | 'high';
+};
+
+export type FilledPlotData = {
+  mostCommonCurrencyUsed: string;
+  data: Array<TimeseriesData>;
+};

@@ -1,4 +1,6 @@
-import { Box, Flex, FlexProps, SimpleGrid } from "@chakra-ui/layout";
+import {
+  Box, Flex, FlexProps
+} from "@chakra-ui/layout";
 import { Button } from "@chakra-ui/react";
 import { capitalizeFirstLetter } from "../../hooks/utils";
 import { TextWithUnderline } from "../Text/TextWithUnderline";
@@ -39,7 +41,7 @@ const MultiSelectButtonGrid = (props: MultiSelectProps) => {
   }, [clearClicked])
 
   const buttons = options.map((val, idx) => {
-    return <Box textAlign="center" mr={2} mb={2}>
+    return <Box textAlign="center" mr={2} mb={2} key={val}>
       <Button
         variant="solid"
         bg={selectedOptions[idx] ? "ui.lightInput" : "ui.input"}
@@ -52,7 +54,6 @@ const MultiSelectButtonGrid = (props: MultiSelectProps) => {
         maxW="bgBoxes.mediumPPBox"
         fontWeight="normal"
         onClick={() => {
-          console.log(options[idx] + selectedOptions[idx])
           setSelectedOptions((currentSelectedOptions) => [
             ...currentSelectedOptions.slice(0, idx),
             !selectedOptions[idx],
@@ -63,7 +64,6 @@ const MultiSelectButtonGrid = (props: MultiSelectProps) => {
             props.removeValue(val)
           }
         }}
-
       >
         {capitalizeFirstLetter(val)}
       </Button>

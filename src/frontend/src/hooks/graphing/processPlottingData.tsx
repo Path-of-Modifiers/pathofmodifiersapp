@@ -1,9 +1,10 @@
 import usePostPlottingData from "./postPlottingData";
 import { PlotQuery } from "../../client";
-import Datum from "../../schemas/Datum";
+import { FilledPlotData } from "../../schemas/Datum";
 import { useEffect } from "react";
 import useCustomToast from "../useCustomToast";
-import { findWinsorUpperBound } from "./utils";
+import { findWinsorUpperBound, getHoursSinceLaunch } from "./utils";
+import { PLOTTING_WINDOW_HOURS } from "../../config";
 
 /**
  * A hook that takes the current plot query and returns
@@ -11,7 +12,7 @@ import { findWinsorUpperBound } from "./utils";
  * @returns The processed data or undefined and the current fetch status.
  */
 function useGetPlotData(plotQuery: PlotQuery): {
-  result: Datum[] | undefined;
+  result: FilledPlotData | undefined;
   mostCommonCurrencyUsed: string | undefined;
   confidenceRating: "low" | "medium" | "high" | undefined;
   upperBoundryChaos: number;
@@ -31,49 +32,67 @@ function useGetPlotData(plotQuery: PlotQuery): {
   }, [isError, isFetched, error, showToast]);
 
   if (plotData !== undefined) {
-    // const cleanData: Datum[] = [];
-    // const upperBoundryChaos = findWinsorUpperBound(plotData.valueInChaos);
-    // const upperBoundrySecondary = findWinsorUpperBound(
-    //   plotData.valueInMostCommonCurrencyUsed
-    // );
-    // for (let i = 0; i < plotData?.hoursSinceLaunch.length; i++) {
-    //   cleanData.push({
-    //     timestamp: plotData.hoursSinceLaunch[i],
-    //     valueInChaos: plotData.valueInChaos[i],
-    //     valueInMostCommonCurrencyUsed:
-    //       plotData.valueInMostCommonCurrencyUsed[i],
-    //     confidence: plotData.confidence[i],
-    //   });
-    // }
-    // const data: Datum[] = cleanData.reduce((prev, curVal) => {
-    //   if (prev.length === 0) {
-    //     return [curVal];
-    //   }
-    //   const prevVal = prev[prev.length - 1];
-    //   const hourGap = curVal.timestamp - prevVal.timestamp;
-    //   if (hourGap > 1) {
-    //     const gapFiller: Datum[] = [];
-    //     for (let j = 0; j < hourGap; j++) {
-    //       gapFiller.push({
-    //         timestamp: prevVal.timestamp + j + 1,
-    //         valueInChaos: null,
-    //         valueInMostCommonCurrencyUsed: null,
-    //         confidence: null,
-    //       });
-    //     }
-    //     return [...prev, ...gapFiller, curVal];
-    //   }
-    //   return [...prev, curVal];
-    // }, [] as Datum[]);
+    const mostCommonCurrencyUsed = plotData.mostCommonCurrencyUsed;
+    const currentHour = getHoursSinceLaunch(new Date());
+    const firstHour = currentHour - PLOTTING_WINDOW_HOURS;
+    const filledPlotData: FilledPlotData = {
+      mostCommonCurrencyUsed: mostCommonCurrencyUsed,
+      data: plotData.data.map(
+        (val) => (
+          {
+            confidenceRating: val.confidenceRating,
+            name: val.name,
+            data: []
+          }))
+    };
+    const currentIdxArray = plotData.data.reduce((prev, cur) => [...prev, 0], [] as number[]);
+    let currentIdx: number;
+    // Makes a filled plot data object, meaning that every hour has an entry
+    // Missing entries from the original plot data is replaced by a "null" entry
+    for (let hour = firstHour; hour <= currentHour; hour++) {
+      for (let seriesIdx = 0; seriesIdx < currentIdxArray.length; seriesIdx++) {
+        currentIdx = currentIdxArray[seriesIdx];
+        if (
+          plotData.data[seriesIdx].data.length <= currentIdx ||
+          plotData.data[seriesIdx].data[currentIdx].hoursSinceLaunch !== hour
+        ) {
+          filledPlotData.data[seriesIdx].data.push(
+            {
+              hoursSinceLaunch: hour,
+              valueInChaos: null,
+              valueInMostCommonCurrencyUsed: null,
+              confidence: null
+            })
+        } else {
+          filledPlotData.data[seriesIdx].data.push(
+            plotData.data[seriesIdx].data[currentIdx]
+          );
+          currentIdxArray[seriesIdx] = currentIdx + 1;
+        }
+      }
+    }
+    const upperBoundryChaos = findWinsorUpperBound(
+      plotData.data[0].data.reduce(
+        (prev, cur) => [...prev, cur.valueInChaos],
+        [] as number[]
+      )
+    );
+    const upperBoundrySecondary = findWinsorUpperBound(
+      plotData.data[0].data.reduce(
+        (prev, cur) => [...prev, cur.valueInMostCommonCurrencyUsed],
+        [] as number[]
+      )
+    );
+    const confidenceRating = plotData.data[0].confidenceRating;
     return {
-      result: data,
-      mostCommonCurrencyUsed: plotData.mostCommonCurrencyUsed,
-      confidenceRating: plotData.confidenceRating,
+      result: filledPlotData,
+      mostCommonCurrencyUsed,
+      confidenceRating,
       upperBoundryChaos,
       upperBoundrySecondary,
       fetchStatus,
-      error,
-    };
+      error
+    }
   }
   return {
     result: undefined,

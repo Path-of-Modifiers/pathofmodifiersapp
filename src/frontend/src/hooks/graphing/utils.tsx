@@ -5,7 +5,7 @@ import {
   BaseSpecState,
   WantedModifierExtended,
 } from "../../store/StateInterface";
-import { LEAGUE_LAUNCH_TIME } from "../../config";
+import { LEAGUE_LAUNCH_TIME, PLOTTING_WINDOW_HOURS } from "../../config";
 
 export const LEAGUE_LAUNCH_DATETIME = new Date(LEAGUE_LAUNCH_TIME);
 
@@ -153,8 +153,8 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
     );
   const currentTime = new Date();
   const end = getHoursSinceLaunch(currentTime);
-  const fourteenDaysHours = 336;
-  const start = end - fourteenDaysHours;
+  const window = PLOTTING_WINDOW_HOURS;
+  const start = end - window;
 
   return {
     league: state.leagues,

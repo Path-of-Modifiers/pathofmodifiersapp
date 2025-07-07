@@ -64,8 +64,8 @@ export interface WantedModifierExtended extends WantedModifier {
 export interface PlotSettingsState {
   showChaos: boolean;
   showSecondary: boolean;
-  setShowChaos: () => void;
-  setShowSecondary: () => void;
+  setShowChaos: (show: boolean) => void;
+  setShowSecondary: (show: boolean) => void;
 }
 export type SetItemSpecMisc = (isItemSpecType: boolean | undefined) => void;
 
