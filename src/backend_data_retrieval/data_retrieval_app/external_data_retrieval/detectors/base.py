@@ -25,7 +25,7 @@ class DetectorBase:
 
         self.leagues = [
             settings.CURRENT_SOFTCORE_LEAGUE,
-            settings.CURRENT_HARDCORE_LEAGUE,
+            f"Hardcore {settings.CURRENT_SOFTCORE_LEAGUE}",
         ]
 
         self.pbar_enabled = enable_pbar

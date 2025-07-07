@@ -22,8 +22,12 @@ class PoEPublicStashesTestDataSettings(BaseSettings):
 
     ITEM_NOTE_CURRENCY_TYPES: list[str] = [
         "chaos",
+        "divine",
+        "divine",
     ]  # , "divine", "mirror", etc.
     MEAN_ITEM_PRICE: int = 200
+
+    LEAGUES: list[str] = ["Mercenaries", "Phrecia"]
 
 
 script_settings = PoEPublicStashesTestDataSettings()

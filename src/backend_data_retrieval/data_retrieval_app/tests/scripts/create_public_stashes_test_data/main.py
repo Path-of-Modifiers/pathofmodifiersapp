@@ -3,7 +3,6 @@ import json
 from collections.abc import Iterator
 from typing import Any
 
-from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.logs.logger import test_logger
 from data_retrieval_app.tests.scripts.create_public_stashes_test_data.config import (
     script_settings,
@@ -34,8 +33,8 @@ class PublicStashMockAPI:
         )
         self.public_stashes_modifier_test_data_creator.create_templates()
         self.leagues = [
-            settings.CURRENT_SOFTCORE_LEAGUE,
-            settings.CURRENT_HARDCORE_LEAGUE,
+            *script_settings.LEAGUES,
+            *[f"Hardcore {league}" for league in script_settings.LEAGUES],
         ]
 
     def get_test_data(self) -> list[dict[str, Any]]:

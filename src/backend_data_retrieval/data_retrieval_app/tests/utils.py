@@ -75,7 +75,8 @@ def replace_false_values(data: dict) -> dict:
         # Handle nested dictionaries recursively
         if isinstance(value, dict):
             data[key] = replace_false_values(value)
-
+        elif key == "identified":
+            continue
         # Exclude items here since we add items to the empty list later
         elif isinstance(value, list) and len(value) == 0 and key != "items":
             data[key] = [random_dict()]
