@@ -34,7 +34,7 @@ const PlotCustomizationButtons = (props: PlotCustomizationButtonsProps) => {
           variant="solid"
           bg={showChaos ? "#f99619" : "ui.lightInput"}
           color="#000000"
-          _hover={{ bg: "ui.lightInput" }}
+          _hover={{ borderColor:"#f99619", color: "#f99619", bg: "ui.lightInput" }}
           onClick={handleShowChaos}
           borderWidth={1}
           borderColor="#000000"
@@ -46,7 +46,7 @@ const PlotCustomizationButtons = (props: PlotCustomizationButtonsProps) => {
           variant="solid"
           bg={showSecondary ? "ui.white" : "ui.lightInput"}
           color={showSecondary ? "#ff0000" : "#000000"}
-          _hover={{ bg: "ui.lightInput" }}
+          _hover={{ borderColor: "#ff0000", color: "#ff0000", bg: "ui.lightInput" }}
           borderWidth={1}
           ml={[0, 2]}
           borderColor={showSecondary ? "#ff0000" : "#000000"}
