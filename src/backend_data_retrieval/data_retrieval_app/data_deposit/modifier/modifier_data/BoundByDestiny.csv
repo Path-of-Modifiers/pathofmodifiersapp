@@ -1,0 +1,61 @@
+# Unique Name: Bound By Destiny
+# Base Types: Prismatic Jewel
+# Total modifiers on each item: 3
+# Can have duplicate modifiers: False|False|False
+# Modifier distrubution: 18:1,36:1,"rest":1
+# Source: https://poedb.tw/us/Bound_By_Destiny#BoundByDestinyModifiers
+minRoll,maxRoll,position,effect,static,unique
+10,15,0,"#% increased maximum Life if 2 Elder Items are Equipped",,True
+,,0,"Nearby Enemies are Unnerved if 2 Elder Items are Equipped",True,True
+1,3,0,"#% of Physical Damage Leeched as Energy Shield if 2 Elder Items are Equipped",,True
+10,15,0,"#% increased maximum Mana if 2 Shaper Items are Equipped",,True
+10,20,0,"#% increased Cooldown Recovery Rate if 2 Shaper Items are Equipped",,True
+1,3,0,"#% of Elemental Damage Leeched as Energy Shield if 2 Shaper Items are Equipped",,True
+,,0,"Unaffected by Poison if 2 Hunter Items are Equipped",True,True
+,,0,"Every 4 seconds, Regenerate 35% of Life over one second if 2 Hunter Items are Equipped",True,True
+,,0,"Projectiles Pierce 2 additional Targets if 2 Hunter Items are Equipped",True,True
+,,0,"Unaffected by Ignite if 2 Warlord Items are Equipped",True,True
+,,0,"Nearby Enemies are Intimidated if 2 Warlord Items are Equipped",True,True
+10,15,0,"#% increased Strength if 2 Warlord Items are Equipped",,True
+,,0,"Unaffected by Chill if 2 Redeemer Items are Equipped",True,True
+,,0,"Nearby Enemies are Blinded if 2 Redeemer Items are Equipped",True,True
+10,15,0,"#% increased Dexterity if 2 Redeemer Items are Equipped",,True
+,,0,"Unaffected by Shock if 2 Crusader Items are Equipped",True,True
+,,0,"Consecrated Ground around you while stationary if 2 Crusader Items are Equipped",True,True
+10,15,0,"#% increased Intelligence if 2 Crusader Items are Equipped",,True
+,,0,"+3% to maximum Chance to Block Attack Damage if 4 Elder Items are Equipped",True,True
+,,0,"Cannot take Reflected Physical Damage if 4 Elder Items are Equipped",True,True
+1,1.5,0,"Attacks have +#% to Critical Strike Chance if 4 Elder Items are Equipped",,True
+,,0,"+3% to maximum Chance to Block Spell Damage if 4 Shaper Items are Equipped",True,True
+,,0,"Cannot take Reflected Elemental Damage if 4 Shaper Items are Equipped",True,True
+1,1.5,0,"+#% to Spell Critical Strike Chance if 4 Shaper Items are Equipped",,True
+5,10,0,"#% of Elemental taken as Chaos Damage if 4 Hunter Items are Equipped",,True
+10,25,0,"#% increased Movement Speed if 4 Hunter Items are Equipped",,True
+2,3,0,"+#% to maximum Chaos Resistance if 4 Hunter Items are Equipped",,True
+5,10,0,"#% of Physical Damage taken as Fire Damage if 4 Warlord Items are Equipped",,True
+,,0,"Gain 1 Endurance Charge every second if you've been Hit Recently and 4 Warlord Items are Equipped",True,True
+2,3,0,"+#% to maximum Fire Resistance if 4 Warlord Items are Equipped",,True
+5,10,0,"#% of Physical Damage taken as Cold Damage if 4 Redeemer Items are Equipped",,True
+10,15,0,"#% chance to gain a Frenzy Charge on Hit if 4 Redeemer Items are Equipped",,True
+2,3,0,"+#% to maximum Cold Resistance if 4 Redeemer Items are Equipped",,True
+5,10,0,"#% of Physical Damage taken as Lightning Damage if 4 Crusader Items are Equipped",,True
+10,15,0,"#% chance to gain a Power Charge on Hit if 4 Crusader Items are Equipped",,True
+2,3,0,"+#% to maximum Lightning Resistance if 4 Crusader Items are Equipped",,True
+,,0,"Cannot be Stunned if 6 Elder Items are Equipped",True,True
+,,0,"+1 to Level of all Physical Skill Gems if 6 Elder Items are Equipped",True,True
+10,15,0,"#% increased Attributes if 6 Elder Items are Equipped",,True
+10,15,0,"Gain #% of Physical Damage as Extra Damage of each Element if 6 Shaper Items are Equipped",,True
+1,2,0,"+#% to all maximum Elemental Resistances if 6 Shaper Items are Equipped",,True
+,,0,"+1 to Level of all non-Exceptional Support Gems if 6 Shaper Items are Equipped",True,True
+,,0,"You can apply an additional Curse if 6 Hunter Items are Equipped",True,True
+,,0,"+1 to Level of all Chaos Skill Gems if 6 Hunter Items are Equipped",True,True
+,,0,"Skills fire an additional Projectile if 6 Hunter Items are Equipped",True,True
+,,0,"Melee Hits Fortify if 6 Warlord Items are Equipped",True,True
+,,0,"+1 to Level of all Fire Skill Gems if 6 Warlord Items are Equipped",True,True
+,,0,"+1 to Maximum Endurance Charges if 6 Warlord Items are Equipped",True,True
+,,0,"Cannot be Frozen if 6 Redeemer Items are Equipped",True,True
+,,0,"+1 to Level of all Cold Skill Gems if 6 Redeemer Items are Equipped",True,True
+,,0,"+1 to Maximum Frenzy Charges if 6 Redeemer Items are Equipped",True,True
+1,3,0,"#% of Physical Damage Prevented Recently is Regenerated as Energy Shield Per Second if 6 Crusader Items are Equipped",,True
+,,0,"+1 to Level of all Lightning Skill Gems if 6 Crusader Items are Equipped",True,True
+,,0,"+1 to Maximum Power Charges if 6 Crusader Items are Equipped",True,True

@@ -122,6 +122,7 @@ class UniqueJewelDetector(UniqueDetector):
         "The Adorned",
         "Impossible Escape",
         "Watcher's Eye",
+        "Bound By Destiny",
         "Sublime Vision",
         "The Light of Meaning",
         "Glorious Vanity",
