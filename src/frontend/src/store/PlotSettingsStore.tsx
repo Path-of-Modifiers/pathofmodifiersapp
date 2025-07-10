@@ -5,12 +5,12 @@ export const usePlotSettingsStore = create<PlotSettingsState>((set) => ({
   showChaos: true,
   showSecondary: false,
 
-  setShowChaos: () =>
-    set((state) => ({
-      showChaos: !state.showChaos,
+  setShowChaos: (show: boolean) =>
+    set(() => ({
+      showChaos: show,
     })),
-  setShowSecondary: () =>
-    set((state) => ({
-      showSecondary: !state.showSecondary,
+  setShowSecondary: (show: boolean) =>
+    set(() => ({
+      showSecondary: show,
     })),
 }));

@@ -1,7 +1,7 @@
 import Header from "../../components/Common/Header";
 import QueryButtons from "../../components/Common/QueryButtons";
 import { GraphInput } from "../../components/Input/GraphInput";
-import GraphComponent from "../../components/Graph/GraphComponent";
+import GraphComponent from "../Graph/GraphComponent";
 import Footer from "../../components/Common/Footer";
 
 import { Flex, Box, VStack } from "@chakra-ui/layout";

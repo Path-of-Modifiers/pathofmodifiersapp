@@ -18,6 +18,7 @@ from data_retrieval_app.tests.scripts.create_public_stashes_test_data.config imp
 from data_retrieval_app.tests.scripts.create_public_stashes_test_data.main import (
     PublicStashMockAPI,
 )
+from data_retrieval_app.utils import find_hours_since_launch
 
 
 class TestUniquePoEAPIDataTransformer(UniquePoEAPIDataTransformer):
@@ -25,11 +26,11 @@ class TestUniquePoEAPIDataTransformer(UniquePoEAPIDataTransformer):
         super().__init__()
 
     def _create_random_time_column(self, length: int) -> pd.Series:
-        start = 300 * 24
+        start = find_hours_since_launch()
 
         random_times = np.random.randint(0, script_settings.TIMING_PERIOD * 24, length)
 
-        time_column = random_times + start
+        time_column = start - random_times
 
         return pd.Series(time_column, dtype=str)
 
@@ -97,6 +98,10 @@ class PoEMockAPIHandler(PoEAPIHandler):
         super().__init__(*args, **kwargs)
 
         self.mock_api = PublicStashMockAPI()
+
+        for detector in self.item_detectors:
+            detector.leagues = self.mock_api.leagues
+
         self.run_program_for_n_seconds = script_settings.CREATE_TEST_DATA_FOR_N_SECONDS
         self.n_checkpoints_per_transfromation = (
             script_settings.N_CHECKPOINTS_PER_TRANSFORMATION

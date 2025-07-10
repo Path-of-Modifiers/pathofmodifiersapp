@@ -1,26 +1,25 @@
 import { Button, Flex, FlexProps } from "@chakra-ui/react";
 import { capitalizeFirstLetter } from "../../hooks/utils";
 import { usePlotSettingsStore } from "../../store/PlotSettingsStore";
-import { CurrencyVisuals } from "../../schemas/CurrencyVisuals";
 
 interface PlotCustomizationButtonsProps {
   flexProps: FlexProps | undefined;
   mostCommonCurrencyUsed: string;
-  chaosVisuals: CurrencyVisuals;
-  secondaryVisuals: CurrencyVisuals;
 }
 
 const PlotCustomizationButtons = (props: PlotCustomizationButtonsProps) => {
   const mostCommonCurrencyUsed: string = props.mostCommonCurrencyUsed;
   const renderButtons = mostCommonCurrencyUsed !== "chaos";
 
-  const { setShowChaos, setShowSecondary } = usePlotSettingsStore();
+  const { showChaos, setShowChaos, showSecondary, setShowSecondary } = usePlotSettingsStore();
 
   const handleShowChaos = () => {
-    setShowChaos();
+    setShowChaos(true);
+    setShowSecondary(false);
   };
   const handleShowSecondary = () => {
-    setShowSecondary();
+    setShowChaos(false);
+    setShowSecondary(true);
   };
 
   return (
@@ -33,24 +32,24 @@ const PlotCustomizationButtons = (props: PlotCustomizationButtonsProps) => {
       >
         <Button
           variant="solid"
-          bg={props.chaosVisuals.buttonBackground}
-          color={props.chaosVisuals.buttonColor}
+          bg={showChaos ? "#f99619" : "ui.lightInput"}
+          color="#000000"
           _hover={{ bg: "ui.lightInput" }}
           onClick={handleShowChaos}
           borderWidth={1}
-          borderColor={props.chaosVisuals.buttonBorderColor}
+          borderColor="#000000"
           mb={[2, 0]}
         >
           Show price in Chaos
         </Button>
         <Button
           variant="solid"
-          bg={props.secondaryVisuals.buttonBackground}
-          color={props.secondaryVisuals.buttonColor}
+          bg={showSecondary ? "ui.white" : "ui.lightInput"}
+          color={showSecondary ? "#ff0000" : "#000000"}
           _hover={{ bg: "ui.lightInput" }}
           borderWidth={1}
           ml={[0, 2]}
-          borderColor={props.secondaryVisuals.buttonBorderColor}
+          borderColor={showSecondary ? "#ff0000" : "#000000"}
           onClick={handleShowSecondary}
         >
           Show price in {capitalizeFirstLetter(mostCommonCurrencyUsed)}

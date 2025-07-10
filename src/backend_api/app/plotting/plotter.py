@@ -11,7 +11,9 @@ from sqlalchemy import (
     and_,
     or_,
     select,
+    text
 )
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.sql.expression import Select
@@ -50,11 +52,6 @@ from app.exceptions.model_exceptions.plot_exception import (
     PlotQueryInvalidError,
 )
 from app.logs.logger import plot_logger
-from app.plotting.utils import (
-    determine_confidence,
-    find_conversion_value,
-    summarize_function,
-)
 from app.utils.timing_tracker import async_timing_tracker, sync_timing_tracker
 
 Q = TypeVar("Q", bound=PlotQuery)
@@ -98,6 +95,7 @@ class _BasePlotter(ABC, Generic[Q]):
         select_args: list[InstrumentedAttribute[Any] | Label[Any]] = [
             item_model.itemId,
             item_model.createdHoursSinceLaunch,
+            item_model.league,
             item_model.itemBaseTypeId,
             item_model.currencyId,
             item_model.currencyAmount,
@@ -113,8 +111,14 @@ class _BasePlotter(ABC, Generic[Q]):
         stmt = (
             select(*select_args)
             .join(model_Currency, item_model.currencyId == model_Currency.currencyId)
-            .where(item_model.league == query.league)
         )
+
+        if isinstance(query.league, list):
+            stmt = stmt.where(
+                or_(*[model_Item.league == league for league in query.league])
+            )
+        else:
+            stmt = stmt.where(model_Item.league == query.league)
 
         if start is not None:
             stmt = stmt.where(item_model.createdHoursSinceLaunch >= start)
@@ -176,74 +180,11 @@ class _BasePlotter(ABC, Generic[Q]):
 
         return statement.where(and_(True, *item_lvls))
 
-    def _get_plot_dict(
-        self,
-        value_in_chaos: pd.Series,
-        time_stamps: pd.Series,
-        value_in_most_common_currency_used: pd.Series,
-        mostCommonCurrencyUsed: str,
-    ) -> dict[str, pd.Series | str]:
-        return {
-            "valueInChaos": value_in_chaos,
-            "hoursSinceLaunch": time_stamps,
-            "valueInMostCommonCurrencyUsed": value_in_most_common_currency_used,
-            "mostCommonCurrencyUsed": mostCommonCurrencyUsed,
-        }
-
-    def _update_plot_data_by_processed_df(
-        self,
-        plot_data: dict,
-        processed_df: pd.DataFrame,  # ← rename & re‑type to DataFrame
-    ) -> dict[str, Any]:
-        """
-        After processing rows like aggregates and `determine_confidence`, update `plot_data` before
-        validating with PlotData schema
-        """
-        # convert the Int64Index → list[int]
-        plot_data["hoursSinceLaunch"] = processed_df.index.astype(int).tolist()
-
-        # convert each column Series → list[...]
-        plot_data["valueInChaos"] = processed_df["valueInChaos"].tolist()
-        plot_data["valueInMostCommonCurrencyUsed"] = processed_df[
-            "valueInMostCommonCurrencyUsed"
-        ].tolist()
-        plot_data["confidence"] = processed_df["confidence"].tolist()
-
-        # get the most common confidence rating as a Python str
-        plot_data["confidenceRating"] = processed_df["confidence"].mode().tolist()[0]
-
-        return plot_data
-
     @sync_timing_tracker
     def _convert_result_to_df(self, result: Result) -> pd.DataFrame:
         rows = result.fetchall()
         df = pd.DataFrame(rows, columns=result.keys())
         return df
-
-    @sync_timing_tracker
-    def _create_plot_data(
-        self, df: pd.DataFrame
-    ) -> tuple[pd.Series, pd.Series, pd.Series, str]:
-        most_common_currency_used = df.tradeName.mode()[0]
-
-        value_in_chaos: pd.Series = df["currencyAmount"] * df["valueInChaos"]
-
-        time_stamps: pd.Series = df.loc[:, "createdHoursSinceLaunch"]
-
-        # Find conversion value between chaos and most common currency
-        conversion_value = find_conversion_value(
-            df,
-            value_in_chaos=value_in_chaos,
-            most_common_currency_used=most_common_currency_used,
-        )
-        value_in_most_common_currency_used = value_in_chaos / conversion_value
-
-        return (
-            value_in_chaos,
-            time_stamps,
-            value_in_most_common_currency_used,
-            most_common_currency_used,
-        )
 
     @async_timing_tracker
     async def _perform_plot_db_stmt(
@@ -253,6 +194,29 @@ class _BasePlotter(ABC, Generic[Q]):
             result = await db.execute(statement)
 
         return result
+    
+    @sync_timing_tracker
+    def _create_plot_data(self, df: pd.DataFrame) -> PlotData:
+        mostCommonCurrencyUsed: str = df["mostCommonCurrencyUsed"].get(0)
+        data = []
+        for league in df["league"].unique():
+            league_df: pd.DataFrame = df.loc[df["league"] == league]
+            timeseries_data = {
+                "name": league,
+                "confidenceRating": league_df["confidence"].mode()[0],
+                "data": league_df[
+                    [
+                        "hoursSinceLaunch",
+                        "valueInChaos",
+                        "valueInMostCommonCurrencyUsed",
+                        "confidence",
+                    ]
+                ].to_dict("records"),
+            }
+            data.append(timeseries_data)
+
+        return self.validate({"mostCommonCurrencyUsed": mostCommonCurrencyUsed, "data": data})
+
 
 
 class IdentifiedPlotter(_BasePlotter):
@@ -467,46 +431,56 @@ class IdentifiedPlotter(_BasePlotter):
         statement = self._filter_properties(
             statement, query=query, start=start, end=end
         )
-        return statement
+        full_statement = text(
+            f"""
+            WITH baseQuery AS (
+                {statement.compile(
+                dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}
+            ).string}
+            ), mostCommon AS (
+                SELECT baseQuery."tradeName" AS "mostCommonTradeName", COUNT(baseQuery."tradeName") AS "nameCount"
+                FROM baseQuery
+                GROUP BY baseQuery.league, baseQuery."tradeName"
+                ORDER BY "nameCount" DESC
+                LIMIT 1
+            ), mostCommonIds AS (
+                SELECT baseQuery."createdHoursSinceLaunch", MAX(baseQuery."currencyId") AS "mostCommonCurrencyId"
+                FROM baseQuery
+                WHERE baseQuery."tradeName" = (SELECT "mostCommonTradeName" FROM mostCommon)
+                GROUP BY baseQuery."createdHoursSinceLaunch"
+            ), mostCommonPrices AS (
+                SELECT baseQuery."createdHoursSinceLaunch", MIN(baseQuery."valueInChaos") AS "mostCommonValueInChaos", MIN(baseQuery."tradeName") AS "mostCommonCurrencyUsed"
+                FROM baseQuery NATURAL JOIN mostCommonIds
+                WHERE baseQuery."currencyId" = mostCommonIds."mostCommonCurrencyId"
+                GROUP BY baseQuery."createdHoursSinceLaunch"
+            ), prices AS (
+                SELECT baseQuery."createdHoursSinceLaunch", baseQuery.league, baseQuery."currencyAmount"*baseQuery."valueInChaos" AS "valueInChaos", baseQuery."currencyAmount"*baseQuery."valueInChaos" / mostCommonPrices."mostCommonValueInChaos" AS "valueInMostCommonCurrencyUsed", mostCommonPrices."mostCommonCurrencyUsed"
+                FROM baseQuery JOIN mostCommonPrices ON baseQuery."createdHoursSinceLaunch" = mostCommonPrices."createdHoursSinceLaunch"
+            ), rankedPrices AS (
+                SELECT prices.*,
+                    RANK() OVER
+                        (PARTITION BY prices."createdHoursSinceLaunch" ORDER BY prices."valueInChaos" ASC) AS pos
+                FROM prices
+            ), filteredPrices AS (
+            SELECT r."createdHoursSinceLaunch", r.league, r."valueInChaos", r."valueInMostCommonCurrencyUsed", r."mostCommonCurrencyUsed",
+                    CASE
+                        WHEN r.pos < 10 THEN 'low'
+                        WHEN r.pos < 15 THEN 'medium'
+                        ELSE 'high'
+                    END as confidence
+                FROM rankedPrices r
+                WHERE r.pos <=20
+                ORDER BY r."createdHoursSinceLaunch"
+            )
 
-    @sync_timing_tracker
-    def _summarize_plot_data(
-        self,
-        value_in_chaos: pd.Series,
-        time_stamps: pd.Series,
-        value_in_most_common_currency_used: pd.Series,
-        mostCommonCurrencyUsed: str,
-    ) -> dict[str, pd.Series | str]:
-        plot_data = self._get_plot_dict(
-            value_in_chaos,
-            time_stamps,
-            value_in_most_common_currency_used,
-            mostCommonCurrencyUsed,
+            SELECT filteredPrices."createdHoursSinceLaunch" AS "hoursSinceLaunch", filteredPrices.league, AVG(filteredPrices."valueInChaos") AS "valueInChaos", AVG(filteredPrices."valueInMostCommonCurrencyUsed") AS "valueInMostCommonCurrencyUsed", MIN(filteredPrices."mostCommonCurrencyUsed") AS "mostCommonCurrencyUsed", MIN(filteredPrices.confidence) AS confidence
+            FROM filteredPrices
+            GROUP BY filteredPrices."createdHoursSinceLaunch", filteredPrices.league
+            """
         )
-        # Convert to dict
-        # Then as a dataframe
-        df = pd.DataFrame(plot_data)
+        return full_statement
 
-        # Group by hour
-        grouped_by_created_hours_since_launch_df = df.groupby("hoursSinceLaunch")
-
-        # Aggregate by custom function
-        agg_by_date_df = grouped_by_created_hours_since_launch_df.agg(
-            valueInChaos=("valueInChaos", summarize_function),
-            valueInMostCommonCurrencyUsed=(
-                "valueInMostCommonCurrencyUsed",
-                summarize_function,
-            ),
-            confidence=("valueInChaos", determine_confidence),
-        )
-        agg_by_date_df = agg_by_date_df.loc[~agg_by_date_df["valueInChaos"].isna()]
-
-        # Update the values in the dict
-        plot_data = self._update_plot_data_by_processed_df(plot_data, agg_by_date_df)
-
-        return plot_data
-
-    async def _plot_execute(self, db: AsyncSession, *, statement: Select) -> tuple:
+    async def _plot_execute(self, db: AsyncSession, *, statement: Select) -> PlotData:
         result = await self._perform_plot_db_stmt(db, statement=statement)
         df = self._convert_result_to_df(result)
 
@@ -531,24 +505,10 @@ class IdentifiedPlotter(_BasePlotter):
         identified_query = self._convert_plot_query_type(query)
 
         statement = self._create_plot_statement(identified_query)
-        (
-            value_in_chaos,
-            time_stamps,
-            value_in_most_common_currency_used,
-            mostCommonCurrencyUsed,
-        ) = await self._plot_execute(db, statement=statement)
-
         # Logs statement in nice format
         log_stmt = statement.compile(engine, compile_kwargs={"literal_binds": True})
         plot_logger.info(f"{log_stmt}")
-
-        plot_data = self._summarize_plot_data(
-            value_in_chaos,
-            time_stamps,
-            value_in_most_common_currency_used,
-            mostCommonCurrencyUsed,
-        )
-        return self.validate(plot_data)
+        return await self._plot_execute(db, statement=statement)
 
 
 class UnidentifiedPlotter(_BasePlotter):
@@ -591,6 +551,10 @@ class UnidentifiedPlotter(_BasePlotter):
         )
 
         return statement
+    
+    def _convert_plot_query_type(self, query: PlotQuery) -> UnidentifiedPlotQuery:
+        query_dump = query.model_dump()
+        return UnidentifiedPlotQuery(**query_dump)
 
     def _create_plot_statement(self, query: UnidentifiedPlotQuery) -> Select:
         start, end = query.start, query.end
@@ -609,7 +573,27 @@ class UnidentifiedPlotter(_BasePlotter):
             statement, item_model=model_UnidentifiedItem, query=query
         )
         statement = self._filter_unidentified_agg(statement)
-        return statement
+
+        full_statement = text(
+            f"""
+            WITH baseQuery AS (
+                {statement.compile(
+                dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}
+            ).string}
+            )
+
+            SELECT baseQuery."createdHoursSinceLaunch" AS "hoursSinceLaunch", baseQuery.league, baseQuery."currencyAmount" * baseQuery."valueInChaos", baseQuery."currencyAmount" AS "valueInMostCommonCurrencyUsed", baseQuery."tradeName" AS "mostCommonCurrencyUsed", 
+                CASE 
+                    WHEN baseQuery."nItems" < 10 THEN 'low'
+                    WHEN baseQuery."nItems" < 15 THEN 'medium'
+                    ELSE 'high'
+                END AS confidence
+            FROM baseQuery
+            ORDER BY baseQuery."createdHoursSinceLaunch"
+
+            """)
+
+        return full_statement
 
     async def _plot_execute(
         self, db: AsyncSession, *, statement: Select
@@ -624,81 +608,19 @@ class UnidentifiedPlotter(_BasePlotter):
                 class_name=self.__class__.__name__,
             )
 
-        (
-            value_in_chaos,
-            time_stamps,
-            value_in_most_common_currency_used,
-            mostCommonCurrencyUsed,
-        ) = self._create_plot_data(df)
-
-        nItems = df.loc[:, "nItems"]
-
-        return (
-            value_in_chaos,
-            time_stamps,
-            nItems,
-            value_in_most_common_currency_used,
-            mostCommonCurrencyUsed,
-        )
-
-    def _create_data_unidentified(
-        self,
-        value_in_chaos: pd.Series,
-        time_stamps: pd.Series,
-        nItems: pd.Series,
-        value_in_most_common_currency_used: pd.Series,
-        mostCommonCurrencyUsed: str,
-    ) -> dict[str, pd.Series | str]:
-        # Convert to dict, then as a dataframe
-
-        plot_data = self._get_plot_dict(
-            value_in_chaos,
-            time_stamps,
-            value_in_most_common_currency_used,
-            mostCommonCurrencyUsed,
-        )
-        plot_data["nItems"] = nItems
-
-        df = pd.DataFrame(plot_data)
-        df["confidence"] = plot_data["nItems"].apply(determine_confidence)
-        df = df.loc[~df["valueInChaos"].isna()]
-
-        plot_data = self._update_plot_data_by_processed_df(plot_data, df)
-
-        return plot_data
-
-    def _convert_plot_query_type(self, query: PlotQuery) -> UnidentifiedPlotQuery:
-        query_dump = query.model_dump()
-        return UnidentifiedPlotQuery(**query_dump)
-
-    @async_timing_tracker
+        return self.validate(self._create_plot_data(df))
+        
     async def plot(self, db: AsyncSession, *, query: PlotQuery) -> PlotData:
         self._raise_invalid_query(query)
 
-        query_unid = self._convert_plot_query_type(query)
+        unidentified_query = self._convert_plot_query_type(query)
 
-        statement = self._create_plot_statement(query_unid)
-        (
-            value_in_chaos,
-            time_stamps,
-            nItems,
-            value_in_most_common_currency_used,
-            mostCommonCurrencyUsed,
-        ) = await self._plot_execute(db, statement=statement)
-
+        statement = self._create_plot_statement(unidentified_query)
         # Logs statement in nice format
         log_stmt = statement.compile(engine, compile_kwargs={"literal_binds": True})
         plot_logger.info(f"{log_stmt}")
 
-        plot_data = self._create_data_unidentified(
-            value_in_chaos,
-            time_stamps,
-            nItems,
-            value_in_most_common_currency_used,
-            mostCommonCurrencyUsed,
-        )
-
-        return self.validate(plot_data)
+        return await self._plot_execute(db, statement=statement)
 
 
 def configure_plotter_by_query(

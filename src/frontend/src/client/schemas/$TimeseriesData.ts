@@ -2,17 +2,21 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export const $PlotData = {
+export const $TimeseriesData = {
     properties: {
-        mostCommonCurrencyUsed: {
+        name: {
             type: 'string',
             isRequired: true,
         },
         data: {
             type: 'array',
             contains: {
-                type: 'TimeseriesData',
+                type: 'Datum',
             },
+            isRequired: true,
+        },
+        confidenceRating: {
+            type: 'Enum',
             isRequired: true,
         },
     },

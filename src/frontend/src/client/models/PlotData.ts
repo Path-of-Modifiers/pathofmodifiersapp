@@ -2,12 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { TimeseriesData } from './TimeseriesData';
 export type PlotData = {
-    valueInChaos: Array<number>;
-    hoursSinceLaunch: Array<number>;
-    valueInMostCommonCurrencyUsed: Array<number>;
-    confidence: Array<'low' | 'medium' | 'high'>;
-    confidenceRating: 'low' | 'medium' | 'high';
     mostCommonCurrencyUsed: string;
+    data: Array<TimeseriesData>;
 };
 

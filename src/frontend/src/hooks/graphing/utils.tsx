@@ -5,7 +5,7 @@ import {
   BaseSpecState,
   WantedModifierExtended,
 } from "../../store/StateInterface";
-import { LEAGUE_LAUNCH_TIME } from "../../config";
+import { LEAGUE_LAUNCH_TIME, PLOTTING_WINDOW_HOURS } from "../../config";
 
 export const LEAGUE_LAUNCH_DATETIME = new Date(LEAGUE_LAUNCH_TIME);
 
@@ -17,7 +17,7 @@ const calcMean = (values: number[]) => {
 const calcSTD = (values: number[], mean: number) => {
   return Math.sqrt(
     values.reduce((prev, cur) => prev + (cur - mean) * (cur - mean), 0) /
-    values.length,
+    values.length
   );
 };
 
@@ -40,7 +40,7 @@ export function formatHoursSinceLaunch(hoursSinceLaunch: number): string {
 export const getHoursSinceLaunch = (currentTime: Date): number => {
   const getCurrentTimeDate = currentTime.getTime();
   const hoursSinceLaunch = Math.floor(
-    (getCurrentTimeDate - LEAGUE_LAUNCH_DATETIME.getTime()) / (1000 * 3600),
+    (getCurrentTimeDate - LEAGUE_LAUNCH_DATETIME.getTime()) / (1000 * 3600)
   );
   return hoursSinceLaunch;
 };
@@ -63,10 +63,10 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
         return newUniqueCandidates;
       }
       return prev.filter((prevCandidate) =>
-        newUniqueCandidates.includes(prevCandidate),
+        newUniqueCandidates.includes(prevCandidate)
       );
     },
-    [] as string[],
+    [] as string[]
   );
   if (possibleUniques.length === 0 && state.itemSpec?.identified !== false) {
     useErrorStore.getState().setNoRelatedUniqueError(true);
@@ -149,16 +149,15 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
       groupedWantedModifierExtended.map((wantedModifierExtended) => ({
         modifierId: wantedModifierExtended.modifierId,
         modifierLimitations: wantedModifierExtended.modifierLimitations,
-      })),
+      }))
     );
   const currentTime = new Date();
   const end = getHoursSinceLaunch(currentTime);
-  const fourteenDaysHours = 336;
-  const start = end - fourteenDaysHours;
-
+  const window = PLOTTING_WINDOW_HOURS;
+  const start = end - window;
 
   return {
-    league: state.league,
+    league: state.leagues,
     itemSpecifications: itemSpec,
     baseSpecifications: baseSpec,
     wantedModifiers: wantedModifier,

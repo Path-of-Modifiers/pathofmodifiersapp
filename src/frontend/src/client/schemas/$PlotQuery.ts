@@ -6,7 +6,15 @@ export const $PlotQuery = {
     description: `Plots for items with or without modifiers`,
     properties: {
         league: {
-            type: 'string',
+            type: 'any-of',
+            contains: [{
+                type: 'array',
+                contains: {
+                    type: 'string',
+                },
+            }, {
+                type: 'string',
+            }],
             isRequired: true,
         },
         itemSpecifications: {

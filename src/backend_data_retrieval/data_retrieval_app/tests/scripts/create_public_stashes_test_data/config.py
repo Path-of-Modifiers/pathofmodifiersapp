@@ -22,8 +22,17 @@ class PoEPublicStashesTestDataSettings(BaseSettings):
 
     ITEM_NOTE_CURRENCY_TYPES: list[str] = [
         "chaos",
+        "divine",
+        "divine",
     ]  # , "divine", "mirror", etc.
     MEAN_ITEM_PRICE: int = 200
+
+    SOFTCORE_LEAGUES: list[str] = ["Mercenaries", "Phrecia"]
+    
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def HARDCORE_LEAGUES(self) -> list[str]:
+        return [f"Hardcore {league}" for league in self.SOFTCORE_LEAGUES]
 
 
 script_settings = PoEPublicStashesTestDataSettings()

@@ -11,7 +11,7 @@ import {
 } from "./StateInterface";
 import { GroupedModifierByEffect, ItemBaseType, PlotQuery } from "../client";
 import { encodeHash, decodeHash } from "./utils";
-import { DEFAULT_LEAGUE } from "../config";
+import { DEFAULT_LEAGUES } from "../config";
 
 // Graph Input Store  -  This store is used to store graph input data.
 export const useGraphInputStore = create<GraphInputState>((set) => ({
@@ -25,7 +25,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
   choosableItemBaseType: [],
   choosableItemNames: [],
 
-  league: DEFAULT_LEAGUE,
+  leagues: DEFAULT_LEAGUES,
 
   itemName: undefined,
   itemSpec: undefined,
@@ -34,7 +34,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
   wantedModifierExtended: [],
 
   plotQuery: {
-    league: DEFAULT_LEAGUE,
+    league: DEFAULT_LEAGUES,
     wantedModifiers: [],
   },
 
@@ -43,7 +43,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       const internalState: GraphInputState = { ...state };
       searchParams.forEach((value, key) => {
         if (key === "league") {
-          internalState.league = value;
+          internalState.leagues = JSON.parse(value);
         }
         if (key === "itemName") {
           internalState.itemName = value;
@@ -70,9 +70,9 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       if (state.stateHash != null) return {};
       const searchParams = new URLSearchParams();
       const stateHash: StateHash = {};
-      if (state.league != null) {
-        stateHash.league = state.league;
-        searchParams.set("league", state.league);
+      if (state.leagues != null) {
+        stateHash.leagues = state.leagues;
+        searchParams.set("league", JSON.stringify(state.leagues));
       }
       if (state.itemName != null) {
         stateHash.itemName = state.itemName;
@@ -176,7 +176,16 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       baseSpec: undefined,
     })),
 
-  setLeague: (league: string) => set(() => ({ league: league })),
+  addLeague: (league: string) => set((state) => ({ leagues: [...state.leagues, league] })),
+  removeLeague: (league: string) =>
+    set((state) => ({
+      leagues: [
+        ...state.leagues.reduce(
+          (prev, cur) =>
+            cur === league ? [...prev] : [...prev, cur],
+          [] as string[])
+      ]
+    })),
 
   setItemSpec: (itemSpec: ItemSpecState) => set(() => ({ itemSpec: itemSpec })),
 
@@ -479,17 +488,17 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       const updatedModifiersExtended = state.wantedModifierExtended.map(
         (wantedModifierExtended) =>
           wantedModifierExtended.modifierId === modifierId &&
-          wantedModifierExtended.index === index
+            wantedModifierExtended.index === index
             ? {
-                ...wantedModifierExtended,
-                modifierLimitations:
-                  textRoll !== undefined
-                    ? {
-                        ...wantedModifierExtended.modifierLimitations,
-                        textRoll: textRoll,
-                      }
-                    : undefined,
-              }
+              ...wantedModifierExtended,
+              modifierLimitations:
+                textRoll !== undefined
+                  ? {
+                    ...wantedModifierExtended.modifierLimitations,
+                    textRoll: textRoll,
+                  }
+                  : undefined,
+            }
             : wantedModifierExtended,
       );
       return { wantedModifierExtended: updatedModifiersExtended };

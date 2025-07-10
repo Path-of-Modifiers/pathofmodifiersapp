@@ -1977,6 +1977,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "additionalProperties": true,
                   "title": "Response Tests-Bulk Insert Test"
                 }
               }
@@ -2137,7 +2138,7 @@
             "anyOf": [
               {
                 "type": "string",
-                "pattern": "password"
+                "pattern": "^password$"
               },
               {
                 "type": "null"
@@ -2151,6 +2152,7 @@
           },
           "password": {
             "type": "string",
+            "format": "password",
             "title": "Password"
           },
           "scope": {
@@ -2178,6 +2180,7 @@
                 "type": "null"
               }
             ],
+            "format": "password",
             "title": "Client Secret"
           }
         },
@@ -2256,6 +2259,39 @@
           "valueInChaos"
         ],
         "title": "CurrencyUpdate"
+      },
+      "Datum": {
+        "properties": {
+          "hoursSinceLaunch": {
+            "type": "integer",
+            "title": "Hourssincelaunch"
+          },
+          "valueInChaos": {
+            "type": "number",
+            "title": "Valueinchaos"
+          },
+          "valueInMostCommonCurrencyUsed": {
+            "type": "number",
+            "title": "Valueinmostcommoncurrencyused"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "title": "Confidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hoursSinceLaunch",
+          "valueInChaos",
+          "valueInMostCommonCurrencyUsed",
+          "confidence"
+        ],
+        "title": "Datum"
       },
       "GroupedModifierByEffect": {
         "properties": {
@@ -3788,68 +3824,39 @@
       },
       "PlotData": {
         "properties": {
-          "valueInChaos": {
-            "items": {
-              "type": "number"
-            },
-            "type": "array",
-            "title": "Valueinchaos"
-          },
-          "hoursSinceLaunch": {
-            "items": {
-              "type": "integer"
-            },
-            "type": "array",
-            "title": "Hourssincelaunch"
-          },
-          "valueInMostCommonCurrencyUsed": {
-            "items": {
-              "type": "number"
-            },
-            "type": "array",
-            "title": "Valueinmostcommoncurrencyused"
-          },
-          "confidence": {
-            "items": {
-              "type": "string",
-              "enum": [
-                "low",
-                "medium",
-                "high"
-              ]
-            },
-            "type": "array",
-            "title": "Confidence"
-          },
-          "confidenceRating": {
-            "type": "string",
-            "enum": [
-              "low",
-              "medium",
-              "high"
-            ],
-            "title": "Confidencerating"
-          },
           "mostCommonCurrencyUsed": {
             "type": "string",
             "title": "Mostcommoncurrencyused"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/TimeseriesData"
+            },
+            "type": "array",
+            "title": "Data"
           }
         },
         "type": "object",
         "required": [
-          "valueInChaos",
-          "hoursSinceLaunch",
-          "valueInMostCommonCurrencyUsed",
-          "confidence",
-          "confidenceRating",
-          "mostCommonCurrencyUsed"
+          "mostCommonCurrencyUsed",
+          "data"
         ],
         "title": "PlotData"
       },
       "PlotQuery": {
         "properties": {
           "league": {
-            "type": "string",
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "string"
+              }
+            ],
             "title": "League"
           },
           "itemSpecifications": {
@@ -3918,6 +3925,37 @@
         ],
         "title": "PlotQuery",
         "description": "Plots for items with or without modifiers"
+      },
+      "TimeseriesData": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/Datum"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "confidenceRating": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "title": "Confidencerating"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "data",
+          "confidenceRating"
+        ],
+        "title": "TimeseriesData"
       },
       "Token": {
         "properties": {

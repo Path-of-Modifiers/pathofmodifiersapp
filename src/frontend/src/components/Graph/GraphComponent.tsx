@@ -9,16 +9,17 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Box, BoxProps, Center, Spinner } from "@chakra-ui/react";
-import useGetPlotData from "../../hooks/graphing/processPlottingData";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 import { usePlotSettingsStore } from "../../store/PlotSettingsStore";
-import PlotCustomizationButtons from "../Common/PlotCustomizationButtons";
 import { capitalizeFirstLetter } from "../../hooks/utils";
-import { CurrencyVisuals } from "../../schemas/CurrencyVisuals";
 import { CustomTooltip } from "./CustomTooltip";
-import { formatHoursSinceLaunch } from "../../hooks/graphing/utils";
+import {
+  formatHoursSinceLaunch,
+} from "../../hooks/graphing/utils";
 import { BiError } from "react-icons/bi";
 import { ErrorMessage } from "../Input/StandardLayoutInput/ErrorMessage";
+import useGetPlotData from "../../hooks/graphing/processPlottingData";
+import PlotCustomizationButtons from "../Common/PlotCustomizationButtons";
 
 /**
  * Uses the globally stored plotQuery state to send a request,
@@ -28,22 +29,24 @@ import { ErrorMessage } from "../Input/StandardLayoutInput/ErrorMessage";
  * and a graph if there has been
  */
 function GraphComponent(props: BoxProps) {
-  const { plotQuery } = useGraphInputStore();
-  const {
-    result,
+  const { plotQuery, leagues } = useGraphInputStore();
+  const { result: plotData,
     mostCommonCurrencyUsed,
     confidenceRating,
     upperBoundryChaos,
     upperBoundrySecondary,
     fetchStatus,
-    error,
-  } = useGetPlotData(plotQuery);
+    error } = useGetPlotData(plotQuery);
 
-  const renderGraph = result && mostCommonCurrencyUsed && !error;
+
+  const mostCommonCurrencyUsedName = `${capitalizeFirstLetter(mostCommonCurrencyUsed ?? "")} value`;
+  const renderGraph =
+    plotData != undefined && mostCommonCurrencyUsed != undefined && !error;
   const showChaos = usePlotSettingsStore((state) => state.showChaos);
   const showSecondary = usePlotSettingsStore((state) => state.showSecondary);
 
-  if (error) return;
+  if (error || plotData == undefined) return;
+  const fetchedLeagues = plotData.data.map((val) => val.name);
 
   const isLowConfidence = confidenceRating === "low";
   const isMediumConfidence = confidenceRating === "medium";
@@ -53,29 +56,10 @@ function GraphComponent(props: BoxProps) {
       ? "ui.mediumConfidencePrimary"
       : "ui.input";
 
-  const chaosVisuals: CurrencyVisuals = {
-    stroke: "#f99619",
-    name: "Chaos value",
-    yAxisId: 0,
-    datakey: "valueInChaos",
-    buttonColor: "#000000",
-    buttonBorderColor: "#000000",
-    buttonBackground: showChaos ? "#f99619" : "ui.lightInput",
-    upperBoundry: upperBoundryChaos,
-  };
+  const colors = [
+    "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"
+  ]
 
-  const secondaryVisuals: CurrencyVisuals = {
-    stroke: "#ff0000",
-    name: renderGraph
-      ? `${capitalizeFirstLetter(mostCommonCurrencyUsed)} value`
-      : "",
-    yAxisId: 1,
-    datakey: "valueInMostCommonCurrencyUsed",
-    buttonColor: showSecondary ? "#ff0000" : "#000000",
-    buttonBorderColor: showSecondary ? "#ff0000" : "#000000",
-    buttonBackground: showSecondary ? "ui.white" : "ui.lightInput",
-    upperBoundry: upperBoundrySecondary,
-  };
 
   if (fetchStatus === "fetching") {
     return (
@@ -84,8 +68,6 @@ function GraphComponent(props: BoxProps) {
       </Center>
     );
   }
-  if (error) return;
-
   return (
     renderGraph && (
       <Box {...props}>
@@ -123,15 +105,12 @@ function GraphComponent(props: BoxProps) {
           <PlotCustomizationButtons
             flexProps={{ justifyContent: "center", mt: "10px" }}
             mostCommonCurrencyUsed={mostCommonCurrencyUsed}
-            chaosVisuals={chaosVisuals}
-            secondaryVisuals={secondaryVisuals}
           />
         </Box>
         <ResponsiveContainer>
           <LineChart
             width={500}
             height={300}
-            data={result}
             margin={{
               top: 5,
               right: 30,
@@ -141,7 +120,7 @@ function GraphComponent(props: BoxProps) {
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
-              dataKey="timestamp"
+              dataKey="hoursSinceLaunch"
               label={{
                 value: "Days and hours since launch",
                 position: "bottom",
@@ -153,59 +132,66 @@ function GraphComponent(props: BoxProps) {
               type="number"
               domain={["dataMin", "dataMax + 10"]}
             />
-            {/* Set Y-axis label */}
             <YAxis
               label={{
-                value: chaosVisuals.name,
+                value: "Chaos value",
                 angle: -90,
                 position: "insideLeft",
               }}
               hide={!showChaos}
               type="number"
-              dataKey={chaosVisuals.datakey}
-              domain={[0, chaosVisuals.upperBoundry]}
+              dataKey={"valueInChaos"}
+              domain={[0, upperBoundryChaos]}
               allowDataOverflow
             />
             <Tooltip
-              content={<CustomTooltip upperBoundry={upperBoundryChaos} />}
+              content={<CustomTooltip upperBoundry={upperBoundryChaos} fetchedLeagues={fetchedLeagues} colors={colors} />}
               isAnimationActive={false}
             />
             <Legend verticalAlign="top" height={36} />
-            {/* Update the Line dataKey to match "Chaos value" */}
-            <Line
-              type="monotone"
-              dataKey={chaosVisuals.datakey}
-              name={chaosVisuals.name}
-              stroke={chaosVisuals.stroke}
-              yAxisId={chaosVisuals.yAxisId}
-              hide={!showChaos}
-              isAnimationActive={false}
-              dot={{ fill: chaosVisuals.stroke }}
-            />
-
+            {plotData.data.map((series, idx) => (
+              leagues.includes(series.name) && (<Line
+                type="monotone"
+                data={series.data}
+                dataKey={"valueInChaos"}
+                key={series.name}
+                name={series.name + " - " + "Chaos Value"}
+                stroke={colors[idx]}
+                yAxisId={0}
+                hide={!showChaos}
+                isAnimationActive={false}
+                dot={{ fill: colors[idx] }}
+                legendType={showChaos ? "line" : "none"}
+              />)
+            ))}
             <YAxis
               label={{
-                value: secondaryVisuals.name,
+                value: mostCommonCurrencyUsedName,
                 angle: -90,
                 position: "right",
               }}
               orientation="right"
-              yAxisId={secondaryVisuals.yAxisId}
+              yAxisId={1}
               hide={!showSecondary}
               type="number"
-              domain={[0, secondaryVisuals.upperBoundry]}
+              domain={[0, upperBoundrySecondary]}
               allowDataOverflow
             />
-            <Line
-              type="monotone"
-              dataKey={secondaryVisuals.datakey}
-              name={secondaryVisuals.name}
-              stroke={secondaryVisuals.stroke}
-              yAxisId={secondaryVisuals.yAxisId}
-              hide={!showSecondary}
-              isAnimationActive={false}
-              dot={{ fill: secondaryVisuals.stroke }}
-            />
+            {mostCommonCurrencyUsed !== "chaos" && plotData.data.map((series, idx) => (
+              leagues.includes(series.name) && (<Line
+                type="monotone"
+                data={series.data}
+                dataKey={"valueInMostCommonCurrencyUsed"}
+                key={series.name}
+                name={series.name + " - " + mostCommonCurrencyUsedName}
+                stroke={colors[idx]}
+                yAxisId={1}
+                hide={!showSecondary}
+                isAnimationActive={false}
+                dot={{ fill: colors[idx] }}
+                legendType={showSecondary ? "line" : "none"}
+              />)
+            ))}
           </LineChart>
         </ResponsiveContainer>
       </Box>

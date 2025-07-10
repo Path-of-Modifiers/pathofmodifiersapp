@@ -35,8 +35,8 @@ class DataDepositTestDataCreator:
         self.base_url = settings.BACKEND_BASE_URL
         self.pom_auth_headers = get_superuser_token_headers(self.base_url)
         self.leagues = [
-            settings.CURRENT_SOFTCORE_LEAGUE,
-            settings.CURRENT_HARDCORE_LEAGUE,
+            *script_settings.SOFTCORE_LEAGUES,
+            *script_settings.HARDCORE_LEAGUES,
         ]
 
         self.base_type_df = self._get_df_from_url("itemBaseType/")
@@ -402,7 +402,6 @@ class DataDepositTestDataCreator:
         )
         base_type = random.choice(template["base_types"])
         identified = random.random() < 0.95  # 95% chance for identified item
-
         item_dict = {
             "verified": True,
             "name": name,
