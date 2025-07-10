@@ -1,9 +1,115 @@
 # Path of Modifiers API documentation
 
-This document describes and illustrates more advanced features in the API.
+## Development
 
-- [Authentication](#authentication)
-- [Rate limit](#rate-limit)
+### Requirements
+
+- [Docker Engine or Docker Desktop](https://docs.docker.com/engine/install/)
+- [uv for Python package manager](https://docs.astral.sh/uv/)
+
+### Docker compose
+
+Check out the guide in [../development.md](https://github.com/Path-of-Modifiers/pathofmodifiersapp/blob/main/development.md)
+
+### uv
+
+Install dependencies and activate environment with:
+
+```bash
+cd backend_api
+
+uv sync
+
+source .venv/bin/activate
+```
+
+
+### Docker Compose Override
+
+
+To have automatic syncing changes during development, run:
+
+```bash
+docker compose watch
+```
+
+
+## How to run tests
+
+Describes how to run the tests in backend API.
+
+For information about the api tests, please check out [Test module documentation](https://github.com/Path-of-Modifiers/pathofmodifiersapp/blob/main/src/backend_api/app/tests/README.md).
+
+
+#### Backend API test prerequisites
+
+Development docker containers must be running:
+
+```bash
+docker compose up -d
+```
+
+Start docker test containers:
+
+```bash
+docker compose -f docker-compose.test.yml up -d
+```
+
+#### Run simulated automated tests backend API
+
+To run all of the tests backend container, run this command:
+
+```bash
+docker compose exec -T backend pytest
+```
+
+#### Run real environment tests backend API
+
+To run tests to the real environment backend API, perform this command:
+
+```bash
+docker compose exec -T backend sh scripts/test_scripts/{test_script_name}.sh
+```
+
+
+
+## Alembic migrations
+
+This section describes how to migrate changes made in database models to the database postgres server. Migrations are done inside the `backend` container, which runs our API.
+
+To enter the `backend` container, run:
+
+```bash
+docker container exec -it src-backend-1 bash
+```
+
+### Migrate alembic database model changes
+
+1. To create a alembic revision, run:
+
+```bash
+alembic revision --autogenerate -m "Message"
+```
+
+- Check out [What does and doesn't Alembic automatically detect](https://alembic.sqlalchemy.org/en/latest/autogenerate.html#what-does-autogenerate-detect-and-what-does-it-not-detect)
+
+2. Review the generated migration template
+3. To migrate database changes, run:
+
+```bash
+alembic upgrade head
+```
+
+### Revert alembic database model changes
+
+To revert to the latest changes made by an alembic revision, run:
+
+```bash
+alembic downgrade -1
+```
+
+
+## Routes
 
 Description of each route is documented in [Path of Modifiers API Docs](https://pathofmodifiers.com/docs)
 
