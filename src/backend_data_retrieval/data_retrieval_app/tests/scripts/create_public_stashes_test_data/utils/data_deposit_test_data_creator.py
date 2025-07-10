@@ -35,8 +35,8 @@ class DataDepositTestDataCreator:
         self.base_url = settings.BACKEND_BASE_URL
         self.pom_auth_headers = get_superuser_token_headers(self.base_url)
         self.leagues = [
-            *script_settings.LEAGUES,
-            *[f"Hardcore {league}" for league in script_settings.LEAGUES],
+            *script_settings.SOFTCORE_LEAGUES,
+            *script_settings.HARDCORE_LEAGUES,
         ]
 
         self.base_type_df = self._get_df_from_url("itemBaseType/")

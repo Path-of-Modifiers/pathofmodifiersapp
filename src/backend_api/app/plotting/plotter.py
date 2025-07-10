@@ -196,7 +196,7 @@ class _BasePlotter(ABC, Generic[Q]):
         return result
     
     @sync_timing_tracker
-    def _create_plot_data(self, df: pd.DataFrame) -> dict[str, list[dict] | str]:
+    def _create_plot_data(self, df: pd.DataFrame) -> PlotData:
         mostCommonCurrencyUsed: str = df["mostCommonCurrencyUsed"].get(0)
         data = []
         for league in df["league"].unique():
@@ -215,7 +215,7 @@ class _BasePlotter(ABC, Generic[Q]):
             }
             data.append(timeseries_data)
 
-        return {"mostCommonCurrencyUsed": mostCommonCurrencyUsed, "data": data}
+        return self.validate({"mostCommonCurrencyUsed": mostCommonCurrencyUsed, "data": data})
 
 
 
@@ -480,7 +480,7 @@ class IdentifiedPlotter(_BasePlotter):
         )
         return full_statement
 
-    async def _plot_execute(self, db: AsyncSession, *, statement: Select) -> tuple:
+    async def _plot_execute(self, db: AsyncSession, *, statement: Select) -> PlotData:
         result = await self._perform_plot_db_stmt(db, statement=statement)
         df = self._convert_result_to_df(result)
 
@@ -491,7 +491,7 @@ class IdentifiedPlotter(_BasePlotter):
                 class_name=self.__class__.__name__,
             )
 
-        return self.validate(self._create_plot_data(df))
+        return self._create_plot_data(df)
 
     def _convert_plot_query_type(self, query: PlotQuery) -> IdentifiedPlotQuery:
         query_dump = query.model_dump()
@@ -552,7 +552,7 @@ class UnidentifiedPlotter(_BasePlotter):
 
         return statement
     
-    def _convert_plot_query_type(self, query: PlotQuery) -> IdentifiedPlotQuery:
+    def _convert_plot_query_type(self, query: PlotQuery) -> UnidentifiedPlotQuery:
         query_dump = query.model_dump()
         return UnidentifiedPlotQuery(**query_dump)
 
