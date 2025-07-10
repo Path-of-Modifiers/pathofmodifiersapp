@@ -39,7 +39,7 @@ You can find a file `.pre-commit-config.yaml` with configurations at the root of
 
 After having the pre-commit tool installed and available, you need to "install" it in the local repository, so that it runs automatically before each commit.
 
-In root directory `.`, using Poetry, you could do it with:
+In ./src directory using uv, you could do it with:
 
 ```bash
 uv run pre-commit install
