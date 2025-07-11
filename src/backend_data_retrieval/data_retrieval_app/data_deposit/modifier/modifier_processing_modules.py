@@ -160,7 +160,8 @@ class ModifierRegexCreator:
         )
         failed_df = dynamic_modifier_df.loc[dynamic_modifier_df["regex"].isna()]
         if not failed_df.empty:
-            logger.critical("Some modifiers did not get a regex.")
+            logger.critical("Some modifiers did not get a regex:")
+            logger.critical(failed_df["effect"])
             raise AssertionError("Some modifiers did not get a regex.")
         logger.debug("Successfully added regex row by row")
 
