@@ -1,0 +1,44 @@
+# Unique Name: Cane of Kulemak
+# Base Types: Serpentine Staff
+# Total modifiers: 3|4
+# Can have duplicate modifiers: False|False|False
+# Modifier distrubution: 3:3,"rest":2|3 
+# Source: https://poedb.tw/us/Cane_of_Kulemak
+minRoll,maxRoll,textRolls,position,effect,static,unique
+2,3,,0,"+# to Level of Socketed Support Gems",,True
+5,8,,0,"+#% to Quality of Socketed Support Gems",,True
+12,14,,0,"#% chance to deal Double Damage",,True
+34,38,,0,"Minions have #% increased # Speed",,True
+,,"Attack|Cast",1,"Minions have #% increased Ca#st Speed",,True
+44,48,,0,"#% to # Damage over Time Multiplier",,True
+,,"Chaos|Physical|Cold|Fire",1,"#% to # Damage over Time Multiplier",,True
+7,8,,0,"#% increased Damage per # Charge",,True
+,,"Endurance|Frenzy|Power",1,"#% increased Damage per # Charge",,True
+54,60,,0,"+#% Critical Strike Multiplier while a Rare or Unique Enemy is Nearby",,True
+27,30,,0,"#% increased Attack Speed while a Rare or Unique Enemy is Nearby",,True
+36,40,,0,"#% chance to deal Double Damage while Focused",,True
+25,28,,0,"+# to Dexterity and Intelligence",,True
+25,28,,0,"+# to Strength and Dexterity",,True
+25,28,,0,"+# to Strength and Intelligence",,True
+18,22,,0,"#% increased Attack Speed",,True
+15,15,,0,"#% chance to Trigger Level # Blood Rage when you Kill an Enemy",,True
+28,32,,0,"#% increased Critical Strike Chance",,True
+311,350,,0,"+# to Accuracy Rating",,True
+26,31,,0,"#% increased Cast Speed",,True
+15,15,,0,"#% chance to gain Arcane Surge when you Kill an Enemy",,True
+120,139,,0,"#% increased Physical Damage",,True
+21,25,,0,"#% chance to Impale Enemies on Hit with Attacks",,True
+21,25,,0,"#% chance to cause Bleeding on Hit",,True
+21,25,,0,"#% chance to Blind Enemies on hit",,True
+21,25,,0,"#% chance to Poison on Hit",,True
+14,16,,0,"Attacks with this Weapon Penetrate #% # Resistances?",,True
+,,"Elemental|Chaos",1,"Attacks with this Weapon Penetrate #% # Resistances?",,True
+100,109,,0,"#% increased # Damage",,True
+,,"Fire|Cold|Lightning|Chaos|Spell",0,"#% increased # Damage",,True
+35,40,,0,"#% chance to #",,True
+,,"Ignite|Freeze|Shock",0,"#% chance to #",,True
+26,30,,0,"Chaos Skills have #% increased Skill Effect Duration",,True
+36,40,,0,"#% increased Mana Regeneration Rate",,True
+9,10,,0,"Gain #% of Non-Chaos Damage as extra Chaos Damage",,True
+50,59,,0,"Minions have #% increased maximum Life",,True
+50,59,,0,"Minions deal #% increased Damage",,True
