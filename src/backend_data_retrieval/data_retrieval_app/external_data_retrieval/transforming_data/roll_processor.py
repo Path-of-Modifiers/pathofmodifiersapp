@@ -95,7 +95,7 @@ class RollProcessor:
             index=False
         ):
             matched_modifiers = dynamic_df["modifier"].str.replace(
-                regex, extract_rolls, regex=True
+                regex, extract_rolls, regex=True, case=False
             )
             matched_modifiers_mask = matched_modifiers.str.contains("matched", na=False)
 

@@ -180,7 +180,7 @@ class ModifierRegexCreator:
 
         def remove_quantifier(ser: pd.Series) -> pd.Series:
             contains_q_mask = ser.str.contains("?", regex=False)
-            ser_contains_q = ser.loc[contains_q_mask]
+            ser_contains_q = ser.loc[contains_q_mask].copy()
 
             if ser_contains_q.empty:
                 return ser
@@ -237,14 +237,18 @@ def check_for_updated_text_rolls(
         logger.info(
             f"Found a modifier with new 'textRolls'. Modifier: {data['effect']}"
         )
-        data["textRolls"] = row_new["textRolls"]
+        new_rolls = set(row_new["textRolls"].split("|"))
+        old_rolls = set(data["textRolls"].split("|"))
+        # data["textRolls"] = "|".join(list(new_rolls | old_rolls))
         if rolls is not None:
-            data["rolls"] = rolls
+            rolls[int(data["position"])] = "|".join(list(new_rolls | old_rolls))
+            data["textRolls"] = rolls
             data["effect"] = data["effect"].replace("+", r"\+")
             data["regex"] = regex_creator.create_regex_from_row(data)
 
             data["effect"] = data["effect"].replace(r"\+", "+")
-            data.pop("rolls")
+
+        data["textRolls"] = "|".join(list(new_rolls | old_rolls))
 
         put_update = True
     else:

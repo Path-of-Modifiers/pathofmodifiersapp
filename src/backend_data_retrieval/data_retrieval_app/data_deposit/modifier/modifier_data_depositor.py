@@ -104,7 +104,7 @@ class ModifierDataDepositor(DataDepositorBase):
                     else:
                         # We only need to check if the roll is of type float,
                         # which we only need 'minRoll' for and not both 'minRoll' and 'maxRoll'
-                        rolls.append(same_modifier_row["minRoll"])
+                        rolls.append(float(same_modifier_row["minRoll"]))
 
             if "updatedAt" in data:
                 data.pop("updatedAt")
