@@ -73,6 +73,7 @@ class UniqueUnidentifiedDetector(UniqueDetector):
         "ElderJewel.png": "Watcher's Eye",
         "SublimeVision.png": "Sublime Vision",
         "AfflictionJewel.png": "The Light of Meaning",
+        "BoundByDestiny.png": "Bound By Destiny",
         "VaalCivilization.png": "Glorious Vanity",
         "KaruiCivilization.png": "Lethal Pride",
         "TemplarCivilization.png": "Militant Faith",
@@ -163,7 +164,7 @@ class UniqueArmourDetector(UniqueDetector):
 
 
 class UniqueWeaponDetector(UniqueDetector):
-    wanted_items = ["Paradoxica"]
+    wanted_items = ["Paradoxica", "Cane of Kulemak"]
 
     def __str__(self):
         return "Unique Weapon Detector"
