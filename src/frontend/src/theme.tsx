@@ -12,6 +12,7 @@ const theme = extendTheme({
       },
       success: "#215918",
       danger: "#FF1D1D",
+      black: "#000000",
       white: "#FFFFFF",
       grey: "#B3B3B3",
       greyShade: {
@@ -26,6 +27,8 @@ const theme = extendTheme({
       input: "#2d3333",
       inputChanged: "#bea06a",
       lightInput: "#565b5b",
+      chaosOrb: "#f99619",
+      divineOrb: "#ff0000",
       queryBaseInput: "#1C5B39",
       queryMainInput: "#72AE8E",
       darkSlate: "#252D3D",
