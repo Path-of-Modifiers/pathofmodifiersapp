@@ -10,6 +10,7 @@ from data_retrieval_app.data_deposit.modifier.modifier_processing_modules import
     check_for_new_related_unique,
     check_for_updated_numerical_rolls,
     check_for_updated_text_rolls,
+    do_update_regex,
 )
 from data_retrieval_app.logs.logger import data_deposit_logger as logger
 from data_retrieval_app.utils import df_to_JSON
@@ -78,6 +79,7 @@ class ModifierDataDepositor(DataDepositorBase):
         update_url = self.data_url + "?modifierId={}"
 
         rolls = None
+        update_regex = False
         for (_, row_cur), (_, row_new) in zip(
             current_duplicate_modifiers_df.iterrows(),
             duplicate_df.iterrows(),
@@ -88,6 +90,7 @@ class ModifierDataDepositor(DataDepositorBase):
             position = int(data["position"])
             # if position is higher than 1, we want to store the types of rolls it has
             if position >= 1 and rolls is None:
+                update_regex = False
                 effect = data["effect"]
                 same_modifier_df = duplicate_df.loc[
                     duplicate_df["effect"] == effect
@@ -102,9 +105,7 @@ class ModifierDataDepositor(DataDepositorBase):
                     elif not pd.isna(same_modifier_row["textRolls"]):
                         rolls.append(same_modifier_row["textRolls"])
                     else:
-                        # We only need to check if the roll is of type float,
-                        # which we only need 'minRoll' for and not both 'minRoll' and 'maxRoll'
-                        rolls.append(same_modifier_row["minRoll"])
+                        rolls.append(None)
 
             if "updatedAt" in data:
                 data.pop("updatedAt")
@@ -112,16 +113,21 @@ class ModifierDataDepositor(DataDepositorBase):
             if not pd.isna(row_new["static"]):
                 pass
             elif not pd.isna(row_new["textRolls"]):
-                data, put_update = check_for_updated_text_rolls(
+                data, put_update, rolls = check_for_updated_text_rolls(
                     data=data,
                     row_new=row_new,
                     rolls=rolls,
                     regex_creator=self.regex_creator,
                 )
+                update_regex = put_update
             else:
                 data, put_update = check_for_updated_numerical_rolls(
                     data=data, row_new=row_new
                 )
+
+            if update_regex:
+                data = do_update_regex(data, rolls, regex_creator=self.regex_creator)
+                put_update = True
 
             data, put_update = check_for_additional_modifier_types(
                 data=data,
@@ -160,6 +166,7 @@ class ModifierDataDepositor(DataDepositorBase):
             # We reset the rolls if the position is 0, because then the next row will be a new modifier
             if position == 0 and rolls is not None:
                 rolls = None
+                update_regex = False
 
     def _remove_duplicates(self, new_modifiers_df: pd.DataFrame) -> pd.DataFrame:
         current_modifiers_df = self._get_current_modifiers()
@@ -171,7 +178,11 @@ class ModifierDataDepositor(DataDepositorBase):
             return new_modifiers_df
 
         logger.info("Removing duplicate modifiers")
-        duplicate_mask = new_modifiers_df["effect"].isin(current_modifiers_df["effect"])
+        duplicate_mask = (
+            new_modifiers_df["effect"]
+            .str.lower()
+            .isin(current_modifiers_df["effect"].str.lower())
+        )
 
         duplicate_df = new_modifiers_df.loc[duplicate_mask].copy()
         self._update_duplicates(duplicate_df, current_modifiers_df)

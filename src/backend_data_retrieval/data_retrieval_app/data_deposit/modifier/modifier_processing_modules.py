@@ -181,7 +181,7 @@ class ModifierRegexCreator:
 
         def remove_quantifier(ser: pd.Series) -> pd.Series:
             contains_q_mask = ser.str.contains("?", regex=False)
-            ser_contains_q = ser.loc[contains_q_mask]
+            ser_contains_q = ser.loc[contains_q_mask].copy()
 
             if ser_contains_q.empty:
                 return ser
@@ -231,27 +231,58 @@ class ModifierRegexCreator:
 def check_for_updated_text_rolls(
     data: dict[str, Any],
     row_new: pd.DataFrame,
-    rolls: list[int | str],
+    rolls: list[None | str],
     regex_creator: ModifierRegexCreator,
-) -> tuple[dict[str, Any], bool]:
+) -> tuple[dict[str, Any], bool, list[None | str]]:
     if data["textRolls"] != row_new["textRolls"]:
         logger.info(
             f"Found a modifier with new 'textRolls'. Modifier: {data['effect']}"
         )
-        data["textRolls"] = row_new["textRolls"]
+        new_rolls: list[str] = row_new["textRolls"].split("|")
+        old_rolls: list[str] = data["textRolls"].split("|")
+        combined_rolls = old_rolls + [
+            roll
+            for roll in new_rolls
+            if roll.lower() not in [old_roll.lower() for old_roll in old_rolls]
+        ]
         if rolls is not None:
-            data["rolls"] = rolls
-            data["effect"] = data["effect"].replace("+", r"\+")
-            data["regex"] = regex_creator.create_regex_from_row(data)
+            rolls[int(data["position"])] = "|".join(combined_rolls)
+            data["textRolls"] = rolls
+        else:
+            data["textRolls"] = [data["textRolls"]]
 
-            data["effect"] = data["effect"].replace(r"\+", "+")
-            data.pop("rolls")
+        data["effect"] = data["effect"].replace("+", r"\+")
+        data["regex"] = regex_creator.create_regex_from_row(data)
+        data["effect"] = data["effect"].replace(r"\+", "+")
+
+        data["textRolls"] = "|".join(combined_rolls)
 
         put_update = True
     else:
         put_update = False
 
-    return data, put_update
+    return data, put_update, rolls
+
+
+def do_update_regex(
+    data: dict[str, Any], rolls: list[None, str], regex_creator: ModifierRegexCreator
+) -> dict[str, Any]:
+    if "textRolls" in data:
+        text_rolls = data["textRolls"]
+    else:
+        text_rolls = None
+
+    data["textRolls"] = rolls
+    data["effect"] = data["effect"].replace("+", r"\+")
+    data["regex"] = regex_creator.create_regex_from_row(data)
+    data["effect"] = data["effect"].replace(r"\+", "+")
+
+    if text_rolls is not None:
+        data["textRolls"] = text_rolls
+    else:
+        data.pop("textRolls")
+
+    return data
 
 
 def check_for_updated_numerical_rolls(
