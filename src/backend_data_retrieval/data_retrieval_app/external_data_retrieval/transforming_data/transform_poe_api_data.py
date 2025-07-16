@@ -77,7 +77,7 @@ class PoEAPIDataTransformerBase:
         """
 
         mirror_row = currency_df.loc[currency_df["tradeName"] == "mirror"]
-        mirror_value = mirror_row["valueInChaos"].get(0)
+        mirror_value = mirror_row["valueInChaos"].get(0, 100_000)
 
         currency_too_high_mask = (
             item_currency_merged_df["valueInChaos"]
