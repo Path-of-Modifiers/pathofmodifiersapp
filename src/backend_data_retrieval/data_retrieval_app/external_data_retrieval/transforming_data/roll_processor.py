@@ -171,8 +171,8 @@ class RollProcessor:
         def convert_text_roll_to_index(row: pd.DataFrame) -> int:
             text_rolls: str = row["textRolls"]
             if text_rolls != "None":
-                text_rolls = text_rolls.split("|")
-                roll = text_rolls.index(row["roll"])
+                text_rolls = text_rolls.lower().split("|")
+                roll = text_rolls.index(row["roll"].lower())
             else:
                 roll = row["roll"]
 

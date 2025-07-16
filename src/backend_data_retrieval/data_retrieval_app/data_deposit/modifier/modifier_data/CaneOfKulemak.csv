@@ -10,7 +10,7 @@ minRoll,maxRoll,textRolls,position,effect,static,unique,veiled
 5,8,,0,"+#% to Quality of Socketed Support Gems",,True,True
 20,30,,0,"Enemies you Kill have a #% chance to Explode, dealing a quarter of their maximum Life as Chaos Damage",,True,True
 1,1,,0,"Socketed Gems are Supported by Level # #",,True,True
-,,"Cast While Channelling|Cast On Critical Strike",1,"Socketed Gems are Supported by Level # #",,True,True
+,,"Cast while Channelling|Cast On Critical Strike",1,"Socketed Gems are Supported by Level # #",,True,True
 12,14,,0,"#% chance to deal Double Damage",,True,True
 34,38,,0,"Minions have #% increased # Speed",,True,True
 ,,"Attack|Cast",1,"Minions have #% increased Ca#st Speed",,True,True
