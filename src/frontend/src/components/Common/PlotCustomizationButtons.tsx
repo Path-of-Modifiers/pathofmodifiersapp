@@ -32,12 +32,12 @@ const PlotCustomizationButtons = (props: PlotCustomizationButtonsProps) => {
       >
         <Button
           variant="solid"
-          bg={showChaos ? "#f99619" : "ui.lightInput"}
-          color="#000000"
-          _hover={{ borderColor:"#f99619", color: "#f99619", bg: "ui.lightInput" }}
+          bg={showChaos ? "ui.chaosOrb" : "ui.lightInput"}
+          color="ui.black"
+          _hover={{ borderColor:"ui.chaosOrb", color: "ui.chaosOrb", bg: "ui.lightInput" }}
           onClick={handleShowChaos}
           borderWidth={1}
-          borderColor="#000000"
+          borderColor="ui.black"
           mb={[2, 0]}
         >
           Show price in Chaos
@@ -45,11 +45,11 @@ const PlotCustomizationButtons = (props: PlotCustomizationButtonsProps) => {
         <Button
           variant="solid"
           bg={showSecondary ? "ui.white" : "ui.lightInput"}
-          color={showSecondary ? "#ff0000" : "#000000"}
-          _hover={{ borderColor: "#ff0000", color: "#ff0000", bg: "ui.lightInput" }}
+          color={showSecondary ? "ui.divineOrb" : "ui.black"}
+          _hover={{ borderColor: "ui.divineOrb", color: "ui.divineOrb", bg: "ui.lightInput" }}
           borderWidth={1}
           ml={[0, 2]}
-          borderColor={showSecondary ? "#ff0000" : "#000000"}
+          borderColor={showSecondary ? "ui.divineOrb" : "ui.black"}
           onClick={handleShowSecondary}
         >
           Show price in {capitalizeFirstLetter(mostCommonCurrencyUsed)}
