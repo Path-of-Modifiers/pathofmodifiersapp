@@ -238,10 +238,12 @@ def check_for_updated_text_rolls(
         logger.info(
             f"Found a modifier with new 'textRolls'. Modifier: {data['effect']}"
         )
-        new_rolls = row_new["textRolls"].split("|")
-        old_rolls = data["textRolls"].split("|")
+        new_rolls: list[str] = row_new["textRolls"].split("|")
+        old_rolls: list[str] = data["textRolls"].split("|")
         combined_rolls = old_rolls + [
-            roll for roll in new_rolls if roll not in old_rolls
+            roll
+            for roll in new_rolls
+            if roll.lower() not in [old_roll.lower() for old_roll in old_rolls]
         ]
         if rolls is not None:
             rolls[int(data["position"])] = "|".join(combined_rolls)

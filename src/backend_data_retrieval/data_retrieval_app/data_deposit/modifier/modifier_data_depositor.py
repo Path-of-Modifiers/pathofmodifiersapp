@@ -178,7 +178,11 @@ class ModifierDataDepositor(DataDepositorBase):
             return new_modifiers_df
 
         logger.info("Removing duplicate modifiers")
-        duplicate_mask = new_modifiers_df["effect"].isin(current_modifiers_df["effect"])
+        duplicate_mask = (
+            new_modifiers_df["effect"]
+            .str.lower()
+            .isin(current_modifiers_df["effect"].str.lower())
+        )
 
         duplicate_df = new_modifiers_df.loc[duplicate_mask].copy()
         self._update_duplicates(duplicate_df, current_modifiers_df)
