@@ -630,22 +630,38 @@ class UnidentifiedPlotter(_BasePlotter):
                     dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}
                 ).string
             }
+            ), calcValue AS (
+            SELECT baseQuery.*,
+            baseQuery."currencyAmount" * baseQuery."valueInChaos" AS "itemValueInChaos"
+
+            FROM baseQuery
+            ), rankedCheap AS (
+                SELECT calcValue.*,
+                RANK() OVER
+                    (
+                        PARTITION BY calcValue."createdHoursSinceLaunch", calcValue.league
+                        ORDER BY calcValue."itemValueInChaos" ASC
+                    ) AS cheap
+
+                FROM calcValue
             )
 
-            SELECT baseQuery."createdHoursSinceLaunch" AS "hoursSinceLaunch",
-            baseQuery.league,
-            baseQuery."currencyAmount" * baseQuery."valueInChaos" AS "valueInChaos",
-            baseQuery."currencyAmount" AS "valueInMostCommonCurrencyUsed",
-            baseQuery."tradeName" AS "mostCommonCurrencyUsed",
+            SELECT rankedCheap."createdHoursSinceLaunch" AS "hoursSinceLaunch",
+            rankedCheap.league,
+            rankedCheap."currencyAmount" * rankedCheap."itemValueInChaos" AS "valueInChaos",
+            rankedCheap."currencyAmount" AS "valueInMostCommonCurrencyUsed",
+            rankedCheap."tradeName" AS "mostCommonCurrencyUsed",
             CASE
-                WHEN baseQuery."nItems" < 10 THEN 'low'
-                WHEN baseQuery."nItems" < 15 THEN 'medium'
+                WHEN rankedCheap."nItems" < 10 THEN 'low'
+                WHEN rankedCheap."nItems" < 15 THEN 'medium'
                 ELSE 'high'
             END AS confidence
 
-            FROM baseQuery
+            FROM rankedCheap
 
-            ORDER BY baseQuery."createdHoursSinceLaunch"
+            WHERE rankedCheap.cheap = 1
+
+            ORDER BY rankedCheap."createdHoursSinceLaunch";
             """
         )
 
