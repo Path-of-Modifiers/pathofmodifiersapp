@@ -536,18 +536,24 @@ class IdentifiedPlotter(_BasePlotter):
             .cte("filteredPrices")
         )
 
-        final_query = select(
-            filtered_prices.c.createdHoursSinceLaunch.label("hoursSinceLaunch"),
-            filtered_prices.c.league,
-            func.avg(filtered_prices.c.valueInChaos).label("valueInChaos"),
-            func.avg(filtered_prices.c.valueInMostCommonCurrencyUsed).label(
-                "valueInMostCommonCurrencyUsed"
-            ),
-            func.min(filtered_prices.c.mostCommonCurrencyUsed).label(
-                "mostCommonCurrencyUsed"
-            ),
-            func.min(filtered_prices.c.confidence).label("confidence"),
-        ).group_by(filtered_prices.c.createdHoursSinceLaunch, filtered_prices.c.league)
+        final_query = (
+            select(
+                filtered_prices.c.createdHoursSinceLaunch.label("hoursSinceLaunch"),
+                filtered_prices.c.league,
+                func.avg(filtered_prices.c.valueInChaos).label("valueInChaos"),
+                func.avg(filtered_prices.c.valueInMostCommonCurrencyUsed).label(
+                    "valueInMostCommonCurrencyUsed"
+                ),
+                func.min(filtered_prices.c.mostCommonCurrencyUsed).label(
+                    "mostCommonCurrencyUsed"
+                ),
+                func.min(filtered_prices.c.confidence).label("confidence"),
+            )
+            .group_by(
+                filtered_prices.c.createdHoursSinceLaunch, filtered_prices.c.league
+            )
+            .order_by(filtered_prices.c.createdHoursSinceLaunch)
+        )
 
         return final_query
 
