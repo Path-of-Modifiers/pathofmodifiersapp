@@ -3,17 +3,19 @@ from typing import Any, Generic, TypeVar
 
 import pandas as pd
 from pydantic import TypeAdapter
+from pydantic.fields import FieldInfo
 from sqlalchemy import (
     BinaryExpression,
     ColumnElement,
     Label,
     Result,
     and_,
+    case,
+    desc,
+    func,
     or_,
     select,
-    text
 )
-from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.sql.expression import Select
@@ -76,7 +78,7 @@ class _BasePlotter(ABC, Generic[Q]):
         "Creates SQLAlchmy select statement from the plot query"
 
     @abstractmethod
-    async def _plot_execute(self, db: AsyncSession, *, statement: Select) -> tuple:
+    async def _plot_execute(self, db: AsyncSession, *, statement: Select) -> PlotData:
         "Executes statement to the database. Returns result as rows."
 
     @abstractmethod
@@ -108,14 +110,13 @@ class _BasePlotter(ABC, Generic[Q]):
         if query_select_args:
             select_args.extend(query_select_args)
 
-        stmt = (
-            select(*select_args)
-            .join(model_Currency, item_model.currencyId == model_Currency.currencyId)
+        stmt = select(*select_args).join(
+            model_Currency, item_model.currencyId == model_Currency.currencyId
         )
 
         if isinstance(query.league, list):
             stmt = stmt.where(
-                or_(*[model_Item.league == league for league in query.league])
+                or_(*[item_model.league == league for league in query.league])
             )
         else:
             stmt = stmt.where(model_Item.league == query.league)
@@ -137,7 +138,7 @@ class _BasePlotter(ABC, Generic[Q]):
         base_spec_query = query.baseSpecifications
         if base_spec_query is not None:
             if base_spec_query.itemBaseTypeId is not None:
-                return statement.where(
+                statement = statement.where(
                     item_model.itemBaseTypeId == base_spec_query.itemBaseTypeId
                 )
 
@@ -158,10 +159,9 @@ class _BasePlotter(ABC, Generic[Q]):
                     )
                 subquery = subquery.where(and_(True, *base_spec_conditions))
 
-                return statement.where(item_model.itemBaseTypeId.in_(subquery))
+                statement = statement.where(item_model.itemBaseTypeId.in_(subquery))
 
-        else:
-            return statement
+        return statement
 
     def filter_item_lvl(
         self,
@@ -183,40 +183,44 @@ class _BasePlotter(ABC, Generic[Q]):
     @sync_timing_tracker
     def _convert_result_to_df(self, result: Result) -> pd.DataFrame:
         rows = result.fetchall()
-        df = pd.DataFrame(rows, columns=result.keys())
+        df = pd.DataFrame(rows, columns=result.keys())  # type: ignore
         return df
 
     @async_timing_tracker
-    async def _perform_plot_db_stmt(
+    async def _perform_plot_db_statement(
         self, db: AsyncSession, *, statement: Select
     ) -> Result:
         async with db.begin():
             result = await db.execute(statement)
 
         return result
-    
+
     @sync_timing_tracker
     def _create_plot_data(self, df: pd.DataFrame) -> PlotData:
-        mostCommonCurrencyUsed: str = df["mostCommonCurrencyUsed"].get(0)
+        mostCommonCurrencyUsed = df["mostCommonCurrencyUsed"].get(
+            0, "divine"
+        )  # TODO: set enum
         data = []
         for league in df["league"].unique():
             league_df: pd.DataFrame = df.loc[df["league"] == league]
+            league_data = league_df[
+                [
+                    "hoursSinceLaunch",
+                    "valueInChaos",
+                    "valueInMostCommonCurrencyUsed",
+                    "confidence",
+                ]
+            ].to_dict(orient="records")  # type: ignore
             timeseries_data = {
                 "name": league,
                 "confidenceRating": league_df["confidence"].mode()[0],
-                "data": league_df[
-                    [
-                        "hoursSinceLaunch",
-                        "valueInChaos",
-                        "valueInMostCommonCurrencyUsed",
-                        "confidence",
-                    ]
-                ].to_dict("records"),
+                "data": league_data,
             }
             data.append(timeseries_data)
 
-        return self.validate({"mostCommonCurrencyUsed": mostCommonCurrencyUsed, "data": data})
-
+        return self.validate(
+            {"mostCommonCurrencyUsed": mostCommonCurrencyUsed, "data": data}
+        )
 
 
 class IdentifiedPlotter(_BasePlotter):
@@ -360,7 +364,9 @@ class IdentifiedPlotter(_BasePlotter):
     def _filter_item_specs(
         self, statement: Select, *, item_spec_query: ItemSpecs
     ) -> Select:
-        item_spec_query_fields = item_spec_query.model_fields.copy()
+        item_spec_query_fields: dict[
+            str, FieldInfo
+        ] = item_spec_query.__class__.model_fields.copy()
         item_specifications = []
 
         if item_spec_query.name is not None:
@@ -431,57 +437,122 @@ class IdentifiedPlotter(_BasePlotter):
         statement = self._filter_properties(
             statement, query=query, start=start, end=end
         )
-        full_statement = text(
-            f"""
-            WITH baseQuery AS (
-                {statement.compile(
-                dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}
-            ).string}
-            ), mostCommon AS (
-                SELECT baseQuery."tradeName" AS "mostCommonTradeName", COUNT(baseQuery."tradeName") AS "nameCount"
-                FROM baseQuery
-                GROUP BY baseQuery.league, baseQuery."tradeName"
-                ORDER BY "nameCount" DESC
-                LIMIT 1
-            ), mostCommonIds AS (
-                SELECT baseQuery."createdHoursSinceLaunch", MAX(baseQuery."currencyId") AS "mostCommonCurrencyId"
-                FROM baseQuery
-                WHERE baseQuery."tradeName" = (SELECT "mostCommonTradeName" FROM mostCommon)
-                GROUP BY baseQuery."createdHoursSinceLaunch"
-            ), mostCommonPrices AS (
-                SELECT baseQuery."createdHoursSinceLaunch", MIN(baseQuery."valueInChaos") AS "mostCommonValueInChaos", MIN(baseQuery."tradeName") AS "mostCommonCurrencyUsed"
-                FROM baseQuery NATURAL JOIN mostCommonIds
-                WHERE baseQuery."currencyId" = mostCommonIds."mostCommonCurrencyId"
-                GROUP BY baseQuery."createdHoursSinceLaunch"
-            ), prices AS (
-                SELECT baseQuery."createdHoursSinceLaunch", baseQuery.league, baseQuery."currencyAmount"*baseQuery."valueInChaos" AS "valueInChaos", baseQuery."currencyAmount"*baseQuery."valueInChaos" / mostCommonPrices."mostCommonValueInChaos" AS "valueInMostCommonCurrencyUsed", mostCommonPrices."mostCommonCurrencyUsed"
-                FROM baseQuery JOIN mostCommonPrices ON baseQuery."createdHoursSinceLaunch" = mostCommonPrices."createdHoursSinceLaunch"
-            ), rankedPrices AS (
-                SELECT prices.*,
-                    RANK() OVER
-                        (PARTITION BY prices."createdHoursSinceLaunch" ORDER BY prices."valueInChaos" ASC) AS pos
-                FROM prices
-            ), filteredPrices AS (
-            SELECT r."createdHoursSinceLaunch", r.league, r."valueInChaos", r."valueInMostCommonCurrencyUsed", r."mostCommonCurrencyUsed",
-                    CASE
-                        WHEN r.pos < 10 THEN 'low'
-                        WHEN r.pos < 15 THEN 'medium'
-                        ELSE 'high'
-                    END as confidence
-                FROM rankedPrices r
-                WHERE r.pos <=20
-                ORDER BY r."createdHoursSinceLaunch"
-            )
 
-            SELECT filteredPrices."createdHoursSinceLaunch" AS "hoursSinceLaunch", filteredPrices.league, AVG(filteredPrices."valueInChaos") AS "valueInChaos", AVG(filteredPrices."valueInMostCommonCurrencyUsed") AS "valueInMostCommonCurrencyUsed", MIN(filteredPrices."mostCommonCurrencyUsed") AS "mostCommonCurrencyUsed", MIN(filteredPrices.confidence) AS confidence
-            FROM filteredPrices
-            GROUP BY filteredPrices."createdHoursSinceLaunch", filteredPrices.league
-            """
+        base_query = statement.cte("baseQuery")
+
+        most_common = (
+            select(
+                base_query.c.tradeName.label("mostCommonTradeName"),
+                func.count(base_query.c.tradeName).label("nameCount"),
+            )
+            .group_by(base_query.c.league, base_query.c.tradeName)
+            .order_by(desc("nameCount"))  # Can use literal_column in complex cases
+            .limit(1)
+            .cte("mostCommon")
         )
-        return full_statement
+
+        most_common_ids = (
+            select(
+                base_query.c.createdHoursSinceLaunch,
+                func.max(base_query.c.currencyId).label("mostCommonCurrencyId"),
+            )
+            .where(
+                base_query.c.tradeName
+                == select(most_common.c.mostCommonTradeName).scalar_subquery()
+            )
+            .group_by(base_query.c.createdHoursSinceLaunch)
+            .cte("mostCommonIds")
+        )
+
+        most_common_prices = (
+            select(
+                base_query.c.createdHoursSinceLaunch,
+                func.min(base_query.c.valueInChaos).label("mostCommonValueInChaos"),
+                func.min(base_query.c.tradeName).label("mostCommonCurrencyUsed"),
+            )
+            .select_from(
+                base_query.join(
+                    most_common_ids,
+                    and_(
+                        base_query.c.createdHoursSinceLaunch
+                        == most_common_ids.c.createdHoursSinceLaunch,
+                        base_query.c.currencyId
+                        == most_common_ids.c.mostCommonCurrencyId,
+                    ),
+                )
+            )
+            .group_by(base_query.c.createdHoursSinceLaunch)
+            .cte("mostCommonPrices")
+        )
+
+        prices = (
+            select(
+                base_query.c.createdHoursSinceLaunch,
+                base_query.c.league,
+                (base_query.c.currencyAmount * base_query.c.valueInChaos).label(
+                    "valueInChaos"
+                ),
+                (
+                    base_query.c.currencyAmount
+                    * base_query.c.valueInChaos
+                    / most_common_prices.c.mostCommonValueInChaos
+                ).label("valueInMostCommonCurrencyUsed"),
+                most_common_prices.c.mostCommonCurrencyUsed,
+            )
+            .select_from(base_query)
+            .join(
+                most_common_prices,
+                base_query.c.createdHoursSinceLaunch
+                == most_common_prices.c.createdHoursSinceLaunch,
+            )
+            .cte("prices")
+        )
+
+        ranked_prices = select(
+            prices,
+            func.rank()
+            .over(
+                partition_by=prices.c.createdHoursSinceLaunch,
+                order_by=prices.c.valueInChaos.asc(),
+            )
+            .label("pos"),
+        ).cte("rankedPrices")
+
+        filtered_prices = (
+            select(
+                ranked_prices.c.createdHoursSinceLaunch,
+                ranked_prices.c.league,
+                ranked_prices.c.valueInChaos,
+                ranked_prices.c.valueInMostCommonCurrencyUsed,
+                ranked_prices.c.mostCommonCurrencyUsed,
+                case(
+                    (ranked_prices.c.pos < 10, "low"),
+                    (ranked_prices.c.pos < 15, "medium"),
+                    else_="high",
+                ).label("confidence"),
+            )
+            .where(ranked_prices.c.pos <= 20)
+            .order_by(ranked_prices.c.createdHoursSinceLaunch)
+            .cte("filteredPrices")
+        )
+
+        final_query = select(
+            filtered_prices.c.createdHoursSinceLaunch.label("hoursSinceLaunch"),
+            filtered_prices.c.league,
+            func.avg(filtered_prices.c.valueInChaos).label("valueInChaos"),
+            func.avg(filtered_prices.c.valueInMostCommonCurrencyUsed).label(
+                "valueInMostCommonCurrencyUsed"
+            ),
+            func.min(filtered_prices.c.mostCommonCurrencyUsed).label(
+                "mostCommonCurrencyUsed"
+            ),
+            func.min(filtered_prices.c.confidence).label("confidence"),
+        ).group_by(filtered_prices.c.createdHoursSinceLaunch, filtered_prices.c.league)
+
+        return final_query
 
     async def _plot_execute(self, db: AsyncSession, *, statement: Select) -> PlotData:
-        result = await self._perform_plot_db_stmt(db, statement=statement)
+        result = await self._perform_plot_db_statement(db, statement=statement)
         df = self._convert_result_to_df(result)
 
         if df.empty:
@@ -504,11 +575,11 @@ class IdentifiedPlotter(_BasePlotter):
         # Convert to make sure wantedModifiers are specified for identified items
         identified_query = self._convert_plot_query_type(query)
 
-        statement = self._create_plot_statement(identified_query)
+        stmt = self._create_plot_statement(identified_query)
         # Logs statement in nice format
-        log_stmt = statement.compile(engine, compile_kwargs={"literal_binds": True})
-        plot_logger.info(f"{log_stmt}")
-        return await self._plot_execute(db, statement=statement)
+        log_clause = stmt.compile(engine, compile_kwargs={"literal_binds": True})
+        plot_logger.info(f"{log_clause}")
+        return await self._plot_execute(db, statement=stmt)
 
 
 class UnidentifiedPlotter(_BasePlotter):
@@ -544,14 +615,13 @@ class UnidentifiedPlotter(_BasePlotter):
     def _filter_unidentified_agg(self, statement: Select) -> Select:
         statement = statement.where(
             and_(
-                True,
                 model_UnidentifiedItem.identified.is_(False),
                 model_UnidentifiedItem.aggregated.is_(True),
             )
         )
 
         return statement
-    
+
     def _convert_plot_query_type(self, query: PlotQuery) -> UnidentifiedPlotQuery:
         query_dump = query.model_dump()
         return UnidentifiedPlotQuery(**query_dump)
@@ -574,31 +644,51 @@ class UnidentifiedPlotter(_BasePlotter):
         )
         statement = self._filter_unidentified_agg(statement)
 
-        full_statement = text(
-            f"""
-            WITH baseQuery AS (
-                {statement.compile(
-                dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}
-            ).string}
+        base_query = statement.cte("baseQuery")
+
+        calc_value = select(
+            base_query,
+            (base_query.c.currencyAmount * base_query.c.valueInChaos).label(
+                "itemValueInChaos"
+            ),
+        ).cte("calcValue")
+
+        ranked_cheap = select(
+            calc_value,
+            func.rank()
+            .over(
+                partition_by=[
+                    calc_value.c.createdHoursSinceLaunch,
+                    calc_value.c.league,
+                ],
+                order_by=calc_value.c.itemValueInChaos.asc(),
             )
+            .label("cheap"),
+        ).cte("rankedCheap")
 
-            SELECT baseQuery."createdHoursSinceLaunch" AS "hoursSinceLaunch", baseQuery.league, baseQuery."currencyAmount" * baseQuery."valueInChaos", baseQuery."currencyAmount" AS "valueInMostCommonCurrencyUsed", baseQuery."tradeName" AS "mostCommonCurrencyUsed", 
-                CASE 
-                    WHEN baseQuery."nItems" < 10 THEN 'low'
-                    WHEN baseQuery."nItems" < 15 THEN 'medium'
-                    ELSE 'high'
-                END AS confidence
-            FROM baseQuery
-            ORDER BY baseQuery."createdHoursSinceLaunch"
+        final_query = (
+            select(
+                ranked_cheap.c.createdHoursSinceLaunch.label("hoursSinceLaunch"),
+                ranked_cheap.c.league,
+                (ranked_cheap.c.currencyAmount * ranked_cheap.c.itemValueInChaos).label(
+                    "valueInChaos"
+                ),
+                ranked_cheap.c.currencyAmount.label("valueInMostCommonCurrencyUsed"),
+                ranked_cheap.c.tradeName.label("mostCommonCurrencyUsed"),
+                case(
+                    (ranked_cheap.c.nItems < 10, "low"),
+                    (ranked_cheap.c.nItems < 15, "medium"),
+                    else_="high",
+                ).label("confidence"),
+            )
+            .where(ranked_cheap.c.cheap == 1)
+            .order_by(ranked_cheap.c.createdHoursSinceLaunch)
+        )
 
-            """)
+        return final_query
 
-        return full_statement
-
-    async def _plot_execute(
-        self, db: AsyncSession, *, statement: Select
-    ) -> tuple[pd.Series, pd.Series, pd.Series, pd.Series, str]:
-        result = await self._perform_plot_db_stmt(db, statement=statement)
+    async def _plot_execute(self, db: AsyncSession, *, statement: Select) -> PlotData:
+        result = await self._perform_plot_db_statement(db, statement=statement)
         df = self._convert_result_to_df(result)
 
         if df.empty:
@@ -609,7 +699,7 @@ class UnidentifiedPlotter(_BasePlotter):
             )
 
         return self.validate(self._create_plot_data(df))
-        
+
     async def plot(self, db: AsyncSession, *, query: PlotQuery) -> PlotData:
         self._raise_invalid_query(query)
 
@@ -617,8 +707,8 @@ class UnidentifiedPlotter(_BasePlotter):
 
         statement = self._create_plot_statement(unidentified_query)
         # Logs statement in nice format
-        log_stmt = statement.compile(engine, compile_kwargs={"literal_binds": True})
-        plot_logger.info(f"{log_stmt}")
+        log_clause = statement.compile(engine, compile_kwargs={"literal_binds": True})
+        plot_logger.info(f"{log_clause}")
 
         return await self._plot_execute(db, statement=statement)
 
