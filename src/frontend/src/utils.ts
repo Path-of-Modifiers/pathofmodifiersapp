@@ -105,6 +105,6 @@ export const validateAndSetSearchParams = (searchParams: URLSearchParams) => {
     graphState.addLeague(DEFAULT_LEAGUES[0]);
     const searchParams = new URLSearchParams();
     searchParams.set("league", DEFAULT_LEAGUES[0]);
-    location.hash = searchParams.toString();
+    graphState.setHashFromStore();
   }
 };

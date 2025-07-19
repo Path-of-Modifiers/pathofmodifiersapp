@@ -4,12 +4,19 @@ import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 import useTurnstileValidation, {
   hasCompletedCaptcha,
 } from "../hooks/validation/turnstileValidation";
+import { useGraphInputStore } from "../store/GraphInputStore";
 
 const security_ip = localStorage.getItem("security_ip");
 
 export const Route = createFileRoute("/_layout")({
   component: Layout,
   beforeLoad: async () => {
+    try {
+      const searchParams = new URLSearchParams(location.hash.slice(1));
+      useGraphInputStore.getState().getStoreFromHash(searchParams);
+    } catch (error) {
+     console.log("Coulnd't get url hash to store properly")
+    }
     if (!hasCompletedCaptcha()) {
       throw redirect({
         to: "/captcha",
