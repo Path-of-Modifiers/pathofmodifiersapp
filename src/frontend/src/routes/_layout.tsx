@@ -12,12 +12,18 @@ const security_ip = localStorage.getItem("security_ip");
 export const Route = createFileRoute("/_layout")({
   component: Layout,
   beforeLoad: async () => {
-    const searchParams = new URLSearchParams(location.hash.slice(1));
-    useGraphInputStore.getState().getStoreFromHash(searchParams);
     if (!hasCompletedCaptcha()) {
       throw redirect({
         to: "/captcha",
       });
+    }
+    try {
+      const searchParams = new URLSearchParams(location.hash.slice(1));
+      useGraphInputStore.getState().getStoreFromHash(searchParams);
+    } catch (err) {
+      throw redirect({
+        to: "/"
+      })
     }
   },
 });
