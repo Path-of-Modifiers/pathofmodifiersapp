@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 
 import { MainPage } from '../../components/Common/MainPage'
 import { useGraphInputStore } from '../../store/GraphInputStore'
