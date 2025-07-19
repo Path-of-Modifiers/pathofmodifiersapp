@@ -12,7 +12,7 @@ export const LeagueInput = () => {
 
   return (
     <MultiSelectButtonGrid
-      optionsName="Leagues"
+      optionsName="Select one or more Leagues"
       options={selectLeagueOptions}
       defaultSelectedOptions={leagues}
       setValue={addLeague}
