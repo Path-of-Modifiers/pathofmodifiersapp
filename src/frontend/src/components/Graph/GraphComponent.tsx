@@ -174,6 +174,7 @@ function GraphComponent(props: BoxProps) {
               yAxisId={1}
               hide={!showSecondary}
               type="number"
+              dataKey={"valueInMostCommonCurrencyUsed"}
               domain={[0, upperBoundrySecondary]}
               allowDataOverflow
             />
