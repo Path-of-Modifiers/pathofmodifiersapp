@@ -97,7 +97,9 @@ const validateLeagues = (searchParams: URLSearchParams) => {
 };
 
 export const validateAndSetSearchParams = (searchParams: URLSearchParams) => {
+  const graphState = useGraphInputStore.getState();
   try {
+    graphState.setHashFromStore();
     validateLeagues(searchParams);
   } catch (error) {
     const graphState = useGraphInputStore.getState();
@@ -105,6 +107,8 @@ export const validateAndSetSearchParams = (searchParams: URLSearchParams) => {
     graphState.addLeague(DEFAULT_LEAGUES[0]);
     const searchParams = new URLSearchParams();
     searchParams.set("league", DEFAULT_LEAGUES[0]);
-    location.hash = searchParams.toString();
+    graphState.setHashFromStore();
+  } finally {
+    graphState.setStateHash(undefined);
   }
 };
