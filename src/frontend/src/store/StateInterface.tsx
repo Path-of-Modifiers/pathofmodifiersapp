@@ -117,6 +117,7 @@ export interface GraphInputState {
 
   addLeague: (league: string) => void;
   removeLeague: (league: string) => void;
+  removeAllLeagues: () => void;
 
 
   setItemName: (name: string | undefined) => void;

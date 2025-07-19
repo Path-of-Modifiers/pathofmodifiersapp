@@ -5,8 +5,6 @@ import useTurnstileValidation, {
   hasCompletedCaptcha,
 } from "../hooks/validation/turnstileValidation";
 
-import { useGraphInputStore } from "../store/GraphInputStore";
-
 const security_ip = localStorage.getItem("security_ip");
 
 export const Route = createFileRoute("/_layout")({
@@ -16,14 +14,6 @@ export const Route = createFileRoute("/_layout")({
       throw redirect({
         to: "/captcha",
       });
-    }
-    try {
-      const searchParams = new URLSearchParams(location.hash.slice(1));
-      useGraphInputStore.getState().getStoreFromHash(searchParams);
-    } catch (err) {
-      throw redirect({
-        to: "/"
-      })
     }
   },
 });

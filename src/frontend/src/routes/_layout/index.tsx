@@ -5,18 +5,12 @@ import { MainPage } from '../../components/Common/MainPage'
 import { useGraphInputStore } from '../../store/GraphInputStore'
 import { useGetGroupedModifiers } from '../../hooks/getData/prefetchGroupedModifiers'
 import { useGetItemBaseTypes } from '../../hooks/getData/getBaseTypeCategories'
+import { validateAndSetSearchParams } from '../../utils'
 
 export const Route = createFileRoute("/_layout/")({
   beforeLoad: async () => {
     const searchParams = new URLSearchParams(location.hash.slice(1))
-    const state = useGraphInputStore.getState()
-    if (searchParams.size > 0) {
-      state.getStoreFromHash(searchParams)
-    } else {
-      // This happens when being redirected from login
-      state.setHashFromStore()
-      state.setStateHash(undefined)
-    }
+    validateAndSetSearchParams(searchParams)
   },
   component: Index,
 })
