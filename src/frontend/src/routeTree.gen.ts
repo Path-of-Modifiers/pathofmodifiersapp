@@ -15,7 +15,7 @@ import { Route as PrivacyPolicyImport } from './routes/privacy-policy'
 import { Route as CaptchaImport } from './routes/captcha'
 import { Route as AboutImport } from './routes/about'
 import { Route as LayoutImport } from './routes/_layout'
-import { Route as IndexImport } from './routes/index'
+import { Route as LayoutIndexImport } from './routes/_layout/index'
 
 // Create/Update Routes
 
@@ -42,23 +42,16 @@ const LayoutRoute = LayoutImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const IndexRoute = IndexImport.update({
+const LayoutIndexRoute = LayoutIndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => LayoutRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
     '/_layout': {
       id: '/_layout'
       path: ''
@@ -87,56 +80,77 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyPolicyImport
       parentRoute: typeof rootRoute
     }
+    '/_layout/': {
+      id: '/_layout/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof LayoutIndexImport
+      parentRoute: typeof LayoutImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface LayoutRouteChildren {
+  LayoutIndexRoute: typeof LayoutIndexRoute
+}
+
+const LayoutRouteChildren: LayoutRouteChildren = {
+  LayoutIndexRoute: LayoutIndexRoute,
+}
+
+const LayoutRouteWithChildren =
+  LayoutRoute._addFileChildren(LayoutRouteChildren)
+
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '': typeof LayoutRoute
+  '': typeof LayoutRouteWithChildren
   '/about': typeof AboutRoute
   '/captcha': typeof CaptchaRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/': typeof LayoutIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '': typeof LayoutRoute
   '/about': typeof AboutRoute
   '/captcha': typeof CaptchaRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/': typeof LayoutIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexRoute
-  '/_layout': typeof LayoutRoute
+  '/_layout': typeof LayoutRouteWithChildren
   '/about': typeof AboutRoute
   '/captcha': typeof CaptchaRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/_layout/': typeof LayoutIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '' | '/about' | '/captcha' | '/privacy-policy'
+  fullPaths: '' | '/about' | '/captcha' | '/privacy-policy' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/about' | '/captcha' | '/privacy-policy'
-  id: '__root__' | '/' | '/_layout' | '/about' | '/captcha' | '/privacy-policy'
+  to: '/about' | '/captcha' | '/privacy-policy' | '/'
+  id:
+    | '__root__'
+    | '/_layout'
+    | '/about'
+    | '/captcha'
+    | '/privacy-policy'
+    | '/_layout/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  LayoutRoute: typeof LayoutRoute
+  LayoutRoute: typeof LayoutRouteWithChildren
   AboutRoute: typeof AboutRoute
   CaptchaRoute: typeof CaptchaRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  LayoutRoute: LayoutRoute,
+  LayoutRoute: LayoutRouteWithChildren,
   AboutRoute: AboutRoute,
   CaptchaRoute: CaptchaRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
@@ -152,18 +166,17 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
         "/_layout",
         "/about",
         "/captcha",
         "/privacy-policy"
       ]
     },
-    "/": {
-      "filePath": "index.tsx"
-    },
     "/_layout": {
-      "filePath": "_layout.tsx"
+      "filePath": "_layout.tsx",
+      "children": [
+        "/_layout/"
+      ]
     },
     "/about": {
       "filePath": "about.tsx"
@@ -173,6 +186,10 @@ export const routeTree = rootRoute
     },
     "/privacy-policy": {
       "filePath": "privacy-policy.tsx"
+    },
+    "/_layout/": {
+      "filePath": "_layout/index.tsx",
+      "parent": "/_layout"
     }
   }
 }
