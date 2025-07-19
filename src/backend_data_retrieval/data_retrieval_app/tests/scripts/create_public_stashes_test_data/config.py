@@ -1,3 +1,4 @@
+from pydantic import computed_field
 from pydantic_settings import BaseSettings
 
 
@@ -21,14 +22,12 @@ class PoEPublicStashesTestDataSettings(BaseSettings):
         return bool(self.CREATE_DATA_DIFFERENT_TIMING_INTERVAL and self.TIMING_PERIOD)
 
     ITEM_NOTE_CURRENCY_TYPES: list[str] = [
-        "chaos",
-        "divine",
         "divine",
     ]  # , "divine", "mirror", etc.
     MEAN_ITEM_PRICE: int = 200
 
     SOFTCORE_LEAGUES: list[str] = ["Mercenaries", "Phrecia"]
-    
+
     @computed_field  # type: ignore[prop-decorator]
     @property
     def HARDCORE_LEAGUES(self) -> list[str]:

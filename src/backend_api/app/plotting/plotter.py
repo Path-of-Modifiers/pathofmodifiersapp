@@ -128,6 +128,28 @@ class _BasePlotter(ABC, Generic[Q]):
 
         return stmt
 
+    def _filter_item_names(
+        self,
+        statement: Select,
+        *,
+        item_model: type[model_Item | model_UniItem],
+        query: Q,
+    ) -> Select:
+        if query.itemSpecifications is not None:
+            if query.itemSpecifications.name is not None:
+                if "|" in query.itemSpecifications.name:
+                    name_filter = or_(
+                        *[
+                            item_model.name == name
+                            for name in query.itemSpecifications.name.split("|")
+                        ]
+                    )
+                else:
+                    name_filter = item_model.name == query.itemSpecifications.name
+                statement = statement.where(name_filter)
+
+        return statement
+
     def _filter_base_specs(
         self,
         statement: Select,
@@ -340,27 +362,6 @@ class IdentifiedPlotter(_BasePlotter):
 
         return statement.where(and_(True, *exists_conditions))
 
-    def _filter_item_names(
-        self,
-        statement: Select,
-        *,
-        query: IdentifiedPlotQuery,
-    ) -> Select:
-        if query.itemSpecifications is not None:
-            if query.itemSpecifications.name is not None:
-                if "|" in query.itemSpecifications.name:
-                    name_filter = or_(
-                        *[
-                            model_Item.name == name
-                            for name in query.itemSpecifications.name.split("|")
-                        ]
-                    )
-                else:
-                    name_filter = model_Item.name == query.itemSpecifications.name
-                statement = statement.where(name_filter)
-
-        return statement
-
     def _filter_item_specs(
         self, statement: Select, *, item_spec_query: ItemSpecs
     ) -> Select:
@@ -432,7 +433,9 @@ class IdentifiedPlotter(_BasePlotter):
         statement = self._filter_base_specs(
             statement, item_model=model_Item, query=query
         )
-        statement = self._filter_item_names(statement, query=query)
+        statement = self._filter_item_names(
+            statement, item_model=model_Item, query=query
+        )
         statement = self.filter_item_lvl(statement, item_model=model_Item, query=query)
         statement = self._filter_properties(
             statement, query=query, start=start, end=end
@@ -641,6 +644,9 @@ class UnidentifiedPlotter(_BasePlotter):
             start=start,
             end=end,
             query_select_args=q_add_args,
+        )
+        statement = self._filter_item_names(
+            statement, item_model=model_UnidentifiedItem, query=query
         )
         statement = self._filter_base_specs(
             statement, item_model=model_UnidentifiedItem, query=query

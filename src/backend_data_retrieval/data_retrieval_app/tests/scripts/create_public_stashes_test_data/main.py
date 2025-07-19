@@ -33,8 +33,8 @@ class PublicStashMockAPI:
         )
         self.public_stashes_modifier_test_data_creator.create_templates()
         self.leagues = [
-            *script_settings.LEAGUES,
-            *[f"Hardcore {league}" for league in script_settings.LEAGUES],
+            *script_settings.SOFTCORE_LEAGUES,
+            *script_settings.HARDCORE_LEAGUES,
         ]
 
     def get_test_data(self) -> list[dict[str, Any]]:
