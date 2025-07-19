@@ -186,6 +186,10 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
           [] as string[])
       ]
     })),
+  removeAllLeagues: () =>
+    set(() => ({
+      leagues: []
+    })),
 
   setItemSpec: (itemSpec: ItemSpecState) => set(() => ({ itemSpec: itemSpec })),
 
