@@ -4,14 +4,21 @@ import { useGetGroupedModifiers } from "../hooks/getData/prefetchGroupedModifier
 import { useGetItemBaseTypes } from "../hooks/getData/getBaseTypeCategories";
 
 import { useEffect, useRef } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   beforeLoad: async () => {
     const searchParams = new URLSearchParams(location.hash.slice(1));
     const state = useGraphInputStore.getState();
     if (searchParams.size > 0) {
-      state.getStoreFromHash(searchParams);
+      try {
+        state.getStoreFromHash(searchParams);
+      } catch (err) {
+        throw redirect({
+          to: "/",
+        });
+      }
+
     } else {
       // This happens when being redirected from login
       state.setHashFromStore();
