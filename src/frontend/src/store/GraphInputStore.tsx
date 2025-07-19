@@ -25,7 +25,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
   choosableItemBaseType: [],
   choosableItemNames: [],
 
-  leagues: DEFAULT_LEAGUES,
+  leagues: [DEFAULT_LEAGUES[0]],
 
   itemName: undefined,
   itemSpec: undefined,
