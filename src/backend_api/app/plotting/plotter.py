@@ -539,10 +539,10 @@ class IdentifiedPlotter(_BasePlotter):
             .cte("filteredPrices")
         )
 
-        final_query = (
+        json_ready = (
             select(
                 filtered_prices.c.createdHoursSinceLaunch.label("hoursSinceLaunch"),
-                filtered_prices.c.league,
+                filtered_prices.c.league.label("name"),
                 func.avg(filtered_prices.c.valueInChaos).label("valueInChaos"),
                 func.avg(filtered_prices.c.valueInMostCommonCurrencyUsed).label(
                     "valueInMostCommonCurrencyUsed"
@@ -556,11 +556,83 @@ class IdentifiedPlotter(_BasePlotter):
                 filtered_prices.c.createdHoursSinceLaunch, filtered_prices.c.league
             )
             .order_by(filtered_prices.c.createdHoursSinceLaunch)
+        ).cte("jsonReady")
+
+        overall_confidence = (
+            select(
+                json_ready.c.name,
+                json_ready.c.confidence.label("confidenceRating"),
+                func.rank().over(
+                    partition_by=json_ready.c.name,
+                    order_by=func.count(json_ready.c.confidence),
+                ),
+            )
+            .group_by(json_ready.c.name, json_ready.c.confidence)
+            .cte("overallConfidence")
+        )
+
+        overall_most_common_currency_used = (
+            select(
+                json_ready.c.name,
+                json_ready.c.mostCommonCurrencyUsed.label("mostCommonCurrencyUsed"),
+                func.rank().over(
+                    partition_by=json_ready.c.name,
+                    order_by=func.count(json_ready.c.mostCommonCurrencyUsed),
+                ),
+            )
+            .group_by(json_ready.c.name, json_ready.c.mostCommonCurrencyUsed)
+            .cte("overallMostCommonCurrencyUsed")
+        )
+
+        time_series_data = (
+            select(
+                json_ready.c.name,
+                func.json_agg(
+                    func.json_build_object(
+                        "hoursSinceLaunch",
+                        json_ready.c.hoursSinceLaunch,
+                        "valueInChaos",
+                        json_ready.c.valueInChaos,
+                        "valueInMostCommonCurrencyUsed",
+                        json_ready.c.valueInMostCommonCurrencyUsed,
+                        "confidence",
+                        json_ready.c.confidence,
+                    )
+                ).label("data"),
+                overall_confidence.c.confidenceRating,
+            )
+            .select_from(json_ready)
+            .join(
+                overall_confidence,
+                json_ready.c.name == overall_confidence.c.name,
+            )
+            .join(
+                overall_most_common_currency_used,
+                json_ready.c.name == overall_most_common_currency_used.c.name,
+            )
+            .group_by(json_ready.c.name, overall_confidence.c.confidenceRating)
+        ).cte("timeSeriesData")
+
+        final_query = select(
+            func.min(overall_most_common_currency_used.c.mostCommonCurrencyUsed).label(
+                "mostCommonCurrencyUsed"
+            ),
+            func.json_agg(
+                func.json_build_object(
+                    "name",
+                    time_series_data.c.name,
+                    "data",
+                    time_series_data.c.data,
+                    "confidenceRating",
+                    time_series_data.c.confidenceRating,
+                )
+            ).label("data"),
         )
 
         return final_query
 
     async def _plot_execute(self, db: AsyncSession, *, statement: Select) -> PlotData:
+        print(statement)
         result = await self._perform_plot_db_statement(db, statement=statement)
         df = self._convert_result_to_df(result)
 
@@ -588,7 +660,17 @@ class IdentifiedPlotter(_BasePlotter):
         # Logs statement in nice format
         log_clause = stmt.compile(engine, compile_kwargs={"literal_binds": True})
         plot_logger.info(f"{log_clause}")
-        return await self._plot_execute(db, statement=stmt)
+
+        result = await self._perform_plot_db_statement(db, statement=stmt)
+        # (temp,) = result.fetchone()
+        # print(temp)
+        # return temp
+        # return result.scalar()
+        # return result.fetchone()
+        return result.first()
+        # return result.fetchone()
+        # return result.scalar_one()
+        # return await self._plot_execute(db, statement=stmt)
 
 
 class UnidentifiedPlotter(_BasePlotter):
