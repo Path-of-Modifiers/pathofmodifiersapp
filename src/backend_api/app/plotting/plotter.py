@@ -632,18 +632,9 @@ class IdentifiedPlotter(_BasePlotter):
         return final_query
 
     async def _plot_execute(self, db: AsyncSession, *, statement: Select) -> PlotData:
-        print(statement)
         result = await self._perform_plot_db_statement(db, statement=statement)
-        df = self._convert_result_to_df(result)
 
-        if df.empty:
-            raise PlotQueryDataNotFoundError(
-                query_data=str(statement),
-                function_name=self.plot.__name__,
-                class_name=self.__class__.__name__,
-            )
-
-        return self._create_plot_data(df)
+        return result.first()
 
     def _convert_plot_query_type(self, query: PlotQuery) -> IdentifiedPlotQuery:
         query_dump = query.model_dump()
@@ -661,16 +652,7 @@ class IdentifiedPlotter(_BasePlotter):
         log_clause = stmt.compile(engine, compile_kwargs={"literal_binds": True})
         plot_logger.info(f"{log_clause}")
 
-        result = await self._perform_plot_db_statement(db, statement=stmt)
-        # (temp,) = result.fetchone()
-        # print(temp)
-        # return temp
-        # return result.scalar()
-        # return result.fetchone()
-        return result.first()
-        # return result.fetchone()
-        # return result.scalar_one()
-        # return await self._plot_execute(db, statement=stmt)
+        return await self._plot_execute(db, statement=stmt)
 
 
 class UnidentifiedPlotter(_BasePlotter):
