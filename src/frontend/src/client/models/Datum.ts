@@ -6,6 +6,5 @@ export type Datum = {
     hoursSinceLaunch: number;
     valueInChaos: number;
     valueInMostCommonCurrencyUsed: number;
-    confidence: 'low' | 'medium' | 'high';
 };
 

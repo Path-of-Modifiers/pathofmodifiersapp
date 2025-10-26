@@ -2,16 +2,23 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export const $PlotData = {
+export const $LeagueData = {
     properties: {
-        mostCommonCurrencyUsed: {
+        league: {
             type: 'string',
             isRequired: true,
         },
-        data: {
+        linkedPrices: {
             type: 'array',
             contains: {
-                type: 'LeagueData',
+                type: 'LinkedPrices',
+            },
+            isRequired: true,
+        },
+        unlinkedPrices: {
+            type: 'array',
+            contains: {
+                type: 'Datum',
             },
             isRequired: true,
         },

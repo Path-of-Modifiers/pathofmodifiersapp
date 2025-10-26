@@ -16,9 +16,5 @@ export const $Datum = {
             type: 'number',
             isRequired: true,
         },
-        confidence: {
-            type: 'Enum',
-            isRequired: true,
-        },
     },
 } as const;

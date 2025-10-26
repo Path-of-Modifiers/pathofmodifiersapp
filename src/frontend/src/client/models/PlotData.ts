@@ -2,9 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { TimeseriesData } from './TimeseriesData';
+import type { LeagueData } from './LeagueData';
 export type PlotData = {
     mostCommonCurrencyUsed: string;
-    data: Array<TimeseriesData>;
+    data: Array<LeagueData>;
 };
 

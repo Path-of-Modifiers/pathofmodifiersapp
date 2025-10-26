@@ -2,9 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export const $TimeseriesData = {
+export const $LinkedPrices = {
     properties: {
-        name: {
+        gameItemId: {
             type: 'string',
             isRequired: true,
         },
@@ -13,10 +13,6 @@ export const $TimeseriesData = {
             contains: {
                 type: 'Datum',
             },
-            isRequired: true,
-        },
-        confidenceRating: {
-            type: 'Enum',
             isRequired: true,
         },
     },

@@ -3,9 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { Datum } from './Datum';
-export type TimeseriesData = {
-    name: string;
+export type LinkedPrices = {
+    gameItemId: string;
     data: Array<Datum>;
-    confidenceRating: 'low' | 'medium' | 'high';
 };
 

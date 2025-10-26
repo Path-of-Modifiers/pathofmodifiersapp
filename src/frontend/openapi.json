@@ -2273,23 +2273,13 @@
           "valueInMostCommonCurrencyUsed": {
             "type": "number",
             "title": "Valueinmostcommoncurrencyused"
-          },
-          "confidence": {
-            "type": "string",
-            "enum": [
-              "low",
-              "medium",
-              "high"
-            ],
-            "title": "Confidence"
           }
         },
         "type": "object",
         "required": [
           "hoursSinceLaunch",
           "valueInChaos",
-          "valueInMostCommonCurrencyUsed",
-          "confidence"
+          "valueInMostCommonCurrencyUsed"
         ],
         "title": "Datum"
       },
@@ -2483,6 +2473,17 @@
           "rarity": {
             "type": "string",
             "title": "Rarity"
+          },
+          "gameItemId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gameitemid"
           },
           "identified": {
             "type": "boolean",
@@ -2804,6 +2805,17 @@
           "rarity": {
             "type": "string",
             "title": "Rarity"
+          },
+          "gameItemId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gameitemid"
           },
           "identified": {
             "type": "boolean",
@@ -3193,6 +3205,56 @@
         },
         "type": "object",
         "title": "ItemSpecs"
+      },
+      "LeagueData": {
+        "properties": {
+          "league": {
+            "type": "string",
+            "title": "League"
+          },
+          "linkedPrices": {
+            "items": {
+              "$ref": "#/components/schemas/LinkedPrices"
+            },
+            "type": "array",
+            "title": "Linkedprices"
+          },
+          "unlinkedPrices": {
+            "items": {
+              "$ref": "#/components/schemas/Datum"
+            },
+            "type": "array",
+            "title": "Unlinkedprices"
+          }
+        },
+        "type": "object",
+        "required": [
+          "league",
+          "linkedPrices",
+          "unlinkedPrices"
+        ],
+        "title": "LeagueData"
+      },
+      "LinkedPrices": {
+        "properties": {
+          "gameItemId": {
+            "type": "string",
+            "title": "Gameitemid"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/Datum"
+            },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "gameItemId",
+          "data"
+        ],
+        "title": "LinkedPrices"
       },
       "MetadataObject": {
         "properties": {
@@ -3830,7 +3892,7 @@
           },
           "data": {
             "items": {
-              "$ref": "#/components/schemas/TimeseriesData"
+              "$ref": "#/components/schemas/LeagueData"
             },
             "type": "array",
             "title": "Data"
@@ -3925,37 +3987,6 @@
         ],
         "title": "PlotQuery",
         "description": "Plots for items with or without modifiers"
-      },
-      "TimeseriesData": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "data": {
-            "items": {
-              "$ref": "#/components/schemas/Datum"
-            },
-            "type": "array",
-            "title": "Data"
-          },
-          "confidenceRating": {
-            "type": "string",
-            "enum": [
-              "low",
-              "medium",
-              "high"
-            ],
-            "title": "Confidencerating"
-          }
-        },
-        "type": "object",
-        "required": [
-          "name",
-          "data",
-          "confidenceRating"
-        ],
-        "title": "TimeseriesData"
       },
       "Token": {
         "properties": {
