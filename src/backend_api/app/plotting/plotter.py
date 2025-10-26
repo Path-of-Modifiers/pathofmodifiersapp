@@ -654,8 +654,14 @@ class IdentifiedPlotter(_BasePlotter):
 
     async def _plot_execute(self, db: AsyncSession, *, statement: Select) -> PlotData:
         result = await self._perform_plot_db_statement(db, statement=statement)
-
-        return result.first()
+        json_result = result.first()
+        if not json_result:
+            raise PlotQueryDataNotFoundError(
+                query_data=str(statement),
+                function_name=self.plot.__name__,
+                class_name=self.__class__.__name__,
+            )
+        return json_result
 
     def _convert_plot_query_type(self, query: PlotQuery) -> IdentifiedPlotQuery:
         query_dump = query.model_dump()
