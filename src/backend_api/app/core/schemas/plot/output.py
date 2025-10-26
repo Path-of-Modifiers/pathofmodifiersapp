@@ -1,5 +1,3 @@
-from typing import Literal
-
 import pydantic as _pydantic
 
 
@@ -7,15 +5,19 @@ class Datum(_pydantic.BaseModel):
     hoursSinceLaunch: int
     valueInChaos: float
     valueInMostCommonCurrencyUsed: float
-    confidence: Literal["low", "medium", "high"]
 
 
-class TimeseriesData(_pydantic.BaseModel):
-    name: str
+class LinkedPrices(_pydantic.BaseModel):
+    gameItemId: str
     data: list[Datum]
-    confidenceRating: Literal["low", "medium", "high"]
+
+
+class LeagueData(_pydantic.BaseModel):
+    league: str
+    linkedPrices: list[LinkedPrices]
+    unlinkedPrices: list[Datum]
 
 
 class PlotData(_pydantic.BaseModel):
     mostCommonCurrencyUsed: str
-    data: list[TimeseriesData]
+    data: list[LeagueData]

@@ -13,6 +13,7 @@ from sqlalchemy import (
     case,
     desc,
     func,
+    literal,
     or_,
     select,
 )
@@ -429,7 +430,13 @@ class IdentifiedPlotter(_BasePlotter):
 
     def _create_plot_statement(self, query: IdentifiedPlotQuery) -> Select:
         start, end = query.start, query.end
-        statement = self._init_stmt(query, item_model=model_Item, start=start, end=end)
+        statement = self._init_stmt(
+            query,
+            item_model=model_Item,
+            start=start,
+            end=end,
+            query_select_args=[model_Item.gameItemId],
+        )
         statement = self._filter_base_specs(
             statement, item_model=model_Item, query=query
         )
@@ -440,7 +447,6 @@ class IdentifiedPlotter(_BasePlotter):
         statement = self._filter_properties(
             statement, query=query, start=start, end=end
         )
-
         base_query = statement.cte("baseQuery")
 
         most_common = (
@@ -492,6 +498,7 @@ class IdentifiedPlotter(_BasePlotter):
             select(
                 base_query.c.createdHoursSinceLaunch,
                 base_query.c.league,
+                base_query.c.gameItemId,
                 (base_query.c.currencyAmount * base_query.c.valueInChaos).label(
                     "valueInChaos"
                 ),
@@ -511,122 +518,136 @@ class IdentifiedPlotter(_BasePlotter):
             .cte("prices")
         )
 
-        ranked_prices = select(
-            prices,
-            func.rank()
-            .over(
-                partition_by=prices.c.createdHoursSinceLaunch,
-                order_by=prices.c.valueInChaos.asc(),
-            )
-            .label("pos"),
-        ).cte("rankedPrices")
-
-        filtered_prices = (
+        # overall_most_common_currency_used = (
+        overall_most_common_currency_used_unordered = (
             select(
-                ranked_prices.c.createdHoursSinceLaunch,
-                ranked_prices.c.league,
-                ranked_prices.c.valueInChaos,
-                ranked_prices.c.valueInMostCommonCurrencyUsed,
-                ranked_prices.c.mostCommonCurrencyUsed,
-                case(
-                    (ranked_prices.c.pos < 10, "low"),
-                    (ranked_prices.c.pos < 15, "medium"),
-                    else_="high",
-                ).label("confidence"),
+                literal(0).label("join_variable"),
+                prices.c["mostCommonCurrencyUsed"],
+                func.count().label("currencyCount"),
             )
-            .where(ranked_prices.c.pos <= 20)
-            .order_by(ranked_prices.c.createdHoursSinceLaunch)
-            .cte("filteredPrices")
-        )
-
-        json_ready = (
-            select(
-                filtered_prices.c.createdHoursSinceLaunch.label("hoursSinceLaunch"),
-                filtered_prices.c.league.label("name"),
-                func.avg(filtered_prices.c.valueInChaos).label("valueInChaos"),
-                func.avg(filtered_prices.c.valueInMostCommonCurrencyUsed).label(
-                    "valueInMostCommonCurrencyUsed"
-                ),
-                func.min(filtered_prices.c.mostCommonCurrencyUsed).label(
-                    "mostCommonCurrencyUsed"
-                ),
-                func.min(filtered_prices.c.confidence).label("confidence"),
-            )
-            .group_by(
-                filtered_prices.c.createdHoursSinceLaunch, filtered_prices.c.league
-            )
-            .order_by(filtered_prices.c.createdHoursSinceLaunch)
-        ).cte("jsonReady")
-
-        overall_confidence = (
-            select(
-                json_ready.c.name,
-                json_ready.c.confidence.label("confidenceRating"),
-                func.rank().over(
-                    partition_by=json_ready.c.name,
-                    order_by=func.count(json_ready.c.confidence),
-                ),
-            )
-            .group_by(json_ready.c.name, json_ready.c.confidence)
-            .cte("overallConfidence")
+            .group_by(prices.c["mostCommonCurrencyUsed"])
+            .cte("overallMostCommonCurrencyUsedUnordered")
         )
 
         overall_most_common_currency_used = (
-            select(
-                json_ready.c.name,
-                json_ready.c.mostCommonCurrencyUsed.label("mostCommonCurrencyUsed"),
-                func.rank().over(
-                    partition_by=json_ready.c.name,
-                    order_by=func.count(json_ready.c.mostCommonCurrencyUsed),
-                ),
+            select(overall_most_common_currency_used_unordered)
+            .order_by(
+                overall_most_common_currency_used_unordered.c["currencyCount"].desc()
             )
-            .group_by(json_ready.c.name, json_ready.c.mostCommonCurrencyUsed)
+            .limit(1)
             .cte("overallMostCommonCurrencyUsed")
         )
 
-        time_series_data = (
+        items_per_id = (
+            select(prices.c["gameItemId"], func.count().label("itemCount"))
+            .group_by(prices.c["gameItemId"])
+            .cte("itemsPerId")
+        )
+
+        prices_per_game_item_id = (
             select(
-                json_ready.c.name,
+                prices.c["gameItemId"],
                 func.json_agg(
                     func.json_build_object(
                         "hoursSinceLaunch",
-                        json_ready.c.hoursSinceLaunch,
+                        prices.c["createdHoursSinceLaunch"],
                         "valueInChaos",
-                        json_ready.c.valueInChaos,
+                        prices.c["valueInChaos"],
                         "valueInMostCommonCurrencyUsed",
-                        json_ready.c.valueInMostCommonCurrencyUsed,
-                        "confidence",
-                        json_ready.c.confidence,
+                        prices.c["valueInMostCommonCurrencyUsed"],
                     )
                 ).label("data"),
-                overall_confidence.c.confidenceRating,
             )
-            .select_from(json_ready)
-            .join(
-                overall_confidence,
-                json_ready.c.name == overall_confidence.c.name,
-            )
-            .join(
-                overall_most_common_currency_used,
-                json_ready.c.name == overall_most_common_currency_used.c.name,
-            )
-            .group_by(json_ready.c.name, overall_confidence.c.confidenceRating)
-        ).cte("timeSeriesData")
+            .select_from(prices)
+            .join(items_per_id, prices.c["gameItemId"] == items_per_id.c["gameItemId"])
+            .where(items_per_id.c["itemCount"] > 1)
+            .group_by(prices.c["gameItemId"])
+            .cte("pricesPerGameItemId")
+        )
 
-        final_query = select(
-            func.min(overall_most_common_currency_used.c.mostCommonCurrencyUsed).label(
-                "mostCommonCurrencyUsed"
-            ),
-            func.json_agg(
-                func.json_build_object(
-                    "name",
-                    time_series_data.c.name,
-                    "data",
-                    time_series_data.c.data,
-                    "confidenceRating",
-                    time_series_data.c.confidenceRating,
+        linked_prices = (
+            select(
+                prices.c["league"],
+                func.json_agg(
+                    func.json_build_object(
+                        "gameItemId",
+                        prices.c["gameItemId"],
+                        "data",
+                        prices_per_game_item_id.c["data"],
+                    )
+                ).label("linkedPrices"),
+            )
+            .select_from(prices_per_game_item_id)
+            .join(
+                prices,
+                prices_per_game_item_id.c["gameItemId"] == prices.c["gameItemId"],
+            )
+            .group_by(prices.c["league"])
+            .cte("linkedPrices")
+        )
+
+        unlinked_prices = (
+            select(
+                prices.c["league"],
+                func.json_agg(
+                    func.json_build_object(
+                        "hoursSinceLaunch",
+                        prices.c["createdHoursSinceLaunch"],
+                        "valueInChaos",
+                        prices.c["valueInChaos"],
+                        "valueInMostCommonCurrencyUsed",
+                        prices.c["valueInMostCommonCurrencyUsed"],
+                    )
+                ).label("unlinkedPrices"),
+            )
+            .select_from(prices)
+            .join(items_per_id, prices.c["gameItemId"] == items_per_id.c["gameItemId"])
+            .where(
+                or_(
+                    prices.c["gameItemId"].is_(None),
+                    items_per_id.c["itemCount"] == 1,
                 )
-            ).label("data"),
+            )
+            .group_by(prices.c["league"])
+            .cte("unlinkedPrices")
+        )
+
+        league_data = (
+            select(
+                literal(0).label("join_variable"),
+                linked_prices.c["league"],
+                linked_prices.c["linkedPrices"],
+                unlinked_prices.c["unlinkedPrices"],
+            )
+            .select_from(linked_prices)
+            .join(
+                unlinked_prices,
+                linked_prices.c["league"] == unlinked_prices.c["league"],
+            )
+            .cte("leagueData")
+        )
+
+        final_query = (
+            select(
+                overall_most_common_currency_used.c["mostCommonCurrencyUsed"],
+                func.json_agg(
+                    func.json_build_object(
+                        "league",
+                        league_data.c["league"],
+                        "linkedPrices",
+                        league_data.c["linkedPrices"],
+                        "unlinkedPrices",
+                        league_data.c["unlinkedPrices"],
+                    )
+                ).label("data"),
+            )
+            .select_from(overall_most_common_currency_used)
+            .join(
+                league_data,
+                overall_most_common_currency_used.c["join_variable"]
+                == league_data.c["join_variable"],
+            )
+            .group_by(overall_most_common_currency_used.c["mostCommonCurrencyUsed"])
         )
 
         return final_query
