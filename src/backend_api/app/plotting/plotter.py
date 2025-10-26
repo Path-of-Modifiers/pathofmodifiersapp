@@ -451,10 +451,10 @@ class IdentifiedPlotter(_BasePlotter):
 
         most_common = (
             select(
-                base_query.c.tradeName.label("mostCommonTradeName"),
-                func.count(base_query.c.tradeName).label("nameCount"),
+                base_query.c["tradeName"].label("mostCommonTradeName"),
+                func.count(base_query.c["tradeName"]).label("nameCount"),
             )
-            .group_by(base_query.c.league, base_query.c.tradeName)
+            .group_by(base_query.c["league"], base_query.c["tradeName"])
             .order_by(desc("nameCount"))  # Can use literal_column in complex cases
             .limit(1)
             .cte("mostCommon")
@@ -462,58 +462,58 @@ class IdentifiedPlotter(_BasePlotter):
 
         most_common_ids = (
             select(
-                base_query.c.createdHoursSinceLaunch,
-                func.max(base_query.c.currencyId).label("mostCommonCurrencyId"),
+                base_query.c["createdHoursSinceLaunch"],
+                func.max(base_query.c["currencyId"]).label("mostCommonCurrencyId"),
             )
             .where(
-                base_query.c.tradeName
-                == select(most_common.c.mostCommonTradeName).scalar_subquery()
+                base_query.c["tradeName"]
+                == select(most_common.c["mostCommonTradeName"]).scalar_subquery()
             )
-            .group_by(base_query.c.createdHoursSinceLaunch)
+            .group_by(base_query.c["createdHoursSinceLaunch"])
             .cte("mostCommonIds")
         )
 
         most_common_prices = (
             select(
-                base_query.c.createdHoursSinceLaunch,
-                func.min(base_query.c.valueInChaos).label("mostCommonValueInChaos"),
-                func.min(base_query.c.tradeName).label("mostCommonCurrencyUsed"),
+                base_query.c["createdHoursSinceLaunch"],
+                func.min(base_query.c["valueInChaos"]).label("mostCommonValueInChaos"),
+                func.min(base_query.c["tradeName"]).label("mostCommonCurrencyUsed"),
             )
             .select_from(
                 base_query.join(
                     most_common_ids,
                     and_(
-                        base_query.c.createdHoursSinceLaunch
-                        == most_common_ids.c.createdHoursSinceLaunch,
-                        base_query.c.currencyId
-                        == most_common_ids.c.mostCommonCurrencyId,
+                        base_query.c["createdHoursSinceLaunch"]
+                        == most_common_ids.c["createdHoursSinceLaunch"],
+                        base_query.c["currencyId"]
+                        == most_common_ids.c["mostCommonCurrencyId"],
                     ),
                 )
             )
-            .group_by(base_query.c.createdHoursSinceLaunch)
+            .group_by(base_query.c["createdHoursSinceLaunch"])
             .cte("mostCommonPrices")
         )
 
         prices = (
             select(
-                base_query.c.createdHoursSinceLaunch,
-                base_query.c.league,
-                base_query.c.gameItemId,
-                (base_query.c.currencyAmount * base_query.c.valueInChaos).label(
+                base_query.c["createdHoursSinceLaunch"],
+                base_query.c["league"],
+                base_query.c["gameItemId"],
+                (base_query.c["currencyAmount"] * base_query.c["valueInChaos"]).label(
                     "valueInChaos"
                 ),
                 (
-                    base_query.c.currencyAmount
-                    * base_query.c.valueInChaos
-                    / most_common_prices.c.mostCommonValueInChaos
+                    base_query.c["currencyAmount"]
+                    * base_query.c["valueInChaos"]
+                    / most_common_prices.c["mostCommonValueInChaos"]
                 ).label("valueInMostCommonCurrencyUsed"),
-                most_common_prices.c.mostCommonCurrencyUsed,
+                most_common_prices.c["mostCommonCurrencyUsed"],
             )
             .select_from(base_query)
             .join(
                 most_common_prices,
-                base_query.c.createdHoursSinceLaunch
-                == most_common_prices.c.createdHoursSinceLaunch,
+                base_query.c["createdHoursSinceLaunch"]
+                == most_common_prices.c["createdHoursSinceLaunch"],
             )
             .cte("prices")
         )
@@ -745,7 +745,7 @@ class UnidentifiedPlotter(_BasePlotter):
 
         calc_value = select(
             base_query,
-            (base_query.c.currencyAmount * base_query.c.valueInChaos).label(
+            (base_query.c["currencyAmount"] * base_query.c["valueInChaos"]).label(
                 "itemValueInChaos"
             ),
         ).cte("calcValue")
@@ -755,31 +755,32 @@ class UnidentifiedPlotter(_BasePlotter):
             func.rank()
             .over(
                 partition_by=[
-                    calc_value.c.createdHoursSinceLaunch,
-                    calc_value.c.league,
+                    calc_value.c["createdHoursSinceLaunch"],
+                    calc_value.c["league"],
                 ],
-                order_by=calc_value.c.itemValueInChaos.asc(),
+                order_by=calc_value.c["itemValueInChaos"].asc(),
             )
             .label("cheap"),
         ).cte("rankedCheap")
 
         final_query = (
             select(
-                ranked_cheap.c.createdHoursSinceLaunch.label("hoursSinceLaunch"),
-                ranked_cheap.c.league,
-                (ranked_cheap.c.currencyAmount * ranked_cheap.c.itemValueInChaos).label(
-                    "valueInChaos"
-                ),
-                ranked_cheap.c.currencyAmount.label("valueInMostCommonCurrencyUsed"),
-                ranked_cheap.c.tradeName.label("mostCommonCurrencyUsed"),
+                ranked_cheap.c["createdHoursSinceLaunch"].label("hoursSinceLaunch"),
+                ranked_cheap.c["league"],
+                (
+                    ranked_cheap.c["currencyAmount"]
+                    * ranked_cheap.c["itemValueInChaos"]
+                ).label("valueInChaos"),
+                ranked_cheap.c["currencyAmount"].label("valueInMostCommonCurrencyUsed"),
+                ranked_cheap.c["tradeName"].label("mostCommonCurrencyUsed"),
                 case(
-                    (ranked_cheap.c.nItems < 10, "low"),
-                    (ranked_cheap.c.nItems < 15, "medium"),
+                    (ranked_cheap.c["nItems"] < 10, "low"),
+                    (ranked_cheap.c["nItems"] < 15, "medium"),
                     else_="high",
                 ).label("confidence"),
             )
-            .where(ranked_cheap.c.cheap == 1)
-            .order_by(ranked_cheap.c.createdHoursSinceLaunch)
+            .where(ranked_cheap.c["cheap"] == 1)
+            .order_by(ranked_cheap.c["createdHoursSinceLaunch"])
         )
 
         return final_query
