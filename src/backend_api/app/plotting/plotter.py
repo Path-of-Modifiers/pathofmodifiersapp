@@ -517,15 +517,38 @@ class IdentifiedPlotter(_BasePlotter):
             )
             .cte("prices")
         )
+        ranked_prices = select(
+            prices,
+            func.rank()
+            .over(
+                partition_by=prices.c["createdHoursSinceLaunch"],
+                order_by=prices.c["valueInChaos"].asc(),
+            )
+            .label("pos"),
+        ).cte("rankedPrices")
+
+        filtered_prices = (
+            select(
+                ranked_prices.c["createdHoursSinceLaunch"],
+                ranked_prices.c["league"],
+                ranked_prices.c["gameItemId"],
+                ranked_prices.c["valueInChaos"],
+                ranked_prices.c["valueInMostCommonCurrencyUsed"],
+                ranked_prices.c["mostCommonCurrencyUsed"],
+            )
+            .where(ranked_prices.c["pos"] <= 5)
+            .order_by(ranked_prices.c["createdHoursSinceLaunch"])
+            .cte("filteredPrices")
+        )
 
         # overall_most_common_currency_used = (
         overall_most_common_currency_used_unordered = (
             select(
                 literal(0).label("join_variable"),
-                prices.c["mostCommonCurrencyUsed"],
+                filtered_prices.c["mostCommonCurrencyUsed"],
                 func.count().label("currencyCount"),
             )
-            .group_by(prices.c["mostCommonCurrencyUsed"])
+            .group_by(filtered_prices.c["mostCommonCurrencyUsed"])
             .cte("overallMostCommonCurrencyUsedUnordered")
         )
 
@@ -539,39 +562,42 @@ class IdentifiedPlotter(_BasePlotter):
         )
 
         items_per_id = (
-            select(prices.c["gameItemId"], func.count().label("itemCount"))
-            .group_by(prices.c["gameItemId"])
+            select(filtered_prices.c["gameItemId"], func.count().label("itemCount"))
+            .group_by(filtered_prices.c["gameItemId"])
             .cte("itemsPerId")
         )
 
         prices_per_game_item_id = (
             select(
-                prices.c["gameItemId"],
+                filtered_prices.c["gameItemId"],
                 func.json_agg(
                     func.json_build_object(
                         "hoursSinceLaunch",
-                        prices.c["createdHoursSinceLaunch"],
+                        filtered_prices.c["createdHoursSinceLaunch"],
                         "valueInChaos",
-                        prices.c["valueInChaos"],
+                        filtered_prices.c["valueInChaos"],
                         "valueInMostCommonCurrencyUsed",
-                        prices.c["valueInMostCommonCurrencyUsed"],
+                        filtered_prices.c["valueInMostCommonCurrencyUsed"],
                     )
                 ).label("data"),
             )
-            .select_from(prices)
-            .join(items_per_id, prices.c["gameItemId"] == items_per_id.c["gameItemId"])
+            .select_from(filtered_prices)
+            .join(
+                items_per_id,
+                filtered_prices.c["gameItemId"] == items_per_id.c["gameItemId"],
+            )
             .where(items_per_id.c["itemCount"] > 1)
-            .group_by(prices.c["gameItemId"])
+            .group_by(filtered_prices.c["gameItemId"])
             .cte("pricesPerGameItemId")
         )
 
         linked_prices = (
             select(
-                prices.c["league"],
+                filtered_prices.c["league"],
                 func.json_agg(
                     func.json_build_object(
                         "gameItemId",
-                        prices.c["gameItemId"],
+                        filtered_prices.c["gameItemId"],
                         "data",
                         prices_per_game_item_id.c["data"],
                     )
@@ -579,36 +605,40 @@ class IdentifiedPlotter(_BasePlotter):
             )
             .select_from(prices_per_game_item_id)
             .join(
-                prices,
-                prices_per_game_item_id.c["gameItemId"] == prices.c["gameItemId"],
+                filtered_prices,
+                prices_per_game_item_id.c["gameItemId"]
+                == filtered_prices.c["gameItemId"],
             )
-            .group_by(prices.c["league"])
+            .group_by(filtered_prices.c["league"])
             .cte("linkedPrices")
         )
 
         unlinked_prices = (
             select(
-                prices.c["league"],
+                filtered_prices.c["league"],
                 func.json_agg(
                     func.json_build_object(
                         "hoursSinceLaunch",
-                        prices.c["createdHoursSinceLaunch"],
+                        filtered_prices.c["createdHoursSinceLaunch"],
                         "valueInChaos",
-                        prices.c["valueInChaos"],
+                        filtered_prices.c["valueInChaos"],
                         "valueInMostCommonCurrencyUsed",
-                        prices.c["valueInMostCommonCurrencyUsed"],
+                        filtered_prices.c["valueInMostCommonCurrencyUsed"],
                     )
                 ).label("unlinkedPrices"),
             )
-            .select_from(prices)
-            .join(items_per_id, prices.c["gameItemId"] == items_per_id.c["gameItemId"])
+            .select_from(filtered_prices)
+            .join(
+                items_per_id,
+                filtered_prices.c["gameItemId"] == items_per_id.c["gameItemId"],
+            )
             .where(
                 or_(
-                    prices.c["gameItemId"].is_(None),
+                    filtered_prices.c["gameItemId"].is_(None),
                     items_per_id.c["itemCount"] == 1,
                 )
             )
-            .group_by(prices.c["league"])
+            .group_by(filtered_prices.c["league"])
             .cte("unlinkedPrices")
         )
 
