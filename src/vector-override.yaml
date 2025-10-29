@@ -3,6 +3,10 @@ api:
   address: 0.0.0.0:8686
 
 sources:
+  host:
+    type: host_metrics
+    scrape_interval_secs: 15
+
   src-backend-1:
     type: docker_logs
     include_images:
@@ -15,6 +19,13 @@ sources:
     docker_host: unix:///var/run/docker.sock
 
 transforms:
+  add_host_tag:
+    type: remap
+    inputs:
+      - host
+    source: |-
+      .host = parse_syslog!(.hostname)
+
   transform_docker_logs:
     type: remap
     inputs:
@@ -56,7 +67,8 @@ transforms:
 sinks:
   console:
     inputs:
-      - transform_docker_logs
+      - add_host_tag
+      #- transform_docker_logs
     target: stdout
     type: console
     encoding:
