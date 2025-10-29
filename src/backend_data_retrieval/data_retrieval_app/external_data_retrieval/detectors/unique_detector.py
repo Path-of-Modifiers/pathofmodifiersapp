@@ -25,6 +25,21 @@ class UniqueDetector(DetectorBase):
         return df
 
 
+class UniqueFoulbornDetector(UniqueDetector):
+    def _check_if_wanted(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Uses the icon to identify which unique it is, then saving that name.
+        If the name attribute still has a length of 0 it means no matching unique
+        was found.
+        """
+        if "mutated" not in df.columns:
+            return pd.DataFrame(columns=df.columns)
+
+        df = df.loc[df["mutated"]]
+
+        return df
+
+
 class UniqueUnidentifiedDetector(UniqueDetector):
     """
     Notes:
