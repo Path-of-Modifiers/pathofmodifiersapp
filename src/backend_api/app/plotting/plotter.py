@@ -565,6 +565,7 @@ class IdentifiedPlotter(_BasePlotter):
 
         items_per_id = (
             select(filtered_prices.c["gameItemId"], func.count().label("itemCount"))
+            .where(filtered_prices.c["gameItemId"] != "unlinked")
             .group_by(filtered_prices.c["gameItemId"])
             .cte("itemsPerId")
         )
