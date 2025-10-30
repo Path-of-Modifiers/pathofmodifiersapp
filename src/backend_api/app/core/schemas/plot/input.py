@@ -49,12 +49,14 @@ class PlotQuery(BasePlotQuery):
     "Plots for items with or without modifiers"
 
     wantedModifiers: list[list[WantedModifier]] | None = None
+    dataPointsPerHour: int = 5
 
 
 class IdentifiedPlotQuery(BasePlotQuery):
     "Plots for items with modifiers"
 
     wantedModifiers: list[list[WantedModifier]]
+    dataPointsPerHour: int = 5
 
 
 class UnidentifiedPlotQuery(BasePlotQuery):

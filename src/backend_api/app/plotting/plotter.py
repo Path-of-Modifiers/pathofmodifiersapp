@@ -538,7 +538,7 @@ class IdentifiedPlotter(_BasePlotter):
                 ranked_prices.c["valueInMostCommonCurrencyUsed"],
                 ranked_prices.c["mostCommonCurrencyUsed"],
             )
-            .where(ranked_prices.c["pos"] <= 5)
+            .where(ranked_prices.c["pos"] <= query.dataPointsPerHour)
             .order_by(ranked_prices.c["createdHoursSinceLaunch"])
             .cte("filteredPrices")
         )
