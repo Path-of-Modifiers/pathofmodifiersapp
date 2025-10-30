@@ -498,7 +498,9 @@ class IdentifiedPlotter(_BasePlotter):
             select(
                 base_query.c["createdHoursSinceLaunch"],
                 base_query.c["league"],
-                base_query.c["gameItemId"],
+                func.coalesce(base_query.c["gameItemId"], "unlinked").label(
+                    "gameItemId"
+                ),
                 (base_query.c["currencyAmount"] * base_query.c["valueInChaos"]).label(
                     "valueInChaos"
                 ),
@@ -634,7 +636,7 @@ class IdentifiedPlotter(_BasePlotter):
             )
             .where(
                 or_(
-                    filtered_prices.c["gameItemId"].is_(None),
+                    filtered_prices.c["gameItemId"] == "unlinked",
                     items_per_id.c["itemCount"] == 1,
                 )
             )
