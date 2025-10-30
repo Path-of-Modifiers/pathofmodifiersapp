@@ -32,6 +32,7 @@ class PoEAPIDataTransformerBase:
         """
         self.item_columns = [
             "itemId",
+            "id",
             "name",
             "league",
             "baseType",
@@ -144,8 +145,8 @@ class PoEAPIDataTransformerBase:
         if "extended.suffixes" in item_df.columns:
             rename_extended_map["extended.suffixes"] = "suffixes"
 
-        if rename_extended_map:
-            item_df = item_df.rename(columns=rename_extended_map)
+        rename_map = {**rename_extended_map, "id": "gameItemId"}
+        item_df = item_df.rename(columns=rename_map)
 
         stash_series = item_df["stash"].str.split(" ")
         currency_series = item_df["note"].str.split(" ")
@@ -192,6 +193,7 @@ class PoEAPIDataTransformerBase:
             dont_drop_columns = self._item_table_columns_to_not_drop
         except AttributeError:
             dont_drop_columns = {
+                "gameItemId",
                 "name",
                 "league",
                 "itemBaseTypeId",

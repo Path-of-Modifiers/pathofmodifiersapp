@@ -19,6 +19,7 @@ class _BaseItem(_pydantic.BaseModel):
     itemBaseTypeId: int
     ilvl: int
     rarity: str
+    gameItemId: str | None = None
     identified: bool = True
     currencyAmount: float | None = None
     currencyId: int | None = None
