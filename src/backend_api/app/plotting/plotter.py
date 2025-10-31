@@ -565,7 +565,6 @@ class IdentifiedPlotter(_BasePlotter):
 
         items_per_id = (
             select(filtered_prices.c["gameItemId"], func.count().label("itemCount"))
-            .where(filtered_prices.c["gameItemId"] != "unlinked")
             .group_by(filtered_prices.c["gameItemId"])
             .cte("itemsPerId")
         )
@@ -589,7 +588,12 @@ class IdentifiedPlotter(_BasePlotter):
                 items_per_id,
                 filtered_prices.c["gameItemId"] == items_per_id.c["gameItemId"],
             )
-            .where(items_per_id.c["itemCount"] > 1)
+            .where(
+                and_(
+                    filtered_prices.c["gameItemId"] != "unlinked",
+                    items_per_id.c["itemCount"] > 1,
+                )
+            )
             .group_by(filtered_prices.c["gameItemId"])
             .cte("pricesPerGameItemId")
         )
@@ -648,14 +652,15 @@ class IdentifiedPlotter(_BasePlotter):
         league_data = (
             select(
                 literal(0).label("join_variable"),
-                linked_prices.c["league"],
+                unlinked_prices.c["league"],
                 linked_prices.c["linkedPrices"],
                 unlinked_prices.c["unlinkedPrices"],
             )
-            .select_from(linked_prices)
+            .select_from(unlinked_prices)
             .join(
-                unlinked_prices,
-                linked_prices.c["league"] == unlinked_prices.c["league"],
+                linked_prices,
+                unlinked_prices.c["league"] == linked_prices.c["league"],
+                full=True,
             )
             .cte("leagueData")
         )

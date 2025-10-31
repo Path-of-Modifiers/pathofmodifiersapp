@@ -14,8 +14,8 @@ class LinkedPrices(_pydantic.BaseModel):
 
 class LeagueData(_pydantic.BaseModel):
     league: str
-    linkedPrices: list[LinkedPrices]
-    unlinkedPrices: list[Datum]
+    linkedPrices: list[LinkedPrices] | None = None
+    unlinkedPrices: list[Datum] | None = None
 
 
 class PlotData(_pydantic.BaseModel):
