@@ -63,5 +63,8 @@ export const $PlotQuery = {
                 type: 'null',
             }],
         },
+        dataPointsPerHour: {
+            type: 'number',
+        },
     },
 } as const;

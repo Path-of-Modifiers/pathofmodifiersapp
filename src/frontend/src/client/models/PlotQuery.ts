@@ -15,5 +15,6 @@ export type PlotQuery = {
     end?: (number | null);
     start?: (number | null);
     wantedModifiers?: (Array<Array<WantedModifier>> | null);
+    dataPointsPerHour?: number;
 };
 

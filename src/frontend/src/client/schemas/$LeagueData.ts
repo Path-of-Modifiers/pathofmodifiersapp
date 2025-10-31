@@ -9,18 +9,26 @@ export const $LeagueData = {
             isRequired: true,
         },
         linkedPrices: {
-            type: 'array',
-            contains: {
-                type: 'LinkedPrices',
-            },
-            isRequired: true,
+            type: 'any-of',
+            contains: [{
+                type: 'array',
+                contains: {
+                    type: 'LinkedPrices',
+                },
+            }, {
+                type: 'null',
+            }],
         },
         unlinkedPrices: {
-            type: 'array',
-            contains: {
-                type: 'Datum',
-            },
-            isRequired: true,
+            type: 'any-of',
+            contains: [{
+                type: 'array',
+                contains: {
+                    type: 'Datum',
+                },
+            }, {
+                type: 'null',
+            }],
         },
     },
 } as const;
