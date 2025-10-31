@@ -521,7 +521,7 @@ class IdentifiedPlotter(_BasePlotter):
         )
         ranked_prices = select(
             prices,
-            func.rank()
+            func.row_number()
             .over(
                 partition_by=prices.c["createdHoursSinceLaunch"],
                 order_by=prices.c["valueInChaos"].asc(),
@@ -566,6 +566,7 @@ class IdentifiedPlotter(_BasePlotter):
         items_per_id = (
             select(filtered_prices.c["gameItemId"], func.count().label("itemCount"))
             .group_by(filtered_prices.c["gameItemId"])
+            .where(filtered_prices.c["gameItemId"] != "unlinked")
             .cte("itemsPerId")
         )
 
@@ -638,6 +639,7 @@ class IdentifiedPlotter(_BasePlotter):
             .join(
                 items_per_id,
                 filtered_prices.c["gameItemId"] == items_per_id.c["gameItemId"],
+                isouter=True,
             )
             .where(
                 or_(
