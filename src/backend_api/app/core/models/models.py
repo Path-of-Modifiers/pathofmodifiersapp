@@ -84,7 +84,8 @@ class Item(_ItemBase, Base):
     # Hypertable
     # For hypertable specs, see alembic revision `cc29b89156db'
     __tablename__ = "item"
-
+    # TODO do something about None and make it not nullable
+    gameItemId: Mapped[str | None] = mapped_column(Text)
     prefixes: Mapped[int | None] = mapped_column(SmallInteger)
     suffixes: Mapped[int | None] = mapped_column(SmallInteger)
     foilVariation: Mapped[int | None] = mapped_column(SmallInteger)
