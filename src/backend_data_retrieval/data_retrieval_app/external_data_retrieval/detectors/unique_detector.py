@@ -37,6 +37,7 @@ class UniqueFoulbornDetector(UniqueDetector):
 
         df = df.loc[df["mutated"]]
 
+        df = df.loc[df["name"].str.len() != 0]
         return df
 
 
