@@ -1,3 +1,5 @@
+from typing import Any
+
 from pydantic import EmailStr
 
 from app.core.schemas.message import Message
@@ -8,7 +10,7 @@ from app.core.schemas.user import (
 
 def get_delete_return_msg(
     model_table_name: str,
-    filter: dict[str, str],
+    filter: dict[str, Any],
 ) -> Message:
     """Returns a message indicating the object was deleted successfully.
 

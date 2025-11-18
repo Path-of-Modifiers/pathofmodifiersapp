@@ -8,6 +8,12 @@ from .modifier import (
     ModifierCreate,
     ModifierUpdate,
 )
+from .carantene_modifier import (
+    CaranteneModifier,
+    CaranteneModifierInDB,
+    CaranteneModifierCreate,
+    CaranteneModifierUpdate,
+)
 from .item_base_type import (
     ItemBaseType,
     ItemBaseTypeInDB,
