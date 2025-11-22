@@ -103,8 +103,20 @@ class PoEAPIDataTransformerBase:
         represented by `price` and `b/o` respectively.
         """
 
-        def transform_base_types(element):
-            return item_base_types[element]
+        missing_base_type_rows = []
+
+        def transform_base_types(row):
+            base_type = row["baseType"]
+            if base_type not in item_base_types:
+                log_row = (
+                    "name",
+                    row["name"],
+                    "baseType",
+                    base_type,
+                )
+                missing_base_type_rows.append(log_row)
+                return None
+            return item_base_types[base_type]
 
         def get_currency_amount(element):
             if len(element) == 3:
@@ -128,8 +140,12 @@ class PoEAPIDataTransformerBase:
                         ] = True
                 return influence_dict
 
-        base_type_series = item_df["baseType"]
-        item_df["itemBaseTypeId"] = base_type_series.apply(transform_base_types)
+        item_df["itemBaseTypeId"] = item_df.apply(transform_base_types, axis=1)
+        if missing_base_type_rows:
+            logger.critical(
+                f"Missing base types registered: {set(missing_base_type_rows)}"
+            )
+            raise ValueError("Missing base types registered")
 
         influence_columns = [
             column for column in item_df.columns if "influences" in column
@@ -427,7 +443,7 @@ class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
         A similiar process to creating the item table, only this time the
         relevant column contains a list and not a JSON-object
         """
-        item_modifier_columns = ["name", "explicitMods"]
+        item_modifier_columns = ["name", "explicitMods", "mutated"]
         item_modifier_df = df.loc[
             self.price_found_mask,
             item_modifier_columns,

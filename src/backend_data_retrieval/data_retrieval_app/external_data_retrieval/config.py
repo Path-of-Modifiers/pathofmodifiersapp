@@ -28,21 +28,26 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER: str
     FIRST_SUPERUSER_PASSWORD: str
     CURRENT_SOFTCORE_LEAGUE: str
+
     @computed_field  # type: ignore[prop-decorator]
     @property
     def CURRENT_HARDCORE_LEAGUE(self) -> str:
         return f"Hardcore {self.CURRENT_SOFTCORE_LEAGUE}"
+
     POE_PUBLIC_STASHES_AUTH_TOKEN: str
     OAUTH_CLIENT_ID: str
     OAUTH_CLIENT_SECRET: str
 
     MINI_BATCH_SIZE: int = 30
-    N_CHECKPOINTS_PER_TRANSFORMATION: int = 10
+    N_CHECKPOINTS_PER_TRANSFORMATION: int = 1
 
     TIME_BETWEEN_RESTART: int = 3600
     MAX_TIME_PER_MINI_BATCH: int = 3 * 60
 
     LEAGUE_LAUNCH_TIME: str
+
+    LOAD_INITIAL_DATA: bool = False
+    CHECK_CARANTENE_MODIFIERS: bool = True
 
     @computed_field  # type: ignore[prop-decorator]
     @property
