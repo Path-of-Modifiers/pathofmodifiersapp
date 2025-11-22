@@ -152,8 +152,6 @@ services:
     env_file:
       - .env
     environment:
-      - GF_SECURITY_ADMIN_USER=${GRAFANA_USERNAME?Grafana username not set}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD?Grafan password not set}
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_AUTH_ANONYMOUS_ENABLED=false
       - GF_AUTH_BASIC_ENABLED=false
