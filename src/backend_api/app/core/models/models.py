@@ -160,11 +160,11 @@ class Modifier(Base):
     corrupted: Mapped[bool | None] = mapped_column(Boolean)
     enchanted: Mapped[bool | None] = mapped_column(Boolean)
     veiled: Mapped[bool | None] = mapped_column(Boolean)
-    # mutated: Mapped[bool | None] = mapped_column(Boolean)
+    mutated: Mapped[bool | None] = mapped_column(Boolean)
     static: Mapped[bool | None] = mapped_column(Boolean)
-    # dynamicallyCreated: Mapped[bool | None] = mapped_column(
-    #    Boolean
-    # )  # Modifier got created during extract of items
+    dynamicallyCreated: Mapped[bool | None] = mapped_column(
+        Boolean
+    )  # Modifier got created during ETL
     explicit: Mapped[bool | None] = mapped_column(Boolean)
     effect: Mapped[str] = mapped_column(Text, nullable=False)
     relatedUniques: Mapped[str | None] = mapped_column(Text)

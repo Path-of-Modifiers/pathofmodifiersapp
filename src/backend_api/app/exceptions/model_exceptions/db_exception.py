@@ -107,7 +107,7 @@ class DbObjectDoesNotExistError(PathOfModifiersAPIError):
         self,
         *,
         model_table_name: str,
-        filter: dict[str, Any] | None = None,
+        filter: dict[str, Any] | list[dict[str, Any]] | None = None,
         function_name: str | None = "Unknown function",
         class_name: str | None = None,
         status_code: int | None = status.HTTP_404_NOT_FOUND,

@@ -10,7 +10,7 @@ from app.core.schemas.user import (
 
 def get_delete_return_msg(
     model_table_name: str,
-    filter: dict[str, Any],
+    filter: dict[str, Any] | list[Any],
 ) -> Message:
     """Returns a message indicating the object was deleted successfully.
 
@@ -23,9 +23,11 @@ def get_delete_return_msg(
         str: Message indicating the object was deleted successfully.
     """
 
-    return Message(
-        message=f"{model_table_name} with filter {filter} was deleted successfully"
-    )
+    if isinstance(filter, list):
+        message = f"{model_table_name} with total filter: {len(filter)} and 10 samples: {filter[:10]} was deleted successfully"
+    else:
+        message = f"{model_table_name} with filter {filter} was deleted successfully"
+    return Message(message=message)
 
 
 def get_user_active_change_msg(username: str, active: bool) -> Message:

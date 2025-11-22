@@ -46,3 +46,7 @@ class CaranteneModifier(CaranteneModifierInDBBase):
 # Properties stored in DB
 class CaranteneModifierInDB(CaranteneModifierInDBBase):
     pass
+
+
+class CaranteneModifiersPK(_pydantic.BaseModel):
+    caranteneModifierId: int
