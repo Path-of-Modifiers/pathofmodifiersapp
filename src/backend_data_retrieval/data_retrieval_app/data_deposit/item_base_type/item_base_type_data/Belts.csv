@@ -1,0 +1,8 @@
+# Source: NA
+# Note: Only contains bases relevant to the uniques we are tracking
+baseType,category,subCategory,relatedUniques
+"Chain Belt","belt","belt",
+"Heavy Belt","belt","belt",
+"Leather Belt","belt","belt",
+"Cloth Belt","belt","belt",
+
