@@ -56,16 +56,21 @@ def _diff_chunks(a: list[str], b: list[str]) -> list[tuple[str, str, int]]:
     return diffs
 
 
-def _build_text_rolls(df: pd.DataFrame, min_overlap=0.8, min_words=4, min_count=10):
+def _build_text_rolls(
+    df: pd.DataFrame, min_overlap=0.65, min_days_since_created=3, min_words=3
+):
     dfx = df.copy()
+
     dfx["relatedUnique"] = dfx["relatedUnique"].apply(
         lambda x: x if isinstance(x, list) else [x]
     )
     dfx = dfx.explode("relatedUnique", ignore_index=True)
     dfx["textRolls"] = [[] for _ in range(len(dfx))]
+    dfx["numForTextReplaced"] = dfx["effect"].str.replace(NUM_PATTERN, "d#", regex=True)
 
-    counts = dfx.groupby(["relatedUnique", "effect"])["relatedUnique"].transform("size")
-    dfx = dfx[counts >= min_count].copy().reset_index(drop=True)
+    dfx["createdAt"] = pd.to_datetime(dfx["createdAt"])
+    cutoff = pd.Timestamp.now(tz="UTC") - pd.Timedelta(days=min_days_since_created)
+    dfx = dfx[dfx["createdAt"] <= cutoff].copy().reset_index(drop=True)
 
     if dfx.empty:
         raise EmptyCarModDF
@@ -274,6 +279,7 @@ def _consistent_values_from_counter(
             v = next(iter(vals))
             v = _coerce_numeric(v)
             if isinstance(v, int | float):
+                v = int(v) if v.is_integer() else float(v)
                 result[pos] = v
             else:
                 # Not numeric after all – treat as inconsistent
