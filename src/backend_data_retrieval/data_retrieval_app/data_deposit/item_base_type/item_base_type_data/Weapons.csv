@@ -2,4 +2,32 @@
 # Note: Only contains bases relevant to the uniques we are tracking
 baseType,category,subCategory,relatedUniques
 "Vaal Rapier","weapon","one-handed sword","Paradoxica"
+"Midnight Blade","weapon","one-handed sword"
 "Serpentine Staff","weapon","warstaff","Cane of Kulemak"
+"Ranger Bow","weapon","bow",
+"Citadel Bow","weapon","bow",
+"Short Bow","weapon","bow",
+"Assassin Bow","weapon","bow",
+"Terror Claw","weapon","claw",
+"Imperial Claw","weapon","claw",
+"Timeworn Claw","weapon","claw",
+"Fiend Dagger","weapon","dagger",
+"Fishing Rod","weapon","fishing rod"
+"Tomahawk","weapon","one-handed axe"
+"Royal Axe","weapon","one-handed axe"
+"Ornate Mace","weapon","one-handed mace"
+"Gavel","weapon","one-handed mace"
+"Cutlass","weapon","one-handed sword"
+"Platinum Sceptre","weapon","sceptre"
+"Serpentine Staff","weapon","staff",
+"Vaal Axe","weapon","two-handed axe",
+"Jasper Chopper","weapon","two-handed axe",
+"Terror Maul","weapon","two-handed mace",
+"Steelhead","weapon","two-handed mace",
+"Etched Greatsword","weapon","two-handed sword",
+"Lion Sword","weapon","two-handed sword",
+"Reaver Sword","weapon","two-handed sword",
+"Goat's Horn","weapon","wand",
+"Opal Wand","weapon","wand",
+"Calling Wand","weapon","wand",
+"Kinetic Wand","weapon","wand",
