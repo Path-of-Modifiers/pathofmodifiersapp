@@ -1,6 +1,8 @@
 # Source: NA
 # Note: Only contains bases relevant to the uniques we are tracking
 baseType,category,subCategory,relatedUniques
-"Penetrating Arrow Quiver","quiver","quiver"
-"Blunt Arrow Quiver","quiver","quiver"
-"Spike-Point Arrow Quiver","quiver","quiver"
+"Penetrating Arrow Quiver","quiver","quiver",
+"Blunt Arrow Quiver","quiver","quiver",
+"Spike-Point Arrow Quiver","quiver","quiver",
+"Two-Point Arrow Quiver","quiver","quiver",
+"Ornate Quiver","quiver","quiver",

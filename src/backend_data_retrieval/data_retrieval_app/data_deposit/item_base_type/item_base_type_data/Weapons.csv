@@ -2,28 +2,37 @@
 # Note: Only contains bases relevant to the uniques we are tracking
 baseType,category,subCategory,relatedUniques
 "Vaal Rapier","weapon","one-handed sword","Paradoxica"
-"Midnight Blade","weapon","one-handed sword"
+"Cutlass","weapon","one-handed sword",
+"Midnight Blade","weapon","one-handed sword",
+"Eternal Sword","weapon","one-handed sword",
 "Serpentine Staff","weapon","warstaff","Cane of Kulemak"
+"Vile Staff","weapon","warstaff",
+"Military Staff","weapon","warstaff",
 "Ranger Bow","weapon","bow",
 "Citadel Bow","weapon","bow",
 "Short Bow","weapon","bow",
+"Death Bow","weapon","bow",
 "Assassin Bow","weapon","bow",
 "Terror Claw","weapon","claw",
 "Imperial Claw","weapon","claw",
 "Timeworn Claw","weapon","claw",
+"Thresher Claw","weapon","claw",
 "Fiend Dagger","weapon","dagger",
-"Fishing Rod","weapon","fishing rod"
-"Tomahawk","weapon","one-handed axe"
-"Royal Axe","weapon","one-handed axe"
-"Ornate Mace","weapon","one-handed mace"
-"Gavel","weapon","one-handed mace"
-"Cutlass","weapon","one-handed sword"
-"Platinum Sceptre","weapon","sceptre"
+"Fishing Rod","weapon","fishing rod",
+"Tomahawk","weapon","one-handed axe",
+"Royal Axe","weapon","one-handed axe",
+"Ornate Mace","weapon","one-handed mace",
+"Gavel","weapon","one-handed mace",
+"Terror Maul","weapon","two-handed mace",
+"Steelhead","weapon","two-handed mace",
+"Platinum Sceptre","weapon","sceptre",
+"Karui Sceptre","weapon","sceptre",
+"Vaal Sceptre","weapon","sceptre",
 "Serpentine Staff","weapon","staff",
 "Vaal Axe","weapon","two-handed axe",
 "Jasper Chopper","weapon","two-handed axe",
-"Terror Maul","weapon","two-handed mace",
-"Steelhead","weapon","two-handed mace",
+"Karui Chopper","weapon","two-handed axe",
+"Abyssal Axe","weapon","two-handed axe",
 "Etched Greatsword","weapon","two-handed sword",
 "Lion Sword","weapon","two-handed sword",
 "Reaver Sword","weapon","two-handed sword",
@@ -31,3 +40,6 @@ baseType,category,subCategory,relatedUniques
 "Opal Wand","weapon","wand",
 "Calling Wand","weapon","wand",
 "Kinetic Wand","weapon","wand",
+"Somatic Wand","weapon","wand",
+"Prophecy Wand","weapon","wand",
+"Spiraled Wand","weapon","wand",
