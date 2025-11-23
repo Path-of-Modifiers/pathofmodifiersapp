@@ -183,7 +183,6 @@ class ModifierDataDepositor(DataDepositorBase):
             .str.lower()
             .isin(current_modifiers_df["effect"].str.lower())
         )
-
         duplicate_df = new_modifiers_df.loc[duplicate_mask].copy()
         self._update_duplicates(duplicate_df, current_modifiers_df)
         non_duplicate_df = new_modifiers_df.loc[~duplicate_mask].copy()

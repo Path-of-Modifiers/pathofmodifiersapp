@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 26,
+  "id": 2,
   "links": [],
   "panels": [
     {
@@ -55,6 +55,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -70,7 +71,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "red",
@@ -97,11 +98,12 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-79146",
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "datasource": {
@@ -165,6 +167,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -180,7 +183,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "red",
@@ -207,11 +210,12 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-79146",
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "datasource": {
@@ -251,14 +255,15 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 18,
-        "w": 19,
+        "h": 19,
+        "w": 24,
         "x": 0,
         "y": 8
       },
       "id": 2,
       "options": {
         "dedupStrategy": "none",
+        "enableInfiniteScrolling": false,
         "enableLogDetails": true,
         "prettifyLogMessage": false,
         "showCommonLabels": false,
@@ -267,7 +272,7 @@
         "sortOrder": "Ascending",
         "wrapLogMessage": false
       },
-      "pluginVersion": "11.4.0-79146",
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "datasource": {
@@ -292,14 +297,15 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 24,
-        "w": 19,
+        "h": 25,
+        "w": 24,
         "x": 0,
-        "y": 26
+        "y": 27
       },
       "id": 1,
       "options": {
         "dedupStrategy": "none",
+        "enableInfiniteScrolling": false,
         "enableLogDetails": true,
         "prettifyLogMessage": false,
         "showCommonLabels": false,
@@ -308,7 +314,7 @@
         "sortOrder": "Ascending",
         "wrapLogMessage": false
       },
-      "pluginVersion": "11.4.0-79146",
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "direction": "backward",
@@ -332,14 +338,15 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 12,
+        "h": 16,
+        "w": 24,
         "x": 0,
-        "y": 50
+        "y": 52
       },
       "id": 5,
       "options": {
         "dedupStrategy": "none",
+        "enableInfiniteScrolling": false,
         "enableLogDetails": true,
         "prettifyLogMessage": false,
         "showCommonLabels": false,
@@ -348,7 +355,7 @@
         "sortOrder": "Ascending",
         "wrapLogMessage": true
       },
-      "pluginVersion": "11.4.0-79146",
+      "pluginVersion": "12.2.0",
       "targets": [
         {
           "datasource": {
@@ -366,7 +373,7 @@
     }
   ],
   "preload": false,
-  "schemaVersion": 40,
+  "schemaVersion": 42,
   "tags": [],
   "templating": {
     "list": []
@@ -379,6 +386,5 @@
   "timezone": "browser",
   "title": "Backend Data Retrieval",
   "uid": "fe4c6i7cxq5moc",
-  "version": 25,
-  "weekStart": ""
+  "version": 1
 }

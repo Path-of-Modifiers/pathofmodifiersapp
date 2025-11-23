@@ -79,6 +79,8 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
       - REDIS_HOST=cache
       - REDIS_PASSWORD=${REDIS_PASSWORD?Variable not set}
+      - LEAGUE_LAUNCH_TIME=${LEAGUE_LAUNCH_TIME?Variable not set}
+      - CURRENT_SOFTCORE_LEAGUE=${CURRENT_SOFTCORE_LEAGUE?Variable not set}
     build:
       context: ./backend_api
       args:

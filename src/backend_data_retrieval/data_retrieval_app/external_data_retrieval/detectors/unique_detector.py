@@ -1,6 +1,7 @@
 import pandas as pd
 
 from data_retrieval_app.external_data_retrieval.detectors.base import DetectorBase
+from data_retrieval_app.logs.logger import main_logger as logger
 
 
 class UniqueDetector(DetectorBase):
@@ -23,6 +24,22 @@ class UniqueDetector(DetectorBase):
                     self.found_items[name_baseType] = True
 
         return df
+
+
+class UniqueFoulbornDetector(UniqueDetector):
+    def _check_if_wanted(self, df: pd.DataFrame) -> pd.DataFrame:
+        if "mutated" not in df.columns:
+            logger.error("MUTATED NOT IN")
+            return pd.DataFrame(columns=df.columns)
+
+        df_filtered = df[df["mutated"].astype(str) == "True"].loc[
+            df["name"].str.len() != 0
+        ]
+
+        return df_filtered
+
+    def __str__(self):
+        return "Unique Foulborn Detector"
 
 
 class UniqueUnidentifiedDetector(UniqueDetector):
