@@ -164,31 +164,3 @@ async def delete_carantene_modifier(
     return get_delete_return_msg(
         model_table_name=CaranteneModifier.__tablename__, filter=carantene_modifier_map
     ).message
-
-
-@router.delete(
-    "/bulk-delete/",
-    response_model=str,
-    dependencies=[Depends(get_current_active_superuser)],
-)
-async def bulk_delete_carantene_modifier(
-    caranteneModifierIds: list[schemas.CaranteneModifiersPK],
-    db: Session = Depends(get_db),
-):
-    """
-    Delete a list of carantene modifier by list of key "caranteneModifierId" and values.
-
-    Returns a message that the carantene modifier was deleted.
-    """
-    filter = [car_id.caranteneModifierId for car_id in caranteneModifierIds]
-    await CRUD_carantene_modifier.remove(
-        db=db,
-        filter=filter,
-        max_deletion_limit=99999999999,
-        deletion_key="caranteneModifierId",
-    )
-
-    return get_delete_return_msg(
-        model_table_name=CaranteneModifier.__tablename__,
-        filter=caranteneModifierIds,
-    ).message
