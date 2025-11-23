@@ -1,4 +1,5 @@
 import re
+from datetime import UTC, datetime
 from difflib import SequenceMatcher
 from typing import Any
 
@@ -57,8 +58,8 @@ def _diff_chunks(a: list[str], b: list[str]) -> list[tuple[str, str, int]]:
 
 
 def _build_text_rolls(
-    df: pd.DataFrame, min_overlap=0.65, min_days_since_created=3, min_words=3
-):
+    df: pd.DataFrame,
+) -> pd.DataFrame:
     dfx = df.copy()
 
     dfx["relatedUnique"] = dfx["relatedUnique"].apply(
@@ -69,8 +70,6 @@ def _build_text_rolls(
     dfx["numForTextReplaced"] = dfx["effect"].str.replace(NUM_PATTERN, "d#", regex=True)
 
     dfx["createdAt"] = pd.to_datetime(dfx["createdAt"])
-    cutoff = pd.Timestamp.now(tz="UTC") - pd.Timedelta(days=min_days_since_created)
-    dfx = dfx[dfx["createdAt"] <= cutoff].copy().reset_index(drop=True)
 
     if dfx.empty:
         raise EmptyCarModDF
@@ -91,7 +90,7 @@ def _build_text_rolls(
             a_effect_tokens = [
                 t for t in effects_token_map[i] if not skippable_token(t)
             ]
-            if len(a_effect_tokens) < min_words:
+            if len(a_effect_tokens) < settings.MIN_WORDS_CREATE_TEXT_ROLLS:
                 continue
             for j in idxs:
                 if i == j:
@@ -102,7 +101,7 @@ def _build_text_rolls(
                 lcs_ratio = _lcs_len(a_effect_tokens, b_effect_tokens) / max(
                     1, len(a_effect_tokens)
                 )
-                if lcs_ratio >= min_overlap:
+                if lcs_ratio >= settings.MIN_OVERLAP_EFFECT_CREATE_TEXT_ROLLS:
                     diffs = _diff_chunks(a_effect_tokens, b_effect_tokens)
                     if diffs:
                         roll = list(diffs)
@@ -512,7 +511,42 @@ def _transform_carantene_modifier(
     return carantene_modifier_df, carantene_modifier_ids
 
 
-def check_carantene_modifiers() -> None:
+def _get_latest_dynamic_modifier_created_at() -> datetime:
+    url = f"{settings.BACKEND_BASE_URL}/modifier/latest-dynamically-created/"
+    pom_api_headers = get_superuser_token_headers(settings.BACKEND_BASE_URL)
+    try:
+        response = requests.get(url=url, headers=pom_api_headers)
+        response.raise_for_status()
+
+        latest_datetime_str = response.json()
+
+        assert isinstance(latest_datetime_str, str)
+        latest_datetime_str = latest_datetime_str.replace(
+            "+00", "+00:00"
+        )  # why why why
+
+    except requests.HTTPError as e:
+        raise requests.HTTPError(
+            f"POM API HTTP request error, failed to create initial dynamically created modifier, error: {e}"
+        )
+    except Exception as e:
+        raise Exception(
+            f"Failed to create initial dynamically created modifier, error: {e}"
+        )
+
+    return datetime.fromisoformat(latest_datetime_str)
+
+
+def _check_days_since_last_created() -> bool:
+    latest_created_at = _get_latest_dynamic_modifier_created_at()
+    days_since_last_created_at = (datetime.now(UTC) - latest_created_at).days
+    if not days_since_last_created_at > settings.MIN_DAYS_SINCE_DYNAMICALLY_CREATED_AT:
+        raise Exception("DAYS SINCE LAST WAS NOT GOOD ENOUGH")
+        return False
+    return True
+
+
+def _get_carantene_df() -> pd.DataFrame:
     base_url = str(settings.BACKEND_BASE_URL)
     pom_auth_headers = get_superuser_token_headers(base_url)
     get_carantene_response = requests.get(
@@ -528,8 +562,43 @@ def check_carantene_modifiers() -> None:
 
     carantene_df = pd.DataFrame(carantene_dump)
 
+    return carantene_df
+
+
+def _insert_modifiers_from_carantene(
+    carantene_modifier_df: pd.DataFrame, carantene_modifier_ids: list[int]
+) -> None:
+    base_url = str(settings.BACKEND_BASE_URL)
+    pom_auth_headers = get_superuser_token_headers(base_url)
+
+    insert_data(
+        carantene_modifier_df,
+        url=base_url,
+        table_name="modifier",
+        logger=logger,
+        headers=pom_auth_headers,
+        method="post",
+    )
+
+    logger.info(
+        f"Deleting {len(carantene_modifier_ids)} of the old carantene modifiers present"
+    )
+
+    bulk_delete_data(
+        primary_key="caranteneModifierId",
+        primary_key_values=carantene_modifier_ids,
+        table_name="carantene_modifier",
+    )
+
+
+def check_carantene_modifiers() -> None:
+    if not _check_days_since_last_created():
+        return None
+
     # with open("car_df_json_dump.json", "w") as f:
     #    json.dump(carantene_dump, f, indent=4)
+
+    carantene_df = _get_carantene_df()
 
     carantene_modifier_df, carantene_modifier_ids = _transform_carantene_modifier(
         carantene_df
@@ -539,22 +608,23 @@ def check_carantene_modifiers() -> None:
         logger.info(
             f"Inserting {len(carantene_modifier_df)} new modifiers from carantene modifiers"
         )
+        _insert_modifiers_from_carantene(carantene_modifier_df, carantene_modifier_ids)
 
-        insert_data(
-            carantene_modifier_df,
-            url=base_url,
-            table_name="modifier",
-            logger=logger,
-            headers=pom_auth_headers,
-            method="post",
+
+def initial_dynamically_created_modifier() -> None:
+    "Creates an initial dynamically created modifier, if one does not exist in the database"
+
+    url = f"{settings.BACKEND_BASE_URL}/modifier/initial-dynamically-created/"
+    pom_api_headers = get_superuser_token_headers(settings.BACKEND_BASE_URL)
+    try:
+        response = requests.post(url=url, headers=pom_api_headers)
+        response.raise_for_status()
+
+    except requests.HTTPError as e:
+        raise requests.HTTPError(
+            f"POM API HTTP request error, failed to create initial dynamically created modifier, error: {e}"
         )
-
-        logger.info(
-            f"Deleting {len(carantene_modifier_ids)} of the old carantene modifiers present"
-        )
-
-        bulk_delete_data(
-            primary_key="caranteneModifierId",
-            primary_key_values=carantene_modifier_ids,
-            table_name="carantene_modifier",
+    except Exception as e:
+        raise Exception(
+            f"Failed to create initial dynamically created modifier, error: {e}"
         )

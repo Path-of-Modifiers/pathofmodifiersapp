@@ -6,6 +6,7 @@ from data_retrieval_app.data_deposit.item_base_type.item_base_type_data_deposito
 )
 from data_retrieval_app.data_deposit.modifier.carantene_modifier_processor import (
     check_carantene_modifiers,
+    initial_dynamically_created_modifier,
 )
 from data_retrieval_app.data_deposit.modifier.modifier_data_depositor import (
     ModifierDataDepositor,
@@ -27,7 +28,9 @@ def main():
             logger.info(f"Depositing {key} data.")
             data_depositor.deposit_data()
     logger.info("Checking carantene modifiers")
-    check_carantene_modifiers()
+    if settings.CHECK_CARANTENE_MODIFIERS:
+        initial_dynamically_created_modifier()
+        check_carantene_modifiers()
     logger.info("Finished checking carantene modifiers")
     return 0
 
