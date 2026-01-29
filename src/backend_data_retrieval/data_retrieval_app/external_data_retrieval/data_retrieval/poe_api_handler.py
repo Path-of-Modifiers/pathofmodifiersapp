@@ -229,6 +229,7 @@ class PoEAPIHandler:
                 self.url, params={"id": self.next_change_id}
             ) as response:
                 headers = response.headers
+                response.status = 503
                 if response.status >= 300:
                     if response.status == 429:
                         self.skip_program_too_slow = False
@@ -239,6 +240,16 @@ class PoEAPIHandler:
                             f"During the 429 response, these are the headers: {headers}"
                         )
                         await asyncio.sleep(int(headers["Retry-After"]))
+                        waiting_for_next_id_lock.release()
+                        return await self._send_n_recursion_requests(
+                            n, session, waiting_for_next_id_lock, mini_batch_size
+                        )
+                    elif response.status == 503:
+                        # Temporarily unavailable = servers are down
+                        logger.info(
+                            "Received a 503 response, meaning servers are down. Sleeping for 30 seconds"
+                        )
+                        await asyncio.sleep(30)
                         waiting_for_next_id_lock.release()
                         return await self._send_n_recursion_requests(
                             n, session, waiting_for_next_id_lock, mini_batch_size
