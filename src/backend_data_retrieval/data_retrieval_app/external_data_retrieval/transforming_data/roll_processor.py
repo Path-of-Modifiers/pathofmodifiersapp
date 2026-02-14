@@ -1,10 +1,50 @@
 import re
 
 import pandas as pd
+from pydantic import BaseModel, HttpUrl
 
+from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.logs.logger import transform_logger as logger
+from data_retrieval_app.utils import bulk_update_data, insert_data
 
 pd.set_option("display.max_colwidth", None)
+
+
+class ModifierSchema(BaseModel):
+    modifierId: int
+    position: int
+    minRoll: int
+    maxRoll: int
+    implicit: bool
+    explicit: bool
+    delve: bool
+    fractured: bool
+    synthesised: bool
+    unique: bool
+    corrupted: bool
+    enchanted: bool
+    veiled: bool
+    static: bool
+    effect: str
+    relatedUniques: str
+    textRolls: str
+    regex: str
+    dynamicallyCreated: bool
+
+
+class CaranteneModifierSchema(BaseModel):
+    effect: str
+    relatedUnique: str
+    implicit: str
+    explicit: str
+    delve: str
+    fractured: str
+    synthesised: str
+    unique: str
+    corrupted: str
+    enchanted: str
+    veiled: str
+    mutated: str
 
 
 class RollProcessor:
@@ -39,6 +79,37 @@ class RollProcessor:
 
         return df
 
+    def _update_related_unique_modifier(self, item_modifier_df: pd.DataFrame) -> None:
+        if "relatedUniques" not in item_modifier_df.columns:
+            item_modifier_df["relatedUniques"] = ""
+        item_modifier_df["relatedUniques"] = (
+            item_modifier_df["relatedUniques"].fillna("").astype(str)
+        )
+
+        item_modifier_df["related_unique_contains"] = item_modifier_df.apply(
+            lambda row: row["name"] in row["relatedUniques"].split("|"), axis=1
+        )
+
+        item_modifier_df["relatedUniques"] = item_modifier_df.apply(
+            lambda row: f"{row['relatedUniques']}|{row['name']}"
+            if not row["related_unique_contains"] and pd.notna(row["name"])
+            else row["relatedUniques"],
+            axis=1,
+        )
+
+        modifier_cols = ModifierSchema.model_fields.keys()
+
+        new_modifiers = item_modifier_df[modifier_cols]
+        logger.info(
+            f"Updating new modifiers related uniques, count: \n {len(new_modifiers)}"
+        )
+
+        bulk_update_data(
+            new_modifiers,
+            table_name="modifier",
+            sub_endpoint="update-related-uniques",
+        )
+
     def _process_static(
         self, df: pd.DataFrame, static_modifers_mask: pd.Series
     ) -> pd.DataFrame:
@@ -59,6 +130,7 @@ class RollProcessor:
         merged_static_df = static_df.merge(
             static_modifier_df, on=["effect", "position"], how="left"
         )
+
         failed_df = merged_static_df.loc[merged_static_df["static"].isna()]
 
         if not failed_df.empty:
@@ -69,9 +141,13 @@ class RollProcessor:
             # NOTE this should never happen
             merged_static_df = merged_static_df.loc[~merged_static_df["static"].isna()]
 
+        self._update_related_unique_modifier(merged_static_df)
+
         return merged_static_df
 
-    def _get_rolls(self, dynamic_df: pd.DataFrame) -> pd.DataFrame:
+    def _get_rolls(
+        self, dynamic_df: pd.DataFrame
+    ) -> tuple[pd.DataFrame, pd.DataFrame | None]:
         """
         Uses regex matching groups to extract the rolls and adds
         the correct effect.
@@ -94,9 +170,14 @@ class RollProcessor:
         for effect, regex in dynamic_modifier_df[["effect", "regex"]].itertuples(
             index=False
         ):
-            matched_modifiers = dynamic_df["modifier"].str.replace(
-                regex, extract_rolls, regex=True, case=False
-            )
+            try:
+                matched_modifiers = dynamic_df["modifier"].str.replace(
+                    regex, extract_rolls, regex=True, case=False
+                )
+            except Exception as e:
+                raise Exception(
+                    f"Found unprocessable regex pattern: {regex} \n for effect: {effect} \n error: {e}"
+                )
             matched_modifiers_mask = matched_modifiers.str.contains("matched", na=False)
 
             dynamic_w_rolls_df.loc[matched_modifiers_mask, "effect"] = effect
@@ -115,19 +196,60 @@ class RollProcessor:
         # If there are rows in the dataframe which contain empty lists, something has failed
         failed_df = dynamic_df.loc[dynamic_df["roll"].isna()]
         if not failed_df.empty:
-            logger.critical(
+            logger.warning(
                 "Failed to add rolls to listed modifiers, this likely means"
-                " the modifier is legacy or there was a new expansion."
+                " the modifier is carantene, legacy or there was a new expansion."
             )
-            logger.critical(
+            logger.warning(
                 f"These items have missing modifiers: {failed_df['name'].unique().tolist()}"
             )
-            logger.critical(
-                f"These modifiers were not present in the database: {failed_df['effect'].unique().tolist()}"
+            modifiers_failed = failed_df["effect"].unique().tolist()
+            logger.warning(
+                f"These first 15 modifiers of total {len(modifiers_failed)} were not present in the database: {modifiers_failed[:16]}"
             )
             dynamic_df = dynamic_df.loc[~dynamic_df["roll"].isna()]
 
-        return dynamic_df
+        return dynamic_df, failed_df if not failed_df.empty else None
+
+    def insert_carantene_modifiers(self, item_df: pd.DataFrame) -> None:
+        # Currently only create carantene mods from mutated items
+        mutated_item_df = item_df[item_df["mutated"].astype(str) == "True"]
+        if mutated_item_df.empty:
+            return None
+
+        def create_carantene_modifiers(item_df: pd.DataFrame) -> pd.DataFrame:
+            "Build a DataFrame of carantene modifiers from item data."
+
+            base = item_df.loc[:, ["effect", "name", "mutated"]].copy()
+
+            modifiers = base.assign(
+                relatedUnique=lambda df: df["name"],
+                explicit=True,
+                unique=lambda df: df["name"].notna() & (df["name"] != ""),
+            ).reset_index(drop=True)
+
+            return modifiers
+
+        carantene_modifier_cols = CaranteneModifierSchema.model_fields.keys()
+        carantene_modifiers = create_carantene_modifiers(mutated_item_df)
+
+        assert isinstance(carantene_modifiers, pd.DataFrame)
+
+        existing_cols = [
+            col for col in carantene_modifier_cols if col in carantene_modifiers.columns
+        ]
+        carantene_modifiers = carantene_modifiers[existing_cols]
+
+        logger.info(
+            f"Found {len(carantene_modifiers)} to carantene modifiers, inserting to db..."
+        )
+
+        insert_data(
+            carantene_modifiers,
+            url=HttpUrl(settings.BACKEND_BASE_URL),
+            table_name="carantene_modifier",
+            logger=logger,
+        )
 
     def _process_dynamic(
         self, df: pd.DataFrame, static_modifers_mask: pd.Series
@@ -140,11 +262,13 @@ class RollProcessor:
         dynamic_modifier_df = self.dynamic_modifier_df
         dynamic_df = df.loc[~static_modifers_mask]  # Everything not static is dynamic
         if dynamic_df.empty:
-            raise Exception("ASDHSDHASDHHSADDSHAD")
+            return pd.DataFrame(
+                columns=dynamic_df.columns.append(dynamic_modifier_df.columns)
+            )
 
         dynamic_df.loc[:, "effect"] = dynamic_df.loc[:, "modifier"]
 
-        dynamic_df = self._get_rolls(dynamic_df.copy())
+        dynamic_df, failed_dynamic_df = self._get_rolls(dynamic_df.copy())
 
         # Creates a column for position, which contains a list of numerical strings
         dynamic_df.loc[:, "position"] = dynamic_df.loc[:, "roll"].apply(
@@ -159,14 +283,21 @@ class RollProcessor:
         )
 
         # If all of these fields are still NA, it means that modifier was not matched with a modifier in our DB
-        failed_df = merged_dynamic_df.loc[merged_dynamic_df["roll"].isna()]
-        if not failed_df.empty:
-            logger.exception(
-                "Some modifiers did not find their counterpart in the database."
-                " This likely means the modifier is new or has been reworded.\n"
-                f"{failed_df[['effect', 'roll']].to_string()}"
+        if failed_dynamic_df is not None:
+            # logger.info(
+            #    "Some modifiers did not find their counterpart in the database."
+            #    " This likely means the modifier is new or has been reworded.\n"
+            #    f"{non_matched_modifier_df[['effect', 'roll']].to_string()}"
+            # )
+            logger.info(
+                f"Checking carantene modifiers from non matched modifiers, count={len(failed_dynamic_df)}"
             )
+
+            self.insert_carantene_modifiers(failed_dynamic_df)
+
             merged_dynamic_df = merged_dynamic_df.loc[~merged_dynamic_df["roll"].isna()]
+
+        self._update_related_unique_modifier(merged_dynamic_df)
 
         def convert_text_roll_to_index(row: pd.DataFrame) -> int:
             text_rolls: str = row["textRolls"]

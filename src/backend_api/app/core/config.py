@@ -81,6 +81,12 @@ class Settings(BaseSettings):
             path=self.POSTGRES_DB,
         )
 
+    CURRENT_SOFTCORE_LEAGUE: str
+    LEAGUE_LAUNCH_TIME: str
+    MIN_DAYS_BEFORE_NEW_INIT_DYNAMIC_MODIFIER: int = (
+        3  # Mininum amount of days before a new dynamic mod get created
+    )
+
     REDIS_PORT: int = 6379
     REDIS_SERVER: str
     REDIS_CACHE: str = str(0)

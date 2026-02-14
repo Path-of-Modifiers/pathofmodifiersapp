@@ -29,7 +29,7 @@ minRoll,maxRoll,position,effect,static,unique
 ,,0,"+3% to maximum Chance to Block Spell Damage if 4 Shaper Items are Equipped",True,True
 ,,0,"Cannot take Reflected Elemental Damage if 4 Shaper Items are Equipped",True,True
 1,1.5,0,"+#% to Spell Critical Strike Chance if 4 Shaper Items are Equipped",,True
-5,10,0,"#% of Elemental taken as Chaos Damage if 4 Hunter Items are Equipped",,True
+5,10,0,"#% of Elemental Damage taken as Chaos Damage if 4 Hunter Items are Equipped",,True
 10,25,0,"#% increased Movement Speed if 4 Hunter Items are Equipped",,True
 2,3,0,"+#% to maximum Chaos Resistance if 4 Hunter Items are Equipped",,True
 5,10,0,"#% of Physical Damage taken as Fire Damage if 4 Warlord Items are Equipped",,True

@@ -1,6 +1,8 @@
 from fastapi import APIRouter
 
 from app.api.routes import (
+    carantene_modifier,
+    carantene_modifier_prefix,
     currency,
     currency_prefix,
     item,
@@ -27,6 +29,11 @@ api_router = APIRouter()
 
 
 api_router.include_router(
+    carantene_modifier.router,
+    prefix=f"/{carantene_modifier_prefix}",
+    tags=[f"{carantene_modifier_prefix}s"],
+)
+api_router.include_router(
     currency.router, prefix=f"/{currency_prefix}", tags=[f"{currency_prefix}s"]
 )
 api_router.include_router(
@@ -46,6 +53,9 @@ api_router.include_router(
     unidentified_item.router,
     prefix=f"/{unidentified_item_prefix}",
     tags=[f"{unidentified_item_prefix}s"],
+)
+api_router.include_router(
+    modifier.router, prefix=f"/{modifier_prefix}", tags=[f"{modifier_prefix}s"]
 )
 api_router.include_router(
     modifier.router, prefix=f"/{modifier_prefix}", tags=[f"{modifier_prefix}s"]

@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 2,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -55,6 +55,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -69,7 +70,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "red",
@@ -100,7 +102,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.0.1+security-01",
+      "pluginVersion": "12.3.0",
       "targets": [
         {
           "datasource": {
@@ -164,6 +166,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -179,7 +182,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "red",
@@ -211,7 +215,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.0.1+security-01",
+      "pluginVersion": "12.3.0",
       "targets": [
         {
           "datasource": {
@@ -275,6 +279,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -289,7 +294,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "red",
@@ -320,7 +326,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.0.1+security-01",
+      "pluginVersion": "12.3.0",
       "targets": [
         {
           "datasource": {
@@ -394,93 +400,6 @@
         "type": "loki",
         "uid": "pomodifiers-loki"
       },
-      "description": "Displays all information about general requests to the API.\n\nFilters status code \"0\" requests ",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 18,
-        "w": 12,
-        "x": 12,
-        "y": 8
-      },
-      "id": 1,
-      "options": {
-        "dedupStrategy": "none",
-        "enableInfiniteScrolling": false,
-        "enableLogDetails": true,
-        "prettifyLogMessage": false,
-        "showCommonLabels": false,
-        "showLabels": false,
-        "showTime": true,
-        "sortOrder": "Ascending",
-        "wrapLogMessage": false
-      },
-      "pluginVersion": "12.0.1+security-01",
-      "targets": [
-        {
-          "datasource": {
-            "type": "loki",
-            "uid": "pomodifiers-loki"
-          },
-          "editorMode": "builder",
-          "expr": "{job=\"vector\"} |= `pom_app.request` | json | keep level, request_host, request_method, request_process_time_ms, request_status_code, request_url | line_format `{{.level}} {{.request_host}} {{.request_method}} {{.request_url}} {{.request_status_code}} {{.request_process_time_ms}}` | request_status_code != `0`",
-          "queryType": "range",
-          "refId": "A"
-        }
-      ],
-      "title": "Backend API - Requests",
-      "type": "logs"
-    },
-    {
-      "datasource": {
-        "type": "loki",
-        "uid": "pomodifiers-loki"
-      },
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 16
-      },
-      "id": 5,
-      "options": {
-        "dedupStrategy": "none",
-        "enableInfiniteScrolling": false,
-        "enableLogDetails": true,
-        "prettifyLogMessage": false,
-        "showCommonLabels": false,
-        "showLabels": false,
-        "showTime": false,
-        "sortOrder": "Descending",
-        "wrapLogMessage": false
-      },
-      "pluginVersion": "12.0.1+security-01",
-      "targets": [
-        {
-          "datasource": {
-            "type": "loki",
-            "uid": "pomodifiers-loki"
-          },
-          "editorMode": "code",
-          "expr": "{job=\"vector\"} |= \"src-backend-1\" != \"INFO\" or `0.0.0.0:80` | json | keep level, request_host, request_method, request_process_time_ms, request_status_code, request_url, message | line_format \"{{.level}} {{.request_host}} {{.request_method}} {{.request_url}} {{.request_status_code}} {{.request_process_time}} {{.message}}\" | request_status_code != \"0\"",
-          "queryType": "range",
-          "refId": "A"
-        }
-      ],
-      "title": "Backend API - Errors (except from host:0.0.0.0)",
-      "type": "logs"
-    },
-    {
-      "datasource": {
-        "type": "loki",
-        "uid": "pomodifiers-loki"
-      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -510,6 +429,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -524,7 +444,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "red",
@@ -539,8 +460,8 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 0,
-        "y": 24
+        "x": 12,
+        "y": 8
       },
       "id": 4,
       "options": {
@@ -556,7 +477,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.0.1+security-01",
+      "pluginVersion": "12.3.0",
       "targets": [
         {
           "datasource": {
@@ -591,6 +512,96 @@
         "type": "loki",
         "uid": "pomodifiers-loki"
       },
+      "description": "Displays all information about general requests to the API.\n\nFilters status code \"0\" requests ",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 25,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "id": 1,
+      "options": {
+        "dedupStrategy": "none",
+        "enableInfiniteScrolling": false,
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showCommonLabels": false,
+        "showControls": false,
+        "showLabels": false,
+        "showTime": true,
+        "sortOrder": "Ascending",
+        "wrapLogMessage": false
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "pomodifiers-loki"
+          },
+          "editorMode": "builder",
+          "expr": "{job=\"vector\"} |= `pom_app.request` | json | keep level, request_host, request_method, request_process_time_ms, request_status_code, request_url | line_format `{{.level}} {{.request_host}} {{.request_method}} {{.request_url}} {{.request_status_code}} {{.request_process_time_ms}}` | request_status_code != `0`",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Backend API - Requests",
+      "type": "logs"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "pomodifiers-loki"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 25,
+        "w": 24,
+        "x": 0,
+        "y": 41
+      },
+      "id": 5,
+      "options": {
+        "dedupStrategy": "none",
+        "enableInfiniteScrolling": false,
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showCommonLabels": false,
+        "showControls": false,
+        "showLabels": false,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "pomodifiers-loki"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "{job=\"vector\"} |= \"src-backend-1\" != \"INFO\" or `0.0.0.0:80` | json | keep level, request_host, request_method, request_process_time_ms, request_status_code, request_url, message | line_format \"{{.level}} {{.request_host}} {{.request_method}} {{.request_url}} {{.request_status_code}} {{.request_process_time}} {{.message}}\" | request_status_code != \"0\"",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Backend API - Errors (except from host:0.0.0.0)",
+      "type": "logs"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "pomodifiers-loki"
+      },
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -599,7 +610,7 @@
         "h": 16,
         "w": 24,
         "x": 0,
-        "y": 32
+        "y": 66
       },
       "id": 8,
       "options": {
@@ -608,12 +619,13 @@
         "enableLogDetails": true,
         "prettifyLogMessage": true,
         "showCommonLabels": false,
+        "showControls": false,
         "showLabels": false,
         "showTime": true,
         "sortOrder": "Ascending",
         "wrapLogMessage": true
       },
-      "pluginVersion": "12.0.1+security-01",
+      "pluginVersion": "12.3.0",
       "targets": [
         {
           "datasource": {
@@ -632,7 +644,7 @@
     }
   ],
   "preload": false,
-  "schemaVersion": 41,
+  "schemaVersion": 42,
   "tags": [],
   "templating": {
     "list": []
