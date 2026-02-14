@@ -229,7 +229,6 @@ class PoEAPIHandler:
                 self.url, params={"id": self.next_change_id}
             ) as response:
                 headers = response.headers
-                response.status = 503
                 if response.status >= 300:
                     if response.status == 429:
                         self.skip_program_too_slow = False
