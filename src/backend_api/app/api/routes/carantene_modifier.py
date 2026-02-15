@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, Request, Response
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
@@ -164,3 +165,63 @@ async def delete_carantene_modifier(
     return get_delete_return_msg(
         model_table_name=CaranteneModifier.__tablename__, filter=carantene_modifier_map
     ).message
+
+
+@router.delete(
+    "/bulk-delete/",
+    response_model=str,
+    dependencies=[Depends(get_current_active_superuser)],
+)
+async def bulk_delete_carantene_modifier(
+    caranteneModifierIds: list[schemas.CaranteneModifiersPK],
+    db: Session = Depends(get_db),
+):
+    """
+    Delete a carantene modifier by key and value for "caranteneModifierId"
+
+    Returns a message that the carantene modifier was deleted.
+    Always deletes one carantene_modifier.
+    """
+
+    filter = [car_id.caranteneModifierId for car_id in caranteneModifierIds]
+    await CRUD_carantene_modifier.remove(
+        db=db, filter=filter, deletion_key="caranteneModifierId"
+    )
+
+    return get_delete_return_msg(
+        model_table_name=CaranteneModifier.__tablename__, filter=filter
+    ).message
+
+
+@router.post(
+    "/delete-grouped-dupes/",
+    response_model=str,
+    dependencies=[Depends(get_current_active_superuser)],
+)
+async def delete_grouped_dupes_carantene_modifier(
+    db: Session = Depends(get_db),
+):
+    group_amount = 12
+
+    db.execute(
+        text(
+            f"""
+            DELETE FROM "carantene_modifier"
+            WHERE "caranteneModifierId" IN (
+                SELECT "caranteneModifierId"
+                FROM (
+                    SELECT
+                        "caranteneModifierId",
+                        ROW_NUMBER() OVER (
+                            PARTITION BY "effect"
+                            ORDER BY "createdAt" DESC
+                        ) AS rn
+                    FROM "carantene_modifier"
+                ) AS ranked
+                WHERE rn > {group_amount}
+            )
+            """
+        )
+    )
+
+    return "Successfully deleted duplicate carantene modifier groups by effect"

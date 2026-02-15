@@ -85,7 +85,7 @@ class CRUDModifier(
             select(model_Modifier)
             .where(model_Modifier.dynamicallyCreated)
             .order_by(desc(model_Modifier.dynamicallyCreated))
-        ).first()[0]
+        ).first()
 
         if not existing_dynamically_created:
             modifier_in = ModifierCreate(
@@ -98,6 +98,7 @@ class CRUDModifier(
         else:
             "I know this shit is messy"
             # Check if latest item inserted is older than 3 days, if so then create new initial dynamic modifier
+            existing_dynamically_created = existing_dynamically_created[0]
 
             item_result = db.execute(
                 text(
@@ -105,7 +106,7 @@ class CRUDModifier(
                 )
             ).fetchone()
 
-            existing_item_hours_since_launch = item_result[0]
+            existing_item_hours_since_launch = item_result[0] if item_result else None
             now = datetime.now(timezone.utc)
 
             league_launch_datetime = datetime.fromisoformat(settings.LEAGUE_LAUNCH_TIME)
