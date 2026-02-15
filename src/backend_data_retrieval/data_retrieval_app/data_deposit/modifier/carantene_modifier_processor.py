@@ -5,11 +5,13 @@ from typing import Any
 
 import pandas as pd
 import requests
+from nltk.corpus import stopwords
+from spacy.lang.en.stop_words import STOP_WORDS
 
 from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.logs.logger import data_deposit_logger as logger
 from data_retrieval_app.pom_api_authentication import get_superuser_token_headers
-from data_retrieval_app.utils import bulk_delete_data, insert_data
+from data_retrieval_app.utils import insert_data
 
 NUM_PATTERN = re.compile(r"-?\d+(?:\.\d+)?")
 
@@ -60,6 +62,7 @@ def _diff_chunks(a: list[str], b: list[str]) -> list[tuple[str, str, int]]:
 def _build_text_rolls(
     df: pd.DataFrame,
 ) -> pd.DataFrame:
+    logger.info("Building text rolls...")
     dfx = df.copy()
 
     dfx["relatedUnique"] = dfx["relatedUnique"].apply(
@@ -71,26 +74,37 @@ def _build_text_rolls(
 
     dfx["createdAt"] = pd.to_datetime(dfx["createdAt"])
 
-    if dfx.empty:
-        raise EmptyCarModDF
+    groups = list(dfx.groupby("relatedUnique", sort=False))
+    total_groups = len(groups)
 
-    for _, g_df in dfx.groupby("relatedUnique", sort=False):
+    def skippable_token(t: str):
+        return any(c.isdigit() or c == "#" for c in t)
+
+    stopwords_set = (
+        set(stopwords.words("english"))
+        | STOP_WORDS
+        | {"increased", "decreased", "reduced"}
+    )
+
+    for idx, (_, g_df) in enumerate(groups, start=1):
+        logger.info(
+            "Processing textrolls, related unique group %s/%s (size=%s)",
+            idx,
+            total_groups,
+            len(g_df),
+        )
+
         idxs: list[int] = g_df.index.tolist()
         effects_token_map: dict[int, list[str]] = {
-            i: _tokenize(dfx.at[i, "effect"]) for i in idxs
+            i: _tokenize(dfx.at[i, "numForTextReplaced"]) for i in idxs
         }
         for i in idxs:
-
-            def skippable_token(t: str):
-                return not any(c.isdigit() for c in t) or t.lower() in {
-                    "decreased",
-                    "increased",
-                }
-
             a_effect_tokens = [
                 t for t in effects_token_map[i] if not skippable_token(t)
             ]
-            if len(a_effect_tokens) < settings.MIN_WORDS_CREATE_TEXT_ROLLS:
+            if (
+                len(effects_token_map[i]) < settings.MIN_WORDS_CREATE_TEXT_ROLLS
+            ):  # check with skips/numbers for min words
                 continue
             for j in idxs:
                 if i == j:
@@ -99,13 +113,23 @@ def _build_text_rolls(
                     t for t in effects_token_map[j] if not skippable_token(t)
                 ]
                 lcs_ratio = _lcs_len(a_effect_tokens, b_effect_tokens) / max(
-                    1, len(a_effect_tokens)
+                    1, len(effects_token_map[i])
                 )
                 if lcs_ratio >= settings.MIN_OVERLAP_EFFECT_CREATE_TEXT_ROLLS:
                     diffs = _diff_chunks(a_effect_tokens, b_effect_tokens)
                     if diffs:
-                        roll = list(diffs)
-                        dfx.at[i, "textRolls"] = dfx.at[i, "textRolls"] + roll
+                        diff_rolls = [
+                            diff_tuple
+                            for diff_tuple in diffs
+                            if all(
+                                roll.lower() not in stopwords_set
+                                for roll in diff_tuple[:-1]
+                            )
+                        ]
+                        dfx.at[i, "textRolls"] = dfx.at[i, "textRolls"] + diff_rolls
+    logger.info(
+        "Successfully built text rolls, performing further transforms on carantene..."
+    )
     return dfx
 
 
@@ -143,7 +167,6 @@ def _expand_effect(row):
     text_rolls = row["textRolls"]
     related_uniq = row["relatedUnique"]
 
-    # Replace every full numeric match (int or float) with "d#"
     replaced_num_effect = NUM_PATTERN.sub("d#", effect)
     matches = list(NUM_PATTERN.finditer(effect))
 
@@ -222,7 +245,6 @@ def _coerce_numeric(v: Any) -> int | float | Any:
         if not s:
             return v
 
-        # Heuristic: if it looks like a float (has '.' or exponent), parse as float
         if any(c in s for c in ".eE"):
             try:
                 return float(s)
@@ -273,7 +295,6 @@ def _consistent_values_from_counter(
 
     for pos, vals in by_pos.items():
         # If we have exactly one distinct value, it's "consistent"
-        # Note: {1, 1.0} collapses to length 1 because 1 == 1.0
         if len(vals) == 1:
             v = next(iter(vals))
             v = _coerce_numeric(v)
@@ -281,7 +302,6 @@ def _consistent_values_from_counter(
                 v = int(v) if v.is_integer() else float(v)
                 result[pos] = v
             else:
-                # Not numeric after all – treat as inconsistent
                 result[pos] = None
         else:
             result[pos] = None
@@ -340,6 +360,9 @@ def _apply_static_num_replacements(df: pd.DataFrame) -> pd.DataFrame:
         )
         out_rows.append(merged)
 
+    logger.info(
+        "Successfully added static numbers replacements, performing further transforms on carantene..."
+    )
     return pd.concat(out_rows, ignore_index=True)
 
 
@@ -420,7 +443,7 @@ def _build_modifier_from_carantene(df: pd.DataFrame):
             static_val = None if ("d#" in template or "#" in template) else True
             kinds = kinds if kinds else [None]
             for pos, kind in enumerate(kinds):
-                row = {
+                out_row = {
                     "position": pos,
                     "relatedUniques": related_str,
                     "effect": effect,
@@ -431,18 +454,18 @@ def _build_modifier_from_carantene(df: pd.DataFrame):
                     "dynamicallyCreated": True,
                 }
                 if kind == "num":
-                    row["minRoll"] = -999999
-                    row["maxRoll"] = 999999
-                    row["textRolls"] = None
-                elif "text":
-                    row["minRoll"] = None
-                    row["maxRoll"] = None
-                    row["textRolls"] = pos_to_textroll.get(pos)
+                    out_row["minRoll"] = -999999
+                    out_row["maxRoll"] = 999999
+                    out_row["textRolls"] = None
+                elif kind == "text":
+                    out_row["minRoll"] = None
+                    out_row["maxRoll"] = None
+                    out_row["textRolls"] = pos_to_textroll.get(pos)
                 else:
-                    row["minRoll"] = None
-                    row["maxRoll"] = None
-                    row["textRolls"] = None
-                rows.append(row)
+                    out_row["minRoll"] = None
+                    out_row["maxRoll"] = None
+                    out_row["textRolls"] = None
+                rows.append(out_row)
 
         except Exception as e:
             raise Exception(f"Failed to create mod on row {row}, exception: {e}")
@@ -462,6 +485,7 @@ def _build_modifier_from_carantene(df: pd.DataFrame):
 
     modifier_ids = list({int(item) for sublist in all_car_mod_ids for item in sublist})
 
+    logger.info("Successfully built modifiers from carantene modifiers")
     return pd.DataFrame(rows, columns=mod_cols), modifier_ids
 
 
@@ -493,6 +517,10 @@ def _transform_carantene_modifier(
         grouped = grouped[grouped["counter"].apply(row_has_min_count)]
         if grouped.empty:
             raise EmptyCarModDF
+
+        logger.info(
+            "Successfully grouped and added counters, performing further transforms on carantene..."
+        )
         return grouped
 
     try:
@@ -515,11 +543,10 @@ def _get_latest_dynamic_modifier_created_at() -> datetime:
     url = f"{settings.BACKEND_BASE_URL}/modifier/latest-dynamically-created/"
     pom_api_headers = get_superuser_token_headers(settings.BACKEND_BASE_URL)
     try:
-        response = requests.get(url=url, headers=pom_api_headers)
+        response = requests.get(url=url, headers=pom_api_headers, timeout=60)
         response.raise_for_status()
 
         latest_datetime_str = response.json()
-
         assert isinstance(latest_datetime_str, str)
         latest_datetime_str = latest_datetime_str.replace(
             "+00", "+00:00"
@@ -541,7 +568,6 @@ def _check_days_since_last_created() -> bool:
     latest_created_at = _get_latest_dynamic_modifier_created_at()
     days_since_last_created_at = (datetime.now(UTC) - latest_created_at).days
     if not days_since_last_created_at > settings.MIN_DAYS_SINCE_DYNAMICALLY_CREATED_AT:
-        raise Exception("DAYS SINCE LAST WAS NOT GOOD ENOUGH")
         return False
     return True
 
@@ -565,9 +591,7 @@ def _get_carantene_df() -> pd.DataFrame:
     return carantene_df
 
 
-def _insert_modifiers_from_carantene(
-    carantene_modifier_df: pd.DataFrame, carantene_modifier_ids: list[int]
-) -> None:
+def _insert_modifiers_from_carantene(carantene_modifier_df: pd.DataFrame) -> None:
     base_url = str(settings.BACKEND_BASE_URL)
     pom_auth_headers = get_superuser_token_headers(base_url)
 
@@ -580,25 +604,21 @@ def _insert_modifiers_from_carantene(
         method="post",
     )
 
-    logger.info(
-        f"Deleting {len(carantene_modifier_ids)} of the old carantene modifiers present"
-    )
-
-    bulk_delete_data(
-        primary_key="caranteneModifierId",
-        primary_key_values=carantene_modifier_ids,
-        table_name="carantene_modifier",
-    )
-
 
 def check_carantene_modifiers() -> None:
     if not _check_days_since_last_created():
         return None
 
+    logger.info(
+        "Its been over 3 days since last created modifiers from carantene modifiers. Retrieving carantene modifiers..."
+    )
+
     # with open("car_df_json_dump.json", "w") as f:
     #    json.dump(carantene_dump, f, indent=4)
 
     carantene_df = _get_carantene_df()
+
+    logger.info("Transforming carantene modifiers...")
 
     carantene_modifier_df, carantene_modifier_ids = _transform_carantene_modifier(
         carantene_df
@@ -606,9 +626,20 @@ def check_carantene_modifiers() -> None:
 
     if carantene_modifier_df is not None and carantene_modifier_ids is not None:
         logger.info(
-            f"Inserting {len(carantene_modifier_df)} new modifiers from carantene modifiers"
+            f"Inserting {len(carantene_modifier_df)} new modifiers from carantene modifiers..."
         )
-        _insert_modifiers_from_carantene(carantene_modifier_df, carantene_modifier_ids)
+
+        _insert_modifiers_from_carantene(carantene_modifier_df)
+
+        logger.info(
+            f"Deleting {len(carantene_modifier_ids)} of the old carantene modifiers present"
+        )
+
+        # bulk_delete_data(
+        #    primary_key="caranteneModifierId",
+        #    primary_key_values=carantene_modifier_ids,
+        #    table_name="carantene_modifier",
+        # )
 
 
 def initial_dynamically_created_modifier() -> None:
@@ -628,3 +659,18 @@ def initial_dynamically_created_modifier() -> None:
         raise Exception(
             f"Failed to create initial dynamically created modifier, error: {e}"
         )
+
+
+def delete_grouped_dupes() -> None:
+    url = f"{settings.BACKEND_BASE_URL}/carantene_modifier/delete-grouped-dupes/"
+    pom_api_headers = get_superuser_token_headers(settings.BACKEND_BASE_URL)
+    try:
+        response = requests.post(url=url, headers=pom_api_headers)
+        response.raise_for_status()
+
+    except requests.HTTPError as e:
+        raise requests.HTTPError(
+            f"POM API HTTP request error, failed to delete grouped dupes, error: {e}"
+        )
+    except Exception as e:
+        raise Exception(f"Failed to delete grouped dupes, error: {e}")

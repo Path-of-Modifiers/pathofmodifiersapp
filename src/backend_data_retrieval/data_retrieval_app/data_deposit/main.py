@@ -6,6 +6,7 @@ from data_retrieval_app.data_deposit.item_base_type.item_base_type_data_deposito
 )
 from data_retrieval_app.data_deposit.modifier.carantene_modifier_processor import (
     check_carantene_modifiers,
+    delete_grouped_dupes,
     initial_dynamically_created_modifier,
 )
 from data_retrieval_app.data_deposit.modifier.modifier_data_depositor import (
@@ -29,7 +30,11 @@ def main():
             data_depositor.deposit_data()
     logger.info("Checking carantene modifiers")
     if settings.CHECK_CARANTENE_MODIFIERS:
+        import nltk
+
+        nltk.download("stopwords")
         initial_dynamically_created_modifier()
+        delete_grouped_dupes()
         check_carantene_modifiers()
     logger.info("Finished checking carantene modifiers")
     return 0
