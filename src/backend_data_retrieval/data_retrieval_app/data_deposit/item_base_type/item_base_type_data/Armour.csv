@@ -22,6 +22,7 @@ baseType,category,subCategory,relatedUniques
 "Close Helmet","any armour","helmet",
 "Harlequin Mask","any armour","helmet",
 "Iron Circlet","any armour","helmet",
+"Mind Cage","any armour","helmet",
 "Carnal Armour","any armour","body armour","Shroud of the Lightless"
 "Simple Robe","any armour","body armour","Skin of the Lords"
 "Zodiac Leather","any armour","body armour",
@@ -97,3 +98,4 @@ baseType,category,subCategory,relatedUniques
 "Champion Kite Shield","any armour","shield",
 "Archon Kite Shield","any armour","shield",
 "Pinnacle Tower Shield","any armour","shield",
+"Branded Kite Shield","any armour","shield",

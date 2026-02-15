@@ -3,6 +3,7 @@
 baseType,category,subCategory,relatedUniques
 "Vaal Rapier","weapon","one-handed sword","Paradoxica"
 "Cutlass","weapon","one-handed sword",
+"Vaal Blade","weapon","one-handed sword",
 "Midnight Blade","weapon","one-handed sword",
 "Eternal Sword","weapon","one-handed sword",
 "Serpentine Staff","weapon","warstaff","Cane of Kulemak"
@@ -12,6 +13,7 @@ baseType,category,subCategory,relatedUniques
 "Citadel Bow","weapon","bow",
 "Short Bow","weapon","bow",
 "Death Bow","weapon","bow",
+"Royal Bow","weapon","bow",
 "Assassin Bow","weapon","bow",
 "Terror Claw","weapon","claw",
 "Imperial Claw","weapon","claw",
@@ -29,6 +31,7 @@ baseType,category,subCategory,relatedUniques
 "Karui Sceptre","weapon","sceptre",
 "Vaal Sceptre","weapon","sceptre",
 "Serpentine Staff","weapon","staff",
+"Lathi","weapon","staff",
 "Vaal Axe","weapon","two-handed axe",
 "Jasper Chopper","weapon","two-handed axe",
 "Karui Chopper","weapon","two-handed axe",
