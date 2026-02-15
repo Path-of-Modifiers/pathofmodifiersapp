@@ -24,6 +24,7 @@ class _BaseModifier(_pydantic.BaseModel):
     corrupted: bool | None = None
     enchanted: bool | None = None
     veiled: bool | None = None
+    dynamicallyCreated: bool | None = None
 
 
 class GroupedModifierProperties(_pydantic.BaseModel):
@@ -64,3 +65,8 @@ class Modifier(ModifierInDBBase):
 # Properties stored in DB
 class ModifierInDB(ModifierInDBBase):
     pass
+
+
+class ModifierRelatedUniquesMap(_pydantic.BaseModel):
+    modifierId: int
+    relatedUniques: str

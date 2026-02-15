@@ -1,8 +1,9 @@
-from app.core.models.models import Currency as model_Currency
+from app.core.models.models import CaranteneModifier, Currency as model_Currency
 from app.core.models.models import Item as model_Item
 from app.core.models.models import ItemBaseType as model_ItemBaseType
 from app.core.models.models import ItemModifier as model_ItemModifier
 from app.core.models.models import Modifier as model_Modifier
+from app.core.models.models import CaranteneModifier as model_CaranteneModifier
 from app.core.models.models import UnidentifiedItem as model_UnidentifiedItem
 from app.core.schemas.currency import Currency, CurrencyCreate, CurrencyUpdate
 from app.core.schemas.item import Item, ItemCreate, ItemUpdate
@@ -17,6 +18,11 @@ from app.core.schemas.item_modifier import (
     ItemModifierUpdate,
 )
 from app.core.schemas.modifier import Modifier, ModifierCreate
+from app.core.schemas.carantene_modifier import (
+    CaranteneModifier,
+    CaranteneModifierCreate,
+    CaranteneModifierUpdate,
+)
 from app.core.schemas.unidentified_item import (
     UnidentifiedItem,
     UnidentifiedItemCreate,
@@ -77,6 +83,17 @@ CRUD_modifier = CRUDModifier(
     model=model_Modifier,
     schema=Modifier,
     create_schema=ModifierCreate,
+)
+
+CRUD_carantene_modifier = CRUDBase[
+    model_CaranteneModifier,
+    CaranteneModifier,
+    CaranteneModifierCreate,
+    CaranteneModifierUpdate,
+](
+    model=model_CaranteneModifier,
+    schema=CaranteneModifier,
+    create_schema=CaranteneModifierCreate,
 )
 
 CRUD_user = CRUDUser()

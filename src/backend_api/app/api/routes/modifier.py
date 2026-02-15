@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, Request, Response
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
@@ -57,6 +58,31 @@ async def get_modifier(
     modifier = await CRUD_modifier.get(db=db, filter=modifier_map)
 
     return modifier
+
+
+@router.get(
+    "/latest-dynamically-created/",
+    response_model=str | None,
+    dependencies=[Depends(get_current_active_superuser)],
+)
+async def modifier_latest_dynamic_created_datetime(
+    db: Session = Depends(get_db),
+):
+    """
+    Delete a list of carantene modifier by list of key "caranteneModifierId" and values.
+
+    Returns a message that the carantene modifier was deleted.
+    """
+    result = db.execute(
+        text(
+            """SELECT MAX("createdAt") FROM modifier WHERE "dynamicallyCreated" IS TRUE"""
+        )
+    ).fetchone()
+
+    if not result or not result[0]:
+        return None
+
+    return str(result[0])
 
 
 @router.get(
@@ -187,3 +213,65 @@ async def delete_modifier(
     return get_delete_return_msg(
         model_table_name=Modifier.__tablename__, filter=modifier_map
     ).message
+
+
+@router.put(
+    "/update-related-uniques/",
+    response_model=str,
+    dependencies=[Depends(get_current_active_superuser)],
+)
+async def update_related_unique_modifiers(
+    modifier_related_uniques_update: list[schemas.ModifierRelatedUniquesMap],
+    db: Session = Depends(get_db),
+):
+    """
+    Update a modifier by key and value for "modifierId"
+
+    Dominant key is "modifierId".
+
+    Returns the updated modifier.
+    """
+
+    for update_rel_modifier in modifier_related_uniques_update:
+        modifier_map = {"modifierId": update_rel_modifier.modifierId}
+
+        modifier = await CRUD_modifier.get(
+            db=db,
+            filter=modifier_map,
+        )
+        assert not isinstance(modifier, list) and modifier is not None
+
+        update_modifier = schemas.ModifierUpdate(
+            position=modifier.position,
+            relatedUniques=update_rel_modifier.relatedUniques,
+            minRoll=modifier.minRoll,
+            maxRoll=modifier.maxRoll,
+            textRolls=modifier.textRolls,
+            static=modifier.static,
+            effect=modifier.effect,
+            regex=modifier.regex,
+            implicit=modifier.implicit,
+            explicit=modifier.explicit,
+            delve=modifier.delve,
+            fractured=modifier.fractured,
+            synthesised=modifier.synthesised,
+            unique=modifier.unique,
+            corrupted=modifier.corrupted,
+            enchanted=modifier.enchanted,
+            veiled=modifier.veiled,
+            dynamicallyCreated=modifier.dynamicallyCreated,
+        )
+
+        await CRUD_modifier.update(db_obj=modifier, obj_in=update_modifier, db=db)
+    return f"Updated related uniques for count={len(modifier_related_uniques_update)} modifiers"
+
+
+@router.post(
+    "/initial-dynamically-created/",
+    response_model=str,
+    dependencies=[Depends(get_current_active_superuser)],
+)
+async def create_initial_dynamically_created_mod(db: Session = Depends(get_db)) -> str:
+    await CRUD_modifier.create_initial_dynamically_created_mod(db)
+
+    return "Successfully created or updated initial dynamically created modifier to mininum 3 days since created at"

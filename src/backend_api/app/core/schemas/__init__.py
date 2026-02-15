@@ -7,6 +7,14 @@ from .modifier import (
     ModifierInDB,
     ModifierCreate,
     ModifierUpdate,
+    ModifierRelatedUniquesMap,
+)
+from .carantene_modifier import (
+    CaranteneModifier,
+    CaranteneModifierInDB,
+    CaranteneModifierCreate,
+    CaranteneModifierUpdate,
+    CaranteneModifiersPK,
 )
 from .item_base_type import (
     ItemBaseType,

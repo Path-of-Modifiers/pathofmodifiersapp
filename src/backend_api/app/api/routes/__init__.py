@@ -5,6 +5,7 @@ from app.api.routes.item import item_prefix
 from app.api.routes.unidentified_item import unidentified_item_prefix
 from app.api.routes.login import login_prefix
 from app.api.routes.modifier import modifier_prefix
+from app.api.routes.carantene_modifier import carantene_modifier_prefix
 from app.api.routes.plot import plot_prefix
 from app.api.routes.turnstile import turnstile_prefix
 from app.api.routes.user import user_prefix

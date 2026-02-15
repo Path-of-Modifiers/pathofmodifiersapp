@@ -1,9 +1,12 @@
+from datetime import datetime, timezone
+
 import pandas as pd
 from fastapi import HTTPException
 from pydantic import TypeAdapter
-from sqlalchemy import select
+from sqlalchemy import desc, select, text
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.core.models.models import Modifier as model_Modifier
 from app.core.schemas.modifier import (
     GroupedModifierByEffect,
@@ -76,3 +79,65 @@ class CRUDModifier(
         ).validate_python
 
         return validate(grouped_modifier_by_effect_record)
+
+    async def create_initial_dynamically_created_mod(self, db: Session) -> None:
+        existing_dynamically_created = db.execute(
+            select(model_Modifier)
+            .where(model_Modifier.dynamicallyCreated)
+            .order_by(desc(model_Modifier.dynamicallyCreated))
+        ).first()
+
+        if not existing_dynamically_created:
+            modifier_in = ModifierCreate(
+                position=0,
+                effect="EMPTY",
+                dynamicallyCreated=True,
+                static=True,
+            )
+            await self.create(db=db, obj_in=modifier_in)
+        else:
+            "I know this shit is messy"
+            # Check if latest item inserted is older than 3 days, if so then create new initial dynamic modifier
+            existing_dynamically_created = existing_dynamically_created[0]
+
+            item_result = db.execute(
+                text(
+                    f"""SELECT MAX("createdHoursSinceLaunch") FROM item WHERE "league"='{settings.CURRENT_SOFTCORE_LEAGUE}'"""
+                )
+            ).fetchone()
+
+            existing_item_hours_since_launch = item_result[0] if item_result else None
+            now = datetime.now(timezone.utc)
+
+            league_launch_datetime = datetime.fromisoformat(settings.LEAGUE_LAUNCH_TIME)
+
+            delta = now - league_launch_datetime
+            hours_since_launch = delta.total_seconds() / 3600
+
+            existing_item_hours_since_launch_diff = None
+            if existing_item_hours_since_launch is not None:
+                existing_item_hours_since_launch_diff = (
+                    hours_since_launch - existing_item_hours_since_launch
+                )
+
+            min_hours_between = settings.MIN_DAYS_BEFORE_NEW_INIT_DYNAMIC_MODIFIER * 24
+
+            if (
+                existing_item_hours_since_launch is None
+                or existing_item_hours_since_launch_diff is None
+                or existing_item_hours_since_launch_diff > min_hours_between
+            ):
+                empty_filter = {"effect": "EMPTY"}
+                existing_empty_mod = await self.get(db=db, filter=empty_filter)
+                assert not isinstance(
+                    existing_empty_mod, list
+                ), "Found duplicate `EMPTY` effect in modifier table, though there should be max 1"
+                await self.remove(db=db, filter=empty_filter)
+
+                modifier_in = ModifierCreate(
+                    position=0,
+                    effect="EMPTY",
+                    dynamicallyCreated=True,
+                    static=True,
+                )
+                await self.create(db=db, obj_in=modifier_in)

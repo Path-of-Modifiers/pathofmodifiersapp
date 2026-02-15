@@ -25,6 +25,18 @@ class UniqueDetector(DetectorBase):
         return df
 
 
+class UniqueFoulbornDetector(UniqueDetector):
+    def _check_if_wanted(self, df: pd.DataFrame) -> pd.DataFrame:
+        df_filtered = df[df["identified"] & df["mutated"].astype(str) == "True"].loc[
+            df["name"].str.len() != 0
+        ]
+
+        return df_filtered
+
+    def __str__(self):
+        return "Unique Foulborn Detector"
+
+
 class UniqueUnidentifiedDetector(UniqueDetector):
     """
     Notes:

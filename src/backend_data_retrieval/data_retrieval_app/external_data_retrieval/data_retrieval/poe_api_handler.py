@@ -12,6 +12,7 @@ from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.external_data_retrieval.detectors.unique_detector import (
     UniqueArmourDetector,
     UniqueDetector,
+    UniqueFoulbornDetector,
     UniqueJewelDetector,
     UniqueJewelleryDetector,
     UniqueUnidentifiedDetector,
@@ -58,6 +59,7 @@ class PoEAPIHandler:
                 UniqueJewelleryDetector(),
                 UniqueWeaponDetector(),
                 UniqueUnidentifiedDetector(),
+                UniqueFoulbornDetector(),
             ]
         logger.debug("Item detectors set to: " + str(item_detectors))
         self.url = url

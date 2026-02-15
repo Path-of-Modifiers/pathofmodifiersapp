@@ -161,7 +161,12 @@ class Modifier(Base):
     corrupted: Mapped[bool | None] = mapped_column(Boolean)
     enchanted: Mapped[bool | None] = mapped_column(Boolean)
     veiled: Mapped[bool | None] = mapped_column(Boolean)
+    mutated: Mapped[bool | None] = mapped_column(Boolean)
     static: Mapped[bool | None] = mapped_column(Boolean)
+    dynamicallyCreated: Mapped[bool | None] = mapped_column(
+        Boolean
+    )  # Modifier got created during ETL
+    explicit: Mapped[bool | None] = mapped_column(Boolean)
     effect: Mapped[str] = mapped_column(Text, nullable=False)
     relatedUniques: Mapped[str | None] = mapped_column(Text)
     textRolls: Mapped[str | None] = mapped_column(Text)
@@ -221,6 +226,35 @@ class Modifier(Base):
             name="check_modifier_maxRoll_greaterThan_minRoll",
         ),
         UniqueConstraint(modifierId, position),
+    )
+
+
+class CaranteneModifier(Base):
+    __tablename__ = "carantene_modifier"
+
+    caranteneModifierId: Mapped[int] = mapped_column(
+        BigInteger,
+        Identity(start=1, increment=1, cycle=True),
+        primary_key=True,
+    )
+    effect: Mapped[str] = mapped_column(Text)
+    relatedUnique: Mapped[str] = mapped_column(Text)
+    implicit: Mapped[bool | None] = mapped_column(Boolean)
+    explicit: Mapped[bool | None] = mapped_column(Boolean)
+    delve: Mapped[bool | None] = mapped_column(Boolean)
+    fractured: Mapped[bool | None] = mapped_column(Boolean)
+    synthesised: Mapped[bool | None] = mapped_column(Boolean)
+    unique: Mapped[bool | None] = mapped_column(Boolean)
+    corrupted: Mapped[bool | None] = mapped_column(Boolean)
+    enchanted: Mapped[bool | None] = mapped_column(Boolean)
+    veiled: Mapped[bool | None] = mapped_column(Boolean)
+    mutated: Mapped[bool | None] = mapped_column(Boolean)
+    createdAt: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=func.now(), nullable=False
+    )
+    updatedAt: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        onupdate=func.now(),
     )
 
 
