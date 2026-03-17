@@ -1,0 +1,14 @@
+# Unique Name: Mageblood
+# Base Types: Heavy Belt
+# Total modifiers on each item: 6
+# Can have duplicate modifiers: False
+# Modifier distrubution: "rest":6
+# Source: https://poedb.tw/us/Mageblood
+minRoll,maxRoll,textRolls,position,effect,static,unique
+30,50,,0,"+# to Dexterity",,True
+15,25,,0,"+# to # Resistance",,True
+,,"Fire|Cold",1,"+# to # Resistance",,True
+,,,0,"Magic Utility Flasks cannot be Used",True,True
+,,"Rightmost|Leftmost",0,"# # Magic Utility Flasks constantly apply their Flask Effects to you",,True
+1,5,,1,"# # Magic Utility Flasks constantly apply their Flask Effects to you",,True
+,,,0,"Magic Utility Flask Effects cannot be removed",True,True

@@ -1,0 +1,5 @@
+# Source: https://poedb.tw/us/Belts#BeltsItem
+# Note: Only contains bases relevant to the uniques we are tracking
+baseType,category,relatedUniques
+"Leather Belt",belt,"Screams of the Desiccated"
+"Heavy Belt",belt,"Mageblood"

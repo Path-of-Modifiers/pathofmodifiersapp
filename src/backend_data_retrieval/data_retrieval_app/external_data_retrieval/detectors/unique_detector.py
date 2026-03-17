@@ -57,6 +57,7 @@ class UniqueUnidentifiedDetector(UniqueDetector):
         "Amethyst Ring",
         "Great Crown",
         "Simple Robe",
+        "Leather Belt",
     ]
 
     wanted_item_icons = {
@@ -90,6 +91,8 @@ class UniqueUnidentifiedDetector(UniqueDetector):
         "SynthesisPhysical.png": "Circle of Nostalgia",
         "TheEpiphany.png": "Forbidden Shako",
         "MyriadGraspGrand.png": "Skin of the Lords",
+        "ExpeditonCivilization.png": "Heroic Tragedy",
+        "Soulcord.png": "Screams of the Desiccated",
     }
 
     def _check_if_wanted(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -132,6 +135,7 @@ class UniqueJewelDetector(UniqueDetector):
         "Militant Faith",
         "Elegant Hubris",
         "Voices",
+        "Heroic Tragedy",
     ]
 
     def __str__(self):
@@ -150,6 +154,7 @@ class UniqueJewelleryDetector(UniqueDetector):
         "Circle of Regret",
         "Circle of Fear",
         "Circle of Nostalgia",
+        "Screams of the Desiccated",
     ]
 
     def __str__(self):
