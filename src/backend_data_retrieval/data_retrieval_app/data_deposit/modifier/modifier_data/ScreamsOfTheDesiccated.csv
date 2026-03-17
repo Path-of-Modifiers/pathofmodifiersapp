@@ -1,0 +1,11 @@
+# Unique Name: Screams of the Desiccated
+# Base Types: Leather Belt
+# Total modifiers on each item: 3|4|5
+# Can have duplicate modifiers: False
+# Modifier distrubution: 2:2,"rest":1|2|3
+# Source: https://poedb.tw/us/Screams_of_the_Desiccated
+minRoll,maxRoll,textRolls,position,effect,unique
+23,32,,0,"+# to Intelligence",True
+23,37,,0,"+# to Chaos Resistance",True
+,,"Acceleration|Brutal|Greater Freezing|Greater Shocking|Greater Skeletal|Diamond|Echoing|Gloom|Impenetrable|Massive|Replenishing|Resistance|Resonating",0,"You have # Shrine Buff while affected by no Flasks",True
+15,20,,0,"#% increased Effect of Shrine Buffs on you",True
