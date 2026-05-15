@@ -2,8 +2,8 @@ import pandas as pd
 import requests
 
 from data_retrieval_app.external_data_retrieval.config import settings
-from data_retrieval_app.external_data_retrieval.data_retrieval.poe_ninja_currency_api_handler import (
-    PoENinjaCurrencyAPIHandler,
+from data_retrieval_app.external_data_retrieval.data_retrieval.currency_api_handler import (
+    CurrencyAPIHandler,
 )
 from data_retrieval_app.logs.logger import transform_logger as logger
 from data_retrieval_app.pom_api_authentication import get_superuser_token_headers
@@ -14,7 +14,7 @@ def load_currency_data():
     """
     Loads data from the poe.ninja currency API.
     """
-    poe_ninja_currency_api_handler = PoENinjaCurrencyAPIHandler(
+    poe_ninja_currency_api_handler = CurrencyAPIHandler(
         url=f"https://poe.ninja/api/data/currencyoverview?league={settings.CURRENT_SOFTCORE_LEAGUE}&type=Currency"
     )
 
@@ -23,27 +23,46 @@ def load_currency_data():
     return currencies_df
 
 
-class TransformPoENinjaCurrencyAPIData:
+class TransformCurrencyAPIData:
     def __init__(self) -> None:
-        logger.debug("Initializing TransformPoENinjaCurrencyAPIData.")
+        logger.debug("Initializing TransformCurrencyAPIData.")
         self.base_url = settings.BACKEND_BASE_URL
         logger.debug(f"Url set to: {self.base_url}")
         self.pom_api_headers = get_superuser_token_headers(self.base_url)
         logger.debug("Headers set to: " + str(self.pom_api_headers))
-        logger.debug("Initializing TransformPoENinjaCurrencyAPIData done.")
+        logger.debug("Initializing TransformCurrencyAPIData done.")
 
-    def _create_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
+        self.name_to_trade_name = self._get_name_to_trade_name_dict()
+
+    def _get_name_to_trade_name_dict(self) -> dict:
         """
-        Creates the currency table.
+        Retrieves a map for "fancy" currency names, as used in the API, to their trade names, which we need.
         """
-        currency_df.rename(
-            columns={
-                "tradeId": "tradeName",
-                "chaosEquivalent": "valueInChaos",
-            },
-            inplace=True,
-        )
-        return currency_df
+        headers = {
+            "User-Agent": f"OAuth pathofmodifiers/0.1.0 (contact: {settings.OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
+        }
+        try:
+            response = requests.get(
+                "https://www.pathofexile.com/api/trade/data/static", headers=headers
+            )
+            response.raise_for_status()
+        except Exception as e:
+            logger.error(
+                f"The following error occurred while making request _get_latest_change_id: {e}"
+            )
+            raise e
+
+        response_json = response.json()
+        result = response_json["result"]
+        currencies = {}
+        for category in result:
+            if category["id"] == "Currency":
+                for entry in category["entries"]:
+                    name = entry["text"]
+                    trade_name = entry["id"]
+                    currencies[name] = trade_name
+
+        return currencies
 
     def _transform_currency_table(
         self, currency_df: pd.DataFrame, hours_since_launch: int
@@ -51,9 +70,20 @@ class TransformPoENinjaCurrencyAPIData:
         """
         Since a chaos orb is always worth one chaos orb, ninja does not include it in its price api.
         """
+
+        currency_df["chaos.chaosValue"] = currency_df["chaos.chaosValue"].where(
+            (currency_df["chaos.chaosValue"] == 0)
+            | (currency_df["chaos.chaosValue"].isna()),
+            currency_df["divine.chaosValue"],
+        )
+
+        currency_df["tradeName"] = currency_df["name"].map(
+            lambda name: self.name_to_trade_name.get(name, pd.NA)
+        )
+
         chaos_dict = {
-            "tradeName": ["chaos"],
-            "valueInChaos": [1],
+            "name": ["Chaos Orb"],
+            "chaos.chaosValue": [1],
         }
         chaos_df = pd.DataFrame.from_dict(chaos_dict)
         currency_df = pd.concat((currency_df, chaos_df), ignore_index=True)
@@ -65,15 +95,17 @@ class TransformPoENinjaCurrencyAPIData:
         """
         Cleans the currency table of unnecessary columns.
         """
+        currency_df = currency_df.rename(columns={"chaos.chaosValue": "valueInChaos"})
 
-        currency_df.drop(
+        currency_df = currency_df.drop(
             currency_df.columns.difference(
                 ["tradeName", "valueInChaos", "createdHoursSinceLaunch"]
             ),
             axis=1,
-            inplace=True,
         )
-        currency_df = currency_df.loc[~currency_df["tradeName"].isna()].reset_index()
+        currency_df = currency_df.loc[~currency_df["tradeName"].isna()].reset_index(
+            drop=True
+        )
         return currency_df
 
     def _get_latest_currency_id_series(self, currency_df: pd.DataFrame) -> pd.Series:
@@ -102,7 +134,6 @@ class TransformPoENinjaCurrencyAPIData:
         """
         hours_since_launch = find_hours_since_launch()
         logger.debug("Transforming data into tables.")
-        currency_df = self._create_currency_table(currency_df)
         currency_df = self._transform_currency_table(currency_df, hours_since_launch)
         logger.debug("Successfully transformed data into tables.")
 
