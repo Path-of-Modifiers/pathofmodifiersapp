@@ -8,19 +8,6 @@ class CurrencyAPIHandler:
     def __init__(self, url: str) -> None:
         self.url = url
 
-    def _combine_currency_data(self, currencies: list, currency_details: list) -> list:
-        """
-        Combines the currency data.
-        """
-        currencies_df = self._json_to_df(currencies)
-        currency_details_df = self._json_to_df(currency_details)
-
-        combined_currency_data_df = currencies_df.merge(
-            currency_details_df,
-            on="id",
-        )
-        return combined_currency_data_df
-
     def _json_to_df(self, currencies: list) -> pd.DataFrame:
         df = pd.json_normalize(currencies)
 

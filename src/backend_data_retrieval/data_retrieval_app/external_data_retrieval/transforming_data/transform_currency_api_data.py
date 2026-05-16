@@ -77,16 +77,16 @@ class TransformCurrencyAPIData:
             currency_df["divine.chaosValue"],
         )
 
-        currency_df["tradeName"] = currency_df["name"].map(
-            lambda name: self.name_to_trade_name.get(name, pd.NA)
-        )
-
         chaos_dict = {
             "name": ["Chaos Orb"],
             "chaos.chaosValue": [1],
         }
         chaos_df = pd.DataFrame.from_dict(chaos_dict)
         currency_df = pd.concat((currency_df, chaos_df), ignore_index=True)
+
+        currency_df["tradeName"] = currency_df["name"].map(
+            lambda name: self.name_to_trade_name.get(name, pd.NA)
+        )
 
         currency_df["createdHoursSinceLaunch"] = hours_since_launch
         return currency_df
