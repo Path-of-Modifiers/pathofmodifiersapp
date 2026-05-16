@@ -11,18 +11,18 @@ import pandas as pd
 import requests
 
 from data_retrieval_app.external_data_retrieval.config import settings
+from data_retrieval_app.external_data_retrieval.data_retrieval.currency_api_handler import (
+    CurrencyAPIHandler,
+)
 from data_retrieval_app.external_data_retrieval.data_retrieval.poe_api_handler import (
     PoEAPIHandler,
 )
-from data_retrieval_app.external_data_retrieval.data_retrieval.poe_ninja_currency_api_handler import (
-    PoENinjaCurrencyAPIHandler,
+from data_retrieval_app.external_data_retrieval.transforming_data.transform_currency_api_data import (
+    TransformCurrencyAPIData,
 )
 from data_retrieval_app.external_data_retrieval.transforming_data.transform_poe_api_data import (
     PoEAPIDataTransformerBase,
     UniquePoEAPIDataTransformer,
-)
-from data_retrieval_app.external_data_retrieval.transforming_data.transform_poe_ninja_currency_api_data import (
-    TransformPoENinjaCurrencyAPIData,
 )
 from data_retrieval_app.external_data_retrieval.utils import (
     ProgramRunTooLongException,
@@ -62,10 +62,10 @@ class ContinuousDataRetrieval:
             n_unique_wanted_items=10,
         )
 
-        self.poe_ninja_currency_api_handler = PoENinjaCurrencyAPIHandler(
-            url=f"https://poe.ninja/api/data/currencyoverview?league={self.current_league}&type=Currency"
+        self.currency_api_handler = CurrencyAPIHandler(
+            url=f"https://api.poe.watch/exchange/ratios?league={self.current_league}&game=poe1"
         )
-        self.poe_ninja_transformer = TransformPoENinjaCurrencyAPIData()
+        self.currency_transformer = TransformCurrencyAPIData()
 
     def _get_modifiers(self) -> dict[str, pd.DataFrame]:
         response = requests.get(self.modifier_url, headers=self.pom_auth_headers)
@@ -147,8 +147,8 @@ class ContinuousDataRetrieval:
         return split_dfs
 
     def _get_new_currency_data(self) -> pd.DataFrame:
-        currency_df = self.poe_ninja_currency_api_handler.make_request()
-        currency_df = self.poe_ninja_transformer.transform_into_tables(currency_df)
+        currency_df = self.currency_api_handler.make_request()
+        currency_df = self.currency_transformer.transform_into_tables(currency_df)
         return currency_df
 
     def _initialize_data_stream_threads(
@@ -233,6 +233,8 @@ class ContinuousDataRetrieval:
                             )
                             futures[follow_future] = "data_processing"
                     elif future_job == "listener":
+                        logger.exception(crashed_future.exception().with_traceback())
+                        raise crashed_future.exception()
                         new_future = self._initialize_data_stream_threads(
                             executor,
                             listeners=1,
