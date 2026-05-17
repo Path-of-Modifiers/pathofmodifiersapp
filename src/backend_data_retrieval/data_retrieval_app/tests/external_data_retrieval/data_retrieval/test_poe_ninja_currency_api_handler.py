@@ -1,4 +1,4 @@
-class TestPoENinjaCurrencyAPIHandler:
+class TestCurrencyAPIHandler:
     """
     settings.POE_PUBLIC_STASHES_AUTH_TOKEN and settings.OATH_ACC_TOKEN_CONTACT_EMAIL
     needs to be set to for this test to work
