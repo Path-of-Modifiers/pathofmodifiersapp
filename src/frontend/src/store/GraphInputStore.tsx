@@ -176,19 +176,20 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       baseSpec: undefined,
     })),
 
-  addLeague: (league: string) => set((state) => ({ leagues: [...state.leagues, league] })),
+  addLeague: (league: string) =>
+    set((state) => ({ leagues: [...state.leagues, league] })),
   removeLeague: (league: string) =>
     set((state) => ({
       leagues: [
         ...state.leagues.reduce(
-          (prev, cur) =>
-            cur === league ? [...prev] : [...prev, cur],
-          [] as string[])
-      ]
+          (prev, cur) => (cur === league ? [...prev] : [...prev, cur]),
+          [] as string[],
+        ),
+      ],
     })),
   removeAllLeagues: () =>
     set(() => ({
-      leagues: []
+      leagues: [],
     })),
 
   setItemSpec: (itemSpec: ItemSpecState) => set(() => ({ itemSpec: itemSpec })),
@@ -415,6 +416,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
 
   setWantedModifierMinRoll: (
     modifierId: number,
+    position: number,
     minRoll: number | undefined,
     index: number,
   ) =>
@@ -425,20 +427,41 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             wantedModifierExtended.modifierId === modifierId &&
             wantedModifierExtended.index === index
           ) {
+            let updatedModifierLimitations =
+              wantedModifierExtended.modifierLimitations;
+            if (updatedModifierLimitations == null) {
+              updatedModifierLimitations = [];
+            }
             if (minRoll === undefined) {
-              if (!wantedModifierExtended.modifierLimitations?.maxRoll) {
-                delete wantedModifierExtended["modifierLimitations"];
-              } else {
-                delete wantedModifierExtended.modifierLimitations["minRoll"];
+              for (let i = 0; i < updatedModifierLimitations.length; i++) {
+                const limitation = updatedModifierLimitations[i];
+                if (limitation.position === position) {
+                  if (limitation.minRoll == null) {
+                    delete updatedModifierLimitations[i];
+                  } else {
+                    delete limitation["minRoll"];
+                  }
+                  break;
+                }
               }
-              return wantedModifierExtended;
+            } else {
+              let updatedModifierLimitation = updatedModifierLimitations.find(
+                (modifierLimitation) =>
+                  modifierLimitation.position === position,
+              );
+              if (updatedModifierLimitation == null) {
+                updatedModifierLimitation = {
+                  position: position,
+                  minRoll: minRoll,
+                };
+                updatedModifierLimitations.push(updatedModifierLimitation);
+              } else {
+                updatedModifierLimitation.minRoll = minRoll;
+              }
             }
             return {
               ...wantedModifierExtended,
-              modifierLimitations: {
-                ...wantedModifierExtended.modifierLimitations,
-                minRoll: minRoll,
-              },
+              modifierLimitations: updatedModifierLimitations,
             };
           } else {
             return wantedModifierExtended;
@@ -450,6 +473,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
 
   setWantedModifierMaxRoll: (
     modifierId: number,
+    position: number,
     maxRoll: number | undefined,
     index: number,
   ) =>
@@ -460,20 +484,41 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             wantedModifierExtended.modifierId === modifierId &&
             wantedModifierExtended.index === index
           ) {
+            let updatedModifierLimitations =
+              wantedModifierExtended.modifierLimitations;
+            if (updatedModifierLimitations == null) {
+              updatedModifierLimitations = [];
+            }
             if (maxRoll === undefined) {
-              if (!wantedModifierExtended.modifierLimitations?.minRoll) {
-                delete wantedModifierExtended["modifierLimitations"];
-              } else {
-                delete wantedModifierExtended.modifierLimitations["maxRoll"];
+              for (let i = 0; i < updatedModifierLimitations.length; i++) {
+                const limitation = updatedModifierLimitations[i];
+                if (limitation.position === position) {
+                  if (limitation.minRoll == null) {
+                    delete updatedModifierLimitations[i];
+                  } else {
+                    delete limitation["maxRoll"];
+                  }
+                  break;
+                }
               }
-              return wantedModifierExtended;
+            } else {
+              let updatedModifierLimitation = updatedModifierLimitations.find(
+                (modifierLimitation) =>
+                  modifierLimitation.position === position,
+              );
+              if (updatedModifierLimitation == null) {
+                updatedModifierLimitation = {
+                  position: position,
+                  maxRoll: maxRoll,
+                };
+                updatedModifierLimitations.push(updatedModifierLimitation);
+              } else {
+                updatedModifierLimitation.maxRoll = maxRoll;
+              }
             }
             return {
               ...wantedModifierExtended,
-              modifierLimitations: {
-                ...wantedModifierExtended.modifierLimitations,
-                maxRoll: maxRoll,
-              },
+              modifierLimitations: updatedModifierLimitations,
             };
           } else {
             return wantedModifierExtended;
@@ -485,25 +530,50 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
 
   setWantedModifierTextRoll: (
     modifierId: number,
+    position: number,
     textRoll: number | undefined,
     index: number,
   ) =>
     set((state) => {
       const updatedModifiersExtended = state.wantedModifierExtended.map(
-        (wantedModifierExtended) =>
-          wantedModifierExtended.modifierId === modifierId &&
+        (wantedModifierExtended) => {
+          if (
+            wantedModifierExtended.modifierId === modifierId &&
             wantedModifierExtended.index === index
-            ? {
-              ...wantedModifierExtended,
-              modifierLimitations:
-                textRoll !== undefined
-                  ? {
-                    ...wantedModifierExtended.modifierLimitations,
-                    textRoll: textRoll,
-                  }
-                  : undefined,
+          ) {
+            let updatedModifierLimitations =
+              wantedModifierExtended.modifierLimitations;
+            if (updatedModifierLimitations == null) {
+              updatedModifierLimitations = [];
             }
-            : wantedModifierExtended,
+            if (textRoll === undefined) {
+              updatedModifierLimitations = updatedModifierLimitations.filter(
+                (modifierLimitation) =>
+                  modifierLimitation.position !== position,
+              );
+            } else {
+              let updatedModifierLimitation = updatedModifierLimitations.find(
+                (modifierLimitation) =>
+                  modifierLimitation.position === position,
+              );
+              if (updatedModifierLimitation == null) {
+                updatedModifierLimitation = {
+                  position: position,
+                  textRoll: textRoll,
+                };
+                updatedModifierLimitations.push(updatedModifierLimitation);
+              } else {
+                updatedModifierLimitation.textRoll = textRoll;
+              }
+            }
+            return {
+              ...wantedModifierExtended,
+              modifierLimitations: updatedModifierLimitations,
+            };
+          } else {
+            return wantedModifierExtended;
+          }
+        },
       );
       return { wantedModifierExtended: updatedModifiersExtended };
     }),

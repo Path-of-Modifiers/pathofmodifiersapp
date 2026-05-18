@@ -8,89 +8,118 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-// Import Routes
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as CaptchaRouteImport } from './routes/captcha'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as LayoutRouteImport } from './routes/_layout'
+import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as PrivacyPolicyImport } from './routes/privacy-policy'
-import { Route as CaptchaImport } from './routes/captcha'
-import { Route as AboutImport } from './routes/about'
-import { Route as LayoutImport } from './routes/_layout'
-import { Route as LayoutIndexImport } from './routes/_layout/index'
-
-// Create/Update Routes
-
-const PrivacyPolicyRoute = PrivacyPolicyImport.update({
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
   id: '/privacy-policy',
   path: '/privacy-policy',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const CaptchaRoute = CaptchaImport.update({
+const CaptchaRoute = CaptchaRouteImport.update({
   id: '/captcha',
   path: '/captcha',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const AboutRoute = AboutImport.update({
+const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const LayoutRoute = LayoutImport.update({
+const LayoutRoute = LayoutRouteImport.update({
   id: '/_layout',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const LayoutIndexRoute = LayoutIndexImport.update({
+const LayoutIndexRoute = LayoutIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => LayoutRoute,
 } as any)
 
-// Populate the FileRoutesByPath interface
+export interface FileRoutesByFullPath {
+  '/': typeof LayoutIndexRoute
+  '/about': typeof AboutRoute
+  '/captcha': typeof CaptchaRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+}
+export interface FileRoutesByTo {
+  '/about': typeof AboutRoute
+  '/captcha': typeof CaptchaRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/': typeof LayoutIndexRoute
+}
+export interface FileRoutesById {
+  __root__: typeof rootRouteImport
+  '/_layout': typeof LayoutRouteWithChildren
+  '/about': typeof AboutRoute
+  '/captcha': typeof CaptchaRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/_layout/': typeof LayoutIndexRoute
+}
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths: '/' | '/about' | '/captcha' | '/privacy-policy'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/about' | '/captcha' | '/privacy-policy' | '/'
+  id:
+    | '__root__'
+    | '/_layout'
+    | '/about'
+    | '/captcha'
+    | '/privacy-policy'
+    | '/_layout/'
+  fileRoutesById: FileRoutesById
+}
+export interface RootRouteChildren {
+  LayoutRoute: typeof LayoutRouteWithChildren
+  AboutRoute: typeof AboutRoute
+  CaptchaRoute: typeof CaptchaRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
+}
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_layout': {
-      id: '/_layout'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof LayoutImport
-      parentRoute: typeof rootRoute
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutImport
-      parentRoute: typeof rootRoute
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/captcha': {
       id: '/captcha'
       path: '/captcha'
       fullPath: '/captcha'
-      preLoaderRoute: typeof CaptchaImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof CaptchaRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/privacy-policy': {
-      id: '/privacy-policy'
-      path: '/privacy-policy'
-      fullPath: '/privacy-policy'
-      preLoaderRoute: typeof PrivacyPolicyImport
-      parentRoute: typeof rootRoute
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_layout': {
+      id: '/_layout'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof LayoutRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_layout/': {
       id: '/_layout/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof LayoutIndexImport
-      parentRoute: typeof LayoutImport
+      preLoaderRoute: typeof LayoutIndexRouteImport
+      parentRoute: typeof LayoutRoute
     }
   }
 }
-
-// Create and export the route tree
 
 interface LayoutRouteChildren {
   LayoutIndexRoute: typeof LayoutIndexRoute
@@ -103,94 +132,12 @@ const LayoutRouteChildren: LayoutRouteChildren = {
 const LayoutRouteWithChildren =
   LayoutRoute._addFileChildren(LayoutRouteChildren)
 
-export interface FileRoutesByFullPath {
-  '': typeof LayoutRouteWithChildren
-  '/about': typeof AboutRoute
-  '/captcha': typeof CaptchaRoute
-  '/privacy-policy': typeof PrivacyPolicyRoute
-  '/': typeof LayoutIndexRoute
-}
-
-export interface FileRoutesByTo {
-  '/about': typeof AboutRoute
-  '/captcha': typeof CaptchaRoute
-  '/privacy-policy': typeof PrivacyPolicyRoute
-  '/': typeof LayoutIndexRoute
-}
-
-export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/_layout': typeof LayoutRouteWithChildren
-  '/about': typeof AboutRoute
-  '/captcha': typeof CaptchaRoute
-  '/privacy-policy': typeof PrivacyPolicyRoute
-  '/_layout/': typeof LayoutIndexRoute
-}
-
-export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/about' | '/captcha' | '/privacy-policy' | '/'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/about' | '/captcha' | '/privacy-policy' | '/'
-  id:
-    | '__root__'
-    | '/_layout'
-    | '/about'
-    | '/captcha'
-    | '/privacy-policy'
-    | '/_layout/'
-  fileRoutesById: FileRoutesById
-}
-
-export interface RootRouteChildren {
-  LayoutRoute: typeof LayoutRouteWithChildren
-  AboutRoute: typeof AboutRoute
-  CaptchaRoute: typeof CaptchaRoute
-  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
-}
-
 const rootRouteChildren: RootRouteChildren = {
   LayoutRoute: LayoutRouteWithChildren,
   AboutRoute: AboutRoute,
   CaptchaRoute: CaptchaRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/_layout",
-        "/about",
-        "/captcha",
-        "/privacy-policy"
-      ]
-    },
-    "/_layout": {
-      "filePath": "_layout.tsx",
-      "children": [
-        "/_layout/"
-      ]
-    },
-    "/about": {
-      "filePath": "about.tsx"
-    },
-    "/captcha": {
-      "filePath": "captcha.tsx"
-    },
-    "/privacy-policy": {
-      "filePath": "privacy-policy.tsx"
-    },
-    "/_layout/": {
-      "filePath": "_layout/index.tsx",
-      "parent": "/_layout"
-    }
-  }
-}
-ROUTE_MANIFEST_END */

@@ -4,7 +4,7 @@ import {
   AlertIcon,
   AlertTitle,
   AlertProps,
-} from "@chakra-ui/alert";
+} from "@chakra-ui/react/alert";
 import { IconBaseProps } from "react-icons/lib";
 
 interface ErrorMessageProps {

@@ -1,10 +1,7 @@
-import { PlotQuery, WantedModifier } from "../../client";
+import { PlotQuery } from "../../client";
 import { useErrorStore } from "../../store/ErrorStore";
 import { useGraphInputStore } from "../../store/GraphInputStore";
-import {
-  BaseSpecState,
-  WantedModifierExtended,
-} from "../../store/StateInterface";
+import { BaseSpecState } from "../../store/StateInterface";
 import { LEAGUE_LAUNCH_TIME, PLOTTING_WINDOW_HOURS } from "../../config";
 
 export const LEAGUE_LAUNCH_DATETIME = new Date(LEAGUE_LAUNCH_TIME);
@@ -17,7 +14,7 @@ const calcMean = (values: number[]) => {
 const calcSTD = (values: number[], mean: number) => {
   return Math.sqrt(
     values.reduce((prev, cur) => prev + (cur - mean) * (cur - mean), 0) /
-    values.length
+      values.length,
   );
 };
 
@@ -40,7 +37,7 @@ export function formatHoursSinceLaunch(hoursSinceLaunch: number): string {
 export const getHoursSinceLaunch = (currentTime: Date): number => {
   const getCurrentTimeDate = currentTime.getTime();
   const hoursSinceLaunch = Math.floor(
-    (getCurrentTimeDate - LEAGUE_LAUNCH_DATETIME.getTime()) / (1000 * 3600)
+    (getCurrentTimeDate - LEAGUE_LAUNCH_DATETIME.getTime()) / (1000 * 3600),
   );
   return hoursSinceLaunch;
 };
@@ -63,10 +60,10 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
         return newUniqueCandidates;
       }
       return prev.filter((prevCandidate) =>
-        newUniqueCandidates.includes(prevCandidate)
+        newUniqueCandidates.includes(prevCandidate),
       );
     },
-    [] as string[]
+    [] as string[],
   );
   if (possibleUniques.length === 0 && state.itemSpec?.identified !== false) {
     useErrorStore.getState().setNoRelatedUniqueError(true);
@@ -125,32 +122,12 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
   }
 
   itemSpec = { ...itemSpec, name: possibleUniques.join("|") };
-  const wantedModifier: WantedModifier[][] = state.wantedModifierExtended
+  const wantedModifier = state.wantedModifierExtended
     .filter((wantedModifier) => wantedModifier.isSelected)
-    .reduce((prev, cur, index) => {
-      // Very over complicated way to group modifier ids
-      const prevLength = prev.length;
-      if (prevLength === 0) {
-        return [[cur]];
-      }
-      const wantedModifierIndex = cur.index;
-      const prevWantedModifierIndex =
-        state.wantedModifierExtended[index - 1].index;
-
-      if (wantedModifierIndex === prevWantedModifierIndex) {
-        return [
-          ...prev.slice(0, prevLength - 1),
-          [...prev[prevLength - 1], cur],
-        ];
-      }
-      return [...prev, [cur]];
-    }, [] as WantedModifierExtended[][])
-    .map((groupedWantedModifierExtended) =>
-      groupedWantedModifierExtended.map((wantedModifierExtended) => ({
-        modifierId: wantedModifierExtended.modifierId,
-        modifierLimitations: wantedModifierExtended.modifierLimitations,
-      }))
-    );
+    .map((wantedMoidifierExtended) => ({
+      modifierId: wantedMoidifierExtended.modifierId,
+      modifierLimitations: wantedMoidifierExtended.modifierLimitations,
+    }));
   const currentTime = new Date();
   const end = getHoursSinceLaunch(currentTime);
   const window = PLOTTING_WINDOW_HOURS;
