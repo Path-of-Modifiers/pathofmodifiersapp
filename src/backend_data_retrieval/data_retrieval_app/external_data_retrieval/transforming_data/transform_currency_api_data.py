@@ -71,9 +71,11 @@ class TransformCurrencyAPIData:
         Since a chaos orb is always worth one chaos orb, ninja does not include it in its price api.
         """
 
+        missing_chaos_value_mask = (currency_df["chaos.chaosValue"] == 0) | (
+            currency_df["chaos.chaosValue"].isna()
+        )
         currency_df["chaos.chaosValue"] = currency_df["chaos.chaosValue"].where(
-            (currency_df["chaos.chaosValue"] == 0)
-            | (currency_df["chaos.chaosValue"].isna()),
+            ~missing_chaos_value_mask,
             currency_df["divine.chaosValue"],
         )
 
