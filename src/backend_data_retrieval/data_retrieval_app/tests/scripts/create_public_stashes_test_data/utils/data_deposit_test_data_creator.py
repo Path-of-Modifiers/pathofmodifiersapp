@@ -111,35 +111,32 @@ class DataDepositTestDataCreator:
 
         return output
 
-    def _find_connected_modifier_ids_and_rolls(
+    def _find_modifier_and_rolls(
         self,
         modifier_df: pd.DataFrame,
-        modifier_distrubution: dict[int | str, list[int]],
+        modifier_distribution: dict[int | str, list[int]],
     ) -> tuple[
         dict[int | str, list[list[int]]], dict[int | str, list[tuple[int, int] | str]]
     ]:
         """
-        Example input modifier_distrubution dict:
+        Example input modifier_distribution dict:
         {
-            3: [1],
+            3: [2],
             "rest": [1]
         }
         Example output connected_modifier_ids_dict:
         {
             3: [
-                [1],
-                [5, 6]
+                1,
+                5
             ],
             "rest": [
-                [1]
+                2
             ]
         }
         Example output connected_rolls_dict:
         {
-            3: [
-                [1, 20],
-                "Balbala|Xibaqua"
-            ],
+            3: {1: {"rolls": [[1,20], "Balbala|Xibaqua"]}, 5: {"rolls": [[1,4]]}},
             "rest": [
                 []
             ]
@@ -150,14 +147,13 @@ class DataDepositTestDataCreator:
         roll is seperated by `|`
         """
 
-        def get_modifier_ids_rolls_effect(
+        def get_roll_ranges(
             row: pd.Series,
         ) -> pd.Series:
-            choosable_modifier_ids = row["groupedModifierProperties"]["modifierId"]
-            effect = row["effect"]
+            modifier_id = row["modifierId"]
 
             df: pd.DataFrame = self.db_modifier_df.loc[
-                self.db_modifier_df["effect"] == effect
+                self.db_modifier_df["modifierId"] == modifier_id
             ]
             not_static = all(df["static"].isna())
             rolls = []
@@ -178,19 +174,15 @@ class DataDepositTestDataCreator:
                     .to_list()
                 )
 
-            return pd.Series(
-                {
-                    "modifier_ids": choosable_modifier_ids,
-                    "rolls": rolls,
-                    "effect": effect,
-                }
-            )
+            # return pd.Series({"modifier_id": modifier_id, "rolls": rolls}, index=)
+            # return {modifier_id: rolls}
+            return pd.Series({"modifier_id": modifier_id, "rolls": rolls})
 
         grouped_modifier_df = self.grouped_modifier_df
         prev_key = 0
         connected_modifier_ids_dict = {}
         connected_rolls_dict = {}
-        for key in modifier_distrubution:
+        for key in modifier_distribution:
             upper_bound = key
             if key == "rest":
                 upper_bound = len(modifier_df)
@@ -213,24 +205,18 @@ class DataDepositTestDataCreator:
                 choosable_effects_mask
             ]
 
-            modifier_ids_rolls_effect_df = choosable_grouped_modifier_df.apply(
-                get_modifier_ids_rolls_effect, axis=1
-            )
+            modifier_ids = choosable_grouped_modifier_df["modifierId"].to_list()
+            effects = choosable_grouped_modifier_df["effect"].to_list()
 
-            modifier_ids: list[list[int]] = modifier_ids_rolls_effect_df[
-                "modifier_ids"
-            ].to_list()
             connected_modifier_ids_dict[key] = modifier_ids
-
-            rolls = modifier_ids_rolls_effect_df["rolls"].to_list()
+            rolls = choosable_grouped_modifier_df.apply(get_roll_ranges, axis=1)
+            rolls.set_index("modifier_id", inplace=True)
+            rolls = rolls.to_dict()["rolls"]
             connected_rolls_dict[key] = rolls
 
-            effects: list[list[str]] = modifier_ids_rolls_effect_df["effect"].to_list()
             for modifier_id, effect in zip(modifier_ids, effects, strict=True):
-                if tuple(modifier_id) not in self.modifier_ids_to_effect_map:
-                    self.modifier_ids_to_effect_map[tuple(modifier_id)] = effect
-
-            prev_key = upper_bound
+                if modifier_id not in self.modifier_ids_to_effect_map:
+                    self.modifier_ids_to_effect_map[modifier_id] = effect
 
         return connected_modifier_ids_dict, connected_rolls_dict
 
@@ -263,25 +249,26 @@ class DataDepositTestDataCreator:
                 modifier_comments["Can have duplicate modifiers"]
             )
 
-            if "Modifier distrubution" in modifier_comments:
-                modifier_template["distrubution"] = self._parse_comment(
-                    modifier_comments["Modifier distrubution"]
+            if "Modifier distribution" in modifier_comments:
+                modifier_template["distribution"] = self._parse_comment(
+                    modifier_comments["Modifier distribution"]
                 )
             else:
-                modifier_template["distrubution"] = {"rest": 6}
+                modifier_template["distribution"] = {"rest": 6}
 
             (
                 modifier_template["modifier_ids_to_choose"],
                 modifier_template["roll_ranges"],
-            ) = self._find_connected_modifier_ids_and_rolls(
-                modifier_df, modifier_template["distrubution"]
+            ) = self._find_modifier_and_rolls(
+                modifier_df, modifier_template["distribution"]
             )
+
             # Check for equal lengths taken from:
             # https://stackoverflow.com/questions/35791051/better-way-to-check-if-all-lists-in-a-list-are-the-same-length
             it = iter(
                 [
                     modifier_template["can_duplicate"],
-                    modifier_template["distrubution"].keys(),
+                    modifier_template["distribution"].keys(),
                     modifier_template["modifier_ids_to_choose"].keys(),
                     modifier_template["roll_ranges"].keys(),
                 ]
@@ -293,7 +280,7 @@ class DataDepositTestDataCreator:
                     + str(
                         [
                             len(modifier_template["can_duplicate"]),
-                            len(modifier_template["distrubution"].keys()),
+                            len(modifier_template["distribution"].keys()),
                             len(modifier_template["modifier_ids_to_choose"].keys()),
                             len(modifier_template["roll_ranges"].keys()),
                         ]
@@ -345,35 +332,34 @@ class DataDepositTestDataCreator:
         Note: Only works when
             len(can_duplicate)
             ==
-            len(distrubution.keys())
+            len(distribution.keys())
             ==
             len(modifier_ids_to_choose.keys())
             ==
             len(roll_ranges.keys())
         """
         can_duplicate = template["can_duplicate"]
-        distrubution = template["distrubution"]
+        distribution = template["distribution"]
         modifier_ids_to_choose = template["modifier_ids_to_choose"]
         roll_ranges = template["roll_ranges"]
 
         modifiers = []
-        for i, key in enumerate(distrubution):
-            n_modifiers_to_create: int = random.choice(distrubution[key])
+        for i, key in enumerate(distribution):
+            n_modifiers_to_create: int = random.choice(distribution[key])
 
             remove_chosen_modifiers_from_pool: bool = not can_duplicate[i]
 
-            modifier_ids_to_choose_from: list[list[int]] = modifier_ids_to_choose[
+            modifier_ids_to_choose_from: list[int] = modifier_ids_to_choose[key].copy()
+            complementing_roll_ranges: dict[int, list[str | list[float]]] = roll_ranges[
                 key
             ].copy()
-            complementing_roll_ranges: list[str | list[float]] = roll_ranges[key].copy()
 
             for _ in range(n_modifiers_to_create):
-                choice_made = random.choice(range(len(modifier_ids_to_choose_from)))
+                modifier_id = random.choice(modifier_ids_to_choose_from)
 
-                chosen_modifier_ids = modifier_ids_to_choose_from[choice_made]
-                chosen_rolls = complementing_roll_ranges[choice_made]
+                chosen_rolls = complementing_roll_ranges[modifier_id]
 
-                effect = self.modifier_ids_to_effect_map[tuple(chosen_modifier_ids)]
+                effect = self.modifier_ids_to_effect_map[modifier_id]
 
                 if chosen_rolls:
                     # equivalent to modifier not being static
@@ -383,9 +369,8 @@ class DataDepositTestDataCreator:
 
                 if remove_chosen_modifiers_from_pool or not chosen_rolls:
                     # not chosen_rolls -> static, can't have multiple static modifiers
-                    modifier_ids_to_choose_from.pop(choice_made)
-                    complementing_roll_ranges.pop(choice_made)
-
+                    modifier_ids_to_choose_from.remove(modifier_id)
+                    complementing_roll_ranges.pop(modifier_id)
         return modifiers
 
     def _create_item_dict_from_template(
@@ -427,12 +412,16 @@ class DataDepositTestDataCreator:
     def create_test_data(
         self,
     ) -> Iterator[tuple[str, list[dict[str, Any]]]]:
-        for filename, template in self.templates.items():
-            stash = []
-            for _ in range(self.n_of_items):
-                item_dict = self._create_item_dict_from_template(template)
-                stash.append(item_dict)
-            yield filename, stash
+        try:
+            for filename, template in self.templates.items():
+                stash = []
+                for _ in range(self.n_of_items):
+                    item_dict = self._create_item_dict_from_template(template)
+                    stash.append(item_dict)
+                yield filename, stash
+        except Exception as e:
+            test_logger.exception(f"An error occurred while creating test data: {e}")
+            raise e
 
 
 def main() -> int:

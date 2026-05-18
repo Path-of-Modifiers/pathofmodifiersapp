@@ -76,7 +76,7 @@ class ModifierDataDepositor(DataDepositorBase):
             by=["effect", "position"], ascending=False, inplace=True
         )
 
-        update_url = self.data_url + "?modifierId={}"
+        update_url = self.data_url + "?modifierId={}&position={}"
 
         rolls = None
         update_regex = False
@@ -151,7 +151,7 @@ class ModifierDataDepositor(DataDepositorBase):
                 headers.update(self.pom_auth_headers)
                 try:
                     response = requests.put(
-                        update_url.format(row_cur["modifierId"]),
+                        update_url.format(row_cur["modifierId"], row_cur["position"]),
                         json=data,
                         headers=headers,
                         # add HTTP Basic Auth

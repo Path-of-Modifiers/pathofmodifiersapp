@@ -12,11 +12,11 @@ class ReplaceableObject:
 
 
 class ReplaceableTrigger(ReplaceableObject):
-    def __init__(self, name, table, function, trigger):
+    def __init__(self, name: str, table: str, function: str, trigger: str):
         self.name = name
         self.table = table
-        self.function = function
-        self.trigger = trigger
+        self.function = function.format(name=name)
+        self.trigger = trigger.format(name=name, table=table)
 
 
 ObjectType = TypeVar("ObjectType", bound=ReplaceableObject)
@@ -89,22 +89,24 @@ class DropTriggerOp(ReversibleOp[ReplaceableTrigger]):
 @Operations.implementation_for(CreateViewOp)
 def create_view(operations: Operations, operation: CreateViewOp):
     operations.execute(
-        "CREATE VIEW %s AS %s" % (operation.target.name, operation.target.sqltext)
+        "CREATE VIEW {} AS {}".format(operation.target.name, operation.target.sqltext)
     )
 
 
 @Operations.implementation_for(DropViewOp)
 def drop_view(operations: Operations, operation: DropViewOp):
-    operations.execute("DROP VIEW %s" % operation.target.name)
+    operations.execute("DROP VIEW {}".format(operation.target.name))
 
 
 @Operations.implementation_for(CreateTriggerOp)
 def create_trigger(operations: Operations, operation: CreateTriggerOp):
     operations.execute(
-        "CREATE FUNCTION %s() %s" % (operation.target.name, operation.target.function)
+        "CREATE FUNCTION {}() {}".format(
+            operation.target.name, operation.target.function
+        )
     )
     operations.execute(
-        "CREATE TRIGGER %s %s" % (operation.target.name, operation.target.trigger)
+        "CREATE TRIGGER {} {}".format(operation.target.name, operation.target.trigger)
     )
 
 
@@ -113,4 +115,4 @@ def drop_trigger(operations: Operations, operation: DropTriggerOp):
     operations.execute(
         "DROP TRIGGER {} ON {};".format(operation.target.name, operation.target.table)
     )
-    operations.execute("DROP FUNCTION %s();" % operation.target.name)
+    operations.execute("DROP FUNCTION {}();".format(operation.target.name))
