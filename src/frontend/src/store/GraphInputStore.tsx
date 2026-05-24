@@ -12,6 +12,7 @@ import {
 import { GroupedModifierByEffect, ItemBaseType, PlotQuery } from "../client";
 import { encodeHash, decodeHash } from "./utils";
 import { DEFAULT_LEAGUES } from "../config";
+import { updateNumericalRoll } from "../hooks/graphing/utils";
 
 // Graph Input Store  -  This store is used to store graph input data.
 export const useGraphInputStore = create<GraphInputState>((set) => ({
@@ -420,56 +421,9 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
     minRoll: number | undefined,
     index: number,
   ) =>
-    set((state) => {
-      const updatedModifiersExtended = state.wantedModifierExtended.map(
-        (wantedModifierExtended) => {
-          if (
-            wantedModifierExtended.modifierId === modifierId &&
-            wantedModifierExtended.index === index
-          ) {
-            let updatedModifierLimitations =
-              wantedModifierExtended.modifierLimitations;
-            if (updatedModifierLimitations == null) {
-              updatedModifierLimitations = [];
-            }
-            if (minRoll === undefined) {
-              for (let i = 0; i < updatedModifierLimitations.length; i++) {
-                const limitation = updatedModifierLimitations[i];
-                if (limitation.position === position) {
-                  if (limitation.minRoll == null) {
-                    delete updatedModifierLimitations[i];
-                  } else {
-                    delete limitation["minRoll"];
-                  }
-                  break;
-                }
-              }
-            } else {
-              let updatedModifierLimitation = updatedModifierLimitations.find(
-                (modifierLimitation) =>
-                  modifierLimitation.position === position,
-              );
-              if (updatedModifierLimitation == null) {
-                updatedModifierLimitation = {
-                  position: position,
-                  minRoll: minRoll,
-                };
-                updatedModifierLimitations.push(updatedModifierLimitation);
-              } else {
-                updatedModifierLimitation.minRoll = minRoll;
-              }
-            }
-            return {
-              ...wantedModifierExtended,
-              modifierLimitations: updatedModifierLimitations,
-            };
-          } else {
-            return wantedModifierExtended;
-          }
-        },
-      );
-      return { wantedModifierExtended: updatedModifiersExtended };
-    }),
+    set((state) =>
+      updateNumericalRoll(state, modifierId, position, minRoll, "min", index),
+    ),
 
   setWantedModifierMaxRoll: (
     modifierId: number,
@@ -477,56 +431,9 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
     maxRoll: number | undefined,
     index: number,
   ) =>
-    set((state) => {
-      const updatedModifiersExtended = state.wantedModifierExtended.map(
-        (wantedModifierExtended) => {
-          if (
-            wantedModifierExtended.modifierId === modifierId &&
-            wantedModifierExtended.index === index
-          ) {
-            let updatedModifierLimitations =
-              wantedModifierExtended.modifierLimitations;
-            if (updatedModifierLimitations == null) {
-              updatedModifierLimitations = [];
-            }
-            if (maxRoll === undefined) {
-              for (let i = 0; i < updatedModifierLimitations.length; i++) {
-                const limitation = updatedModifierLimitations[i];
-                if (limitation.position === position) {
-                  if (limitation.minRoll == null) {
-                    delete updatedModifierLimitations[i];
-                  } else {
-                    delete limitation["maxRoll"];
-                  }
-                  break;
-                }
-              }
-            } else {
-              let updatedModifierLimitation = updatedModifierLimitations.find(
-                (modifierLimitation) =>
-                  modifierLimitation.position === position,
-              );
-              if (updatedModifierLimitation == null) {
-                updatedModifierLimitation = {
-                  position: position,
-                  maxRoll: maxRoll,
-                };
-                updatedModifierLimitations.push(updatedModifierLimitation);
-              } else {
-                updatedModifierLimitation.maxRoll = maxRoll;
-              }
-            }
-            return {
-              ...wantedModifierExtended,
-              modifierLimitations: updatedModifierLimitations,
-            };
-          } else {
-            return wantedModifierExtended;
-          }
-        },
-      );
-      return { wantedModifierExtended: updatedModifiersExtended };
-    }),
+    set((state) =>
+      updateNumericalRoll(state, modifierId, position, maxRoll, "max", index),
+    ),
 
   setWantedModifierTextRoll: (
     modifierId: number,
@@ -543,7 +450,11 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
           ) {
             let updatedModifierLimitations =
               wantedModifierExtended.modifierLimitations;
+            // textRoll === undefined => remove textRoll
             if (updatedModifierLimitations == null) {
+              if (textRoll === undefined) {
+                return wantedModifierExtended;
+              }
               updatedModifierLimitations = [];
             }
             if (textRoll === undefined) {

@@ -1,7 +1,7 @@
 import { PlotQuery } from "../../client";
 import { useErrorStore } from "../../store/ErrorStore";
 import { useGraphInputStore } from "../../store/GraphInputStore";
-import { BaseSpecState } from "../../store/StateInterface";
+import { BaseSpecState, GraphInputState } from "../../store/StateInterface";
 import { LEAGUE_LAUNCH_TIME, PLOTTING_WINDOW_HOURS } from "../../config";
 
 export const LEAGUE_LAUNCH_DATETIME = new Date(LEAGUE_LAUNCH_TIME);
@@ -40,6 +40,80 @@ export const getHoursSinceLaunch = (currentTime: Date): number => {
     (getCurrentTimeDate - LEAGUE_LAUNCH_DATETIME.getTime()) / (1000 * 3600),
   );
   return hoursSinceLaunch;
+};
+
+export const updateNumericalRoll = (
+  state: GraphInputState,
+  modifierId: number,
+  position: number,
+  roll: number | undefined,
+  rollType: "min" | "max",
+  index: number,
+) => {
+  const updatedModifiersExtended = state.wantedModifierExtended.map(
+    (wantedModifierExtended) => {
+      if (
+        wantedModifierExtended.modifierId === modifierId &&
+        wantedModifierExtended.index === index
+      ) {
+        let updatedModifierLimitations =
+          wantedModifierExtended.modifierLimitations;
+        // roll === undefined => remove rollType
+        if (updatedModifierLimitations == null) {
+          if (roll === undefined) {
+            return wantedModifierExtended;
+          }
+          updatedModifierLimitations = [];
+        }
+
+        if (roll === undefined) {
+          for (let i = 0; i < updatedModifierLimitations.length; i++) {
+            const limitation = updatedModifierLimitations[i];
+            if (limitation.position === position) {
+              if (limitation.minRoll == null) {
+                delete updatedModifierLimitations[i];
+              } else {
+                if (rollType === "min") {
+                  delete limitation["minRoll"];
+                } else {
+                  delete limitation["maxRoll"];
+                }
+              }
+              break;
+            }
+          }
+        } else {
+          let updatedModifierLimitation = updatedModifierLimitations.find(
+            (modifierLimitation) => modifierLimitation.position === position,
+          );
+          if (updatedModifierLimitation == null) {
+            updatedModifierLimitation = {
+              position: position,
+            };
+            if (rollType === "min") {
+              updatedModifierLimitation["minRoll"] = roll;
+            } else {
+              updatedModifierLimitation["maxRoll"] = roll;
+            }
+            updatedModifierLimitations.push(updatedModifierLimitation);
+          } else {
+            if (rollType === "min") {
+              updatedModifierLimitation["minRoll"] = roll;
+            } else {
+              updatedModifierLimitation["maxRoll"] = roll;
+            }
+          }
+        }
+        return {
+          ...wantedModifierExtended,
+          modifierLimitations: updatedModifierLimitations,
+        };
+      } else {
+        return wantedModifierExtended;
+      }
+    },
+  );
+  return { wantedModifierExtended: updatedModifiersExtended };
 };
 
 export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
