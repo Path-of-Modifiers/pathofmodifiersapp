@@ -9,6 +9,11 @@ import {
   ResponsiveContainer,
   TooltipContentProps,
 } from "recharts";
+// for recharts v2.1 and above
+import {
+  ValueType,
+  NameType,
+} from "recharts/types/component/DefaultTooltipContent";
 import { Box, BoxProps, Center, Spinner } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 import { usePlotSettingsStore } from "../../store/PlotSettingsStore";
@@ -153,7 +158,7 @@ function GraphComponent(props: BoxProps) {
               allowDataOverflow
             />
             <Tooltip
-              content={(props: TooltipContentProps<number, number>) => (
+              content={(props: TooltipContentProps<ValueType, NameType>) => (
                 <CustomTooltip
                   {...props}
                   upperBoundry={upperBoundryChaos}

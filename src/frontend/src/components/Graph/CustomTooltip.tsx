@@ -3,13 +3,17 @@ import { useState, useEffect } from "react";
 import { Box, Divider, Text } from "@chakra-ui/layout";
 import { TooltipContentProps } from "recharts";
 import { Icon } from "@chakra-ui/react";
-
+// for recharts v2.1 and above
+import {
+  ValueType,
+  NameType,
+} from "recharts/types/component/DefaultTooltipContent";
 import { capitalizeFirstLetter } from "../../hooks/utils";
 import { BiError } from "react-icons/bi";
 import { getHoursSinceLaunch } from "../../hooks/graphing/utils";
 import { setupHourlyUpdate } from "../../utils";
 
-interface CustomTooltipProps extends TooltipContentProps<number, number> {
+interface CustomTooltipProps extends TooltipContentProps<ValueType, NameType> {
   upperBoundry: number;
   fetchedLeagues: string[];
   colors: string[];
