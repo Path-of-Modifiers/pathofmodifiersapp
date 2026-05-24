@@ -174,8 +174,6 @@ class DataDepositTestDataCreator:
                     .to_list()
                 )
 
-            # return pd.Series({"modifier_id": modifier_id, "rolls": rolls}, index=)
-            # return {modifier_id: rolls}
             return pd.Series({"modifier_id": modifier_id, "rolls": rolls})
 
         grouped_modifier_df = self.grouped_modifier_df
@@ -217,6 +215,8 @@ class DataDepositTestDataCreator:
             for modifier_id, effect in zip(modifier_ids, effects, strict=True):
                 if modifier_id not in self.modifier_ids_to_effect_map:
                     self.modifier_ids_to_effect_map[modifier_id] = effect
+
+            prev_key = upper_bound
 
         return connected_modifier_ids_dict, connected_rolls_dict
 

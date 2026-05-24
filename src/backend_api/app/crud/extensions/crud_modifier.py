@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from pydantic import TypeAdapter
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -39,6 +40,12 @@ class CRUDModifier(
         ).group_by(model_Modifier.modifierId)
 
         grouped_modifier_by_effect_record = db.execute(stmt).mappings().all()
+
+        if not grouped_modifier_by_effect_record:
+            raise HTTPException(
+                status_code=404,
+                detail=f"No objects found in the table {self.model.__tablename__}.",
+            )
 
         validate = TypeAdapter(
             GroupedModifierByEffect | list[GroupedModifierByEffect]
