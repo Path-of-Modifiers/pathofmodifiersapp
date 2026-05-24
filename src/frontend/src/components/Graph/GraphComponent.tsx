@@ -7,15 +7,19 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  TooltipContentProps,
 } from "recharts";
+// for recharts v2.1 and above
+import {
+  ValueType,
+  NameType,
+} from "recharts/types/component/DefaultTooltipContent";
 import { Box, BoxProps, Center, Spinner } from "@chakra-ui/react";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 import { usePlotSettingsStore } from "../../store/PlotSettingsStore";
 import { capitalizeFirstLetter } from "../../hooks/utils";
 import { CustomTooltip } from "./CustomTooltip";
-import {
-  formatHoursSinceLaunch,
-} from "../../hooks/graphing/utils";
+import { formatHoursSinceLaunch } from "../../hooks/graphing/utils";
 import { BiError } from "react-icons/bi";
 import { ErrorMessage } from "../Input/StandardLayoutInput/ErrorMessage";
 import useGetPlotData from "../../hooks/graphing/processPlottingData";
@@ -30,14 +34,15 @@ import PlotCustomizationButtons from "../Common/PlotCustomizationButtons";
  */
 function GraphComponent(props: BoxProps) {
   const { plotQuery, leagues } = useGraphInputStore();
-  const { result: plotData,
+  const {
+    result: plotData,
     mostCommonCurrencyUsed,
     confidenceRating,
     upperBoundryChaos,
     upperBoundrySecondary,
     fetchStatus,
-    error } = useGetPlotData(plotQuery);
-
+    error,
+  } = useGetPlotData(plotQuery);
 
   const mostCommonCurrencyUsedName = `${capitalizeFirstLetter(mostCommonCurrencyUsed ?? "")} value`;
   const renderGraph =
@@ -57,9 +62,17 @@ function GraphComponent(props: BoxProps) {
       : "ui.input";
 
   const colors = [
-    "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"
-  ]
-
+    "#1f77b4",
+    "#ff7f0e",
+    "#2ca02c",
+    "#d62728",
+    "#9467bd",
+    "#8c564b",
+    "#e377c2",
+    "#7f7f7f",
+    "#bcbd22",
+    "#17becf",
+  ];
 
   if (fetchStatus === "fetching") {
     return (
@@ -145,25 +158,35 @@ function GraphComponent(props: BoxProps) {
               allowDataOverflow
             />
             <Tooltip
-              content={<CustomTooltip upperBoundry={upperBoundryChaos} fetchedLeagues={fetchedLeagues} colors={colors} />}
+              content={(props: TooltipContentProps<ValueType, NameType>) => (
+                <CustomTooltip
+                  {...props}
+                  upperBoundry={upperBoundryChaos}
+                  fetchedLeagues={fetchedLeagues}
+                  colors={colors}
+                />
+              )}
               isAnimationActive={false}
             />
             <Legend verticalAlign="top" height={36} />
-            {plotData.data.map((series, idx) => (
-              leagues.includes(series.name) && (<Line
-                type="monotone"
-                data={series.data}
-                dataKey={"valueInChaos"}
-                key={series.name}
-                name={series.name + " - " + "Chaos Value"}
-                stroke={colors[idx]}
-                yAxisId={0}
-                hide={!showChaos}
-                isAnimationActive={false}
-                dot={{ fill: colors[idx] }}
-                legendType={showChaos ? "line" : "none"}
-              />)
-            ))}
+            {plotData.data.map(
+              (series, idx) =>
+                leagues.includes(series.name) && (
+                  <Line
+                    type="monotone"
+                    data={series.data}
+                    dataKey={"valueInChaos"}
+                    key={series.name}
+                    name={series.name + " - " + "Chaos Value"}
+                    stroke={colors[idx]}
+                    yAxisId={0}
+                    hide={!showChaos}
+                    isAnimationActive={false}
+                    dot={{ fill: colors[idx] }}
+                    legendType={showChaos ? "line" : "none"}
+                  />
+                ),
+            )}
             <YAxis
               label={{
                 value: mostCommonCurrencyUsedName,
@@ -178,21 +201,25 @@ function GraphComponent(props: BoxProps) {
               domain={[0, upperBoundrySecondary]}
               allowDataOverflow
             />
-            {mostCommonCurrencyUsed !== "chaos" && plotData.data.map((series, idx) => (
-              leagues.includes(series.name) && (<Line
-                type="monotone"
-                data={series.data}
-                dataKey={"valueInMostCommonCurrencyUsed"}
-                key={series.name}
-                name={series.name + " - " + mostCommonCurrencyUsedName}
-                stroke={colors[idx]}
-                yAxisId={1}
-                hide={!showSecondary}
-                isAnimationActive={false}
-                dot={{ fill: colors[idx] }}
-                legendType={showSecondary ? "line" : "none"}
-              />)
-            ))}
+            {mostCommonCurrencyUsed !== "chaos" &&
+              plotData.data.map(
+                (series, idx) =>
+                  leagues.includes(series.name) && (
+                    <Line
+                      type="monotone"
+                      data={series.data}
+                      dataKey={"valueInMostCommonCurrencyUsed"}
+                      key={series.name}
+                      name={series.name + " - " + mostCommonCurrencyUsedName}
+                      stroke={colors[idx]}
+                      yAxisId={1}
+                      hide={!showSecondary}
+                      isAnimationActive={false}
+                      dot={{ fill: colors[idx] }}
+                      legendType={showSecondary ? "line" : "none"}
+                    />
+                  ),
+              )}
           </LineChart>
         </ResponsiveContainer>
       </Box>

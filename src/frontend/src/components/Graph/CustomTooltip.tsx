@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 
 import { Box, Divider, Text } from "@chakra-ui/layout";
-import { TooltipProps } from "recharts";
+import { TooltipContentProps } from "recharts";
 import { Icon } from "@chakra-ui/react";
-
 // for recharts v2.1 and above
 import {
   ValueType,
@@ -11,34 +10,31 @@ import {
 } from "recharts/types/component/DefaultTooltipContent";
 import { capitalizeFirstLetter } from "../../hooks/utils";
 import { BiError } from "react-icons/bi";
-import {
-  getHoursSinceLaunch,
-} from "../../hooks/graphing/utils";
+import { getHoursSinceLaunch } from "../../hooks/graphing/utils";
 import { setupHourlyUpdate } from "../../utils";
 
-interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
+interface CustomTooltipProps extends TooltipContentProps<ValueType, NameType> {
   upperBoundry: number;
   fetchedLeagues: string[];
-  colors: string[]
+  colors: string[];
 }
 
 export const CustomTooltip = (props: CustomTooltipProps) => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  const hoursAgo = getHoursSinceLaunch(currentTime) - props.label
+  let hoursAgo = -1;
+  if (typeof props.label == "number") {
+    hoursAgo = getHoursSinceLaunch(currentTime) - props.label;
+  }
 
-  const daysToDisplay = Math.floor(hoursAgo / 24)
-  const hoursToDisplay = hoursAgo % 24
-
+  const daysToDisplay = Math.floor(hoursAgo / 24);
+  const hoursToDisplay = hoursAgo % 24;
 
   useEffect(() => {
-    return setupHourlyUpdate(setCurrentTime)
+    return setupHourlyUpdate(setCurrentTime);
   }, []);
 
-
-
   if (props.active && props.payload && props.payload.length) {
-
     const confidence = props.payload[0].payload.confidence;
     const isLowConfidence = confidence === "low";
     const isMediumConfidence = confidence === "medium";
@@ -61,8 +57,12 @@ export const CustomTooltip = (props: CustomTooltipProps) => {
         flexDirection="column"
       >
         <Text my="5px">
-          {hoursAgo !== 0 && daysToDisplay !== 0 && ` ${daysToDisplay} days ago`}
-          {hoursAgo !== 0 && hoursToDisplay !== 0 && ` ${hoursToDisplay} hours ago`}
+          {hoursAgo !== 0 &&
+            daysToDisplay !== 0 &&
+            ` ${daysToDisplay} days ago`}
+          {hoursAgo !== 0 &&
+            hoursToDisplay !== 0 &&
+            ` ${hoursToDisplay} hours ago`}
           {hoursAgo === 0 && ` now`}
         </Text>
         <Divider />
@@ -115,7 +115,18 @@ export const CustomTooltip = (props: CustomTooltipProps) => {
 
         <Divider mb="5px" />
         {props.payload.map((value, index) => (
-          <Box display="flex" flexDirection="row" key={`value-${index}`} color={props.colors[props.fetchedLeagues.indexOf((value.name as string).split(" - ")[0])]}>
+          <Box
+            display="flex"
+            flexDirection="row"
+            key={`value-${index}`}
+            color={
+              props.colors[
+                props.fetchedLeagues.indexOf(
+                  (value.name as string).split(" - ")[0],
+                )
+              ]
+            }
+          >
             <Box>{`${value.name}: `}</Box>
             <Box
               textAlign="right"
