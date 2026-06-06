@@ -1,7 +1,11 @@
 import { PlotQuery } from "../../client";
 import { useErrorStore } from "../../store/ErrorStore";
 import { useGraphInputStore } from "../../store/GraphInputStore";
-import { BaseSpecState, GraphInputState } from "../../store/StateInterface";
+import {
+  BaseSpecState,
+  GraphInputState,
+  ModifierLimitationState,
+} from "../../store/StateInterface";
 import { LEAGUE_LAUNCH_TIME, PLOTTING_WINDOW_HOURS } from "../../config";
 
 export const LEAGUE_LAUNCH_DATETIME = new Date(LEAGUE_LAUNCH_TIME);
@@ -42,6 +46,66 @@ export const getHoursSinceLaunch = (currentTime: Date): number => {
   return hoursSinceLaunch;
 };
 
+const removeNumericalRoll = (
+  modifierLimitations: ModifierLimitationState[] | null | undefined,
+  position: number,
+  rollType: "min" | "max",
+) => {
+  if (modifierLimitations == null) {
+    return false;
+  }
+  for (let i = 0; i < modifierLimitations.length; i++) {
+    const limitation = modifierLimitations[i];
+    if (limitation.position === position) {
+      const minRoll = limitation.minRoll;
+      const maxRoll = limitation.maxRoll;
+      // checks if all rolls will be gone after deletion
+      if (
+        (!minRoll || rollType === "min") &&
+        (!maxRoll || rollType === "max")
+      ) {
+        delete modifierLimitations[i];
+        if (modifierLimitations.length === 1) {
+          return true;
+        }
+      } else {
+        delete limitation[rollType === "min" ? "minRoll" : "maxRoll"];
+      }
+      return false;
+    }
+  }
+};
+
+const addNumericalRoll = (
+  modifierLimitations: ModifierLimitationState[] | null | undefined,
+  position: number,
+  roll: number,
+  rollType: "min" | "max",
+) => {
+  let modifierLimitation: ModifierLimitationState;
+  if (!modifierLimitations) {
+    modifierLimitations = [];
+    modifierLimitation = {
+      position: position,
+    };
+    modifierLimitations.push(modifierLimitation);
+  } else {
+    const idx = modifierLimitations.findIndex(
+      (modifierLimitation) => modifierLimitation.position === position,
+    );
+    if (idx === -1) {
+      modifierLimitation = {
+        position: position,
+      };
+      modifierLimitations.push(modifierLimitation);
+    } else {
+      modifierLimitation = modifierLimitations[idx];
+    }
+  }
+  modifierLimitation[rollType === "min" ? "minRoll" : "maxRoll"] = roll;
+  return modifierLimitations;
+};
+
 export const updateNumericalRoll = (
   state: GraphInputState,
   modifierId: number,
@@ -56,61 +120,33 @@ export const updateNumericalRoll = (
         wantedModifierExtended.modifierId === modifierId &&
         wantedModifierExtended.index === index
       ) {
-        let updatedModifierLimitations =
-          wantedModifierExtended.modifierLimitations;
-        // roll === undefined => remove rollType
-        if (updatedModifierLimitations == null) {
-          if (roll === undefined) {
-            return wantedModifierExtended;
-          }
-          updatedModifierLimitations = [];
-        }
-
+        // roll is undefined => delete roll
         if (roll === undefined) {
-          for (let i = 0; i < updatedModifierLimitations.length; i++) {
-            const limitation = updatedModifierLimitations[i];
-            if (limitation.position === position) {
-              if (limitation.minRoll == null) {
-                delete updatedModifierLimitations[i];
-              } else {
-                if (rollType === "min") {
-                  delete limitation["minRoll"];
-                } else {
-                  delete limitation["maxRoll"];
-                }
-              }
-              break;
-            }
+          const noMoreLimitations = removeNumericalRoll(
+            wantedModifierExtended.modifierLimitations,
+            position,
+            rollType,
+          );
+          if (noMoreLimitations) {
+            return {
+              ...wantedModifierExtended,
+              modifierLimitations: null,
+            };
           }
         } else {
-          let updatedModifierLimitation = updatedModifierLimitations.find(
-            (modifierLimitation) => modifierLimitation.position === position,
+          const updatedModifierLimitations = addNumericalRoll(
+            wantedModifierExtended.modifierLimitations,
+            position,
+            roll,
+            rollType,
           );
-          if (updatedModifierLimitation == null) {
-            updatedModifierLimitation = {
-              position: position,
-            };
-            if (rollType === "min") {
-              updatedModifierLimitation["minRoll"] = roll;
-            } else {
-              updatedModifierLimitation["maxRoll"] = roll;
-            }
-            updatedModifierLimitations.push(updatedModifierLimitation);
-          } else {
-            if (rollType === "min") {
-              updatedModifierLimitation["minRoll"] = roll;
-            } else {
-              updatedModifierLimitation["maxRoll"] = roll;
-            }
-          }
+          return {
+            ...wantedModifierExtended,
+            modifierLimitations: updatedModifierLimitations,
+          };
         }
-        return {
-          ...wantedModifierExtended,
-          modifierLimitations: updatedModifierLimitations,
-        };
-      } else {
-        return wantedModifierExtended;
       }
+      return wantedModifierExtended;
     },
   );
   return { wantedModifierExtended: updatedModifiersExtended };
