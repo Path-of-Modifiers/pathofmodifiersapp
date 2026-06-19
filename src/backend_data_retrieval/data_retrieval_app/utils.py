@@ -146,7 +146,7 @@ def insert_data(
         response.raise_for_status()
 
 
-def bulk_update_data(
+def update_data(
     df: pd.DataFrame,
     *,
     table_name: str,

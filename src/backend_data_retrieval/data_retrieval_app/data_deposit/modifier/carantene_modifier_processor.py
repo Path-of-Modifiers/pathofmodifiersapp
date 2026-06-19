@@ -30,6 +30,7 @@ def _tokenize(s: str) -> list[str]:
 
 
 def _lcs_len(a: list[str], b: list[str]) -> float:
+    """Lowest common subsequence algo: https://en.wikipedia.org/wiki/Longest_common_subsequence"""
     n, m = len(a), len(b)
     dp = [0] * (m + 1)
     for i in range(1, n + 1):
@@ -46,7 +47,12 @@ def _lcs_len(a: list[str], b: list[str]) -> float:
 
 
 def _diff_chunks(a: list[str], b: list[str]) -> list[tuple[str, str, int]]:
-    "Returns [(text_roll_1, text_roll_2, position), (..)] for different tokens between `a` and `b`"
+    """
+    Returns [(text_a, text_b, position)] for tokens that differ between `a` and `b`.
+    Only includes substitutions (both sides non-empty); pure insertions/deletions are skipped.
+
+    Used for finding the text roll values that differ between similar modifier effects
+    """
     sm = SequenceMatcher(a=a, b=b, autojunk=False)
     diffs = []
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
@@ -610,7 +616,7 @@ def check_carantene_modifiers() -> None:
         return None
 
     logger.info(
-        "Its been over 3 days since last created modifiers from carantene modifiers. Retrieving carantene modifiers..."
+        f"It's been over {settings.MIN_DAYS_SINCE_DYNAMICALLY_CREATED_AT} days since last created modifiers from carantene modifiers. Retrieving carantene modifiers..."
     )
 
     # with open("car_df_json_dump.json", "w") as f:
@@ -665,7 +671,7 @@ def delete_grouped_dupes() -> None:
     url = f"{settings.BACKEND_BASE_URL}/carantene_modifier/delete-grouped-dupes/"
     pom_api_headers = get_superuser_token_headers(settings.BACKEND_BASE_URL)
     try:
-        response = requests.post(url=url, headers=pom_api_headers)
+        response = requests.delete(url=url, headers=pom_api_headers)
         response.raise_for_status()
 
     except requests.HTTPError as e:

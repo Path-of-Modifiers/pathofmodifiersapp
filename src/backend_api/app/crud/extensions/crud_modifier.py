@@ -96,7 +96,8 @@ class CRUDModifier(
             )
             await self.create(db=db, obj_in=modifier_in)
         else:
-            "I know this shit is messy"
+            # I know this shit is messy
+
             # Check if latest item inserted is older than 3 days, if so then create new initial dynamic modifier
             existing_dynamically_created = existing_dynamically_created[0]
 

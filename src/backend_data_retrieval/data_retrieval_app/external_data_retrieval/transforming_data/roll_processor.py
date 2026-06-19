@@ -1,50 +1,17 @@
 import re
 
 import pandas as pd
-from pydantic import BaseModel, HttpUrl
+from pydantic import HttpUrl
 
 from data_retrieval_app.external_data_retrieval.config import settings
+from data_retrieval_app.external_data_retrieval.transforming_data.schemas.modifier_schemas import (
+    CaranteneModifierSchema,
+    ModifierSchema,
+)
 from data_retrieval_app.logs.logger import transform_logger as logger
-from data_retrieval_app.utils import bulk_update_data, insert_data
+from data_retrieval_app.utils import insert_data, update_data
 
 pd.set_option("display.max_colwidth", None)
-
-
-class ModifierSchema(BaseModel):
-    modifierId: int
-    position: int
-    minRoll: int
-    maxRoll: int
-    implicit: bool
-    explicit: bool
-    delve: bool
-    fractured: bool
-    synthesised: bool
-    unique: bool
-    corrupted: bool
-    enchanted: bool
-    veiled: bool
-    static: bool
-    effect: str
-    relatedUniques: str
-    textRolls: str
-    regex: str
-    dynamicallyCreated: bool
-
-
-class CaranteneModifierSchema(BaseModel):
-    effect: str
-    relatedUnique: str
-    implicit: str
-    explicit: str
-    delve: str
-    fractured: str
-    synthesised: str
-    unique: str
-    corrupted: str
-    enchanted: str
-    veiled: str
-    mutated: str
 
 
 class RollProcessor:
@@ -104,7 +71,7 @@ class RollProcessor:
             f"Updating new modifiers related uniques, count: \n {len(new_modifiers)}"
         )
 
-        bulk_update_data(
+        update_data(
             new_modifiers,
             table_name="modifier",
             sub_endpoint="update-related-uniques",

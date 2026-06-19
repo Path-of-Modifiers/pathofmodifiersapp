@@ -193,7 +193,7 @@ async def bulk_delete_carantene_modifier(
     ).message
 
 
-@router.post(
+@router.delete(
     "/delete-grouped-dupes/",
     response_model=str,
     dependencies=[Depends(get_current_active_superuser)],

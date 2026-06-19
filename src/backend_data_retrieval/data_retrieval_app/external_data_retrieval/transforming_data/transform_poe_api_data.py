@@ -1,10 +1,14 @@
 import pandas as pd
 import requests
+from pydantic import HttpUrl
 from requests.exceptions import HTTPError
 
 from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.external_data_retrieval.transforming_data.roll_processor import (
     RollProcessor,
+)
+from data_retrieval_app.external_data_retrieval.transforming_data.schemas.modifier_schemas import (
+    CaranteneModifierSchema,
 )
 from data_retrieval_app.external_data_retrieval.utils import sync_timing_tracker
 from data_retrieval_app.logs.logger import transform_logger as logger
@@ -398,6 +402,46 @@ class PoEAPIDataTransformerBase:
             headers=self.pom_auth_headers,
         )
 
+    def _process_carantene_modifiers(self, item_df: pd.DataFrame) -> None:
+        # Currently only create carantene mods from mutated items
+        mutated_item_df = item_df[item_df["mutated"].astype(str) == "True"]
+        if mutated_item_df.empty:
+            return None
+
+        def create_carantene_modifiers(item_df: pd.DataFrame) -> pd.DataFrame:
+            "Build a DataFrame of carantene modifiers from item data."
+
+            base = item_df.loc[:, ["effect", "name", "mutated"]].copy()
+
+            modifiers = base.assign(
+                relatedUnique=lambda df: df["name"],
+                explicit=True,
+                unique=lambda df: df["name"].notna() & (df["name"] != ""),
+            ).reset_index(drop=True)
+
+            return modifiers
+
+        carantene_modifier_cols = CaranteneModifierSchema.model_fields.keys()
+        carantene_modifiers = create_carantene_modifiers(mutated_item_df)
+
+        assert isinstance(carantene_modifiers, pd.DataFrame)
+
+        existing_cols = [
+            col for col in carantene_modifier_cols if col in carantene_modifiers.columns
+        ]
+        carantene_modifiers = carantene_modifiers[existing_cols]
+
+        logger.info(
+            f"Found {len(carantene_modifiers)} to carantene modifiers, inserting to db..."
+        )
+
+        insert_data(
+            carantene_modifiers,
+            url=HttpUrl(settings.BACKEND_BASE_URL),
+            table_name="carantene_modifier",
+            logger=logger,
+        )
+
     def transform_into_tables(
         self,
         df: pd.DataFrame,
@@ -417,6 +461,12 @@ class PoEAPIDataTransformerBase:
                 hours_since_launch=hours_since_launch,
             )
             self._process_unidentified_item_table(
+                df.copy(deep=True),
+                currency_df=currency_df,
+                item_base_types=item_base_types,
+                hours_since_launch=hours_since_launch,
+            )
+            self._process_carantene_modifiers_table(
                 df.copy(deep=True),
                 currency_df=currency_df,
                 item_base_types=item_base_types,

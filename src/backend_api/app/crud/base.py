@@ -343,16 +343,19 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         db: Session,
         *,
         filter: dict[str, Any] | list[Any],
-        sort_key: str | None = None,
-        sort_method: Literal["asc", "dec"] | None = None,
         max_deletion_limit: int = 12,
         deletion_key: str | None = None,
-    ) -> ModelType:
-        if isinstance(filter, list) and deletion_key is not None:
-            deletion_key_model = getattr(self.model, deletion_key, None)
-            if deletion_key_model is None:
-                raise ValueError("Couldn't find deletion key in model")
-            db_objs = db.query(self.model).filter(deletion_key_model.in_(filter)).all()
+    ) -> ModelType | list[ModelType]:
+        if isinstance(filter, list):
+            if deletion_key:
+                deletion_key_model = getattr(self.model, deletion_key, None)
+                if deletion_key_model is None:
+                    raise ValueError("Couldn't find deletion key in model")
+                db_objs = (
+                    db.query(self.model).filter(deletion_key_model.in_(filter)).all()
+                )
+            else:
+                raise ValueError("Filter argument can't be list without deletion key")
         else:
             db_objs = db.query(self.model).filter_by(**filter).all()
         if not db_objs:
@@ -376,9 +379,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             db_objs = db_objs[0]
             db.delete(db_objs)
         else:
-            db_objs = self._sort_objects(
-                db_objs, sort_key=sort_key, sort_method=sort_method
-            )
-            [db.delete(obj) for obj in db_objs]
+            for obj in db_objs:
+                db.delete(obj)
         db.commit()
         return self.validate(db_objs)
