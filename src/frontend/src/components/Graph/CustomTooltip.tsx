@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 import { Box, Divider, Text } from "@chakra-ui/layout";
-import { TooltipContentProps } from "recharts";
+import { TooltipProps } from "recharts";
 import { Icon } from "@chakra-ui/react";
 // for recharts v2.1 and above
 import {
@@ -13,7 +13,7 @@ import { BiError } from "react-icons/bi";
 import { getHoursSinceLaunch } from "../../hooks/graphing/utils";
 import { setupHourlyUpdate } from "../../utils";
 
-interface CustomTooltipProps extends TooltipContentProps<ValueType, NameType> {
+interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
   upperBoundry: number;
   fetchedLeagues: string[];
   colors: string[];

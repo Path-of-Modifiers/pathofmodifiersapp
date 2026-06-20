@@ -7,7 +7,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  TooltipContentProps,
+  TooltipProps,
 } from "recharts";
 // for recharts v2.1 and above
 import {
@@ -158,7 +158,7 @@ function GraphComponent(props: BoxProps) {
               allowDataOverflow
             />
             <Tooltip
-              content={(props: TooltipContentProps<ValueType, NameType>) => (
+              content={(props: TooltipProps<ValueType, NameType>) => (
                 <CustomTooltip
                   {...props}
                   upperBoundry={upperBoundryChaos}
