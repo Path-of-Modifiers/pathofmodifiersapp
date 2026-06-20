@@ -31,7 +31,7 @@ class PoEPublicStashesTestDataSettings(BaseSettings):
     @computed_field  # type: ignore[prop-decorator]
     @property
     def SOFTCORE_LEAGUES(self) -> list[str]:
-        return self.SOFTCORE_LEAGUES.split("|")
+        return self.ALL_SOFTCORE_LEAGUES.split("|")
 
     @computed_field  # type: ignore[prop-decorator]
     @property
