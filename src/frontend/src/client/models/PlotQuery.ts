@@ -14,6 +14,6 @@ export type PlotQuery = {
     baseSpecifications?: (BaseSpecs | null);
     end?: (number | null);
     start?: (number | null);
-    wantedModifiers?: (Array<WantedModifier> | null);
+    wantedModifiers?: (Array<Array<WantedModifier>> | null);
 };
 

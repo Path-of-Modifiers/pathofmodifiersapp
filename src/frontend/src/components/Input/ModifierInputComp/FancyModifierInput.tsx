@@ -5,11 +5,10 @@ import {
   DefaultMinMaxValues,
 } from "../StandardLayoutInput/MinMaxNumberInput";
 import { useGraphInputStore } from "../../../store/GraphInputStore";
-import { ModifierLimitationState } from "../../../store/StateInterface";
+import { WantedModifierExtended } from "../../../store/StateInterface";
 
 type HandleChangeEventFunction = (
   modifierId: number,
-  position: number,
   value: string | undefined,
   selectedModifierIndex: number,
   numericalType?: "min" | "max",
@@ -20,9 +19,8 @@ export type TakingInputEventFunction = (orderIndex: number) => void;
 
 interface InputChangeHandler {
   modifierId: number;
-  position: number;
   selectedModifierIndex: number;
-  modifierLimitation: ModifierLimitationState | null | undefined;
+  currentRelevantModifierSpec: WantedModifierExtended;
   orderIndex: number;
   isNumerical: boolean;
   textRolls: string | null | undefined;
@@ -31,18 +29,19 @@ interface InputChangeHandler {
 }
 
 const InputChangeHandler = (props: InputChangeHandler) => {
+  const modifierLimitations =
+    props.currentRelevantModifierSpec.modifierLimitations;
   const textRolls = props.textRolls;
   if (props.isNumerical) {
     const defaultMinMaxValues: DefaultMinMaxValues = {
-      max: props.modifierLimitation?.maxRoll ?? undefined,
-      min: props.modifierLimitation?.minRoll ?? undefined,
+      max: modifierLimitations?.maxRoll ?? undefined,
+      min: modifierLimitations?.minRoll ?? undefined,
     };
     return (
       <MinMaxNumberInput
         handleNumberChange={(value, numericalType) =>
           props.handleAnyChange(
             props.modifierId,
-            props.position,
             value,
             props.selectedModifierIndex,
             numericalType,
@@ -60,7 +59,7 @@ const InputChangeHandler = (props: InputChangeHandler) => {
   } else if (textRolls == null) {
     throw "'textRolls' cannot be undefined at the same time as 'isNumerical===false'";
   } else {
-    const defaultTextIndex = props.modifierLimitation?.textRoll ?? undefined;
+    const defaultTextIndex = modifierLimitations?.textRoll ?? undefined;
     let defaultTextValue: string | undefined = undefined;
     if (defaultTextIndex !== undefined) {
       defaultTextValue = textRolls.split("|")[defaultTextIndex];
@@ -72,7 +71,6 @@ const InputChangeHandler = (props: InputChangeHandler) => {
         handleTextChange={(value) =>
           props.handleAnyChange(
             props.modifierId,
-            props.position,
             value,
             props.selectedModifierIndex,
             undefined,
@@ -90,34 +88,32 @@ const InputChangeHandler = (props: InputChangeHandler) => {
 };
 
 interface DefaultOutputHandlerProps {
-  modifierLimitation: ModifierLimitationState | null | undefined;
+  currentRelevantModifierSpec: WantedModifierExtended;
   isNumerical: boolean;
   textRolls: string | null | undefined;
 }
 
 const DefaultOutputHandler = (props: DefaultOutputHandlerProps) => {
-  if (props.modifierLimitation == null) {
+  const modifierLimitations =
+    props.currentRelevantModifierSpec.modifierLimitations;
+  if (modifierLimitations == null) {
     return <Box as="u">#</Box>;
   }
   if (props.isNumerical) {
     if (
-      props.modifierLimitation.minRoll == null &&
-      props.modifierLimitation.maxRoll == null
+      modifierLimitations.minRoll == null &&
+      modifierLimitations.maxRoll == null
     ) {
       return <Box as="u">#</Box>;
     }
     return (
       <Box>
         <Box fontSize={10} textAlign="center">
-          {props.modifierLimitation.minRoll
-            ? props.modifierLimitation.minRoll
-            : "Min"}
+          {modifierLimitations.minRoll ? modifierLimitations.minRoll : "Min"}
         </Box>
         <Divider borderColor="ui.queryMainInput" />
         <Box fontSize={10} textAlign="center">
-          {props.modifierLimitation.maxRoll
-            ? props.modifierLimitation.maxRoll
-            : "Max"}
+          {modifierLimitations.maxRoll ? modifierLimitations.maxRoll : "Max"}
         </Box>
       </Box>
     );
@@ -126,8 +122,8 @@ const DefaultOutputHandler = (props: DefaultOutputHandlerProps) => {
   } else {
     return (
       <Box as="u">
-        {props.modifierLimitation.textRoll != null
-          ? props.textRolls.split("|")[props.modifierLimitation.textRoll]
+        {modifierLimitations.textRoll != null
+          ? props.textRolls.split("|")[modifierLimitations.textRoll]
           : "#"}
       </Box>
     );
@@ -137,7 +133,6 @@ const DefaultOutputHandler = (props: DefaultOutputHandlerProps) => {
 interface FancyModifierInputProps {
   currentlyTakingInput: boolean;
   modifierId: number;
-  position: number;
   selectedModifierIndex: number;
   textRolls: string | null | undefined;
   orderIndex: number;
@@ -156,7 +151,6 @@ export const FancyModifierInput = (props: FancyModifierInputProps) => {
   // A generic handle function that handles mixed input
   const handleAnyChange: HandleChangeEventFunction = (
     modifierId: number,
-    position: number,
     value: string | undefined,
     selectedModifierIndex: number,
     numericalType?: "min" | "max",
@@ -168,19 +162,9 @@ export const FancyModifierInput = (props: FancyModifierInputProps) => {
     if (numericalType !== undefined) {
       const numValue = value ? Number(value) : undefined;
       if (numericalType === "min") {
-        setWantedModifierMinRoll(
-          modifierId,
-          position,
-          numValue,
-          selectedModifierIndex,
-        );
+        setWantedModifierMinRoll(modifierId, numValue, selectedModifierIndex);
       } else {
-        setWantedModifierMaxRoll(
-          modifierId,
-          position,
-          numValue,
-          selectedModifierIndex,
-        );
+        setWantedModifierMaxRoll(modifierId, numValue, selectedModifierIndex);
       }
     } else if (textRolls) {
       if (value === "Any") {
@@ -188,12 +172,7 @@ export const FancyModifierInput = (props: FancyModifierInputProps) => {
       }
       const textValue =
         value !== undefined ? textRolls.split("|").indexOf(value) : undefined;
-      setWantedModifierTextRoll(
-        modifierId,
-        position,
-        textValue,
-        selectedModifierIndex,
-      );
+      setWantedModifierTextRoll(modifierId, textValue, selectedModifierIndex);
     } else {
       throw "Modifier must have text rolls if the roll is not numerical.";
     }
@@ -205,35 +184,21 @@ export const FancyModifierInput = (props: FancyModifierInputProps) => {
     (spec) => spec.index == props.selectedModifierIndex,
   );
 
-  const currentModifierLimitations = currentWantedModifierExtended.find(
-    (wantedModifierExtended) =>
-      wantedModifierExtended.modifierId === props.modifierId &&
-      wantedModifierExtended.index === props.selectedModifierIndex,
-  )?.modifierLimitations;
-
-  let currentModifierPositionLimitation:
-    | ModifierLimitationState
-    | null
-    | undefined = null;
-  if (currentModifierLimitations != null) {
-    currentModifierPositionLimitation = currentModifierLimitations?.find(
-      (limitation) => limitation.position === props.position,
-    );
-  }
+  const currentRelevantModifierSpec =
+    currentWantedModifierExtended[props.orderIndex];
 
   // This happens when 'Clear Query' is pressed:
   // For a split second this element is rerendered, but there are no selected modifiers.
-  // which makes 'currentModifierLimitations' null | undefined
-  // if (currentModifierLimitations == null) {
-  //   return;
-  // }
+  // which makes 'currentRelevantModifierSpec' null | undefined
+  if (currentRelevantModifierSpec == null) {
+    return;
+  }
 
   if (props.currentlyTakingInput) {
     return (
       <InputChangeHandler
         modifierId={props.modifierId}
-        position={props.position}
-        modifierLimitation={currentModifierPositionLimitation}
+        currentRelevantModifierSpec={currentRelevantModifierSpec}
         selectedModifierIndex={props.selectedModifierIndex}
         orderIndex={props.orderIndex}
         isNumerical={isNumerical}
@@ -250,7 +215,7 @@ export const FancyModifierInput = (props: FancyModifierInputProps) => {
         key={`fancyInput-${props.selectedModifierIndex}-click-${props.orderIndex}`}
       >
         <DefaultOutputHandler
-          modifierLimitation={currentModifierPositionLimitation}
+          currentRelevantModifierSpec={currentRelevantModifierSpec}
           isNumerical={isNumerical}
           textRolls={props.textRolls}
         />

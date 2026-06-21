@@ -4,10 +4,6 @@
 /* eslint-disable */
 export const $GroupedModifierByEffect = {
     properties: {
-        modifierId: {
-            type: 'number',
-            isRequired: true,
-        },
         effect: {
             type: 'string',
             isRequired: true,

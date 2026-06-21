@@ -6,6 +6,6 @@ from .input import (
     BaseSpecs,
     ItemSpecs,
     WantedModifier,
-    ModifierLimitation,
+    ModifierLimitations,
 )
 from .output import PlotData

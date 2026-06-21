@@ -45,7 +45,6 @@ export interface BaseSpecState {
 }
 
 export interface ModifierLimitationState {
-  position: number;
   minRoll?: number | null;
   maxRoll?: number | null;
   textRoll?: number | null;
@@ -53,7 +52,7 @@ export interface ModifierLimitationState {
 
 export interface WantedModifier {
   modifierId: number;
-  modifierLimitations?: ModifierLimitationState[] | null;
+  modifierLimitations?: ModifierLimitationState | null;
 }
 // Used to keep track of the different wanted modifiers for frontend
 export interface WantedModifierExtended extends WantedModifier {
@@ -120,6 +119,7 @@ export interface GraphInputState {
   removeLeague: (league: string) => void;
   removeAllLeagues: () => void;
 
+
   setItemName: (name: string | undefined) => void;
 
   setItemSpec: (itemSpec: ItemSpecState) => void;
@@ -165,19 +165,16 @@ export interface GraphInputState {
   ) => void;
   setWantedModifierMinRoll: (
     modifierId: number,
-    position: number,
     minRoll: number | undefined,
     index: number,
   ) => void;
   setWantedModifierMaxRoll: (
     modifierId: number,
-    position: number,
     maxRoll: number | undefined,
     index: number,
   ) => void;
   setWantedModifierTextRoll: (
     modifierId: number,
-    position: number,
     textRoll: number | undefined,
     index: number,
   ) => void;
@@ -198,14 +195,14 @@ export interface ExpandedComponentState {
 export interface ErrorState {
   leagueError: boolean;
   noSelectedModifiersError: boolean;
-  modifiersUnidentifiedError: boolean;
-  currentlySelectedModifiersError: boolean;
+  modifiersUnidentifiedError: boolean,
+  currentlySelectedModifiersError: boolean,
   noRelatedUniqueError: boolean;
   baseSpecDoesNotMatchError: boolean;
   setLeagueError: (leagueError: boolean) => void;
   setNoSelectedModifiersError: (modifiersError: boolean) => void;
   setModifiersUnidentifiedError: (modifiersError: boolean) => void;
-  setCurrentlySelectedModifiersError: (modifiersError: boolean) => void;
+  setCurrentlySelectedModifiersError: (modifiersError: boolean) => void,
   setNoRelatedUniqueError: (noRelatedUniqueError: boolean) => void;
   setBaseSpecDoesNotMatchError: (baseSpecDoesNotMatchError: boolean) => void;
 }

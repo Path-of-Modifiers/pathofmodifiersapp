@@ -26,12 +26,7 @@ class PoEPublicStashesTestDataSettings(BaseSettings):
     ]  # , "divine", "mirror", etc.
     MEAN_ITEM_PRICE: int = 200
 
-    ALL_SOFTCORE_LEAGUES: str
-
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def SOFTCORE_LEAGUES(self) -> list[str]:
-        return self.ALL_SOFTCORE_LEAGUES.split("|")
+    SOFTCORE_LEAGUES: list[str] = ["Mercenaries", "Phrecia"]
 
     @computed_field  # type: ignore[prop-decorator]
     @property

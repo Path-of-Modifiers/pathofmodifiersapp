@@ -135,7 +135,7 @@ async def create_currency(
 
 
 @router.put(
-    "/",
+    "/{currencyId}",
     response_model=schemas.Currency,
     dependencies=[
         Depends(get_current_active_superuser),
@@ -162,7 +162,7 @@ async def update_currency(
 
 
 @router.delete(
-    "/",
+    "/{currencyId}",
     response_model=str,
     dependencies=[
         Depends(get_current_active_superuser),

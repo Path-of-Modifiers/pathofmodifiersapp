@@ -8,14 +8,13 @@ from sqlalchemy import (
     DateTime,
     Float,
     ForeignKey,
-    ForeignKeyConstraint,
     Identity,
     Index,
     Integer,
-    PrimaryKeyConstraint,
     SmallInteger,
     String,
     Text,
+    UniqueConstraint,
     func,
 )
 from sqlalchemy.dialects.postgresql import JSONB, UUID
@@ -145,7 +144,11 @@ class UnidentifiedItem(_ItemBase, Base):
 class Modifier(Base):
     __tablename__ = "modifier"
 
-    modifierId: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    modifierId: Mapped[int] = mapped_column(
+        SmallInteger,
+        Identity(start=1, increment=1, cycle=True),
+        primary_key=True,
+    )
     position: Mapped[int] = mapped_column(SmallInteger, nullable=False)
     minRoll: Mapped[float | None] = mapped_column(Float(4))
     maxRoll: Mapped[float | None] = mapped_column(Float(4))
@@ -172,7 +175,6 @@ class Modifier(Base):
     )
 
     __table_args__ = (
-        PrimaryKeyConstraint("modifierId", "position"),
         CheckConstraint(
             """
             CASE
@@ -218,6 +220,7 @@ class Modifier(Base):
             """ modifier."maxRoll" >= modifier."minRoll" """,
             name="check_modifier_maxRoll_greaterThan_minRoll",
         ),
+        UniqueConstraint(modifierId, position),
     )
 
 
@@ -229,10 +232,11 @@ class ItemModifier(Base):
 
     modifierId: Mapped[int] = mapped_column(
         SmallInteger,
-        nullable=False,
-    )
-    position: Mapped[int] = mapped_column(
-        SmallInteger,
+        ForeignKey(
+            "modifier.modifierId",
+            ondelete="CASCADE",
+            onupdate="CASCADE",
+        ),
         nullable=False,
     )
     createdHoursSinceLaunch: Mapped[int] = mapped_column(SmallInteger, nullable=False)
@@ -245,12 +249,6 @@ class ItemModifier(Base):
         Float(4),
     )
     __table_args__ = (
-        ForeignKeyConstraint(
-            ["modifierId", "position"],
-            ["modifier.modifierId", "modifier.position"],
-            ondelete="CASCADE",
-            onupdate="CASCADE",
-        ),
         Index(
             "ix_item_modifierId_createdHoursSinceLaunch_roll_itemId",
             "modifierId",
