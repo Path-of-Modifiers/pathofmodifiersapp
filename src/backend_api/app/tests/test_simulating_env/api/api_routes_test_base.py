@@ -730,11 +730,14 @@ class TestAPI(BaseTest):
         response = await async_client.delete(
             f"{settings.API_V1_STR}/{route_prefix}/", params=obj_out_pk_map
         )
+        content = response.json()
+        print(content["detail"], "badsad")
         invalid_token_error = InvalidTokenError(
             token=None,
             function_name=UserCache.verify_token.__name__,
             class_name=UserCache.__name__,
         )
+        print(response.status_code, invalid_token_error.status_code)
         assert response.status_code == invalid_token_error.status_code
         content = response.json()
         assert content["detail"] == invalid_token_error.detail

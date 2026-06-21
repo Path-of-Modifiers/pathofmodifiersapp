@@ -45,10 +45,12 @@ async def create_random_item_modifier_dict(
     itemId = item.itemId
     modifier_dict, modifier = await generate_random_modifier(db)
     modifierId = modifier.modifierId
+    position = modifier.position
 
     item_modifier_dict = {
         "itemId": itemId,
         "modifierId": modifierId,
+        "position": position,
         "roll": roll_value,
         "createdHoursSinceLaunch": random_int(small_int=True),
     }

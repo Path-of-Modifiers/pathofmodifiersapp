@@ -167,7 +167,7 @@ async def update_modifier(
 
 
 @router.delete(
-    "/{modifierId}",
+    "/",
     response_model=str,
     dependencies=[Depends(get_current_active_superuser)],
 )

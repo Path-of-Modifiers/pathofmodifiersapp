@@ -68,7 +68,7 @@ class TestRateLimitBase(BaseTest):
                     # print(
                     #     f"{response.status_code} | {i} | {request_amount} | ResponseJson: {response.json()}"
                     # )
-                    assert response.status_code == 200 if i < request_amount else 429
+                    assert response.status_code == (200 if i < request_amount else 429)
                     await asyncio.sleep(skip_time)
 
                     # if i >= request_amount:
