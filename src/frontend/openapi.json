@@ -1538,15 +1538,6 @@
               "type": "integer",
               "title": "Modifierid"
             }
-          },
-          {
-            "name": "position",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Position"
-            }
           }
         ],
         "responses": {
@@ -1801,15 +1792,6 @@
             "schema": {
               "type": "integer",
               "title": "Modifierid"
-            }
-          },
-          {
-            "name": "position",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Position"
             }
           }
         ],
@@ -2313,10 +2295,6 @@
       },
       "GroupedModifierByEffect": {
         "properties": {
-          "modifierId": {
-            "type": "integer",
-            "title": "Modifierid"
-          },
           "effect": {
             "type": "string",
             "title": "Effect"
@@ -2353,7 +2331,6 @@
         },
         "type": "object",
         "required": [
-          "modifierId",
           "effect",
           "regex",
           "static",
@@ -2364,12 +2341,12 @@
       },
       "GroupedModifierProperties": {
         "properties": {
-          "position": {
+          "modifierId": {
             "items": {
               "type": "integer"
             },
             "type": "array",
-            "title": "Position"
+            "title": "Modifierid"
           },
           "textRolls": {
             "items": {
@@ -2388,7 +2365,7 @@
         },
         "type": "object",
         "required": [
-          "position",
+          "modifierId",
           "textRolls"
         ],
         "title": "GroupedModifierProperties"
@@ -2506,17 +2483,6 @@
           "rarity": {
             "type": "string",
             "title": "Rarity"
-          },
-          "gameItemId": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Gameitemid"
           },
           "identified": {
             "type": "boolean",
@@ -2839,17 +2805,6 @@
             "type": "string",
             "title": "Rarity"
           },
-          "gameItemId": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Gameitemid"
-          },
           "identified": {
             "type": "boolean",
             "title": "Identified",
@@ -3022,10 +2977,6 @@
             "type": "integer",
             "title": "Modifierid"
           },
-          "position": {
-            "type": "integer",
-            "title": "Position"
-          },
           "roll": {
             "anyOf": [
               {
@@ -3046,7 +2997,6 @@
         "required": [
           "itemId",
           "modifierId",
-          "position",
           "createdHoursSinceLaunch"
         ],
         "title": "ItemModifier"
@@ -3061,10 +3011,6 @@
             "type": "integer",
             "title": "Modifierid"
           },
-          "position": {
-            "type": "integer",
-            "title": "Position"
-          },
           "roll": {
             "anyOf": [
               {
@@ -3085,7 +3031,6 @@
         "required": [
           "itemId",
           "modifierId",
-          "position",
           "createdHoursSinceLaunch"
         ],
         "title": "ItemModifierCreate"
@@ -3655,12 +3600,8 @@
         ],
         "title": "ModifierCreate"
       },
-      "ModifierLimitation": {
+      "ModifierLimitations": {
         "properties": {
-          "position": {
-            "type": "integer",
-            "title": "Position"
-          },
           "maxRoll": {
             "anyOf": [
               {
@@ -3696,10 +3637,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "position"
-        ],
-        "title": "ModifierLimitation"
+        "title": "ModifierLimitations"
       },
       "ModifierUpdate": {
         "properties": {
@@ -3967,7 +3905,10 @@
             "anyOf": [
               {
                 "items": {
-                  "$ref": "#/components/schemas/WantedModifier"
+                  "items": {
+                    "$ref": "#/components/schemas/WantedModifier"
+                  },
+                  "type": "array"
                 },
                 "type": "array"
               },
@@ -4327,16 +4268,12 @@
           "modifierLimitations": {
             "anyOf": [
               {
-                "items": {
-                  "$ref": "#/components/schemas/ModifierLimitation"
-                },
-                "type": "array"
+                "$ref": "#/components/schemas/ModifierLimitations"
               },
               {
                 "type": "null"
               }
-            ],
-            "title": "Modifierlimitations"
+            ]
           }
         },
         "type": "object",

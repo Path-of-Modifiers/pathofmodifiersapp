@@ -176,7 +176,7 @@ class TestAPI(BaseTest):
         on_duplicate_params: tuple[bool, str | None],
     ) -> None:
         """Test create found duplicate instance"""
-        # on_duplicate_pkey_do_nothing = on_duplicate_params[0]
+        on_duplicate_pkey_do_nothing = on_duplicate_params[0]
         # if not on_duplicate_pkey_do_nothing:
         # TODO: Make test database mock with unique constraints
         pytest.skip(
@@ -398,6 +398,7 @@ class TestAPI(BaseTest):
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         route_prefix: str,
         model_table_name: str,
+        unique_identifier: str,
         update_request_params: bool,
         ignore_test_columns: list[str],
         is_hypertable: bool,
@@ -428,8 +429,7 @@ class TestAPI(BaseTest):
         update_obj_pk_map = self._create_primary_key_map(update_object_out)
 
         delete_response = await async_client.delete(
-            f"{settings.API_V1_STR}/{route_prefix}/",
-            params=update_obj_pk_map,
+            f"{settings.API_V1_STR}/{route_prefix}/{update_obj_pk_map[unique_identifier]}",
             headers=superuser_token_headers,
         )  # delete the object to avoid unique constraint errorspå
         assert delete_response.status_code == 200
@@ -439,18 +439,24 @@ class TestAPI(BaseTest):
             content_delete
             == get_delete_return_msg(
                 model_table_name=model_table_name,
-                filter=update_obj_pk_map,
+                filter={unique_identifier: update_obj_pk_map[unique_identifier]},
             ).message
         )
 
         if update_request_params:
             obj_out_pk_map = self._create_primary_key_map(object_out)
-        response = await async_client.put(
-            f"{settings.API_V1_STR}/{route_prefix}/",
-            headers=superuser_token_headers,
-            json=update_object_dict,
-            params=obj_out_pk_map,
-        )
+            response = await async_client.put(
+                f"{settings.API_V1_STR}/{route_prefix}/",
+                headers=superuser_token_headers,
+                json=update_object_dict,
+                params=obj_out_pk_map,
+            )
+        else:
+            response = await async_client.put(
+                f"{settings.API_V1_STR}/{route_prefix}/{obj_out_pk_map[unique_identifier]}",
+                headers=superuser_token_headers,
+                json=update_object_dict,
+            )
         assert response.status_code == 200
         content = response.json()
 
@@ -470,6 +476,8 @@ class TestAPI(BaseTest):
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         route_prefix: str,
         model_table_name: str,
+        update_request_params: bool,
+        unique_identifier: str,
         is_hypertable: bool,
     ) -> None:
         """Test update instance not found
@@ -499,8 +507,7 @@ class TestAPI(BaseTest):
         update_obj_out_pk_map = self._create_primary_key_map(update_object_out)
 
         delete_response = await async_client.delete(
-            f"{settings.API_V1_STR}/{route_prefix}/",
-            params=update_obj_out_pk_map,
+            f"{settings.API_V1_STR}/{route_prefix}/{update_obj_out_pk_map[unique_identifier]}",
             headers=superuser_token_headers,
         )  # delete the object to avoid unique constraint errors
         assert delete_response.status_code == 200
@@ -511,7 +518,7 @@ class TestAPI(BaseTest):
             content_delete
             == get_delete_return_msg(
                 model_table_name=model_table_name,
-                filter=update_obj_out_pk_map,
+                filter={unique_identifier: update_obj_out_pk_map[unique_identifier]},
             ).message
         )
 
@@ -519,12 +526,19 @@ class TestAPI(BaseTest):
         for key in update_obj_out_pk_map:
             update_obj_out_pk_map[key] = not_found_object
 
-        response = await async_client.put(
-            f"{settings.API_V1_STR}/{route_prefix}/",
-            headers=superuser_token_headers,
-            json=update_object_dict,
-            params=update_obj_out_pk_map,
-        )
+        if update_request_params:
+            response = await async_client.put(
+                f"{settings.API_V1_STR}/{route_prefix}/",
+                headers=superuser_token_headers,
+                json=update_object_dict,
+                params=update_obj_out_pk_map,
+            )
+        else:
+            response = await async_client.put(
+                f"{settings.API_V1_STR}/{route_prefix}/{not_found_object}",
+                headers=superuser_token_headers,
+                json=update_object_dict,
+            )
 
         db_obj_does_not_exist_error = DbObjectDoesNotExistError(
             model_table_name=model_table_name,
@@ -544,6 +558,8 @@ class TestAPI(BaseTest):
         route_prefix: str,
         model_table_name: str,
         superuser_token_headers: dict[str, str],
+        unique_identifier: str,
+        update_request_params: bool,
         is_hypertable: bool,
     ) -> None:
         """Test update instance not enough permissions
@@ -575,8 +591,7 @@ class TestAPI(BaseTest):
         update_obj_pk_map = self._create_primary_key_map(update_object_out)
 
         delete_response = await async_client.delete(
-            f"{settings.API_V1_STR}/{route_prefix}/",
-            params=update_obj_pk_map,
+            f"{settings.API_V1_STR}/{route_prefix}/{update_obj_pk_map[unique_identifier]}",
             headers=superuser_token_headers,
         )  # delete the object to avoid unique constraint errors
         assert delete_response.status_code == 200
@@ -587,15 +602,21 @@ class TestAPI(BaseTest):
             content_delete
             == get_delete_return_msg(
                 model_table_name=model_table_name,
-                filter=update_obj_pk_map,
+                filter={unique_identifier: update_obj_pk_map[unique_identifier]},
             ).message
         )
 
-        response = await async_client.put(
-            f"{settings.API_V1_STR}/{route_prefix}/",
-            json=update_object_dict,
-            params=obj_pk_map,
-        )
+        if update_request_params:
+            response = await async_client.put(
+                f"{settings.API_V1_STR}/{route_prefix}/",
+                json=update_object_dict,
+                params=obj_pk_map,
+            )
+        else:
+            response = await async_client.put(
+                f"{settings.API_V1_STR}/{route_prefix}/{obj_pk_map[unique_identifier]}",
+                json=update_object_dict,
+            )
         invalid_token_error = InvalidTokenError(
             token=None,
             function_name=UserCache.verify_token.__name__,
@@ -614,6 +635,7 @@ class TestAPI(BaseTest):
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         route_prefix: str,
         model_table_name: str,
+        unique_identifier: str,
         is_hypertable: bool,
     ) -> None:
         """Test delete instance
@@ -638,8 +660,7 @@ class TestAPI(BaseTest):
         update_obj_pk_map = self._create_primary_key_map(update_object_out)
 
         response = await async_client.delete(
-            f"{settings.API_V1_STR}/{route_prefix}/",
-            params=update_obj_pk_map,
+            f"{settings.API_V1_STR}/{route_prefix}/{update_obj_pk_map[unique_identifier]}",
             headers=superuser_token_headers,
         )
         assert response.status_code == 200
@@ -649,7 +670,7 @@ class TestAPI(BaseTest):
             content
             == get_delete_return_msg(
                 model_table_name=model_table_name,
-                filter=update_obj_pk_map,
+                filter={unique_identifier: update_obj_pk_map[unique_identifier]},
             ).message
         )
 
@@ -657,11 +678,10 @@ class TestAPI(BaseTest):
     async def test_delete_instance_not_found(
         self,
         async_client: AsyncClient,
-        db: Session,
         superuser_token_headers: dict[str, str],
-        object_generator_func: Callable[[], tuple[dict, ModelType]],
         route_prefix: str,
         model_table_name: str,
+        unique_identifier: str,
         crud_instance: CRUDBase,
         is_hypertable: bool,
     ) -> None:
@@ -677,23 +697,14 @@ class TestAPI(BaseTest):
         if is_hypertable:
             pytest.skip("Hypertables doesn't support delete object operations")
 
-        object_dict, object_out = await self._create_random_object_crud(
-            db, object_generator_func
-        )  # create the object to update and add to the db
-        self._test_object(object_out, object_dict)
-
-        delete_obj_out_pk_map = self._create_primary_key_map(object_out)
-        for key in delete_obj_out_pk_map.keys():
-            delete_obj_out_pk_map[key] = 999
-
+        not_found_object = 999
         response = await async_client.delete(
-            f"{settings.API_V1_STR}/{route_prefix}/",
-            params=delete_obj_out_pk_map,
+            f"{settings.API_V1_STR}/{route_prefix}/{not_found_object}",
             headers=superuser_token_headers,
         )
         db_obj_not_exists_error = DbObjectDoesNotExistError(
             model_table_name=model_table_name,
-            filter=delete_obj_out_pk_map,
+            filter={unique_identifier: not_found_object},
             function_name=crud_instance.remove.__name__,
             class_name=crud_instance.__class__.__name__,
         )
@@ -708,6 +719,7 @@ class TestAPI(BaseTest):
         db: Session,
         object_generator_func: Callable[[], tuple[dict, ModelType]],
         route_prefix: str,
+        unique_identifier: str,
         is_hypertable: bool,
     ) -> None:
         """Test delete instance not enough permissions
@@ -728,7 +740,7 @@ class TestAPI(BaseTest):
         _, object_out = await self._create_random_object_crud(db, object_generator_func)
         obj_out_pk_map = self._create_primary_key_map(object_out)
         response = await async_client.delete(
-            f"{settings.API_V1_STR}/{route_prefix}/", params=obj_out_pk_map
+            f"{settings.API_V1_STR}/{route_prefix}/{obj_out_pk_map[unique_identifier]}",
         )
         invalid_token_error = InvalidTokenError(
             token=None,

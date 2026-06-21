@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type GroupedModifierProperties = {
-    position: Array<number>;
+    modifierId: Array<number>;
     textRolls: Array<(string | null)>;
 };
 

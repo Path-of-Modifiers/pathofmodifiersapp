@@ -1,8 +1,8 @@
 # Unique Name: Mageblood
 # Base Types: Heavy Belt
-# Total modifiers: 5
+# Total modifiers on each item: 6
 # Can have duplicate modifiers: False
-# Modifier distribution: "rest":5
+# Modifier distrubution: "rest":6
 # Source: https://poedb.tw/us/Mageblood
 minRoll,maxRoll,textRolls,position,effect,static,unique
 30,50,,0,"+# to Dexterity",,True

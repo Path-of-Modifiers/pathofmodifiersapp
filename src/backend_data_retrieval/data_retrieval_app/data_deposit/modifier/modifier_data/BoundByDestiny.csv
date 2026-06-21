@@ -1,8 +1,8 @@
 # Unique Name: Bound By Destiny
 # Base Types: Prismatic Jewel
-# Total modifiers: 3
+# Total modifiers on each item: 3
 # Can have duplicate modifiers: False|False|False
-# Modifier distribution: 18:1,36:1,"rest":1
+# Modifier distrubution: 18:1,36:1,"rest":1
 # Source: https://poedb.tw/us/Bound_By_Destiny#BoundByDestinyModifiers
 minRoll,maxRoll,position,effect,static,unique
 10,15,0,"#% increased maximum Life if 2 Elder Items are Equipped",,True

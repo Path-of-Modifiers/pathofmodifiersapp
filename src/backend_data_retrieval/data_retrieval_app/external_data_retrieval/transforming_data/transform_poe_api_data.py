@@ -463,7 +463,6 @@ class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
             dont_drop_columns = {
                 "itemId",
                 "modifierId",
-                "position",
                 "roll",
                 "createdHoursSinceLaunch",
             }

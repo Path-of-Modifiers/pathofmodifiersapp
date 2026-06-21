@@ -5,7 +5,6 @@
 export type ItemModifier = {
     itemId: number;
     modifierId: number;
-    position: number;
     roll?: (number | null);
     createdHoursSinceLaunch: number;
 };

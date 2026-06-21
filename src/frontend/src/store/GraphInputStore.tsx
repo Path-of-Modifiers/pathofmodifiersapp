@@ -12,7 +12,6 @@ import {
 import { GroupedModifierByEffect, ItemBaseType, PlotQuery } from "../client";
 import { encodeHash, decodeHash } from "./utils";
 import { DEFAULT_LEAGUES } from "../config";
-import { updateNumericalRoll } from "../hooks/graphing/utils";
 
 // Graph Input Store  -  This store is used to store graph input data.
 export const useGraphInputStore = create<GraphInputState>((set) => ({
@@ -177,20 +176,19 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
       baseSpec: undefined,
     })),
 
-  addLeague: (league: string) =>
-    set((state) => ({ leagues: [...state.leagues, league] })),
+  addLeague: (league: string) => set((state) => ({ leagues: [...state.leagues, league] })),
   removeLeague: (league: string) =>
     set((state) => ({
       leagues: [
         ...state.leagues.reduce(
-          (prev, cur) => (cur === league ? [...prev] : [...prev, cur]),
-          [] as string[],
-        ),
-      ],
+          (prev, cur) =>
+            cur === league ? [...prev] : [...prev, cur],
+          [] as string[])
+      ]
     })),
   removeAllLeagues: () =>
     set(() => ({
-      leagues: [],
+      leagues: []
     })),
 
   setItemSpec: (itemSpec: ItemSpecState) => set(() => ({ itemSpec: itemSpec })),
@@ -417,28 +415,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
 
   setWantedModifierMinRoll: (
     modifierId: number,
-    position: number,
     minRoll: number | undefined,
-    index: number,
-  ) =>
-    set((state) =>
-      updateNumericalRoll(state, modifierId, position, minRoll, "min", index),
-    ),
-
-  setWantedModifierMaxRoll: (
-    modifierId: number,
-    position: number,
-    maxRoll: number | undefined,
-    index: number,
-  ) =>
-    set((state) =>
-      updateNumericalRoll(state, modifierId, position, maxRoll, "max", index),
-    ),
-
-  setWantedModifierTextRoll: (
-    modifierId: number,
-    position: number,
-    textRoll: number | undefined,
     index: number,
   ) =>
     set((state) => {
@@ -448,43 +425,85 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
             wantedModifierExtended.modifierId === modifierId &&
             wantedModifierExtended.index === index
           ) {
-            let updatedModifierLimitations =
-              wantedModifierExtended.modifierLimitations;
-            // textRoll === undefined => remove textRoll
-            if (updatedModifierLimitations == null) {
-              if (textRoll === undefined) {
-                return wantedModifierExtended;
-              }
-              updatedModifierLimitations = [];
-            }
-            if (textRoll === undefined) {
-              updatedModifierLimitations = updatedModifierLimitations.filter(
-                (modifierLimitation) =>
-                  modifierLimitation.position !== position,
-              );
-            } else {
-              let updatedModifierLimitation = updatedModifierLimitations.find(
-                (modifierLimitation) =>
-                  modifierLimitation.position === position,
-              );
-              if (updatedModifierLimitation == null) {
-                updatedModifierLimitation = {
-                  position: position,
-                  textRoll: textRoll,
-                };
-                updatedModifierLimitations.push(updatedModifierLimitation);
+            if (minRoll === undefined) {
+              if (!wantedModifierExtended.modifierLimitations?.maxRoll) {
+                delete wantedModifierExtended["modifierLimitations"];
               } else {
-                updatedModifierLimitation.textRoll = textRoll;
+                delete wantedModifierExtended.modifierLimitations["minRoll"];
               }
+              return wantedModifierExtended;
             }
             return {
               ...wantedModifierExtended,
-              modifierLimitations: updatedModifierLimitations,
+              modifierLimitations: {
+                ...wantedModifierExtended.modifierLimitations,
+                minRoll: minRoll,
+              },
             };
           } else {
             return wantedModifierExtended;
           }
         },
+      );
+      return { wantedModifierExtended: updatedModifiersExtended };
+    }),
+
+  setWantedModifierMaxRoll: (
+    modifierId: number,
+    maxRoll: number | undefined,
+    index: number,
+  ) =>
+    set((state) => {
+      const updatedModifiersExtended = state.wantedModifierExtended.map(
+        (wantedModifierExtended) => {
+          if (
+            wantedModifierExtended.modifierId === modifierId &&
+            wantedModifierExtended.index === index
+          ) {
+            if (maxRoll === undefined) {
+              if (!wantedModifierExtended.modifierLimitations?.minRoll) {
+                delete wantedModifierExtended["modifierLimitations"];
+              } else {
+                delete wantedModifierExtended.modifierLimitations["maxRoll"];
+              }
+              return wantedModifierExtended;
+            }
+            return {
+              ...wantedModifierExtended,
+              modifierLimitations: {
+                ...wantedModifierExtended.modifierLimitations,
+                maxRoll: maxRoll,
+              },
+            };
+          } else {
+            return wantedModifierExtended;
+          }
+        },
+      );
+      return { wantedModifierExtended: updatedModifiersExtended };
+    }),
+
+  setWantedModifierTextRoll: (
+    modifierId: number,
+    textRoll: number | undefined,
+    index: number,
+  ) =>
+    set((state) => {
+      const updatedModifiersExtended = state.wantedModifierExtended.map(
+        (wantedModifierExtended) =>
+          wantedModifierExtended.modifierId === modifierId &&
+            wantedModifierExtended.index === index
+            ? {
+              ...wantedModifierExtended,
+              modifierLimitations:
+                textRoll !== undefined
+                  ? {
+                    ...wantedModifierExtended.modifierLimitations,
+                    textRoll: textRoll,
+                  }
+                  : undefined,
+            }
+            : wantedModifierExtended,
       );
       return { wantedModifierExtended: updatedModifiersExtended };
     }),

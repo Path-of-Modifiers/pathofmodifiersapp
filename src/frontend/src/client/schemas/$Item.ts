@@ -28,14 +28,6 @@ export const $Item = {
             type: 'string',
             isRequired: true,
         },
-        gameItemId: {
-            type: 'any-of',
-            contains: [{
-                type: 'string',
-            }, {
-                type: 'null',
-            }],
-        },
         identified: {
             type: 'boolean',
         },

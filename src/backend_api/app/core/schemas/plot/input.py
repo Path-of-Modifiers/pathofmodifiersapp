@@ -26,8 +26,7 @@ class BaseSpecs(_pydantic.BaseModel):
     subCategory: str | None = None
 
 
-class ModifierLimitation(_pydantic.BaseModel):
-    position: int
+class ModifierLimitations(_pydantic.BaseModel):
     maxRoll: float | None = None
     minRoll: float | None = None
     textRoll: int | None = None
@@ -35,7 +34,7 @@ class ModifierLimitation(_pydantic.BaseModel):
 
 class WantedModifier(_pydantic.BaseModel):
     modifierId: int
-    modifierLimitations: list[ModifierLimitation] | None = None
+    modifierLimitations: ModifierLimitations | None = None
 
 
 class BasePlotQuery(_pydantic.BaseModel):
@@ -49,13 +48,13 @@ class BasePlotQuery(_pydantic.BaseModel):
 class PlotQuery(BasePlotQuery):
     "Plots for items with or without modifiers"
 
-    wantedModifiers: list[WantedModifier] | None = None
+    wantedModifiers: list[list[WantedModifier]] | None = None
 
 
 class IdentifiedPlotQuery(BasePlotQuery):
     "Plots for items with modifiers"
 
-    wantedModifiers: list[WantedModifier]
+    wantedModifiers: list[list[WantedModifier]]
 
 
 class UnidentifiedPlotQuery(BasePlotQuery):

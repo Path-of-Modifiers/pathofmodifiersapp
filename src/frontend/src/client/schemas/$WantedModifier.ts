@@ -11,10 +11,7 @@ export const $WantedModifier = {
         modifierLimitations: {
             type: 'any-of',
             contains: [{
-                type: 'array',
-                contains: {
-                    type: 'ModifierLimitation',
-                },
+                type: 'ModifierLimitations',
             }, {
                 type: 'null',
             }],

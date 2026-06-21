@@ -7,7 +7,6 @@ class _BaseItemModifier(_pydantic.BaseModel):
 
     itemId: int
     modifierId: int
-    position: int
     roll: float | None = None
 
 

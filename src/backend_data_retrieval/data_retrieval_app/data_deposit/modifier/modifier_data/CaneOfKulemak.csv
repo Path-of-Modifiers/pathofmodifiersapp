@@ -2,7 +2,7 @@
 # Base Types: Serpentine Staff
 # Total modifiers: 4|5
 # Can have duplicate modifiers: False|False|False|False
-# Modifier distribution: 1:1,6:1,25:1|2,"rest":0|1
+# Modifier distrubution: 1:1,6:1,25:1|2,"rest":0|1
 # Source: https://poedb.tw/us/Cane_of_Kulemak
 minRoll,maxRoll,textRolls,position,effect,static,unique,veiled
 60,90,,0,"#% increased Unveiled Modifier magnitudes",,True,True

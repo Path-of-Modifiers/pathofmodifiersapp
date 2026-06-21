@@ -49,7 +49,7 @@ class ItemBaseTypeDataDepositor(DataDepositorBase):
         changed_rows = duplicate_df[
             (duplicate_df["relatedUniques"] != duplicate_df["relatedUniques_y"])
             & (~duplicate_df["relatedUniques"].isna())
-        ].copy()
+        ]
 
         if not changed_rows.empty:
             logger.info(

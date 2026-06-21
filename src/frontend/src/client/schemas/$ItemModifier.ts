@@ -12,10 +12,6 @@ export const $ItemModifier = {
             type: 'number',
             isRequired: true,
         },
-        position: {
-            type: 'number',
-            isRequired: true,
-        },
         roll: {
             type: 'any-of',
             contains: [{

@@ -2,9 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { ModifierLimitation } from './ModifierLimitation';
+import type { ModifierLimitations } from './ModifierLimitations';
 export type WantedModifier = {
     modifierId: number;
-    modifierLimitations?: (Array<ModifierLimitation> | null);
+    modifierLimitations?: (ModifierLimitations | null);
 };
 

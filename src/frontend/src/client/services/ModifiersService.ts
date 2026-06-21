@@ -48,19 +48,14 @@ export class ModifiersService {
      */
     public static deleteModifier({
         modifierId,
-        position,
     }: {
         modifierId: number,
-        position: number,
     }): CancelablePromise<string> {
         return __request(OpenAPI, {
             method: 'DELETE',
             url: '/api/api_v1/modifier/{modifierId}',
             path: {
                 'modifierId': modifierId,
-            },
-            query: {
-                'position': position,
             },
             errors: {
                 422: `Validation Error`,
@@ -140,11 +135,9 @@ export class ModifiersService {
      */
     public static updateModifier({
         modifierId,
-        position,
         requestBody,
     }: {
         modifierId: number,
-        position: number,
         requestBody: ModifierUpdate,
     }): CancelablePromise<Modifier> {
         return __request(OpenAPI, {
@@ -152,7 +145,6 @@ export class ModifiersService {
             url: '/api/api_v1/modifier/',
             query: {
                 'modifierId': modifierId,
-                'position': position,
             },
             body: requestBody,
             mediaType: 'application/json',

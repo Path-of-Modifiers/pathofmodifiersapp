@@ -4,7 +4,7 @@
 /* eslint-disable */
 export const $GroupedModifierProperties = {
     properties: {
-        position: {
+        modifierId: {
             type: 'array',
             contains: {
                 type: 'number',
