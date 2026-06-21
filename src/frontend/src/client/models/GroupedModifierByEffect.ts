@@ -4,6 +4,7 @@
 /* eslint-disable */
 import type { GroupedModifierProperties } from './GroupedModifierProperties';
 export type GroupedModifierByEffect = {
+    modifierId: number;
     effect: string;
     regex: string;
     static: (boolean | null);

@@ -1,7 +1,6 @@
-import pandas as pd
 from fastapi import HTTPException
 from pydantic import TypeAdapter
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.models.models import Modifier as model_Modifier
@@ -25,51 +24,28 @@ class CRUDModifier(
     async def get_grouped_modifier_by_effect(self, db: Session):
         stmt = select(
             model_Modifier.modifierId,
-            model_Modifier.effect,
-            model_Modifier.regex,
-            model_Modifier.textRolls,
-            model_Modifier.relatedUniques,
-            model_Modifier.static,
-        )
-        db_modifier_rows = db.execute(stmt).mappings().all()
+            func.min(model_Modifier.effect).label("effect"),
+            func.coalesce(
+                func.min(model_Modifier.regex),
+                func.min(model_Modifier.effect),
+            ).label("regex"),
+            func.min(model_Modifier.relatedUniques).label("relatedUniques"),
+            func.bool_or(model_Modifier.static).label("static"),
+            func.json_build_object(
+                "position",
+                func.json_agg(model_Modifier.position),
+                "textRolls",
+                func.json_agg(model_Modifier.textRolls),
+            ).label("groupedModifierProperties"),
+        ).group_by(model_Modifier.modifierId)
 
-        if not db_modifier_rows:
+        grouped_modifier_by_effect_record = db.execute(stmt).mappings().all()
+
+        if not grouped_modifier_by_effect_record:
             raise HTTPException(
                 status_code=404,
                 detail=f"No objects found in the table {self.model.__tablename__}.",
             )
-
-        modifiers_df = pd.DataFrame(db_modifier_rows).sort_values(by="modifierId")
-
-        grouped_modifier_df = modifiers_df.groupby(
-            ["effect", "regex", "static", "relatedUniques"],
-            as_index=False,
-            dropna=False,
-            sort=False,
-        ).agg(lambda x: list(x))
-
-        not_static_mask = grouped_modifier_df["static"].isna()
-        grouped_modifier_df.loc[not_static_mask, "static"] = None
-        grouped_modifier_df.loc[~not_static_mask, "regex"] = grouped_modifier_df.loc[
-            ~not_static_mask, "effect"
-        ]
-
-        # Stores the listed fields in a list of dicts
-        grouped_modifier_properties_record = grouped_modifier_df[
-            ["modifierId", "textRolls"]
-        ].to_dict("records")
-
-        # Removes the listed fields
-        grouped_modifier_df = grouped_modifier_df.drop(
-            ["modifierId", "textRolls"], axis=1
-        )
-
-        # Adds the fields back in, but as a field with dicts
-        grouped_modifier_df[
-            "groupedModifierProperties"
-        ] = grouped_modifier_properties_record
-
-        grouped_modifier_by_effect_record = grouped_modifier_df.to_dict("records")
 
         validate = TypeAdapter(
             GroupedModifierByEffect | list[GroupedModifierByEffect]

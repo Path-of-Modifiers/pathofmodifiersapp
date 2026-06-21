@@ -27,11 +27,12 @@ class _BaseModifier(_pydantic.BaseModel):
 
 
 class GroupedModifierProperties(_pydantic.BaseModel):
-    modifierId: list[int]
+    position: list[int]
     textRolls: list[str | None]
 
 
 class GroupedModifierByEffect(_pydantic.BaseModel):
+    modifierId: int
     effect: str
     regex: str
     static: bool | None
