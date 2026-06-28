@@ -33,6 +33,7 @@ from data_retrieval_app.logs.logger import setup_logging
 from data_retrieval_app.pom_api_authentication import (
     get_superuser_token_headers,
 )
+from data_retrieval_app.utils import find_hours_since_launch
 
 
 class ContinuousDataRetrieval:
@@ -43,6 +44,7 @@ class ContinuousDataRetrieval:
     backend_base_url = settings.BACKEND_BASE_URL
     modifier_url = f"{backend_base_url}/modifier/"
     item_base_type_url = f"{backend_base_url}/itemBaseType/"
+    currency_url = f"{backend_base_url}/currency/"
     pom_auth_headers = get_superuser_token_headers(backend_base_url)
 
     def __init__(
@@ -147,8 +149,31 @@ class ContinuousDataRetrieval:
         return split_dfs
 
     def _get_new_currency_data(self) -> pd.DataFrame:
-        currency_df = self.currency_api_handler.make_request()
-        currency_df = self.currency_transformer.transform_into_tables(currency_df)
+        response = requests.get(
+            self.currency_url + "latest_hour/", headers=self.pom_auth_headers
+        )
+        if response.status_code != 200:
+            logger.error(
+                f"Recieved response code {response} when retrieving latest currency hour"
+            )
+            response.raise_for_status()
+        latest_hour = response.json()
+        current_hour = find_hours_since_launch()
+        if latest_hour == current_hour:
+            response = requests.get(
+                self.currency_url + "latest_currencies/", headers=self.pom_auth_headers
+            )
+            if response.status_code != 200:
+                logger.error(
+                    f"Recieved response code {response} when retrieving latest currency hour"
+                )
+                response.raise_for_status()
+
+            currency_df = pd.DataFrame(response.json())
+        else:
+            currency_df = self.currency_api_handler.make_request()
+            currency_df = self.currency_transformer.transform_into_tables(currency_df)
+
         return currency_df
 
     def _initialize_data_stream_threads(
@@ -163,11 +188,10 @@ class ContinuousDataRetrieval:
             logger.info("Retrieving modifiers from db.")
             modifier_dfs = self._get_modifiers()
             item_base_types = self._get_item_base_types()
+            currency_df = self._get_new_currency_data()
             get_df = self.poe_api_handler.dump_stream()
-            for i, df in enumerate(get_df):
+            for df in get_df:
                 split_dfs = self._categorize_new_items(df)
-                if i % 50 == 0:
-                    currency_df = self._get_new_currency_data()
                 for data_transformer_type in self.data_transformers:
                     self.data_transformers[data_transformer_type].transform_into_tables(
                         df=split_dfs[data_transformer_type],

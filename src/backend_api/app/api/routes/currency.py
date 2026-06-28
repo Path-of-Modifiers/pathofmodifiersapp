@@ -1,7 +1,6 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, Request, Response
-from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
@@ -100,15 +99,61 @@ async def get_latest_currency_id(
     db: Session = Depends(get_db),
 ):
     """
-    Get the latest currencyId
+    Get the latest currencyId, returns 1 if table is empty
 
     Can only be used safely on an empty table or directly after an insertion.
     """
-    result = db.execute(text("""SELECT MAX("currencyId") FROM currency""")).fetchone()
-    if result:
-        return int(result[0])
-    else:
-        return 1
+    return await CRUD_currency.get_latest_currency_id(db)
+
+
+@router.get(
+    "/latest_hour/",
+    response_model=int,
+    tags=["latest_hour"],
+    dependencies=[
+        Depends(get_current_active_user),
+    ],
+)
+@apply_user_rate_limits(
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
+async def get_latest_hour(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    db: Session = Depends(get_db),
+):
+    """
+    Return -1 if database is empty
+    """
+    return await CRUD_currency.get_latest_hour(db)
+
+
+@router.get(
+    "/latest_currencies/",
+    response_model=list[schemas.Currency],
+    tags=["latest_currencies"],
+    dependencies=[
+        Depends(get_current_active_user),
+    ],
+)
+@apply_user_rate_limits(
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
+async def get_latest_currencies(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    db: Session = Depends(get_db),
+):
+    """
+    Returns a list of the latest currencies, which all share the same `createdHoursSinceLaunch` as defined by `latest_hour` endpoint.
+    """
+    return await CRUD_currency.get_latest_currencies(db)
 
 
 @router.post(

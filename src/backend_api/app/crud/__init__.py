@@ -23,16 +23,12 @@ from app.core.schemas.unidentified_item import (
     UnidentifiedItemUpdate,
 )
 from app.crud.extensions.crud_modifier import CRUDModifier
+from app.crud.extensions.crud_currency import CRUDCurrency
 from app.crud.user import CRUDUser
 
 from .base import CRUDBase
 
-CRUD_currency = CRUDBase[
-    model_Currency,
-    Currency,
-    CurrencyCreate,
-    CurrencyUpdate,
-](
+CRUD_currency = CRUDCurrency(
     model=model_Currency,
     schema=Currency,
     create_schema=CurrencyCreate,
