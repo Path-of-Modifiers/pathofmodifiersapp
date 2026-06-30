@@ -24,6 +24,15 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.core.models.database import Base
 
 
+class League(Base):
+    __tablename__ = "league"
+
+    leagueId: Mapped[SmallInteger] = mapped_column(
+        Integer, Identity(), primary_key=True
+    )
+    name: Mapped[str] = mapped_column(Text, nullable=False)
+
+
 class Currency(Base):
     __tablename__ = "currency"
 
@@ -31,6 +40,11 @@ class Currency(Base):
     createdHoursSinceLaunch: Mapped[int] = mapped_column(SmallInteger, nullable=False)
     valueInChaos: Mapped[float] = mapped_column(Float(4), nullable=False)
     tradeName: Mapped[str] = mapped_column(Text, nullable=False)
+    leagueId: Mapped[SmallInteger] = mapped_column(
+        SmallInteger,
+        ForeignKey("league.leagueId", ondelete="RESTRICT", onupdate="CASCADE"),
+        nullable=False,
+    )
 
 
 class ItemBaseType(Base):
@@ -61,8 +75,9 @@ class _ItemBase:
         nullable=False,
     )
     createdHoursSinceLaunch: Mapped[int] = mapped_column(SmallInteger, nullable=False)
-    league: Mapped[str] = mapped_column(
-        Text,
+    leagueId: Mapped[SmallInteger] = mapped_column(
+        SmallInteger,
+        ForeignKey("league.leagueId", ondelete="RESTRICT", onupdate="CASCADE"),
         nullable=False,
     )
     itemId: Mapped[int] = mapped_column(
@@ -104,11 +119,11 @@ class Item(_ItemBase, Base):
 
     __table_args__ = (
         Index(
-            "ix_item_name_itemBaseTypeId_createdHoursSinceLaunch_league",
+            "ix_item_name_itemBaseTypeId_createdHoursSinceLaunch_leagueId",
             "name",
             "itemBaseTypeId",
             "createdHoursSinceLaunch",
-            "league",
+            "leagueId",
         ),
     )
 
@@ -127,11 +142,11 @@ class UnidentifiedItem(_ItemBase, Base):
 
     __table_args__ = (
         Index(
-            "ix_unid_item_name_itemBaseTypeId_createdHoursSinceLaunch_league",
+            "ix_unid_name_itemBaseTypeId_createdHoursSinceLaunch_leagueId",
             "name",
             "itemBaseTypeId",
             "createdHoursSinceLaunch",
-            "league",
+            "leagueId",
         ),
         CheckConstraint(
             """
