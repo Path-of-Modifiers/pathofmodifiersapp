@@ -2,8 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export const $ModifierLimitations = {
+export const $ModifierLimitation = {
     properties: {
+        position: {
+            type: 'number',
+            isRequired: true,
+        },
         maxRoll: {
             type: 'any-of',
             contains: [{

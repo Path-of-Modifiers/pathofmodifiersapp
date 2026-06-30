@@ -9,6 +9,7 @@ export type ItemCreate = {
     itemBaseTypeId: number;
     ilvl: number;
     rarity: string;
+    gameItemId?: (string | null);
     identified?: boolean;
     currencyAmount?: (number | null);
     currencyId?: (number | null);

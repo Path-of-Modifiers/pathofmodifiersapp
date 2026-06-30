@@ -43,7 +43,7 @@ from app.core.schemas.plot import (
     BasePlotQuery,
     IdentifiedPlotQuery,
     ItemSpecs,
-    ModifierLimitations,
+    ModifierLimitation,
     PlotData,
     PlotQuery,
     UnidentifiedPlotQuery,
@@ -277,7 +277,7 @@ class IdentifiedPlotter(_BasePlotter):
             )
 
     def _check_rolls(
-        self, modifier_limitations: ModifierLimitations
+        self, modifier_limitations: ModifierLimitation
     ) -> ColumnElement[bool] | BinaryExpression[bool]:
         if modifier_limitations.textRoll is not None:
             return model_ItemModifier.roll == modifier_limitations.textRoll
@@ -297,7 +297,7 @@ class IdentifiedPlotter(_BasePlotter):
         self,
         statement: Select,
         *,
-        wanted_modifier_query: list[list[WantedModifier]],
+        wanted_modifier_query: list[WantedModifier],
         start: int | None,
         end: int | None,
     ) -> Select:
@@ -308,20 +308,17 @@ class IdentifiedPlotter(_BasePlotter):
         one is chosen.
         """
         exists_conditions = []
-        wanted_modifier = None  # Gets set to the last mod after loop below
-        for grouped_wanted_modifier in wanted_modifier_query:
-            modifier_roll_limitation_found = False
-            for wanted_modifier in grouped_wanted_modifier:
-                if wanted_modifier.modifierLimitations is not None:
-                    modifier_roll_limitation_found = True
-                    roll_condition = self._check_rolls(
-                        wanted_modifier.modifierLimitations
-                    )
+        for wanted_modifier in wanted_modifier_query:
+            if wanted_modifier.modifierLimitations is not None:
+                for modifier_limitation in wanted_modifier.modifierLimitations:
+                    roll_condition = self._check_rolls(modifier_limitation)
+
                     and_conditions = [
                         model_Item.itemId == model_ItemModifier.itemId,
                         model_ItemModifier.modifierId == wanted_modifier.modifierId,
                         roll_condition,
                     ]
+
                     if start is not None:
                         and_conditions.append(
                             model_ItemModifier.createdHoursSinceLaunch >= start
@@ -331,7 +328,6 @@ class IdentifiedPlotter(_BasePlotter):
                         and_conditions.append(
                             model_ItemModifier.createdHoursSinceLaunch <= end
                         )
-
                     exists_conditions.append(
                         select(1)
                         .where(
@@ -342,8 +338,7 @@ class IdentifiedPlotter(_BasePlotter):
                         )
                         .exists()
                     )
-
-            if wanted_modifier and not modifier_roll_limitation_found:
+            else:
                 and_conditions = [
                     model_Item.itemId == model_ItemModifier.itemId,
                     model_ItemModifier.modifierId == wanted_modifier.modifierId,

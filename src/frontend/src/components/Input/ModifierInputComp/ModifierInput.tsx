@@ -20,6 +20,7 @@ export interface ModifierOption extends SelectBoxOptionValue {
   index?: number;
   static?: boolean;
   relatedUniques?: string;
+  modifierId: number;
   groupedModifierProperties: GroupedModifierProperties;
 }
 
@@ -41,6 +42,7 @@ export const ModifierInput = () => {
       regex: prefetchedModifier.regex,
       static: prefetchedModifier.static ?? undefined,
       relatedUniques: prefetchedModifier.relatedUniques ?? undefined,
+      modifierId: prefetchedModifier.modifierId,
       groupedModifierProperties: prefetchedModifier.groupedModifierProperties,
     }));
   const [choosableModifierOptions, setChoosableModifierOptions] = useState<
@@ -59,10 +61,8 @@ export const ModifierInput = () => {
   if (wantedModifierExtended.length > 0) {
     prevSelectedModifiers = wantedModifierExtended.reduce(
       (selectedModifiers, wantedModifier) => {
-        const prevSelectedModifier = choosableModifierOptions.find((modifier) =>
-          modifier.groupedModifierProperties.modifierId.includes(
-            wantedModifier.modifierId,
-          ),
+        const prevSelectedModifier = choosableModifierOptions.find(
+          (modifier) => modifier.modifierId === wantedModifier.modifierId,
         );
         if (prevSelectedModifier === undefined) {
           return selectedModifiers;
@@ -137,28 +137,20 @@ export const ModifierInput = () => {
       ]);
 
       removeWantedModifierExtended(overrideIndex);
-      newlySelectedModifier.groupedModifierProperties.modifierId.map(
-        (modifierId) => {
-          addWantedModifierExtended(
-            { modifierId: modifierId },
-            overrideIndex,
-            newlySelectedModifier.relatedUniques,
-          );
-        },
+      addWantedModifierExtended(
+        { modifierId: newlySelectedModifier.modifierId },
+        overrideIndex,
+        newlySelectedModifier.relatedUniques,
       );
     } else {
       setSelectedModifiers((currentSelectedModifiers) => [
         ...currentSelectedModifiers,
         { ...newlySelectedModifier, index: selectedModifiers.length },
       ]);
-      newlySelectedModifier.groupedModifierProperties.modifierId.map(
-        (modifierId) => {
-          addWantedModifierExtended(
-            { modifierId: modifierId },
-            selectedModifiers.length,
-            newlySelectedModifier.relatedUniques,
-          );
-        },
+      addWantedModifierExtended(
+        { modifierId: newlySelectedModifier.modifierId },
+        selectedModifiers.length,
+        newlySelectedModifier.relatedUniques,
       );
     }
   };
@@ -224,9 +216,7 @@ export const ModifierInput = () => {
           isChecked={selectedModifier.isSelected}
           key={selectedIndex}
           onChange={() => {
-            if (
-              selectedModifier.groupedModifierProperties.modifierId[0] !== null
-            ) {
+            if (selectedModifier.modifierId !== null) {
               handleCheckboxChange(selectedModifier, selectedIndex);
             }
           }}
