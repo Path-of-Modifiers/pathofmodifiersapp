@@ -144,6 +144,7 @@ async def create_modifier(
 )
 async def update_modifier(
     modifierId: int,
+    position: int,
     modifier_update: schemas.ModifierUpdate,
     db: Session = Depends(get_db),
 ):
@@ -155,7 +156,7 @@ async def update_modifier(
     Returns the updated modifier.
     """
 
-    modifier_map = {"modifierId": modifierId}
+    modifier_map = {"modifierId": modifierId, "position": position}
 
     modifier = await CRUD_modifier.get(
         db=db,
@@ -172,6 +173,7 @@ async def update_modifier(
 )
 async def delete_modifier(
     modifierId: int,
+    position: int,
     db: Session = Depends(get_db),
 ):
     """
@@ -181,7 +183,7 @@ async def delete_modifier(
     Always deletes one modifier.
     """
 
-    modifier_map = {"modifierId": modifierId}
+    modifier_map = {"modifierId": modifierId, "position": position}
     await CRUD_modifier.remove(db=db, filter=modifier_map)
 
     return get_delete_return_msg(

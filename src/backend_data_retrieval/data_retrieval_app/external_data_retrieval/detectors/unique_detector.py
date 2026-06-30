@@ -58,6 +58,7 @@ class UniqueUnidentifiedDetector(UniqueDetector):
         "Great Crown",
         "Simple Robe",
         "Leather Belt",
+        "Heavy Belt",
     ]
 
     wanted_item_icons = {

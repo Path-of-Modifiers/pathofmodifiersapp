@@ -113,7 +113,7 @@ async def create_item_base_type(
 
 
 @router.put(
-    "/{itemBaseTypeId}",
+    "/",
     response_model=schemas.ItemBaseType,
     dependencies=[
         Depends(get_current_active_superuser),
@@ -141,7 +141,7 @@ async def update_item_base_type(
 
 
 @router.delete(
-    "/{itemBaseTypeId}",
+    "/",
     response_model=str,
     dependencies=[Depends(get_current_active_superuser)],
 )

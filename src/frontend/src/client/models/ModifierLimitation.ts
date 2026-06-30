@@ -2,7 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type ModifierLimitations = {
+export type ModifierLimitation = {
+    position: number;
     maxRoll?: (number | null);
     minRoll?: (number | null);
     textRoll?: (number | null);
