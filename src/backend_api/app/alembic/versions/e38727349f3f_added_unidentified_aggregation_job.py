@@ -13,7 +13,6 @@ import sqlalchemy as sa
 
 from app.alembic.replaceable_objects.main import ReplaceableTrigger
 
-
 # revision identifiers, used by Alembic.
 revision: str = "e38727349f3f"
 down_revision: Union[str, None] = "0f3f15f56b7d"
@@ -25,7 +24,7 @@ unidentified_aggregation_trigger = ReplaceableTrigger(
     "aggregate_unidentified",
     "unidentified_item",
     """
-    RETURNS TRIGGER AS $aggregate_unidentified$
+    RETURNS TRIGGER AS ${name}$
         DECLARE
             current_hour INT;
             divine_id INT;
@@ -65,12 +64,12 @@ unidentified_aggregation_trigger = ReplaceableTrigger(
 			
 			RETURN NEW;
 		END;
-    $aggregate_unidentified$ LANGUAGE plpgsql;
+    ${name}$ LANGUAGE plpgsql;
     """,
     """
-    BEFORE INSERT ON unidentified_item
+    BEFORE INSERT ON {table}
 	FOR EACH ROW
-	EXECUTE FUNCTION aggregate_unidentified();
+	EXECUTE FUNCTION {name}();
     """,
 )
 
