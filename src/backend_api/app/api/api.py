@@ -9,6 +9,8 @@ from app.api.routes import (
     item_modifier,
     item_modifier_prefix,
     item_prefix,
+    league,
+    league_prefix,
     login,
     login_prefix,
     modifier,
@@ -41,6 +43,9 @@ api_router.include_router(
 )
 api_router.include_router(
     item.router, prefix=f"/{item_prefix}", tags=[f"{item_prefix}s"]
+)
+api_router.include_router(
+    league.router, prefix=f"/{league_prefix}", tags=[f"{league_prefix}s"]
 )
 api_router.include_router(
     unidentified_item.router,

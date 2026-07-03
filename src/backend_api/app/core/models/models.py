@@ -28,9 +28,11 @@ class League(Base):
     __tablename__ = "league"
 
     leagueId: Mapped[SmallInteger] = mapped_column(
-        Integer, Identity(), primary_key=True
+        SmallInteger, Identity(), primary_key=True
     )
     name: Mapped[str] = mapped_column(Text, nullable=False)
+    validFrom: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    validTo: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
 class Currency(Base):

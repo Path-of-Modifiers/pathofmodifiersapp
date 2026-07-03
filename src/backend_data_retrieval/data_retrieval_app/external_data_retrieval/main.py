@@ -43,6 +43,7 @@ class ContinuousDataRetrieval:
 
     backend_base_url = settings.BACKEND_BASE_URL
     modifier_url = f"{backend_base_url}/modifier/"
+    league_url = f"{backend_base_url}/league/"
     item_base_type_url = f"{backend_base_url}/itemBaseType/"
     currency_url = f"{backend_base_url}/currency/"
     pom_auth_headers = get_superuser_token_headers(backend_base_url)
@@ -98,6 +99,17 @@ class ContinuousDataRetrieval:
                     ~modifier_df[modifier_type].isna()
                 ]
         return modifier_dfs
+
+    def _get_leagues(self) -> list[str]:
+        response = requests.get(self.league_url, headers=self.pom_auth_headers)
+
+        if response.status_code != 200:
+            logger.error(f"Recieved response code {response} when retrieving leagues")
+            response.raise_for_status()
+
+        leagues = response.json()
+
+        return leagues
 
     def _get_item_base_types(self) -> dict[str, int]:
         response = requests.get(self.item_base_type_url, headers=self.pom_auth_headers)
@@ -187,6 +199,7 @@ class ContinuousDataRetrieval:
         try:
             logger.info("Retrieving modifiers from db.")
             modifier_dfs = self._get_modifiers()
+            # leagues = self._get_leagues()
             item_base_types = self._get_item_base_types()
             currency_df = self._get_new_currency_data()
             get_df = self.poe_api_handler.dump_stream()

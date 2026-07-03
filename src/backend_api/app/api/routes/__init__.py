@@ -9,3 +9,4 @@ from app.api.routes.plot import plot_prefix
 from app.api.routes.turnstile import turnstile_prefix
 from app.api.routes.user import user_prefix
 from app.api.routes.test import test_prefix
+from app.api.routes.league import league_prefix
