@@ -124,7 +124,7 @@ async def create_league(
 
 
 @router.put(
-    "/{leagueI}",
+    "/{leagueId}",
     response_model=schemas.League,
     dependencies=[Depends(get_current_active_superuser)],
 )
