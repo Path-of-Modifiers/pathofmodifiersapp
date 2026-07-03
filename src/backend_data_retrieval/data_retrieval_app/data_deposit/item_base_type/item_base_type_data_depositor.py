@@ -93,7 +93,7 @@ class ItemBaseTypeDataDepositor(DataDepositorBase):
                     response.raise_for_status()
                 except Exception as e:
                     logger.error(
-                        f"The following error occurred while making request during _update_duplicates modifiers: {e}"
+                        f"The following error occurred while making request during _update_duplicates item base types: {e}"
                     )
                     raise e
 

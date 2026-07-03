@@ -14,16 +14,16 @@ from app.crud.base import CRUDBase
 
 
 class CRUDLeague(CRUDBase[model_League, League, LeagueCreate, LeagueUpdate]):
-    async def get_active_leagues(self, db: Session) -> list[str]:
+    async def get_active_leagues(self, db: Session) -> list[League]:
         now = datetime.now()
 
-        stmt = select(model_League.name).where(
+        stmt = select(model_League).where(
             model_League.validFrom <= now,
             model_League.validTo.is_(None) | (model_League.validTo >= now),
         )
 
-        leagues = db.execute(stmt).mappings().all()
+        leagues = db.execute(stmt).scalars().all()
 
-        validate = TypeAdapter(list[str]).validate_python
+        validate = TypeAdapter(list[League]).validate_python
 
         return validate(leagues)

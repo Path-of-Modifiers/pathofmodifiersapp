@@ -8,8 +8,8 @@ class _BaseLeague(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
     name: str
-    validTo: _dt.datetime
     validFrom: _dt.datetime
+    validTo: _dt.datetime | None = None
 
 
 # Properties to receive on League creation
@@ -18,8 +18,11 @@ class LeagueCreate(_BaseLeague):
 
 
 # Properties to receive on update
-class LeagueUpdate(_BaseLeague):
+class LeagueUpdate(_pydantic.BaseModel):
     leagueId: int
+    name: str
+    validFrom: _dt.datetime
+    validTo: _dt.datetime | None = None
 
 
 # Properties shared by models stored in DB

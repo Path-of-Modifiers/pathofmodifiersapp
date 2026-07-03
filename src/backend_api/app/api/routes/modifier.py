@@ -149,9 +149,7 @@ async def update_modifier(
     db: Session = Depends(get_db),
 ):
     """
-    Update a modifier by key and value for "modifierId"
-
-    Dominant key is "modifierId".
+    Update a modifier by key and value for "modifierId" and "position"
 
     Returns the updated modifier.
     """

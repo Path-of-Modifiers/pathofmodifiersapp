@@ -77,7 +77,7 @@ async def get_all_leagues(
 
 @router.get(
     f"/active_{league_prefix}/",
-    response_model=list[str],
+    response_model=list[schemas.League],
     dependencies=[
         Depends(get_current_active_user),
     ],
@@ -102,3 +102,48 @@ async def get_active_leagues(
     leagues = await CRUD_league.get_active_leagues(db=db)
 
     return leagues
+
+
+@router.post(
+    "/",
+    response_model=schemas.LeagueCreate | list[schemas.LeagueCreate] | None,
+    dependencies=[Depends(get_current_active_superuser)],
+)
+async def create_league(
+    league: schemas.LeagueCreate | list[schemas.LeagueCreate],
+    return_nothing: bool | None = None,
+    db: Session = Depends(get_db),
+):
+    """
+    Create one or a list of new leagues.
+
+    Returns the created league or list of leagues.
+    """
+
+    return await CRUD_league.create(db=db, obj_in=league, return_nothing=return_nothing)
+
+
+@router.put(
+    "/{leagueI}",
+    response_model=schemas.League,
+    dependencies=[Depends(get_current_active_superuser)],
+)
+async def update_modifier(
+    leagueId: int,
+    league_update: schemas.LeagueUpdate,
+    db: Session = Depends(get_db),
+):
+    """
+    Update a league by key and value for "leagueId"
+
+    Returns the updated league.
+    """
+
+    modifier_map = {"leagueId": leagueId}
+
+    modifier = await CRUD_league.get(
+        db=db,
+        filter=modifier_map,
+    )
+
+    return await CRUD_league.update(db_obj=modifier, obj_in=league_update, db=db)
