@@ -5,7 +5,6 @@ from io import StringIO
 from typing import Any
 
 import pandas as pd
-import requests
 
 from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.logs.logger import test_logger
@@ -16,6 +15,7 @@ from data_retrieval_app.tests.scripts.create_public_stashes_test_data.config imp
     script_settings,
 )
 from data_retrieval_app.tests.utils import random_float, random_int
+from data_retrieval_app.utils import get_data_safe
 
 
 class DataDepositTestDataCreator:
@@ -59,7 +59,7 @@ class DataDepositTestDataCreator:
     def _get_df_from_url(self, route: str) -> pd.DataFrame:
         headers = {"accept": "application/json", "Content-Type": "application/json"}
         headers.update(self.pom_auth_headers)
-        response = requests.get(f"{self.base_url}/{route}", headers=headers)
+        response = get_data_safe(f"{self.base_url}/{route}", headers=headers)
         df = pd.read_json(StringIO(response.text), orient="records")
         return df
 

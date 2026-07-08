@@ -1,7 +1,9 @@
+from typing import Any
+
 import pandas as pd
-import requests
 
 from data_retrieval_app.logs.logger import external_data_retrieval_logger as logger
+from data_retrieval_app.utils import get_data_safe
 
 
 class CurrencyAPIHandler:
@@ -13,25 +15,25 @@ class CurrencyAPIHandler:
 
         return df
 
-    def make_request(self) -> pd.DataFrame:
+    def make_request(self, leagues: list[dict[str, Any]]) -> pd.DataFrame:
         """
         Makes an initial, synchronous, API call.
         """
-        try:
-            response = requests.get(self.url)
-            response.raise_for_status()
-        except Exception as e:
-            logger.error(
-                f"The following error occurred while making request in poe ninja currency handler: {e}"
+        df = None
+        for league in leagues:
+            response = get_data_safe(
+                self.url.format(league=league["name"].replace(" ", "+")), logger=logger
             )
-            raise e
-        response_json = response.json()
+            response_json = response.json()
 
-        # items_df = pd.DataFrame(response_json["items"])
-        items_df = pd.json_normalize(response_json["items"])
-        currency_df = items_df[items_df["category"] == "currency"]
-
-        return currency_df
+            items_df = pd.json_normalize(response_json["items"])
+            currency_df = items_df[items_df["category"] == "currency"]
+            currency_df["leagueId"] = league["leagueId"]
+            if df is None:
+                df = currency_df
+            else:
+                df = pd.concat((df, currency_df))
+        return df
 
     def store_data_to_csv(self, path: str) -> None:
         """

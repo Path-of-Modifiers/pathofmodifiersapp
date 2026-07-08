@@ -1,9 +1,9 @@
 import inspect
 import time
+from typing import Any
 
 import pandas as pd
 
-from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.logs.logger import data_retrieval_logger as logger
 
 
@@ -15,18 +15,17 @@ class DetectorBase:
     wanted_items = {}
     found_items = {}
 
-    def __init__(self, enable_pbar: bool = False) -> None:
+    def __init__(
+        self, leagues: list[dict[str, Any]], enable_pbar: bool = False
+    ) -> None:
         """
         `self.n_unique_items_found` needs to be stored inbetween item detector sessions.
         """
         self.n_unique_items_found = 0
+        self.leagues = [league["name"] for league in leagues]
+        self.league_to_id = {league["name"]: league["leagueId"] for league in leagues}
 
         self.prev_item_hashes_found = {}
-
-        self.leagues = [
-            settings.CURRENT_SOFTCORE_LEAGUE,
-            settings.CURRENT_HARDCORE_LEAGUE,
-        ]
 
         self.pbar_enabled = enable_pbar
 
@@ -65,6 +64,7 @@ class DetectorBase:
             return pd.DataFrame(columns=df.columns)
 
         df = df.loc[df["league"].isin(self.leagues)]
+        df["leagueId"] = df["league"].map(self.league_to_id)
 
         return df
 

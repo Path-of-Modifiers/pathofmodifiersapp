@@ -3,10 +3,10 @@ import threading
 import time
 from collections.abc import Iterator
 from concurrent.futures import Future, ThreadPoolExecutor
+from typing import Any
 
 import aiohttp
 import pandas as pd
-import requests
 
 from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.external_data_retrieval.detectors.unique_detector import (
@@ -18,12 +18,13 @@ from data_retrieval_app.external_data_retrieval.detectors.unique_detector import
     UniqueWeaponDetector,
 )
 from data_retrieval_app.external_data_retrieval.utils import (
-    ProgramRunTooLongException,
+    ProgramFinished,
     ProgramTooSlowException,
     WrongLeagueSetException,
     sync_timing_tracker,
 )
 from data_retrieval_app.logs.logger import data_retrieval_logger as logger
+from data_retrieval_app.utils import get_data_safe
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
@@ -37,6 +38,7 @@ class PoEAPIHandler:
         self,
         url: str,
         auth_token: str,
+        leagues: list[dict[str, Any]],
         *,
         n_wanted_items: int = 100,
         n_unique_wanted_items: int = 5,
@@ -53,11 +55,11 @@ class PoEAPIHandler:
         logger.debug("Initializing PoEAPIHandler.")
         if item_detectors is None:
             item_detectors = [
-                UniqueArmourDetector(),
-                UniqueJewelDetector(),
-                UniqueJewelleryDetector(),
-                UniqueWeaponDetector(),
-                UniqueUnidentifiedDetector(),
+                UniqueArmourDetector(leagues),
+                UniqueJewelDetector(leagues),
+                UniqueJewelleryDetector(leagues),
+                UniqueWeaponDetector(leagues),
+                UniqueUnidentifiedDetector(leagues),
             ]
         logger.debug("Item detectors set to: " + str(item_detectors))
         self.url = url
@@ -81,6 +83,7 @@ class PoEAPIHandler:
         self.skip_program_too_slow = False
 
         self._program_too_slow = False
+        self._program_finished = False
         self.time_of_launch = time.perf_counter()
         self.run_program_for_n_seconds = settings.TIME_BETWEEN_RESTART
         logger.info("PoEAPIHandler successfully initialized.")
@@ -172,21 +175,15 @@ class PoEAPIHandler:
         ):  # For testing purposes, set manual next_change_id
             next_change_id = settings.NEXT_CHANGE_ID
             return next_change_id
-        try:
-            # Can't have authorization header, so we make a new header
-            headers = {
-                "User-Agent": f"OAuth pathofmodifiers/0.1.0 (contact: {settings.OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
-            }
-            response = requests.get(
-                "https://www.pathofexile.com/api/trade/data/change-ids",
-                headers=headers,
-            )
-            response.raise_for_status()
-        except Exception as e:
-            logger.error(
-                f"The following error occurred while making request _get_latest_change_id: {e}"
-            )
-            raise e
+        # Can't have authorization header, so we make a new header
+        headers = {
+            "User-Agent": f"OAuth pathofmodifiers/0.1.0 (contact: {settings.OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
+        }
+        response = get_data_safe(
+            "https://www.pathofexile.com/api/trade/data/change-ids",
+            headers=headers,
+            logger=logger,
+        )
         response_json = response.json()
         next_change_id = response_json["psapi"]
         logger.info(f"Retrieved latest change id: {next_change_id}. Sleeping for 310s")
@@ -221,6 +218,8 @@ class PoEAPIHandler:
             return []
         if self._program_too_slow:
             raise ProgramTooSlowException
+        if self._program_finished:
+            raise ProgramFinished
 
         waiting_for_next_id_lock.acquire()
 
@@ -347,6 +346,8 @@ class PoEAPIHandler:
                     stashes = await self._send_n_recursion_requests(
                         5, session, waiting_for_next_id_lock, mini_batch_size
                     )
+                    if self._program_finished:
+                        return
                     logger.debug(f"Thread {threading.get_ident()} finished 5 requests")
                     stash_lock.acquire()
                     self.stashes += stashes
@@ -449,9 +450,15 @@ class PoEAPIHandler:
         """
         self._program_too_slow = True
 
+    def set_program_finished(self):
+        """
+        Used to forceall threads to crash, letting the program shut down.
+        """
+        self._program_finished = True
+
     def initialize_data_stream_threads(
         self, executor: ThreadPoolExecutor, listeners: int, has_crashed: bool
-    ) -> dict[Future, str] | Future:
+    ) -> dict[Future, str] | Future | list[Future]:
         """
         Creates the communication tools between threads and store them for later use.
         Gets the latest change id, and initializes the listeners.
@@ -527,4 +534,4 @@ class PoEAPIHandler:
                 current_time = time.perf_counter()
                 time_since_launch = current_time - self.time_of_launch
                 if time_since_launch > self.run_program_for_n_seconds:
-                    raise ProgramRunTooLongException
+                    raise ProgramFinished

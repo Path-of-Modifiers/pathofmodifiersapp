@@ -94,3 +94,43 @@ async def create_item(
     return await CRUD_unidentifiedItem.create(
         db=db, obj_in=item, return_nothing=return_nothing
     )
+
+
+@router.get(
+    "/non_aggregated/",
+    response_model=list[schemas.UnidentifiedItem],
+    dependencies=[Depends(get_current_active_superuser)],
+)
+async def get_non_aggregated(
+    db: Session = Depends(get_db),
+):
+    """
+    Get the non aggregated unidentified items for the last 10 recorded hours
+        (not necessarily the last 10 hours)
+    """
+
+    all_items = await CRUD_unidentifiedItem.get_non_aggregated(db=db)
+
+    return all_items
+
+
+@router.post(
+    "/add_aggregated/",
+    response_model=list[schemas.UnidentifiedItem],
+    dependencies=[Depends(get_current_active_superuser)],
+)
+async def add_aggregated(
+    aggregated_objs: list[schemas.UnidentifiedItemCreate],
+    db: Session = Depends(get_db),
+):
+    """
+    Deletes the non aggregated unidentified items for the last 10 recorded hours
+        (not necessarily the last 10 hours)
+    And inserts the new items
+    """
+
+    deleted_non_aggregated = await CRUD_unidentifiedItem.add_aggregated(
+        db=db, aggregated_objs=aggregated_objs
+    )
+
+    return deleted_non_aggregated

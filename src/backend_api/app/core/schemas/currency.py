@@ -7,6 +7,7 @@ class _BaseCurrency(_pydantic.BaseModel):
 
     tradeName: str
     valueInChaos: float
+    leagueId: int
 
 
 # Properties to receive on currency creation
@@ -33,3 +34,9 @@ class Currency(CurrencyInDBBase):
 # Properties stored in DB
 class CurrencyInDB(CurrencyInDBBase):
     pass
+
+
+class CurrencyQuery(_pydantic.BaseModel):
+    createdHoursSinceLaunch: int | None = None
+    tradeName: str | None = None
+    leagueId: int | None = None

@@ -122,3 +122,23 @@ def insert_data(
             f"Recieved a {response.status_code} response. Error msg: {response.text[:10000]}"
         )
         response.raise_for_status()
+
+
+def get_data_safe(
+    url: str,
+    *,
+    logger: logging.Logger = None,
+    params: dict | list = None,
+    headers: dict[str, str] | None = None,
+) -> requests.Response:
+    try:
+        response = requests.get(url, params=params, headers=headers)
+        response.raise_for_status()
+    except Exception as e:
+        if logger is not None:
+            logger.error(
+                f"The following error occurred while making request a request to {url}: {e}"
+            )
+        raise e
+
+    return response

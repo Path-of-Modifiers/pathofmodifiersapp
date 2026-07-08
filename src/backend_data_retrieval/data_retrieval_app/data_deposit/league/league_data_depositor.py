@@ -5,6 +5,7 @@ import requests
 
 from data_retrieval_app.data_deposit.data_depositor_base import DataDepositorBase
 from data_retrieval_app.logs.logger import data_deposit_logger as logger
+from data_retrieval_app.utils import get_data_safe
 
 
 class LeagueDataDepositor(DataDepositorBase):
@@ -18,14 +19,12 @@ class LeagueDataDepositor(DataDepositorBase):
     def _get_current_leagues(self) -> pd.DataFrame:
         logger.info("Retrieving previously deposited data.")
 
-        response = requests.get(self.data_url, headers=self.pom_auth_headers)
+        response = get_data_safe(
+            self.data_url, headers=self.pom_auth_headers, logger=logger
+        )
 
-        df = pd.DataFrame()
-        # Check if the request was successful
-        if response.status_code == 200:
-            # Load the JSON data into a pandas DataFrame
-            json_io = StringIO(response.content.decode("utf-8"))
-            df = pd.read_json(json_io, dtype=str)
+        json_io = StringIO(response.content.decode("utf-8"))
+        df = pd.read_json(json_io, dtype=str)
 
         if df.empty:
             logger.info("Found no previously deposited data.")
@@ -73,6 +72,9 @@ class LeagueDataDepositor(DataDepositorBase):
                     raise e
 
     def _process_data(self, df: pd.DataFrame) -> pd.DataFrame:
+        hardcore_df = df.copy()
+        hardcore_df["name"] = "Hardcore " + hardcore_df["name"]
+        df = pd.concat((df, hardcore_df), ignore_index=True)
         merged_df = pd.merge(
             df,
             self.current_league_df,

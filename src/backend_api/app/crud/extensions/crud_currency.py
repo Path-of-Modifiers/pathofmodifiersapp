@@ -1,12 +1,13 @@
 from pydantic import TypeAdapter
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from sqlalchemy.sql.expression import func
+from sqlalchemy.sql.expression import and_, func, or_
 
 from app.core.models.models import Currency as model_Currency
 from app.core.schemas.currency import (
     Currency,
     CurrencyCreate,
+    CurrencyQuery,
     CurrencyUpdate,
 )
 from app.crud.base import CRUDBase
@@ -92,3 +93,31 @@ class CRUDCurrency(
         validate = TypeAdapter(list[Currency]).validate_python
 
         return validate(latest_currencies)
+
+    async def get_currency_from_query(
+        self, db: Session, query_list: list[CurrencyQuery]
+    ) -> list[Currency]:
+        filters = []
+        for query in query_list:
+            sub_filter = []
+            if query.createdHoursSinceLaunch is not None:
+                sub_filter.append(
+                    model_Currency.createdHoursSinceLaunch
+                    == query.createdHoursSinceLaunch
+                )
+
+            if query.tradeName is not None:
+                sub_filter.append(model_Currency.tradeName == query.tradeName)
+
+            if query.leagueId is not None:
+                sub_filter.append(model_Currency.leagueId == query.leagueId)
+
+            if sub_filter:
+                filters.append(and_(*sub_filter))
+        stmt = select(model_Currency).where(or_(*filters))
+
+        currencies = db.execute(stmt).scalars().all()
+
+        validate = TypeAdapter(list[Currency]).validate_python
+
+        return validate(currencies)

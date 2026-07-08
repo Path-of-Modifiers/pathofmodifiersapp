@@ -18,6 +18,7 @@ from app.core.rate_limit.rate_limit_config import rate_limit_settings
 from app.core.rate_limit.rate_limiters import (
     apply_user_rate_limits,
 )
+from app.core.schemas.currency import CurrencyQuery
 from app.crud import CRUD_currency
 
 router = APIRouter()
@@ -154,6 +155,31 @@ async def get_latest_currencies(
     Returns a list of the latest currencies, which all share the same `createdHoursSinceLaunch` as defined by `latest_hour` endpoint.
     """
     return await CRUD_currency.get_latest_currencies(db)
+
+
+@router.post(
+    "/from_query/",
+    response_model=list[schemas.Currency],
+    dependencies=[
+        Depends(get_current_active_user),
+    ],
+)
+@apply_user_rate_limits(
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
+async def get_currency_from_query(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    query_list: list[CurrencyQuery],
+    db: Session = Depends(get_db),
+):
+    """
+    Returns a list of currencies that match any of the queries
+    """
+    return await CRUD_currency.get_currency_from_query(db, query_list)
 
 
 @router.post(
