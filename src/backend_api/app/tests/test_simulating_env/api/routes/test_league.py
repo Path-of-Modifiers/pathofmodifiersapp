@@ -5,41 +5,34 @@ import pytest
 import pytest_asyncio
 from fastapi import Response
 from httpx import AsyncClient
+from sqlalchemy.orm import Session
 
 import app.tests.test_simulating_env.api.api_routes_test_base as test_api
-from app.api.routes import currency_prefix, league_prefix
-from app.api.routes.currency import get_currency
+from app.api.routes import item_prefix
 from app.core.config import settings
-from app.core.models.models import Currency, League
-from app.crud import CRUD_currency
+from app.core.models.models import League
+from app.crud import CRUD_item
 from app.crud.base import CRUDBase, ModelType
-from app.tests.utils.model_utils.currency import (
-    create_random_currency_dict,
-    generate_random_currency,
+from app.tests.utils.model_utils.item import (
+    create_random_item_dict,
+    generate_random_item,
 )
-from app.tests.utils.rate_limit import (
-    RateLimitPerTimeInterval,
-    get_function_decorator_rate_limit_per_time_interval,
-)
-from app.tests.utils.utils import (
-    get_model_table_name,
-    get_model_unique_identifier,
-)
+from app.tests.utils.utils import get_model_table_name, get_model_unique_identifier
 
 
 @pytest.fixture(scope="module")
 def route_prefix() -> str:
-    return currency_prefix
+    return item_prefix
 
 
 @pytest.fixture(scope="module")
 def is_hypertable() -> bool:
-    return False
+    return True
 
 
 @pytest.fixture(scope="module")
 def crud_instance() -> CRUDBase:
-    return CRUD_currency
+    return CRUD_item
 
 
 @pytest.fixture(scope="module")
@@ -54,7 +47,7 @@ def on_duplicate_params() -> tuple[bool, str | None]:
 
 @pytest.fixture(scope="module")
 def model_table_name() -> str:
-    return get_model_table_name(Currency)
+    return get_model_table_name(League)
 
 
 @pytest.fixture(scope="module")
@@ -77,57 +70,13 @@ def ignore_test_columns() -> list[str]:
     Returns:
         List[str]: List of columns to ignore
     """
-    return ["currencyId", "createdHoursSinceLaunch"]
+    return []
 
 
 @pytest.fixture(scope="module")
 def unique_identifier() -> str:
-    unique_identifier = get_model_unique_identifier(Currency)
+    unique_identifier = get_model_unique_identifier(League)
     return unique_identifier
-
-
-@pytest.fixture(scope="module")
-def object_generator_func() -> Callable[[], tuple[dict, ModelType]]:
-    return generate_random_currency
-
-
-@pytest.fixture(scope="module")
-def object_generator_func_w_deps() -> (
-    Callable[[], tuple[dict, Currency, list[dict | League]]]
-):
-    def generate_random_item_w_deps(
-        db,
-    ) -> Callable[
-        [],
-        tuple[
-            dict,
-            Currency,
-            list[dict | League | Currency],
-        ],
-    ]:
-        return generate_random_currency(db, retrieve_dependencies=True)
-
-    return generate_random_item_w_deps
-
-
-@pytest.fixture(scope="module")
-def api_deps_instances() -> list[list[str]]:
-    """Fixture for API dependencies instances.
-
-    Dependencies in return list needs to be in correct order.
-    If a dependency is dependent on another, the dependency needs to occur later than
-    the one its dependent on. The order is defined by 'generate_random_item'.
-
-    Returns:
-        List[list[str]]: API dependencies instances. Format: [dep_route_prefix: dep_unique_identifier]
-    """
-    return [
-        [
-            league_prefix,
-            get_model_unique_identifier(League),
-            League.__tablename__,
-        ]
-    ]
 
 
 @pytest.fixture(scope="module")
@@ -141,8 +90,16 @@ def get_high_permissions() -> bool:
 
 
 @pytest.fixture(scope="module")
-def create_random_object_func() -> Callable[[], dict]:
-    return create_random_currency_dict
+def object_generator_func() -> Callable[[], tuple[dict, ModelType]]:
+    return generate_random_item
+
+
+@pytest.fixture(scope="module")
+def create_random_object_func() -> Callable[[Session], Awaitable[dict]]:
+    async def create_object(db: Session) -> dict:
+        return await create_random_item_dict(db)
+
+    return create_object
 
 
 @pytest_asyncio.fixture
@@ -162,14 +119,10 @@ async def get_object_from_api_normal_user(
     return _get_object
 
 
-@pytest.fixture
-def get_request_all_rate_limits_per_interval() -> list[RateLimitPerTimeInterval]:
-    return get_function_decorator_rate_limit_per_time_interval(get_currency)
+@pytest.fixture(scope="module")
+def update_request_params_deps() -> list[str]:
+    return []
 
 
-class TestCurrency(test_api.TestAPI):
+class TestLeague(test_api.TestAPI):
     pass
-
-
-# class TestCurrencyRateLimit(RateLimitSlowAPITestClass):
-#     pass

@@ -1,10 +1,11 @@
 from sqlalchemy.orm import Session
 
 from app import crud
-from app.core.models.models import Currency, Item, ItemBaseType
+from app.core.models.models import Currency, Item, ItemBaseType, League
 from app.core.schemas.item import ItemCreate
 from app.tests.utils.model_utils.currency import generate_random_currency
 from app.tests.utils.model_utils.item_base_type import generate_random_item_base_type
+from app.tests.utils.model_utils.league import generate_random_league
 from app.tests.utils.utils import (
     random_bool,
     random_float,
@@ -16,7 +17,7 @@ from app.tests.utils.utils import (
 
 async def create_random_item_dict(
     db: Session, retrieve_dependencies: bool | None = False
-) -> dict | tuple[dict, list[dict | ItemBaseType | Currency]]:
+) -> dict | tuple[dict, list[dict | ItemBaseType | Currency | League]]:
     """Create a random item dictionary.
 
     Args:
@@ -24,11 +25,10 @@ async def create_random_item_dict(
         retrieve_dependencies (bool, optional): Whether to retrieve dependencies. Defaults to False.
 
     Returns:
-        Union[ Dict, Tuple[ Dict, List[ Union[ Dict, ItemBaseType, Currency, ] ], ], ]: \n
+        Union[ Dict, Tuple[ Dict, List[ Union[ Dict, ItemBaseType, Currency, League] ], ], ]: \n
         Random item dictionary or tuple with random item dictionary and dependencies.
     """
     name = random_lower_string()
-    league = random_lower_string()
     ilvl = random_int(small_int=True)
     rarity = random_lower_string()
     identified = random_bool()
@@ -58,10 +58,12 @@ async def create_random_item_dict(
     itemBaseTypeId = item_base_type.itemBaseTypeId
     currency_dict, currency = await generate_random_currency(db)
     currencyId = currency.currencyId
+    league_dict, league = await generate_random_league(db)
+    leagueId = league.leagueId
 
     item = {
         "name": name,
-        "league": league,
+        "leagueId": leagueId,
         "itemBaseTypeId": itemBaseTypeId,
         "createdHoursSinceLaunch": createdHoursSinceLaunch,
         "ilvl": ilvl,
@@ -88,6 +90,7 @@ async def create_random_item_dict(
         deps = []
         deps += [item_base_type_dict, item_base_type]
         deps += [currency_dict, currency]
+        deps += [league_dict, league]
         return item, deps
 
 
