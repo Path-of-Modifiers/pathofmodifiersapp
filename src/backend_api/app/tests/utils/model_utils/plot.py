@@ -3,7 +3,7 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from app.core.models.models import (
-    Item as model_Item,
+    League as model_League,
 )
 from app.core.models.models import (
     Modifier as model_Modifier,
@@ -24,25 +24,8 @@ async def create_minimal_random_plot_query_dict(db: Session) -> dict[str, Any]:
         db, retrieve_dependencies=True
     )
 
-    item_dep: model_Item = item_modifier_deps[-3]
+    league_dep: model_League = item_modifier_deps[-3]
     modifier_dep: model_Modifier = item_modifier_deps[-1]
-
-    item_specs = {
-        "name": None,
-        "identified": None,
-        "minIlvl": None,
-        "maxIlvl": None,
-        "rarity": None,
-        "corrupted": None,
-        "delve": None,
-        "fractured": None,
-        "synthesised": None,
-        "replica": None,
-        "influences": None,
-        "searing": None,
-        "tangled": None,
-        "foilVariation": None,
-    }
 
     wanted_modifiers = [
         {
@@ -51,8 +34,7 @@ async def create_minimal_random_plot_query_dict(db: Session) -> dict[str, Any]:
     ]
 
     plot_query = {
-        "league": item_dep.league,
-        "itemSpecifications": item_specs,
+        "leagueId": league_dep.leagueId,
         "wantedModifiers": wanted_modifiers,
     }
 

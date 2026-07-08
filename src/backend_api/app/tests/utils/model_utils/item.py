@@ -99,7 +99,7 @@ async def generate_random_item(
 ) -> tuple[
     dict,
     Item,
-    list[dict | ItemBaseType | Currency] | None,
+    list[dict | ItemBaseType | Currency | League] | None,
 ]:
     """Generate a random item.
 

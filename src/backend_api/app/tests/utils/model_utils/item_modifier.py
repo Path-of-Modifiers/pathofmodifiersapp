@@ -6,6 +6,7 @@ from app.core.models.models import (
     Item,
     ItemBaseType,
     ItemModifier,
+    League,
     Modifier,
 )
 from app.core.schemas.item_modifier import ItemModifierCreate
@@ -20,7 +21,7 @@ async def create_random_item_modifier_dict(
     dict
     | tuple[
         dict,
-        list[dict | ItemBaseType | Currency | Item | Modifier] | None,
+        list[dict | ItemBaseType | Currency | League | Item | Modifier] | None,
     ]
 ):
     """Create a random item modifier dictionary.
@@ -66,7 +67,7 @@ async def generate_random_item_modifier(
 ) -> tuple[
     dict,
     ItemModifier,
-    list[dict | ItemBaseType | Currency | Item | Modifier] | None,
+    list[dict | ItemBaseType | Currency | League | Item | Modifier] | None,
 ]:
     """Generate a random item modifier.
 

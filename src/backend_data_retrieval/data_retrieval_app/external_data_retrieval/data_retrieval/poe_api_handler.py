@@ -84,8 +84,6 @@ class PoEAPIHandler:
 
         self._program_too_slow = False
         self._program_finished = False
-        self.time_of_launch = time.perf_counter()
-        self.run_program_for_n_seconds = settings.TIME_BETWEEN_RESTART
         logger.info("PoEAPIHandler successfully initialized.")
 
         self.n_checkpoints_per_transfromation = (
@@ -531,7 +529,3 @@ class PoEAPIHandler:
                 yield df.reset_index()
                 del df
                 logger.info("Finished transformation phase")
-                current_time = time.perf_counter()
-                time_since_launch = current_time - self.time_of_launch
-                if time_since_launch > self.run_program_for_n_seconds:
-                    raise ProgramFinished
