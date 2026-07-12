@@ -4,42 +4,68 @@ import { useEffect, useState } from "react";
 import {
   getHoursSinceLaunch,
   formatHoursSinceLaunch,
-  LEAGUE_LAUNCH_DATETIME,
 } from "../../hooks/graphing/utils";
-import { DEFAULT_LEAGUES } from "../../config";
 import { setupHourlyUpdate } from "../../utils";
+import { useLeagueLaunchStats } from "../../store/LeagueLaunchStatsStore";
 
 const DateDaysHoursSinceLaunchStats = (props: StatProps) => {
-  const defaultLeague = DEFAULT_LEAGUES[0];
-
-  const leagueLaunchDay = LEAGUE_LAUNCH_DATETIME.getDate();
-  const leagueLaunchMonth = LEAGUE_LAUNCH_DATETIME.toLocaleString("default", {
-    month: "short",
-  });
-
   const [currentTime, setCurrentTime] = useState(new Date());
-  const currentDay = currentTime.getDate();
-  const currentMonth = currentTime.toLocaleString("default", {
-    month: "short",
-  });
-
-  const hoursSinceLaunch = getHoursSinceLaunch(currentTime);
-  const daysHoursSinceLaunchFormat = formatHoursSinceLaunch(hoursSinceLaunch);
-  const [sinceLaunchDays, sinceLaunchHours] =
-    daysHoursSinceLaunchFormat.split("T");
-
+  const { league, leagueLaunch, hoursSinceLaunch, setHoursSinceLaunch } =
+    useLeagueLaunchStats();
   useEffect(() => {
     return setupHourlyUpdate(setCurrentTime);
   }, []);
 
+  const leagueLaunchDay = leagueLaunch.getDate();
+  const leagueLaunchMonth = leagueLaunch.toLocaleString("default", {
+    month: "short",
+  });
+  const leagueLaunchYear = leagueLaunch.toLocaleString("default", {
+    year: "numeric",
+  });
+
+  const currentDay = currentTime.getDate();
+  const currentMonth = currentTime.toLocaleString("default", {
+    month: "short",
+  });
+  const currentYear = currentTime.toLocaleString("default", {
+    year: "numeric",
+  });
+
+  const curHoursSinceLaunch = getHoursSinceLaunch(currentTime, leagueLaunch);
+  const [localHoursSinceLaunch, setLocalHoursSinceLaunch] =
+    useState(curHoursSinceLaunch);
+  useEffect(() => {
+    console.log(currentTime, leagueLaunch);
+    const curHoursSinceLaunch = getHoursSinceLaunch(currentTime, leagueLaunch);
+    setLocalHoursSinceLaunch(hoursSinceLaunch);
+    if (curHoursSinceLaunch !== hoursSinceLaunch) {
+      setHoursSinceLaunch(curHoursSinceLaunch);
+    }
+  }, [
+    leagueLaunch,
+    hoursSinceLaunch,
+    setHoursSinceLaunch,
+    currentTime,
+    localHoursSinceLaunch,
+  ]);
+
+  const daysHoursSinceLaunchFormat = formatHoursSinceLaunch(
+    localHoursSinceLaunch,
+  );
+  const [yearsDays, sinceLaunchHours] = daysHoursSinceLaunchFormat.split("T");
+  const [sinceLaunchYears, sinceLaunchDays] = yearsDays.split("Y");
+
   return (
     <Stat {...props}>
       <StatNumber>
-        {sinceLaunchDays} days and {sinceLaunchHours} hours since{" "}
-        {defaultLeague} launched
+        {sinceLaunchYears !== "0" ? `${sinceLaunchYears} years, ` : ""}
+        {sinceLaunchDays} days and {sinceLaunchHours} hours since {league.name}{" "}
+        launched
       </StatNumber>
       <StatHelpText>
-        {leagueLaunchMonth} {leagueLaunchDay} - {currentMonth} {currentDay}
+        {leagueLaunchMonth} {leagueLaunchDay} {leagueLaunchYear} -{" "}
+        {currentMonth} {currentDay} {currentYear}
       </StatHelpText>
     </Stat>
   );

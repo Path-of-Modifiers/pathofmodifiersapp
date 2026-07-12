@@ -9,9 +9,13 @@ import {
   WantedModifier,
   WantedModifierExtended,
 } from "./StateInterface";
-import { GroupedModifierByEffect, ItemBaseType, PlotQuery } from "../client";
+import {
+  GroupedModifierByEffect,
+  ItemBaseType,
+  League,
+  PlotQuery,
+} from "../client";
 import { encodeHash, decodeHash } from "./utils";
-import { DEFAULT_LEAGUES } from "../config";
 import { updateNumericalRoll } from "../hooks/graphing/utils";
 
 // Graph Input Store  -  This store is used to store graph input data.
@@ -26,7 +30,8 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
   choosableItemBaseType: [],
   choosableItemNames: [],
 
-  leagues: [DEFAULT_LEAGUES[0]],
+  leagues: [],
+  choosableLeagues: [],
 
   itemName: undefined,
   itemSpec: undefined,
@@ -35,7 +40,7 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
   wantedModifierExtended: [],
 
   plotQuery: {
-    league: DEFAULT_LEAGUES,
+    leagueId: -1,
     wantedModifiers: [],
   },
 
@@ -192,7 +197,13 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
     set(() => ({
       leagues: [],
     })),
-
+  setChoosableLeagues: (leagues: League | League[]) =>
+    set(() => {
+      leagues = Array.isArray(leagues) ? leagues : [leagues];
+      return {
+        choosableLeagues: leagues,
+      };
+    }),
   setItemSpec: (itemSpec: ItemSpecState) => set(() => ({ itemSpec: itemSpec })),
 
   setItemSpecIdentified: (identified: boolean | undefined) =>

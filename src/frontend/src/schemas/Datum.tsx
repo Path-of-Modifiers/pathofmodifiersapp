@@ -6,12 +6,12 @@ type Datum = {
   valueInChaos: number | null;
   valueInMostCommonCurrencyUsed: number | null;
   confidence: "low" | "medium" | "high" | null;
-}
+};
 
 type TimeseriesData = {
-  name: string;
+  name: number;
   data: Array<Datum>;
-  confidenceRating: 'low' | 'medium' | 'high';
+  confidenceRating: "low" | "medium" | "high";
 };
 
 export type FilledPlotData = {

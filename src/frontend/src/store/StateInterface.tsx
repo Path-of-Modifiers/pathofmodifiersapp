@@ -1,9 +1,20 @@
 import {
   GroupedModifierByEffect,
   ItemBaseType,
+  League,
   PlotQuery,
   TurnstileResponse,
 } from "../client";
+
+export interface LeagueLaunchStats {
+  league: League;
+  leagueLaunch: Date;
+  hoursSinceLaunch: number;
+
+  setLeague: (league: League) => void;
+  setLeagueLaunch: (leagueLaunch: Date) => void;
+  setHoursSinceLaunch: (hoursSinceLaunch: number) => void;
+}
 
 export interface ChoosableModifiersExtended extends GroupedModifierByEffect {
   isNotChoosable?: boolean;
@@ -90,6 +101,7 @@ export interface GraphInputState {
   choosableItemNames: string[];
 
   leagues: string[];
+  choosableLeagues: League[];
 
   itemName: string | undefined;
   itemSpec: ItemSpecState | undefined;
@@ -119,6 +131,7 @@ export interface GraphInputState {
   addLeague: (league: string) => void;
   removeLeague: (league: string) => void;
   removeAllLeagues: () => void;
+  setChoosableLeagues: (leagues: League | League[]) => void;
 
   setItemName: (name: string | undefined) => void;
 

@@ -1,6 +1,5 @@
 import type { ApiError } from "./client";
 import { Toast } from "./hooks/useCustomToast";
-import { DEFAULT_LEAGUES } from "./config";
 import { useGraphInputStore } from "./store/GraphInputStore";
 
 export const emailPattern = {
@@ -85,30 +84,8 @@ export const setupHourlyUpdate = (setCurrentTime: SetDateFunction) => {
   return () => clearTimeout(timeoutId);
 };
 
-const validateLeagues = (searchParams: URLSearchParams) => {
-  const leagues = searchParams.get("league");
-  if (searchParams.size === 1 && leagues) {
-    if (leagues.length > 1 || !leagues.includes(DEFAULT_LEAGUES[0])) {
-      throw "default league not in simple url";
-    }
-  } else if (!leagues || leagues.length === 0) {
-    throw "leagues not set in url";
-  }
-};
-
-export const validateAndSetSearchParams = (searchParams: URLSearchParams) => {
+export const validateAndSetSearchParams = () => {
   const graphState = useGraphInputStore.getState();
-  try {
-    graphState.setHashFromStore();
-    validateLeagues(searchParams);
-  } catch (error) {
-    const graphState = useGraphInputStore.getState();
-    graphState.removeAllLeagues();
-    graphState.addLeague(DEFAULT_LEAGUES[0]);
-    const searchParams = new URLSearchParams();
-    searchParams.set("league", DEFAULT_LEAGUES[0]);
-    graphState.setHashFromStore();
-  } finally {
-    graphState.setStateHash(undefined);
-  }
+  graphState.setHashFromStore();
+  graphState.setStateHash(undefined);
 };

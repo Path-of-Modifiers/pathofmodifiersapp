@@ -9,6 +9,7 @@ import {
 import { useErrorStore } from "../../store/ErrorStore";
 import { ErrorMessage } from "../../components/Input/StandardLayoutInput/ErrorMessage";
 import { getOptimizedPlotQuery } from "../../hooks/graphing/utils";
+import { useLeagueLaunchStats } from "../../store/LeagueLaunchStatsStore";
 
 const QueryButtons = (props: FlexProps) => {
   const { setExpandedGraphInputFilters } = useExpandedComponentStore();
@@ -20,6 +21,7 @@ const QueryButtons = (props: FlexProps) => {
     modifiersUnidentifiedError,
     baseSpecDoesNotMatchError,
   } = useErrorStore();
+  const { hoursSinceLaunch } = useLeagueLaunchStats();
   const { stateHash, fetchStatus, setHashFromStore, setPlotQuery } =
     useGraphInputStore();
   const isFetching = fetchStatus === "fetching";
@@ -42,13 +44,13 @@ const QueryButtons = (props: FlexProps) => {
     }, 10);
   };
 
-  const handlePlotQuery = () => {
+  const handlePlotQuery = (hoursSinceLaunch: number) => {
     if (isFetching) return;
     if (stateHash) return;
     const leagueValid = checkGraphQueryLeagueInput();
     const modifierValid = checkGraphQueryModifierInput();
     if (!leagueValid || !modifierValid) return;
-    const plotQuery = getOptimizedPlotQuery();
+    const plotQuery = getOptimizedPlotQuery(hoursSinceLaunch);
     if (plotQuery === undefined) return;
     setPlotQuery(plotQuery);
     useGraphInputStore.getState().setQueryClicked();
@@ -89,7 +91,7 @@ const QueryButtons = (props: FlexProps) => {
           borderColor="ui.grey"
           width={["inputSizes.defaultBox", "inputSizes.lgBox"]}
           maxW="98vw"
-          onClick={handlePlotQuery}
+          onClick={() => handlePlotQuery(hoursSinceLaunch)}
           disabled={isFetching}
           opacity={isFetching ? 0.5 : 1}
           cursor={isFetching ? "not-allowed" : "pointer"}

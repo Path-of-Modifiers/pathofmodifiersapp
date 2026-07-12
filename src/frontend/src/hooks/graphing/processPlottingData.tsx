@@ -3,8 +3,9 @@ import { PlotQuery } from "../../client";
 import { FilledPlotData } from "../../schemas/Datum";
 import { useEffect } from "react";
 import useCustomToast from "../useCustomToast";
-import { findWinsorUpperBound, getHoursSinceLaunch } from "./utils";
+import { findWinsorUpperBound } from "./utils";
 import { PLOTTING_WINDOW_HOURS } from "../../config";
+import { useLeagueLaunchStats } from "../../store/LeagueLaunchStatsStore";
 
 /**
  * A hook that takes the current plot query and returns
@@ -22,6 +23,7 @@ function useGetPlotData(plotQuery: PlotQuery): {
 } {
   const { plotData, fetchStatus, isFetched, isError, error } =
     usePostPlottingData(plotQuery);
+  const { hoursSinceLaunch } = useLeagueLaunchStats();
   const showToast = useCustomToast();
   useEffect(() => {
     if (isError && isFetched) {
@@ -33,39 +35,38 @@ function useGetPlotData(plotQuery: PlotQuery): {
 
   if (plotData !== undefined) {
     const mostCommonCurrencyUsed = plotData.mostCommonCurrencyUsed;
-    const currentHour = getHoursSinceLaunch(new Date());
-    const firstHour = currentHour - PLOTTING_WINDOW_HOURS;
+    const firstHour = hoursSinceLaunch - PLOTTING_WINDOW_HOURS;
     const filledPlotData: FilledPlotData = {
       mostCommonCurrencyUsed: mostCommonCurrencyUsed,
-      data: plotData.data.map(
-        (val) => (
-          {
-            confidenceRating: val.confidenceRating,
-            name: val.name,
-            data: []
-          }))
+      data: plotData.data.map((val) => ({
+        confidenceRating: val.confidenceRating,
+        name: val.name,
+        data: [],
+      })),
     };
-    const currentIdxArray = plotData.data.reduce((prev) => [...prev, 0], [] as number[]);
+    const currentIdxArray = plotData.data.reduce(
+      (prev) => [...prev, 0],
+      [] as number[],
+    );
     let currentIdx: number;
     // Makes a filled plot data object, meaning that every hour has an entry
     // Missing entries from the original plot data is replaced by a "null" entry
-    for (let hour = firstHour; hour <= currentHour; hour++) {
+    for (let hour = firstHour; hour <= hoursSinceLaunch; hour++) {
       for (let seriesIdx = 0; seriesIdx < currentIdxArray.length; seriesIdx++) {
         currentIdx = currentIdxArray[seriesIdx];
         if (
           plotData.data[seriesIdx].data.length <= currentIdx ||
           plotData.data[seriesIdx].data[currentIdx].hoursSinceLaunch !== hour
         ) {
-          filledPlotData.data[seriesIdx].data.push(
-            {
-              hoursSinceLaunch: hour,
-              valueInChaos: null,
-              valueInMostCommonCurrencyUsed: null,
-              confidence: null
-            })
+          filledPlotData.data[seriesIdx].data.push({
+            hoursSinceLaunch: hour,
+            valueInChaos: null,
+            valueInMostCommonCurrencyUsed: null,
+            confidence: null,
+          });
         } else {
           filledPlotData.data[seriesIdx].data.push(
-            plotData.data[seriesIdx].data[currentIdx]
+            plotData.data[seriesIdx].data[currentIdx],
           );
           currentIdxArray[seriesIdx] = currentIdx + 1;
         }
@@ -74,14 +75,14 @@ function useGetPlotData(plotQuery: PlotQuery): {
     const upperBoundryChaos = findWinsorUpperBound(
       plotData.data[0].data.reduce(
         (prev, cur) => [...prev, cur.valueInChaos],
-        [] as number[]
-      )
+        [] as number[],
+      ),
     );
     const upperBoundrySecondary = findWinsorUpperBound(
       plotData.data[0].data.reduce(
         (prev, cur) => [...prev, cur.valueInMostCommonCurrencyUsed],
-        [] as number[]
-      )
+        [] as number[],
+      ),
     );
     const confidenceRating = plotData.data[0].confidenceRating;
     return {
@@ -91,8 +92,8 @@ function useGetPlotData(plotQuery: PlotQuery): {
       upperBoundryChaos,
       upperBoundrySecondary,
       fetchStatus,
-      error
-    }
+      error,
+    };
   }
   return {
     result: undefined,
