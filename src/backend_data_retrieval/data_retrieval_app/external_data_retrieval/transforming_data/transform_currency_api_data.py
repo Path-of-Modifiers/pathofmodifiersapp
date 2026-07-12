@@ -1,25 +1,9 @@
 import pandas as pd
 
 from data_retrieval_app.external_data_retrieval.config import settings
-from data_retrieval_app.external_data_retrieval.data_retrieval.currency_api_handler import (
-    CurrencyAPIHandler,
-)
 from data_retrieval_app.logs.logger import transform_logger as logger
 from data_retrieval_app.pom_api_authentication import get_superuser_token_headers
 from data_retrieval_app.utils import get_data_safe, insert_data
-
-
-def load_currency_data():
-    """
-    Loads data from the poe.ninja currency API.
-    """
-    poe_ninja_currency_api_handler = CurrencyAPIHandler(
-        url=f"https://poe.ninja/api/data/currencyoverview?league={settings.CURRENT_SOFTCORE_LEAGUE}&type=Currency"
-    )
-
-    currencies_df = poe_ninja_currency_api_handler.make_request()
-
-    return currencies_df
 
 
 class TransformCurrencyAPIData:

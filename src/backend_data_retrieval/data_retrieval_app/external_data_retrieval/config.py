@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from pydantic import (
     HttpUrl,
     computed_field,
@@ -27,12 +25,6 @@ class Settings(BaseSettings):
     OATH_ACC_TOKEN_CONTACT_EMAIL: str
     FIRST_SUPERUSER: str
     FIRST_SUPERUSER_PASSWORD: str
-    CURRENT_SOFTCORE_LEAGUE: str
-
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def CURRENT_HARDCORE_LEAGUE(self) -> str:
-        return f"Hardcore {self.CURRENT_SOFTCORE_LEAGUE}"
 
     POE_PUBLIC_STASHES_AUTH_TOKEN: str
     OAUTH_CLIENT_ID: str
@@ -42,13 +34,6 @@ class Settings(BaseSettings):
     N_CHECKPOINTS_PER_TRANSFORMATION: int = 10
 
     MAX_TIME_PER_MINI_BATCH: int = 3 * 60
-
-    LEAGUE_LAUNCH_TIME: str
-
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def LEAGUE_LAUNCH_DATETIME_OBJECT(self) -> datetime:
-        return datetime.fromisoformat(self.LEAGUE_LAUNCH_TIME)
 
 
 settings = Settings()  # type: ignore

@@ -64,7 +64,6 @@ class DetectorBase:
             return pd.DataFrame(columns=df.columns)
 
         df = df.loc[df["league"].isin(self.leagues)]
-        df["leagueId"] = df["league"].map(self.league_to_id)
 
         return df
 

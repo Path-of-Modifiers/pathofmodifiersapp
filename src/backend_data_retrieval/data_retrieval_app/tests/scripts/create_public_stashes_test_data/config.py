@@ -1,4 +1,3 @@
-from pydantic import computed_field
 from pydantic_settings import BaseSettings
 
 
@@ -25,18 +24,6 @@ class PoEPublicStashesTestDataSettings(BaseSettings):
         "divine",
     ]  # , "divine", "mirror", etc.
     MEAN_ITEM_PRICE: int = 200
-
-    ALL_SOFTCORE_LEAGUES: str
-
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def SOFTCORE_LEAGUES(self) -> list[str]:
-        return self.ALL_SOFTCORE_LEAGUES.split("|")
-
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def HARDCORE_LEAGUES(self) -> list[str]:
-        return [f"Hardcore {league}" for league in self.SOFTCORE_LEAGUES]
 
 
 script_settings = PoEPublicStashesTestDataSettings()

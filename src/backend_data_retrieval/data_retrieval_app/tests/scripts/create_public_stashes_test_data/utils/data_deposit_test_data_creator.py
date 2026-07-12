@@ -19,7 +19,7 @@ from data_retrieval_app.utils import get_data_safe
 
 
 class DataDepositTestDataCreator:
-    def __init__(self, n_of_items: int) -> None:
+    def __init__(self, n_of_items: int, leagues: list[dict[str, Any]]) -> None:
         """
         Creates a number of items from the data deposit files.
 
@@ -34,10 +34,7 @@ class DataDepositTestDataCreator:
 
         self.base_url = settings.BACKEND_BASE_URL
         self.pom_auth_headers = get_superuser_token_headers(self.base_url)
-        self.leagues = [
-            *script_settings.SOFTCORE_LEAGUES,
-            *script_settings.HARDCORE_LEAGUES,
-        ]
+        self.leagues = [league["name"] for league in leagues]
 
         self.base_type_df = self._get_df_from_url("itemBaseType/")
         self.grouped_modifier_df = self._get_df_from_url(
@@ -425,7 +422,8 @@ class DataDepositTestDataCreator:
 
 
 def main() -> int:
-    test = DataDepositTestDataCreator(50)
+    leagues = [{"name": "testing_league"}]
+    test = DataDepositTestDataCreator(50, leagues=leagues)
     test.create_templates()
     print(list(test.create_test_data()))
     return 0

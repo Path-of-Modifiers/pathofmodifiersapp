@@ -38,7 +38,6 @@ from data_retrieval_app.utils import find_hours_since_launch, get_data_safe
 
 class ContinuousDataRetrieval:
     auth_token = settings.POE_PUBLIC_STASHES_AUTH_TOKEN
-    current_league = settings.CURRENT_SOFTCORE_LEAGUE
     stash_tab_url = "https://api.pathofexile.com/public-stash-tabs"
 
     backend_base_url = settings.BACKEND_BASE_URL
@@ -53,12 +52,11 @@ class ContinuousDataRetrieval:
         items_per_batch: int,
         data_transformers: dict[str, PoEAPIDataTransformerBase],
     ):
+        self.leagues = self._get_leagues()
         self.data_transformers: dict[str, PoEAPIDataTransformerBase] = {
-            key: data_transformer()
+            key: data_transformer(self.leagues)
             for key, data_transformer in data_transformers.items()
         }
-
-        self.leagues = self._get_leagues()
 
         self.poe_api_handler = PoEAPIHandler(
             url=self.stash_tab_url,
@@ -188,7 +186,9 @@ class ContinuousDataRetrieval:
 
     def _follow_data_dump_stream(self):
         try:
-            current_hour = find_hours_since_launch()
+            current_hours = find_hours_since_launch(self.leagues)
+            # Only need to refer to one league to see when a new hour starts
+            current_hour = current_hours[self.leagues[0]["leagueId"]]
             next_hour = current_hour + 1
             logger.info("Retrieving modifiers from db.")
             modifier_dfs = self._get_modifiers()
@@ -204,9 +204,10 @@ class ContinuousDataRetrieval:
                         modifier_df=modifier_dfs[data_transformer_type],
                         currency_df=currency_df.copy(deep=True),
                         item_base_types=item_base_types,
-                        current_hour=current_hour,
+                        current_hours=current_hours,
                     )
-                current_hour = find_hours_since_launch()
+                current_hours = find_hours_since_launch(self.leagues)
+                current_hour = current_hours[self.leagues[0]["leagueId"]]
             for data_transformer_type in self.data_transformers:
                 self.data_transformers[data_transformer_type].end_of_hour_cleanup()
 

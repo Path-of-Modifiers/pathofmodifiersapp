@@ -7,7 +7,6 @@ import pandas as pd
 import requests
 from pydantic import HttpUrl
 
-from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.logs.logger import main_logger as logger
 
 
@@ -54,19 +53,25 @@ def df_to_JSON(
         )
 
 
-def find_hours_since_launch() -> int:
+def find_hours_since_launch(leagues_df: list[dict]) -> dict[int, int]:
+    """
+    Finds the number of hours since launch for each of the leagues in the given dataframe
+    """
     current_time = datetime.now(UTC)
-    league_launch_time = settings.LEAGUE_LAUNCH_DATETIME_OBJECT
+    hours_since_launch_dict = {}
+    for league in leagues_df:
+        league_launch_time = datetime.fromisoformat(league["validFrom"])
 
-    time_since_launch = current_time - league_launch_time
+        time_since_launch = current_time - league_launch_time
 
-    days_since_launch, seconds_since_launch = (
-        time_since_launch.days,
-        time_since_launch.seconds,
-    )
-    hours_since_launch = days_since_launch * 24 + seconds_since_launch // 3600
+        days_since_launch, seconds_since_launch = (
+            time_since_launch.days,
+            time_since_launch.seconds,
+        )
+        hours_since_launch = days_since_launch * 24 + seconds_since_launch // 3600
+        hours_since_launch_dict[league["leagueId"]] = hours_since_launch
 
-    return hours_since_launch
+    return hours_since_launch_dict
 
 
 def insert_data(
