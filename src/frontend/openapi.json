@@ -51,109 +51,6 @@
             }
           }
         }
-      },
-      "put": {
-        "tags": [
-          "currencys"
-        ],
-        "summary": "Update Currency",
-        "description": "Update a currency by key and value for \"currencyId\".\n\nReturns the updated currency.",
-        "operationId": "update_currency",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "currencyId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Currencyid"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CurrencyUpdate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Currency"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "currencys"
-        ],
-        "summary": "Delete Currency",
-        "description": "Delete a currency by key and value for \"currencyId\".\n\nReturns a message indicating the currency was deleted.\nAlways deletes one currency.",
-        "operationId": "delete_currency",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "currencyId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Currencyid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "title": "Response Currencys-Delete Currency"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/api/api_v1/currency/": {
@@ -362,6 +259,109 @@
             }
           }
         }
+      },
+      "put": {
+        "tags": [
+          "currencys"
+        ],
+        "summary": "Update Currency",
+        "description": "Update a currency by key and value for \"currencyId\".\n\nReturns the updated currency.",
+        "operationId": "update_currency",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "currencyId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Currencyid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CurrencyUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Currency"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "currencys"
+        ],
+        "summary": "Delete Currency",
+        "description": "Delete a currency by key and value for \"currencyId\".\n\nReturns a message indicating the currency was deleted.\nAlways deletes one currency.",
+        "operationId": "delete_currency",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "currencyId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Currencyid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "title": "Response Currencys-Delete Currency"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/api_v1/currency/latest_currency_id/": {
@@ -371,7 +371,7 @@
           "latest_currency_id"
         ],
         "summary": "Get Latest Currency Id",
-        "description": "Get the latest currencyId\n\nCan only be used safely on an empty table or directly after an insertion.",
+        "description": "Get the latest currencyId, returns 1 if table is empty\n\nCan only be used safely on an empty table or directly after an insertion.",
         "operationId": "get_latest_currency_id",
         "responses": {
           "200": {
@@ -381,6 +381,122 @@
                 "schema": {
                   "type": "integer",
                   "title": "Response Currencys-Get Latest Currency Id"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/api_v1/currency/latest_hour/": {
+      "get": {
+        "tags": [
+          "currencys",
+          "latest_hour"
+        ],
+        "summary": "Get Latest Hour",
+        "description": "Return -1 if database is empty",
+        "operationId": "get_latest_hour",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "title": "Response Currencys-Get Latest Hour"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/api_v1/currency/latest_currencies/": {
+      "get": {
+        "tags": [
+          "currencys",
+          "latest_currencies"
+        ],
+        "summary": "Get Latest Currencies",
+        "description": "Returns a list of the latest currencies, which all share the same `createdHoursSinceLaunch` as defined by `latest_hour` endpoint.",
+        "operationId": "get_latest_currencies",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Currency"
+                  },
+                  "type": "array",
+                  "title": "Response Currencys-Get Latest Currencies"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/api_v1/currency/from_query/": {
+      "post": {
+        "tags": [
+          "currencys"
+        ],
+        "summary": "Get Currency From Query",
+        "description": "Returns a list of currencies that match any of the queries",
+        "operationId": "get_currency_from_query",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/CurrencyQuery"
+                },
+                "type": "array",
+                "title": "Query List"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Currency"
+                  },
+                  "type": "array",
+                  "title": "Response Currencys-Get Currency From Query"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -424,109 +540,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ItemBaseType"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "itemBaseTypes"
-        ],
-        "summary": "Update Item Base Type",
-        "description": "Update an item base type by key and value for \"itemBaseTypeId\".\n\nReturns the updated item base type.",
-        "operationId": "update_item_base_type",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "itemBaseTypeId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Itembasetypeid"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ItemBaseTypeUpdate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ItemBaseType"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "itemBaseTypes"
-        ],
-        "summary": "Delete Item Base Type",
-        "description": "Delete an item base type by key and value for \"itemBaseTypeId\".\n\nReturns a message that the item base type was deleted successfully.\nAlways deletes one item base type.",
-        "operationId": "delete_item_base_type",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "itemBaseTypeId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Itembasetypeid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "title": "Response Itembasetypes-Delete Item Base Type"
                 }
               }
             }
@@ -746,6 +759,109 @@
                     }
                   ],
                   "title": "Response Itembasetypes-Create Item Base Type"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "itemBaseTypes"
+        ],
+        "summary": "Update Item Base Type",
+        "description": "Update an item base type by key and value for \"itemBaseTypeId\".\n\nReturns the updated item base type.",
+        "operationId": "update_item_base_type",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "itemBaseTypeId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Itembasetypeid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ItemBaseTypeUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemBaseType"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "itemBaseTypes"
+        ],
+        "summary": "Delete Item Base Type",
+        "description": "Delete an item base type by key and value for \"itemBaseTypeId\".\n\nReturns a message that the item base type was deleted successfully.\nAlways deletes one item base type.",
+        "operationId": "delete_item_base_type",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "itemBaseTypeId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Itembasetypeid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "title": "Response Itembasetypes-Delete Item Base Type"
                 }
               }
             }
@@ -1215,6 +1331,349 @@
         }
       }
     },
+    "/api/api_v1/league/{leagueId}": {
+      "get": {
+        "tags": [
+          "leagues"
+        ],
+        "summary": "Get League",
+        "description": "Get league by key and value for \"leagueId\".\n\nAlways returns one league.",
+        "operationId": "get_league",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "leagueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Leagueid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/League"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "leagues"
+        ],
+        "summary": "Update Modifier",
+        "description": "Update a league by key and value for \"leagueId\"\n\nReturns the updated league.",
+        "operationId": "update_modifier",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "leagueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Leagueid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeagueUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/League"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/league/": {
+      "get": {
+        "tags": [
+          "leagues"
+        ],
+        "summary": "Get All Leagues",
+        "description": "Get all leagues.\n\nReturns a list of all leagues.",
+        "operationId": "get_all_leagues",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "sort_key",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort Key"
+            }
+          },
+          {
+            "name": "sort_method",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "asc",
+                    "desc"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort Method"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/League"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/League"
+                      }
+                    }
+                  ],
+                  "title": "Response Leagues-Get All Leagues"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "leagues"
+        ],
+        "summary": "Create League",
+        "description": "Create one or a list of new leagues.\n\nReturns the created league or list of leagues.",
+        "operationId": "create_league",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "return_nothing",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Return Nothing"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/LeagueCreate"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/LeagueCreate"
+                    }
+                  }
+                ],
+                "title": "League"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/LeagueCreate"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/LeagueCreate"
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Leagues-Create League"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api_v1/league/active_league/": {
+      "get": {
+        "tags": [
+          "leagues"
+        ],
+        "summary": "Get Active Leagues",
+        "description": "Get leagues that are still valid/active\n\nAlways returns a list, but it may be empty.",
+        "operationId": "get_active_leagues",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/League"
+                  },
+                  "type": "array",
+                  "title": "Response Leagues-Get Active Leagues"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
     "/api/api_v1/unidentifiedItem/latest_item_id/": {
       "get": {
         "tags": [
@@ -1459,6 +1918,92 @@
         }
       }
     },
+    "/api/api_v1/unidentifiedItem/non_aggregated/": {
+      "get": {
+        "tags": [
+          "unidentifiedItems"
+        ],
+        "summary": "Get Non Aggregated",
+        "description": "Get the non aggregated unidentified items for the last 10 recorded hours\n    (not necessarily the last 10 hours)",
+        "operationId": "get_non_aggregated",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UnidentifiedItem"
+                  },
+                  "type": "array",
+                  "title": "Response Unidentifieditems-Get Non Aggregated"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/api_v1/unidentifiedItem/add_aggregated/": {
+      "post": {
+        "tags": [
+          "unidentifiedItems"
+        ],
+        "summary": "Add Aggregated",
+        "description": "Deletes the non aggregated unidentified items for the last 10 recorded hours\n    (not necessarily the last 10 hours)\nAnd inserts the new items",
+        "operationId": "add_aggregated",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/UnidentifiedItemCreate"
+                },
+                "type": "array",
+                "title": "Aggregated Objs"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UnidentifiedItem"
+                  },
+                  "type": "array",
+                  "title": "Response Unidentifieditems-Add Aggregated"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
     "/api/api_v1/modifier/{modifierId}": {
       "get": {
         "tags": [
@@ -1501,62 +2046,6 @@
                     }
                   ],
                   "title": "Response Modifiers-Get Modifier"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "modifiers"
-        ],
-        "summary": "Delete Modifier",
-        "description": "Delete a modifier by key and value for \"modifierId\"\n\nReturns a message that the modifier was deleted.\nAlways deletes one modifier.",
-        "operationId": "delete_modifier",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "modifierId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Modifierid"
-            }
-          },
-          {
-            "name": "position",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Position"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "title": "Response Modifiers-Delete Modifier"
                 }
               }
             }
@@ -1786,7 +2275,7 @@
           "modifiers"
         ],
         "summary": "Update Modifier",
-        "description": "Update a modifier by key and value for \"modifierId\"\n\nDominant key is \"modifierId\".\n\nReturns the updated modifier.",
+        "description": "Update a modifier by key and value for \"modifierId\" and \"position\"\n\nReturns the updated modifier.",
         "operationId": "update_modifier",
         "security": [
           {
@@ -1830,6 +2319,62 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Modifier"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "modifiers"
+        ],
+        "summary": "Delete Modifier",
+        "description": "Delete a modifier by key and value for \"modifierId\"\n\nReturns a message that the modifier was deleted.\nAlways deletes one modifier.",
+        "operationId": "delete_modifier",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "modifierId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Modifierid"
+            }
+          },
+          {
+            "name": "position",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Position"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "title": "Response Modifiers-Delete Modifier"
                 }
               }
             }
@@ -2219,6 +2764,10 @@
             "type": "number",
             "title": "Valueinchaos"
           },
+          "leagueId": {
+            "type": "integer",
+            "title": "Leagueid"
+          },
           "createdHoursSinceLaunch": {
             "type": "integer",
             "title": "Createdhourssincelaunch"
@@ -2232,6 +2781,7 @@
         "required": [
           "tradeName",
           "valueInChaos",
+          "leagueId",
           "createdHoursSinceLaunch",
           "currencyId"
         ],
@@ -2247,6 +2797,10 @@
             "type": "number",
             "title": "Valueinchaos"
           },
+          "leagueId": {
+            "type": "integer",
+            "title": "Leagueid"
+          },
           "createdHoursSinceLaunch": {
             "type": "integer",
             "title": "Createdhourssincelaunch"
@@ -2256,9 +2810,49 @@
         "required": [
           "tradeName",
           "valueInChaos",
+          "leagueId",
           "createdHoursSinceLaunch"
         ],
         "title": "CurrencyCreate"
+      },
+      "CurrencyQuery": {
+        "properties": {
+          "createdHoursSinceLaunch": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdhourssincelaunch"
+          },
+          "tradeName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tradename"
+          },
+          "leagueId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Leagueid"
+          }
+        },
+        "type": "object",
+        "title": "CurrencyQuery"
       },
       "CurrencyUpdate": {
         "properties": {
@@ -2269,12 +2863,17 @@
           "valueInChaos": {
             "type": "number",
             "title": "Valueinchaos"
+          },
+          "leagueId": {
+            "type": "integer",
+            "title": "Leagueid"
           }
         },
         "type": "object",
         "required": [
           "tradeName",
-          "valueInChaos"
+          "valueInChaos",
+          "leagueId"
         ],
         "title": "CurrencyUpdate"
       },
@@ -2491,9 +3090,9 @@
             ],
             "title": "Name"
           },
-          "league": {
-            "type": "string",
-            "title": "League"
+          "leagueId": {
+            "type": "integer",
+            "title": "Leagueid"
           },
           "itemBaseTypeId": {
             "type": "integer",
@@ -2676,7 +3275,7 @@
         },
         "type": "object",
         "required": [
-          "league",
+          "leagueId",
           "itemBaseTypeId",
           "ilvl",
           "rarity",
@@ -2823,9 +3422,9 @@
             ],
             "title": "Name"
           },
-          "league": {
-            "type": "string",
-            "title": "League"
+          "leagueId": {
+            "type": "integer",
+            "title": "Leagueid"
           },
           "itemBaseTypeId": {
             "type": "integer",
@@ -3004,7 +3603,7 @@
         },
         "type": "object",
         "required": [
-          "league",
+          "leagueId",
           "itemBaseTypeId",
           "ilvl",
           "rarity",
@@ -3248,6 +3847,109 @@
         },
         "type": "object",
         "title": "ItemSpecs"
+      },
+      "League": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "validFrom": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Validfrom"
+          },
+          "validTo": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Validto"
+          },
+          "leagueId": {
+            "type": "integer",
+            "title": "Leagueid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "validFrom",
+          "leagueId"
+        ],
+        "title": "League"
+      },
+      "LeagueCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "validFrom": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Validfrom"
+          },
+          "validTo": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Validto"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "validFrom"
+        ],
+        "title": "LeagueCreate"
+      },
+      "LeagueUpdate": {
+        "properties": {
+          "leagueId": {
+            "type": "integer",
+            "title": "Leagueid"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "validFrom": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Validfrom"
+          },
+          "validTo": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Validto"
+          }
+        },
+        "type": "object",
+        "required": [
+          "leagueId",
+          "name",
+          "validFrom"
+        ],
+        "title": "LeagueUpdate"
       },
       "MetadataObject": {
         "properties": {
@@ -3907,19 +4609,19 @@
       },
       "PlotQuery": {
         "properties": {
-          "league": {
+          "leagueId": {
             "anyOf": [
               {
                 "items": {
-                  "type": "string"
+                  "type": "integer"
                 },
                 "type": "array"
               },
               {
-                "type": "string"
+                "type": "integer"
               }
             ],
-            "title": "League"
+            "title": "Leagueid"
           },
           "itemSpecifications": {
             "anyOf": [
@@ -3980,7 +4682,7 @@
         },
         "type": "object",
         "required": [
-          "league"
+          "leagueId"
         ],
         "title": "PlotQuery",
         "description": "Plots for items with or without modifiers"
@@ -3988,7 +4690,7 @@
       "TimeseriesData": {
         "properties": {
           "name": {
-            "type": "string",
+            "type": "integer",
             "title": "Name"
           },
           "data": {
@@ -4141,9 +4843,9 @@
             ],
             "title": "Name"
           },
-          "league": {
-            "type": "string",
-            "title": "League"
+          "leagueId": {
+            "type": "integer",
+            "title": "Leagueid"
           },
           "itemBaseTypeId": {
             "type": "integer",
@@ -4184,14 +4886,6 @@
             ],
             "title": "Currencyid"
           },
-          "createdHoursSinceLaunch": {
-            "type": "integer",
-            "title": "Createdhourssincelaunch"
-          },
-          "itemId": {
-            "type": "integer",
-            "title": "Itemid"
-          },
           "nItems": {
             "type": "integer",
             "title": "Nitems"
@@ -4199,18 +4893,26 @@
           "aggregated": {
             "type": "boolean",
             "title": "Aggregated"
+          },
+          "createdHoursSinceLaunch": {
+            "type": "integer",
+            "title": "Createdhourssincelaunch"
+          },
+          "itemId": {
+            "type": "integer",
+            "title": "Itemid"
           }
         },
         "type": "object",
         "required": [
-          "league",
+          "leagueId",
           "itemBaseTypeId",
           "ilvl",
           "rarity",
-          "createdHoursSinceLaunch",
-          "itemId",
           "nItems",
-          "aggregated"
+          "aggregated",
+          "createdHoursSinceLaunch",
+          "itemId"
         ],
         "title": "UnidentifiedItem"
       },
@@ -4227,9 +4929,9 @@
             ],
             "title": "Name"
           },
-          "league": {
-            "type": "string",
-            "title": "League"
+          "leagueId": {
+            "type": "integer",
+            "title": "Leagueid"
           },
           "itemBaseTypeId": {
             "type": "integer",
@@ -4270,6 +4972,16 @@
             ],
             "title": "Currencyid"
           },
+          "nItems": {
+            "type": "integer",
+            "title": "Nitems",
+            "default": 1
+          },
+          "aggregated": {
+            "type": "boolean",
+            "title": "Aggregated",
+            "default": false
+          },
           "createdHoursSinceLaunch": {
             "type": "integer",
             "title": "Createdhourssincelaunch"
@@ -4277,7 +4989,7 @@
         },
         "type": "object",
         "required": [
-          "league",
+          "leagueId",
           "itemBaseTypeId",
           "ilvl",
           "rarity",

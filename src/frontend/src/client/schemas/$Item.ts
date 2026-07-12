@@ -12,8 +12,8 @@ export const $Item = {
                 type: 'null',
             }],
         },
-        league: {
-            type: 'string',
+        leagueId: {
+            type: 'number',
             isRequired: true,
         },
         itemBaseTypeId: {

@@ -4,6 +4,7 @@
 /* eslint-disable */
 import type { Currency } from '../models/Currency';
 import type { CurrencyCreate } from '../models/CurrencyCreate';
+import type { CurrencyQuery } from '../models/CurrencyQuery';
 import type { CurrencyUpdate } from '../models/CurrencyUpdate';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -24,59 +25,6 @@ export class CurrencysService {
     }): CancelablePromise<Currency> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/api_v1/currency/{currencyId}',
-            path: {
-                'currencyId': currencyId,
-            },
-            errors: {
-                422: `Validation Error`,
-            },
-        });
-    }
-    /**
-     * Update Currency
-     * Update a currency by key and value for "currencyId".
-     *
-     * Returns the updated currency.
-     * @returns Currency Successful Response
-     * @throws ApiError
-     */
-    public static updateCurrency({
-        currencyId,
-        requestBody,
-    }: {
-        currencyId: number,
-        requestBody: CurrencyUpdate,
-    }): CancelablePromise<Currency> {
-        return __request(OpenAPI, {
-            method: 'PUT',
-            url: '/api/api_v1/currency/{currencyId}',
-            path: {
-                'currencyId': currencyId,
-            },
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                422: `Validation Error`,
-            },
-        });
-    }
-    /**
-     * Delete Currency
-     * Delete a currency by key and value for "currencyId".
-     *
-     * Returns a message indicating the currency was deleted.
-     * Always deletes one currency.
-     * @returns string Successful Response
-     * @throws ApiError
-     */
-    public static deleteCurrency({
-        currencyId,
-    }: {
-        currencyId: number,
-    }): CancelablePromise<string> {
-        return __request(OpenAPI, {
-            method: 'DELETE',
             url: '/api/api_v1/currency/{currencyId}',
             path: {
                 'currencyId': currencyId,
@@ -148,8 +96,61 @@ export class CurrencysService {
         });
     }
     /**
+     * Update Currency
+     * Update a currency by key and value for "currencyId".
+     *
+     * Returns the updated currency.
+     * @returns Currency Successful Response
+     * @throws ApiError
+     */
+    public static updateCurrency({
+        currencyId,
+        requestBody,
+    }: {
+        currencyId: number,
+        requestBody: CurrencyUpdate,
+    }): CancelablePromise<Currency> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/api/api_v1/currency/',
+            query: {
+                'currencyId': currencyId,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+    /**
+     * Delete Currency
+     * Delete a currency by key and value for "currencyId".
+     *
+     * Returns a message indicating the currency was deleted.
+     * Always deletes one currency.
+     * @returns string Successful Response
+     * @throws ApiError
+     */
+    public static deleteCurrency({
+        currencyId,
+    }: {
+        currencyId: number,
+    }): CancelablePromise<string> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/api_v1/currency/',
+            query: {
+                'currencyId': currencyId,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+    /**
      * Get Latest Currency Id
-     * Get the latest currencyId
+     * Get the latest currencyId, returns 1 if table is empty
      *
      * Can only be used safely on an empty table or directly after an insertion.
      * @returns number Successful Response
@@ -159,6 +160,51 @@ export class CurrencysService {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/currency/latest_currency_id/',
+        });
+    }
+    /**
+     * Get Latest Hour
+     * Return -1 if database is empty
+     * @returns number Successful Response
+     * @throws ApiError
+     */
+    public static getLatestHour(): CancelablePromise<number> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/api_v1/currency/latest_hour/',
+        });
+    }
+    /**
+     * Get Latest Currencies
+     * Returns a list of the latest currencies, which all share the same `createdHoursSinceLaunch` as defined by `latest_hour` endpoint.
+     * @returns Currency Successful Response
+     * @throws ApiError
+     */
+    public static getLatestCurrencies(): CancelablePromise<Array<Currency>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/api_v1/currency/latest_currencies/',
+        });
+    }
+    /**
+     * Get Currency From Query
+     * Returns a list of currencies that match any of the queries
+     * @returns Currency Successful Response
+     * @throws ApiError
+     */
+    public static getCurrencyFromQuery({
+        requestBody,
+    }: {
+        requestBody: Array<CurrencyQuery>,
+    }): CancelablePromise<Array<Currency>> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/api_v1/currency/from_query/',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: `Validation Error`,
+            },
         });
     }
 }

@@ -2,11 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type Currency = {
-    tradeName: string;
-    valueInChaos: number;
+export type LeagueUpdate = {
     leagueId: number;
-    createdHoursSinceLaunch: number;
-    currencyId: number;
+    name: string;
+    validFrom: string;
+    validTo?: (string | null);
 };
 

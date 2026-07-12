@@ -5,7 +5,7 @@
 export const $TimeseriesData = {
     properties: {
         name: {
-            type: 'string',
+            type: 'number',
             isRequired: true,
         },
         data: {

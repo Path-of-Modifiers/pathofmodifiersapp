@@ -5,7 +5,7 @@
 import type { Influences } from './Influences';
 export type Item = {
     name?: (string | null);
-    league: string;
+    leagueId: number;
     itemBaseTypeId: number;
     ilvl: number;
     rarity: string;

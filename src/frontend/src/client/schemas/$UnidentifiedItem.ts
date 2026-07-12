@@ -12,8 +12,8 @@ export const $UnidentifiedItem = {
                 type: 'null',
             }],
         },
-        league: {
-            type: 'string',
+        leagueId: {
+            type: 'number',
             isRequired: true,
         },
         itemBaseTypeId: {
@@ -47,20 +47,20 @@ export const $UnidentifiedItem = {
                 type: 'null',
             }],
         },
-        createdHoursSinceLaunch: {
-            type: 'number',
-            isRequired: true,
-        },
-        itemId: {
-            type: 'number',
-            isRequired: true,
-        },
         nItems: {
             type: 'number',
             isRequired: true,
         },
         aggregated: {
             type: 'boolean',
+            isRequired: true,
+        },
+        createdHoursSinceLaunch: {
+            type: 'number',
+            isRequired: true,
+        },
+        itemId: {
+            type: 'number',
             isRequired: true,
         },
     },

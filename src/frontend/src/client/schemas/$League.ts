@@ -2,21 +2,27 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export const $CurrencyCreate = {
+export const $League = {
     properties: {
-        tradeName: {
+        name: {
             type: 'string',
             isRequired: true,
         },
-        valueInChaos: {
-            type: 'number',
+        validFrom: {
+            type: 'string',
             isRequired: true,
+            format: 'date-time',
+        },
+        validTo: {
+            type: 'any-of',
+            contains: [{
+                type: 'string',
+                format: 'date-time',
+            }, {
+                type: 'null',
+            }],
         },
         leagueId: {
-            type: 'number',
-            isRequired: true,
-        },
-        createdHoursSinceLaunch: {
             type: 'number',
             isRequired: true,
         },

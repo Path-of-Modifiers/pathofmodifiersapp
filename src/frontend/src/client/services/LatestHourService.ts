@@ -5,19 +5,17 @@
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class LatestCurrencyIdService {
+export class LatestHourService {
     /**
-     * Get Latest Currency Id
-     * Get the latest currencyId, returns 1 if table is empty
-     *
-     * Can only be used safely on an empty table or directly after an insertion.
+     * Get Latest Hour
+     * Return -1 if database is empty
      * @returns number Successful Response
      * @throws ApiError
      */
-    public static getLatestCurrencyId(): CancelablePromise<number> {
+    public static getLatestHour(): CancelablePromise<number> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/api_v1/currency/latest_currency_id/',
+            url: '/api/api_v1/currency/latest_hour/',
         });
     }
 }

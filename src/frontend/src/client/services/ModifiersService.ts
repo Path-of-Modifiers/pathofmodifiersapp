@@ -38,36 +38,6 @@ export class ModifiersService {
         });
     }
     /**
-     * Delete Modifier
-     * Delete a modifier by key and value for "modifierId"
-     *
-     * Returns a message that the modifier was deleted.
-     * Always deletes one modifier.
-     * @returns string Successful Response
-     * @throws ApiError
-     */
-    public static deleteModifier({
-        modifierId,
-        position,
-    }: {
-        modifierId: number,
-        position: number,
-    }): CancelablePromise<string> {
-        return __request(OpenAPI, {
-            method: 'DELETE',
-            url: '/api/api_v1/modifier/{modifierId}',
-            path: {
-                'modifierId': modifierId,
-            },
-            query: {
-                'position': position,
-            },
-            errors: {
-                422: `Validation Error`,
-            },
-        });
-    }
-    /**
      * Get All Modifiers
      * Get all modifiers.
      *
@@ -130,9 +100,7 @@ export class ModifiersService {
     }
     /**
      * Update Modifier
-     * Update a modifier by key and value for "modifierId"
-     *
-     * Dominant key is "modifierId".
+     * Update a modifier by key and value for "modifierId" and "position"
      *
      * Returns the updated modifier.
      * @returns Modifier Successful Response
@@ -156,6 +124,34 @@ export class ModifiersService {
             },
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+    /**
+     * Delete Modifier
+     * Delete a modifier by key and value for "modifierId"
+     *
+     * Returns a message that the modifier was deleted.
+     * Always deletes one modifier.
+     * @returns string Successful Response
+     * @throws ApiError
+     */
+    public static deleteModifier({
+        modifierId,
+        position,
+    }: {
+        modifierId: number,
+        position: number,
+    }): CancelablePromise<string> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/api_v1/modifier/',
+            query: {
+                'modifierId': modifierId,
+                'position': position,
+            },
             errors: {
                 422: `Validation Error`,
             },

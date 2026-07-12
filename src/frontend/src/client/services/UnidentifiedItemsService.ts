@@ -83,4 +83,40 @@ export class UnidentifiedItemsService {
             },
         });
     }
+    /**
+     * Get Non Aggregated
+     * Get the non aggregated unidentified items for the last 10 recorded hours
+     * (not necessarily the last 10 hours)
+     * @returns UnidentifiedItem Successful Response
+     * @throws ApiError
+     */
+    public static getNonAggregated(): CancelablePromise<Array<UnidentifiedItem>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/api_v1/unidentifiedItem/non_aggregated/',
+        });
+    }
+    /**
+     * Add Aggregated
+     * Deletes the non aggregated unidentified items for the last 10 recorded hours
+     * (not necessarily the last 10 hours)
+     * And inserts the new items
+     * @returns UnidentifiedItem Successful Response
+     * @throws ApiError
+     */
+    public static addAggregated({
+        requestBody,
+    }: {
+        requestBody: Array<UnidentifiedItemCreate>,
+    }): CancelablePromise<Array<UnidentifiedItem>> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/api_v1/unidentifiedItem/add_aggregated/',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
 }

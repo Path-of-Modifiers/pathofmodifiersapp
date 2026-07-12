@@ -12,6 +12,7 @@ from app.api.deps import (
 from app.api.params import FilterParams
 from app.core.rate_limit.rate_limit_config import rate_limit_settings
 from app.core.rate_limit.rate_limiters import (
+    apply_ip_rate_limits,
     apply_user_rate_limits,
 )
 from app.crud import CRUD_league
@@ -56,11 +57,16 @@ async def get_league(
 @router.get(
     "/",
     response_model=schemas.League | list[schemas.League],
-    dependencies=[
-        Depends(get_current_active_superuser),
-    ],
+)
+@apply_ip_rate_limits(
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_DAY,
 )
 async def get_all_leagues(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
     filter_params: Annotated[FilterParams, Query()],
     db: Session = Depends(get_db),
 ):

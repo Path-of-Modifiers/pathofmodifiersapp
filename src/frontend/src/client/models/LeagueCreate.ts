@@ -2,9 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type CurrencyUpdate = {
-    tradeName: string;
-    valueInChaos: number;
-    leagueId: number;
+export type LeagueCreate = {
+    name: string;
+    validFrom: string;
+    validTo?: (string | null);
 };
 

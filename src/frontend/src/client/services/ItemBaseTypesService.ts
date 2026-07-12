@@ -34,59 +34,6 @@ export class ItemBaseTypesService {
         });
     }
     /**
-     * Update Item Base Type
-     * Update an item base type by key and value for "itemBaseTypeId".
-     *
-     * Returns the updated item base type.
-     * @returns ItemBaseType Successful Response
-     * @throws ApiError
-     */
-    public static updateItemBaseType({
-        itemBaseTypeId,
-        requestBody,
-    }: {
-        itemBaseTypeId: number,
-        requestBody: ItemBaseTypeUpdate,
-    }): CancelablePromise<ItemBaseType> {
-        return __request(OpenAPI, {
-            method: 'PUT',
-            url: '/api/api_v1/itemBaseType/{itemBaseTypeId}',
-            path: {
-                'itemBaseTypeId': itemBaseTypeId,
-            },
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                422: `Validation Error`,
-            },
-        });
-    }
-    /**
-     * Delete Item Base Type
-     * Delete an item base type by key and value for "itemBaseTypeId".
-     *
-     * Returns a message that the item base type was deleted successfully.
-     * Always deletes one item base type.
-     * @returns string Successful Response
-     * @throws ApiError
-     */
-    public static deleteItemBaseType({
-        itemBaseTypeId,
-    }: {
-        itemBaseTypeId: number,
-    }): CancelablePromise<string> {
-        return __request(OpenAPI, {
-            method: 'DELETE',
-            url: '/api/api_v1/itemBaseType/{itemBaseTypeId}',
-            path: {
-                'itemBaseTypeId': itemBaseTypeId,
-            },
-            errors: {
-                422: `Validation Error`,
-            },
-        });
-    }
-    /**
      * Get All Item Base Types
      * Get all item base types.
      *
@@ -145,6 +92,59 @@ export class ItemBaseTypesService {
             },
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+    /**
+     * Update Item Base Type
+     * Update an item base type by key and value for "itemBaseTypeId".
+     *
+     * Returns the updated item base type.
+     * @returns ItemBaseType Successful Response
+     * @throws ApiError
+     */
+    public static updateItemBaseType({
+        itemBaseTypeId,
+        requestBody,
+    }: {
+        itemBaseTypeId: number,
+        requestBody: ItemBaseTypeUpdate,
+    }): CancelablePromise<ItemBaseType> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/api/api_v1/itemBaseType/',
+            query: {
+                'itemBaseTypeId': itemBaseTypeId,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+    /**
+     * Delete Item Base Type
+     * Delete an item base type by key and value for "itemBaseTypeId".
+     *
+     * Returns a message that the item base type was deleted successfully.
+     * Always deletes one item base type.
+     * @returns string Successful Response
+     * @throws ApiError
+     */
+    public static deleteItemBaseType({
+        itemBaseTypeId,
+    }: {
+        itemBaseTypeId: number,
+    }): CancelablePromise<string> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/api_v1/itemBaseType/',
+            query: {
+                'itemBaseTypeId': itemBaseTypeId,
+            },
             errors: {
                 422: `Validation Error`,
             },

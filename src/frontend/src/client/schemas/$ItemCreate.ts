@@ -12,8 +12,8 @@ export const $ItemCreate = {
                 type: 'null',
             }],
         },
-        league: {
-            type: 'string',
+        leagueId: {
+            type: 'number',
             isRequired: true,
         },
         itemBaseTypeId: {
