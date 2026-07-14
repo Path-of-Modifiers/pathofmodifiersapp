@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 from pydantic import TypeAdapter
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -62,7 +60,7 @@ class CRUDCurrency(
 
     async def get_latest_currencies(
         self, db: Session, league_ids: list[int]
-    ) -> dict[int, list[Currency]]:
+    ) -> list[Currency]:
         latest_hours = self._latest_hours_stmt(league_ids).subquery()
 
         stmt = select(model_Currency).join(
@@ -72,13 +70,9 @@ class CRUDCurrency(
         )
         currencies = db.scalars(stmt).all()
 
-        latest_currencies: dict[int, list[Currency]] = defaultdict(list)
-        for currency in currencies:
-            latest_currencies[currency.leagueId].append(currency)
+        validate = TypeAdapter(list[Currency]).validate_python
 
-        validate = TypeAdapter(dict[int, list[Currency]]).validate_python
-
-        return validate(latest_currencies)
+        return validate(currencies)
 
     async def get_currency_from_query(
         self, db: Session, query_list: list[CurrencyQuery]

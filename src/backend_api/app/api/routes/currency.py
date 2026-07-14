@@ -137,7 +137,7 @@ async def get_latest_hours(
 
 @router.get(
     "/latest_currencies/",
-    response_model=dict[int, list[schemas.Currency]],
+    response_model=list[schemas.Currency],
     tags=["latest_currencies"],
     dependencies=[
         Depends(get_current_active_user),
@@ -156,9 +156,7 @@ async def get_latest_currencies(
     db: Session = Depends(get_db),
 ):
     """
-    Returns a dict mapping league id to most recent currencies relating to that league. Dict is empty if no currencies exist.
-
-    Does not guarantee an entry for every league id.
+    Returns a list of currencies for all queried leagues (if data exists).
     """
     return await CRUD_currency.get_latest_currencies(db, league_ids)
 
