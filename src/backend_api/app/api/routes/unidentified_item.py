@@ -116,7 +116,6 @@ async def get_non_aggregated(
 
 @router.post(
     "/add_aggregated/",
-    response_model=list[schemas.UnidentifiedItem],
     dependencies=[Depends(get_current_active_superuser)],
 )
 async def add_aggregated(
@@ -129,8 +128,4 @@ async def add_aggregated(
     And inserts the new items
     """
 
-    deleted_non_aggregated = await CRUD_unidentifiedItem.add_aggregated(
-        db=db, aggregated_objs=aggregated_objs
-    )
-
-    return deleted_non_aggregated
+    await CRUD_unidentifiedItem.add_aggregated(db=db, aggregated_objs=aggregated_objs)

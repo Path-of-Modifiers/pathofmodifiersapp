@@ -35,12 +35,10 @@ class CRUDUnidentifiedItem(
 
     async def add_aggregated(
         self, db: Session, aggregated_objs: list[UnidentifiedItemCreate]
-    ) -> list[UnidentifiedItem]:
+    ):
         stmt = delete(model_UnidentifiedItem).where(
             model_UnidentifiedItem.aggregated.isnot(True),
         )
-        non_aggregated_objs = db.execute(stmt)
+        db.execute(stmt)
 
         await self.create(db, obj_in=aggregated_objs, return_nothing=True)
-
-        return non_aggregated_objs

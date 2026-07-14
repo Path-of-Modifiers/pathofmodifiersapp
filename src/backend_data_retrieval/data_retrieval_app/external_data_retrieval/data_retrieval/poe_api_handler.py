@@ -302,6 +302,12 @@ class PoEAPIHandler:
             logger.exception(
                 f"The following exception occured during {self._send_n_recursion_requests.__name__}: {e}"
             )
+            raise
+        except ProgramTooSlowException:
+            pass
+        except ProgramFinished:
+            pass
+        finally:
             if waiting_for_next_id_lock.locked():
                 logger.info("Released lock after crash")
                 if headers is not None:
@@ -321,7 +327,6 @@ class PoEAPIHandler:
                             )
 
                 waiting_for_next_id_lock.release()
-            raise
 
     async def _follow_stream(
         self,
@@ -355,6 +360,10 @@ class PoEAPIHandler:
                 stashes = []
                 stashes_ready_event.set()
                 await asyncio.sleep(1)
+        except ProgramTooSlowException:
+            pass
+        except ProgramFinished:
+            pass
         except Exception as e:
             logger.info(
                 f"The following exception occured during {self._follow_stream}: {e}"
