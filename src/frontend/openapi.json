@@ -7,9 +7,7 @@
   "paths": {
     "/api/api_v1/currency/{currencyId}": {
       "get": {
-        "tags": [
-          "currencys"
-        ],
+        "tags": ["currency"],
         "summary": "Get Currency",
         "description": "Get currency by key and value for \"currencyId\".\n\nAlways returns one currency.",
         "operationId": "get_currency",
@@ -55,9 +53,7 @@
     },
     "/api/api_v1/currency/": {
       "get": {
-        "tags": [
-          "currencys"
-        ],
+        "tags": ["currency"],
         "summary": "Get All Currencies",
         "description": "Get all currencies.\n\nReturns a list of all currencies.",
         "operationId": "get_all_currencies",
@@ -124,10 +120,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "enum": [
-                    "asc",
-                    "desc"
-                  ],
+                  "enum": ["asc", "desc"],
                   "type": "string"
                 },
                 {
@@ -155,7 +148,7 @@
                       }
                     }
                   ],
-                  "title": "Response Currencys-Get All Currencies"
+                  "title": "Response Currency-Get All Currencies"
                 }
               }
             }
@@ -173,9 +166,7 @@
         }
       },
       "post": {
-        "tags": [
-          "currencys"
-        ],
+        "tags": ["currency"],
         "summary": "Create Currency",
         "description": "Create one or a list of currencies.\n\nReturns the created currency or list of currencies.",
         "operationId": "create_currency",
@@ -243,7 +234,7 @@
                       "type": "null"
                     }
                   ],
-                  "title": "Response Currencys-Create Currency"
+                  "title": "Response Currency-Create Currency"
                 }
               }
             }
@@ -261,9 +252,7 @@
         }
       },
       "put": {
-        "tags": [
-          "currencys"
-        ],
+        "tags": ["currency"],
         "summary": "Update Currency",
         "description": "Update a currency by key and value for \"currencyId\".\n\nReturns the updated currency.",
         "operationId": "update_currency",
@@ -317,9 +306,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "currencys"
-        ],
+        "tags": ["currency"],
         "summary": "Delete Currency",
         "description": "Delete a currency by key and value for \"currencyId\".\n\nReturns a message indicating the currency was deleted.\nAlways deletes one currency.",
         "operationId": "delete_currency",
@@ -346,7 +333,7 @@
               "application/json": {
                 "schema": {
                   "type": "string",
-                  "title": "Response Currencys-Delete Currency"
+                  "title": "Response Currency-Delete Currency"
                 }
               }
             }
@@ -366,10 +353,7 @@
     },
     "/api/api_v1/currency/latest_currency_id/": {
       "get": {
-        "tags": [
-          "currencys",
-          "latest_currency_id"
-        ],
+        "tags": ["currency", "latest_currency_id"],
         "summary": "Get Latest Currency Id",
         "description": "Get the latest currencyId, returns 1 if table is empty\n\nCan only be used safely on an empty table or directly after an insertion.",
         "operationId": "get_latest_currency_id",
@@ -380,7 +364,7 @@
               "application/json": {
                 "schema": {
                   "type": "integer",
-                  "title": "Response Currencys-Get Latest Currency Id"
+                  "title": "Response Currency-Get Latest Currency Id"
                 }
               }
             }
@@ -393,72 +377,120 @@
         ]
       }
     },
-    "/api/api_v1/currency/latest_hour/": {
+    "/api/api_v1/currency/latest_hours/": {
       "get": {
-        "tags": [
-          "currencys",
-          "latest_hour"
+        "tags": ["currency", "latest_hours"],
+        "summary": "Get Latest Hours",
+        "description": "Returns a dict mapping league id to the most recent hour relating to that league. Dict is empty if no currencies exist.\n\nDoes not guarantee an entry for every league id.",
+        "operationId": "get_latest_hours",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
         ],
-        "summary": "Get Latest Hour",
-        "description": "Return -1 if database is empty",
-        "operationId": "get_latest_hour",
+        "parameters": [
+          {
+            "name": "league_ids",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "minItems": 1,
+              "title": "League Ids"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "integer",
-                  "title": "Response Currencys-Get Latest Hour"
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer"
+                  },
+                  "title": "Response Currency-Get Latest Hours"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
           }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
+        }
       }
     },
     "/api/api_v1/currency/latest_currencies/": {
       "get": {
-        "tags": [
-          "currencys",
-          "latest_currencies"
-        ],
+        "tags": ["currency", "latest_currencies"],
         "summary": "Get Latest Currencies",
-        "description": "Returns a list of the latest currencies, which all share the same `createdHoursSinceLaunch` as defined by `latest_hour` endpoint.",
+        "description": "Returns a dict mapping league id to most recent currencies relating to that league. Dict is empty if no currencies exist.\n\nDoes not guarantee an entry for every league id.",
         "operationId": "get_latest_currencies",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "league_ids",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "minItems": 1,
+              "title": "League Ids"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/Currency"
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Currency"
+                    }
                   },
-                  "type": "array",
-                  "title": "Response Currencys-Get Latest Currencies"
+                  "title": "Response Currency-Get Latest Currencies"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
           }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
+        }
       }
     },
     "/api/api_v1/currency/from_query/": {
       "post": {
-        "tags": [
-          "currencys"
-        ],
+        "tags": ["currency"],
         "summary": "Get Currency From Query",
         "description": "Returns a list of currencies that match any of the queries",
         "operationId": "get_currency_from_query",
@@ -486,7 +518,7 @@
                     "$ref": "#/components/schemas/Currency"
                   },
                   "type": "array",
-                  "title": "Response Currencys-Get Currency From Query"
+                  "title": "Response Currency-Get Currency From Query"
                 }
               }
             }
@@ -511,9 +543,7 @@
     },
     "/api/api_v1/itemBaseType/{itemBaseTypeId}": {
       "get": {
-        "tags": [
-          "itemBaseTypes"
-        ],
+        "tags": ["itemBaseType"],
         "summary": "Get Item Base Type",
         "description": "Get item base type by key and value for \"itemBaseTypeId\".\n\nAlways returns one item base type.",
         "operationId": "get_item_base_type",
@@ -559,9 +589,7 @@
     },
     "/api/api_v1/itemBaseType/": {
       "get": {
-        "tags": [
-          "itemBaseTypes"
-        ],
+        "tags": ["itemBaseType"],
         "summary": "Get All Item Base Types",
         "description": "Get all item base types.\n\nReturns a list of all item base types.",
         "operationId": "get_all_item_base_types",
@@ -623,10 +651,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "enum": [
-                    "asc",
-                    "desc"
-                  ],
+                  "enum": ["asc", "desc"],
                   "type": "string"
                 },
                 {
@@ -654,7 +679,7 @@
                       }
                     }
                   ],
-                  "title": "Response Itembasetypes-Get All Item Base Types"
+                  "title": "Response Itembasetype-Get All Item Base Types"
                 }
               }
             }
@@ -672,9 +697,7 @@
         }
       },
       "post": {
-        "tags": [
-          "itemBaseTypes"
-        ],
+        "tags": ["itemBaseType"],
         "summary": "Create Item Base Type",
         "description": "Create one or a list of new item base types.\n\nReturns the created item base type or list of item base types.",
         "operationId": "create_item_base_type",
@@ -758,7 +781,7 @@
                       "type": "null"
                     }
                   ],
-                  "title": "Response Itembasetypes-Create Item Base Type"
+                  "title": "Response Itembasetype-Create Item Base Type"
                 }
               }
             }
@@ -776,9 +799,7 @@
         }
       },
       "put": {
-        "tags": [
-          "itemBaseTypes"
-        ],
+        "tags": ["itemBaseType"],
         "summary": "Update Item Base Type",
         "description": "Update an item base type by key and value for \"itemBaseTypeId\".\n\nReturns the updated item base type.",
         "operationId": "update_item_base_type",
@@ -832,9 +853,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "itemBaseTypes"
-        ],
+        "tags": ["itemBaseType"],
         "summary": "Delete Item Base Type",
         "description": "Delete an item base type by key and value for \"itemBaseTypeId\".\n\nReturns a message that the item base type was deleted successfully.\nAlways deletes one item base type.",
         "operationId": "delete_item_base_type",
@@ -861,7 +880,7 @@
               "application/json": {
                 "schema": {
                   "type": "string",
-                  "title": "Response Itembasetypes-Delete Item Base Type"
+                  "title": "Response Itembasetype-Delete Item Base Type"
                 }
               }
             }
@@ -881,9 +900,7 @@
     },
     "/api/api_v1/itemModifier/": {
       "get": {
-        "tags": [
-          "itemModifiers"
-        ],
+        "tags": ["itemModifier"],
         "summary": "Get All Item Modifiers",
         "description": "Get all item modifiers.\n\nReturns a list of all item modifiers.",
         "operationId": "get_all_item_modifiers",
@@ -950,10 +967,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "enum": [
-                    "asc",
-                    "desc"
-                  ],
+                  "enum": ["asc", "desc"],
                   "type": "string"
                 },
                 {
@@ -981,7 +995,7 @@
                       }
                     }
                   ],
-                  "title": "Response Itemmodifiers-Get All Item Modifiers"
+                  "title": "Response Itemmodifier-Get All Item Modifiers"
                 }
               }
             }
@@ -999,9 +1013,7 @@
         }
       },
       "post": {
-        "tags": [
-          "itemModifiers"
-        ],
+        "tags": ["itemModifier"],
         "summary": "Create Item Modifier",
         "description": "Create one or a list item modifiers.\n\nReturns the created item modifier or list of item modifiers.",
         "operationId": "create_item_modifier",
@@ -1069,7 +1081,7 @@
                       "type": "null"
                     }
                   ],
-                  "title": "Response Itemmodifiers-Create Item Modifier"
+                  "title": "Response Itemmodifier-Create Item Modifier"
                 }
               }
             }
@@ -1089,10 +1101,7 @@
     },
     "/api/api_v1/item/latest_item_id/": {
       "get": {
-        "tags": [
-          "items",
-          "latest_item_id"
-        ],
+        "tags": ["item", "latest_item_id"],
         "summary": "Get Latest Item Id",
         "description": "Get the latest \"itemId\"\n\nCan only be used safely on an empty table or directly after an insertion.",
         "operationId": "get_latest_item_id",
@@ -1110,7 +1119,7 @@
                       "type": "null"
                     }
                   ],
-                  "title": "Response Items-Get Latest Item Id"
+                  "title": "Response Item-Get Latest Item Id"
                 }
               }
             }
@@ -1125,9 +1134,7 @@
     },
     "/api/api_v1/item/": {
       "get": {
-        "tags": [
-          "items"
-        ],
+        "tags": ["item"],
         "summary": "Get All Items",
         "description": "Get all items.\n\nReturns a list of all items.",
         "operationId": "get_all_items",
@@ -1194,10 +1201,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "enum": [
-                    "asc",
-                    "desc"
-                  ],
+                  "enum": ["asc", "desc"],
                   "type": "string"
                 },
                 {
@@ -1225,7 +1229,7 @@
                       }
                     }
                   ],
-                  "title": "Response Items-Get All Items"
+                  "title": "Response Item-Get All Items"
                 }
               }
             }
@@ -1243,9 +1247,7 @@
         }
       },
       "post": {
-        "tags": [
-          "items"
-        ],
+        "tags": ["item"],
         "summary": "Create Item",
         "description": "Create one or a list of new items.\n\nReturns the created item or list of items.",
         "operationId": "create_item",
@@ -1313,7 +1315,7 @@
                       "type": "null"
                     }
                   ],
-                  "title": "Response Items-Create Item"
+                  "title": "Response Item-Create Item"
                 }
               }
             }
@@ -1333,9 +1335,7 @@
     },
     "/api/api_v1/league/{leagueId}": {
       "get": {
-        "tags": [
-          "leagues"
-        ],
+        "tags": ["league"],
         "summary": "Get League",
         "description": "Get league by key and value for \"leagueId\".\n\nAlways returns one league.",
         "operationId": "get_league",
@@ -1379,9 +1379,7 @@
         }
       },
       "put": {
-        "tags": [
-          "leagues"
-        ],
+        "tags": ["league"],
         "summary": "Update Modifier",
         "description": "Update a league by key and value for \"leagueId\"\n\nReturns the updated league.",
         "operationId": "update_modifier",
@@ -1437,17 +1435,10 @@
     },
     "/api/api_v1/league/": {
       "get": {
-        "tags": [
-          "leagues"
-        ],
+        "tags": ["league"],
         "summary": "Get All Leagues",
         "description": "Get all leagues.\n\nReturns a list of all leagues.",
         "operationId": "get_all_leagues",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
         "parameters": [
           {
             "name": "limit",
@@ -1506,10 +1497,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "enum": [
-                    "asc",
-                    "desc"
-                  ],
+                  "enum": ["asc", "desc"],
                   "type": "string"
                 },
                 {
@@ -1537,7 +1525,7 @@
                       }
                     }
                   ],
-                  "title": "Response Leagues-Get All Leagues"
+                  "title": "Response League-Get All Leagues"
                 }
               }
             }
@@ -1555,9 +1543,7 @@
         }
       },
       "post": {
-        "tags": [
-          "leagues"
-        ],
+        "tags": ["league"],
         "summary": "Create League",
         "description": "Create one or a list of new leagues.\n\nReturns the created league or list of leagues.",
         "operationId": "create_league",
@@ -1625,7 +1611,7 @@
                       "type": "null"
                     }
                   ],
-                  "title": "Response Leagues-Create League"
+                  "title": "Response League-Create League"
                 }
               }
             }
@@ -1645,9 +1631,7 @@
     },
     "/api/api_v1/league/active_league/": {
       "get": {
-        "tags": [
-          "leagues"
-        ],
+        "tags": ["league"],
         "summary": "Get Active Leagues",
         "description": "Get leagues that are still valid/active\n\nAlways returns a list, but it may be empty.",
         "operationId": "get_active_leagues",
@@ -1661,7 +1645,7 @@
                     "$ref": "#/components/schemas/League"
                   },
                   "type": "array",
-                  "title": "Response Leagues-Get Active Leagues"
+                  "title": "Response League-Get Active Leagues"
                 }
               }
             }
@@ -1676,10 +1660,7 @@
     },
     "/api/api_v1/unidentifiedItem/latest_item_id/": {
       "get": {
-        "tags": [
-          "unidentifiedItems",
-          "latest_item_id"
-        ],
+        "tags": ["unidentifiedItem", "latest_item_id"],
         "summary": "Get Latest Item Id",
         "description": "Get the latest \"itemId\"\n\nCan only be used safely on an empty table or directly after an insertion.",
         "operationId": "get_latest_item_id",
@@ -1697,7 +1678,7 @@
                       "type": "null"
                     }
                   ],
-                  "title": "Response Unidentifieditems-Get Latest Item Id"
+                  "title": "Response Unidentifieditem-Get Latest Item Id"
                 }
               }
             }
@@ -1712,9 +1693,7 @@
     },
     "/api/api_v1/unidentifiedItem/": {
       "get": {
-        "tags": [
-          "unidentifiedItems"
-        ],
+        "tags": ["unidentifiedItem"],
         "summary": "Get All Items",
         "description": "Get all items.\n\nReturns a list of all items.",
         "operationId": "get_all_items",
@@ -1781,10 +1760,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "enum": [
-                    "asc",
-                    "desc"
-                  ],
+                  "enum": ["asc", "desc"],
                   "type": "string"
                 },
                 {
@@ -1812,7 +1788,7 @@
                       }
                     }
                   ],
-                  "title": "Response Unidentifieditems-Get All Items"
+                  "title": "Response Unidentifieditem-Get All Items"
                 }
               }
             }
@@ -1830,9 +1806,7 @@
         }
       },
       "post": {
-        "tags": [
-          "unidentifiedItems"
-        ],
+        "tags": ["unidentifiedItem"],
         "summary": "Create Item",
         "description": "Create one or a list of new items.\n\nReturns the created item or list of items.",
         "operationId": "create_item",
@@ -1900,7 +1874,7 @@
                       "type": "null"
                     }
                   ],
-                  "title": "Response Unidentifieditems-Create Item"
+                  "title": "Response Unidentifieditem-Create Item"
                 }
               }
             }
@@ -1920,9 +1894,7 @@
     },
     "/api/api_v1/unidentifiedItem/non_aggregated/": {
       "get": {
-        "tags": [
-          "unidentifiedItems"
-        ],
+        "tags": ["unidentifiedItem"],
         "summary": "Get Non Aggregated",
         "description": "Get the non aggregated unidentified items for the last 10 recorded hours\n    (not necessarily the last 10 hours)",
         "operationId": "get_non_aggregated",
@@ -1936,7 +1908,7 @@
                     "$ref": "#/components/schemas/UnidentifiedItem"
                   },
                   "type": "array",
-                  "title": "Response Unidentifieditems-Get Non Aggregated"
+                  "title": "Response Unidentifieditem-Get Non Aggregated"
                 }
               }
             }
@@ -1951,9 +1923,7 @@
     },
     "/api/api_v1/unidentifiedItem/add_aggregated/": {
       "post": {
-        "tags": [
-          "unidentifiedItems"
-        ],
+        "tags": ["unidentifiedItem"],
         "summary": "Add Aggregated",
         "description": "Deletes the non aggregated unidentified items for the last 10 recorded hours\n    (not necessarily the last 10 hours)\nAnd inserts the new items",
         "operationId": "add_aggregated",
@@ -1981,7 +1951,7 @@
                     "$ref": "#/components/schemas/UnidentifiedItem"
                   },
                   "type": "array",
-                  "title": "Response Unidentifieditems-Add Aggregated"
+                  "title": "Response Unidentifieditem-Add Aggregated"
                 }
               }
             }
@@ -2006,9 +1976,7 @@
     },
     "/api/api_v1/modifier/{modifierId}": {
       "get": {
-        "tags": [
-          "modifiers"
-        ],
+        "tags": ["modifier"],
         "summary": "Get Modifier",
         "description": "Get modifier or list of modifiers by key and\nvalue for \"modifierId\"\n\nDominant key is \"modifierId\".\n\nReturns one or a list of modifiers.",
         "operationId": "get_modifier",
@@ -2045,7 +2013,7 @@
                       }
                     }
                   ],
-                  "title": "Response Modifiers-Get Modifier"
+                  "title": "Response Modifier-Get Modifier"
                 }
               }
             }
@@ -2065,9 +2033,7 @@
     },
     "/api/api_v1/modifier/": {
       "get": {
-        "tags": [
-          "modifiers"
-        ],
+        "tags": ["modifier"],
         "summary": "Get All Modifiers",
         "description": "Get all modifiers.\n\nReturns a list of all modifiers.",
         "operationId": "get_all_modifiers",
@@ -2134,10 +2100,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "enum": [
-                    "asc",
-                    "desc"
-                  ],
+                  "enum": ["asc", "desc"],
                   "type": "string"
                 },
                 {
@@ -2165,7 +2128,7 @@
                       }
                     }
                   ],
-                  "title": "Response Modifiers-Get All Modifiers"
+                  "title": "Response Modifier-Get All Modifiers"
                 }
               }
             }
@@ -2183,9 +2146,7 @@
         }
       },
       "post": {
-        "tags": [
-          "modifiers"
-        ],
+        "tags": ["modifier"],
         "summary": "Create Modifier",
         "description": "Create one or a list of new modifiers.\n\nReturns the created modifier or list of modifiers.",
         "operationId": "create_modifier",
@@ -2253,7 +2214,7 @@
                       "type": "null"
                     }
                   ],
-                  "title": "Response Modifiers-Create Modifier"
+                  "title": "Response Modifier-Create Modifier"
                 }
               }
             }
@@ -2271,9 +2232,7 @@
         }
       },
       "put": {
-        "tags": [
-          "modifiers"
-        ],
+        "tags": ["modifier"],
         "summary": "Update Modifier",
         "description": "Update a modifier by key and value for \"modifierId\" and \"position\"\n\nReturns the updated modifier.",
         "operationId": "update_modifier",
@@ -2336,9 +2295,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "modifiers"
-        ],
+        "tags": ["modifier"],
         "summary": "Delete Modifier",
         "description": "Delete a modifier by key and value for \"modifierId\"\n\nReturns a message that the modifier was deleted.\nAlways deletes one modifier.",
         "operationId": "delete_modifier",
@@ -2374,7 +2331,7 @@
               "application/json": {
                 "schema": {
                   "type": "string",
-                  "title": "Response Modifiers-Delete Modifier"
+                  "title": "Response Modifier-Delete Modifier"
                 }
               }
             }
@@ -2394,9 +2351,7 @@
     },
     "/api/api_v1/modifier/grouped_modifiers_by_effect/": {
       "get": {
-        "tags": [
-          "modifiers"
-        ],
+        "tags": ["modifier"],
         "summary": "Get Grouped Modifier By Effect",
         "description": "Get all grouped modifiers by effect.\n\nReturns a list of all grouped modifiers by effect.",
         "operationId": "get_grouped_modifier_by_effect",
@@ -2417,7 +2372,7 @@
                       "type": "array"
                     }
                   ],
-                  "title": "Response Modifiers-Get Grouped Modifier By Effect"
+                  "title": "Response Modifier-Get Grouped Modifier By Effect"
                 }
               }
             }
@@ -2427,9 +2382,7 @@
     },
     "/api/api_v1/plot/": {
       "post": {
-        "tags": [
-          "plots"
-        ],
+        "tags": ["plot"],
         "summary": "Get Plot Data",
         "description": "Takes a query based on the 'PlotQuery' schema and retrieves data\nto be used for plotting in the format of the 'PlotData' schema.\n\nThe 'PlotQuery' schema allows for modifier restriction and item specifications.",
         "operationId": "get_plot_data",
@@ -2469,9 +2422,7 @@
     },
     "/api/api_v1/turnstile/": {
       "post": {
-        "tags": [
-          "turnstiles"
-        ],
+        "tags": ["turnstile"],
         "summary": "Get Turnstile Validation",
         "description": "Takes a query based on the 'TurnstileQuery' schema and retrieves data\nbased on the cloudfare challenge turnstile validation response.\n\nArgs:\n    query (schemas.TurnstileQuery): Query based on the 'TurnstileQuery' schema.\n    verification (bool, optional): Verification flag. Defaults to Depends(verification).\n\nRaises:\n    HTTPException: If verification fails.\n\nReturns:\n    _type_: Returns a response based on the 'TurnstileResponse' schema.",
         "operationId": "get_turnstile_validation",
@@ -2511,9 +2462,7 @@
     },
     "/api/api_v1/test/bulk-insert-test": {
       "post": {
-        "tags": [
-          "tests"
-        ],
+        "tags": ["test"],
         "summary": "Bulk Insert Test",
         "description": "Can only be used in `settings.ENVIRONMENT=local` environment.\n\nTest route for bulk inserting records.\n\nReturns a success message once the insertion is complete.",
         "operationId": "bulk_insert_test",
@@ -2541,7 +2490,7 @@
                 "schema": {
                   "type": "object",
                   "additionalProperties": true,
-                  "title": "Response Tests-Bulk Insert Test"
+                  "title": "Response Test-Bulk Insert Test"
                 }
               }
             }
@@ -2561,9 +2510,7 @@
     },
     "/api/api_v1/test/bulk-insert-users-and-verify": {
       "post": {
-        "tags": [
-          "tests"
-        ],
+        "tags": ["test"],
         "summary": "Bulk Insert Users And Verify",
         "description": "Can only be used in `settings.ENVIRONMENT=local` environment.\n\nTest route for bulk inserting users and verifying them.\n\nReturns the access tokens for the created users.",
         "operationId": "bulk_insert_users_and_verify",
@@ -2593,7 +2540,7 @@
                   "items": {
                     "type": "string"
                   },
-                  "title": "Response Tests-Bulk Insert Users And Verify"
+                  "title": "Response Test-Bulk Insert Users And Verify"
                 }
               }
             }
@@ -2613,9 +2560,7 @@
     },
     "/api/api_v1/login/access-token": {
       "post": {
-        "tags": [
-          "logins"
-        ],
+        "tags": ["login"],
         "summary": "Login Access Session",
         "description": "OAuth2 compatible session login.",
         "operationId": "login_access_session",
@@ -2623,7 +2568,7 @@
           "content": {
             "application/x-www-form-urlencoded": {
               "schema": {
-                "$ref": "#/components/schemas/Body_logins-login_access_session"
+                "$ref": "#/components/schemas/Body_login-login_access_session"
               }
             }
           },
@@ -2695,7 +2640,7 @@
         "type": "object",
         "title": "BaseSpecs"
       },
-      "Body_logins-login_access_session": {
+      "Body_login-login_access_session": {
         "properties": {
           "grant_type": {
             "anyOf": [
@@ -2748,11 +2693,8 @@
           }
         },
         "type": "object",
-        "required": [
-          "username",
-          "password"
-        ],
-        "title": "Body_logins-login_access_session"
+        "required": ["username", "password"],
+        "title": "Body_login-login_access_session"
       },
       "Currency": {
         "properties": {
@@ -2870,11 +2812,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "tradeName",
-          "valueInChaos",
-          "leagueId"
-        ],
+        "required": ["tradeName", "valueInChaos", "leagueId"],
         "title": "CurrencyUpdate"
       },
       "Datum": {
@@ -2893,11 +2831,7 @@
           },
           "confidence": {
             "type": "string",
-            "enum": [
-              "low",
-              "medium",
-              "high"
-            ],
+            "enum": ["low", "medium", "high"],
             "title": "Confidence"
           }
         },
@@ -2986,10 +2920,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "position",
-          "textRolls"
-        ],
+        "required": ["position", "textRolls"],
         "title": "GroupedModifierProperties"
       },
       "HTTPValidationError": {
@@ -3322,11 +3253,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "baseType",
-          "category",
-          "itemBaseTypeId"
-        ],
+        "required": ["baseType", "category", "itemBaseTypeId"],
         "title": "ItemBaseType"
       },
       "ItemBaseTypeCreate": {
@@ -3363,10 +3290,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "baseType",
-          "category"
-        ],
+        "required": ["baseType", "category"],
         "title": "ItemBaseTypeCreate"
       },
       "ItemBaseTypeUpdate": {
@@ -3403,10 +3327,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "baseType",
-          "category"
-        ],
+        "required": ["baseType", "category"],
         "title": "ItemBaseTypeUpdate"
       },
       "ItemCreate": {
@@ -3871,17 +3792,17 @@
             ],
             "title": "Validto"
           },
+          "version": {
+            "type": "number",
+            "title": "Versionminor"
+          },
           "leagueId": {
             "type": "integer",
             "title": "Leagueid"
           }
         },
         "type": "object",
-        "required": [
-          "name",
-          "validFrom",
-          "leagueId"
-        ],
+        "required": ["name", "validFrom", "version", "leagueId"],
         "title": "League"
       },
       "LeagueCreate": {
@@ -3906,21 +3827,18 @@
               }
             ],
             "title": "Validto"
+          },
+          "version": {
+            "type": "number",
+            "title": "Versionminor"
           }
         },
         "type": "object",
-        "required": [
-          "name",
-          "validFrom"
-        ],
+        "required": ["name", "validFrom", "version"],
         "title": "LeagueCreate"
       },
       "LeagueUpdate": {
         "properties": {
-          "leagueId": {
-            "type": "integer",
-            "title": "Leagueid"
-          },
           "name": {
             "type": "string",
             "title": "Name"
@@ -3941,14 +3859,18 @@
               }
             ],
             "title": "Validto"
+          },
+          "version": {
+            "type": "number",
+            "title": "Versionminor"
+          },
+          "leagueId": {
+            "type": "integer",
+            "title": "Leagueid"
           }
         },
         "type": "object",
-        "required": [
-          "leagueId",
-          "name",
-          "validFrom"
-        ],
+        "required": ["name", "validFrom", "version", "leagueId"],
         "title": "LeagueUpdate"
       },
       "MetadataObject": {
@@ -4166,12 +4088,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "position",
-          "effect",
-          "modifierId",
-          "createdAt"
-        ],
+        "required": ["position", "effect", "modifierId", "createdAt"],
         "title": "Modifier"
       },
       "ModifierCreate": {
@@ -4351,10 +4268,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "position",
-          "effect"
-        ],
+        "required": ["position", "effect"],
         "title": "ModifierCreate"
       },
       "ModifierLimitation": {
@@ -4398,9 +4312,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "position"
-        ],
+        "required": ["position"],
         "title": "ModifierLimitation"
       },
       "ModifierUpdate": {
@@ -4580,10 +4492,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "position",
-          "effect"
-        ],
+        "required": ["position", "effect"],
         "title": "ModifierUpdate"
       },
       "PlotData": {
@@ -4601,10 +4510,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "mostCommonCurrencyUsed",
-          "data"
-        ],
+        "required": ["mostCommonCurrencyUsed", "data"],
         "title": "PlotData"
       },
       "PlotQuery": {
@@ -4681,17 +4587,15 @@
           }
         },
         "type": "object",
-        "required": [
-          "leagueId"
-        ],
+        "required": ["leagueId"],
         "title": "PlotQuery",
         "description": "Plots for items with or without modifiers"
       },
       "TimeseriesData": {
         "properties": {
-          "name": {
+          "leagueId": {
             "type": "integer",
-            "title": "Name"
+            "title": "Leagueid"
           },
           "data": {
             "items": {
@@ -4702,20 +4606,12 @@
           },
           "confidenceRating": {
             "type": "string",
-            "enum": [
-              "low",
-              "medium",
-              "high"
-            ],
+            "enum": ["low", "medium", "high"],
             "title": "Confidencerating"
           }
         },
         "type": "object",
-        "required": [
-          "name",
-          "data",
-          "confidenceRating"
-        ],
+        "required": ["leagueId", "data", "confidenceRating"],
         "title": "TimeseriesData"
       },
       "Token": {
@@ -4726,9 +4622,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "access_token"
-        ],
+        "required": ["access_token"],
         "title": "Token"
       },
       "TurnstileQuery": {
@@ -4743,10 +4637,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "token",
-          "ip"
-        ],
+        "required": ["token", "ip"],
         "title": "TurnstileQuery"
       },
       "TurnstileResponse": {
@@ -4825,9 +4716,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "title": "TurnstileResponse"
       },
       "UnidentifiedItem": {
@@ -4888,11 +4777,13 @@
           },
           "nItems": {
             "type": "integer",
-            "title": "Nitems"
+            "title": "Nitems",
+            "default": 1
           },
           "aggregated": {
             "type": "boolean",
-            "title": "Aggregated"
+            "title": "Aggregated",
+            "default": false
           },
           "createdHoursSinceLaunch": {
             "type": "integer",
@@ -4909,8 +4800,6 @@
           "itemBaseTypeId",
           "ilvl",
           "rarity",
-          "nItems",
-          "aggregated",
           "createdHoursSinceLaunch",
           "itemId"
         ],
@@ -5023,11 +4912,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
+        "required": ["loc", "msg", "type"],
         "title": "ValidationError"
       },
       "WantedModifier": {
@@ -5052,9 +4937,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "modifierId"
-        ],
+        "required": ["modifierId"],
         "title": "WantedModifier"
       }
     },

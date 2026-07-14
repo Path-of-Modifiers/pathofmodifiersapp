@@ -51,12 +51,19 @@ function Index() {
           setChoosableItemNames(itemBaseTypes.itemNames);
         }
         if (leagues) {
-          setChoosableLeagues(leagues.leagues);
+          setChoosableLeagues(
+            leagues.leagues.sort(
+              (league1, league2) =>
+                Date.parse(league2.validFrom) - Date.parse(league1.validFrom),
+            ),
+          );
           const currentLeague = getCurrentLeague(leagues.leagues);
           if (currentLeague !== undefined) {
             const leagueLaunch = new Date(currentLeague.validFrom);
             setLeagueLaunch(leagueLaunch);
+            // setLeague is used to create the header
             setLeague(currentLeague);
+            // addLeague is for the plot query, and needed for default league selection
             addLeague(currentLeague.name);
             setHashFromStore();
           }
@@ -76,6 +83,8 @@ function Index() {
     setChoosableLeagues,
     setLeagueLaunch,
     setLeague,
+    addLeague,
+    setHashFromStore,
   ]);
   return <MainPage isReady={isFetched.current} />;
 }

@@ -1,4 +1,4 @@
-import { LeaguesService } from "../../client";
+import { LeagueService } from "../../client";
 import { QueryClient } from "@tanstack/react-query";
 
 export const useGetLeagues = async (queryClient: QueryClient) => {
@@ -6,7 +6,7 @@ export const useGetLeagues = async (queryClient: QueryClient) => {
     const leagues = await queryClient.fetchQuery({
       queryKey: ["allModifiers"],
       queryFn: async () => {
-        const data = await LeaguesService.getAllLeagues({});
+        const data = await LeagueService.getAllLeagues({});
         return Array.isArray(data) ? data : [data];
       },
     });

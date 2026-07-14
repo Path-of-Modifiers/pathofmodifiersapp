@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type League = {
-    name: string;
-    validFrom: string;
-    validTo?: (string | null);
-    leagueId: number;
+  name: string;
+  validFrom: string;
+  validTo?: string | null;
+  version: number;
+  leagueId: number;
 };
-

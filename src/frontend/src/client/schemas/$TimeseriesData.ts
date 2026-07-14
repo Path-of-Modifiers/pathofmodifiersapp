@@ -4,7 +4,7 @@
 /* eslint-disable */
 export const $TimeseriesData = {
     properties: {
-        name: {
+        leagueId: {
             type: 'number',
             isRequired: true,
         },

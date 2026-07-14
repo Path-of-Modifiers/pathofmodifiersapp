@@ -7,7 +7,7 @@ import type { UnidentifiedItemCreate } from '../models/UnidentifiedItemCreate';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class UnidentifiedItemsService {
+export class UnidentifiedItemService {
     /**
      * Get Latest Item Id
      * Get the latest "itemId"

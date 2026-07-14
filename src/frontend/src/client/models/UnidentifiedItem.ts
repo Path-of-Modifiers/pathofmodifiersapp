@@ -11,8 +11,8 @@ export type UnidentifiedItem = {
     identified?: boolean;
     currencyAmount?: (number | null);
     currencyId?: (number | null);
-    nItems: number;
-    aggregated: boolean;
+    nItems?: number;
+    aggregated?: boolean;
     createdHoursSinceLaunch: number;
     itemId: number;
 };

@@ -3,8 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 export type LeagueCreate = {
-    name: string;
-    validFrom: string;
-    validTo?: (string | null);
+  name: string;
+  validFrom: string;
+  validTo?: string | null;
+  version: number;
 };
-

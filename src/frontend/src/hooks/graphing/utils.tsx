@@ -7,14 +7,16 @@ import {
   ModifierLimitationState,
 } from "../../store/StateInterface";
 import { PLOTTING_WINDOW_HOURS } from "../../config";
+import { useLeagueLaunchStats } from "../../store/LeagueLaunchStatsStore";
 
 export const getCurrentLeague = (choosableLeagues: League | League[]) => {
   choosableLeagues = Array.isArray(choosableLeagues)
     ? choosableLeagues
     : [choosableLeagues];
   const now = Date.now();
-  const currentLeague = choosableLeagues.reduce<League | undefined>(
-    (latest, league) => {
+  const currentLeague = choosableLeagues
+    .filter((league) => !league.name.startsWith("Hardcore"))
+    .reduce<League | undefined>((latest, league) => {
       const validFrom = Date.parse(league.validFrom);
       const validTo = league.validTo
         ? Date.parse(league.validTo)
@@ -26,9 +28,7 @@ export const getCurrentLeague = (choosableLeagues: League | League[]) => {
         return league;
       }
       return latest;
-    },
-    undefined,
-  );
+    }, undefined);
   return currentLeague;
 };
 
@@ -179,9 +179,7 @@ export const updateNumericalRoll = (
   return { wantedModifierExtended: updatedModifiersExtended };
 };
 
-export const getOptimizedPlotQuery = (
-  hoursSinceLaunch: number,
-): PlotQuery | undefined => {
+export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
   // currently always runs, needs to be in if check
   // when Non-unique rarity is possible
   const state = useGraphInputStore.getState();
@@ -267,7 +265,7 @@ export const getOptimizedPlotQuery = (
       modifierId: wantedMoidifierExtended.modifierId,
       modifierLimitations: wantedMoidifierExtended.modifierLimitations,
     }));
-  const end = hoursSinceLaunch;
+  const end = useLeagueLaunchStats.getState().hoursSinceLaunch;
   const window = PLOTTING_WINDOW_HOURS;
   const start = end - window;
 

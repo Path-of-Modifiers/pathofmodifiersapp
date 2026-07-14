@@ -1,5 +1,5 @@
 import { QueryClient } from "@tanstack/react-query";
-import { ItemBaseTypesService, ItemBaseType } from "../../client";
+import { ItemBaseTypeService, ItemBaseType } from "../../client";
 
 // Fetches all item base type data and processes related unique item names
 export const useGetItemBaseTypes = async (queryClient: QueryClient) => {
@@ -8,7 +8,7 @@ export const useGetItemBaseTypes = async (queryClient: QueryClient) => {
     const itemBaseTypes = await queryClient.fetchQuery({
       queryKey: ["baseTypeValues"],
       queryFn: async () => {
-        const data = await ItemBaseTypesService.getAllItemBaseTypes({});
+        const data = await ItemBaseTypeService.getAllItemBaseTypes({});
         return Array.isArray(data) ? data : [data];
       },
     });

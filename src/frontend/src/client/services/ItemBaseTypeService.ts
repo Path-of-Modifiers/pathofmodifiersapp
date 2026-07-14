@@ -8,7 +8,7 @@ import type { ItemBaseTypeUpdate } from '../models/ItemBaseTypeUpdate';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class ItemBaseTypesService {
+export class ItemBaseTypeService {
     /**
      * Get Item Base Type
      * Get item base type by key and value for "itemBaseTypeId".

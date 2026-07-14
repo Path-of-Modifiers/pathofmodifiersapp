@@ -51,7 +51,7 @@ function GraphComponent(props: BoxProps) {
   const showSecondary = usePlotSettingsStore((state) => state.showSecondary);
 
   if (error || plotData == undefined) return;
-  const fetchedLeagueIds = plotData.data.map((val) => val.name);
+  const fetchedLeagueIds = plotData.data.map((val) => val.leagueId);
   const fetchedLeagues = choosableLeagues
     .filter((league) => fetchedLeagueIds.includes(league.leagueId))
     .map((league) => league.name);
@@ -174,12 +174,12 @@ function GraphComponent(props: BoxProps) {
             <Legend verticalAlign="top" height={36} />
             {plotData.data.map(
               (series, idx) =>
-                fetchedLeagueIds.includes(series.name) && (
+                fetchedLeagueIds.includes(series.leagueId) && (
                   <Line
                     type="monotone"
                     data={series.data}
                     dataKey={"valueInChaos"}
-                    key={series.name}
+                    key={series.leagueId}
                     name={fetchedLeagues[idx] + " - " + "Chaos Value"}
                     stroke={colors[idx]}
                     yAxisId={0}
@@ -207,12 +207,12 @@ function GraphComponent(props: BoxProps) {
             {mostCommonCurrencyUsed !== "chaos" &&
               plotData.data.map(
                 (series, idx) =>
-                  fetchedLeagueIds.includes(series.name) && (
+                  fetchedLeagueIds.includes(series.leagueId) && (
                     <Line
                       type="monotone"
                       data={series.data}
                       dataKey={"valueInMostCommonCurrencyUsed"}
-                      key={series.name}
+                      key={series.leagueId}
                       name={
                         fetchedLeagues[idx] + " - " + mostCommonCurrencyUsedName
                       }

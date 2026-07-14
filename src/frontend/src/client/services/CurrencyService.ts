@@ -9,7 +9,7 @@ import type { CurrencyUpdate } from '../models/CurrencyUpdate';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class CurrencysService {
+export class CurrencyService {
     /**
      * Get Currency
      * Get currency by key and value for "currencyId".
@@ -163,27 +163,51 @@ export class CurrencysService {
         });
     }
     /**
-     * Get Latest Hour
-     * Return -1 if database is empty
+     * Get Latest Hours
+     * Returns a dict mapping league id to the most recent hour relating to that league. Dict is empty if no currencies exist.
+     *
+     * Does not guarantee an entry for every league id.
      * @returns number Successful Response
      * @throws ApiError
      */
-    public static getLatestHour(): CancelablePromise<number> {
+    public static getLatestHours({
+        leagueIds,
+    }: {
+        leagueIds: Array<number>,
+    }): CancelablePromise<Record<string, number>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/api_v1/currency/latest_hour/',
+            url: '/api/api_v1/currency/latest_hours/',
+            query: {
+                'league_ids': leagueIds,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
         });
     }
     /**
      * Get Latest Currencies
-     * Returns a list of the latest currencies, which all share the same `createdHoursSinceLaunch` as defined by `latest_hour` endpoint.
+     * Returns a dict mapping league id to most recent currencies relating to that league. Dict is empty if no currencies exist.
+     *
+     * Does not guarantee an entry for every league id.
      * @returns Currency Successful Response
      * @throws ApiError
      */
-    public static getLatestCurrencies(): CancelablePromise<Array<Currency>> {
+    public static getLatestCurrencies({
+        leagueIds,
+    }: {
+        leagueIds: Array<number>,
+    }): CancelablePromise<Record<string, Array<Currency>>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/api/api_v1/currency/latest_currencies/',
+            query: {
+                'league_ids': leagueIds,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
         });
     }
     /**

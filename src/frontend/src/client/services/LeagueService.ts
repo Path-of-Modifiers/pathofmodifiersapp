@@ -8,7 +8,7 @@ import type { LeagueUpdate } from '../models/LeagueUpdate';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class LeaguesService {
+export class LeagueService {
     /**
      * Get League
      * Get league by key and value for "leagueId".

@@ -49,11 +49,9 @@ export const $UnidentifiedItem = {
         },
         nItems: {
             type: 'number',
-            isRequired: true,
         },
         aggregated: {
             type: 'boolean',
-            isRequired: true,
         },
         createdHoursSinceLaunch: {
             type: 'number',

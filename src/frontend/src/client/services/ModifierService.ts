@@ -9,7 +9,7 @@ import type { ModifierUpdate } from '../models/ModifierUpdate';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class ModifiersService {
+export class ModifierService {
     /**
      * Get Modifier
      * Get modifier or list of modifiers by key and

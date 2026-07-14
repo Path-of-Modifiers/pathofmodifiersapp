@@ -3,28 +3,35 @@
 /* tslint:disable */
 /* eslint-disable */
 export const $LeagueUpdate = {
-    properties: {
-        leagueId: {
-            type: 'number',
-            isRequired: true,
-        },
-        name: {
-            type: 'string',
-            isRequired: true,
-        },
-        validFrom: {
-            type: 'string',
-            isRequired: true,
-            format: 'date-time',
-        },
-        validTo: {
-            type: 'any-of',
-            contains: [{
-                type: 'string',
-                format: 'date-time',
-            }, {
-                type: 'null',
-            }],
-        },
+  properties: {
+    name: {
+      type: "string",
+      isRequired: true,
     },
+    validFrom: {
+      type: "string",
+      isRequired: true,
+      format: "date-time",
+    },
+    validTo: {
+      type: "any-of",
+      contains: [
+        {
+          type: "string",
+          format: "date-time",
+        },
+        {
+          type: "null",
+        },
+      ],
+    },
+    version: {
+      type: "number",
+      isRequired: true,
+    },
+    leagueId: {
+      type: "number",
+      isRequired: true,
+    },
+  },
 } as const;

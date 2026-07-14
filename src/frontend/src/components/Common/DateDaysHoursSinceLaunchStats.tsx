@@ -36,7 +36,6 @@ const DateDaysHoursSinceLaunchStats = (props: StatProps) => {
   const [localHoursSinceLaunch, setLocalHoursSinceLaunch] =
     useState(curHoursSinceLaunch);
   useEffect(() => {
-    console.log(currentTime, leagueLaunch);
     const curHoursSinceLaunch = getHoursSinceLaunch(currentTime, leagueLaunch);
     setLocalHoursSinceLaunch(hoursSinceLaunch);
     if (curHoursSinceLaunch !== hoursSinceLaunch) {

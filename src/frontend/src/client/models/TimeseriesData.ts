@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { Datum } from './Datum';
 export type TimeseriesData = {
-    name: number;
+    leagueId: number;
     data: Array<Datum>;
     confidenceRating: 'low' | 'medium' | 'high';
 };

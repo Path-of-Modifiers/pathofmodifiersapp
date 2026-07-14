@@ -9,7 +9,7 @@ type Datum = {
 };
 
 type TimeseriesData = {
-  name: number;
+  leagueId: number;
   data: Array<Datum>;
   confidenceRating: "low" | "medium" | "high";
 };

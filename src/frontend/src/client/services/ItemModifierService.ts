@@ -7,7 +7,7 @@ import type { ItemModifierCreate } from '../models/ItemModifierCreate';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class ItemModifiersService {
+export class ItemModifierService {
     /**
      * Get All Item Modifiers
      * Get all item modifiers.

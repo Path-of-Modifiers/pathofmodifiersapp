@@ -133,6 +133,10 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
     set(() => ({
       choosableItemNames: choosableItemNames,
     })),
+  setChoosableLeagues: (leagues: League[]) =>
+    set(() => ({
+      choosableLeagues: leagues,
+    })),
 
   updateChoosable: (itemName: string | undefined) =>
     set((state) => {
@@ -197,13 +201,6 @@ export const useGraphInputStore = create<GraphInputState>((set) => ({
     set(() => ({
       leagues: [],
     })),
-  setChoosableLeagues: (leagues: League | League[]) =>
-    set(() => {
-      leagues = Array.isArray(leagues) ? leagues : [leagues];
-      return {
-        choosableLeagues: leagues,
-      };
-    }),
   setItemSpec: (itemSpec: ItemSpecState) => set(() => ({ itemSpec: itemSpec })),
 
   setItemSpecIdentified: (identified: boolean | undefined) =>

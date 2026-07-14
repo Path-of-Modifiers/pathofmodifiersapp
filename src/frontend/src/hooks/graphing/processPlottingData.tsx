@@ -40,7 +40,7 @@ function useGetPlotData(plotQuery: PlotQuery): {
       mostCommonCurrencyUsed: mostCommonCurrencyUsed,
       data: plotData.data.map((val) => ({
         confidenceRating: val.confidenceRating,
-        name: val.name,
+        leagueId: val.leagueId,
         data: [],
       })),
     };
