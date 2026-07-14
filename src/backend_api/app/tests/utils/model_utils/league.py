@@ -5,6 +5,7 @@ from app.core.models.models import League
 from app.core.schemas import LeagueCreate
 from app.tests.utils.utils import (
     random_datetime,
+    random_float,
     random_lower_string,
 )
 
@@ -18,11 +19,13 @@ def create_random_league_dict() -> dict:
     name = random_lower_string()
     validFrom = random_datetime()
     validTo = random_datetime(min_time=validFrom)
+    version = random_float(small_float=True, max_value=3.99)
 
     league = {
         "name": name,
         "validFrom": validFrom,
         "validTo": validTo,
+        "version": version,
     }
 
     return league

@@ -36,20 +36,23 @@ class LeagueDataDepositor(DataDepositorBase):
     def _update_duplicates(self, duplicate_df: pd.DataFrame):
         for _, duplicate_league_row in duplicate_df.iterrows():
             league_id = int(duplicate_league_row["leagueId"])
-            data = {"leagueId": league_id, "name": duplicate_league_row["name"]}
+
+            old_df = duplicate_league_row[
+                [col for col in duplicate_league_row.index if not col.endswith("_y")]
+            ]
+            old_df.index = old_df.index.str.removesuffix("_x")
+            old = old_df.to_dict()
+            new_df = duplicate_league_row[
+                [col for col in duplicate_league_row.index if not col.endswith("_x")]
+            ]
+            new_df.index = new_df.index.str.removesuffix("_y")
+            new = new_df.to_dict()
+
             do_update = False
-
-            old_valid_to = duplicate_league_row["validTo_y"]
-            new_valid_to = duplicate_league_row["validTo"]
-            data["validTo"] = new_valid_to
-            if old_valid_to != new_valid_to:
-                do_update = True
-
-            old_valid_from = duplicate_league_row["validFrom_y"]
-            new_valid_from = duplicate_league_row["validFrom"]
-            data["validFrom"] = new_valid_from
-            if old_valid_from != new_valid_from:
-                do_update = True
+            for key, old_val in old.items():
+                if new[key] != old_val:
+                    do_update = True
+                    break
 
             if do_update:
                 headers = {
@@ -60,7 +63,7 @@ class LeagueDataDepositor(DataDepositorBase):
                 try:
                     response = requests.put(
                         self.update_url + str(league_id),
-                        json=data,
+                        json=new,
                         headers=headers,
                         # add HTTP Basic Auth
                     )
@@ -80,7 +83,7 @@ class LeagueDataDepositor(DataDepositorBase):
             self.current_league_df,
             how="left",
             on="name",
-            suffixes=("", "_y"),
+            suffixes=("_x", "_y"),
         )
         non_duplicate_mask = merged_df["leagueId"].isna()
         non_duplicate_df = merged_df[non_duplicate_mask]
@@ -89,6 +92,7 @@ class LeagueDataDepositor(DataDepositorBase):
                 column for column in non_duplicate_df.columns if column.endswith("_y")
             ]
         )
+        non_duplicate_df.columns = non_duplicate_df.columns.str.removesuffix("_x")
 
         self._update_duplicates(merged_df[~non_duplicate_mask])
 

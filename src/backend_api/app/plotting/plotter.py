@@ -234,7 +234,7 @@ class _BasePlotter(ABC, Generic[Q]):
                 ]
             ].to_dict(orient="records")  # type: ignore
             timeseries_data = {
-                "name": league,
+                "leagueId": league,
                 "confidenceRating": league_df["confidence"].mode()[0],
                 "data": league_data,
             }

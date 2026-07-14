@@ -83,11 +83,15 @@ def upgrade() -> None:
         sa.Column("name", sa.Text(), nullable=False),
         sa.Column("validFrom", sa.DateTime(timezone=True), nullable=False),
         sa.Column("validTo", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("version", sa.Float(), nullable=False),
         sa.PrimaryKeyConstraint("leagueId"),
     )
     op.execute("""
-        INSERT INTO league (name)
-        SELECT DISTINCT league
+        INSERT INTO league (name, "validFrom", version)
+        SELECT DISTINCT 
+               league,
+                TIMESTAMP '1970-01-01 00:00:00',
+                0.0
         FROM item
         WHERE league IS NOT NULL
     """)

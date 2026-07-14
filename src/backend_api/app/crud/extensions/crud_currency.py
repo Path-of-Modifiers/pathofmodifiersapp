@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from pydantic import TypeAdapter
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -36,61 +38,45 @@ class CRUDCurrency(
 
         return validate(latest_currency_id)
 
-    async def get_latest_hour(self, db: Session) -> int:
-        stmt = (
-            select(model_Currency.createdHoursSinceLaunch)
-            .order_by(model_Currency.currencyId.desc())
-            .limit(1)
-        )
-
-        db_latest_hour = db.execute(stmt).mappings().first()
-        if db_latest_hour is not None:
-            latest_hour = db_latest_hour["createdHoursSinceLaunch"]
-        else:
-            latest_hour = -1
-
-        validate = TypeAdapter(int).validate_python
-
-        return validate(latest_hour)
-
-    async def get_latest_currencies(self, db: Session) -> list[Currency]:
-        latest_hour = await self.get_latest_hour(db)
-
-        # All rows from that hour, plus the next lower currencyId
-        hour_rows = (
+    def _latest_hours_stmt(self, league_ids: list[int]):
+        return (
             select(
-                model_Currency.currencyId,
-                model_Currency.createdHoursSinceLaunch,
-                func.lead(model_Currency.currencyId)
-                .over(order_by=model_Currency.currencyId.desc())
-                .label("next_id"),
-            ).where(model_Currency.createdHoursSinceLaunch == latest_hour)
-        ).cte("hour_rows")
-
-        # The first place where the IDs stop being consecutive
-        boundary = (
-            select(hour_rows.c.next_id)
-            .where(hour_rows.c.currencyId - hour_rows.c.next_id > 1)
-            .order_by(hour_rows.c.currencyId.desc())
-            .limit(1)
-            .scalar_subquery()
-        )
-        # If no gap exists, include all rows for that hour
-        min_id = func.coalesce(
-            boundary,
-            select(func.min(hour_rows.c.currencyId)).scalar_subquery(),
-        )
-        stmt = (
-            select(model_Currency.__table__)
-            .where(
-                model_Currency.createdHoursSinceLaunch == latest_hour,
-                model_Currency.currencyId >= min_id,
+                model_Currency.leagueId,
+                func.max(model_Currency.createdHoursSinceLaunch).label("latest_hour"),
             )
-            .order_by(model_Currency.currencyId.desc())
+            .where(model_Currency.leagueId.in_(league_ids))
+            .group_by(model_Currency.leagueId)
         )
-        latest_currencies = db.execute(stmt).mappings().all()
 
-        validate = TypeAdapter(list[Currency]).validate_python
+    async def get_latest_hours(
+        self, db: Session, league_ids: list[int]
+    ) -> dict[int, int]:
+        stmt = self._latest_hours_stmt(league_ids)
+
+        objs = db.execute(stmt).mappings().all()
+        id_hour_map = {obj["leagueId"]: obj["latest_hour"] for obj in objs}
+
+        validate = TypeAdapter(dict[int, int]).validate_python
+
+        return validate(id_hour_map)
+
+    async def get_latest_currencies(
+        self, db: Session, league_ids: list[int]
+    ) -> dict[int, list[Currency]]:
+        latest_hours = self._latest_hours_stmt(league_ids).subquery()
+
+        stmt = select(model_Currency).join(
+            latest_hours,
+            (model_Currency.leagueId == latest_hours.c.leagueId)
+            & (model_Currency.createdHoursSinceLaunch == latest_hours.c.latest_hour),
+        )
+        currencies = db.scalars(stmt).all()
+
+        latest_currencies: dict[int, list[Currency]] = defaultdict(list)
+        for currency in currencies:
+            latest_currencies[currency.leagueId].append(currency)
+
+        validate = TypeAdapter(dict[int, list[Currency]]).validate_python
 
         return validate(latest_currencies)
 

@@ -310,7 +310,7 @@ class PoEAPIDataTransformerBase:
         item_df["chaos_value"] = (
             item_df["currencyAmount"].astype(float) * item_df["valueInChaos"]
         )
-        # TODO why do items sometime have chaos currency Id?
+
         for league in item_df["leagueId"].unique():
             divine_row = currency_df.loc[
                 (currency_df["leagueId"] == league)

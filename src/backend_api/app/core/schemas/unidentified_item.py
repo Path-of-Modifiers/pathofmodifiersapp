@@ -31,8 +31,6 @@ class UnidentifiedItemUpdate(_BaseUnidentifiedItem):
 class UnidentifiedItemInDBBase(_BaseUnidentifiedItem):
     createdHoursSinceLaunch: int
     itemId: int
-    nItems: int
-    aggregated: bool
 
 
 # Properties to return to client

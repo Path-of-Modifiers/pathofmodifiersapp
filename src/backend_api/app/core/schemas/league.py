@@ -10,6 +10,7 @@ class _BaseLeague(_pydantic.BaseModel):
     name: str
     validFrom: _dt.datetime
     validTo: _dt.datetime | None = None
+    version: float
 
 
 # Properties to receive on League creation
@@ -18,11 +19,8 @@ class LeagueCreate(_BaseLeague):
 
 
 # Properties to receive on update
-class LeagueUpdate(_pydantic.BaseModel):
+class LeagueUpdate(_BaseLeague):
     leagueId: int
-    name: str
-    validFrom: _dt.datetime
-    validTo: _dt.datetime | None = None
 
 
 # Properties shared by models stored in DB

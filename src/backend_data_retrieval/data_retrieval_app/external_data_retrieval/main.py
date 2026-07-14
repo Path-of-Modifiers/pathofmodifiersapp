@@ -153,27 +153,54 @@ class ContinuousDataRetrieval:
 
         return split_dfs
 
-    def _get_new_currency_data(self, current_hour: int) -> pd.DataFrame:
+    def _get_new_currency_data(self, current_hours: dict[int, int]) -> pd.DataFrame:
+        league_ids = list(current_hours.keys())
         response = get_data_safe(
-            self.currency_url + "latest_hour/",
+            self.currency_url + "latest_hours/",
+            params={"league_ids": league_ids},
             headers=self.pom_auth_headers,
             logger=logger,
         )
 
-        latest_hour = response.json()
-        if latest_hour == current_hour:
+        latest_hours: dict[str, int] = response.json()
+        need_new_data = []
+        need_old_data = []
+        if latest_hours:
+            for league_id, latest_hour in latest_hours.items():
+                league_id = int(league_id)
+                if (
+                    league_id in current_hours
+                    and latest_hour == current_hours[league_id]
+                ):
+                    need_old_data.append(league_id)
+                else:
+                    need_new_data.append(league_id)
+        else:
+            need_new_data = league_ids
+
+        currency_df = None
+        if need_old_data:
             response = get_data_safe(
                 self.currency_url + "latest_currencies/",
+                params={"league_ids": need_old_data},
                 headers=self.pom_auth_headers,
                 logger=logger,
             )
 
             currency_df = pd.DataFrame(response.json())
-        else:
-            currency_df = self.currency_api_handler.make_request(self.leagues)
-            currency_df = self.currency_transformer.transform_into_tables(
-                currency_df, current_hour
+
+        if need_new_data:
+            needed_leagues = [
+                league for league in self.leagues if league["leagueId"] in need_new_data
+            ]
+            new_data = self.currency_api_handler.make_request(needed_leagues)
+            new_data = self.currency_transformer.transform_into_tables(
+                new_data, current_hours
             )
+            if currency_df is None:
+                currency_df = new_data
+            else:
+                currency_df = pd.concat((currency_df, new_data))
 
         return currency_df
 
@@ -193,7 +220,7 @@ class ContinuousDataRetrieval:
             logger.info("Retrieving modifiers from db.")
             modifier_dfs = self._get_modifiers()
             item_base_types = self._get_item_base_types()
-            currency_df = self._get_new_currency_data(current_hour)
+            currency_df = self._get_new_currency_data(current_hours)
             get_df = self.poe_api_handler.dump_stream()
             while current_hour < next_hour:
                 df = next(get_df)

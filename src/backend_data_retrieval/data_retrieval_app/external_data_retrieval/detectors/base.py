@@ -23,7 +23,6 @@ class DetectorBase:
         """
         self.n_unique_items_found = 0
         self.leagues = [league["name"] for league in leagues]
-        self.league_to_id = {league["name"]: league["leagueId"] for league in leagues}
 
         self.prev_item_hashes_found = {}
 

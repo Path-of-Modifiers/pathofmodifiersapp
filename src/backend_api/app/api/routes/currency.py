@@ -108,9 +108,9 @@ async def get_latest_currency_id(
 
 
 @router.get(
-    "/latest_hour/",
-    response_model=int,
-    tags=["latest_hour"],
+    "/latest_hours/",
+    response_model=dict[int, int],
+    tags=["latest_hours"],
     dependencies=[
         Depends(get_current_active_user),
     ],
@@ -121,20 +121,23 @@ async def get_latest_currency_id(
     rate_limit_settings.DEFAULT_USER_RATE_LIMIT_HOUR,
     rate_limit_settings.DEFAULT_USER_RATE_LIMIT_DAY,
 )
-async def get_latest_hour(
+async def get_latest_hours(
+    league_ids: Annotated[list[int], Query(min_length=1)],
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     db: Session = Depends(get_db),
 ):
     """
-    Return -1 if database is empty
+    Returns a dict mapping league id to the most recent hour relating to that league. Dict is empty if no currencies exist.
+
+    Does not guarantee an entry for every league id.
     """
-    return await CRUD_currency.get_latest_hour(db)
+    return await CRUD_currency.get_latest_hours(db, league_ids)
 
 
 @router.get(
     "/latest_currencies/",
-    response_model=list[schemas.Currency],
+    response_model=dict[int, list[schemas.Currency]],
     tags=["latest_currencies"],
     dependencies=[
         Depends(get_current_active_user),
@@ -147,14 +150,17 @@ async def get_latest_hour(
     rate_limit_settings.DEFAULT_USER_RATE_LIMIT_DAY,
 )
 async def get_latest_currencies(
+    league_ids: Annotated[list[int], Query(min_length=1)],
     request: Request,  # noqa: ARG001
     response: Response,  # noqa: ARG001
     db: Session = Depends(get_db),
 ):
     """
-    Returns a list of the latest currencies, which all share the same `createdHoursSinceLaunch` as defined by `latest_hour` endpoint.
+    Returns a dict mapping league id to most recent currencies relating to that league. Dict is empty if no currencies exist.
+
+    Does not guarantee an entry for every league id.
     """
-    return await CRUD_currency.get_latest_currencies(db)
+    return await CRUD_currency.get_latest_currencies(db, league_ids)
 
 
 @router.post(

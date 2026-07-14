@@ -43,7 +43,7 @@ class TransformCurrencyAPIData:
         return currencies
 
     def _transform_currency_table(
-        self, currency_df: pd.DataFrame, hours_since_launch: int
+        self, currency_df: pd.DataFrame, current_hours: dict[int, int]
     ) -> pd.DataFrame:
         """
         Since a chaos orb is always worth one chaos orb, ninja does not include it in its price api.
@@ -70,7 +70,9 @@ class TransformCurrencyAPIData:
             lambda name: self.name_to_trade_name.get(name, pd.NA)
         )
 
-        currency_df["createdHoursSinceLaunch"] = hours_since_launch
+        currency_df["createdHoursSinceLaunch"] = currency_df["leagueId"].map(
+            current_hours
+        )
         return currency_df
 
     def _clean_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
@@ -105,13 +107,13 @@ class TransformCurrencyAPIData:
         return currency_id
 
     def transform_into_tables(
-        self, currency_df: pd.DataFrame, current_hour: int
+        self, currency_df: pd.DataFrame, current_hours: dict[int, int]
     ) -> pd.DataFrame:
         """
         Transforms the data into tables and transforms with help functions.
         """
         logger.debug("Transforming data into tables.")
-        currency_df = self._transform_currency_table(currency_df, current_hour)
+        currency_df = self._transform_currency_table(currency_df, current_hours)
         logger.debug("Successfully transformed data into tables.")
 
         logger.debug("Cleaning currency table data.")

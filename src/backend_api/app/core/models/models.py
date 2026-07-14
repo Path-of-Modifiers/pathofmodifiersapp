@@ -33,6 +33,7 @@ class League(Base):
     name: Mapped[str] = mapped_column(Text, nullable=False)
     validFrom: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     validTo: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+    version: Mapped[float] = mapped_column(Float, nullable=False)
 
 
 class Currency(Base):

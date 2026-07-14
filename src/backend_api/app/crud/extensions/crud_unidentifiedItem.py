@@ -21,17 +21,9 @@ class CRUDUnidentifiedItem(
 ):
     async def get_non_aggregated(self, db: Session) -> list[UnidentifiedItem]:
         """
-        Returns the non aggregated unidentified items for the last 10 recorded hours
-            (not necessarily the last 10 hours)
+        Returns the non aggregated unidentified items
         """
-        last_10_recorded_hours = (
-            select(model_UnidentifiedItem.createdHoursSinceLaunch.distinct())
-            .where(model_UnidentifiedItem.aggregated.isnot(True))
-            .order_by(model_UnidentifiedItem.createdHoursSinceLaunch.desc())
-            .limit(10)
-        )
         stmt = select(model_UnidentifiedItem).where(
-            model_UnidentifiedItem.createdHoursSinceLaunch.in_(last_10_recorded_hours),
             model_UnidentifiedItem.aggregated.isnot(True),
         )
 
@@ -44,14 +36,7 @@ class CRUDUnidentifiedItem(
     async def add_aggregated(
         self, db: Session, aggregated_objs: list[UnidentifiedItemCreate]
     ) -> list[UnidentifiedItem]:
-        last_10_recorded_hours = (
-            select(model_UnidentifiedItem.createdHoursSinceLaunch.distinct())
-            .where(model_UnidentifiedItem.aggregated.isnot(True))
-            .order_by(model_UnidentifiedItem.createdHoursSinceLaunch.desc())
-            .limit(10)
-        )
         stmt = delete(model_UnidentifiedItem).where(
-            model_UnidentifiedItem.createdHoursSinceLaunch.in_(last_10_recorded_hours),
             model_UnidentifiedItem.aggregated.isnot(True),
         )
         non_aggregated_objs = db.execute(stmt)
