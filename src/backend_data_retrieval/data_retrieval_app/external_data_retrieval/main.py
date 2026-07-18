@@ -1,3 +1,4 @@
+import threading
 from concurrent.futures import (
     ALL_COMPLETED,
     FIRST_COMPLETED,
@@ -25,7 +26,6 @@ from data_retrieval_app.external_data_retrieval.transforming_data.transform_poe_
     UniquePoEAPIDataTransformer,
 )
 from data_retrieval_app.external_data_retrieval.utils import (
-    ProgramFinished,
     ProgramTooSlowException,
 )
 from data_retrieval_app.logs.logger import external_data_retrieval_logger as logger
@@ -49,7 +49,6 @@ class ContinuousDataRetrieval:
 
     def __init__(
         self,
-        items_per_batch: int,
         data_transformers: dict[str, PoEAPIDataTransformerBase],
     ):
         self.leagues = self._get_leagues()
@@ -62,8 +61,6 @@ class ContinuousDataRetrieval:
             url=self.stash_tab_url,
             auth_token=self.auth_token,
             leagues=self.leagues,
-            n_wanted_items=items_per_batch,
-            n_unique_wanted_items=10,
         )
 
         self.currency_api_handler = CurrencyAPIHandler(
@@ -212,55 +209,45 @@ class ContinuousDataRetrieval:
         )
 
     def _follow_data_dump_stream(self):
-        try:
-            current_hours = find_hours_since_launch(self.leagues)
-            # Only need to refer to one league to see when a new hour starts
-            current_hour = current_hours[self.leagues[0]["leagueId"]]
-            next_hour = current_hour + 1
-            logger.info("Retrieving modifiers from db.")
-            modifier_dfs = self._get_modifiers()
-            item_base_types = self._get_item_base_types()
-            currency_df = self._get_new_currency_data(current_hours)
-            get_df = self.poe_api_handler.dump_stream()
-            while current_hour < next_hour:
-                df = next(get_df)
-                split_dfs = self._categorize_new_items(df)
-                for data_transformer_type in self.data_transformers:
-                    self.data_transformers[data_transformer_type].transform_into_tables(
-                        df=split_dfs[data_transformer_type],
-                        modifier_df=modifier_dfs[data_transformer_type],
-                        currency_df=currency_df.copy(deep=True),
-                        item_base_types=item_base_types,
-                        current_hours=current_hours,
-                    )
-                current_hours = find_hours_since_launch(self.leagues)
-                current_hour = current_hours[self.leagues[0]["leagueId"]]
+        current_hours = find_hours_since_launch(self.leagues)
+        # Only need to refer to one league to see when a new hour starts
+        current_hour = current_hours[self.leagues[0]["leagueId"]]
+        next_hour = current_hour + 1
+        logger.info("Retrieving modifiers from db.")
+        modifier_dfs = self._get_modifiers()
+        item_base_types = self._get_item_base_types()
+        currency_df = self._get_new_currency_data(current_hours)
+        get_df = self.poe_api_handler.dump_stream()
+        while current_hour < next_hour:
+            df = next(get_df)
+            split_dfs = self._categorize_new_items(df)
             for data_transformer_type in self.data_transformers:
-                self.data_transformers[data_transformer_type].end_of_hour_cleanup()
-
-            raise ProgramFinished
-
-        except ProgramFinished:
-            raise
-        except ProgramTooSlowException:
-            raise
-        except Exception as e:
-            logger.exception(
-                f"The following exception occured during '_follow_data_dump_stream': {e}"
-            )
-            raise
+                self.data_transformers[data_transformer_type].transform_into_tables(
+                    df=split_dfs[data_transformer_type],
+                    modifier_df=modifier_dfs[data_transformer_type],
+                    currency_df=currency_df.copy(deep=True),
+                    item_base_types=item_base_types,
+                    current_hours=current_hours,
+                )
+            current_hours = find_hours_since_launch(self.leagues)
+            current_hour = current_hours[self.leagues[0]["leagueId"]]
+        for data_transformer_type in self.data_transformers:
+            self.data_transformers[data_transformer_type].end_of_hour_cleanup()
 
     def retrieve_data(self):
         logger.info("Program starting up.")
         logger.info("Initiating data stream.")
-        max_workers = 3
-        listeners = max(
-            max_workers - 1, 1
-        )  # minus one because of transformation threads
+        max_workers = 2
+        stop_event = threading.Event()
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            futures = self._initialize_data_stream_threads(
-                executor, listeners=listeners
+            # futures = self._initialize_data_stream_threads(
+            #     executor, listeners=listeners
+            # )
+            futures = {}
+            listener_future = self.poe_api_handler.initialize_data_stream_threads(
+                executor, stop_event
             )
+            futures[listener_future] = "listener"
             follow_future = executor.submit(self._follow_data_dump_stream)
             futures[follow_future] = "data_processing"
             logger.info("Waiting for futures to crash.")
@@ -268,30 +255,25 @@ class ContinuousDataRetrieval:
             while True:
                 if finished:
                     return
+
                 done_futures, _ = wait(futures, return_when=FIRST_COMPLETED)
                 while done_futures:
                     future = done_futures.pop()
                     future_job = futures.pop(future)
-
                     if future_job == "data_processing":
                         try:
                             future.result()
+                            stop_event.set()
+                            wait(futures, return_when=ALL_COMPLETED)
+                            finished = True
                         except ProgramTooSlowException:
                             logger.info(
                                 f"The job '{future_job}' was too slow. Restarting..."
                             )
-                            self.poe_api_handler.set_program_too_slow()
+                            stop_event.set()
 
                             wait(futures, return_when=ALL_COMPLETED)
 
-                            finished = True
-                        except ProgramFinished:
-                            logger.info(
-                                f"The job '{future_job}' has finished this cycle. Restarting..."
-                            )
-                            self.poe_api_handler.set_program_finished()
-
-                            wait(futures, return_when=ALL_COMPLETED)
                             finished = True
                         except Exception:
                             logger.exception(
@@ -302,22 +284,20 @@ class ContinuousDataRetrieval:
                             )
                             futures[follow_future] = "data_processing"
                     elif future_job == "listener":
-                        new_future = self._initialize_data_stream_threads(
-                            executor,
-                            listeners=1,
-                            has_crashed=True,
+                        listener_future = (
+                            self.poe_api_handler.initialize_data_stream_threads(
+                                executor, stop_event
+                            )
                         )
-                        futures[new_future] = "listener"
+                        futures[listener_future] = "listener"
 
 
 def main():
     logger.info("Starting the program...")
     setup_logging()
-    items_per_batch = 300
     data_transformers = {"unique": UniquePoEAPIDataTransformer}
 
     data_retriever = ContinuousDataRetrieval(
-        items_per_batch=items_per_batch,
         data_transformers=data_transformers,
     )
     data_retriever.retrieve_data()

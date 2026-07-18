@@ -79,9 +79,5 @@ class ProgramTooSlowException(Exception):
     pass
 
 
-class ProgramFinished(Exception):
-    pass
-
-
 class WrongLeagueSetException(Exception):
     pass
