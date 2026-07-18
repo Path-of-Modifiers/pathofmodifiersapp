@@ -10,7 +10,9 @@ from io import StringIO
 from typing import Any
 
 import pandas as pd
+import redis
 
+from data_retrieval_app.external_data_retrieval.cache import get_cache
 from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.external_data_retrieval.data_retrieval.currency_api_handler import (
     CurrencyAPIHandler,
@@ -208,7 +210,7 @@ class ContinuousDataRetrieval:
             executor, listeners, has_crashed
         )
 
-    def _follow_data_dump_stream(self):
+    def _follow_data_dump_stream(self, cache: redis.Redis):
         current_hours = find_hours_since_launch(self.leagues)
         # Only need to refer to one league to see when a new hour starts
         current_hour = current_hours[self.leagues[0]["leagueId"]]
@@ -217,7 +219,7 @@ class ContinuousDataRetrieval:
         modifier_dfs = self._get_modifiers()
         item_base_types = self._get_item_base_types()
         currency_df = self._get_new_currency_data(current_hours)
-        get_df = self.poe_api_handler.dump_stream()
+        get_df = self.poe_api_handler.dump_stream(cache)
         while current_hour < next_hour:
             df = next(get_df)
             split_dfs = self._categorize_new_items(df)
@@ -239,16 +241,15 @@ class ContinuousDataRetrieval:
         logger.info("Initiating data stream.")
         max_workers = 2
         stop_event = threading.Event()
-        with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            # futures = self._initialize_data_stream_threads(
-            #     executor, listeners=listeners
-            # )
+        with ThreadPoolExecutor(
+            max_workers=max_workers
+        ) as executor, get_cache() as cache:
             futures = {}
             listener_future = self.poe_api_handler.initialize_data_stream_threads(
-                executor, stop_event
+                executor, stop_event, cache
             )
             futures[listener_future] = "listener"
-            follow_future = executor.submit(self._follow_data_dump_stream)
+            follow_future = executor.submit(self._follow_data_dump_stream, cache)
             futures[follow_future] = "data_processing"
             logger.info("Waiting for futures to crash.")
             finished = False

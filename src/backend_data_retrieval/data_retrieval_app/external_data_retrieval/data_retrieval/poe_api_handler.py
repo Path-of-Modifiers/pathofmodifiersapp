@@ -9,6 +9,7 @@ from typing import Any
 
 import httpx
 import pandas as pd
+import redis
 
 from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.external_data_retrieval.data_retrieval.utils import (
@@ -102,7 +103,7 @@ class PoEAPIHandler:
 
         return df
 
-    def _check_stashes(self, stashes: list) -> pd.DataFrame:
+    def _detector_filter(self, stashes: list) -> pd.DataFrame:
         """
         Parameters:
             :param stashes: (list) A list of stash objects
@@ -176,11 +177,7 @@ class PoEAPIHandler:
 
         return next_change_id
 
-    def _follow_stream(
-        self,
-        client: httpx.Client,
-        stop_event: threading.Event,
-    ):
+    def _follow_stream(self, client: httpx.Client, stop_event: threading.Event):
         local_pending = []
         change_id = self.initial_change_id
         weird_errors = 0
@@ -246,7 +243,7 @@ class PoEAPIHandler:
             self.pending_queue.put(None)
 
     @sync_timing_tracker
-    def _process_stream(self) -> pd.DataFrame | None:
+    def _process_stream(self, cache: redis.Redis) -> pd.DataFrame | None:
         i = 0
         stashes = []
         while i < self.mini_batch_size:
@@ -259,26 +256,25 @@ class PoEAPIHandler:
             if pending is None:
                 return stashes
 
-            # try:
             obj = json.loads(pending.response.decode("utf-8"))
             stashes.extend(obj["stashes"])
-            # finally:
-            #     pending.response.close()
+
+            cache.set("next_change_id", pending.next_change_id)
 
             i += 1
 
         logger.info("Stashes are ready for processing")
-        wanted_df = self._check_stashes(stashes)
+        wanted_df = self._detector_filter(stashes)
         logger.info("Finished processing the data, waiting for more")
         if wanted_df.empty:
             return None
         return wanted_df
 
-    def _gather_n_checkpoints(self, n: int) -> pd.DataFrame | None:
+    def _gather_n_checkpoints(self, cache: redis.Redis, n: int) -> pd.DataFrame | None:
         df = None
         for _ in range(n):
             start_time = time.perf_counter()
-            wanted_df = self._process_stream()
+            wanted_df = self._process_stream(cache)
             end_time = time.perf_counter()
 
             time_per_mini_batch = end_time - start_time
@@ -299,9 +295,16 @@ class PoEAPIHandler:
         return df
 
     def initialize_data_stream_threads(
-        self, executor: ThreadPoolExecutor, stop_event: threading.Event
+        self,
+        executor: ThreadPoolExecutor,
+        stop_event: threading.Event,
+        cache: redis.Redis,
     ):
-        self.initial_change_id = self._get_latest_change_id()
+        self.initial_change_id = cache.get("next_change_id")
+        if self.initial_change_id is None or settings.MANUAL_NEXT_CHANGE_ID:
+            logger.info("Using manually set change id")
+            self.initial_change_id = self._get_latest_change_id()
+
         self.rate_limiter = RateLimiter()
         self.mini_batch_size = settings.MINI_BATCH_SIZE
         self.pending_queue = Queue(maxsize=self.mini_batch_size)
@@ -318,11 +321,12 @@ class PoEAPIHandler:
         logging.getLogger("httpx").setLevel(logging.WARNING)
         return executor.submit(self._follow_stream, client, stop_event)
 
-    def dump_stream(self) -> Iterator[pd.DataFrame]:
+    def dump_stream(self, cache: redis.Redis) -> Iterator[pd.DataFrame]:
         time.sleep(5)  # Waits for the listening threads to have time to start up.
         while True:
             logger.info("Waiting for data from the stream")
             df = self._gather_n_checkpoints(
+                cache,
                 n=settings.N_CHECKPOINTS_PER_TRANSFORMATION,
             )
             if df is None:
