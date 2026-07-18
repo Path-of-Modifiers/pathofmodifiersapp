@@ -149,16 +149,11 @@ class PoEAPIHandler:
 
     def _get_latest_change_id(self) -> str:
         """
-        Gets the latest change id from GGG or uses a manual one.
+        Gets the latest change id from GGG.
         The change id provided by GGG does not become available in the stream
         before 5 minutes. A manual next change id circumvents this wait.
         """
 
-        if (
-            settings.MANUAL_NEXT_CHANGE_ID
-        ):  # For testing purposes, set manual next_change_id
-            next_change_id = settings.NEXT_CHANGE_ID
-            return next_change_id
         # Can't have authorization header, so we make a new header
         headers = {
             "User-Agent": f"OAuth pathofmodifiers/0.1.0 (contact: {settings.OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
@@ -300,10 +295,13 @@ class PoEAPIHandler:
         stop_event: threading.Event,
         cache: redis.Redis,
     ):
-        self.initial_change_id = cache.get("next_change_id")
-        if self.initial_change_id is None or settings.MANUAL_NEXT_CHANGE_ID:
-            logger.info("Using manually set change id")
-            self.initial_change_id = self._get_latest_change_id()
+        if settings.MANUAL_NEXT_CHANGE_ID:
+            self.initial_change_id = settings.NEXT_CHANGE_ID
+        else:
+            self.initial_change_id = cache.get("next_change_id")
+            if self.initial_change_id is None:
+                logger.info("Using manually set change id")
+                self.initial_change_id = self._get_latest_change_id()
 
         self.rate_limiter = RateLimiter()
         self.mini_batch_size = settings.MINI_BATCH_SIZE
