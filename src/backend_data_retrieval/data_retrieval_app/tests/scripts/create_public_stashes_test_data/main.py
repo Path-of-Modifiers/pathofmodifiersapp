@@ -21,7 +21,8 @@ OUTPUT_TEST_DATA_LOCATION_PATH = "data_retrieval_app/tests/test_data/"
 
 
 class PublicStashMockAPI:
-    def __init__(self) -> None:
+    def __init__(self, leagues: list[dict[str, Any]]) -> None:
+        self.leagues = [league["name"] for league in leagues]
         scrap_and_mock_poe_api_docs_objs = ScrapAndMockPoEAPIDocs()
         (
             self.public_stashes_mock_obj,
@@ -29,13 +30,9 @@ class PublicStashMockAPI:
         ) = scrap_and_mock_poe_api_docs_objs.produce_mocks_from_docs()
 
         self.public_stashes_modifier_test_data_creator = DataDepositTestDataCreator(
-            n_of_items=script_settings.N_OF_ITEMS_PER_MODIFIER_FILE
+            n_of_items=script_settings.N_OF_ITEMS_PER_MODIFIER_FILE, leagues=leagues
         )
         self.public_stashes_modifier_test_data_creator.create_templates()
-        self.leagues = [
-            *script_settings.SOFTCORE_LEAGUES,
-            *script_settings.HARDCORE_LEAGUES,
-        ]
 
     def get_test_data(self) -> list[dict[str, Any]]:
         """Generates test data by modifying mock stashes and items based on league."""

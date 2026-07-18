@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ModifiersService, GroupedModifierByEffect } from "../../client";
+import { ModifierService, GroupedModifierByEffect } from "../../client";
 import { useQuery } from "@tanstack/react-query";
 
 // Get all grouped modifiers by effect
@@ -11,9 +11,7 @@ export const GetGroupedModifiersByEffect = () => {
     useQuery({
       queryKey: ["allModifiers"],
       queryFn: async () => {
-        setModifiers(
-          await ModifiersService.getGroupedModifierByEffect()
-        );
+        setModifiers(await ModifierService.getGroupedModifierByEffect());
         return 1;
       },
     });

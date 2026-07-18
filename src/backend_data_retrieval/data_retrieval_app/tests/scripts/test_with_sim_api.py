@@ -1,4 +1,5 @@
 import threading
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -18,26 +19,29 @@ from data_retrieval_app.tests.scripts.create_public_stashes_test_data.config imp
 from data_retrieval_app.tests.scripts.create_public_stashes_test_data.main import (
     PublicStashMockAPI,
 )
-from data_retrieval_app.utils import find_hours_since_launch
 
 
 class TestUniquePoEAPIDataTransformer(UniquePoEAPIDataTransformer):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, leagues: dict[str, Any]):
+        super().__init__(leagues)
 
     def _create_random_time_column(self, length: int) -> pd.Series:
-        start = find_hours_since_launch()
-
         random_times = np.random.randint(0, script_settings.TIMING_PERIOD * 24, length)
 
-        time_column = start - random_times
+        return pd.Series(random_times, dtype=int)
 
-        return pd.Series(time_column, dtype=str)
-
-    def _create_item_table(self, df, hours_since_launch: int):
-        item_df = super()._create_item_table(df, hours_since_launch)
+    def _transform_item_table(
+        self,
+        item_df: pd.DataFrame,
+        currency_df: pd.DataFrame,
+        item_base_types: dict[str, int],
+        current_hours: dict[int, int],
+    ) -> pd.DataFrame:
+        item_df = super()._transform_item_table(
+            item_df, currency_df, item_base_types, current_hours
+        )
         if script_settings.dispersed_timing_enabled:
-            item_df["createdHoursSinceLaunch"] = self.time_column
+            item_df["createdHoursSinceLaunch"] += self.time_column
 
         return item_df
 
@@ -46,18 +50,15 @@ class TestUniquePoEAPIDataTransformer(UniquePoEAPIDataTransformer):
         df: pd.DataFrame,
         *,
         item_id: pd.Series,
-        hours_since_launch: int,  # noqa: ARG003
+        current_hours: dict[int, int],
     ) -> pd.DataFrame:
         """
         A similiar process to creating the item table, only this time the
         relevant column contains a list and not a JSON-object
         """
-        item_modifier_columns = ["name", "explicitMods"]
-
-        if script_settings.dispersed_timing_enabled:
-            df["createdHoursSinceLaunch"] = self.time_column
-            item_modifier_columns.append("createdHoursSinceLaunch")
-
+        # This method does the exact same thing, except adding random time if enabled
+        # This needs to be done before explode, but after filtering extremly priced items
+        item_modifier_columns = ["name", "explicitMods", "league"]
         item_modifier_df = df.loc[
             self.price_found_mask,
             item_modifier_columns,
@@ -68,10 +69,13 @@ class TestUniquePoEAPIDataTransformer(UniquePoEAPIDataTransformer):
         ].reset_index()
 
         item_modifier_df["itemId"] = item_id
-        item_modifier_df = item_modifier_df.explode("explicitMods", ignore_index=True)
-        test_logger.info(
-            f"Transforming {len(item_modifier_df)} item modifiers, making them ready to insert into db"
+        item_modifier_df["leagueId"] = item_modifier_df["league"].map(self.league_to_id)
+        item_modifier_df["createdHoursSinceLaunch"] = item_modifier_df["leagueId"].map(
+            current_hours
         )
+        if script_settings.dispersed_timing_enabled:
+            item_modifier_df["createdHoursSinceLaunch"] += self.time_column
+        item_modifier_df = item_modifier_df.explode("explicitMods", ignore_index=True)
 
         item_modifier_df.rename({"explicitMods": "modifier"}, axis=1, inplace=True)
 
@@ -83,6 +87,7 @@ class TestUniquePoEAPIDataTransformer(UniquePoEAPIDataTransformer):
         modifier_df: pd.DataFrame,
         currency_df: pd.DataFrame,
         item_base_types: dict[str, int],
+        current_hours: dict[int, int],
     ) -> None:
         if script_settings.dispersed_timing_enabled:
             self.time_column = self._create_random_time_column(length=len(df))
@@ -90,17 +95,15 @@ class TestUniquePoEAPIDataTransformer(UniquePoEAPIDataTransformer):
         test_logger.info(
             f"Transforming {len(df)} items, making them ready to insert into db"
         )
-        super().transform_into_tables(df, modifier_df, currency_df, item_base_types)
+        super().transform_into_tables(
+            df, modifier_df, currency_df, item_base_types, current_hours
+        )
 
 
 class PoEMockAPIHandler(PoEAPIHandler):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-
-        self.mock_api = PublicStashMockAPI()
-
-        for detector in self.item_detectors:
-            detector.leagues = self.mock_api.leagues
+        self.mock_api = PublicStashMockAPI(leagues=kwargs["leagues"])
 
         self.run_program_for_n_seconds = script_settings.CREATE_TEST_DATA_FOR_N_SECONDS
         self.n_checkpoints_per_transfromation = (
@@ -137,6 +140,7 @@ class ContinuousMockDataRetrieval(ContinuousDataRetrieval):
         self.poe_api_handler = PoEMockAPIHandler(
             url=self.stash_tab_url,
             auth_token=self.auth_token,
+            leagues=self.leagues,
             n_wanted_items=items_per_batch,
             n_unique_wanted_items=10,
         )

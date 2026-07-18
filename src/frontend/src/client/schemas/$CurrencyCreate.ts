@@ -12,6 +12,10 @@ export const $CurrencyCreate = {
             type: 'number',
             isRequired: true,
         },
+        leagueId: {
+            type: 'number',
+            isRequired: true,
+        },
         createdHoursSinceLaunch: {
             type: 'number',
             isRequired: true,

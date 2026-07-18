@@ -5,7 +5,7 @@
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class TestsService {
+export class TestService {
     /**
      * Bulk Insert Test
      * Can only be used in `settings.ENVIRONMENT=local` environment.

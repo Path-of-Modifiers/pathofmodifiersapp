@@ -21,7 +21,9 @@ class CRUDModifier(
         ModifierUpdate,
     ]
 ):
-    async def get_grouped_modifier_by_effect(self, db: Session):
+    async def get_grouped_modifier_by_effect(
+        self, db: Session
+    ) -> GroupedModifierByEffect:
         stmt = select(
             model_Modifier.modifierId,
             func.min(model_Modifier.effect).label("effect"),

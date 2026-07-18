@@ -4,16 +4,16 @@
 /* eslint-disable */
 export type UnidentifiedItem = {
     name?: (string | null);
-    league: string;
+    leagueId: number;
     itemBaseTypeId: number;
     ilvl: number;
     rarity: string;
     identified?: boolean;
     currencyAmount?: (number | null);
     currencyId?: (number | null);
+    nItems?: number;
+    aggregated?: boolean;
     createdHoursSinceLaunch: number;
     itemId: number;
-    nItems: number;
-    aggregated: boolean;
 };
 

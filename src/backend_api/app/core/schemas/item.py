@@ -15,7 +15,7 @@ class _BaseItem(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
     name: str | None = None
-    league: str
+    leagueId: int
     itemBaseTypeId: int
     ilvl: int
     rarity: str

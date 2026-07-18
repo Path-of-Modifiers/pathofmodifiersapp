@@ -2,8 +2,9 @@ import json
 import uuid
 from typing import Any
 
-import requests
 from bs4 import BeautifulSoup
+
+from data_retrieval_app.utils import get_data_safe
 
 
 class ScrapAndMockPoEAPIDocs:
@@ -19,8 +20,7 @@ class ScrapAndMockPoEAPIDocs:
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36"
         }
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
+        response = get_data_safe(url, headers=headers)
         return response.text
 
     # Parse the schema table using BeautifulSoup

@@ -1,5 +1,6 @@
+from typing import Any
+
 import pandas as pd
-import requests
 from requests.exceptions import HTTPError
 
 from data_retrieval_app.external_data_retrieval.config import settings
@@ -9,24 +10,27 @@ from data_retrieval_app.external_data_retrieval.transforming_data.roll_processor
 from data_retrieval_app.external_data_retrieval.utils import sync_timing_tracker
 from data_retrieval_app.logs.logger import transform_logger as logger
 from data_retrieval_app.pom_api_authentication import get_superuser_token_headers
-from data_retrieval_app.utils import find_hours_since_launch, insert_data
+from data_retrieval_app.utils import get_data_safe, insert_data
 
 pd.options.mode.chained_assignment = None  # default="warn"
 
 
 class PoEAPIDataTransformerBase:
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        leagues: list[dict[str, Any]],
+    ) -> None:
         logger.debug("Initializing PoEAPIDataTransformer")
 
         self.base_url = settings.BACKEND_BASE_URL
         self.pom_auth_headers = get_superuser_token_headers(self.base_url)
         self.roll_processor = RollProcessor()
 
+        self.league_to_id = {league["name"]: league["leagueId"] for league in leagues}
+
         logger.debug("Initializing PoEAPIDataTransformer done.")
 
-    def _create_item_table(
-        self, df: pd.DataFrame, hours_since_launch: int
-    ) -> pd.DataFrame:
+    def _create_item_table(self, df: pd.DataFrame) -> pd.DataFrame:
         """
         Creates the basis of the `item` table.
         """
@@ -64,11 +68,12 @@ class PoEAPIDataTransformerBase:
             :, [column for column in self.item_columns if column in df.columns]
         ]  # Can't guarantee all columns are present
 
-        item_df["createdHoursSinceLaunch"] = hours_since_launch
         return item_df
 
     def _find_not_too_highly_priced_item_mask(
-        self, currency_df: pd.DataFrame, item_currency_merged_df: pd.DataFrame
+        self,
+        currency_df: pd.DataFrame,
+        item_currency_merged_df: pd.DataFrame,
     ) -> pd.Series:
         """
         Some items are too highly priced to be legitimate. A boundary of the price equivelant to
@@ -94,6 +99,7 @@ class PoEAPIDataTransformerBase:
         item_df: pd.DataFrame,
         currency_df: pd.DataFrame,
         item_base_types: dict[str, int],
+        current_hours: dict[int, int],
     ) -> pd.DataFrame:
         """
         The `item` table requires a foreign key to the `currency` table.
@@ -128,6 +134,9 @@ class PoEAPIDataTransformerBase:
                             influence_column.replace("influences.", "")
                         ] = True
                 return influence_dict
+
+        item_df["leagueId"] = item_df["league"].map(self.league_to_id)
+        item_df["createdHoursSinceLaunch"] = item_df["leagueId"].map(current_hours)
 
         base_type_series = item_df["baseType"]
         item_df["itemBaseTypeId"] = base_type_series.apply(transform_base_types)
@@ -167,8 +176,8 @@ class PoEAPIDataTransformerBase:
         item_df = item_df.merge(
             currency_df,
             how="left",
-            left_on="currencyType",
-            right_on="tradeName",
+            left_on=["currencyType", "leagueId"],
+            right_on=["tradeName", "leagueId"],
             suffixes=(None, "_y"),
         )
 
@@ -195,7 +204,7 @@ class PoEAPIDataTransformerBase:
             dont_drop_columns = {
                 "gameItemId",
                 "name",
-                "league",
+                "leagueId",
                 "itemBaseTypeId",
                 "ilvl",
                 "rarity",
@@ -244,16 +253,11 @@ class PoEAPIDataTransformerBase:
         return item_df
 
     def _get_latest_item_id_series(self, item_df: pd.DataFrame) -> pd.Series:
-        try:
-            response = requests.get(
-                f"{self.base_url}/item/latest_item_id/", headers=self.pom_auth_headers
-            )
-            response.raise_for_status()
-        except Exception as e:
-            logger.error(
-                f"The following error occurred while making request _get_latest_item_id_series: {e}"
-            )
-            raise e
+        response = get_data_safe(
+            f"{self.base_url}/item/latest_item_id/",
+            headers=self.pom_auth_headers,
+            logger=logger,
+        )
         latest_item_id = int(response.text)
 
         item_id = pd.Series(
@@ -267,13 +271,15 @@ class PoEAPIDataTransformerBase:
         df: pd.DataFrame,
         currency_df: pd.DataFrame,
         item_base_types: dict[str, int],
-        hours_since_launch: int,
+        current_hours: dict[int, int],
     ) -> pd.Series:
         """
         Needs to return item ids, as it is used to connect the item modifiers
         """
-        item_df = self._create_item_table(df, hours_since_launch=hours_since_launch)
-        item_df = self._transform_item_table(item_df, currency_df, item_base_types)
+        item_df = self._create_item_table(df)
+        item_df = self._transform_item_table(
+            item_df, currency_df, item_base_types, current_hours=current_hours
+        )
         item_df = self._clean_item_table(item_df)
         insert_data(
             item_df,
@@ -286,6 +292,41 @@ class PoEAPIDataTransformerBase:
         logger.debug("Latest item id found: " + str(item_id))
         return item_id
 
+    @sync_timing_tracker
+    def _transform_unidentified_item_table(
+        self,
+        item_df: pd.DataFrame,
+        currency_df: pd.DataFrame,
+        item_base_types: dict[str, int],
+        current_hours: dict[int, int],
+    ) -> pd.DataFrame:
+        """
+        For convenience, all unid items are stored in divine prices
+        """
+        item_df = self._transform_item_table(
+            item_df, currency_df, item_base_types, current_hours=current_hours
+        )
+
+        item_df["chaos_value"] = (
+            item_df["currencyAmount"].astype(float) * item_df["valueInChaos"]
+        )
+
+        for league in item_df["leagueId"].unique():
+            divine_row = currency_df.loc[
+                (currency_df["leagueId"] == league)
+                & (currency_df["tradeName"] == "divine")
+            ].iloc[0]
+
+            divine_id = divine_row["currencyId"]
+            divine_value = divine_row["valueInChaos"]
+
+            item_league_mask = item_df["leagueId"] == league
+            item_df.loc[item_league_mask, "currencyId"] = divine_id
+            item_df.loc[item_league_mask, "currencyAmount"] = (
+                item_df.loc[item_league_mask, "chaos_value"] / divine_value
+            )
+        return item_df
+
     def _clean_unidentified_item_table(self, item_df: pd.DataFrame) -> pd.DataFrame:
         """
         Gets rid of unnecessay information, so that only fields needed for the DB remains.
@@ -297,7 +338,7 @@ class PoEAPIDataTransformerBase:
             "name",
             "itemBaseTypeId",
             "createdHoursSinceLaunch",
-            "league",
+            "leagueId",
             "currencyId",
             "ilvl",
             "currencyAmount",
@@ -316,15 +357,73 @@ class PoEAPIDataTransformerBase:
 
         return unidentified_item_df
 
+    def _aggregate_unidentified_item_table(
+        self,
+    ):
+        """
+        Should run once at the end of every hour. For safety, it also aggregates all previous
+        hours, in case of previous unfortunate errors.
+        """
+        response = get_data_safe(
+            f"{self.base_url}/unidentifiedItem/non_aggregated/",
+            headers=self.pom_auth_headers,
+            logger=logger,
+        )
+        unid_df = pd.DataFrame(response.json())
+        if unid_df.empty:
+            logger.info("Found no unidentified items to aggregate")
+            return
+
+        group_cols = [
+            "leagueId",
+            "name",
+            "itemBaseTypeId",
+            "createdHoursSinceLaunch",
+            "ilvl",
+            "identified",
+            "currencyId",
+            "rarity",
+        ]
+
+        g = unid_df.groupby(group_cols)
+
+        unid_df["calc_avg"] = g["currencyAmount"].transform("mean")
+        unid_df["calc_std"] = g["currencyAmount"].transform("std")
+        unid_df["calc_count"] = g["itemId"].transform("count")
+
+        filtered_df = unid_df[
+            unid_df["currencyAmount"].between(
+                unid_df["calc_avg"] - 1.97 * unid_df["calc_std"],
+                unid_df["calc_avg"] + 1.97 * unid_df["calc_std"],
+            )
+            | unid_df["calc_std"].isna()
+        ]
+
+        result_df = filtered_df.groupby(group_cols, as_index=False).agg(
+            currencyAmount=("currencyAmount", "mean"),
+            nItems=("calc_count", "first"),
+        )
+        result_df["aggregated"] = True
+        logger.info("Pushing aggregated unidentified items")
+        insert_data(
+            result_df,
+            url=self.base_url,
+            table_name="unidentifiedItem/add_aggregated",
+            logger=logger,
+            headers=self.pom_auth_headers,
+        )
+
     def _process_unidentified_item_table(
         self,
         df: pd.DataFrame,
         currency_df: pd.DataFrame,
         item_base_types: dict[str, int],
-        hours_since_launch: int,
+        current_hours: dict[int, int],
     ) -> None:
-        item_df = self._create_item_table(df, hours_since_launch=hours_since_launch)
-        item_df = self._transform_item_table(item_df, currency_df, item_base_types)
+        item_df = self._create_item_table(df)
+        item_df = self._transform_unidentified_item_table(
+            item_df, currency_df, item_base_types, current_hours=current_hours
+        )
         item_df = self._clean_unidentified_item_table(item_df)
         insert_data(
             item_df,
@@ -335,7 +434,7 @@ class PoEAPIDataTransformerBase:
         )
 
     def _create_item_modifier_table(
-        self, df: pd.DataFrame, *, item_id: pd.Series, hours_since_launch: int
+        self, df: pd.DataFrame, *, item_id: pd.Series
     ) -> pd.DataFrame:
         """
         The `item_modifier` table heavily relies on what type of item the modifiers
@@ -346,6 +445,7 @@ class PoEAPIDataTransformerBase:
     def _transform_item_modifier_table(
         self,
         item_modifier_df: pd.DataFrame,
+        current_hours: dict[int, int],
     ) -> pd.DataFrame:
         """
         The `item_modifier` table heavily relies on what type of item the modifiers
@@ -368,14 +468,13 @@ class PoEAPIDataTransformerBase:
         self,
         df: pd.DataFrame,
         item_id: pd.Series,
-        hours_since_launch: int,
+        current_hours: dict[int, int],
     ) -> None:
         item_modifier_df = self._create_item_modifier_table(
-            df, item_id=item_id, hours_since_launch=hours_since_launch
+            df, item_id=item_id, current_hours=current_hours
         )
         item_modifier_df = self._transform_item_modifier_table(item_modifier_df)
         item_modifier_df = self._clean_item_modifier_table(item_modifier_df)
-
         insert_data(
             item_modifier_df,
             url=self.base_url,
@@ -390,28 +489,28 @@ class PoEAPIDataTransformerBase:
         modifier_df: pd.DataFrame,
         currency_df: pd.DataFrame,
         item_base_types: dict[str, int],
+        current_hours: dict[int, int],
     ) -> None:
         self.roll_processor.add_modifier_df(modifier_df)
         try:
             logger.debug("Transforming data into tables.")
             logger.debug("Processing data tables.")
-            hours_since_launch = find_hours_since_launch()
             item_id = self._process_item_table(
                 df.copy(deep=True),
                 currency_df=currency_df,
                 item_base_types=item_base_types,
-                hours_since_launch=hours_since_launch,
+                current_hours=current_hours,
             )
             self._process_unidentified_item_table(
                 df.copy(deep=True),
                 currency_df=currency_df,
                 item_base_types=item_base_types,
-                hours_since_launch=hours_since_launch,
+                current_hours=current_hours,
             )
             self._process_item_modifier_table(
                 df.copy(deep=True),
                 item_id=item_id,
-                hours_since_launch=hours_since_launch,
+                current_hours=current_hours,
             )
             logger.debug("Successfully transformed data into tables.")
 
@@ -419,17 +518,24 @@ class PoEAPIDataTransformerBase:
             logger.exception(f"Something went wrong:\n{repr(e)}")
             raise e
 
+    def end_of_hour_cleanup(self):
+        self._aggregate_unidentified_item_table()
+
 
 class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
     @sync_timing_tracker
     def _create_item_modifier_table(
-        self, df: pd.DataFrame, *, item_id: pd.Series, hours_since_launch: int
+        self,
+        df: pd.DataFrame,
+        *,
+        item_id: pd.Series,
+        current_hours: dict[int, int],
     ) -> pd.DataFrame:
         """
         A similiar process to creating the item table, only this time the
         relevant column contains a list and not a JSON-object
         """
-        item_modifier_columns = ["name", "explicitMods"]
+        item_modifier_columns = ["name", "explicitMods", "league"]
         item_modifier_df = df.loc[
             self.price_found_mask,
             item_modifier_columns,
@@ -440,19 +546,23 @@ class UniquePoEAPIDataTransformer(PoEAPIDataTransformerBase):
         ].reset_index()
 
         item_modifier_df["itemId"] = item_id
+        item_modifier_df["leagueId"] = item_modifier_df["league"].map(self.league_to_id)
+        item_modifier_df["createdHoursSinceLaunch"] = item_modifier_df["leagueId"].map(
+            current_hours
+        )
         item_modifier_df = item_modifier_df.explode("explicitMods", ignore_index=True)
 
         item_modifier_df.rename({"explicitMods": "modifier"}, axis=1, inplace=True)
-
-        item_modifier_df["createdHoursSinceLaunch"] = hours_since_launch
 
         return item_modifier_df
 
     @sync_timing_tracker
     def _transform_item_modifier_table(
-        self, item_modifier_df: pd.DataFrame
+        self,
+        item_modifier_df: pd.DataFrame,
     ) -> pd.DataFrame:
         item_modifier_df = self.roll_processor.add_rolls(df=item_modifier_df)
+
         return item_modifier_df
 
     @property

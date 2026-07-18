@@ -1,4 +1,4 @@
-import { PlotQuery } from "../../client";
+import { League, PlotQuery } from "../../client";
 import { useErrorStore } from "../../store/ErrorStore";
 import { useGraphInputStore } from "../../store/GraphInputStore";
 import {
@@ -6,9 +6,31 @@ import {
   GraphInputState,
   ModifierLimitationState,
 } from "../../store/StateInterface";
-import { LEAGUE_LAUNCH_TIME, PLOTTING_WINDOW_HOURS } from "../../config";
+import { PLOTTING_WINDOW_HOURS } from "../../config";
+import { useLeagueLaunchStats } from "../../store/LeagueLaunchStatsStore";
 
-export const LEAGUE_LAUNCH_DATETIME = new Date(LEAGUE_LAUNCH_TIME);
+export const getCurrentLeague = (choosableLeagues: League | League[]) => {
+  choosableLeagues = Array.isArray(choosableLeagues)
+    ? choosableLeagues
+    : [choosableLeagues];
+  const now = Date.now();
+  const currentLeague = choosableLeagues
+    .filter((league) => !league.name.startsWith("Hardcore"))
+    .reduce<League | undefined>((latest, league) => {
+      const validFrom = Date.parse(league.validFrom);
+      const validTo = league.validTo
+        ? Date.parse(league.validTo)
+        : Number.POSITIVE_INFINITY;
+      if (validFrom > now || now > validTo) {
+        return latest;
+      }
+      if (!latest || validFrom > Date.parse(latest.validFrom)) {
+        return league;
+      }
+      return latest;
+    }, undefined);
+  return currentLeague;
+};
 
 const calcMean = (values: number[]) => {
   const sumValues = values.reduce((prev, cur) => prev + cur, 0);
@@ -31,17 +53,22 @@ export const findWinsorUpperBound = (values: number[]) => {
 };
 
 export function formatHoursSinceLaunch(hoursSinceLaunch: number): string {
-  const daysSinceLaunch = Math.floor(hoursSinceLaunch / 24);
+  let daysSinceLaunch = Math.floor(hoursSinceLaunch / 24);
+  const yearsSinceLaunch = Math.floor(daysSinceLaunch / 365);
+  daysSinceLaunch = daysSinceLaunch - yearsSinceLaunch * 365;
   const remainder = hoursSinceLaunch % 24;
 
   // Combine the date and time into the desired format
-  return `${daysSinceLaunch}T${remainder}`;
+  return `${yearsSinceLaunch}Y${daysSinceLaunch}T${remainder}`;
 }
 
-export const getHoursSinceLaunch = (currentTime: Date): number => {
+export const getHoursSinceLaunch = (
+  currentTime: Date,
+  leagueLaunch: Date,
+): number => {
   const getCurrentTimeDate = currentTime.getTime();
   const hoursSinceLaunch = Math.floor(
-    (getCurrentTimeDate - LEAGUE_LAUNCH_DATETIME.getTime()) / (1000 * 3600),
+    (getCurrentTimeDate - leagueLaunch.getTime()) / (1000 * 3600),
   );
   return hoursSinceLaunch;
 };
@@ -238,13 +265,14 @@ export const getOptimizedPlotQuery = (): PlotQuery | undefined => {
       modifierId: wantedMoidifierExtended.modifierId,
       modifierLimitations: wantedMoidifierExtended.modifierLimitations,
     }));
-  const currentTime = new Date();
-  const end = getHoursSinceLaunch(currentTime);
+  const end = useLeagueLaunchStats.getState().hoursSinceLaunch;
   const window = PLOTTING_WINDOW_HOURS;
   const start = end - window;
 
   return {
-    league: state.leagues,
+    leagueId: state.choosableLeagues
+      .filter((league) => state.leagues.includes(league.name))
+      .map((league) => league.leagueId),
     itemSpecifications: itemSpec,
     baseSpecifications: baseSpec,
     wantedModifiers: wantedModifier,

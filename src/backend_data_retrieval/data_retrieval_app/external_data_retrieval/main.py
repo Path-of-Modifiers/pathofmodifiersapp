@@ -1,14 +1,14 @@
 from concurrent.futures import (
     ALL_COMPLETED,
-    FIRST_EXCEPTION,
+    FIRST_COMPLETED,
     Future,
     ThreadPoolExecutor,
     wait,
 )
 from io import StringIO
+from typing import Any
 
 import pandas as pd
-import requests
 
 from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.external_data_retrieval.data_retrieval.currency_api_handler import (
@@ -25,7 +25,7 @@ from data_retrieval_app.external_data_retrieval.transforming_data.transform_poe_
     UniquePoEAPIDataTransformer,
 )
 from data_retrieval_app.external_data_retrieval.utils import (
-    ProgramRunTooLongException,
+    ProgramFinished,
     ProgramTooSlowException,
 )
 from data_retrieval_app.logs.logger import external_data_retrieval_logger as logger
@@ -33,16 +33,18 @@ from data_retrieval_app.logs.logger import setup_logging
 from data_retrieval_app.pom_api_authentication import (
     get_superuser_token_headers,
 )
+from data_retrieval_app.utils import find_hours_since_launch, get_data_safe
 
 
 class ContinuousDataRetrieval:
     auth_token = settings.POE_PUBLIC_STASHES_AUTH_TOKEN
-    current_league = settings.CURRENT_SOFTCORE_LEAGUE
     stash_tab_url = "https://api.pathofexile.com/public-stash-tabs"
 
     backend_base_url = settings.BACKEND_BASE_URL
     modifier_url = f"{backend_base_url}/modifier/"
+    active_league_url = f"{backend_base_url}/league/active_league/"
     item_base_type_url = f"{backend_base_url}/itemBaseType/"
+    currency_url = f"{backend_base_url}/currency/"
     pom_auth_headers = get_superuser_token_headers(backend_base_url)
 
     def __init__(
@@ -50,30 +52,31 @@ class ContinuousDataRetrieval:
         items_per_batch: int,
         data_transformers: dict[str, PoEAPIDataTransformerBase],
     ):
-        self.data_transformers = {
-            key: data_transformer()
+        self.leagues = self._get_leagues()
+        self.data_transformers: dict[str, PoEAPIDataTransformerBase] = {
+            key: data_transformer(self.leagues)
             for key, data_transformer in data_transformers.items()
         }
 
         self.poe_api_handler = PoEAPIHandler(
             url=self.stash_tab_url,
             auth_token=self.auth_token,
+            leagues=self.leagues,
             n_wanted_items=items_per_batch,
             n_unique_wanted_items=10,
         )
 
         self.currency_api_handler = CurrencyAPIHandler(
-            url=f"https://api.poe.watch/exchange/ratios?league={self.current_league}&game=poe1"
+            url="https://api.poe.watch/exchange/ratios?league={league}&game=poe1"
         )
         self.currency_transformer = TransformCurrencyAPIData()
 
     def _get_modifiers(self) -> dict[str, pd.DataFrame]:
-        response = requests.get(self.modifier_url, headers=self.pom_auth_headers)
+        response = get_data_safe(
+            self.modifier_url, headers=self.pom_auth_headers, logger=logger
+        )
         # Check if the request was successful
         modifier_df = pd.DataFrame()
-        if response.status_code != 200:
-            logger.error(f"Recieved response code {response} when retrieving modifiers")
-            response.raise_for_status()
         # Load the JSON data into a pandas DataFrame
         json_io = StringIO(response.content.decode("utf-8"))
         modifier_df = pd.read_json(json_io, dtype=str)
@@ -97,16 +100,20 @@ class ContinuousDataRetrieval:
                 ]
         return modifier_dfs
 
+    def _get_leagues(self) -> list[dict[str, Any]]:
+        response = get_data_safe(
+            self.active_league_url, headers=self.pom_auth_headers, logger=logger
+        )
+        leagues = response.json()
+
+        return leagues
+
     def _get_item_base_types(self) -> dict[str, int]:
-        response = requests.get(self.item_base_type_url, headers=self.pom_auth_headers)
+        response = get_data_safe(
+            self.item_base_type_url, headers=self.pom_auth_headers, logger=logger
+        )
         item_base_type_mapped = {}
         item_base_types = []
-
-        if response.status_code != 200:
-            logger.error(
-                f"Recieved response code {response} when retrieving item base types"
-            )
-            response.raise_for_status()
 
         item_base_types = response.json()
         if not isinstance(item_base_types, list):
@@ -146,9 +153,55 @@ class ContinuousDataRetrieval:
 
         return split_dfs
 
-    def _get_new_currency_data(self) -> pd.DataFrame:
-        currency_df = self.currency_api_handler.make_request()
-        currency_df = self.currency_transformer.transform_into_tables(currency_df)
+    def _get_new_currency_data(self, current_hours: dict[int, int]) -> pd.DataFrame:
+        league_ids = list(current_hours.keys())
+        response = get_data_safe(
+            self.currency_url + "latest_hours/",
+            params={"league_ids": league_ids},
+            headers=self.pom_auth_headers,
+            logger=logger,
+        )
+
+        latest_hours: dict[str, int] = response.json()
+        need_new_data = []
+        need_old_data = []
+        if latest_hours:
+            for league_id, latest_hour in latest_hours.items():
+                league_id = int(league_id)
+                if (
+                    league_id in current_hours
+                    and latest_hour == current_hours[league_id]
+                ):
+                    need_old_data.append(league_id)
+                else:
+                    need_new_data.append(league_id)
+        else:
+            need_new_data = league_ids
+
+        currency_df = None
+        if need_old_data:
+            response = get_data_safe(
+                self.currency_url + "latest_currencies/",
+                params={"league_ids": need_old_data},
+                headers=self.pom_auth_headers,
+                logger=logger,
+            )
+
+            currency_df = pd.DataFrame(response.json())
+
+        if need_new_data:
+            needed_leagues = [
+                league for league in self.leagues if league["leagueId"] in need_new_data
+            ]
+            new_data = self.currency_api_handler.make_request(needed_leagues)
+            new_data = self.currency_transformer.transform_into_tables(
+                new_data, current_hours
+            )
+            if currency_df is None:
+                currency_df = new_data
+            else:
+                currency_df = pd.concat((currency_df, new_data))
+
         return currency_df
 
     def _initialize_data_stream_threads(
@@ -160,21 +213,37 @@ class ContinuousDataRetrieval:
 
     def _follow_data_dump_stream(self):
         try:
+            current_hours = find_hours_since_launch(self.leagues)
+            # Only need to refer to one league to see when a new hour starts
+            current_hour = current_hours[self.leagues[0]["leagueId"]]
+            next_hour = current_hour + 1
             logger.info("Retrieving modifiers from db.")
             modifier_dfs = self._get_modifiers()
             item_base_types = self._get_item_base_types()
+            currency_df = self._get_new_currency_data(current_hours)
             get_df = self.poe_api_handler.dump_stream()
-            for i, df in enumerate(get_df):
+            while current_hour < next_hour:
+                df = next(get_df)
                 split_dfs = self._categorize_new_items(df)
-                if i % 50 == 0:
-                    currency_df = self._get_new_currency_data()
                 for data_transformer_type in self.data_transformers:
                     self.data_transformers[data_transformer_type].transform_into_tables(
                         df=split_dfs[data_transformer_type],
                         modifier_df=modifier_dfs[data_transformer_type],
                         currency_df=currency_df.copy(deep=True),
                         item_base_types=item_base_types,
+                        current_hours=current_hours,
                     )
+                current_hours = find_hours_since_launch(self.leagues)
+                current_hour = current_hours[self.leagues[0]["leagueId"]]
+            for data_transformer_type in self.data_transformers:
+                self.data_transformers[data_transformer_type].end_of_hour_cleanup()
+
+            raise ProgramFinished
+
+        except ProgramFinished:
+            raise
+        except ProgramTooSlowException:
+            raise
         except Exception as e:
             logger.exception(
                 f"The following exception occured during '_follow_data_dump_stream': {e}"
@@ -185,28 +254,28 @@ class ContinuousDataRetrieval:
         logger.info("Program starting up.")
         logger.info("Initiating data stream.")
         max_workers = 3
-        listeners = max_workers - 1  # minus one because of transformation threads
-        try:
-            with ThreadPoolExecutor(max_workers=max_workers) as executor:
-                futures = self._initialize_data_stream_threads(
-                    executor, listeners=listeners
-                )
-                follow_future = executor.submit(self._follow_data_dump_stream)
-                futures[follow_future] = "data_processing"
-                logger.info("Waiting for futures to crash.")
-                while True:
-                    done_futures, not_done_futures = wait(
-                        futures, return_when=FIRST_EXCEPTION
-                    )
-                    crashed_future = list(done_futures)[0]
-                    future_job = futures.pop(crashed_future)
-                    logger.info(
-                        f"The future '{future_job}' has crashed. Finding exception..."
-                    )
+        listeners = max(
+            max_workers - 1, 1
+        )  # minus one because of transformation threads
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = self._initialize_data_stream_threads(
+                executor, listeners=listeners
+            )
+            follow_future = executor.submit(self._follow_data_dump_stream)
+            futures[follow_future] = "data_processing"
+            logger.info("Waiting for futures to crash.")
+            finished = False
+            while True:
+                if finished:
+                    return
+                done_futures, _ = wait(futures, return_when=FIRST_COMPLETED)
+                while done_futures:
+                    future = done_futures.pop()
+                    future_job = futures.pop(future)
+
                     if future_job == "data_processing":
-                        crashed_future_exception = crashed_future.exception()
                         try:
-                            raise crashed_future_exception
+                            future.result()
                         except ProgramTooSlowException:
                             logger.info(
                                 f"The job '{future_job}' was too slow. Restarting..."
@@ -215,39 +284,30 @@ class ContinuousDataRetrieval:
 
                             wait(futures, return_when=ALL_COMPLETED)
 
-                            raise ProgramTooSlowException
-                        except ProgramRunTooLongException:
+                            finished = True
+                        except ProgramFinished:
                             logger.info(
-                                f"The job '{future_job}' has been running too long. Restarting..."
+                                f"The job '{future_job}' has finished this cycle. Restarting..."
                             )
-                            self.poe_api_handler.set_program_too_slow()
+                            self.poe_api_handler.set_program_finished()
 
                             wait(futures, return_when=ALL_COMPLETED)
-                            raise ProgramRunTooLongException
+                            finished = True
                         except Exception:
                             logger.exception(
-                                f"The following exception occured in job '{future_job}': {crashed_future_exception}"
+                                f"The following exception occured in job '{future_job}': {future.exception()}"
                             )
                             follow_future = executor.submit(
                                 self._follow_data_dump_stream
                             )
                             futures[follow_future] = "data_processing"
                     elif future_job == "listener":
-                        logger.exception(crashed_future.exception().with_traceback())
-                        raise crashed_future.exception()
                         new_future = self._initialize_data_stream_threads(
                             executor,
                             listeners=1,
                             has_crashed=True,
                         )
                         futures[new_future] = "listener"
-        except ProgramTooSlowException:
-            logger.info("Program was too slow. Restarting...")
-        except ProgramRunTooLongException:
-            logger.info("Program has run too long. Restarting...")
-        except Exception as e:
-            logger.exception(f"The following exception occured: {e}")
-            raise e
 
 
 def main():

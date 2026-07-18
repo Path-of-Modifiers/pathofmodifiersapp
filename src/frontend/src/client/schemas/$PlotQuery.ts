@@ -5,15 +5,15 @@
 export const $PlotQuery = {
     description: `Plots for items with or without modifiers`,
     properties: {
-        league: {
+        leagueId: {
             type: 'any-of',
             contains: [{
                 type: 'array',
                 contains: {
-                    type: 'string',
+                    type: 'number',
                 },
             }, {
-                type: 'string',
+                type: 'number',
             }],
             isRequired: true,
         },

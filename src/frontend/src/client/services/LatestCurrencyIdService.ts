@@ -8,7 +8,7 @@ import { request as __request } from '../core/request';
 export class LatestCurrencyIdService {
     /**
      * Get Latest Currency Id
-     * Get the latest currencyId
+     * Get the latest currencyId, returns 1 if table is empty
      *
      * Can only be used safely on an empty table or directly after an insertion.
      * @returns number Successful Response

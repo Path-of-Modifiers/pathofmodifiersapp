@@ -2,35 +2,21 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { UnidentifiedItem } from '../models/UnidentifiedItem';
-import type { UnidentifiedItemCreate } from '../models/UnidentifiedItemCreate';
+import type { ItemModifier } from '../models/ItemModifier';
+import type { ItemModifierCreate } from '../models/ItemModifierCreate';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class UnidentifiedItemsService {
+export class ItemModifierService {
     /**
-     * Get Latest Item Id
-     * Get the latest "itemId"
+     * Get All Item Modifiers
+     * Get all item modifiers.
      *
-     * Can only be used safely on an empty table or directly after an insertion.
+     * Returns a list of all item modifiers.
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getLatestItemId(): CancelablePromise<(number | null)> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/api/api_v1/unidentifiedItem/latest_item_id/',
-        });
-    }
-    /**
-     * Get All Items
-     * Get all items.
-     *
-     * Returns a list of all items.
-     * @returns any Successful Response
-     * @throws ApiError
-     */
-    public static getAllItems({
+    public static getAllItemModifiers({
         limit,
         skip,
         sortKey,
@@ -40,10 +26,10 @@ export class UnidentifiedItemsService {
         skip?: (number | null),
         sortKey?: (string | null),
         sortMethod?: ('asc' | 'desc' | null),
-    }): CancelablePromise<(UnidentifiedItem | Array<UnidentifiedItem>)> {
+    }): CancelablePromise<(ItemModifier | Array<ItemModifier>)> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/api_v1/unidentifiedItem/',
+            url: '/api/api_v1/itemModifier/',
             query: {
                 'limit': limit,
                 'skip': skip,
@@ -56,23 +42,23 @@ export class UnidentifiedItemsService {
         });
     }
     /**
-     * Create Item
-     * Create one or a list of new items.
+     * Create Item Modifier
+     * Create one or a list item modifiers.
      *
-     * Returns the created item or list of items.
+     * Returns the created item modifier or list of item modifiers.
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static createItem({
+    public static createItemModifier({
         requestBody,
         returnNothing,
     }: {
-        requestBody: (UnidentifiedItemCreate | Array<UnidentifiedItemCreate>),
+        requestBody: (ItemModifierCreate | Array<ItemModifierCreate>),
         returnNothing?: (boolean | null),
-    }): CancelablePromise<(UnidentifiedItemCreate | Array<UnidentifiedItemCreate> | null)> {
+    }): CancelablePromise<(ItemModifierCreate | Array<ItemModifierCreate> | null)> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/api_v1/unidentifiedItem/',
+            url: '/api/api_v1/itemModifier/',
             query: {
                 'return_nothing': returnNothing,
             },

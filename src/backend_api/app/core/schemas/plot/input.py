@@ -39,7 +39,7 @@ class WantedModifier(_pydantic.BaseModel):
 
 
 class BasePlotQuery(_pydantic.BaseModel):
-    league: list[str] | str
+    leagueId: list[int] | int
     itemSpecifications: ItemSpecs | None = None
     baseSpecifications: BaseSpecs | None = None
     end: int | None = None

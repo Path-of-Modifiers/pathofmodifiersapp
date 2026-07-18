@@ -1,0 +1,11 @@
+/* generated using openapi-typescript-codegen -- do not edit */
+/* istanbul ignore file */
+/* tslint:disable */
+/* eslint-disable */
+export type LeagueUpdate = {
+  name: string;
+  validFrom: string;
+  validTo?: string | null;
+  version: number;
+  leagueId: number;
+};

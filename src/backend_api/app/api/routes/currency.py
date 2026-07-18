@@ -1,7 +1,6 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, Request, Response
-from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
@@ -19,6 +18,7 @@ from app.core.rate_limit.rate_limit_config import rate_limit_settings
 from app.core.rate_limit.rate_limiters import (
     apply_user_rate_limits,
 )
+from app.core.schemas.currency import CurrencyQuery
 from app.crud import CRUD_currency
 
 router = APIRouter()
@@ -100,15 +100,90 @@ async def get_latest_currency_id(
     db: Session = Depends(get_db),
 ):
     """
-    Get the latest currencyId
+    Get the latest currencyId, returns 1 if table is empty
 
     Can only be used safely on an empty table or directly after an insertion.
     """
-    result = db.execute(text("""SELECT MAX("currencyId") FROM currency""")).fetchone()
-    if result:
-        return int(result[0])
-    else:
-        return 1
+    return await CRUD_currency.get_latest_currency_id(db)
+
+
+@router.get(
+    "/latest_hours/",
+    response_model=dict[int, int],
+    tags=["latest_hours"],
+    dependencies=[
+        Depends(get_current_active_user),
+    ],
+)
+@apply_user_rate_limits(
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
+async def get_latest_hours(
+    league_ids: Annotated[list[int], Query(min_length=1)],
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    db: Session = Depends(get_db),
+):
+    """
+    Returns a dict mapping league id to the most recent hour relating to that league. Dict is empty if no currencies exist.
+
+    Does not guarantee an entry for every league id.
+    """
+    return await CRUD_currency.get_latest_hours(db, league_ids)
+
+
+@router.get(
+    "/latest_currencies/",
+    response_model=list[schemas.Currency],
+    tags=["latest_currencies"],
+    dependencies=[
+        Depends(get_current_active_user),
+    ],
+)
+@apply_user_rate_limits(
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
+async def get_latest_currencies(
+    league_ids: Annotated[list[int], Query(min_length=1)],
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    db: Session = Depends(get_db),
+):
+    """
+    Returns a list of currencies for all queried leagues (if data exists).
+    """
+    return await CRUD_currency.get_latest_currencies(db, league_ids)
+
+
+@router.post(
+    "/from_query/",
+    response_model=list[schemas.Currency],
+    dependencies=[
+        Depends(get_current_active_user),
+    ],
+)
+@apply_user_rate_limits(
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
+async def get_currency_from_query(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    query_list: list[CurrencyQuery],
+    db: Session = Depends(get_db),
+):
+    """
+    Returns a list of currencies that match any of the queries
+    """
+    return await CRUD_currency.get_currency_from_query(db, query_list)
 
 
 @router.post(

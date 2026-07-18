@@ -3,7 +3,7 @@ import {
   ApiError,
   TurnstileQuery,
   TurnstileResponse,
-  TurnstilesService,
+  TurnstileService,
 } from "../../client";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
@@ -37,7 +37,7 @@ const useTurnstileValidation = (requestBody?: TurnstileQuery) => {
   } = useQuery<TurnstileResponse | null, Error>({
     queryKey: ["turnstile", hasCompletedCaptcha()],
     queryFn: async (): Promise<TurnstileResponse | null> => {
-      const turnstileResponse = await TurnstilesService.getTurnstileValidation({
+      const turnstileResponse = await TurnstileService.getTurnstileValidation({
         requestBody: {
           token: requestBody?.token ?? token,
           ip: requestBody?.ip ?? ip,
@@ -62,7 +62,7 @@ const useTurnstileValidation = (requestBody?: TurnstileQuery) => {
 
   const completeCaptcha = async (data: TurnstileQuery) => {
     console.log("Completing captcha...");
-    await TurnstilesService.getTurnstileValidation({
+    await TurnstileService.getTurnstileValidation({
       requestBody: data,
     });
   };
@@ -74,7 +74,7 @@ const useTurnstileValidation = (requestBody?: TurnstileQuery) => {
       setToken(requestBody?.token ?? "");
       localStorage.setItem(
         "turnstile_captcha_token",
-        requestBody?.token ?? token
+        requestBody?.token ?? token,
       );
       navigate({ to: from ? "/" + `${from}` : "/" });
     },

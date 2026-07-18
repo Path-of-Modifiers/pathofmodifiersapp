@@ -79,7 +79,7 @@ class ProgramTooSlowException(Exception):
     pass
 
 
-class ProgramRunTooLongException(Exception):
+class ProgramFinished(Exception):
     pass
 
 

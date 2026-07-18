@@ -6,13 +6,15 @@ class _BaseUnidentifiedItem(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
     name: str | None = None
-    league: str
+    leagueId: int
     itemBaseTypeId: int
     ilvl: int
     rarity: str
     identified: bool = False
     currencyAmount: float | None = None
     currencyId: int | None = None
+    nItems: int = 1
+    aggregated: bool = False
 
 
 # Properties to receive on item creation
@@ -29,8 +31,6 @@ class UnidentifiedItemUpdate(_BaseUnidentifiedItem):
 class UnidentifiedItemInDBBase(_BaseUnidentifiedItem):
     createdHoursSinceLaunch: int
     itemId: int
-    nItems: int
-    aggregated: bool
 
 
 # Properties to return to client

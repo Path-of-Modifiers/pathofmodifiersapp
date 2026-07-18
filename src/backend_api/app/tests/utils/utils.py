@@ -1,7 +1,7 @@
 import random
 import string
 from collections.abc import Callable
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from inspect import iscoroutinefunction
 from typing import Any
 
@@ -130,13 +130,22 @@ def random_url() -> str:
     return f"https://{random_lower_string()}.{random_lower_string(small_string=True)}"
 
 
-def random_datetime() -> datetime:
+def random_datetime(min_time: datetime = None, max_time: datetime = None) -> datetime:
     """Generate a random datetime.
 
     Returns:
         datetime: Random datetime.
     """
-    return datetime.now() + random.uniform(-5, 5) * timedelta(days=1)
+    time = datetime.now(tz=timezone.utc)
+    bottom = -5
+    top = 5
+    if min_time is not None:
+        time = min(time, min_time)
+        bottom = 0
+    if max_time is not None:
+        time = max(time, max_time)
+        top = 0
+    return time + random.uniform(bottom, top) * timedelta(days=1)
 
 
 def random_based_on_type(reference: str | float | int) -> str | int | float:

@@ -12,5 +12,9 @@ export const $CurrencyUpdate = {
             type: 'number',
             isRequired: true,
         },
+        leagueId: {
+            type: 'number',
+            isRequired: true,
+        },
     },
 } as const;

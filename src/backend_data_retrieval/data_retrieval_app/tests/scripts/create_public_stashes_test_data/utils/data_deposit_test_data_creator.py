@@ -5,7 +5,6 @@ from io import StringIO
 from typing import Any
 
 import pandas as pd
-import requests
 
 from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.logs.logger import test_logger
@@ -16,10 +15,11 @@ from data_retrieval_app.tests.scripts.create_public_stashes_test_data.config imp
     script_settings,
 )
 from data_retrieval_app.tests.utils import random_float, random_int
+from data_retrieval_app.utils import get_data_safe
 
 
 class DataDepositTestDataCreator:
-    def __init__(self, n_of_items: int) -> None:
+    def __init__(self, n_of_items: int, leagues: list[dict[str, Any]]) -> None:
         """
         Creates a number of items from the data deposit files.
 
@@ -34,10 +34,7 @@ class DataDepositTestDataCreator:
 
         self.base_url = settings.BACKEND_BASE_URL
         self.pom_auth_headers = get_superuser_token_headers(self.base_url)
-        self.leagues = [
-            *script_settings.SOFTCORE_LEAGUES,
-            *script_settings.HARDCORE_LEAGUES,
-        ]
+        self.leagues = [league["name"] for league in leagues]
 
         self.base_type_df = self._get_df_from_url("itemBaseType/")
         self.grouped_modifier_df = self._get_df_from_url(
@@ -59,7 +56,7 @@ class DataDepositTestDataCreator:
     def _get_df_from_url(self, route: str) -> pd.DataFrame:
         headers = {"accept": "application/json", "Content-Type": "application/json"}
         headers.update(self.pom_auth_headers)
-        response = requests.get(f"{self.base_url}/{route}", headers=headers)
+        response = get_data_safe(f"{self.base_url}/{route}", headers=headers)
         df = pd.read_json(StringIO(response.text), orient="records")
         return df
 
@@ -425,7 +422,8 @@ class DataDepositTestDataCreator:
 
 
 def main() -> int:
-    test = DataDepositTestDataCreator(50)
+    leagues = [{"name": "testing_league"}]
+    test = DataDepositTestDataCreator(50, leagues=leagues)
     test.create_templates()
     print(list(test.create_test_data()))
     return 0

@@ -11,7 +11,7 @@ class Datum(_pydantic.BaseModel):
 
 
 class TimeseriesData(_pydantic.BaseModel):
-    name: str
+    leagueId: int
     data: list[Datum]
     confidenceRating: Literal["low", "medium", "high"]
 

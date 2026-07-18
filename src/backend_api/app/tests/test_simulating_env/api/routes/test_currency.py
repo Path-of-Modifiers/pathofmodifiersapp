@@ -7,10 +7,10 @@ from fastapi import Response
 from httpx import AsyncClient
 
 import app.tests.test_simulating_env.api.api_routes_test_base as test_api
-from app.api.routes import currency_prefix
+from app.api.routes import currency_prefix, league_prefix
 from app.api.routes.currency import get_currency
 from app.core.config import settings
-from app.core.models.models import Currency
+from app.core.models.models import Currency, League
 from app.crud import CRUD_currency
 from app.crud.base import CRUDBase, ModelType
 from app.tests.utils.model_utils.currency import (
@@ -89,6 +89,45 @@ def unique_identifier() -> str:
 @pytest.fixture(scope="module")
 def object_generator_func() -> Callable[[], tuple[dict, ModelType]]:
     return generate_random_currency
+
+
+@pytest.fixture(scope="module")
+def object_generator_func_w_deps() -> (
+    Callable[[], tuple[dict, Currency, list[dict | League]]]
+):
+    def generate_random_item_w_deps(
+        db,
+    ) -> Callable[
+        [],
+        tuple[
+            dict,
+            Currency,
+            list[dict | League | Currency],
+        ],
+    ]:
+        return generate_random_currency(db, retrieve_dependencies=True)
+
+    return generate_random_item_w_deps
+
+
+@pytest.fixture(scope="module")
+def api_deps_instances() -> list[list[str]]:
+    """Fixture for API dependencies instances.
+
+    Dependencies in return list needs to be in correct order.
+    If a dependency is dependent on another, the dependency needs to occur later than
+    the one its dependent on. The order is defined by 'generate_random_item'.
+
+    Returns:
+        List[list[str]]: API dependencies instances. Format: [dep_route_prefix: dep_unique_identifier]
+    """
+    return [
+        [
+            league_prefix,
+            get_model_unique_identifier(League),
+            League.__tablename__,
+        ]
+    ]
 
 
 @pytest.fixture(scope="module")

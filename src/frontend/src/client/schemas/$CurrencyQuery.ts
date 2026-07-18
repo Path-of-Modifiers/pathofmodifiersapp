@@ -2,30 +2,17 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export const $Body_logins_login_access_session = {
+export const $CurrencyQuery = {
     properties: {
-        grant_type: {
+        createdHoursSinceLaunch: {
             type: 'any-of',
             contains: [{
-                type: 'string',
-                pattern: '^password$',
+                type: 'number',
             }, {
                 type: 'null',
             }],
         },
-        username: {
-            type: 'string',
-            isRequired: true,
-        },
-        password: {
-            type: 'string',
-            isRequired: true,
-            format: 'password',
-        },
-        scope: {
-            type: 'string',
-        },
-        client_id: {
+        tradeName: {
             type: 'any-of',
             contains: [{
                 type: 'string',
@@ -33,10 +20,10 @@ export const $Body_logins_login_access_session = {
                 type: 'null',
             }],
         },
-        client_secret: {
+        leagueId: {
             type: 'any-of',
             contains: [{
-                type: 'string',
+                type: 'number',
             }, {
                 type: 'null',
             }],

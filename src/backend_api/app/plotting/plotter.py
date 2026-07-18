@@ -97,7 +97,7 @@ class _BasePlotter(ABC, Generic[Q]):
         select_args: list[InstrumentedAttribute[Any] | Label[Any]] = [
             item_model.itemId,
             item_model.createdHoursSinceLaunch,
-            item_model.league,
+            item_model.leagueId,
             item_model.itemBaseTypeId,
             item_model.currencyId,
             item_model.currencyAmount,
@@ -114,12 +114,12 @@ class _BasePlotter(ABC, Generic[Q]):
             model_Currency, item_model.currencyId == model_Currency.currencyId
         )
 
-        if isinstance(query.league, list):
+        if isinstance(query.leagueId, list):
             stmt = stmt.where(
-                or_(*[item_model.league == league for league in query.league])
+                or_(*[item_model.leagueId == league for league in query.leagueId])
             )
         else:
-            stmt = stmt.where(model_Item.league == query.league)
+            stmt = stmt.where(model_Item.leagueId == query.leagueId)
 
         if start is not None:
             stmt = stmt.where(item_model.createdHoursSinceLaunch >= start)
@@ -223,8 +223,8 @@ class _BasePlotter(ABC, Generic[Q]):
             0, "divine"
         )  # TODO: set enum
         data = []
-        for league in df["league"].unique():
-            league_df: pd.DataFrame = df.loc[df["league"] == league]
+        for league in df["leagueId"].unique():
+            league_df: pd.DataFrame = df.loc[df["leagueId"] == league]
             league_data = league_df[
                 [
                     "hoursSinceLaunch",
@@ -234,7 +234,7 @@ class _BasePlotter(ABC, Generic[Q]):
                 ]
             ].to_dict(orient="records")  # type: ignore
             timeseries_data = {
-                "name": league,
+                "leagueId": league,
                 "confidenceRating": league_df["confidence"].mode()[0],
                 "data": league_data,
             }
@@ -443,7 +443,7 @@ class IdentifiedPlotter(_BasePlotter):
                 base_query.c.tradeName.label("mostCommonTradeName"),
                 func.count(base_query.c.tradeName).label("nameCount"),
             )
-            .group_by(base_query.c.league, base_query.c.tradeName)
+            .group_by(base_query.c.leagueId, base_query.c.tradeName)
             .order_by(desc("nameCount"))  # Can use literal_column in complex cases
             .limit(1)
             .cte("mostCommon")
@@ -486,7 +486,7 @@ class IdentifiedPlotter(_BasePlotter):
         prices = (
             select(
                 base_query.c.createdHoursSinceLaunch,
-                base_query.c.league,
+                base_query.c.leagueId,
                 (base_query.c.currencyAmount * base_query.c.valueInChaos).label(
                     "valueInChaos"
                 ),
@@ -519,7 +519,7 @@ class IdentifiedPlotter(_BasePlotter):
         filtered_prices = (
             select(
                 ranked_prices.c.createdHoursSinceLaunch,
-                ranked_prices.c.league,
+                ranked_prices.c.leagueId,
                 ranked_prices.c.valueInChaos,
                 ranked_prices.c.valueInMostCommonCurrencyUsed,
                 ranked_prices.c.mostCommonCurrencyUsed,
@@ -537,7 +537,7 @@ class IdentifiedPlotter(_BasePlotter):
         final_query = (
             select(
                 filtered_prices.c.createdHoursSinceLaunch.label("hoursSinceLaunch"),
-                filtered_prices.c.league,
+                filtered_prices.c.leagueId,
                 func.avg(filtered_prices.c.valueInChaos).label("valueInChaos"),
                 func.avg(filtered_prices.c.valueInMostCommonCurrencyUsed).label(
                     "valueInMostCommonCurrencyUsed"
@@ -548,7 +548,7 @@ class IdentifiedPlotter(_BasePlotter):
                 func.min(filtered_prices.c.confidence).label("confidence"),
             )
             .group_by(
-                filtered_prices.c.createdHoursSinceLaunch, filtered_prices.c.league
+                filtered_prices.c.createdHoursSinceLaunch, filtered_prices.c.leagueId
             )
             .order_by(filtered_prices.c.createdHoursSinceLaunch)
         )

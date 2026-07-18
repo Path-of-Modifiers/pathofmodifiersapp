@@ -5,6 +5,7 @@
 export type Currency = {
     tradeName: string;
     valueInChaos: number;
+    leagueId: number;
     createdHoursSinceLaunch: number;
     currencyId: number;
 };

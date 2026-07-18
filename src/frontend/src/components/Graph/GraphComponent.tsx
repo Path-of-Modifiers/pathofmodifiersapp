@@ -33,7 +33,7 @@ import PlotCustomizationButtons from "../Common/PlotCustomizationButtons";
  * and a graph if there has been
  */
 function GraphComponent(props: BoxProps) {
-  const { plotQuery, leagues } = useGraphInputStore();
+  const { plotQuery, choosableLeagues } = useGraphInputStore();
   const {
     result: plotData,
     mostCommonCurrencyUsed,
@@ -51,7 +51,10 @@ function GraphComponent(props: BoxProps) {
   const showSecondary = usePlotSettingsStore((state) => state.showSecondary);
 
   if (error || plotData == undefined) return;
-  const fetchedLeagues = plotData.data.map((val) => val.name);
+  const fetchedLeagueIds = plotData.data.map((val) => val.leagueId);
+  const fetchedLeagues = choosableLeagues
+    .filter((league) => fetchedLeagueIds.includes(league.leagueId))
+    .map((league) => league.name);
 
   const isLowConfidence = confidenceRating === "low";
   const isMediumConfidence = confidenceRating === "medium";
@@ -171,13 +174,13 @@ function GraphComponent(props: BoxProps) {
             <Legend verticalAlign="top" height={36} />
             {plotData.data.map(
               (series, idx) =>
-                leagues.includes(series.name) && (
+                fetchedLeagueIds.includes(series.leagueId) && (
                   <Line
                     type="monotone"
                     data={series.data}
                     dataKey={"valueInChaos"}
-                    key={series.name}
-                    name={series.name + " - " + "Chaos Value"}
+                    key={series.leagueId}
+                    name={fetchedLeagues[idx] + " - " + "Chaos Value"}
                     stroke={colors[idx]}
                     yAxisId={0}
                     hide={!showChaos}
@@ -204,13 +207,15 @@ function GraphComponent(props: BoxProps) {
             {mostCommonCurrencyUsed !== "chaos" &&
               plotData.data.map(
                 (series, idx) =>
-                  leagues.includes(series.name) && (
+                  fetchedLeagueIds.includes(series.leagueId) && (
                     <Line
                       type="monotone"
                       data={series.data}
                       dataKey={"valueInMostCommonCurrencyUsed"}
-                      key={series.name}
-                      name={series.name + " - " + mostCommonCurrencyUsedName}
+                      key={series.leagueId}
+                      name={
+                        fetchedLeagues[idx] + " - " + mostCommonCurrencyUsedName
+                      }
                       stroke={colors[idx]}
                       yAxisId={1}
                       hide={!showSecondary}

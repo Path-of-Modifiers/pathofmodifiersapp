@@ -28,10 +28,6 @@ if [[ -z "${POE_PUBLIC_STASHES_AUTH_TOKEN}" ]] || [[ "${POE_PUBLIC_STASHES_AUTH_
     echo "Env variable POE_PUBLIC_STASHES_AUTH_TOKEN is not set"
     exit 1
 fi
-if [[ -z "${CURRENT_SOFTCORE_LEAGUE}" ]] || [[ "${CURRENT_SOFTCORE_LEAGUE}" == "changethis" ]]; then
-    echo "Env variable CURRENT_SOFTCORE_LEAGUE is not set"
-    exit 1
-fi
 if [[ -z "${OATH_ACC_TOKEN_CONTACT_EMAIL}" ]] || [[ "${OATH_ACC_TOKEN_CONTACT_EMAIL}" == "changethis" ]]; then
     echo "Env variable OATH_ACC_TOKEN_CONTACT_EMAIL is not set"
     exit 1

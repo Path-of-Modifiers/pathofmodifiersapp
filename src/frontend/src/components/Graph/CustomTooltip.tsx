@@ -12,6 +12,7 @@ import { capitalizeFirstLetter } from "../../hooks/utils";
 import { BiError } from "react-icons/bi";
 import { getHoursSinceLaunch } from "../../hooks/graphing/utils";
 import { setupHourlyUpdate } from "../../utils";
+import { useLeagueLaunchStats } from "../../store/LeagueLaunchStatsStore";
 
 interface CustomTooltipProps extends TooltipContentProps<ValueType, NameType> {
   upperBoundry: number;
@@ -21,10 +22,11 @@ interface CustomTooltipProps extends TooltipContentProps<ValueType, NameType> {
 
 export const CustomTooltip = (props: CustomTooltipProps) => {
   const [currentTime, setCurrentTime] = useState(new Date());
+  const { leagueLaunch } = useLeagueLaunchStats();
 
   let hoursAgo = -1;
   if (typeof props.label == "number") {
-    hoursAgo = getHoursSinceLaunch(currentTime) - props.label;
+    hoursAgo = getHoursSinceLaunch(currentTime, leagueLaunch) - props.label;
   }
 
   const daysToDisplay = Math.floor(hoursAgo / 24);
