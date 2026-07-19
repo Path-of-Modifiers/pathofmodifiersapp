@@ -172,7 +172,13 @@ class PoEAPIHandler:
 
         return next_change_id
 
-    def _follow_stream(self, client: httpx.Client, stop_event: threading.Event):
+    def _follow_stream(
+        self,
+        client: httpx.Client,
+        reset_event: threading.Event,
+        stop_event: threading.Event,
+        cache: redis.Redis,
+    ):
         local_pending = []
         change_id = self.initial_change_id
         weird_errors = 0
@@ -180,6 +186,14 @@ class PoEAPIHandler:
             while True:
                 if stop_event.is_set():
                     break
+                if reset_event.is_set():
+                    logger.info("Resetting the listener thread")
+                    # pick up from latest checkpoint
+                    change_id = cache.get("next_change_id")
+                    if change_id is None:
+                        change_id = self.initial_change_id
+                    local_pending = []
+                    reset_event.clear()
                 with client.stream(
                     "GET", self.url, params={"id": change_id}
                 ) as response:
@@ -238,9 +252,10 @@ class PoEAPIHandler:
             self.pending_queue.put(None)
 
     @sync_timing_tracker
-    def _process_stream(self, cache: redis.Redis) -> pd.DataFrame | None:
+    def _process_stream(self, cache: redis.Redis) -> tuple[pd.DataFrame | None, str]:
         i = 0
         stashes = []
+        next_change_id = cache.get("next_change_id")
         while i < self.mini_batch_size:
             try:
                 pending: PendingResponse | None = self.pending_queue.get(timeout=30)
@@ -254,7 +269,7 @@ class PoEAPIHandler:
             obj = json.loads(pending.response.decode("utf-8"))
             stashes.extend(obj["stashes"])
 
-            cache.set("next_change_id", pending.next_change_id)
+            next_change_id = pending.next_change_id
 
             i += 1
 
@@ -263,13 +278,15 @@ class PoEAPIHandler:
         logger.info("Finished processing the data, waiting for more")
         if wanted_df.empty:
             return None
-        return wanted_df
+        return wanted_df, next_change_id
 
-    def _gather_n_checkpoints(self, cache: redis.Redis, n: int) -> pd.DataFrame | None:
+    def _gather_n_checkpoints(
+        self, cache: redis.Redis, n: int
+    ) -> tuple[pd.DataFrame | None, str]:
         df = None
         for _ in range(n):
             start_time = time.perf_counter()
-            wanted_df = self._process_stream(cache)
+            wanted_df, next_change_id = self._process_stream(cache)
             end_time = time.perf_counter()
 
             time_per_mini_batch = end_time - start_time
@@ -287,11 +304,12 @@ class PoEAPIHandler:
             elif wanted_df is not None:
                 df = pd.concat((df, wanted_df))
 
-        return df
+        return df, next_change_id
 
     def initialize_data_stream_threads(
         self,
         executor: ThreadPoolExecutor,
+        reset_event: threading.Event,
         stop_event: threading.Event,
         cache: redis.Redis,
     ):
@@ -317,13 +335,15 @@ class PoEAPIHandler:
             headers=self.headers,
         )
         logging.getLogger("httpx").setLevel(logging.WARNING)
-        return executor.submit(self._follow_stream, client, stop_event)
+        return executor.submit(
+            self._follow_stream, client, reset_event, stop_event, cache
+        )
 
-    def dump_stream(self, cache: redis.Redis) -> Iterator[pd.DataFrame]:
+    def dump_stream(self, cache: redis.Redis) -> Iterator[pd.DataFrame, str]:
         time.sleep(5)  # Waits for the listening threads to have time to start up.
         while True:
             logger.info("Waiting for data from the stream")
-            df = self._gather_n_checkpoints(
+            df, next_change_id = self._gather_n_checkpoints(
                 cache,
                 n=settings.N_CHECKPOINTS_PER_TRANSFORMATION,
             )
@@ -331,6 +351,6 @@ class PoEAPIHandler:
                 logger.info("Found no data")
                 return
             logger.info("Finished processing the stream, entering transformation phase")
-            yield df.reset_index()
+            yield df.reset_index(), next_change_id
             del df
             logger.info("Finished transformation phase")

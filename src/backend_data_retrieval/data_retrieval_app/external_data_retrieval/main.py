@@ -219,9 +219,9 @@ class ContinuousDataRetrieval:
         modifier_dfs = self._get_modifiers()
         item_base_types = self._get_item_base_types()
         currency_df = self._get_new_currency_data(current_hours)
-        get_df = self.poe_api_handler.dump_stream(cache)
+        iter_data = self.poe_api_handler.dump_stream(cache)
         while current_hour < next_hour:
-            df = next(get_df)
+            df, next_change_id = next(iter_data)
             split_dfs = self._categorize_new_items(df)
             for data_transformer_type in self.data_transformers:
                 self.data_transformers[data_transformer_type].transform_into_tables(
@@ -231,6 +231,8 @@ class ContinuousDataRetrieval:
                     item_base_types=item_base_types,
                     current_hours=current_hours,
                 )
+            # Only set the next change id once the data has been safely inserted
+            cache.set("next_change_id", next_change_id)
             current_hours = find_hours_since_launch(self.leagues)
             current_hour = current_hours[self.leagues[0]["leagueId"]]
         for data_transformer_type in self.data_transformers:
@@ -240,13 +242,14 @@ class ContinuousDataRetrieval:
         logger.info("Program starting up.")
         logger.info("Initiating data stream.")
         max_workers = 2
+        reset_event = threading.Event()
         stop_event = threading.Event()
         with ThreadPoolExecutor(
             max_workers=max_workers
         ) as executor, get_cache() as cache:
             futures = {}
             listener_future = self.poe_api_handler.initialize_data_stream_threads(
-                executor, stop_event, cache
+                executor, reset_event, stop_event, cache
             )
             futures[listener_future] = "listener"
             follow_future = executor.submit(self._follow_data_dump_stream, cache)
@@ -280,14 +283,16 @@ class ContinuousDataRetrieval:
                             logger.exception(
                                 f"The following exception occured in job '{future_job}': {future.exception()}"
                             )
+                            # reset to the latest change id checkpoint
+                            reset_event.set()
                             follow_future = executor.submit(
-                                self._follow_data_dump_stream
+                                self._follow_data_dump_stream, cache
                             )
                             futures[follow_future] = "data_processing"
                     elif future_job == "listener":
                         listener_future = (
                             self.poe_api_handler.initialize_data_stream_threads(
-                                executor, stop_event
+                                executor, reset_event, stop_event, cache
                             )
                         )
                         futures[listener_future] = "listener"
