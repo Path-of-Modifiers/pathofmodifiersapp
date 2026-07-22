@@ -3,9 +3,9 @@ import logging
 import threading
 import time
 from collections.abc import Iterator
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future, ThreadPoolExecutor
 from queue import Empty, Full, Queue
-from typing import Any
+from typing import Any, Literal
 
 import httpx
 import pandas as pd
@@ -14,7 +14,7 @@ import redis
 from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.external_data_retrieval.data_retrieval.utils import (
     PendingResponse,
-    RateLimiter,
+    RateLimiterThreadSafe,
 )
 from data_retrieval_app.external_data_retrieval.detectors.unique_detector import (
     UniqueArmourDetector,
@@ -174,13 +174,15 @@ class PoEAPIHandler:
 
     def _follow_stream(
         self,
-        client: httpx.Client,
+        listener_id: int,
+        incoming: Queue,
+        outgoing: Queue,
         reset_event: threading.Event,
         stop_event: threading.Event,
         cache: redis.Redis,
     ):
+        logger.info(f"Started listnener: {listener_id}")
         local_pending = []
-        change_id = self.initial_change_id
         weird_errors = 0
         try:
             while True:
@@ -188,17 +190,20 @@ class PoEAPIHandler:
                     break
                 if reset_event.is_set():
                     logger.info("Resetting the listener thread")
-                    # pick up from latest checkpoint
-                    change_id = cache.get("next_change_id")
-                    if change_id is None:
-                        change_id = self.initial_change_id
                     local_pending = []
-                    reset_event.clear()
-                with client.stream(
+                    # pick up from latest checkpoint
+                    if listener_id == 0:
+                        change_id = cache.get("next_change_id")
+                        if change_id is None:
+                            change_id = self.initial_change_id
+                        reset_event.clear()
+                else:
+                    change_id = incoming.get()
+
+                self.rate_limiter.acquire()
+                with self.client.stream(
                     "GET", self.url, params={"id": change_id}
                 ) as response:
-                    self.rate_limiter.acquire()
-
                     headers = response.headers
                     self.rate_limiter.update(headers)
                     if response.status_code >= 300:
@@ -224,6 +229,7 @@ class PoEAPIHandler:
                             weird_errors += 1
 
                     next_change_id = headers["X-Next-Change-Id"]
+                    outgoing.put(next_change_id)
                     if next_change_id == change_id:
                         self.skip_program_too_slow = True
                         logger.info("We sucessfully caught up to the stream!")
@@ -235,27 +241,95 @@ class PoEAPIHandler:
                         next_change_id=next_change_id,
                         response=response.read(),
                     )
-                    change_id = next_change_id
-                    local_pending.append(pending)
-                if len(local_pending) >= self.mini_batch_size:
+                local_pending.append(pending)
+                if len(local_pending) >= self.mini_batch_size // 2:
                     try:
                         while local_pending:
                             self.pending_queue.put(local_pending[0])
                             local_pending.pop(0)
                     except Full:
                         time.sleep(0.5)
-
         finally:
-            logger.info(f"Exiting {self._follow_stream.__name__} gracefully")
+            logger.info(
+                f"Listener {listener_id}: Exiting {self._follow_stream.__name__} gracefully"
+            )
             while local_pending:
                 self.pending_queue.put(local_pending.pop(0))
-            self.pending_queue.put(None)
+            if stop_event.is_set():
+                self.pending_queue.put(None)
+
+    def initialize_data_stream_threads(
+        self,
+        executor: ThreadPoolExecutor,
+        reset_event: threading.Event,
+        stop_event: threading.Event,
+        cache: redis.Redis,
+        *,
+        crashed: bool = False,
+        listener_id: int = None,
+    ) -> dict[Future, Literal["listener_0", "listener_1"]]:
+        if settings.MANUAL_NEXT_CHANGE_ID:
+            self.initial_change_id = settings.NEXT_CHANGE_ID
+        else:
+            self.initial_change_id = cache.get("next_change_id")
+            if self.initial_change_id is None:
+                logger.info("Using manually set change id")
+                self.initial_change_id = self._get_latest_change_id()
+
+        if not crashed:
+            logger.info("Initializing follow stream threads")
+            self.rate_limiter = RateLimiterThreadSafe()
+            self.mini_batch_size = settings.MINI_BATCH_SIZE
+            self.pending_queue = Queue(maxsize=self.mini_batch_size)
+            self.queue_0 = Queue(1)
+            self.queue_1 = Queue(1)
+            self.client = httpx.Client(
+                http2=True,
+                limits=httpx.Limits(
+                    max_connections=2,
+                    max_keepalive_connections=2,
+                ),
+                timeout=httpx.Timeout(10, read=60),
+                headers=self.headers,
+            )
+            logging.getLogger("httpx").setLevel(logging.WARNING)
+        futures = {}
+        if (listener_id is None and not crashed) or listener_id == 0:
+            incoming = self.queue_0
+            outgoing = self.queue_1
+            future = executor.submit(
+                self._follow_stream,
+                0,
+                incoming,
+                outgoing,
+                reset_event,
+                stop_event,
+                cache,
+            )
+            futures[future] = "listener_0"
+        if (listener_id is None and not crashed) or listener_id == 1:
+            incoming = self.queue_1
+            outgoing = self.queue_0
+            future = executor.submit(
+                self._follow_stream,
+                1,
+                incoming,
+                outgoing,
+                reset_event,
+                stop_event,
+                cache,
+            )
+            futures[future] = "listener_1"
+
+        if not crashed:
+            self.queue_0.put(self.initial_change_id)
+        return futures
 
     @sync_timing_tracker
-    def _process_stream(self, cache: redis.Redis) -> tuple[pd.DataFrame | None, str]:
+    def _read_stream(self) -> tuple[pd.DataFrame | None, str | None]:
         i = 0
         stashes = []
-        next_change_id = cache.get("next_change_id")
+        next_change_id = None
         while i < self.mini_batch_size:
             try:
                 pending: PendingResponse | None = self.pending_queue.get(timeout=30)
@@ -273,20 +347,23 @@ class PoEAPIHandler:
 
             i += 1
 
+        return stashes, next_change_id
+
+    @sync_timing_tracker
+    def _process_stream(self, stashes: list) -> pd.DataFrame | None:
         logger.info("Stashes are ready for processing")
         wanted_df = self._detector_filter(stashes)
         logger.info("Finished processing the data, waiting for more")
         if wanted_df.empty:
             return None
-        return wanted_df, next_change_id
+        return wanted_df
 
-    def _gather_n_checkpoints(
-        self, cache: redis.Redis, n: int
-    ) -> tuple[pd.DataFrame | None, str]:
+    def _gather_n_checkpoints(self, n: int) -> tuple[pd.DataFrame | None, str | None]:
         df = None
         for _ in range(n):
             start_time = time.perf_counter()
-            wanted_df, next_change_id = self._process_stream(cache)
+            stashes, next_change_id = self._read_stream()
+            wanted_df = self._process_stream(stashes)
             end_time = time.perf_counter()
 
             time_per_mini_batch = end_time - start_time
@@ -306,45 +383,11 @@ class PoEAPIHandler:
 
         return df, next_change_id
 
-    def initialize_data_stream_threads(
-        self,
-        executor: ThreadPoolExecutor,
-        reset_event: threading.Event,
-        stop_event: threading.Event,
-        cache: redis.Redis,
-    ):
-        if settings.MANUAL_NEXT_CHANGE_ID:
-            self.initial_change_id = settings.NEXT_CHANGE_ID
-        else:
-            self.initial_change_id = cache.get("next_change_id")
-            if self.initial_change_id is None:
-                logger.info("Using manually set change id")
-                self.initial_change_id = self._get_latest_change_id()
-
-        self.rate_limiter = RateLimiter()
-        self.mini_batch_size = settings.MINI_BATCH_SIZE
-        self.pending_queue = Queue(maxsize=self.mini_batch_size)
-        logger.info("Initializing follow stream threads")
-        client = httpx.Client(
-            http2=True,
-            limits=httpx.Limits(
-                max_connections=1,
-                max_keepalive_connections=1,
-            ),
-            timeout=httpx.Timeout(10, read=60),
-            headers=self.headers,
-        )
-        logging.getLogger("httpx").setLevel(logging.WARNING)
-        return executor.submit(
-            self._follow_stream, client, reset_event, stop_event, cache
-        )
-
-    def dump_stream(self, cache: redis.Redis) -> Iterator[pd.DataFrame, str]:
+    def dump_stream(self) -> Iterator[pd.DataFrame, str | None]:
         time.sleep(5)  # Waits for the listening threads to have time to start up.
         while True:
             logger.info("Waiting for data from the stream")
             df, next_change_id = self._gather_n_checkpoints(
-                cache,
                 n=settings.N_CHECKPOINTS_PER_TRANSFORMATION,
             )
             if df is None:

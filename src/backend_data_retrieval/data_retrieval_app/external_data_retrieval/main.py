@@ -1,4 +1,5 @@
 import threading
+import time
 from concurrent.futures import (
     ALL_COMPLETED,
     FIRST_COMPLETED,
@@ -219,7 +220,7 @@ class ContinuousDataRetrieval:
         modifier_dfs = self._get_modifiers()
         item_base_types = self._get_item_base_types()
         currency_df = self._get_new_currency_data(current_hours)
-        iter_data = self.poe_api_handler.dump_stream(cache)
+        iter_data = self.poe_api_handler.dump_stream()
         while current_hour < next_hour:
             df, next_change_id = next(iter_data)
             split_dfs = self._categorize_new_items(df)
@@ -231,8 +232,10 @@ class ContinuousDataRetrieval:
                     item_base_types=item_base_types,
                     current_hours=current_hours,
                 )
-            # Only set the next change id once the data has been safely inserted
-            cache.set("next_change_id", next_change_id)
+            if next_change_id is not None:
+                # Only set the next change id once the data has been safely inserted
+                cache.set("next_change_id", next_change_id)
+
             current_hours = find_hours_since_launch(self.leagues)
             current_hour = current_hours[self.leagues[0]["leagueId"]]
         for data_transformer_type in self.data_transformers:
@@ -241,17 +244,25 @@ class ContinuousDataRetrieval:
     def retrieve_data(self):
         logger.info("Program starting up.")
         logger.info("Initiating data stream.")
-        max_workers = 2
+        max_workers = 3
         reset_event = threading.Event()
         stop_event = threading.Event()
+
+        # leagues is empty = no active leagues. Thus sleep
+        while not self.leagues:
+            logger.warning("Found no active leagues, sleeping for 5 min.")
+            time.sleep(300)
+            self.leagues = self._get_leagues()
+
         with ThreadPoolExecutor(
             max_workers=max_workers
         ) as executor, get_cache() as cache:
             futures = {}
-            listener_future = self.poe_api_handler.initialize_data_stream_threads(
-                executor, reset_event, stop_event, cache
+            futures.update(
+                self.poe_api_handler.initialize_data_stream_threads(
+                    executor, reset_event, stop_event, cache
+                )
             )
-            futures[listener_future] = "listener"
             follow_future = executor.submit(self._follow_data_dump_stream, cache)
             futures[follow_future] = "data_processing"
             logger.info("Waiting for futures to crash.")
@@ -263,7 +274,7 @@ class ContinuousDataRetrieval:
                 done_futures, _ = wait(futures, return_when=FIRST_COMPLETED)
                 while done_futures:
                     future = done_futures.pop()
-                    future_job = futures.pop(future)
+                    future_job: str = futures.pop(future)
                     if future_job == "data_processing":
                         try:
                             future.result()
@@ -289,13 +300,18 @@ class ContinuousDataRetrieval:
                                 self._follow_data_dump_stream, cache
                             )
                             futures[follow_future] = "data_processing"
-                    elif future_job == "listener":
-                        listener_future = (
+                    elif future_job.startswith("listener"):
+                        listener_id = int(future_job[-1])
+                        futures.update(
                             self.poe_api_handler.initialize_data_stream_threads(
-                                executor, reset_event, stop_event, cache
+                                executor,
+                                reset_event,
+                                stop_event,
+                                cache,
+                                crashed=True,
+                                listener_id=listener_id,
                             )
                         )
-                        futures[listener_future] = "listener"
 
 
 def main():
