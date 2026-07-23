@@ -85,10 +85,14 @@ class DetectorBase:
         """
         n_items_before_filter = len(df)
 
-        df = df.drop_duplicates(["id", "note"])
+        if "note" in df.columns:
+            df = df.drop_duplicates(["id", "note"])
+            note = df["note"].apply(hash)
+        else:
+            df = df.drop_duplicates("id")
+            note = 0
 
         game_item_id = df["id"].apply(int, base=16)
-        note = df["note"].apply(hash)
 
         hashes: pd.Series[int] = game_item_id + note
 

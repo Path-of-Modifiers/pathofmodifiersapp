@@ -1,7 +1,9 @@
 from pydantic import (
+    AnyUrl,
     HttpUrl,
     computed_field,
 )
+from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -19,6 +21,22 @@ class Settings(BaseSettings):
             return HttpUrl(f"https://{self.DOMAIN}/api/api_v1")
         else:
             return HttpUrl("http://src-backend-1:8000/api/api_v1")
+
+    REDIS_PORT: int = 6379
+    REDIS_SERVER: str
+    REDIS_CACHE: str = str(0)
+    REDIS_PASSWORD: str = ""
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def CACHE_URI(self) -> AnyUrl:
+        return MultiHostUrl.build(
+            scheme="redis",
+            password=self.REDIS_PASSWORD,
+            host=self.REDIS_SERVER,
+            port=self.REDIS_PORT,
+            path=self.REDIS_CACHE,
+        )
 
     MANUAL_NEXT_CHANGE_ID: bool
     NEXT_CHANGE_ID: str

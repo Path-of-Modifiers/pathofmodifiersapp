@@ -140,7 +140,9 @@ class RollProcessor:
         dynamic_modifier_df = self.dynamic_modifier_df
         dynamic_df = df.loc[~static_modifers_mask]  # Everything not static is dynamic
         if dynamic_df.empty:
-            raise Exception("ASDHSDHASDHHSADDSHAD")
+            return pd.DataFrame(
+                columns=dynamic_df.columns.append(dynamic_modifier_df.columns)
+            )
 
         dynamic_df.loc[:, "effect"] = dynamic_df.loc[:, "modifier"]
 
