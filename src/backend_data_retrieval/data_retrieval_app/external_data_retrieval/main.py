@@ -223,6 +223,8 @@ class ContinuousDataRetrieval:
         iter_data = self.poe_api_handler.dump_stream()
         while current_hour < next_hour:
             df, next_change_id = next(iter_data)
+            if df.empty:
+                continue
             split_dfs = self._categorize_new_items(df)
             for data_transformer_type in self.data_transformers:
                 self.data_transformers[data_transformer_type].transform_into_tables(

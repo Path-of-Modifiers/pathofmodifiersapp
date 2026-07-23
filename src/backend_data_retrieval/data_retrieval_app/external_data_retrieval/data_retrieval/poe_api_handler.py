@@ -26,7 +26,6 @@ from data_retrieval_app.external_data_retrieval.detectors.unique_detector import
 )
 from data_retrieval_app.external_data_retrieval.utils import (
     ProgramTooSlowException,
-    WrongLeagueSetException,
     sync_timing_tracker,
 )
 from data_retrieval_app.logs.logger import data_retrieval_logger as logger
@@ -142,9 +141,6 @@ class PoEAPIHandler:
             )
             raise
 
-        if df_wanted.empty:
-            raise WrongLeagueSetException
-
         return df_wanted.reset_index()
 
     def _get_latest_change_id(self) -> str:
@@ -181,24 +177,34 @@ class PoEAPIHandler:
         stop_event: threading.Event,
         cache: redis.Redis,
     ):
-        logger.info(f"Started listnener: {listener_id}")
+        logger.debug(f"Started listnener: {listener_id}")
         local_pending = []
+        redo_last = False
+        sent_outgoing = False
         weird_errors = 0
         try:
             while True:
                 if stop_event.is_set():
                     break
                 if reset_event.is_set():
-                    logger.info("Resetting the listener thread")
+                    logger.debug("Resetting the listener thread")
                     local_pending = []
                     # pick up from latest checkpoint
                     if listener_id == 0:
+                        logger.debug("Main listener initiating the ping-pong again")
                         change_id = cache.get("next_change_id")
                         if change_id is None:
                             change_id = self.initial_change_id
+                        # Make sure second listener also resets
+                        time.sleep(5)
                         reset_event.clear()
                 else:
-                    change_id = incoming.get()
+                    if not redo_last:
+                        change_id = incoming.get()
+                    else:
+                        redo_last = False
+
+                sent_outgoing = False
 
                 self.rate_limiter.acquire()
                 with self.client.stream(
@@ -207,9 +213,13 @@ class PoEAPIHandler:
                     headers = response.headers
                     self.rate_limiter.update(headers)
                     if response.status_code >= 300:
+                        redo_last = True
                         # rate limited = 429 -> handled by ratelimiter
                         if response.status_code == 503:
                             # Temporarily unavailable = servers are down
+                            logger.critical(
+                                "Server is temporarily unavailable, sleeping for 30 seconds"
+                            )
                             time.sleep(30)
                             continue
                         else:
@@ -225,15 +235,17 @@ class PoEAPIHandler:
                                     "Too many unkown errors have occured, stopping current listener"
                                 )
                                 stop_event.set()
-                                continue
                             weird_errors += 1
+                            continue
 
                     next_change_id = headers["X-Next-Change-Id"]
                     outgoing.put(next_change_id)
+                    sent_outgoing = True
                     if next_change_id == change_id:
                         self.skip_program_too_slow = True
                         logger.info("We sucessfully caught up to the stream!")
                         time.sleep(30)
+                        redo_last = True
                         continue
 
                     pending = PendingResponse(
@@ -257,6 +269,9 @@ class PoEAPIHandler:
                 self.pending_queue.put(local_pending.pop(0))
             if stop_event.is_set():
                 self.pending_queue.put(None)
+            if redo_last or not sent_outgoing:
+                logger.debug("Need to redo last request")
+                outgoing.put(change_id)
 
     def initialize_data_stream_threads(
         self,
@@ -297,6 +312,17 @@ class PoEAPIHandler:
         if (listener_id is None and not crashed) or listener_id == 0:
             incoming = self.queue_0
             outgoing = self.queue_1
+            # if crashed:
+            #     try:
+            #         change_id = incoming.get(timeout=1.5)
+            #         incoming.put(change_id)
+            #     except Empty:
+            #         try:
+            #             change_id = outgoing.get(timeout=1.5)
+            #             outgoing.put(change_id)
+            #         except Empty:
+            #             incoming.put(cache.get("next_change_id"))
+
             future = executor.submit(
                 self._follow_stream,
                 0,
@@ -310,6 +336,16 @@ class PoEAPIHandler:
         if (listener_id is None and not crashed) or listener_id == 1:
             incoming = self.queue_1
             outgoing = self.queue_0
+            # if crashed:
+            #     try:
+            #         change_id = incoming.get(timeout=1.5)
+            #         incoming.put(change_id)
+            #     except Empty:
+            #         try:
+            #             change_id = outgoing.get(timeout=1.5)
+            #             outgoing.put(change_id)
+            #         except Empty:
+            #             incoming.put(cache.get("next_change_id"))
             future = executor.submit(
                 self._follow_stream,
                 1,
@@ -337,11 +373,16 @@ class PoEAPIHandler:
                 continue
 
             # This is equivalent to a stop event, but ensures all stashes are processed
-            if pending is None:
+            if pending is None and self.pending_queue.all_tasks_done:
+                self.pending_queue.task_done()
                 return stashes
+            elif pending is None:
+                self.pending_queue.task_done()
+                continue
 
             obj = json.loads(pending.response.decode("utf-8"))
             stashes.extend(obj["stashes"])
+            self.pending_queue.task_done()
 
             next_change_id = pending.next_change_id
 
@@ -383,7 +424,7 @@ class PoEAPIHandler:
 
         return df, next_change_id
 
-    def dump_stream(self) -> Iterator[pd.DataFrame, str | None]:
+    def dump_stream(self) -> Iterator[tuple[pd.DataFrame, str | None]]:
         time.sleep(5)  # Waits for the listening threads to have time to start up.
         while True:
             logger.info("Waiting for data from the stream")
@@ -392,7 +433,7 @@ class PoEAPIHandler:
             )
             if df is None:
                 logger.info("Found no data")
-                return
+                continue
             logger.info("Finished processing the stream, entering transformation phase")
             yield df.reset_index(), next_change_id
             del df
