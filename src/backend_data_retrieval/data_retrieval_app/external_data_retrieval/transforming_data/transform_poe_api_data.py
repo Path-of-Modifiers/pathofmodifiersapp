@@ -157,12 +157,22 @@ class PoEAPIDataTransformerBase:
         rename_map = {**rename_extended_map, "id": "gameItemId"}
         item_df = item_df.rename(columns=rename_map)
 
-        stash_series = item_df["stash"].str.split(" ")
-        currency_series = item_df["note"].str.split(" ")
+        note_series = None
+        if "note" in item_df.columns:
+            note_series = item_df["stash"].str.split(" ")
 
-        currency_series = currency_series.where(
-            item_df["note"].str.contains("~"), stash_series
-        )
+        stash_series = None
+        if "stash" in item_df.columns:
+            stash_series = item_df["stash"].str.split(" ")
+
+        if note_series is not None:
+            currency_series = note_series
+            if stash_series is not None:
+                currency_series = currency_series.where(
+                    item_df["note"].str.contains("~"), stash_series
+                )
+        else:
+            currency_series = stash_series
 
         item_df["currencyAmount"] = currency_series.apply(get_currency_amount)
         item_df["currencyType"] = currency_series.apply(get_currency_type)

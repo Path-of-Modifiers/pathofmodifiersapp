@@ -30,7 +30,7 @@ services:
       retries: 5
 
   cache:
-    image: redis:7.4.0
+    image: redis:7.4
     restart: always
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
@@ -49,7 +49,7 @@ services:
       interval: 1s
       timeout: 3s
       retries: 5
-    command: redis-server --save 20 1 --loglevel warning --maxmemory 1000mb --requirepass ${REDIS_PASSWORD?Variable not set}
+    command: redis-server --save 20 1 --loglevel warning --maxmemory 1000mb --requirepass ${REDIS_PASSWORD?Variable not set} --appendonly yes
 
   backend:
     image: "${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}"
