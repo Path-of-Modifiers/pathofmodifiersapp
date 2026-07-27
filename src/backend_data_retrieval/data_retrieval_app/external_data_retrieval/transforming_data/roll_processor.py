@@ -28,14 +28,15 @@ class RollProcessor:
             self.modifier_df = modifier_df
 
     def _pre_processing(self, df: pd.DataFrame) -> pd.DataFrame:
+        no_modifiers_mask = df["modifier"].isna()
+        df = df.loc[~no_modifiers_mask]
+        df["modifier"] = df["modifier"].apply(lambda mod: mod["description"])
         df.loc[:, "modifier"] = df[
             "modifier"
         ].replace(
             r"\\n|\n", " ", regex=True
         )  # Replaces newline with a space, so that it does not mess up the regex and matches modifiers in the `modifier` table
         # Removes all rows with no modifier (The Adorned)
-        no_modifiers_mask = df["modifier"].isna()
-        df = df.loc[~no_modifiers_mask]
 
         return df
 
@@ -145,7 +146,6 @@ class RollProcessor:
             )
 
         dynamic_df.loc[:, "effect"] = dynamic_df.loc[:, "modifier"]
-
         dynamic_df = self._get_rolls(dynamic_df.copy())
 
         # Creates a column for position, which contains a list of numerical strings

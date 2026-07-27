@@ -13,7 +13,7 @@ import redis
 
 from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.external_data_retrieval.data_retrieval.utils import (
-    PendingResponse,
+    ByteResponse,
     RateLimiterThreadSafe,
 )
 from data_retrieval_app.external_data_retrieval.detectors.unique_detector import (
@@ -58,6 +58,7 @@ class PoEAPIHandler:
             :param item_detectors: (list[ItemDetector]) A list of `ItemDetector` instances.
         """
         logger.debug("Initializing PoEAPIHandler.")
+        self.leagues = leagues
         if item_detectors is None:
             item_detectors = [
                 UniqueArmourDetector(leagues),
@@ -178,9 +179,8 @@ class PoEAPIHandler:
         cache: redis.Redis,
     ):
         logger.debug(f"Started listnener: {listener_id}")
-        local_pending = []
-        redo_last = False
-        sent_outgoing = False
+        local_responses = []
+        sent_outgoing = True
         weird_errors = 0
         try:
             while True:
@@ -188,21 +188,21 @@ class PoEAPIHandler:
                     break
                 if reset_event.is_set():
                     logger.debug("Resetting the listener thread")
-                    local_pending = []
+                    local_responses = []
                     # pick up from latest checkpoint
                     if listener_id == 0:
                         logger.debug("Main listener initiating the ping-pong again")
-                        change_id = cache.get("next_change_id")
+                        change_id = cache.get(
+                            f"next_change_id:{self.leagues[0]["name"]}"
+                        )
                         if change_id is None:
                             change_id = self.initial_change_id
                         # Make sure second listener also resets
                         time.sleep(5)
                         reset_event.clear()
                 else:
-                    if not redo_last:
+                    if sent_outgoing:
                         change_id = incoming.get()
-                    else:
-                        redo_last = False
 
                 sent_outgoing = False
 
@@ -213,7 +213,6 @@ class PoEAPIHandler:
                     headers = response.headers
                     self.rate_limiter.update(headers)
                     if response.status_code >= 300:
-                        redo_last = True
                         # rate limited = 429 -> handled by ratelimiter
                         if response.status_code == 503:
                             # Temporarily unavailable = servers are down
@@ -239,42 +238,43 @@ class PoEAPIHandler:
                             continue
 
                     next_change_id = headers["X-Next-Change-Id"]
-                    outgoing.put(next_change_id)
-                    sent_outgoing = True
                     if next_change_id == change_id:
                         self.skip_program_too_slow = True
                         logger.info("We sucessfully caught up to the stream!")
                         time.sleep(30)
-                        redo_last = True
                         continue
 
-                    pending = PendingResponse(
+                    outgoing.put(next_change_id)
+                    sent_outgoing = True
+
+                    byte_response = ByteResponse(
                         change_id=change_id,
                         next_change_id=next_change_id,
                         response=response.read(),
                     )
-                local_pending.append(pending)
-                if len(local_pending) >= self.mini_batch_size // 2:
+                local_responses.append(byte_response)
+                if len(local_responses) >= self.mini_batch_size // 2:
                     try:
-                        while local_pending:
-                            self.pending_queue.put(local_pending[0])
-                            local_pending.pop(0)
+                        while local_responses:
+                            self.response_queue.put(local_responses[0])
+                            local_responses.pop(0)
                     except Full:
                         time.sleep(0.5)
         finally:
             logger.info(
                 f"Listener {listener_id}: Exiting {self._follow_stream.__name__} gracefully"
             )
-            while local_pending:
-                self.pending_queue.put(local_pending.pop(0))
+            while local_responses:
+                self.response_queue.put(local_responses.pop(0))
             if stop_event.is_set():
-                self.pending_queue.put(None)
-            if redo_last or not sent_outgoing:
+                self.response_queue.put(None)
+            if not sent_outgoing:
                 logger.debug("Need to redo last request")
                 outgoing.put(change_id)
 
     def initialize_data_stream_threads(
         self,
+        n_listeners: int,
         executor: ThreadPoolExecutor,
         reset_event: threading.Event,
         stop_event: threading.Event,
@@ -286,7 +286,8 @@ class PoEAPIHandler:
         if settings.MANUAL_NEXT_CHANGE_ID:
             self.initial_change_id = settings.NEXT_CHANGE_ID
         else:
-            self.initial_change_id = cache.get("next_change_id")
+            league = self.leagues[0]["name"]
+            self.initial_change_id = cache.get(f"next_change_id:{league}")
             if self.initial_change_id is None:
                 logger.info("Using manually set change id")
                 self.initial_change_id = self._get_latest_change_id()
@@ -295,94 +296,61 @@ class PoEAPIHandler:
             logger.info("Initializing follow stream threads")
             self.rate_limiter = RateLimiterThreadSafe()
             self.mini_batch_size = settings.MINI_BATCH_SIZE
-            self.pending_queue = Queue(maxsize=self.mini_batch_size)
-            self.queue_0 = Queue(1)
-            self.queue_1 = Queue(1)
+            self.response_queue = Queue(maxsize=self.mini_batch_size)
+            self.queues = [Queue(maxsize=1) for _ in range(n_listeners)]
             self.client = httpx.Client(
                 http2=True,
                 limits=httpx.Limits(
-                    max_connections=2,
-                    max_keepalive_connections=2,
+                    max_connections=n_listeners,
+                    max_keepalive_connections=n_listeners,
                 ),
-                timeout=httpx.Timeout(10, read=60),
                 headers=self.headers,
             )
             logging.getLogger("httpx").setLevel(logging.WARNING)
         futures = {}
-        if (listener_id is None and not crashed) or listener_id == 0:
-            incoming = self.queue_0
-            outgoing = self.queue_1
-            # if crashed:
-            #     try:
-            #         change_id = incoming.get(timeout=1.5)
-            #         incoming.put(change_id)
-            #     except Empty:
-            #         try:
-            #             change_id = outgoing.get(timeout=1.5)
-            #             outgoing.put(change_id)
-            #         except Empty:
-            #             incoming.put(cache.get("next_change_id"))
-
-            future = executor.submit(
-                self._follow_stream,
-                0,
-                incoming,
-                outgoing,
-                reset_event,
-                stop_event,
-                cache,
-            )
-            futures[future] = "listener_0"
-        if (listener_id is None and not crashed) or listener_id == 1:
-            incoming = self.queue_1
-            outgoing = self.queue_0
-            # if crashed:
-            #     try:
-            #         change_id = incoming.get(timeout=1.5)
-            #         incoming.put(change_id)
-            #     except Empty:
-            #         try:
-            #             change_id = outgoing.get(timeout=1.5)
-            #             outgoing.put(change_id)
-            #         except Empty:
-            #             incoming.put(cache.get("next_change_id"))
-            future = executor.submit(
-                self._follow_stream,
-                1,
-                incoming,
-                outgoing,
-                reset_event,
-                stop_event,
-                cache,
-            )
-            futures[future] = "listener_1"
+        for _listener_id in range(n_listeners):
+            incoming = self.queues[_listener_id]
+            outgoing = self.queues[
+                _listener_id + 1 if _listener_id < (n_listeners - 1) else -1
+            ]
+            if not crashed or listener_id == _listener_id:
+                future = executor.submit(
+                    self._follow_stream,
+                    _listener_id,
+                    incoming,
+                    outgoing,
+                    reset_event,
+                    stop_event,
+                    cache,
+                )
+                futures[future] = f"listener_{_listener_id}"
 
         if not crashed:
-            self.queue_0.put(self.initial_change_id)
+            self.queues[0].put(self.initial_change_id)
         return futures
 
     @sync_timing_tracker
-    def _read_stream(self) -> tuple[pd.DataFrame | None, str | None]:
+    def _read_stream(self) -> tuple[list[Any], str | None]:
         i = 0
         stashes = []
         next_change_id = None
         while i < self.mini_batch_size:
             try:
-                pending: PendingResponse | None = self.pending_queue.get(timeout=30)
+                pending: ByteResponse | None = self.response_queue.get(timeout=30)
             except Empty:
                 continue
 
             # This is equivalent to a stop event, but ensures all stashes are processed
-            if pending is None and self.pending_queue.all_tasks_done:
-                self.pending_queue.task_done()
-                return stashes
+            if pending is None and self.response_queue.all_tasks_done:
+                self.response_queue.task_done()
+                return stashes, next_change_id
             elif pending is None:
-                self.pending_queue.task_done()
+                self.response_queue.task_done()
                 continue
 
             obj = json.loads(pending.response.decode("utf-8"))
             stashes.extend(obj["stashes"])
-            self.pending_queue.task_done()
+            self.response_queue.task_done()
 
             next_change_id = pending.next_change_id
 
@@ -391,12 +359,10 @@ class PoEAPIHandler:
         return stashes, next_change_id
 
     @sync_timing_tracker
-    def _process_stream(self, stashes: list) -> pd.DataFrame | None:
+    def _process_stream(self, stashes: list) -> pd.DataFrame:
         logger.info("Stashes are ready for processing")
         wanted_df = self._detector_filter(stashes)
         logger.info("Finished processing the data, waiting for more")
-        if wanted_df.empty:
-            return None
         return wanted_df
 
     def _gather_n_checkpoints(self, n: int) -> tuple[pd.DataFrame | None, str | None]:
@@ -417,9 +383,12 @@ class PoEAPIHandler:
                     # Does not allow a batch to take longer than 2 minutes
                     raise ProgramTooSlowException
 
-            if df is None and wanted_df is not None:
+            if wanted_df.empty:
+                continue
+
+            if df is None:
                 df = wanted_df
-            elif wanted_df is not None:
+            else:
                 df = pd.concat((df, wanted_df))
 
         return df, next_change_id

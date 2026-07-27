@@ -3,7 +3,6 @@ import time
 from concurrent.futures import (
     ALL_COMPLETED,
     FIRST_COMPLETED,
-    Future,
     ThreadPoolExecutor,
     wait,
 )
@@ -153,7 +152,7 @@ class ContinuousDataRetrieval:
 
         return split_dfs
 
-    def _get_new_currency_data(self, current_hours: dict[int, int]) -> pd.DataFrame:
+    def _get_currency_data(self, current_hours: dict[int, int]) -> pd.DataFrame:
         league_ids = list(current_hours.keys())
         response = get_data_safe(
             self.currency_url + "latest_hours/",
@@ -204,13 +203,6 @@ class ContinuousDataRetrieval:
 
         return currency_df
 
-    def _initialize_data_stream_threads(
-        self, executor: ThreadPoolExecutor, listeners: int, has_crashed: bool = False
-    ) -> dict[Future, str]:
-        return self.poe_api_handler.initialize_data_stream_threads(
-            executor, listeners, has_crashed
-        )
-
     def _follow_data_dump_stream(self, cache: redis.Redis):
         current_hours = find_hours_since_launch(self.leagues)
         # Only need to refer to one league to see when a new hour starts
@@ -219,7 +211,7 @@ class ContinuousDataRetrieval:
         logger.info("Retrieving modifiers from db.")
         modifier_dfs = self._get_modifiers()
         item_base_types = self._get_item_base_types()
-        currency_df = self._get_new_currency_data(current_hours)
+        currency_df = self._get_currency_data(current_hours)
         iter_data = self.poe_api_handler.dump_stream()
         while current_hour < next_hour:
             df, next_change_id = next(iter_data)
@@ -262,7 +254,7 @@ class ContinuousDataRetrieval:
             futures = {}
             futures.update(
                 self.poe_api_handler.initialize_data_stream_threads(
-                    executor, reset_event, stop_event, cache
+                    max_workers - 1, executor, reset_event, stop_event, cache
                 )
             )
             follow_future = executor.submit(self._follow_data_dump_stream, cache)
@@ -294,7 +286,7 @@ class ContinuousDataRetrieval:
                             finished = True
                         except Exception:
                             logger.exception(
-                                f"The following exception occured in job '{future_job}': {future.exception()}"
+                                f"The following exception occured in job '{future_job}'",
                             )
                             # reset to the latest change id checkpoint
                             reset_event.set()
@@ -304,8 +296,15 @@ class ContinuousDataRetrieval:
                             futures[follow_future] = "data_processing"
                     elif future_job.startswith("listener"):
                         listener_id = int(future_job[-1])
+                        try:
+                            future.result()
+                        except Exception:
+                            logger.exception(
+                                f"The following exception occured in listener {listener_id}"
+                            )
                         futures.update(
                             self.poe_api_handler.initialize_data_stream_threads(
+                                max_workers - 1,
                                 executor,
                                 reset_event,
                                 stop_event,
