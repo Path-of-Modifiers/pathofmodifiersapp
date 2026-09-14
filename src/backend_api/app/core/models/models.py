@@ -2,7 +2,6 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import (
-    BigInteger,
     Boolean,
     CheckConstraint,
     DateTime,
@@ -68,6 +67,74 @@ class ItemBaseType(Base):
     relatedUniques: Mapped[str | None] = mapped_column(Text)
 
 
+class ItemAvailability(Base):
+    __tablename__ = "item_availability"
+
+    availabilityId: Mapped[int] = mapped_column(
+        Integer, primary_key=True, autoincrement=True
+    )
+    itemId: Mapped[str] = mapped_column(
+        Text,
+        ForeignKey("item_temp.itemId", ondelete="CASCADE", onupdate="CASCADE"),
+        nullable=False,
+    )
+    currencyId: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("currency.currencyId", ondelete="RESTRICT", onupdate="CASCADE"),
+        nullable=False,
+    )
+    currencyAmount: Mapped[float] = mapped_column(Float(4), nullable=False)
+    isAsync: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    validFrom: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    validTo: Mapped[int | None] = mapped_column(SmallInteger, nullable=True)
+
+    __table_args__ = (Index("ix_item_id_valid_from", "itemId", "validFrom"),)
+
+
+class Item(Base):
+    __tablename__ = "item"
+    itemId: Mapped[int] = mapped_column(
+        Integer,
+        Identity(start=1, increment=1),
+        primary_key=True,
+    )
+    gameItemId: Mapped[str | None] = mapped_column(Text, nullable=False)
+    leagueId: Mapped[SmallInteger] = mapped_column(
+        SmallInteger,
+        ForeignKey("league.leagueId", ondelete="CASCADE", onupdate="CASCADE"),
+        nullable=False,
+    )
+    firstObserved: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    name: Mapped[str | None] = mapped_column(Text, nullable=False)
+    itemBaseTypeId: Mapped[int] = mapped_column(
+        SmallInteger,
+        ForeignKey(
+            "item_base_type.itemBaseTypeId", ondelete="RESTRICT", onupdate="CASCADE"
+        ),
+        nullable=False,
+    )
+    ilvl: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    rarity: Mapped[str] = mapped_column(Text, nullable=False)
+
+    identified: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    corrupted: Mapped[bool | None] = mapped_column(Boolean)
+
+    replica: Mapped[bool | None] = mapped_column(Boolean)
+    searing: Mapped[bool | None] = mapped_column(Boolean)
+    tangled: Mapped[bool | None] = mapped_column(Boolean)
+    influences: Mapped[dict[str, str] | None] = mapped_column(
+        JSONB
+    )  # elder, shaper, warlord etc
+
+    __table_args__ = (
+        Index(
+            "ix_item_leagueId_itemBaseTypeId",
+            "leagueId",
+            "itemBaseTypeId",
+        ),
+    )
+
+
 class _ItemBase:
     name: Mapped[str | None] = mapped_column(Text, nullable=False)
     itemBaseTypeId: Mapped[int] = mapped_column(
@@ -84,10 +151,11 @@ class _ItemBase:
         nullable=False,
     )
     itemId: Mapped[int] = mapped_column(
-        BigInteger,
+        Integer,
         Identity(start=1, increment=1, always=True),
         primary_key=True,  # Primary key constraint gets removed on hypertable creation
     )
+
     currencyId: Mapped[int] = mapped_column(
         Integer,
         ForeignKey("currency.currencyId", ondelete="RESTRICT"),
@@ -97,38 +165,6 @@ class _ItemBase:
     ilvl: Mapped[int] = mapped_column(SmallInteger, nullable=False)
     currencyAmount: Mapped[float] = mapped_column(Float(4), nullable=False)
     rarity: Mapped[str] = mapped_column(Text, nullable=False)
-
-
-class Item(_ItemBase, Base):
-    # Hypertable
-    # For hypertable specs, see alembic revision `cc29b89156db'
-    __tablename__ = "item"
-    # TODO do something about None and make it not nullable
-    gameItemId: Mapped[str | None] = mapped_column(Text)
-    prefixes: Mapped[int | None] = mapped_column(SmallInteger)
-    suffixes: Mapped[int | None] = mapped_column(SmallInteger)
-    foilVariation: Mapped[int | None] = mapped_column(SmallInteger)
-    identified: Mapped[bool] = mapped_column(Boolean, nullable=False)
-    corrupted: Mapped[bool | None] = mapped_column(Boolean)
-    delve: Mapped[bool | None] = mapped_column(Boolean)
-    fractured: Mapped[bool | None] = mapped_column(Boolean)
-    synthesised: Mapped[bool | None] = mapped_column(Boolean)
-    replica: Mapped[bool | None] = mapped_column(Boolean)
-    searing: Mapped[bool | None] = mapped_column(Boolean)
-    tangled: Mapped[bool | None] = mapped_column(Boolean)
-    influences: Mapped[dict[str, str] | None] = mapped_column(
-        JSONB
-    )  # elder, shaper, warlord etc
-
-    __table_args__ = (
-        Index(
-            "ix_item_name_itemBaseTypeId_createdHoursSinceLaunch_leagueId",
-            "name",
-            "itemBaseTypeId",
-            "createdHoursSinceLaunch",
-            "leagueId",
-        ),
-    )
 
 
 class UnidentifiedItem(_ItemBase, Base):
@@ -244,6 +280,10 @@ class ItemModifier(Base):
     # For hypertable specs, see alembic revision `cc29b89156db'
 
     __tablename__ = "item_modifier"
+    itemId: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+    )
 
     modifierId: Mapped[int] = mapped_column(
         SmallInteger,
@@ -253,16 +293,11 @@ class ItemModifier(Base):
         SmallInteger,
         nullable=False,
     )
-    createdHoursSinceLaunch: Mapped[int] = mapped_column(SmallInteger, nullable=False)
-    itemId: Mapped[int] = mapped_column(
-        BigInteger,
-        nullable=False,
-        primary_key=True,  # Primary key constraint gets removed on hypertable creation
-    )
     roll: Mapped[float | None] = mapped_column(
         Float(4),
     )
     __table_args__ = (
+        PrimaryKeyConstraint("itemId", "modifierId", "position"),
         ForeignKeyConstraint(
             ["modifierId", "position"],
             ["modifier.modifierId", "modifier.position"],
