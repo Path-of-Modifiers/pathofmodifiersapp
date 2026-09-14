@@ -2,6 +2,12 @@
 
 from .currency import Currency, CurrencyCreate, CurrencyInDB, CurrencyUpdate
 from .item import Item, ItemCreate, ItemInDB, ItemUpdate
+from .item_availability import (
+    ItemAvailability,
+    ItemAvailabilityCreate,
+    ItemAvailabilityInDB,
+    ItemAvailabilityUpdate,
+)
 from .item_base_type import (
     ItemBaseType,
     ItemBaseTypeCreate,

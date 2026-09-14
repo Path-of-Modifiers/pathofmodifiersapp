@@ -14,31 +14,30 @@ class Influences(_pydantic.BaseModel):
 class _BaseItem(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
-    name: str | None = None
+    gameItemId: str
     leagueId: int
+
+    firstObserved: int
+
+    name: str
     itemBaseTypeId: int
     ilvl: int
     rarity: str
-    gameItemId: str | None = None
+
     identified: bool = True
-    currencyAmount: float | None = None
-    currencyId: int | None = None
     corrupted: bool | None = None
-    delve: bool | None = None
+
     fractured: bool | None = None
     synthesised: bool | None = None
     replica: bool | None = None
     influences: Influences | None = None
     searing: bool | None = None
     tangled: bool | None = None
-    prefixes: int | None = None
-    suffixes: int | None = None
-    foilVariation: int | None = None
 
 
 # Properties to receive on item creation
 class ItemCreate(_BaseItem):
-    createdHoursSinceLaunch: int
+    pass
 
 
 # Properties to receive on update
@@ -48,7 +47,6 @@ class ItemUpdate(_BaseItem):
 
 # Properties shared by models stored in DB
 class ItemInDBBase(_BaseItem):
-    createdHoursSinceLaunch: int
     itemId: int
 
 

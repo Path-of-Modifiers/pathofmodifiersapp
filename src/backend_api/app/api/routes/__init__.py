@@ -1,4 +1,5 @@
 from app.api.routes.currency import currency_prefix
+from app.api.routes.item_availability import item_availability_prefix
 from app.api.routes.item_base_type import item_base_type_prefix
 from app.api.routes.item_modifier import item_modifier_prefix
 from app.api.routes.item import item_prefix

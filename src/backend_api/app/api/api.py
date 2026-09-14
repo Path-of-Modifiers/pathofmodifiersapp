@@ -4,6 +4,8 @@ from app.api.routes import (
     currency,
     currency_prefix,
     item,
+    item_availability,
+    item_availability_prefix,
     item_base_type,
     item_base_type_prefix,
     item_modifier,
@@ -30,6 +32,11 @@ api_router = APIRouter()
 
 api_router.include_router(
     currency.router, prefix=f"/{currency_prefix}", tags=[currency_prefix]
+)
+api_router.include_router(
+    item_availability.router,
+    prefix=f"/{item_availability_prefix}",
+    tags=[item_availability_prefix],
 )
 api_router.include_router(
     item_base_type.router,

@@ -1,5 +1,12 @@
+from backend_api.app.core.schemas.item_availability import (
+    ItemAvailability,
+    ItemAvailabilityCreate,
+    ItemAvailabilityUpdate,
+)
+
 from app.core.models.models import Currency as model_Currency
 from app.core.models.models import Item as model_Item
+from app.core.models.models import ItemAvailability as model_ItemAvailability
 from app.core.models.models import ItemBaseType as model_ItemBaseType
 from app.core.models.models import ItemModifier as model_ItemModifier
 from app.core.models.models import League as model_League
@@ -42,6 +49,16 @@ CRUD_currency = CRUDCurrency(
     create_schema=CurrencyCreate,
 )
 
+CRUD_itemAvailability = CRUDBase[
+    model_ItemAvailability,
+    ItemAvailability,
+    ItemAvailabilityCreate,
+    ItemAvailabilityUpdate,
+](
+    model=model_ItemAvailability,
+    schema=ItemAvailability,
+    create_schema=ItemAvailabilityCreate,
+)
 
 CRUD_itemBaseType = CRUDBase[
     model_ItemBaseType, ItemBaseType, ItemBaseTypeCreate, ItemBaseTypeUpdate

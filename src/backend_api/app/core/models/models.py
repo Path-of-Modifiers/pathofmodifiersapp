@@ -78,15 +78,18 @@ class ItemAvailability(Base):
         ForeignKey("item_temp.itemId", ondelete="CASCADE", onupdate="CASCADE"),
         nullable=False,
     )
+
     currencyId: Mapped[int] = mapped_column(
         Integer,
         ForeignKey("currency.currencyId", ondelete="RESTRICT", onupdate="CASCADE"),
         nullable=False,
     )
     currencyAmount: Mapped[float] = mapped_column(Float(4), nullable=False)
-    isAsync: Mapped[bool] = mapped_column(Boolean, nullable=False)
+
     validFrom: Mapped[int] = mapped_column(SmallInteger, nullable=False)
     validTo: Mapped[int | None] = mapped_column(SmallInteger, nullable=True)
+
+    isAsync: Mapped[bool | None] = mapped_column(Boolean, nullable=False)
 
     __table_args__ = (Index("ix_item_id_valid_from", "itemId", "validFrom"),)
 
@@ -105,7 +108,7 @@ class Item(Base):
         nullable=False,
     )
     firstObserved: Mapped[int] = mapped_column(SmallInteger, nullable=False)
-    name: Mapped[str | None] = mapped_column(Text, nullable=False)
+    name: Mapped[str] = mapped_column(Text, nullable=False)
     itemBaseTypeId: Mapped[int] = mapped_column(
         SmallInteger,
         ForeignKey(
@@ -119,6 +122,8 @@ class Item(Base):
     identified: Mapped[bool] = mapped_column(Boolean, nullable=False)
     corrupted: Mapped[bool | None] = mapped_column(Boolean)
 
+    fractured: Mapped[bool | None] = mapped_column(Boolean)
+    synthesised: Mapped[bool | None] = mapped_column(Boolean)
     replica: Mapped[bool | None] = mapped_column(Boolean)
     searing: Mapped[bool | None] = mapped_column(Boolean)
     tangled: Mapped[bool | None] = mapped_column(Boolean)
