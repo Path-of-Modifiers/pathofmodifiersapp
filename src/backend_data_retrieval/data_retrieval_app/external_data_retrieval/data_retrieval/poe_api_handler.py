@@ -16,9 +16,11 @@ from data_retrieval_app.external_data_retrieval.data_retrieval.utils import (
     ByteResponse,
     RateLimiterThreadSafe,
 )
+from data_retrieval_app.external_data_retrieval.detectors.detector_controller import (
+    DetectorController,
+)
 from data_retrieval_app.external_data_retrieval.detectors.unique_detector import (
     UniqueArmourDetector,
-    UniqueDetector,
     UniqueJewelDetector,
     UniqueJewelleryDetector,
     UniqueUnidentifiedDetector,
@@ -40,7 +42,7 @@ class PoEAPIHandler:
     """
 
     headers = {
-        "User-Agent": f"OAuth pathofmodifiers/0.1.0 (contact: {settings.OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
+        "User-Agent": f"OAuth pathofmodifiers/{settings.TAG} (contact: {settings.OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
     }
 
     def __init__(
@@ -49,7 +51,7 @@ class PoEAPIHandler:
         auth_token: str,
         *,
         leagues: list[dict[str, Any]],
-        item_detectors: list[UniqueDetector] | None = None,
+        detector_controller: DetectorController | None = None,
     ) -> None:
         """
         Parameters:
@@ -59,15 +61,17 @@ class PoEAPIHandler:
         """
         logger.debug("Initializing PoEAPIHandler.")
         self.leagues = leagues
-        if item_detectors is None:
-            item_detectors = [
-                UniqueArmourDetector(leagues),
-                UniqueJewelDetector(leagues),
-                UniqueJewelleryDetector(leagues),
-                UniqueWeaponDetector(leagues),
-                UniqueUnidentifiedDetector(leagues),
-            ]
-        logger.debug("Item detectors set to: " + str(item_detectors))
+        if detector_controller is None:
+            detector_controller = DetectorController(
+                [
+                    UniqueArmourDetector(),
+                    UniqueJewelDetector(),
+                    UniqueJewelleryDetector(),
+                    UniqueWeaponDetector(),
+                    UniqueUnidentifiedDetector(),
+                ],
+                leagues,
+            )
         self.url = url
         logger.debug("Url set to: " + self.url)
         self.auth_token = auth_token
@@ -75,74 +79,10 @@ class PoEAPIHandler:
 
         logger.debug("Headers set to: " + str(self.headers))
 
-        self.item_detectors = item_detectors
-        logger.debug("Item detectors set to: " + str(self.item_detectors))
+        self.detector_controller = detector_controller
 
         self.skip_program_too_slow = False
         logger.info("PoEAPIHandler successfully initialized.")
-
-    def _json_to_df(self, stashes: list) -> pd.DataFrame | None:
-        df_temp = pd.json_normalize(stashes)
-
-        if "items" not in df_temp.columns:
-            return None
-
-        df_temp = df_temp.explode(["items"])
-
-        df_temp = df_temp.loc[~df_temp["items"].isnull()]
-
-        df_temp.drop("items", axis=1, inplace=True)
-
-        df = pd.json_normalize(stashes, record_path=["items"])
-
-        df["stash_index"] = df_temp.index
-
-        df_temp.index = df.index
-
-        df[df_temp.columns.to_list()] = df_temp
-
-        return df
-
-    def _detector_filter(self, stashes: list) -> pd.DataFrame:
-        """
-        Parameters:
-            :param stashes: (list) A list of stash objects
-        """
-        df_wanted = pd.DataFrame()
-        n_new_items = 0
-        n_total_unique_items = 0
-        df = self._json_to_df(stashes)
-        if df is None:
-            return df_wanted
-
-        # The stashes are fed to all item detectors, slowly being filtered down
-        try:
-            for item_detector in self.item_detectors:
-                (
-                    df_filtered,
-                    item_count,
-                    n_unique_found_items,
-                    df_leftover,
-                ) = item_detector.iterate_stashes(df)
-
-                df_wanted = pd.concat((df_wanted, df_filtered))
-
-                del df_filtered
-
-                n_new_items += item_count
-                n_total_unique_items += n_unique_found_items
-                if df_leftover.empty:
-                    break
-
-                df = df_leftover.copy(deep=True)
-                del df_leftover
-        except Exception as e:
-            logger.exception(
-                f"While checking stashes (detector: {item_detector}), this exception occured: {e}"
-            )
-            raise
-
-        return df_wanted.reset_index()
 
     def _get_latest_change_id(self) -> str:
         """
@@ -361,9 +301,10 @@ class PoEAPIHandler:
     @sync_timing_tracker
     def _process_stream(self, stashes: list) -> pd.DataFrame:
         logger.info("Stashes are ready for processing")
-        wanted_df = self._detector_filter(stashes)
+        self.detector_controller._filter_never_used(stashes)
+
         logger.info("Finished processing the data, waiting for more")
-        return wanted_df
+        # return wanted_df
 
     def _gather_n_checkpoints(self, n: int) -> tuple[pd.DataFrame | None, str | None]:
         df = None

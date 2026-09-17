@@ -1,28 +1,19 @@
-import pandas as pd
-
+from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.poe_schema import (
+    Item,
+)
 from data_retrieval_app.external_data_retrieval.detectors.base import DetectorBase
 
 
 class UniqueDetector(DetectorBase):
-    def _check_if_wanted(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = df.loc[df["name"].isin(self.wanted_items)]
-        return df
+    should_cache = True
 
-    def _specialized_filter(self, df: pd.DataFrame) -> pd.DataFrame:
-        if "rarity" not in df.columns:
-            return pd.DataFrame(columns=df.columns)
+    def _is_wanted(self, item: Item) -> bool:
+        if item.rarity is None or item.rarity != "Unique":
+            return False
+        if item.name not in self.wanted_items:
+            return False
 
-        df = df.loc[df["rarity"] == "Unique"]
-
-        df = self._check_if_wanted(df)
-
-        if self.pbar_enabled:
-            temp_df = df["name"] + df["baseType"]
-            for name_baseType in temp_df.unique():
-                if name_baseType not in self.found_items:
-                    self.found_items[name_baseType] = True
-
-        return df
+        return True
 
 
 class UniqueUnidentifiedDetector(UniqueDetector):
@@ -39,6 +30,8 @@ class UniqueUnidentifiedDetector(UniqueDetector):
     Is this a problem?
         No, because they are not particularly sought after in their un-id form
     """
+
+    should_cache = False
 
     wanted_base_types = [
         "Viridian Jewel",
@@ -96,20 +89,22 @@ class UniqueUnidentifiedDetector(UniqueDetector):
         "Soulcord.png": "Screams of the Desiccated",
     }
 
-    def _check_if_wanted(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _is_wanted(self, item: Item) -> bool:
         """
-        Uses the icon to identify which unique it is, then saving that name.
-        If the name attribute still has a length of 0 it means no matching unique
-        was found.
+        Uses the icon to identify which unique it is, then saving that name inplace.
         """
-        df = df.loc[(~df["identified"] & df["baseType"].isin(self.wanted_base_types))]
+        if item.identified:
+            return False
+        if item.base_type not in self.wanted_base_types:
+            return False
 
-        for icon, name in self.wanted_item_icons.items():
-            df.loc[df["icon"].str.endswith(icon), "name"] = name
+        icon = item.icon.split("/")[-1]
+        name = self.wanted_item_icons.get(icon)
+        if name is None:
+            return False
 
-        df = df.loc[df["name"].str.len() != 0]
-        # self._snapshot(df)
-        return df
+        item.name = name
+        return True
 
     def __str__(self):
         return "Unidentifed Unique detector"

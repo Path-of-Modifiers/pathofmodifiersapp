@@ -12,6 +12,8 @@ class Settings(BaseSettings):
         env_file=".env", env_ignore_empty=True, extra="ignore"
     )
 
+    TAG: str
+
     DOMAIN: str
 
     @computed_field  # type: ignore[prop-decorator]
