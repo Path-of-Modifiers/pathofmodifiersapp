@@ -1,7 +1,7 @@
 """optimize item table
 
 Revision ID: dd4abb2b6541
-Revises: 965e766db0a0
+Revises: ee1239y6yfda
 Create Date: 2026-07-23 15:20:18.565656
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = "dd4abb2b6541"
-down_revision: Union[str, None] = "965e766db0a0"
+down_revision: Union[str, None] = "ee1239y6yfda"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -26,14 +26,14 @@ def upgrade() -> None:
             "temp_league_id", sa.SmallInteger(), nullable=False
         ),  # Temporary column
         # sa.Column("itemId", sa.Integer(), nullable=False), # Will be added later
-        sa.Column("currencyId", sa.Integer(), nullable=False),
+        sa.Column("currencyId", sa.SmallInteger(), nullable=False),
         sa.Column("currencyAmount", sa.Float(4), nullable=False),
         sa.Column("isAsync", sa.Boolean()),
         sa.Column("validFrom", sa.SmallInteger(), nullable=False),
         sa.Column("validTo", sa.SmallInteger()),
         sa.ForeignKeyConstraint(
             ["currencyId"],
-            ["currency.currencyId"],
+            ["currency_type.currencyId"],
             ondelete="RESTRICT",
             onupdate="CASCADE",
         ),
@@ -216,14 +216,14 @@ def upgrade() -> None:
             primary_key=True,
         ),
         sa.Column("itemId", sa.Integer(), nullable=False),
-        sa.Column("currencyId", sa.Integer(), nullable=False),
+        sa.Column("currencyId", sa.SmallInteger(), nullable=False),
         sa.Column("currencyAmount", sa.Float(4), nullable=False),
         sa.Column("isAsync", sa.Boolean()),
         sa.Column("validFrom", sa.SmallInteger(), nullable=False),
         sa.Column("validTo", sa.SmallInteger()),
         sa.ForeignKeyConstraint(
             ["currencyId"],
-            ["currency.currencyId"],
+            ["currency_type.currencyId"],
             ondelete="RESTRICT",
             onupdate="CASCADE",
         ),
@@ -300,6 +300,11 @@ def upgrade() -> None:
             ["modifierId", "position"],
             ondelete="RESTRICT",
             onupdate="CASCADE",
+        )
+        batch_op.create_index(
+            "ix_item_modifier_modifierId_itemId",
+            ["modifierId", "itemId"],
+            unique=False,
         )
 
 

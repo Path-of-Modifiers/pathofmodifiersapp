@@ -21,6 +21,13 @@ class CRUDModifier(
         ModifierUpdate,
     ]
 ):
+    def __init__(self):
+        super().__init__(
+            model=model_Modifier,
+            schema=Modifier,
+            create_schema=ModifierCreate,
+        )
+
     async def get_grouped_modifier_by_effect(
         self, db: Session
     ) -> GroupedModifierByEffect:

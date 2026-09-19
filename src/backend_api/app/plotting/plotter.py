@@ -22,7 +22,10 @@ from sqlalchemy.sql.expression import Select
 
 from app.core.models.database import engine
 from app.core.models.models import (
-    Currency as model_Currency,
+    CurrencyPrice as model_CurrencyPrice,
+)
+from app.core.models.models import (
+    CurrencyType as model_CurrencyType,
 )
 from app.core.models.models import (
     Item as model_Item,
@@ -101,17 +104,25 @@ class _BasePlotter(ABC, Generic[Q]):
             item_model.itemBaseTypeId,
             item_model.currencyId,
             item_model.currencyAmount,
-            model_Currency.tradeName,
-            model_Currency.valueInChaos,
-            model_Currency.createdHoursSinceLaunch.label(
+            model_CurrencyType.tradeName,
+            model_CurrencyPrice.valueInChaos,
+            model_CurrencyPrice.createdHoursSinceLaunch.label(
                 "currencyCreatedHoursSinceLaunch"
             ),
         ]
         if query_select_args:
             select_args.extend(query_select_args)
 
-        stmt = select(*select_args).join(
-            model_Currency, item_model.currencyId == model_Currency.currencyId
+        stmt = (
+            select(*select_args)
+            .join(
+                model_CurrencyPrice,
+                item_model.currencyId == model_CurrencyPrice.currencyId,
+            )
+            .join(
+                model_CurrencyType,
+                model_CurrencyPrice.currencyId == model_CurrencyType.currencyId,
+            )
         )
 
         if isinstance(query.leagueId, list):

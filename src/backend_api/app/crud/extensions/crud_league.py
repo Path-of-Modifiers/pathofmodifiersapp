@@ -14,6 +14,9 @@ from app.crud.base import CRUDBase
 
 
 class CRUDLeague(CRUDBase[model_League, League, LeagueCreate, LeagueUpdate]):
+    def __init__(self):
+        super().__init__(model=model_League, schema=League, create_schema=LeagueCreate)
+
     async def get_active_leagues(self, db: Session) -> list[League]:
         now = datetime.now()
 

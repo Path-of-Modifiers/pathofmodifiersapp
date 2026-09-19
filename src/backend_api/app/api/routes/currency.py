@@ -4,16 +4,12 @@ from fastapi import APIRouter, Depends, Query, Request, Response
 from sqlalchemy.orm import Session
 
 import app.core.schemas as schemas
-from app.api.api_message_util import (
-    get_delete_return_msg,
-)
 from app.api.deps import (
     get_current_active_superuser,
     get_current_active_user,
     get_db,
 )
 from app.api.params import FilterParams
-from app.core.models.models import Currency
 from app.core.rate_limit.rate_limit_config import rate_limit_settings
 from app.core.rate_limit.rate_limiters import (
     apply_user_rate_limits,
@@ -28,44 +24,13 @@ currency_prefix = "currency"
 
 
 @router.get(
-    "/{currencyId}",
-    response_model=schemas.Currency,
+    "/price/",
+    response_model=schemas.CurrencyPrice | list[schemas.CurrencyPrice],
     dependencies=[
         Depends(get_current_active_user),
     ],
 )
-@apply_user_rate_limits(
-    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_SECOND,
-    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
-    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_HOUR,
-    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_DAY,
-)
-async def get_currency(
-    request: Request,  # noqa: ARG001
-    response: Response,  # noqa: ARG001
-    currencyId: int,
-    db: Session = Depends(get_db),
-):
-    """
-    Get currency by key and value for "currencyId".
-
-    Always returns one currency.
-    """
-
-    currency_map = {"currencyId": currencyId}
-    currency = await CRUD_currency.get(db=db, filter=currency_map)
-
-    return currency
-
-
-@router.get(
-    "/",
-    response_model=schemas.Currency | list[schemas.Currency],
-    dependencies=[
-        Depends(get_current_active_superuser),
-    ],
-)
-async def get_all_currencies(
+async def get_all_currency_prices(
     filter_params: Annotated[FilterParams, Query()],
     db: Session = Depends(get_db),
 ):
@@ -75,36 +40,55 @@ async def get_all_currencies(
     Returns a list of all currencies.
     """
 
-    all_currencies = await CRUD_currency.get(db=db, filter_params=filter_params)
+    all_currencies = await CRUD_currency.get_prices(db=db, filter_params=filter_params)
 
     return all_currencies
 
 
 @router.get(
-    "/latest_currency_id/",
-    response_model=int,
-    tags=["latest_currency_id"],
+    "/type/",
+    response_model=schemas.CurrencyType | list[schemas.CurrencyType],
     dependencies=[
         Depends(get_current_active_user),
     ],
 )
-@apply_user_rate_limits(
-    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_SECOND,
-    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
-    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_HOUR,
-    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_DAY,
-)
-async def get_latest_currency_id(
-    request: Request,  # noqa: ARG001
-    response: Response,  # noqa: ARG001
+async def get_all_currency_types(
+    filter_params: Annotated[FilterParams, Query()],
     db: Session = Depends(get_db),
 ):
     """
-    Get the latest currencyId, returns 1 if table is empty
+    Get all currencies.
 
-    Can only be used safely on an empty table or directly after an insertion.
+    Returns a list of all currencies.
     """
-    return await CRUD_currency.get_latest_currency_id(db)
+
+    all_currencies = await CRUD_currency.get_types(db=db, filter_params=filter_params)
+
+    return all_currencies
+
+
+@router.get(
+    "/",
+    response_model=list[schemas.Currency],
+    dependencies=[
+        Depends(get_current_active_user),
+    ],
+)
+async def get_all_currency(
+    filter_params: Annotated[FilterParams, Query()],
+    db: Session = Depends(get_db),
+):
+    """
+    Get all currencies.
+
+    Returns a list of all currencies.
+    """
+
+    all_currencies = await CRUD_currency.get_currency_from_query(
+        db=db, filter_params=filter_params
+    )
+
+    return all_currencies
 
 
 @router.get(
@@ -136,9 +120,8 @@ async def get_latest_hours(
 
 
 @router.get(
-    "/latest_currencies/",
+    "/price/latest/",
     response_model=list[schemas.Currency],
-    tags=["latest_currencies"],
     dependencies=[
         Depends(get_current_active_user),
     ],
@@ -187,14 +170,14 @@ async def get_currency_from_query(
 
 
 @router.post(
-    "/",
-    response_model=schemas.CurrencyCreate | list[schemas.CurrencyCreate] | None,
+    "/type/",
+    response_model=schemas.CurrencyTypeCreate | list[schemas.CurrencyTypeCreate] | None,
     dependencies=[
         Depends(get_current_active_superuser),
     ],
 )
-async def create_currency(
-    currency: schemas.CurrencyCreate | list[schemas.CurrencyCreate],
+async def create_currency_type(
+    currency: schemas.CurrencyTypeCreate | list[schemas.CurrencyTypeCreate],
     return_nothing: bool | None = None,
     db: Session = Depends(get_db),
 ):
@@ -204,59 +187,53 @@ async def create_currency(
     Returns the created currency or list of currencies.
     """
 
-    return await CRUD_currency.create(
+    return await CRUD_currency.create_types(
+        db=db, obj_in=currency, return_nothing=return_nothing
+    )
+
+
+@router.post(
+    "/price/",
+    response_model=schemas.CurrencyPriceCreate
+    | list[schemas.CurrencyPriceCreate]
+    | None,
+    dependencies=[
+        Depends(get_current_active_superuser),
+    ],
+)
+async def create_currency_price(
+    currency: schemas.CurrencyPriceCreate | list[schemas.CurrencyPriceCreate],
+    return_nothing: bool | None = None,
+    db: Session = Depends(get_db),
+):
+    """
+    Create one or a list of currencies.
+
+    Returns the created currency or list of currencies.
+    """
+
+    return await CRUD_currency.create_prices(
         db=db, obj_in=currency, return_nothing=return_nothing
     )
 
 
 @router.put(
-    "/",
-    response_model=schemas.Currency,
-    dependencies=[
-        Depends(get_current_active_superuser),
-    ],
+    "/type/",
+    response_model=schemas.CurrencyType,
+    dependencies=[Depends(get_current_active_superuser)],
 )
-async def update_currency(
+async def update_modifier(
     currencyId: int,
-    currency_update: schemas.CurrencyUpdate,
+    currency_type_update: schemas.CurrencyTypeUpdate,
     db: Session = Depends(get_db),
 ):
-    """
-    Update a currency by key and value for "currencyId".
+    currency_type_map = {"currencyId": currencyId}
 
-    Returns the updated currency.
-    """
-
-    currency_map = {"currencyId": currencyId}
-    currency = await CRUD_currency.get(
+    currency_type = await CRUD_currency.get_types(
         db=db,
-        filter=currency_map,
+        filter=currency_type_map,
     )
 
-    return await CRUD_currency.update(db_obj=currency, obj_in=currency_update, db=db)
-
-
-@router.delete(
-    "/",
-    response_model=str,
-    dependencies=[
-        Depends(get_current_active_superuser),
-    ],
-)
-async def delete_currency(
-    currencyId: int,
-    db: Session = Depends(get_db),
-):
-    """
-    Delete a currency by key and value for "currencyId".
-
-    Returns a message indicating the currency was deleted.
-    Always deletes one currency.
-    """
-
-    currency_map = {"currencyId": currencyId}
-    await CRUD_currency.remove(db=db, filter=currency_map)
-
-    return get_delete_return_msg(
-        model_table_name=Currency.__tablename__, filter=currency_map
-    ).message
+    return await CRUD_currency.update_type(
+        db_obj=currency_type, obj_in=currency_type_update, db=db
+    )

@@ -19,6 +19,13 @@ class CRUDUnidentifiedItem(
         UnidentifiedItemUpdate,
     ]
 ):
+    def __init__(self):
+        super().__init__(
+            model=model_UnidentifiedItem,
+            schema=UnidentifiedItem,
+            create_schema=UnidentifiedItemCreate,
+        )
+
     async def get_non_aggregated(self, db: Session) -> list[UnidentifiedItem]:
         """
         Returns the non aggregated unidentified items

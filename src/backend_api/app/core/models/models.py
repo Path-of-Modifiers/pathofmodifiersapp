@@ -35,17 +35,31 @@ class League(Base):
     version: Mapped[float] = mapped_column(Float, nullable=False)
 
 
-class Currency(Base):
-    __tablename__ = "currency"
-
-    currencyId: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
-    createdHoursSinceLaunch: Mapped[int] = mapped_column(SmallInteger, nullable=False)
-    valueInChaos: Mapped[float] = mapped_column(Float(4), nullable=False)
+class CurrencyType(Base):
+    __tablename__ = "currency_type"
+    currencyId: Mapped[int] = mapped_column(SmallInteger, Identity(), primary_key=True)
+    name: Mapped[str] = mapped_column(Text, nullable=False)
     tradeName: Mapped[str] = mapped_column(Text, nullable=False)
-    leagueId: Mapped[SmallInteger] = mapped_column(
+
+
+class CurrencyPrice(Base):
+    __tablename__ = "currency_price"
+
+    currencyId: Mapped[int] = mapped_column(
+        SmallInteger,
+        ForeignKey("currency_type.currencyId", ondelete="RESTRICT", onupdate="CASCADE"),
+        nullable=False,
+    )
+    leagueId: Mapped[int] = mapped_column(
         SmallInteger,
         ForeignKey("league.leagueId", ondelete="RESTRICT", onupdate="CASCADE"),
         nullable=False,
+    )
+    createdHoursSinceLaunch: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    valueInChaos: Mapped[float] = mapped_column(Float(4), nullable=False)
+
+    __table_args__ = (
+        PrimaryKeyConstraint("currencyId", "leagueId", "createdHoursSinceLaunch"),
     )
 
 
@@ -81,7 +95,7 @@ class ItemAvailability(Base):
 
     currencyId: Mapped[int] = mapped_column(
         Integer,
-        ForeignKey("currency.currencyId", ondelete="RESTRICT", onupdate="CASCADE"),
+        ForeignKey("currency_type.currencyId", ondelete="RESTRICT", onupdate="CASCADE"),
         nullable=False,
     )
     currencyAmount: Mapped[float] = mapped_column(Float(4), nullable=False)
@@ -163,7 +177,7 @@ class _ItemBase:
 
     currencyId: Mapped[int] = mapped_column(
         Integer,
-        ForeignKey("currency.currencyId", ondelete="RESTRICT"),
+        ForeignKey("currency_type.currencyId", ondelete="RESTRICT"),
         index=True,
         nullable=False,
     )
@@ -310,10 +324,8 @@ class ItemModifier(Base):
             onupdate="CASCADE",
         ),
         Index(
-            "ix_item_modifierId_createdHoursSinceLaunch_roll_itemId",
+            "ix_item_modifierId_itemId",
             "modifierId",
-            "createdHoursSinceLaunch",
-            "roll",
             "itemId",
         ),
     )

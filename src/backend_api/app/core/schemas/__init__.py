@@ -1,6 +1,16 @@
 "All schemas are imported here and then exported to the main file"
 
-from .currency import Currency, CurrencyCreate, CurrencyInDB, CurrencyUpdate
+from .currency import (
+    CurrencyPrice,
+    CurrencyPriceCreate,
+    CurrencyPriceInDB,
+    CurrencyPriceUpdate,
+    CurrencyType,
+    CurrencyTypeCreate,
+    CurrencyTypeInDB,
+    CurrencyTypeUpdate,
+    Currency,
+)
 from .item import Item, ItemCreate, ItemInDB, ItemUpdate
 from .item_availability import (
     ItemAvailability,
