@@ -1,6 +1,5 @@
-from typing import Any
-
 import pandas as pd
+from backend_api.app.core.schemas.league import League
 from requests.exceptions import HTTPError
 
 from data_retrieval_app.external_data_retrieval.config import settings
@@ -18,7 +17,7 @@ pd.options.mode.chained_assignment = None  # default="warn"
 class PoEAPIDataTransformerBase:
     def __init__(
         self,
-        leagues: list[dict[str, Any]],
+        leagues: list[League],
     ) -> None:
         logger.debug("Initializing PoEAPIDataTransformer")
 
@@ -26,7 +25,7 @@ class PoEAPIDataTransformerBase:
         self.pom_auth_headers = get_superuser_token_headers(self.base_url)
         self.roll_processor = RollProcessor()
 
-        self.league_to_id = {league["name"]: league["leagueId"] for league in leagues}
+        self.league_to_id = {league.name: league.leagueId for league in leagues}
 
         logger.debug("Initializing PoEAPIDataTransformer done.")
 
@@ -92,6 +91,22 @@ class PoEAPIDataTransformerBase:
         )
 
         return ~currency_too_high_mask
+
+    # @staticmethod
+    # def extract_price(item_note: str, stash_note: str) -> tuple[float, str] | None:
+    #     """If the item has a price, it returns the price and currency. Otherwise None is returned"""
+
+    #     def has_price(note: str):
+    #         return note is not None and note.startswith(("~b/o", "~price"))
+
+    #     if has_price(item_note):
+    #         _, price_str, currency = item_note.split(" ")
+    #     elif has_price(stash_note):
+    #         _, price_str, currency = stash_note.split(" ")
+    #     else:
+    #         return None
+
+    #     return float(price_str), currency
 
     @sync_timing_tracker
     def _transform_item_table(

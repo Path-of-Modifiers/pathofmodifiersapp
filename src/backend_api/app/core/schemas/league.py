@@ -1,5 +1,3 @@
-import datetime as _dt
-
 import pydantic as _pydantic
 
 
@@ -8,8 +6,8 @@ class _BaseLeague(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True)
 
     name: str
-    validFrom: _dt.datetime
-    validTo: _dt.datetime | None = None
+    validFrom: _pydantic.AwareDatetime
+    validTo: _pydantic.AwareDatetime | None = None
     version: float
 
 

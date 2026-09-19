@@ -5,6 +5,7 @@ from typing import Any
 
 import pandas as pd
 import requests
+from backend_api.app.core.schemas.league import League
 from pydantic import HttpUrl
 
 from data_retrieval_app.logs.logger import main_logger as logger
@@ -53,23 +54,21 @@ def df_to_JSON(
         )
 
 
-def find_hours_since_launch(leagues_df: list[dict]) -> dict[int, int]:
+def find_hours_since_launch(leagues: list[League]) -> dict[int, int]:
     """
     Finds the number of hours since launch for each of the leagues in the given dataframe
     """
     current_time = datetime.now(UTC)
-    hours_since_launch_dict = {}
-    for league in leagues_df:
-        league_launch_time = datetime.fromisoformat(league["validFrom"])
-
-        time_since_launch = current_time - league_launch_time
+    hours_since_launch_dict = dict[int, int]()
+    for league in leagues:
+        time_since_launch = current_time - league.validFrom
 
         days_since_launch, seconds_since_launch = (
             time_since_launch.days,
             time_since_launch.seconds,
         )
         hours_since_launch = days_since_launch * 24 + seconds_since_launch // 3600
-        hours_since_launch_dict[league["leagueId"]] = hours_since_launch
+        hours_since_launch_dict[league.leagueId] = hours_since_launch
 
     return hours_since_launch_dict
 
@@ -142,7 +141,28 @@ def get_data_safe(
     except Exception as e:
         if logger is not None:
             logger.error(
-                f"The following error occurred while making request a request to {url}: {e}"
+                f"The following error occurred while making request a get request to {url}: {e}"
+            )
+        raise e
+
+    return response
+
+
+def post_data_safe(
+    url: str,
+    *,
+    json: dict,
+    logger: logging.Logger = None,
+    params: dict | list = None,
+    headers: dict[str, str] | None = None,
+) -> requests.Response:
+    try:
+        response = requests.post(url, json=json, params=params, headers=headers)
+        response.raise_for_status()
+    except Exception as e:
+        if logger is not None:
+            logger.error(
+                f"The following error occurred while making request a post request to {url}: {e}"
             )
         raise e
 

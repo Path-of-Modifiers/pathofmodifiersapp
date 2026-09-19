@@ -1,138 +1,113 @@
-import pandas as pd
+from collections import defaultdict
+
+from backend_api.app.core.schemas.currency import (
+    Currency,
+    CurrencyPriceCreate,
+    CurrencyType,
+)
+from pydantic import TypeAdapter
 
 from data_retrieval_app.external_data_retrieval.config import settings
+from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.external.currency import (
+    ExchangeRatioItem,
+)
 from data_retrieval_app.logs.logger import transform_logger as logger
 from data_retrieval_app.pom_api_authentication import get_superuser_token_headers
-from data_retrieval_app.utils import get_data_safe, insert_data
+from data_retrieval_app.utils import post_data_safe
 
 
 class TransformCurrencyAPIData:
-    def __init__(self) -> None:
+    def __init__(self, name_to_currency: dict[str, CurrencyType]) -> None:
         logger.debug("Initializing TransformCurrencyAPIData.")
         self.base_url = settings.BACKEND_BASE_URL
-        logger.debug(f"Url set to: {self.base_url}")
+        self.url = f"{self.base_url}/currency/price/"
+        logger.debug(f"Url set to: {self.url}")
         self.pom_api_headers = get_superuser_token_headers(self.base_url)
         logger.debug("Headers set to: " + str(self.pom_api_headers))
         logger.debug("Initializing TransformCurrencyAPIData done.")
 
-        self.name_to_trade_name = self._get_name_to_trade_name_dict()
+        self.name_to_currency = name_to_currency
 
-    def _get_name_to_trade_name_dict(self) -> dict:
-        """
-        Retrieves a map for "fancy" currency names, as used in the API, to their trade names, which we need.
-        """
-        headers = {
-            "User-Agent": f"OAuth pathofmodifiers/0.1.0 (contact: {settings.OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
-        }
-        response = get_data_safe(
-            "https://www.pathofexile.com/api/trade/data/static",
-            headers=headers,
-            logger=logger,
-        )
-
-        response_json = response.json()
-        result = response_json["result"]
-        currencies = {}
-        for category in result:
-            if category["id"] == "Currency":
-                for entry in category["entries"]:
-                    name = entry["text"]
-                    trade_name = entry["id"]
-                    currencies[name] = trade_name
-
-        return currencies
-
-    def _transform_currency_table(
-        self, currency_df: pd.DataFrame, current_hours: dict[int, int]
-    ) -> pd.DataFrame:
+    def _transform(
+        self,
+        exchange_ratios: list[ExchangeRatioItem],
+        current_hours: dict[int, int],
+    ) -> dict[str, Currency]:
         """
         Since a chaos orb is always worth one chaos orb, ninja does not include it in its price api.
         """
+        trade_name_to_currencies = defaultdict[str, list[Currency]](list)
+        for ratio in exchange_ratios:
+            currency_type = self.name_to_currency.get(ratio.name)
+            if currency_type is None:
+                continue
 
-        missing_chaos_value_mask = (currency_df["chaos.chaosValue"] == 0) | (
-            currency_df["chaos.chaosValue"].isna()
+            value = -1
+            if ratio.chaos.chaosValue is None or ratio.chaos.chaosValue == 0:
+                value = ratio.divine.chaosValue
+            else:
+                value = ratio.chaos.chaosValue
+
+            current_hour = current_hours[ratio.leagueId]
+            currency_id = currency_type.currencyId
+            trade_name = currency_type.tradeName
+
+            currency = Currency(
+                currencyId=currency_id,
+                tradeName=trade_name,
+                name=ratio.name,
+                leagueId=ratio.leagueId,
+                createdHoursSinceLaunch=current_hour,
+                valueInChaos=value,
+            )
+
+            trade_name_to_currencies[ratio.leagueId].append(currency)
+
+        for league_id, current_hour in current_hours.items():
+            name = "Chaos Orb"
+            currency_type = self.name_to_currency[name]
+            currency_id = currency_type.currencyId
+            trade_name = currency_type.tradeName
+            chaos_currency = Currency(
+                currencyId=currency_id,
+                tradeName=trade_name,
+                name=name,
+                leagueId=league_id,
+                createdHoursSinceLaunch=current_hour,
+                valueInChaos=1,
+            )
+            trade_name_to_currencies[league_id].append(chaos_currency)
+
+        return dict(trade_name_to_currencies)
+
+    def _insert(self, trade_name_to_currencies: dict[int, list[Currency]]):
+        prices = list[CurrencyPriceCreate]()
+        for currencies in trade_name_to_currencies.values():
+            for currency in currencies:
+                prices.append(
+                    CurrencyPriceCreate(
+                        currencyId=currency.currencyId,
+                        leagueId=currency.leagueId,
+                        createdHoursSinceLaunch=currency.createdHoursSinceLaunch,
+                        valueInChaos=currency.valueInChaos,
+                    )
+                )
+
+        headers = {"accept": "application/json", "Content-Type": "application/json"}
+        headers.update(self.pom_api_headers)
+        post_data_safe(
+            self.url,
+            json=TypeAdapter(list[CurrencyPriceCreate]).dump_python(prices),
+            headers=headers,
         )
-        currency_df["chaos.chaosValue"] = currency_df["chaos.chaosValue"].where(
-            ~missing_chaos_value_mask,
-            currency_df["divine.chaosValue"],
-        )
 
-        chaos_dict = {
-            "name": ["Chaos Orb"],
-            "chaos.chaosValue": [1],
-        }
-        for league_id in currency_df["leagueId"].unique():
-            chaos_dict["leagueId"] = [league_id]
-            chaos_df = pd.DataFrame.from_dict(chaos_dict)
-            currency_df = pd.concat((currency_df, chaos_df), ignore_index=True)
-
-        currency_df["tradeName"] = currency_df["name"].map(
-            lambda name: self.name_to_trade_name.get(name, pd.NA)
-        )
-
-        currency_df["createdHoursSinceLaunch"] = currency_df["leagueId"].map(
-            current_hours
-        )
-        return currency_df
-
-    def _clean_currency_table(self, currency_df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Cleans the currency table of unnecessary columns.
-        """
-        currency_df = currency_df.rename(columns={"chaos.chaosValue": "valueInChaos"})
-
-        currency_df = currency_df.drop(
-            currency_df.columns.difference(
-                ["tradeName", "valueInChaos", "createdHoursSinceLaunch", "leagueId"]
-            ),
-            axis=1,
-        )
-        currency_df = currency_df.loc[~currency_df["tradeName"].isna()].reset_index(
-            drop=True
-        )
-        return currency_df
-
-    def _get_latest_currency_id_series(self, currency_df: pd.DataFrame) -> pd.Series:
-        response = get_data_safe(
-            f"{self.base_url}/currency/latest_currency_id/",
-            headers=self.pom_api_headers,
-            logger=logger,
-        )
-        latest_currency_id = int(response.text)
-
-        currency_id = pd.Series(
-            range(latest_currency_id - len(currency_df) + 1, latest_currency_id + 1),
-            dtype=int,
-        )
-        return currency_id
-
-    def transform_into_tables(
-        self, currency_df: pd.DataFrame, current_hours: dict[int, int]
-    ) -> pd.DataFrame:
-        """
-        Transforms the data into tables and transforms with help functions.
-        """
-        logger.debug("Transforming data into tables.")
-        currency_df = self._transform_currency_table(currency_df, current_hours)
-        logger.debug("Successfully transformed data into tables.")
-
-        logger.debug("Cleaning currency table data.")
-        currency_df = self._clean_currency_table(currency_df)
-        logger.debug("Successfully cleaned currency table data.")
-
-        logger.debug("Inserting currency data into database.")
-        insert_data(
-            currency_df,
-            url=self.base_url,
-            table_name="currency",
-            logger=logger,
-            headers=self.pom_api_headers,
-        )
+    def transform_and_insert(
+        self, exchange_ratios: list[ExchangeRatioItem], current_hours: dict[int, int]
+    ) -> dict[int, list[Currency]]:
+        logger.debug("Transforming exchange ratios into currencies.")
+        trade_name_to_currencies = self._transform(exchange_ratios, current_hours)
+        logger.debug("Inserting currency prices.")
+        self._insert(trade_name_to_currencies)
         logger.debug("Successfully inserted currency data into database.")
 
-        currency_id = self._get_latest_currency_id_series(currency_df)
-        logger.debug("Latest currency id found: " + str(currency_id))
-
-        currency_df = currency_df.assign(currencyId=currency_id)
-        logger.debug("Successfully transformed data into tables.")
-        return currency_df
+        return trade_name_to_currencies

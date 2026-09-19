@@ -15,7 +15,7 @@ from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.external.
 )
 from data_retrieval_app.logs.logger import data_deposit_logger as logger
 from data_retrieval_app.pom_api_authentication import get_superuser_token_headers
-from data_retrieval_app.utils import get_data_safe
+from data_retrieval_app.utils import get_data_safe, post_data_safe
 
 
 class CurrencyTypeDataDepositor(DataDepositorBase):
@@ -94,6 +94,8 @@ class CurrencyTypeDataDepositor(DataDepositorBase):
 
         current_currencies = self._get_current_currency_types()
         processed_currencies = list[CurrencyTypeCreate]()
+
+        found_chaos = False
         for currency in currency_items:
             trade_name = self.name_to_trade_name.get(currency.name)
             if trade_name is None:
@@ -125,6 +127,9 @@ class CurrencyTypeDataDepositor(DataDepositorBase):
                 ):
                     found_duplicate = True
 
+                if current_currency.tradeName == "chaos":
+                    found_chaos = True
+
                 if found_duplicate or need_update:
                     currency_id = current_currency.currencyId
                     break
@@ -152,25 +157,25 @@ class CurrencyTypeDataDepositor(DataDepositorBase):
                     CurrencyTypeCreate(name=currency.name, tradeName=trade_name)
                 )
 
+        if not found_chaos:
+            processed_currencies.append(
+                CurrencyTypeCreate(name="Chaos Orb", tradeName="Chaos")
+            )
+
         return processed_currencies
 
     def _insert_data(self, currencies: list[CurrencyTypeCreate]):
         if not currencies:
             return
-        currency_create_adapter = TypeAdapter(list[CurrencyTypeCreate])
 
         logger.info("Inserting data into database.")
         headers = {"accept": "application/json", "Content-Type": "application/json"}
         headers.update(self.pom_auth_headers)
-        try:
-            response = requests.post(
-                self.data_url,
-                json=currency_create_adapter.dump_python(currencies),
-                headers=headers,
-            )
-            response.raise_for_status()
-        except Exception as e:
-            logger.error(f"The following error occurred while inserting data: {e}")
-            raise e
+
+        post_data_safe(
+            self.data_url,
+            json=TypeAdapter(list[CurrencyTypeCreate]).dump_python(currencies),
+            headers=headers,
+        )
 
         logger.info("Successfully inserted data into database.")

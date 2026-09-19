@@ -10,7 +10,9 @@ from typing import Any, Literal
 import httpx
 import pandas as pd
 import redis
+from backend_api.app.core.schemas.league import League
 
+from data_retrieval_app.external_data_retrieval.cache import get_cache
 from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.external_data_retrieval.data_retrieval.utils import (
     ByteResponse,
@@ -50,7 +52,7 @@ class PoEAPIHandler:
         url: str,
         auth_token: str,
         *,
-        leagues: list[dict[str, Any]],
+        leagues: list[League],
         detector_controller: DetectorController | None = None,
     ) -> None:
         """
@@ -71,6 +73,7 @@ class PoEAPIHandler:
                     UniqueUnidentifiedDetector(),
                 ],
                 leagues,
+                get_cache(),
             )
         self.url = url
         logger.debug("Url set to: " + self.url)
@@ -132,9 +135,7 @@ class PoEAPIHandler:
                     # pick up from latest checkpoint
                     if listener_id == 0:
                         logger.debug("Main listener initiating the ping-pong again")
-                        change_id = cache.get(
-                            f"next_change_id:{self.leagues[0]["name"]}"
-                        )
+                        change_id = cache.get(f"next_change_id:{self.leagues[0].name}")
                         if change_id is None:
                             change_id = self.initial_change_id
                         # Make sure second listener also resets

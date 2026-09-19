@@ -7,10 +7,11 @@ from concurrent.futures import (
     wait,
 )
 from io import StringIO
-from typing import Any
 
 import pandas as pd
 import redis
+from backend_api.app.core.schemas.league import League
+from pydantic import TypeAdapter
 
 from data_retrieval_app.external_data_retrieval.cache import get_cache
 from data_retrieval_app.external_data_retrieval.config import settings
@@ -19,9 +20,6 @@ from data_retrieval_app.external_data_retrieval.data_retrieval.currency_api_hand
 )
 from data_retrieval_app.external_data_retrieval.data_retrieval.poe_api_handler import (
     PoEAPIHandler,
-)
-from data_retrieval_app.external_data_retrieval.transforming_data.transform_currency_api_data import (
-    TransformCurrencyAPIData,
 )
 from data_retrieval_app.external_data_retrieval.transforming_data.transform_poe_api_data import (
     PoEAPIDataTransformerBase,
@@ -68,7 +66,6 @@ class ContinuousDataRetrieval:
         self.currency_api_handler = CurrencyAPIHandler(
             url="https://api.poe.watch/exchange/ratios?league={league}&game=poe1"
         )
-        self.currency_transformer = TransformCurrencyAPIData()
 
     def _get_modifiers(self) -> dict[str, pd.DataFrame]:
         response = get_data_safe(
@@ -99,13 +96,12 @@ class ContinuousDataRetrieval:
                 ]
         return modifier_dfs
 
-    def _get_leagues(self) -> list[dict[str, Any]]:
+    def _get_leagues(self) -> list[League]:
         response = get_data_safe(
             self.active_league_url, headers=self.pom_auth_headers, logger=logger
         )
-        leagues = response.json()
 
-        return leagues
+        return TypeAdapter(list[League]).validate_python(response.json())
 
     def _get_item_base_types(self) -> dict[str, int]:
         response = get_data_safe(
@@ -152,66 +148,20 @@ class ContinuousDataRetrieval:
 
         return split_dfs
 
-    def _get_currency_data(self, current_hours: dict[int, int]) -> pd.DataFrame:
-        league_ids = list(current_hours.keys())
-        response = get_data_safe(
-            self.currency_url + "latest_hours/",
-            params={"league_ids": league_ids},
-            headers=self.pom_auth_headers,
-            logger=logger,
-        )
-
-        latest_hours: dict[str, int] = response.json()
-        need_new_data = []
-        need_old_data = []
-        if latest_hours:
-            for league_id, latest_hour in latest_hours.items():
-                league_id = int(league_id)
-                if (
-                    league_id in current_hours
-                    and latest_hour == current_hours[league_id]
-                ):
-                    need_old_data.append(league_id)
-                else:
-                    need_new_data.append(league_id)
-        else:
-            need_new_data = league_ids
-
-        currency_df = None
-        if need_old_data:
-            response = get_data_safe(
-                self.currency_url + "latest_currencies/",
-                params={"league_ids": need_old_data},
-                headers=self.pom_auth_headers,
-                logger=logger,
-            )
-
-            currency_df = pd.DataFrame(response.json())
-
-        if need_new_data:
-            needed_leagues = [
-                league for league in self.leagues if league["leagueId"] in need_new_data
-            ]
-            new_data = self.currency_api_handler.make_request(needed_leagues)
-            new_data = self.currency_transformer.transform_into_tables(
-                new_data, current_hours
-            )
-            if currency_df is None:
-                currency_df = new_data
-            else:
-                currency_df = pd.concat((currency_df, new_data))
-
-        return currency_df
-
     def _follow_data_dump_stream(self, cache: redis.Redis):
         current_hours = find_hours_since_launch(self.leagues)
         # Only need to refer to one league to see when a new hour starts
-        current_hour = current_hours[self.leagues[0]["leagueId"]]
+        current_hour = current_hours[self.leagues[0].leagueId]
         next_hour = current_hour + 1
         logger.info("Retrieving modifiers from db.")
         modifier_dfs = self._get_modifiers()
         item_base_types = self._get_item_base_types()
-        currency_df = self._get_currency_data(current_hours)
+        print(self.leagues)
+        trade_name_to_currencies = self.currency_api_handler.get_currency_data(
+            self.leagues, current_hours
+        )
+        print(trade_name_to_currencies)
+        exit()
         iter_data = self.poe_api_handler.dump_stream()
         while current_hour < next_hour:
             df, next_change_id = next(iter_data)
@@ -222,7 +172,7 @@ class ContinuousDataRetrieval:
                 self.data_transformers[data_transformer_type].transform_into_tables(
                     df=split_dfs[data_transformer_type],
                     modifier_df=modifier_dfs[data_transformer_type],
-                    currency_df=currency_df.copy(deep=True),
+                    # currency_df=currency_df.copy(deep=True),
                     item_base_types=item_base_types,
                     current_hours=current_hours,
                 )
@@ -231,7 +181,7 @@ class ContinuousDataRetrieval:
                 cache.set("next_change_id", next_change_id)
 
             current_hours = find_hours_since_launch(self.leagues)
-            current_hour = current_hours[self.leagues[0]["leagueId"]]
+            current_hour = current_hour = current_hours[self.leagues[0].leagueId]
         for data_transformer_type in self.data_transformers:
             self.data_transformers[data_transformer_type].end_of_hour_cleanup()
 

@@ -72,6 +72,7 @@ class CurrencyTypeInDB(CurrencyTypeInDBBase):
 class Currency(_pydantic.BaseModel):
     currencyId: int
     tradeName: str
+    name: str
 
     leagueId: int
     createdHoursSinceLaunch: int

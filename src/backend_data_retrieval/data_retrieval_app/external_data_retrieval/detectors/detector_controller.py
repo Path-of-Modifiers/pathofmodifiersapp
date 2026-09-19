@@ -1,9 +1,10 @@
 from typing import Any
 
 import redis
+from backend_api.app.core.schemas.league import League
 from pydantic import TypeAdapter
 
-from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.poe_schema import (
+from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.external.poe import (
     CacheItem,
     CacheStash,
     Item,
@@ -16,10 +17,10 @@ class DetectorController:
     def __init__(
         self,
         detectors: list[DetectorBase],
-        leagues: list[dict[str, Any]],
+        leagues: list[League],
         redis_cache: redis.Redis,
     ):
-        self.leagues = [league["name"] for league in leagues]
+        self.leagues = [league.name for league in leagues]
 
         self.detectors = detectors
 

@@ -55,15 +55,14 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         self,
         objs: list[ModelType],
         sort_key: str | None = None,
-        sort_method: Literal["asc", "dec"] | None = None,
+        sort_method: Literal["asc", "dec"] = "asc",
     ) -> list[ModelType]:
         """
         `sort_key` is the column name to sort on. For example `createdAt`.
         """
         if sort_key is None:
             return objs
-        if sort_method is None:
-            sort_method = "asc"
+
         unsorted_extracted_column = []
         for obj in objs:
             unsorted_extracted_column.append(getattr(obj, sort_key))

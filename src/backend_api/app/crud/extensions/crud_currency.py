@@ -82,7 +82,14 @@ class CRUDCurrency:
         latest_hours = self._latest_hours_stmt(league_ids).subquery()
 
         stmt = (
-            select(model_CurrencyPrice)
+            select(
+                model_CurrencyType.currencyId,
+                model_CurrencyType.name,
+                model_CurrencyType.tradeName,
+                model_CurrencyPrice.leagueId,
+                model_CurrencyPrice.createdHoursSinceLaunch,
+                model_CurrencyPrice.valueInChaos,
+            )
             .join(
                 latest_hours,
                 (model_CurrencyPrice.leagueId == latest_hours.c.leagueId)
@@ -96,7 +103,7 @@ class CRUDCurrency:
                 model_CurrencyPrice.currencyId == model_CurrencyType.currencyId,
             )
         )
-        currencies = db.scalars(stmt).all()
+        currencies = db.execute(stmt).mappings().all()
 
         return self.currency_list_validate(currencies)
 
@@ -106,11 +113,19 @@ class CRUDCurrency:
         query_list: list[CurrencyQuery] | None = None,
         filter_params: FilterParams | None = None,
     ) -> list[Currency]:
-        stmt = select(model_CurrencyPrice)
-
+        stmt = select(
+            model_CurrencyType.currencyId,
+            model_CurrencyType.name,
+            model_CurrencyType.tradeName,
+            model_CurrencyPrice.leagueId,
+            model_CurrencyPrice.createdHoursSinceLaunch,
+            model_CurrencyPrice.valueInChaos,
+        ).join(
+            model_CurrencyType,
+            model_CurrencyPrice.currencyId == model_CurrencyType.currencyId,
+        )
         if query_list:
             filters = list[ColumnElement[bool]]()
-            filter_names = False
             for query in query_list:
                 sub_filter = list[ColumnElement[bool]]()
                 if query.createdHoursSinceLaunch is not None:
@@ -121,19 +136,12 @@ class CRUDCurrency:
 
                 if query.tradeName is not None:
                     sub_filter.append(model_CurrencyType.tradeName == query.tradeName)
-                    filter_names = True
 
                 if query.leagueId is not None:
                     sub_filter.append(model_CurrencyPrice.leagueId == query.leagueId)
 
                 if sub_filter:
                     filters.append(and_(*sub_filter))
-
-            if filter_names:
-                stmt = stmt.join(
-                    model_CurrencyType,
-                    model_CurrencyPrice.currencyId == model_CurrencyType.currencyId,
-                )
 
             stmt = stmt.where(or_(*filters))
 
@@ -143,7 +151,7 @@ class CRUDCurrency:
             if filter_params.limit is not None:
                 stmt = stmt.limit(filter_params.limit)
 
-        currencies = db.execute(stmt).scalars().all()
+        currencies = db.execute(stmt).mappings().all()
 
         if filter_params is not None:
             currencies = self.crud_price._sort_objects(

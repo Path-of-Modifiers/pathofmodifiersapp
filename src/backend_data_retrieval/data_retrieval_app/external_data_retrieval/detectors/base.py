@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.poe_schema import (
+from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.external.poe import (
     Item,
     Stash,
 )
