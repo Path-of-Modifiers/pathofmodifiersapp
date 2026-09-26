@@ -1,15 +1,14 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
-
-import app.core.schemas as schemas
-from app.api.deps import (
+import backend_api.app.core.schemas as schemas
+from backend_api.app.api.deps import (
     get_current_active_superuser,
     get_db,
 )
-from app.api.params import FilterParams
-from app.crud import CRUD_itemAvailability
+from backend_api.app.api.params import FilterParams
+from backend_api.app.crud import CRUD_itemAvailability
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 

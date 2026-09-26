@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime
 
+from backend_api.app.core.models.database import Base
 from sqlalchemy import (
     ARRAY,
     Boolean,
@@ -21,8 +22,6 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column
-
-from app.core.models.database import Base
 
 
 class League(Base):

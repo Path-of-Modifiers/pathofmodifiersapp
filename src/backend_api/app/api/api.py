@@ -1,6 +1,4 @@
-from fastapi import APIRouter
-
-from app.api.routes import (
+from backend_api.app.api.routes import (
     currency,
     currency_prefix,
     item,
@@ -22,6 +20,7 @@ from app.api.routes import (
     unidentified_item,
     unidentified_item_prefix,
 )
+from fastapi import APIRouter
 
 api_router = APIRouter()
 

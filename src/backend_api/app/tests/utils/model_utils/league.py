@@ -1,13 +1,13 @@
-from sqlalchemy.orm import Session
-
-from app import crud
-from app.core.models.models import League
-from app.core.schemas import LeagueCreate
-from app.tests.utils.utils import (
+from backend_api.app.core.models.models import League
+from backend_api.app.core.schemas import LeagueCreate
+from backend_api.app.tests.utils.utils import (
     random_datetime,
     random_float,
     random_lower_string,
 )
+from sqlalchemy.orm import Session
+
+from app import crud
 
 
 def create_random_league_dict() -> dict:

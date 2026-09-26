@@ -1,16 +1,17 @@
 from collections.abc import Awaitable
 
 import pytest
-from fastapi import Response
-from httpx import AsyncClient
-
-from app.api.routes.login import login_access_session, login_prefix
-from app.core.config import settings
-from app.tests.test_simulating_env.api.api_test_rate_limit_base import TestRateLimitBase
-from app.tests.test_simulating_env.base_test import BaseTest
-from app.tests.utils.rate_limit import (
+from backend_api.app.api.routes.login import login_access_session, login_prefix
+from backend_api.app.core.config import settings
+from backend_api.app.tests.test_simulating_env.api.api_test_rate_limit_base import (
+    TestRateLimitBase,
+)
+from backend_api.app.tests.test_simulating_env.base_test import BaseTest
+from backend_api.app.tests.utils.rate_limit import (
     get_function_decorator_rate_limit_per_time_interval,
 )
+from fastapi import Response
+from httpx import AsyncClient
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)

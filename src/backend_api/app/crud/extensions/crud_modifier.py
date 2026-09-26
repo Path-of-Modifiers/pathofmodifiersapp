@@ -1,17 +1,16 @@
-from pydantic import TypeAdapter
-from sqlalchemy import func, select, update
-from sqlalchemy.dialects.postgresql import aggregate_order_by
-from sqlalchemy.orm import Session
-
-from app.core.models.models import Modifier as model_Modifier
-from app.core.models.models import ModifierRoll as model_ModifierRoll
-from app.core.schemas.modifier import (
+from backend_api.app.core.models.models import Modifier as model_Modifier
+from backend_api.app.core.models.models import ModifierRoll as model_ModifierRoll
+from backend_api.app.core.schemas.modifier import (
     GroupedModifier,
     Modifier,
     ModifierCreate,
     ModifierUpdate,
 )
-from app.crud.base import CRUDBase
+from backend_api.app.crud.base import CRUDBase
+from pydantic import TypeAdapter
+from sqlalchemy import func, select, update
+from sqlalchemy.dialects.postgresql import aggregate_order_by
+from sqlalchemy.orm import Session
 
 
 class CRUDModifier(

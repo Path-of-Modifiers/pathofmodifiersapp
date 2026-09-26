@@ -4,12 +4,12 @@ set -e
 set -x
 
 # Let the DB start
-python /app/app/backend_pre_start.py
+python /app/backend_api/app/backend_pre_start.py
 
 # Run migrations
 alembic upgrade head
 
 # Create initial data in DB
-python /app/app/initial_data.py
+python /app/backend_api/app/initial_data.py
 
-fastapi run --reload "app/main.py"
+fastapi run --reload "backend_api/app/main.py"

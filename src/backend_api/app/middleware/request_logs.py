@@ -1,12 +1,11 @@
 import http
 import time
 
-from fastapi import Request
-
-from app.api.deps import (
+from backend_api.app.api.deps import (
     get_user_ip_from_header,
 )
-from app.logs.logger import logger_request
+from backend_api.app.logs.logger import logger_request
+from fastapi import Request
 
 """
 Taken from https://medium.com/@roy-pstr/fastapi-server-errors-and-logs-take-back-control-696405437983

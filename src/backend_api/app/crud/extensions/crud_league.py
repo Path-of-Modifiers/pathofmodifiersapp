@@ -1,16 +1,15 @@
 from datetime import datetime
 
-from pydantic import TypeAdapter
-from sqlalchemy import select
-from sqlalchemy.orm import Session
-
-from app.core.models.models import League as model_League
-from app.core.schemas.league import (
+from backend_api.app.core.models.models import League as model_League
+from backend_api.app.core.schemas.league import (
     League,
     LeagueCreate,
     LeagueUpdate,
 )
-from app.crud.base import CRUDBase
+from backend_api.app.crud.base import CRUDBase
+from pydantic import TypeAdapter
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 
 class CRUDLeague(CRUDBase[model_League, League, LeagueCreate, LeagueUpdate]):

@@ -2,13 +2,12 @@ from collections.abc import AsyncGenerator, Callable
 from contextlib import asynccontextmanager
 from typing import Any
 
+from backend_api.app.api.deps import get_user_ip_from_header, get_username_by_request
+from backend_api.app.core.cache.cache import cache
+from backend_api.app.core.config import settings
+from backend_api.app.core.rate_limit.custom_rate_limiter import RateLimiter, RateSpec
+from backend_api.app.core.rate_limit.rate_limit_config import rate_limit_settings
 from slowapi import Limiter
-
-from app.api.deps import get_username_by_request, get_user_ip_from_header
-from app.core.cache.cache import cache
-from app.core.config import settings
-from app.core.rate_limit.custom_rate_limiter import RateLimiter, RateSpec
-from app.core.rate_limit.rate_limit_config import rate_limit_settings
 
 
 def default_limit_provider() -> list[str]:

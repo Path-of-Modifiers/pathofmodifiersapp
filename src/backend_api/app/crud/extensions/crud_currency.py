@@ -1,12 +1,7 @@
-from pydantic import TypeAdapter
-from sqlalchemy import select
-from sqlalchemy.orm import Session
-from sqlalchemy.sql.expression import ColumnElement, and_, func, or_
-
-from app.api.params import FilterParams
-from app.core.models.models import CurrencyPrice as model_CurrencyPrice
-from app.core.models.models import CurrencyType as model_CurrencyType
-from app.core.schemas.currency import (
+from backend_api.app.api.params import FilterParams
+from backend_api.app.core.models.models import CurrencyPrice as model_CurrencyPrice
+from backend_api.app.core.models.models import CurrencyType as model_CurrencyType
+from backend_api.app.core.schemas.currency import (
     Currency,
     CurrencyPrice,
     CurrencyPriceCreate,
@@ -16,7 +11,11 @@ from app.core.schemas.currency import (
     CurrencyTypeCreate,
     CurrencyTypeUpdate,
 )
-from app.crud.base import CRUDBase
+from backend_api.app.crud.base import CRUDBase
+from pydantic import TypeAdapter
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+from sqlalchemy.sql.expression import ColumnElement, and_, func, or_
 
 
 class CRUDCurrency:

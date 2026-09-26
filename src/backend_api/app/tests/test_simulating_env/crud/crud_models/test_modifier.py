@@ -1,9 +1,9 @@
 import pytest
+from backend_api.app.crud import CRUD_modifier
+from backend_api.app.crud.base import CRUDBase
+from backend_api.app.tests.utils.model_utils.modifier import generate_random_modifier
 
 import app.tests.test_simulating_env.crud.crud_test_base as test_crud
-from app.crud import CRUD_modifier
-from app.crud.base import CRUDBase
-from app.tests.utils.model_utils.modifier import generate_random_modifier
 
 
 @pytest.fixture(scope="module")

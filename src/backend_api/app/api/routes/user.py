@@ -1,10 +1,7 @@
 import uuid
 from typing import Any
 
-from fastapi import APIRouter, BackgroundTasks, Depends, Request, Response
-from sqlalchemy.orm import Session
-
-from app.api.api_message_util import (
+from backend_api.app.api.api_message_util import (
     get_activation_token_confirmation_sent_msg,
     get_delete_return_msg,
     get_set_rate_limit_tier_success_msg,
@@ -15,7 +12,7 @@ from app.api.api_message_util import (
     get_user_update_me_confirmation_sent_msg,
     get_user_update_me_success_msg,
 )
-from app.api.deps import (
+from backend_api.app.api.deps import (
     CurrentUser,
     CurrentUserNotActive,
     UserCacheRegisterSession,
@@ -24,14 +21,14 @@ from app.api.deps import (
     get_current_active_user,
     get_db,
 )
-from app.core.config import settings
-from app.core.models.models import User
-from app.core.rate_limit.rate_limit_config import rate_limit_settings
-from app.core.rate_limit.rate_limiters import (
+from backend_api.app.core.config import settings
+from backend_api.app.core.models.models import User
+from backend_api.app.core.rate_limit.rate_limit_config import rate_limit_settings
+from backend_api.app.core.rate_limit.rate_limiters import (
     apply_ip_rate_limits,
     apply_user_rate_limits,
 )
-from app.core.schemas import (
+from backend_api.app.core.schemas import (
     Message,
     UpdatePassword,
     UserCreate,
@@ -40,10 +37,10 @@ from app.core.schemas import (
     UsersPublic,
     UserUpdate,
 )
-from app.core.schemas.token import Token
-from app.core.schemas.user import UserUpdateMe
-from app.crud import CRUD_user
-from app.exceptions import (
+from backend_api.app.core.schemas.token import Token
+from backend_api.app.core.schemas.user import UserUpdateMe
+from backend_api.app.crud import CRUD_user
+from backend_api.app.exceptions import (
     DbObjectAlreadyExistsError,
     DbObjectDoesNotExistError,
     InvalidTokenError,
@@ -51,13 +48,13 @@ from app.exceptions import (
     SuperUserNotAllowedToDeleteSelfError,
     UserWithNotEnoughPrivilegesError,
 )
-from app.exceptions.model_exceptions.user_login_exception import (
+from backend_api.app.exceptions.model_exceptions.user_login_exception import (
     UpdateExisitingMeValuesError,
     UserEmailRequiredError,
     UserIsAlreadyActiveError,
     UserUsernameRequiredError,
 )
-from app.utils.user import (
+from backend_api.app.utils.user import (
     generate_email_changed_notify_email,
     generate_new_account_email,
     generate_password_changed_notify_email,
@@ -65,6 +62,8 @@ from app.utils.user import (
     generate_user_registration_email,
     send_email,
 )
+from fastapi import APIRouter, BackgroundTasks, Depends, Request, Response
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 

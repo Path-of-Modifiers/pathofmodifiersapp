@@ -1,25 +1,25 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query, Request, Response
-from sqlalchemy.orm import Session
-
-import app.core.schemas as schemas
-from app.api.api_message_util import (
+from backend_api.app.api.api_message_util import (
     get_delete_return_msg,
 )
-from app.api.deps import (
+from backend_api.app.api.deps import (
     get_current_active_superuser,
     get_current_active_user,
     get_db,
 )
-from app.api.params import FilterParams
-from app.core.models.models import Modifier
-from app.core.rate_limit.rate_limit_config import rate_limit_settings
-from app.core.rate_limit.rate_limiters import (
+from backend_api.app.api.params import FilterParams
+from backend_api.app.core.models.models import Modifier
+from backend_api.app.core.rate_limit.rate_limit_config import rate_limit_settings
+from backend_api.app.core.rate_limit.rate_limiters import (
     apply_ip_rate_limits,
     apply_user_rate_limits,
 )
-from app.crud import CRUD_modifier
+from backend_api.app.crud import CRUD_modifier
+from fastapi import APIRouter, Depends, Query, Request, Response
+from sqlalchemy.orm import Session
+
+import app.core.schemas as schemas
 
 router = APIRouter()
 

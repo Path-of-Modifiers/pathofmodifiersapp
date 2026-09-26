@@ -1,14 +1,14 @@
-from sqlalchemy.orm import Session
-
-from app import crud
-from app.core.models.models import Modifier
-from app.core.schemas.modifier import ModifierCreate
-from app.tests.utils.utils import (
+from backend_api.app.core.models.models import Modifier
+from backend_api.app.core.schemas.modifier import ModifierCreate
+from backend_api.app.tests.utils.utils import (
     random_bool,
     random_float,
     random_int,
     random_lower_string,
 )
+from sqlalchemy.orm import Session
+
+from app import crud
 
 
 def create_random_modifier_dict() -> dict:

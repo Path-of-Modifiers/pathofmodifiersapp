@@ -2,23 +2,22 @@ from collections.abc import Generator, Iterable
 from itertools import islice
 from typing import Any, Generic, Literal, TypeVar
 
-from pydantic import BaseModel, TypeAdapter
-from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.orm import Session
-
-# from app.api.params import FilterParams
-from app.api.params import FilterParams
-from app.exceptions import (
+# from backend_api.app.api.params import FilterParams
+from backend_api.app.api.params import FilterParams
+from backend_api.app.exceptions import (
     ArgValueNotSupportedError,
     DbObjectDoesNotExistError,
     DbTooManyItemsDeleteError,
 )
-from app.exceptions.model_exceptions.db_exception import (
+from backend_api.app.exceptions.model_exceptions.db_exception import (
     DbObjectAlreadyExistsError,
     GeneralDBError,
 )
-from app.logs.logger import logger
-from app.utils.sort_algorithms import sort_with_reference
+from backend_api.app.logs.logger import logger
+from backend_api.app.utils.sort_algorithms import sort_with_reference
+from pydantic import BaseModel, TypeAdapter
+from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.orm import Session
 
 ModelType = TypeVar("ModelType", bound=Any)
 SchemaType = TypeVar("SchemaType", bound=Any)
