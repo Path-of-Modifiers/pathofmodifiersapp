@@ -121,6 +121,8 @@ services:
       - .env
     build:
       context: ./backend_data_retrieval
+      additional_contexts:
+        backend_api: ./backend_api
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
 

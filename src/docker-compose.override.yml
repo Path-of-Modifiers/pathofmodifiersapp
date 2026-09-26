@@ -92,6 +92,8 @@ services:
       - "8889:8889"
     build:
       context: ./backend_data_retrieval
+      additional_contexts:
+        backend_api: ./backend_api
       args:
         INSTALL_DEV: ${INSTALL_DEV-true}
     command: /data_retrieval_app/prestart.sh
@@ -105,6 +107,9 @@ services:
             - uv.lock
         - path: ./backend_data_retrieval/pyproject.toml
           action: rebuild
+        - path: ./backend_api/app/core/schemas
+          action: sync+restart
+          target: /data_retrieval_app/backend_api/app/core/schemas
 
   frontend:
     restart: "no"

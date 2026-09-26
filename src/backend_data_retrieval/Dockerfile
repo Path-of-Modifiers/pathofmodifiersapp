@@ -32,9 +32,7 @@ COPY ./prestart.sh ./pyproject.toml ./uv.lock /data_retrieval_app/
 
 # For referencing API response schemas
 COPY --from=backend_api \
-    ./app/core/schemas/item.py \
-    ./app/core/schemas/league.py \
-    ./app/core/schemas/currency.py \
+    ./app/core/schemas/ \
      /data_retrieval_app/backend_api/app/core/schemas/
 
 ADD ./data_retrieval_app /data_retrieval_app/data_retrieval_app
