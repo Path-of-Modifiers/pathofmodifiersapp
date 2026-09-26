@@ -1,6 +1,5 @@
 from collections.abc import Iterator
 
-import requests
 from backend_api.app.core.schemas.currency import (
     CurrencyType,
     CurrencyTypeCreate,
@@ -15,7 +14,7 @@ from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.external.
 )
 from data_retrieval_app.logs.logger import data_deposit_logger as logger
 from data_retrieval_app.pom_api_authentication import get_superuser_token_headers
-from data_retrieval_app.utils import get_data_safe, post_data_safe
+from data_retrieval_app.utils import get_data_safe, send_request_safe
 
 
 class CurrencyTypeDataDepositor(DataDepositorBase):
@@ -139,18 +138,13 @@ class CurrencyTypeDataDepositor(DataDepositorBase):
                     currencyId=currency_id, name=currency.name, tradeName=trade_name
                 )
 
-                try:
-                    response = requests.put(
-                        self.data_url,
-                        json=updated_currency.model_dump(),
-                        headers=headers,
-                    )
-                    response.raise_for_status()
-                except Exception as e:
-                    logger.error(
-                        f"The following error occurred while inserting data: {e}"
-                    )
-                    raise e
+                send_request_safe(
+                    "put",
+                    self.data_url,
+                    json=updated_currency.model_dump(),
+                    headers=self.pom_auth_headers,
+                    logger=logger,
+                )
 
             elif not found_duplicate:
                 processed_currencies.append(
@@ -172,7 +166,8 @@ class CurrencyTypeDataDepositor(DataDepositorBase):
         headers = {"accept": "application/json", "Content-Type": "application/json"}
         headers.update(self.pom_auth_headers)
 
-        post_data_safe(
+        send_request_safe(
+            "post",
             self.data_url,
             json=TypeAdapter(list[CurrencyTypeCreate]).dump_python(currencies),
             headers=headers,

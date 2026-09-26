@@ -206,6 +206,10 @@ def upgrade() -> None:
             ["leagueId", "itemBaseTypeId", "firstObserved"],
         )
 
+        batch_op.create_unique_constraint(
+            "uq_item_game_item_id_league_id", ["gameItemId", "leagueId"]
+        )
+
     op.create_table(
         "item_availability",
         sa.Column(
@@ -235,6 +239,7 @@ def upgrade() -> None:
         ),
         # TODO optimize when writing the plotting query
         sa.Index("ix_item_availability_itemId_validFrom", "itemId", "validFrom"),
+        sa.UniqueConstraint("itemId", "validFrom"),
     )
     op.execute("""
     INSERT INTO item_availability (

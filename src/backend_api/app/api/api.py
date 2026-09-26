@@ -4,12 +4,8 @@ from app.api.routes import (
     currency,
     currency_prefix,
     item,
-    item_availability,
-    item_availability_prefix,
     item_base_type,
     item_base_type_prefix,
-    item_modifier,
-    item_modifier_prefix,
     item_prefix,
     league,
     league_prefix,
@@ -34,19 +30,9 @@ api_router.include_router(
     currency.router, prefix=f"/{currency_prefix}", tags=[currency_prefix]
 )
 api_router.include_router(
-    item_availability.router,
-    prefix=f"/{item_availability_prefix}",
-    tags=[item_availability_prefix],
-)
-api_router.include_router(
     item_base_type.router,
     prefix=f"/{item_base_type_prefix}",
     tags=[item_base_type_prefix],
-)
-api_router.include_router(
-    item_modifier.router,
-    prefix=f"/{item_modifier_prefix}",
-    tags=[item_modifier_prefix],
 )
 api_router.include_router(item.router, prefix=f"/{item_prefix}", tags=[item_prefix])
 api_router.include_router(

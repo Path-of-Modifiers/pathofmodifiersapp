@@ -1,20 +1,18 @@
-import datetime as _dt
+import re
 
 import pydantic as _pydantic
 
 
 # Shared modifier props
-class _BaseModifier(_pydantic.BaseModel):
-    model_config = _pydantic.ConfigDict(from_attributes=True)
+class ModifierBase(_pydantic.BaseModel):
+    model_config = _pydantic.ConfigDict(from_attributes=True, extra="ignore")
 
-    position: int
     relatedUniques: str | None = None
-    minRoll: float | None = None
-    maxRoll: float | None = None
-    textRolls: str | None = None
+
     static: bool | None = None
     effect: str
-    regex: str | None = None
+    regex: re.Pattern | None = None
+
     implicit: bool | None = None
     explicit: bool | None = None
     delve: bool | None = None
@@ -25,43 +23,46 @@ class _BaseModifier(_pydantic.BaseModel):
     enchanted: bool | None = None
     veiled: bool | None = None
 
+    @_pydantic.field_validator("regex", mode="before")
+    @classmethod
+    def compile_regex(cls, value: str | None) -> re.Pattern:
+        if value is None:
+            return None
+        elif isinstance(value, str):
+            return re.compile(value)
 
-class GroupedModifierProperties(_pydantic.BaseModel):
-    position: list[int]
-    textRolls: list[str | None]
+        return value
+
+    @_pydantic.field_serializer("regex")
+    def serialize_regex(self, regex: re.Pattern | None) -> str | None:
+        if regex is None:
+            return None
+        elif isinstance(regex, str):
+            return regex
+        else:
+            return regex.pattern
 
 
-class GroupedModifierByEffect(_pydantic.BaseModel):
-    modifierId: int
-    effect: str
-    regex: str
-    static: bool | None
-    relatedUniques: str | None
-    groupedModifierProperties: GroupedModifierProperties
+class ModifierRoll(_pydantic.BaseModel):
+    position: int
+    minRoll: float | None = None
+    maxRoll: float | None = None
+    textRolls: list[str] | None = None
 
 
 # Properties to receive on modifier creation
-class ModifierCreate(_BaseModifier):
-    pass
-
-
-# Properties to receive on update
-class ModifierUpdate(_BaseModifier):
-    pass
-
-
-# Properties shared by models stored in DB
-class ModifierInDBBase(_BaseModifier):
-    modifierId: int
-    createdAt: _dt.datetime
-    updatedAt: _dt.datetime | None = None
+class ModifierCreate(ModifierBase):
+    rolls: list[ModifierRoll] = _pydantic.Field(default_factory=list)
 
 
 # Properties to return to client
-class Modifier(ModifierInDBBase):
-    pass
+class Modifier(ModifierBase):
+    modifierId: int
 
 
-# Properties stored in DB
-class ModifierInDB(ModifierInDBBase):
-    pass
+class GroupedModifier(Modifier):
+    rolls: list[ModifierRoll] = _pydantic.Field(default_factory=list)
+
+
+class ModifierUpdate(GroupedModifier):
+    effect: str | None = None

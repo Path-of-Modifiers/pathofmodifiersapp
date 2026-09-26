@@ -88,9 +88,8 @@ async def get_all_modifiers(
 
 
 @router.get(
-    "/grouped_modifiers_by_effect/",
-    response_model=schemas.GroupedModifierByEffect
-    | list[schemas.GroupedModifierByEffect],
+    "/grouped/",
+    response_model=list[schemas.GroupedModifier],
 )
 @apply_ip_rate_limits(
     rate_limit_settings.DEFAULT_USER_RATE_LIMIT_SECOND,
@@ -109,43 +108,33 @@ async def get_grouped_modifier_by_effect(
     Returns a list of all grouped modifiers by effect.
     """
 
-    all_grouped_modifiers_by_effect = (
-        await CRUD_modifier.get_grouped_modifier_by_effect(db=db)
-    )
+    all_grouped_modifiers_by_effect = await CRUD_modifier.get_grouped_modifiers(db=db)
 
     return all_grouped_modifiers_by_effect
 
 
 @router.post(
     "/",
-    response_model=schemas.ModifierCreate | list[schemas.ModifierCreate] | None,
+    response_model=list[schemas.Modifier],
     dependencies=[Depends(get_current_active_superuser)],
 )
 async def create_modifier(
-    modifier: schemas.ModifierCreate | list[schemas.ModifierCreate],
-    return_nothing: bool | None = None,
+    modifiers: list[schemas.ModifierCreate],
     db: Session = Depends(get_db),
 ):
     """
-    Create one or a list of new modifiers.
-
-    Returns the created modifier or list of modifiers.
+    Create a list of new modifiers.
     """
 
-    return await CRUD_modifier.create(
-        db=db, obj_in=modifier, return_nothing=return_nothing
-    )
+    return await CRUD_modifier.create(db=db, modifiers=modifiers)
 
 
 @router.put(
     "/",
-    response_model=schemas.Modifier,
     dependencies=[Depends(get_current_active_superuser)],
 )
 async def update_modifier(
-    modifierId: int,
-    position: int,
-    modifier_update: schemas.ModifierUpdate,
+    modifier: schemas.ModifierUpdate,
     db: Session = Depends(get_db),
 ):
     """
@@ -153,15 +142,7 @@ async def update_modifier(
 
     Returns the updated modifier.
     """
-
-    modifier_map = {"modifierId": modifierId, "position": position}
-
-    modifier = await CRUD_modifier.get(
-        db=db,
-        filter=modifier_map,
-    )
-
-    return await CRUD_modifier.update(db_obj=modifier, obj_in=modifier_update, db=db)
+    return await CRUD_modifier.update(db=db, modifier=modifier)
 
 
 @router.delete(

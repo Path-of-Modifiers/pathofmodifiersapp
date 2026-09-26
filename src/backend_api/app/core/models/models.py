@@ -2,6 +2,7 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import (
+    ARRAY,
     Boolean,
     CheckConstraint,
     DateTime,
@@ -15,6 +16,7 @@ from sqlalchemy import (
     SmallInteger,
     String,
     Text,
+    UniqueConstraint,
     func,
 )
 from sqlalchemy.dialects.postgresql import JSONB, UUID
@@ -89,7 +91,7 @@ class ItemAvailability(Base):
     )
     itemId: Mapped[str] = mapped_column(
         Text,
-        ForeignKey("item_temp.itemId", ondelete="CASCADE", onupdate="CASCADE"),
+        ForeignKey("item.itemId", ondelete="CASCADE", onupdate="CASCADE"),
         nullable=False,
     )
 
@@ -105,7 +107,10 @@ class ItemAvailability(Base):
 
     isAsync: Mapped[bool | None] = mapped_column(Boolean, nullable=False)
 
-    __table_args__ = (Index("ix_item_id_valid_from", "itemId", "validFrom"),)
+    __table_args__ = (
+        Index("ix_item_id_valid_from", "itemId", "validFrom"),
+        UniqueConstraint("itemId", "validFrom"),
+    )
 
 
 class Item(Base):
@@ -150,6 +155,9 @@ class Item(Base):
             "ix_item_leagueId_itemBaseTypeId",
             "leagueId",
             "itemBaseTypeId",
+        ),
+        UniqueConstraint(
+            "gameItemId", "leagueId", name="uq_item_game_item_id_league_id"
         ),
     )
 
@@ -218,10 +226,14 @@ class UnidentifiedItem(_ItemBase, Base):
 class Modifier(Base):
     __tablename__ = "modifier"
 
-    modifierId: Mapped[int] = mapped_column(SmallInteger, nullable=False)
-    position: Mapped[int] = mapped_column(SmallInteger, nullable=False)
-    minRoll: Mapped[float | None] = mapped_column(Float(4))
-    maxRoll: Mapped[float | None] = mapped_column(Float(4))
+    modifierId: Mapped[int] = mapped_column(SmallInteger, primary_key=True)
+
+    static: Mapped[bool | None] = mapped_column(Boolean)
+    effect: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
+    regex: Mapped[str | None] = mapped_column(Text)
+
+    relatedUniques: Mapped[str | None] = mapped_column(Text)
+
     implicit: Mapped[bool | None] = mapped_column(Boolean)
     explicit: Mapped[bool | None] = mapped_column(Boolean)
     delve: Mapped[bool | None] = mapped_column(Boolean)
@@ -231,11 +243,7 @@ class Modifier(Base):
     corrupted: Mapped[bool | None] = mapped_column(Boolean)
     enchanted: Mapped[bool | None] = mapped_column(Boolean)
     veiled: Mapped[bool | None] = mapped_column(Boolean)
-    static: Mapped[bool | None] = mapped_column(Boolean)
-    effect: Mapped[str] = mapped_column(Text, nullable=False)
-    relatedUniques: Mapped[str | None] = mapped_column(Text)
-    textRolls: Mapped[str | None] = mapped_column(Text)
-    regex: Mapped[str | None] = mapped_column(Text)
+
     createdAt: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=func.now(), nullable=False
     )
@@ -245,29 +253,15 @@ class Modifier(Base):
     )
 
     __table_args__ = (
-        PrimaryKeyConstraint("modifierId", "position"),
         CheckConstraint(
             """
             CASE
                 WHEN (modifier.static = TRUE)
                 THEN (
-                        (modifier."minRoll" IS NULL AND modifier."maxRoll" IS NULL)
-                        AND modifier."textRolls" IS NULL
-                        AND modifier.regex IS NULL
+                        modifier.regex IS NULL
                     )
                 ELSE (
-                        (
-                            (
-                                (modifier."minRoll" IS NOT NULL AND modifier."maxRoll" IS NOT NULL)
-                                AND modifier."textRolls" IS NULL
-                            )
-                            OR
-                            (
-                                (modifier."minRoll" IS  NULL AND modifier."maxRoll" IS  NULL)
-                                AND modifier."textRolls" IS NOT NULL
-                            )
-                        )
-                        AND modifier.regex IS NOT NULL
+                        modifier.regex IS NOT NULL
                     )
             END
             """,
@@ -287,17 +281,33 @@ class Modifier(Base):
             """,
             name="check_modifier_if_not_static_then_modifier_contains_hashtag",
         ),
+    )
+
+
+class ModifierRoll(Base):
+    __tablename__ = "modifier_roll"
+
+    modifierId: Mapped[int] = mapped_column(
+        SmallInteger,
+        ForeignKey("modifier.modifierId", ondelete="CASCADE", onupdate="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    position: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    minRoll: Mapped[float | None] = mapped_column(Float(4))
+    maxRoll: Mapped[float | None] = mapped_column(Float(4))
+    textRolls: Mapped[list[str] | None] = mapped_column(ARRAY(Text()))
+
+    __table_args__ = (
+        PrimaryKeyConstraint("modifierId", "position"),
         CheckConstraint(
-            """ modifier."maxRoll" >= modifier."minRoll" """,
+            """ modifier_roll."maxRoll" >= modifier_roll."minRoll" """,
             name="check_modifier_maxRoll_greaterThan_minRoll",
         ),
     )
 
 
 class ItemModifier(Base):
-    # Hypertable
-    # For hypertable specs, see alembic revision `cc29b89156db'
-
     __tablename__ = "item_modifier"
     itemId: Mapped[int] = mapped_column(
         Integer,
@@ -319,7 +329,7 @@ class ItemModifier(Base):
         PrimaryKeyConstraint("itemId", "modifierId", "position"),
         ForeignKeyConstraint(
             ["modifierId", "position"],
-            ["modifier.modifierId", "modifier.position"],
+            ["modifier_roll.modifierId", "modifier_roll.position"],
             ondelete="CASCADE",
             onupdate="CASCADE",
         ),

@@ -1,7 +1,7 @@
 import logging
 from collections.abc import Generator
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, Literal
 
 import pandas as pd
 import requests
@@ -148,21 +148,35 @@ def get_data_safe(
     return response
 
 
-def post_data_safe(
+def send_request_safe(
+    method: Literal["get", "put", "patch", "post", "delete"],
     url: str,
-    *,
-    json: dict,
+    *args,
     logger: logging.Logger = None,
-    params: dict | list = None,
-    headers: dict[str, str] | None = None,
+    **kwargs,
 ) -> requests.Response:
+    method_func = None
+    if method == "get":
+        method_func = requests.get
+    elif method == "put":
+        method_func = requests.put
+    elif method == "patch":
+        method_func = requests.patch
+    elif method == "post":
+        method_func = requests.post
+    elif method == "delete":
+        method_func = requests.delete
+    else:
+        raise ValueError(
+            f"Invalid method ({method}), must be one of: get, put, patch, post, delete"
+        )
     try:
-        response = requests.post(url, json=json, params=params, headers=headers)
+        response = method_func(url, *args, **kwargs)
         response.raise_for_status()
     except Exception as e:
         if logger is not None:
             logger.error(
-                f"The following error occurred while making request a post request to {url}: {e}"
+                f"The following error occurred while making request a {method} request to {url}: {e}"
             )
         raise e
 

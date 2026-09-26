@@ -1,7 +1,6 @@
 from app.core.models.models import Item as model_Item
 from app.core.models.models import ItemAvailability as model_ItemAvailability
 from app.core.models.models import ItemBaseType as model_ItemBaseType
-from app.core.models.models import ItemModifier as model_ItemModifier
 from app.core.schemas.item import Item, ItemCreate, ItemUpdate
 from app.core.schemas.item_availability import (
     ItemAvailability,
@@ -13,12 +12,8 @@ from app.core.schemas.item_base_type import (
     ItemBaseTypeCreate,
     ItemBaseTypeUpdate,
 )
-from app.core.schemas.item_modifier import (
-    ItemModifier,
-    ItemModifierCreate,
-    ItemModifierUpdate,
-)
 from app.crud.extensions.crud_currency import CRUDCurrency
+from app.crud.extensions.crud_item import CRUDItem
 from app.crud.extensions.crud_league import CRUDLeague
 from app.crud.extensions.crud_modifier import CRUDModifier
 from app.crud.extensions.crud_unidentifiedItem import CRUDUnidentifiedItem
@@ -44,18 +39,6 @@ CRUD_itemAvailability = CRUDBase[
 CRUD_itemBaseType = CRUDBase[
     model_ItemBaseType, ItemBaseType, ItemBaseTypeCreate, ItemBaseTypeUpdate
 ](model=model_ItemBaseType, schema=ItemBaseType, create_schema=ItemBaseTypeCreate)
-
-
-CRUD_itemModifier = CRUDBase[
-    model_ItemModifier,
-    ItemModifier,
-    ItemModifierCreate,
-    ItemModifierUpdate,
-](
-    model=model_ItemModifier,
-    schema=ItemModifier,
-    create_schema=ItemModifierCreate,
-)
 
 CRUD_item = CRUDBase[
     model_Item,

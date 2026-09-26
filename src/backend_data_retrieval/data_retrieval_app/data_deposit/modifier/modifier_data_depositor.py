@@ -1,200 +1,218 @@
-from io import StringIO
+import csv
+import os
+from collections.abc import Iterator
 
-import pandas as pd
-import requests
+from backend_api.app.core.schemas.modifier import (
+    GroupedModifier,
+    ModifierCreate,
+    ModifierRoll,
+    ModifierUpdate,
+)
+from pydantic import TypeAdapter
 
 from data_retrieval_app.data_deposit.data_depositor_base import DataDepositorBase
 from data_retrieval_app.data_deposit.modifier.modifier_processing_modules import (
     ModifierRegexCreator,
-    check_for_additional_modifier_types,
-    check_for_new_related_unique,
-    check_for_updated_numerical_rolls,
-    check_for_updated_text_rolls,
-    do_update_regex,
 )
 from data_retrieval_app.logs.logger import data_deposit_logger as logger
-from data_retrieval_app.utils import df_to_JSON, get_data_safe
-
-CASCADING_UPDATE = True
+from data_retrieval_app.utils import send_request_safe
 
 
 class ModifierDataDepositor(DataDepositorBase):
     def __init__(self) -> None:
         super().__init__(data_type="modifier")
-
-        self.modifier_types = [
-            "implicit",
-            "explicit",
-            "delve",
-            "fractured",
-            "synthesised",
-            "unique",
-            "corrupted",
-            "enchanted",
-            "veiled",
-        ]
         self.regex_creator = ModifierRegexCreator()
 
-        self.update_disabled = not CASCADING_UPDATE
-
-    def _get_current_modifiers(self) -> pd.DataFrame:
-        logger.info("Retrieving previously deposited data.")
-
-        response = get_data_safe(
-            self.data_url, headers=self.pom_auth_headers, logger=logger
+    def _get_current_modifiers(self) -> dict[str, GroupedModifier]:
+        response = send_request_safe(
+            "get",
+            f"{self.data_url}grouped/",
+            headers=self.pom_auth_headers,
+            logger=logger,
         )
 
-        json_io = StringIO(response.content.decode("utf-8"))
-        df = pd.read_json(json_io, dtype=str)
+        modifiers = TypeAdapter(list[GroupedModifier]).validate_python(response.json())
 
-        if df.empty:
-            logger.info("Found no previously deposited data.")
-            return None
-        else:
-            logger.info("Successfully retrieved previously deposited data.")
-            return df
+        return {modifier.effect: modifier for modifier in modifiers}
 
-    def _update_duplicates(
-        self, duplicate_df: pd.DataFrame, current_modifiers_df: pd.DataFrame
-    ) -> None:
-        if self.update_disabled:
-            return None
-        logger.info("Checking if duplicates contain updated information.")
+    def _check_for_updates(
+        self, modifier: ModifierCreate, current_modifier: GroupedModifier
+    ):
+        need_update = False
+        updated_modifier = ModifierUpdate(modifierId=current_modifier.modifierId)
+        for field in modifier.model_fields:
+            if field == "rolls":
+                continue
+            if field == "relatedUniques":
+                new = modifier.relatedUniques.split("|")
+                old = current_modifier.relatedUniques.split("|")
+                related_uniques = set(new).difference(set(old))
+                if related_uniques:
+                    updated_modifier.relatedUniques = "|".join(set(new) | set(old))
+                    need_update = True
 
-        current_duplicate_modifiers_df = current_modifiers_df.loc[
-            current_modifiers_df["effect"].isin(duplicate_df["effect"])
-        ].copy()
+                continue
 
-        # We sort them so that they line up.
-        # We go through in reverse, as we wish to start with the row that has the highest position.
-        current_duplicate_modifiers_df.sort_values(
-            by=["effect", "position"], ascending=False, inplace=True
-        )
-        duplicate_df.sort_values(
-            by=["effect", "position"], ascending=False, inplace=True
-        )
+            if field == "regex":
+                continue
 
-        update_url = self.data_url + "?modifierId={}&position={}"
+            new = getattr(modifier, field)
+            old = getattr(current_modifier, field)
+            if not (new == old or (isinstance(old, bool) and old)):
+                # update rows which have a different value
+                # ignore rows which are bools that are already True
+                setattr(updated_modifier, field, new)
+                need_update = True
 
-        rolls = None
         update_regex = False
-        for (_, row_cur), (_, row_new) in zip(
-            current_duplicate_modifiers_df.iterrows(),
-            duplicate_df.iterrows(),
-            strict=False,
+        for new_roll, old_roll in zip(
+            modifier.rolls, current_modifier.rolls, strict=True
         ):
-            put_update = False
-            data = df_to_JSON(row_cur, request_method="put")
-            position = int(data["position"])
-            # if position is higher than 1, we want to store the types of rolls it has
-            if position >= 1 and rolls is None:
-                update_regex = False
-                effect = data["effect"]
-                same_modifier_df = duplicate_df.loc[
-                    duplicate_df["effect"] == effect
-                ].copy()
-                same_modifier_df.sort_values(
-                    by="position", inplace=True
-                )  # So that the rolls are added in the correct order
-                rolls = []
-                for _, same_modifier_row in same_modifier_df.iterrows():
-                    if not pd.isna(same_modifier_row["static"]):
-                        pass
-                    elif not pd.isna(same_modifier_row["textRolls"]):
-                        rolls.append(same_modifier_row["textRolls"])
+            updated_roll = ModifierRoll(position=new_roll.position)
+            roll_need_update = False
+            if new_roll.minRoll is not None and new_roll.minRoll < old_roll.minRoll:
+                updated_roll.minRoll = new_roll.minRoll
+                roll_need_update = True
+
+            if new_roll.maxRoll is not None and new_roll.maxRoll > old_roll.maxRoll:
+                updated_roll.maxRoll = new_roll.maxRoll
+                roll_need_update = True
+
+            if new_roll.textRolls is not None:
+                text_rolls = set(new_roll.textRolls).difference(set(old_roll.textRolls))
+                if text_rolls:
+                    # preserve order to not disturb existing data
+                    updated_roll.textRolls = old_roll.textRolls + list(text_rolls)
+                    roll_need_update = True
+                    update_regex = True  # regex contains text rolls
+
+            if roll_need_update:
+                updated_modifier.rolls.append(updated_roll)
+                need_update = True
+
+        if update_regex:
+            updated_modifier.regex = self.regex_creator.make_regex(
+                modifier.effect, updated_modifier.rolls
+            )
+            need_update = True
+
+        if need_update:
+            send_request_safe(
+                "put",
+                self.data_url,
+                json=updated_modifier.model_dump(exclude_none=True, exclude_unset=True),
+                headers=self.pom_auth_headers,
+                logger=logger,
+            )
+
+        return need_update
+
+    def _remove_duplicates(
+        self, modifiers: list[ModifierCreate]
+    ) -> list[ModifierCreate]:
+        current_modifiers = self._get_current_modifiers()
+
+        previous_effects = list[str]()
+        did_update = False
+        for modifier in modifiers[:]:
+            if modifier.effect in current_modifiers:
+                did_update = self._check_for_updates(
+                    modifier, current_modifiers[modifier.effect]
+                )
+                modifiers.remove(modifier)
+                continue
+
+            if modifier.effect in previous_effects:
+                modifiers.remove(modifier)
+                continue
+
+            previous_effects.append(modifier.effect)
+        if did_update:
+            logger.info("Updated modifiers using new data")
+        return modifiers
+
+    def _track_comments(self, modifiers: list[ModifierCreate]) -> list[ModifierCreate]:
+        unique_name = self.logged_file_comments["Unique Name"]
+        for modifier in modifiers:
+            modifier.relatedUniques = unique_name
+
+        return modifiers
+
+    def _load_data(self) -> Iterator[ModifierCreate]:
+        for filename in os.listdir(self.new_data_location):
+            modifiers = list[dict]()
+            filepath = os.path.join(self.new_data_location, filename)
+
+            self.logged_file_comments = {}
+            logger.info(f"Loading new data from '{filename}'.")
+            with open(filepath) as infile:
+                while True:
+                    position = infile.tell()
+                    line = infile.readline()
+
+                    if not line:
+                        break
+
+                    if line.startswith("#"):
+                        logger.info(line.rstrip())
+                        split_line = line[1:].split(":", 1)
+                        self.logged_file_comments[split_line[0].strip()] = split_line[
+                            1
+                        ].strip()
                     else:
-                        rolls.append(None)
+                        # We found the CSV header, so go back to its beginning
+                        infile.seek(position)
+                        break
 
-            if "updatedAt" in data:
-                data.pop("updatedAt")
+                modifiers.extend(csv.DictReader(infile))
 
-            if not pd.isna(row_new["static"]):
-                pass
-            elif not pd.isna(row_new["textRolls"]):
-                data, put_update, rolls = check_for_updated_text_rolls(
-                    data=data,
-                    row_new=row_new,
-                    rolls=rolls,
-                    regex_creator=self.regex_creator,
+            deposit_modifiers = dict[str, ModifierCreate]()
+            for modifier in modifiers:
+                for key in list(modifier.keys()):
+                    if modifier[key] == "":
+                        modifier.pop(key)
+
+                text_roll: str | None = modifier.get("textRolls")
+                if text_roll is not None:
+                    text_roll = text_roll.split("|")
+
+                roll = ModifierRoll(
+                    position=modifier["position"],
+                    minRoll=modifier.get("minRoll"),
+                    maxRoll=modifier.get("maxRoll"),
+                    textRolls=text_roll,
                 )
-                update_regex = put_update
-            else:
-                data, put_update = check_for_updated_numerical_rolls(
-                    data=data, row_new=row_new
-                )
 
-            if update_regex:
-                data = do_update_regex(data, rolls, regex_creator=self.regex_creator)
-                put_update = True
+                deposit_modifier = deposit_modifiers.get(modifier["effect"])
+                if deposit_modifier is None:
+                    deposit_modifier = ModifierCreate(**modifier)
+                    deposit_modifiers[modifier["effect"]] = deposit_modifier
 
-            data, put_update = check_for_additional_modifier_types(
-                data=data,
-                put_update=put_update,
-                row_new=row_new,
-                modifier_types=self.modifier_types,
+                deposit_modifier.rolls.append(roll)
+
+            yield TypeAdapter(list[ModifierCreate]).validate_python(
+                deposit_modifiers.values()
             )
 
-            data, put_update = check_for_new_related_unique(
-                data=data,
-                put_update=put_update,
-                new_related_unique=self.logged_file_comments["Unique Name"],
-            )
+    def _process_data(self, modifiers: list[ModifierCreate]) -> list[ModifierCreate]:
+        modifiers = self.regex_creator.add_regex(modifiers)
+        modifiers = self._track_comments(modifiers)
+        modifiers = self._remove_duplicates(modifiers)
+        return modifiers
 
-            if put_update:
-                logger.info("Pushed updated modifier to the database.")
-                headers = {
-                    "accept": "application/json",
-                    "Content-Type": "application/json",
-                }
-                headers.update(self.pom_auth_headers)
-                try:
-                    response = requests.put(
-                        update_url.format(row_cur["modifierId"], row_cur["position"]),
-                        json=data,
-                        headers=headers,
-                        # add HTTP Basic Auth
-                    )
-                    response.raise_for_status()
-                except Exception as e:
-                    logger.error(
-                        f"The following error occurred while making request during _update_duplicates modifiers: {e}"
-                    )
-                    raise e
+    def _insert_data(self, modifiers: list[ModifierCreate]):
+        if not modifiers:
+            return
 
-            # We reset the rolls if the position is 0, because then the next row will be a new modifier
-            if position == 0 and rolls is not None:
-                rolls = None
-                update_regex = False
+        logger.info("Inserting data into database.")
+        headers = {"accept": "application/json", "Content-Type": "application/json"}
+        headers.update(self.pom_auth_headers)
 
-    def _remove_duplicates(self, new_modifiers_df: pd.DataFrame) -> pd.DataFrame:
-        current_modifiers_df = self._get_current_modifiers()
-
-        new_modifiers_df = new_modifiers_df.drop_duplicates()
-
-        if current_modifiers_df is None:
-            logger.info("Skipping duplicate removing due to no previous data")
-            return new_modifiers_df
-
-        logger.info("Removing duplicate modifiers")
-        duplicate_mask = (
-            new_modifiers_df["effect"]
-            .str.lower()
-            .isin(current_modifiers_df["effect"].str.lower())
+        send_request_safe(
+            "post",
+            self.data_url,
+            json=TypeAdapter(list[ModifierCreate]).dump_python(modifiers),
+            headers=headers,
         )
 
-        duplicate_df = new_modifiers_df.loc[duplicate_mask].copy()
-        self._update_duplicates(duplicate_df, current_modifiers_df)
-        non_duplicate_df = new_modifiers_df.loc[~duplicate_mask].copy()
-
-        return non_duplicate_df
-
-    def _track_comments(self, df: pd.DataFrame) -> pd.DataFrame:
-        df["relatedUniques"] = self.logged_file_comments["Unique Name"]
-
-        return df
-
-    def _process_data(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = self.regex_creator.add_regex(df.copy())
-        df = self._remove_duplicates(df.copy())
-        df = self._track_comments(df.copy())
-        return df
+        logger.info("Successfully inserted data into database.")
