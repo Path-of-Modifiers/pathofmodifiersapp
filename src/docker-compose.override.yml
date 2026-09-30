@@ -64,7 +64,7 @@ services:
       watch:
         - path: ./backend_api
           action: sync
-          target: /app
+          target: /app/backend_api
           ignore:
             - .venv
             - uv.lock
