@@ -89,7 +89,7 @@ class ItemAvailability(Base):
         Integer, primary_key=True, autoincrement=True
     )
     itemId: Mapped[str] = mapped_column(
-        Text,
+        Integer,
         ForeignKey("item.itemId", ondelete="CASCADE", onupdate="CASCADE"),
         nullable=False,
     )
@@ -109,6 +109,13 @@ class ItemAvailability(Base):
     __table_args__ = (
         Index("ix_item_id_valid_from", "itemId", "validFrom"),
         UniqueConstraint("itemId", "validFrom"),
+        CheckConstraint(
+            """
+                item_availability."validTo" IS NULL
+                OR item_availability."validTo" > item_availability."validFrom"
+            """,
+            name="check_positive_duration",
+        ),
     )
 
 

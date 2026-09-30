@@ -14,6 +14,8 @@ from .currency import (
 from .item import (
     Item,
     ItemAvailability,
+    ItemAvailabilityExpired,
+    ItemAvailabilityUpdated,
     ItemCreate,
     ItemQuery,
     ItemUpdate,

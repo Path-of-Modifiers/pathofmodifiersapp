@@ -240,6 +240,13 @@ def upgrade() -> None:
         # TODO optimize when writing the plotting query
         sa.Index("ix_item_availability_itemId_validFrom", "itemId", "validFrom"),
         sa.UniqueConstraint("itemId", "validFrom"),
+        sa.CheckConstraint(
+            """
+                item_availability."validTo" IS NULL
+                OR item_availability."validTo" > item_availability."validFrom"
+            """,
+            name="check_positive_duration",
+        ),
     )
     op.execute("""
     INSERT INTO item_availability (
@@ -269,6 +276,9 @@ def upgrade() -> None:
             i."itemId"::INT,
             im."modifierId",
             im.position,
+            ROW_NUMBER() OVER (
+                PARTITION BY i."itemId", im."modifierId", im.position
+            )::SMALLINT AS instance,
             im.roll
         FROM item i
         LEFT JOIN item_modifier im
@@ -284,11 +294,12 @@ def upgrade() -> None:
         batch_op.alter_column("itemId", nullable=False)
         batch_op.alter_column("modifierId", nullable=False)
         batch_op.alter_column("position", nullable=False)
+        batch_op.alter_column("instance", nullable=False)
         batch_op.alter_column(
             "roll", existing_type=sa.Float(), type_=sa.Float(4), nullable=True
         )
         batch_op.create_primary_key(
-            "item_modifier_pkey", ["itemId", "modifierId", "position"]
+            "item_modifier_pkey", ["itemId", "modifierId", "position", "instance"]
         )
         batch_op.create_foreign_key(
             "fk_item_modifier_item",
@@ -306,11 +317,11 @@ def upgrade() -> None:
             ondelete="RESTRICT",
             onupdate="CASCADE",
         )
-        batch_op.create_index(
-            "ix_item_modifier_modifierId_itemId",
-            ["modifierId", "itemId"],
-            unique=False,
-        )
+        # batch_op.create_index(
+        #     "ix_item_modifier_modifierId_itemId",
+        #     ["modifierId", "itemId"],
+        #     unique=False,
+        # )
 
 
 def downgrade() -> None:

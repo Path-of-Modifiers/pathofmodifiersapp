@@ -11,7 +11,7 @@ class ItemModifier(_pydantic.BaseModel):
     roll: float | None = None
 
 
-class ModifierRoll(_pydantic.BaseModel):
+class ItemModifierRoll(_pydantic.BaseModel):
     position: int
     roll: float | None = None
 
@@ -19,4 +19,4 @@ class ModifierRoll(_pydantic.BaseModel):
 class ItemModifierCreate(_pydantic.BaseModel):
     modifierId: int
 
-    rolls: list[ModifierRoll] | None = None
+    rolls: list[ItemModifierRoll]

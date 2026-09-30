@@ -3,51 +3,17 @@ from typing import Annotated
 import backend_api.app.core.schemas as schemas
 from backend_api.app.api.deps import (
     get_current_active_superuser,
-    get_current_active_user,
     get_db,
 )
 from backend_api.app.api.params import FilterParams
-from backend_api.app.core.rate_limit.rate_limit_config import rate_limit_settings
-from backend_api.app.core.rate_limit.rate_limiters import apply_user_rate_limits
 from backend_api.app.crud import CRUD_item
-from fastapi import APIRouter, Depends, Query, Request, Response
-from sqlalchemy import text
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 router = APIRouter()
 
 
 item_prefix = "item"
-
-
-@router.get(
-    "/latest_item_id/",
-    response_model=int | None,
-    tags=["latest_item_id"],
-    dependencies=[Depends(get_current_active_user)],
-)
-@apply_user_rate_limits(
-    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_SECOND,
-    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
-    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_HOUR,
-    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_DAY,
-)
-async def get_latest_item_id(
-    request: Request,  # noqa: ARG001
-    response: Response,  # noqa: ARG001
-    db: Session = Depends(get_db),
-):
-    """
-    Get the latest "itemId"
-
-    Can only be used safely on an empty table or directly after an insertion.
-    """
-
-    result = db.execute(text("""SELECT MAX("itemId") FROM item""")).fetchone()
-    if not result or not result[0]:
-        return None
-
-    return int(result[0])
 
 
 @router.get(
@@ -72,12 +38,11 @@ async def get_all_items(
 
 @router.post(
     "/",
-    response_model=schemas.ItemCreate | list[schemas.ItemCreate] | None,
+    response_model=list[schemas.Item],
     dependencies=[Depends(get_current_active_superuser)],
 )
 async def create_item(
-    item: schemas.ItemCreate | list[schemas.ItemCreate],
-    return_nothing: bool | None = None,
+    items: list[schemas.ItemCreate],
     db: Session = Depends(get_db),
 ):
     """
@@ -86,4 +51,32 @@ async def create_item(
     Returns the created item or list of items.
     """
 
-    return await CRUD_item.create(db=db, obj_in=item, return_nothing=return_nothing)
+    return await CRUD_item.create_items(db=db, new_items=items)
+
+
+@router.patch(
+    "/availability/",
+    response_model=list[schemas.ItemAvailability],
+    dependencies=[Depends(get_current_active_superuser)],
+)
+async def patch_expired_availability(
+    expired_availability: list[schemas.ItemAvailabilityExpired],
+    db: Session = Depends(get_db),
+):
+    return await CRUD_item.patch_expired_availability(
+        db, expired_availability=expired_availability
+    )
+
+
+@router.put(
+    "/availability/",
+    response_model=list[schemas.ItemAvailability],
+    dependencies=[Depends(get_current_active_superuser)],
+)
+async def update_availability(
+    updated_availability: list[schemas.ItemAvailabilityUpdated],
+    db: Session = Depends(get_db),
+):
+    return await CRUD_item.update_availability(
+        db, updated_availability=updated_availability
+    )

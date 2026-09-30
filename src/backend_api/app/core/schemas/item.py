@@ -1,4 +1,5 @@
 import pydantic as _pydantic
+from backend_api.app.core.schemas.item_modifier import ItemModifierCreate
 
 
 class Influences(_pydantic.BaseModel):
@@ -11,16 +12,18 @@ class Influences(_pydantic.BaseModel):
 
 
 # Shared item props
-class _BaseItem(_pydantic.BaseModel):
-    model_config = _pydantic.ConfigDict(from_attributes=True)
+class ItemBase(_pydantic.BaseModel):
+    model_config = _pydantic.ConfigDict(
+        from_attributes=True, extra="ignore", populate_by_name=True
+    )
 
-    gameItemId: str
-    leagueId: int
+    gameItemId: str = _pydantic.Field(alias="game_item_id")
+    leagueId: int = _pydantic.Field(alias="league_id")
 
-    firstObserved: int
+    firstObserved: int = _pydantic.Field(alias="first_observed")
 
     name: str
-    itemBaseTypeId: int
+    itemBaseTypeId: int = _pydantic.Field(alias="item_base_type_id")
     ilvl: int
     rarity: str
 
@@ -35,26 +38,69 @@ class _BaseItem(_pydantic.BaseModel):
     tangled: bool | None = None
 
 
-# Properties to receive on item creation
-class ItemCreate(_BaseItem):
-    pass
+class ItemPrice(_pydantic.BaseModel):
+    currencyId: int
+    currencyAmount: float
+    isAsync: bool | None = None
+
+
+class ItemCreate(_pydantic.BaseModel):
+    item: ItemBase
+    price: ItemPrice
+    modifiers: list[ItemModifierCreate]
 
 
 # Properties to receive on update
-class ItemUpdate(_BaseItem):
+class ItemUpdate(ItemBase):
     pass
-
-
-# Properties shared by models stored in DB
-class ItemInDBBase(_BaseItem):
-    itemId: int
 
 
 # Properties to return to client
-class Item(ItemInDBBase):
-    pass
+class Item(ItemBase):
+    itemId: int
 
 
-# Properties stored in DB
-class ItemInDB(ItemInDBBase):
-    pass
+class ItemQuery(_pydantic.BaseModel):
+    model_config = _pydantic.ConfigDict(
+        extra="ignore",
+        populate_by_name=True,
+    )
+
+    gameItemId: str
+    league: str
+
+
+# Shared item props
+class _BaseItemAvailability(_pydantic.BaseModel):
+    model_config = _pydantic.ConfigDict(from_attributes=True)
+    itemId: int
+
+    currencyId: int
+    currencyAmount: float
+
+    validFrom: int
+    validTo: int | None = None
+
+    isAsync: bool | None = None
+
+
+class ItemAvailabilityExpired(_pydantic.BaseModel):
+    model_config = _pydantic.ConfigDict(from_attributes=True)
+    gameItemId: str
+    leagueId: int
+
+    validTo: int
+
+
+class ItemAvailabilityUpdated(_pydantic.BaseModel):
+    model_config = _pydantic.ConfigDict(from_attributes=True)
+    gameItemId: str
+    leagueId: int
+
+    price: ItemPrice
+
+    validFrom: int
+
+
+class ItemAvailability(_BaseItemAvailability):
+    availabilityId: int
