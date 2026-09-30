@@ -153,7 +153,7 @@ class CurrencyTypeDataDepositor(DataDepositorBase):
 
         if not found_chaos:
             processed_currencies.append(
-                CurrencyTypeCreate(name="Chaos Orb", tradeName="Chaos")
+                CurrencyTypeCreate(name="Chaos Orb", tradeName="chaos")
             )
 
         return processed_currencies

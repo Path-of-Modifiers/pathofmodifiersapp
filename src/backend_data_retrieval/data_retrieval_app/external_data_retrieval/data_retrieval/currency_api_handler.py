@@ -1,4 +1,3 @@
-from collections import defaultdict
 from collections.abc import Sequence
 
 from backend_api.app.core.schemas.currency import Currency, CurrencyType
@@ -16,7 +15,7 @@ from data_retrieval_app.logs.logger import external_data_retrieval_logger as log
 from data_retrieval_app.pom_api_authentication import (
     get_superuser_token_headers,
 )
-from data_retrieval_app.utils import get_data_safe
+from data_retrieval_app.utils import send_request_safe
 
 
 class CurrencyAPIHandler:
@@ -34,7 +33,8 @@ class CurrencyAPIHandler:
         self.transformer = TransformCurrencyAPIData(self.currency_types)
 
     def _get_currency_types(self) -> dict[str, CurrencyType]:
-        response = get_data_safe(
+        response = send_request_safe(
+            "get",
             self.currency_url + "type/",
             headers=self.pom_auth_headers,
             logger=logger,
@@ -46,58 +46,54 @@ class CurrencyAPIHandler:
         return {currency_type.name: currency_type for currency_type in currency_types}
 
     def _get_latest_currencies(
-        self, league_ids: Sequence[int]
-    ) -> dict[str, list[Currency]]:
-        response = get_data_safe(
+        self, leagues: Sequence[League]
+    ) -> dict[tuple[int, str], Currency]:
+        response = send_request_safe(
+            "get",
             self.currency_url + "price/latest/",
-            params={"league_ids": league_ids},
+            params={"league_ids": [league.leagueId for league in leagues]},
             headers=self.pom_auth_headers,
             logger=logger,
         )
-        currencies = TypeAdapter(list[Currency]).validate_python(response.json())
+        currency_list = TypeAdapter(list[Currency]).validate_python(response.json())
 
-        trade_name_to_currencies = defaultdict[str, list[Currency]](list)
-        for currency in currencies:
-            trade_name_to_currencies[currency.tradeName].append(currency)
+        currencies = dict[tuple[int, str], Currency]()
+        for currency in currency_list:
+            currencies[(currency.leagueId, currency.tradeName)] = currency
 
-        return dict(trade_name_to_currencies)
+        return currencies
 
     def _remove_old_currencies(
         self,
-        trade_name_to_currencies: dict[str, list[Currency]],
+        currencies: dict[tuple[int, str], Currency],
         leagues: list[League],
         current_hours: dict[int, int],
     ) -> list[League]:
         """
         Modifies latest currencies inplace
         """
-        leagues_needs_new_data = list[League]()
-        if not trade_name_to_currencies:
+        if not currencies:
             # No prior data is available
             return leagues
 
-        for currencies in trade_name_to_currencies.values():
-            for league in leagues:
-                for currency in currencies[:]:
-                    if league.leagueId != currency.leagueId:
-                        continue
+        leagues_needs_new_data = set[int]()
+        for (league_id, _), currency in currencies.items():
+            current_hour = current_hours[league_id]
+            currency_hour = currency.createdHoursSinceLaunch
+            if currency_hour != current_hour:
+                leagues_needs_new_data.add(league_id)
 
-                    current_hour = current_hours[currency.leagueId]
-                    if currency.createdHoursSinceLaunch == current_hour:
-                        continue
-
-                    currencies.remove(currency)
-
-                if league not in leagues_needs_new_data:
-                    leagues_needs_new_data.append(league)
-
-        return leagues_needs_new_data
+        return [
+            league for league in leagues if league.leagueId in leagues_needs_new_data
+        ]
 
     def _get_new_data(self, leagues: list[League]) -> list[ExchangeRatioItem]:
         currency_items = list[ExchangeRatioItem]()
         for league in leagues:
-            response = get_data_safe(
-                self.url.format(league=league.name.replace(" ", "+")), logger=logger
+            response = send_request_safe(
+                "get",
+                self.url.format(league=league.name.replace(" ", "+")),
+                logger=logger,
             )
             response_json = response.json()
 
@@ -112,25 +108,23 @@ class CurrencyAPIHandler:
 
     def get_currency_data(
         self, leagues: list[League], current_hours: dict[int, int]
-    ) -> dict[str, list[Currency]]:
+    ) -> dict[tuple[int, str], Currency]:
         """
         Returns a dict mapping trade name to list of the same currency per league
         """
-        id_to_league = {league.leagueId: league for league in leagues}
-        trade_name_to_currencies = self._get_latest_currencies(id_to_league.keys())
-        print(trade_name_to_currencies)
+        currencies = self._get_latest_currencies(leagues)
 
         leagues_needs_new_data = self._remove_old_currencies(
-            trade_name_to_currencies, leagues, current_hours
+            currencies, leagues, current_hours
         )
 
         if leagues_needs_new_data:
             exchange_ratios = self._get_new_data(leagues_needs_new_data)
-            trade_name_to_currencies.update(
+            currencies.update(
                 self.transformer.transform_and_insert(exchange_ratios, current_hours)
             )
 
-        return dict(trade_name_to_currencies)
+        return currencies
 
     def store_data_to_csv(self, path: str) -> None:
         """

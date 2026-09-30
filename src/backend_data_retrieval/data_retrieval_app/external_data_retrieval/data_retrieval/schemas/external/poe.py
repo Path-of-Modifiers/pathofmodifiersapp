@@ -1,35 +1,23 @@
 from __future__ import annotations
 
-from typing import Any
+import re
+from typing import TYPE_CHECKING
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import Field
 
+from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.base import (
+    PoeModel,
+)
+from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.internal.cache import (
+    CacheItem,
+    CacheStash,
+)
 
-class PoeModel(BaseModel):
-    model_config = ConfigDict(
-        extra="ignore",
-        populate_by_name=True,
+if TYPE_CHECKING:
+    # To avoid circular imports, while maintaining type hinting
+    from data_retrieval_app.external_data_retrieval.detectors.detector_controller import (
+        DetectorController,
     )
-
-
-class CacheItem(PoeModel):
-    id: str
-    note: str
-
-
-class CacheStash(PoeModel):
-    league: str
-    items: list[CacheItem]
-
-
-class ItemProperty(PoeModel):
-    name: str
-    values: list[list[Any]]
-    display_mode: int | None = Field(default=None, alias="displayMode")
-    progress: float | None = None
-    type: int | None = None
-    suffix: str | None = None
-    icon: str | None = None
 
 
 class ItemModFlags(PoeModel):
@@ -50,7 +38,7 @@ class Extended(PoeModel):
     suffixes: int | None = None
 
 
-class Item(PoeModel):
+class PoeItem(PoeModel):
     # Basic identity / display
     id: str | None = None
     name: str
@@ -58,7 +46,7 @@ class Item(PoeModel):
     base_type: str = Field(alias="baseType")
     rarity: str | None = None
 
-    # Item state
+    # PoeItem state
     verified: bool
     identified: bool
     corrupted: bool | None = None
@@ -163,22 +151,6 @@ class Item(PoeModel):
         alias="utilityMods",
     )
 
-    # Item properties
-    properties: list[ItemProperty] | None = None
-    notable_properties: list[ItemProperty] | None = Field(
-        default=None,
-        alias="notableProperties",
-    )
-    requirements: list[ItemProperty] | None = None
-    additional_properties: list[ItemProperty] | None = Field(
-        default=None,
-        alias="additionalProperties",
-    )
-    next_level_requirements: list[ItemProperty] | None = Field(
-        default=None,
-        alias="nextLevelRequirements",
-    )
-
     # Categories / misc
     category: dict[str, list[str]] | None = None
     flavour_text: list[str] | None = Field(
@@ -212,14 +184,21 @@ class Item(PoeModel):
     veiled: bool | None = None
     foreseeing: bool | None = None
 
-    def to_cache(self) -> CacheItem:
-        return CacheItem(id=self.id, note=self.note)
+    def to_cache(self, detector: DetectorController) -> CacheItem:
+        return CacheItem(
+            id=self.id, note=self.note, category=detector.get_category(self)
+        )
 
     def __eq__(self, other: CacheItem | object) -> bool:
         if isinstance(other, CacheItem):
             print(other)
             return other.id == self.id and other.note == self.note
         return super().__eq__(other)
+
+    def has_price(self) -> bool:
+        return self.note is not None and re.match(
+            r"^(~b\/o|~price) [0-9]*[.]?[0-9]+ [^ ]*$", self.note
+        )
 
 
 class Stash(PoeModel):
@@ -231,14 +210,19 @@ class Stash(PoeModel):
     stash_type: str = Field(alias="stashType")
     league: str | None = None
 
-    items: list[Item] = Field(default_factory=list)
+    items: list[PoeItem] = Field(default_factory=list)
 
-    def to_cache(self) -> CacheStash:
+    def to_cache(self, detector: DetectorController) -> CacheStash:
         return CacheStash(
-            league=self.league, items=[item.to_cache() for item in self.items]
+            league=self.league, items=[item.to_cache(detector) for item in self.items]
         )
 
-    def get_item(self, id: str) -> tuple[int, Item | None]:
+    def has_price(self) -> bool:
+        return self.stash is not None and re.match(
+            r"^(~b\/o|~price) \d+ [^ ]*$", self.stash
+        )
+
+    def get_item(self, id: str) -> tuple[int, PoeItem | None]:
         for i, item in enumerate(self.items):
             if item.id == id:
                 return i, item

@@ -5,15 +5,21 @@ import time
 from collections.abc import Iterator
 from concurrent.futures import Future, ThreadPoolExecutor
 from queue import Empty, Full, Queue
-from typing import Any, Literal
+from typing import Literal
 
 import httpx
 import pandas as pd
 import redis
 from backend_api.app.core.schemas.league import League
+from pydantic import TypeAdapter
 
-from data_retrieval_app.external_data_retrieval.cache import get_cache
 from data_retrieval_app.external_data_retrieval.config import settings
+from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.external.poe import (
+    Stash,
+)
+from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.internal.categorized import (
+    OrganizedItemsByCategory,
+)
 from data_retrieval_app.external_data_retrieval.data_retrieval.utils import (
     ByteResponse,
     RateLimiterThreadSafe,
@@ -22,11 +28,8 @@ from data_retrieval_app.external_data_retrieval.detectors.detector_controller im
     DetectorController,
 )
 from data_retrieval_app.external_data_retrieval.detectors.unique_detector import (
-    UniqueArmourDetector,
-    UniqueJewelDetector,
-    UniqueJewelleryDetector,
-    UniqueUnidentifiedDetector,
-    UniqueWeaponDetector,
+    # UnidentifiedUniqueDetector,
+    UniqueDetector,
 )
 from data_retrieval_app.external_data_retrieval.utils import (
     ProgramTooSlowException,
@@ -66,14 +69,10 @@ class PoEAPIHandler:
         if detector_controller is None:
             detector_controller = DetectorController(
                 [
-                    UniqueArmourDetector(),
-                    UniqueJewelDetector(),
-                    UniqueJewelleryDetector(),
-                    UniqueWeaponDetector(),
-                    UniqueUnidentifiedDetector(),
+                    UniqueDetector(),
+                    # UnidentifiedUniqueDetector(),
                 ],
                 leagues,
-                get_cache(),
             )
         self.url = url
         logger.debug("Url set to: " + self.url)
@@ -83,6 +82,8 @@ class PoEAPIHandler:
         logger.debug("Headers set to: " + str(self.headers))
 
         self.detector_controller = detector_controller
+
+        self.stashes_adapter = TypeAdapter(list[Stash])
 
         self.skip_program_too_slow = False
         logger.info("PoEAPIHandler successfully initialized.")
@@ -271,9 +272,9 @@ class PoEAPIHandler:
         return futures
 
     @sync_timing_tracker
-    def _read_stream(self) -> tuple[list[Any], str | None]:
+    def _read_stream(self) -> tuple[list[Stash], str | None]:
         i = 0
-        stashes = []
+        stashes = list[Stash]()
         next_change_id = None
         while i < self.mini_batch_size:
             try:
@@ -290,7 +291,7 @@ class PoEAPIHandler:
                 continue
 
             obj = json.loads(pending.response.decode("utf-8"))
-            stashes.extend(obj["stashes"])
+            stashes.extend(self.stashes_adapter.validate_python(obj["stashes"]))
             self.response_queue.task_done()
 
             next_change_id = pending.next_change_id
@@ -299,20 +300,14 @@ class PoEAPIHandler:
 
         return stashes, next_change_id
 
-    @sync_timing_tracker
-    def _process_stream(self, stashes: list) -> pd.DataFrame:
-        logger.info("Stashes are ready for processing")
-        self.detector_controller._filter_never_used(stashes)
-
-        logger.info("Finished processing the data, waiting for more")
-        # return wanted_df
-
-    def _gather_n_checkpoints(self, n: int) -> tuple[pd.DataFrame | None, str | None]:
-        df = None
+    def _gather_n_checkpoints(self, n: int) -> tuple[OrganizedItemsByCategory, str]:
+        all_organized_items = OrganizedItemsByCategory()
         for _ in range(n):
             start_time = time.perf_counter()
             stashes, next_change_id = self._read_stream()
-            wanted_df = self._process_stream(stashes)
+            organized_items = self.detector_controller.filter_stashes(
+                stashes, self.redis_cache
+            )
             end_time = time.perf_counter()
 
             time_per_mini_batch = end_time - start_time
@@ -325,27 +320,23 @@ class PoEAPIHandler:
                     # Does not allow a batch to take longer than 2 minutes
                     raise ProgramTooSlowException
 
-            if wanted_df.empty:
-                continue
+            all_organized_items.extend(organized_items)
 
-            if df is None:
-                df = wanted_df
-            else:
-                df = pd.concat((df, wanted_df))
+        return all_organized_items, next_change_id
 
-        return df, next_change_id
-
-    def dump_stream(self) -> Iterator[tuple[pd.DataFrame, str | None]]:
-        time.sleep(5)  # Waits for the listening threads to have time to start up.
+    def dump_stream(
+        self, cache: redis.Redis
+    ) -> Iterator[tuple[OrganizedItemsByCategory, str]]:
+        self.redis_cache = cache
+        # time.sleep(5)  # Waits for the listening threads to have time to start up.
         while True:
             logger.info("Waiting for data from the stream")
-            df, next_change_id = self._gather_n_checkpoints(
+            organized_items, next_change_id = self._gather_n_checkpoints(
                 n=settings.N_CHECKPOINTS_PER_TRANSFORMATION,
             )
-            if df is None:
+            if organized_items.is_empty():
                 logger.info("Found no data")
                 continue
             logger.info("Finished processing the stream, entering transformation phase")
-            yield df.reset_index(), next_change_id
-            del df
+            yield organized_items, next_change_id
             logger.info("Finished transformation phase")

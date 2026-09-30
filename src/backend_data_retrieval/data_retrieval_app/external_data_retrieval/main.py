@@ -6,9 +6,7 @@ from concurrent.futures import (
     ThreadPoolExecutor,
     wait,
 )
-from io import StringIO
 
-import pandas as pd
 import redis
 from backend_api.app.core.schemas.league import League
 from pydantic import TypeAdapter
@@ -22,8 +20,7 @@ from data_retrieval_app.external_data_retrieval.data_retrieval.poe_api_handler i
     PoEAPIHandler,
 )
 from data_retrieval_app.external_data_retrieval.transforming_data.transform_poe_api_data import (
-    PoEAPIDataTransformerBase,
-    UniquePoEAPIDataTransformer,
+    PoEAPIDataTransformer,
 )
 from data_retrieval_app.external_data_retrieval.utils import (
     ProgramTooSlowException,
@@ -41,21 +38,14 @@ class ContinuousDataRetrieval:
     stash_tab_url = "https://api.pathofexile.com/public-stash-tabs"
 
     backend_base_url = settings.BACKEND_BASE_URL
-    modifier_url = f"{backend_base_url}/modifier/"
     active_league_url = f"{backend_base_url}/league/active_league/"
-    item_base_type_url = f"{backend_base_url}/itemBaseType/"
     currency_url = f"{backend_base_url}/currency/"
     pom_auth_headers = get_superuser_token_headers(backend_base_url)
 
-    def __init__(
-        self,
-        data_transformers: dict[str, PoEAPIDataTransformerBase],
-    ):
+    def __init__(self):
         self.leagues = self._get_leagues()
-        self.data_transformers: dict[str, PoEAPIDataTransformerBase] = {
-            key: data_transformer(self.leagues)
-            for key, data_transformer in data_transformers.items()
-        }
+
+        self.data_transformer = PoEAPIDataTransformer(self.leagues)
 
         self.poe_api_handler = PoEAPIHandler(
             url=self.stash_tab_url,
@@ -67,35 +57,6 @@ class ContinuousDataRetrieval:
             url="https://api.poe.watch/exchange/ratios?league={league}&game=poe1"
         )
 
-    def _get_modifiers(self) -> dict[str, pd.DataFrame]:
-        response = get_data_safe(
-            self.modifier_url, headers=self.pom_auth_headers, logger=logger
-        )
-        # Check if the request was successful
-        modifier_df = pd.DataFrame()
-        # Load the JSON data into a pandas DataFrame
-        json_io = StringIO(response.content.decode("utf-8"))
-        modifier_df = pd.read_json(json_io, dtype=str)
-
-        modifier_types = [
-            "implicit",
-            "explicit",
-            "delve",
-            "fractured",
-            "synthesised",
-            "unique",
-            "corrupted",
-            "enchanted",
-            "veiled",
-        ]
-        modifier_dfs = {}
-        for modifier_type in modifier_types:
-            if modifier_type in modifier_df.columns:
-                modifier_dfs[modifier_type] = modifier_df.loc[
-                    ~modifier_df[modifier_type].isna()
-                ]
-        return modifier_dfs
-
     def _get_leagues(self) -> list[League]:
         response = get_data_safe(
             self.active_league_url, headers=self.pom_auth_headers, logger=logger
@@ -103,87 +64,29 @@ class ContinuousDataRetrieval:
 
         return TypeAdapter(list[League]).validate_python(response.json())
 
-    def _get_item_base_types(self) -> dict[str, int]:
-        response = get_data_safe(
-            self.item_base_type_url, headers=self.pom_auth_headers, logger=logger
-        )
-        item_base_type_mapped = {}
-        item_base_types = []
-
-        item_base_types = response.json()
-        if not isinstance(item_base_types, list):
-            item_base_types = [item_base_types]
-        for item_base_type in item_base_types:
-            item_base_type_id = item_base_type["itemBaseTypeId"]
-            base_type = item_base_type["baseType"]
-            item_base_type_mapped[base_type] = item_base_type_id
-
-        return item_base_type_mapped
-
-    def _categorize_new_items(self, df: pd.DataFrame) -> dict[str, pd.DataFrame]:
-        split_dfs = {}
-
-        # TODO not fully exhaustive yet, needs to be updated over time
-        # category_priority = [
-        # "synthesised",
-        # "fractured",
-        # "delve",
-        # "veiled",
-        # "unique",
-        # ]
-        # Needs to take priority, see nebulis and rational doctrine
-        # not_synth_mask = df["synthesised"].isna()
-        # split_dfs["synthesised"] = df.loc[~not_synth_mask]
-        # df = df.loc[not_synth_mask]
-
-        not_unique_mask = df["rarity"] != "Unique"
-        split_dfs["unique"] = df.loc[~not_unique_mask]
-        df = df.loc[not_unique_mask]
-
-        # for category in category_priority:
-        #     mask = df[category].isna()
-
-        #     split_dfs[category] = df.loc[~mask]
-        #     df = df.loc[mask]
-
-        return split_dfs
-
     def _follow_data_dump_stream(self, cache: redis.Redis):
         current_hours = find_hours_since_launch(self.leagues)
         # Only need to refer to one league to see when a new hour starts
         current_hour = current_hours[self.leagues[0].leagueId]
         next_hour = current_hour + 1
         logger.info("Retrieving modifiers from db.")
-        modifier_dfs = self._get_modifiers()
-        item_base_types = self._get_item_base_types()
-        print(self.leagues)
-        trade_name_to_currencies = self.currency_api_handler.get_currency_data(
+        currencies = self.currency_api_handler.get_currency_data(
             self.leagues, current_hours
         )
-        print(trade_name_to_currencies)
-        exit()
-        iter_data = self.poe_api_handler.dump_stream()
+        self.data_transformer.set_currencies(currencies)
+        self.data_transformer.set_current_hours(current_hours)
+        iter_data = self.poe_api_handler.dump_stream(cache)
         while current_hour < next_hour:
-            df, next_change_id = next(iter_data)
-            if df.empty:
-                continue
-            split_dfs = self._categorize_new_items(df)
-            for data_transformer_type in self.data_transformers:
-                self.data_transformers[data_transformer_type].transform_into_tables(
-                    df=split_dfs[data_transformer_type],
-                    modifier_df=modifier_dfs[data_transformer_type],
-                    # currency_df=currency_df.copy(deep=True),
-                    item_base_types=item_base_types,
-                    current_hours=current_hours,
-                )
+            organized_items, next_change_id = next(iter_data)
+            self.data_transformer.transform_and_insert(organized_items)
             if next_change_id is not None:
                 # Only set the next change id once the data has been safely inserted
                 cache.set("next_change_id", next_change_id)
 
             current_hours = find_hours_since_launch(self.leagues)
-            current_hour = current_hour = current_hours[self.leagues[0].leagueId]
-        for data_transformer_type in self.data_transformers:
-            self.data_transformers[data_transformer_type].end_of_hour_cleanup()
+            current_hour = current_hours[self.leagues[0].leagueId]
+
+        self.data_transformer.end_of_hour_cleanup()
 
     def retrieve_data(self):
         logger.info("Program starting up.")
@@ -268,11 +171,8 @@ class ContinuousDataRetrieval:
 def main():
     logger.info("Starting the program...")
     setup_logging()
-    data_transformers = {"unique": UniquePoEAPIDataTransformer}
 
-    data_retriever = ContinuousDataRetrieval(
-        data_transformers=data_transformers,
-    )
+    data_retriever = ContinuousDataRetrieval()
     data_retriever.retrieve_data()
 
 

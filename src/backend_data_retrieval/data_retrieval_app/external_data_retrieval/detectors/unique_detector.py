@@ -1,22 +1,91 @@
 from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.external.poe import (
-    Item,
+    PoeItem,
 )
-from data_retrieval_app.external_data_retrieval.detectors.base import DetectorBase
+from data_retrieval_app.external_data_retrieval.detectors.base import (
+    CategoryDetectorBase,
+    SubCategoryDetectorBase,
+)
 
 
-class UniqueDetector(DetectorBase):
+class UniqueJewelDetector(SubCategoryDetectorBase):
+    wanted_items = [
+        "Grand Spectrum",
+        "Forbidden Flesh",
+        "Forbidden Flame",
+        "The Balance of Terror",
+        "That Which Was Taken",
+        "Split Personality",
+        "Thread of Hope",
+        "The Adorned",
+        "Impossible Escape",
+        "Watcher's Eye",
+        "Bound By Destiny",
+        "Sublime Vision",
+        "The Light of Meaning",
+        "Glorious Vanity",
+        "Lethal Pride",
+        "Brutal Restraint",
+        "Militant Faith",
+        "Elegant Hubris",
+        "Voices",
+        "Heroic Tragedy",
+    ]
+
+    def __str__(self):
+        return "Unique Jewel Detector"
+
+
+class UniqueJewelleryDetector(SubCategoryDetectorBase):
+    wanted_items = [
+        "Aul's Uprising",
+        "Replica Dragonfang's Flight",
+        "The Utmost",
+        "Precursor's Emblem",
+        "Circle of Ambition",
+        "Circle of Guilt",
+        "Circle of Anguish",
+        "Circle of Regret",
+        "Circle of Fear",
+        "Circle of Nostalgia",
+        "Screams of the Desiccated",
+    ]
+
+    def __str__(self):
+        return "Unique Jewellery Detector"
+
+
+class UniqueArmourDetector(SubCategoryDetectorBase):
+    wanted_items = ["Forbidden Shako", "Skin of the Lords", "Shroud of the Lightless"]
+
+    def __str__(self):
+        return "Unique Armour Detector"
+
+
+class UniqueWeaponDetector(SubCategoryDetectorBase):
+    wanted_items = ["Paradoxica", "Cane of Kulemak"]
+
+    def __str__(self):
+        return "Unique Weapon Detector"
+
+
+class UniqueDetector(CategoryDetectorBase):
+    identifier = "unique"
+
     should_cache = True
 
-    def _is_wanted(self, item: Item) -> bool:
-        if item.rarity is None or item.rarity != "Unique":
-            return False
-        if item.name not in self.wanted_items:
-            return False
+    detectors = [
+        UniqueJewelDetector(),
+        UniqueJewelleryDetector(),
+        UniqueArmourDetector(),
+        UniqueWeaponDetector(),
+    ]
 
-        return True
+    def matches_category(self, item: PoeItem) -> bool:
+        return item.identified and item.rarity is not None and item.rarity == "Unique"
 
 
-class UniqueUnidentifiedDetector(UniqueDetector):
+class UnidentifiedUniqueDetector(CategoryDetectorBase):
+    # TODO separate this into sub categories
     """
     Notes:
     Precursor's Emblems, Shroud of the Lightless and Paradoxica are not supported.
@@ -30,6 +99,8 @@ class UniqueUnidentifiedDetector(UniqueDetector):
     Is this a problem?
         No, because they are not particularly sought after in their un-id form
     """
+
+    identifier = "unidentified_unique"
 
     should_cache = False
 
@@ -89,13 +160,15 @@ class UniqueUnidentifiedDetector(UniqueDetector):
         "Soulcord.png": "Screams of the Desiccated",
     }
 
-    def _is_wanted(self, item: Item) -> bool:
+    def matches_category(self, item: PoeItem) -> bool:
         """
         Uses the icon to identify which unique it is, then saving that name inplace.
         """
-        if item.identified:
-            return False
-        if item.base_type not in self.wanted_base_types:
+        if (
+            item.identified
+            or (item.rarity is None or item.rarity != "Unique")
+            or item.base_type not in self.wanted_base_types
+        ):
             return False
 
         icon = item.icon.split("/")[-1]
@@ -108,64 +181,3 @@ class UniqueUnidentifiedDetector(UniqueDetector):
 
     def __str__(self):
         return "Unidentifed Unique detector"
-
-
-class UniqueJewelDetector(UniqueDetector):
-    wanted_items = [
-        "Grand Spectrum",
-        "Forbidden Flesh",
-        "Forbidden Flame",
-        "The Balance of Terror",
-        "That Which Was Taken",
-        "Split Personality",
-        "Thread of Hope",
-        "The Adorned",
-        "Impossible Escape",
-        "Watcher's Eye",
-        "Bound By Destiny",
-        "Sublime Vision",
-        "The Light of Meaning",
-        "Glorious Vanity",
-        "Lethal Pride",
-        "Brutal Restraint",
-        "Militant Faith",
-        "Elegant Hubris",
-        "Voices",
-        "Heroic Tragedy",
-    ]
-
-    def __str__(self):
-        return "Unique Jewel Detector"
-
-
-class UniqueJewelleryDetector(UniqueDetector):
-    wanted_items = [
-        "Aul's Uprising",
-        "Replica Dragonfang's Flight",
-        "The Utmost",
-        "Precursor's Emblem",
-        "Circle of Ambition",
-        "Circle of Guilt",
-        "Circle of Anguish",
-        "Circle of Regret",
-        "Circle of Fear",
-        "Circle of Nostalgia",
-        "Screams of the Desiccated",
-    ]
-
-    def __str__(self):
-        return "Unique Jewellery Detector"
-
-
-class UniqueArmourDetector(UniqueDetector):
-    wanted_items = ["Forbidden Shako", "Skin of the Lords", "Shroud of the Lightless"]
-
-    def __str__(self):
-        return "Unique Armour Detector"
-
-
-class UniqueWeaponDetector(UniqueDetector):
-    wanted_items = ["Paradoxica", "Cane of Kulemak"]
-
-    def __str__(self):
-        return "Unique Weapon Detector"

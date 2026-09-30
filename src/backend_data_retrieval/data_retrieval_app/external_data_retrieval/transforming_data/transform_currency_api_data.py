@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections.abc import Iterator
 
 from backend_api.app.core.schemas.currency import (
     Currency,
@@ -13,7 +13,7 @@ from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.external.
 )
 from data_retrieval_app.logs.logger import transform_logger as logger
 from data_retrieval_app.pom_api_authentication import get_superuser_token_headers
-from data_retrieval_app.utils import post_data_safe
+from data_retrieval_app.utils import send_request_safe
 
 
 class TransformCurrencyAPIData:
@@ -32,11 +32,11 @@ class TransformCurrencyAPIData:
         self,
         exchange_ratios: list[ExchangeRatioItem],
         current_hours: dict[int, int],
-    ) -> dict[str, Currency]:
+    ) -> dict[tuple[int, str], Currency]:
         """
         Since a chaos orb is always worth one chaos orb, ninja does not include it in its price api.
         """
-        trade_name_to_currencies = defaultdict[str, list[Currency]](list)
+        currencies = dict[tuple[int, str], Currency]()
         for ratio in exchange_ratios:
             currency_type = self.name_to_currency.get(ratio.name)
             if currency_type is None:
@@ -61,7 +61,7 @@ class TransformCurrencyAPIData:
                 valueInChaos=value,
             )
 
-            trade_name_to_currencies[ratio.leagueId].append(currency)
+            currencies[currency.leagueId, currency.tradeName] = currency
 
         for league_id, current_hour in current_hours.items():
             name = "Chaos Orb"
@@ -76,26 +76,28 @@ class TransformCurrencyAPIData:
                 createdHoursSinceLaunch=current_hour,
                 valueInChaos=1,
             )
-            trade_name_to_currencies[league_id].append(chaos_currency)
+            currencies[
+                chaos_currency.leagueId, chaos_currency.tradeName
+            ] = chaos_currency
 
-        return dict(trade_name_to_currencies)
+        return currencies
 
-    def _insert(self, trade_name_to_currencies: dict[int, list[Currency]]):
+    def _insert(self, currencies: Iterator[Currency]):
         prices = list[CurrencyPriceCreate]()
-        for currencies in trade_name_to_currencies.values():
-            for currency in currencies:
-                prices.append(
-                    CurrencyPriceCreate(
-                        currencyId=currency.currencyId,
-                        leagueId=currency.leagueId,
-                        createdHoursSinceLaunch=currency.createdHoursSinceLaunch,
-                        valueInChaos=currency.valueInChaos,
-                    )
+        for currency in currencies:
+            prices.append(
+                CurrencyPriceCreate(
+                    currencyId=currency.currencyId,
+                    leagueId=currency.leagueId,
+                    createdHoursSinceLaunch=currency.createdHoursSinceLaunch,
+                    valueInChaos=currency.valueInChaos,
                 )
+            )
 
         headers = {"accept": "application/json", "Content-Type": "application/json"}
         headers.update(self.pom_api_headers)
-        post_data_safe(
+        send_request_safe(
+            "post",
             self.url,
             json=TypeAdapter(list[CurrencyPriceCreate]).dump_python(prices),
             headers=headers,
@@ -103,11 +105,11 @@ class TransformCurrencyAPIData:
 
     def transform_and_insert(
         self, exchange_ratios: list[ExchangeRatioItem], current_hours: dict[int, int]
-    ) -> dict[int, list[Currency]]:
+    ) -> dict[tuple[int, str], Currency]:
         logger.debug("Transforming exchange ratios into currencies.")
-        trade_name_to_currencies = self._transform(exchange_ratios, current_hours)
+        currencies = self._transform(exchange_ratios, current_hours)
         logger.debug("Inserting currency prices.")
-        self._insert(trade_name_to_currencies)
+        self._insert(currencies.values())
         logger.debug("Successfully inserted currency data into database.")
 
-        return trade_name_to_currencies
+        return currencies

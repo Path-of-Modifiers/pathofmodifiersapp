@@ -53,6 +53,8 @@ class Settings(BaseSettings):
     MINI_BATCH_SIZE: int = 30
     N_CHECKPOINTS_PER_TRANSFORMATION: int = 10
 
+    MAX_MIRROR_PRICE: int = 5
+
     MAX_TIME_PER_MINI_BATCH: int = 3 * 60
 
 
