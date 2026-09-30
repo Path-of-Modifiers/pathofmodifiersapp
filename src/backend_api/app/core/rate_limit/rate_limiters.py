@@ -23,7 +23,7 @@ def default_limit_provider() -> list[str]:
 limiter_user = Limiter(
     key_func=get_username_by_request,
     default_limits=default_limit_provider(),
-    storage_uri=str(settings.CACHE_URI),
+    storage_uri=str(settings.API_CACHE_URI),
     headers_enabled=True,
     enabled=settings.RATE_LIMIT,
 )
@@ -32,7 +32,7 @@ limiter_user = Limiter(
 limiter_ip = Limiter(
     key_func=get_user_ip_from_header,
     default_limits=default_limit_provider(),
-    storage_uri=str(settings.CACHE_URI),
+    storage_uri=str(settings.API_CACHE_URI),
     headers_enabled=True,
     enabled=settings.RATE_LIMIT,
 )
