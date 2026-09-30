@@ -87,6 +87,9 @@ class ModifierDataDepositor(DataDepositorBase):
                     update_regex = True  # regex contains text rolls
 
             if roll_need_update:
+                if updated_modifier.rolls is None:
+                    updated_modifier.rolls = list[ModifierRoll]()
+
                 updated_modifier.rolls.append(updated_roll)
                 need_update = True
 

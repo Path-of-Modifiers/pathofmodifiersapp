@@ -61,8 +61,9 @@ class Modifier(ModifierBase):
 
 
 class GroupedModifier(Modifier):
-    rolls: list[ModifierRoll] = _pydantic.Field(default_factory=list)
+    rolls: list[ModifierRoll]
 
 
-class ModifierUpdate(GroupedModifier):
+class ModifierUpdate(Modifier):
+    rolls: list[ModifierRoll] | None = None
     effect: str | None = None

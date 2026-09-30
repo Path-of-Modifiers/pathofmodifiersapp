@@ -101,7 +101,7 @@ def upgrade() -> None:
         batch_op.drop_column("maxRoll")
         batch_op.drop_column("textRolls")
         batch_op.create_primary_key("pk_modifier", ["modifierId"])
-        batch_op.create_unique_constraint("uq_effect")
+        batch_op.create_unique_constraint("uq_effect", ["effect"])
 
     with op.batch_alter_table("modifier_roll") as batch_op:
         batch_op.create_foreign_key(

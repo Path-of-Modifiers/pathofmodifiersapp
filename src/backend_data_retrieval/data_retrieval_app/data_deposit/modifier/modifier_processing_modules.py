@@ -8,9 +8,9 @@ class ModifierRegexCreator:
         regex = effect.replace("+", "[+-]")
         for roll in rolls:
             if roll.textRolls is not None:
-                effect = effect.replace("#", f"({roll.textRolls})", 1)
+                regex = regex.replace("#", f"({"|".join(roll.textRolls)})", 1)
             else:
-                effect = effect.replace("#", r"([0-9]*[.]?[0-9]+)", 1)
+                regex = regex.replace("#", r"([0-9]*[.]?[0-9]+)", 1)
 
         regex = re.sub(r"increased|reduced", "(increased|reduced)", regex)
 

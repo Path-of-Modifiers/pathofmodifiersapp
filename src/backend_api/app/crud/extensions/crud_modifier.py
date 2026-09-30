@@ -56,16 +56,24 @@ class CRUDModifier(
         update_modifier_stmt = (
             update(model_Modifier)
             .where(model_Modifier.modifierId == modifier.modifierId)
-            .values(**modifier.model_dump(exclude_unset=True, exclude_none=True))
+            .values(
+                **modifier.model_dump(
+                    exclude_unset=True, exclude_none=True, exclude={"rolls"}
+                )
+            )
         )
         db.execute(update_modifier_stmt)
 
-        modifier_rolls = [
-            {"modifierId": modifier.modifierId, **roll.model_dump(exclude_unset=True)}
-            for roll in modifier.rolls
-        ]
-        if modifier_rolls:
+        if modifier.rolls is not None:
+            modifier_rolls = [
+                {
+                    "modifierId": modifier.modifierId,
+                    **roll.model_dump(exclude_unset=True),
+                }
+                for roll in modifier.rolls
+            ]
             db.execute(update(model_ModifierRoll), modifier_rolls)
+
         db.commit()
 
     async def get_grouped_modifiers(self, db: Session) -> list[GroupedModifier]:

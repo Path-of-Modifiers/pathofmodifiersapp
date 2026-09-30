@@ -321,6 +321,10 @@ class ItemModifier(Base):
         SmallInteger,
         nullable=False,
     )
+    instance: Mapped[int] = mapped_column(
+        SmallInteger,
+        nullable=False,
+    )  # a modifier can appear multiple times on an item (eg. forbidden shako)
     roll: Mapped[float | None] = mapped_column(
         Float(4),
     )
