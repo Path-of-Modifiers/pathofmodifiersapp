@@ -1,8 +1,9 @@
 import uuid
 from datetime import datetime
 
+from backend_api.app.core.models.database import Base
 from sqlalchemy import (
-    BigInteger,
+    ARRAY,
     Boolean,
     CheckConstraint,
     DateTime,
@@ -16,12 +17,11 @@ from sqlalchemy import (
     SmallInteger,
     String,
     Text,
+    UniqueConstraint,
     func,
 )
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column
-
-from app.core.models.database import Base
 
 
 class League(Base):
@@ -36,17 +36,31 @@ class League(Base):
     version: Mapped[float] = mapped_column(Float, nullable=False)
 
 
-class Currency(Base):
-    __tablename__ = "currency"
-
-    currencyId: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
-    createdHoursSinceLaunch: Mapped[int] = mapped_column(SmallInteger, nullable=False)
-    valueInChaos: Mapped[float] = mapped_column(Float(4), nullable=False)
+class CurrencyType(Base):
+    __tablename__ = "currency_type"
+    currencyId: Mapped[int] = mapped_column(SmallInteger, Identity(), primary_key=True)
+    name: Mapped[str] = mapped_column(Text, nullable=False)
     tradeName: Mapped[str] = mapped_column(Text, nullable=False)
-    leagueId: Mapped[SmallInteger] = mapped_column(
+
+
+class CurrencyPrice(Base):
+    __tablename__ = "currency_price"
+
+    currencyId: Mapped[int] = mapped_column(
+        SmallInteger,
+        ForeignKey("currency_type.currencyId", ondelete="RESTRICT", onupdate="CASCADE"),
+        nullable=False,
+    )
+    leagueId: Mapped[int] = mapped_column(
         SmallInteger,
         ForeignKey("league.leagueId", ondelete="RESTRICT", onupdate="CASCADE"),
         nullable=False,
+    )
+    createdHoursSinceLaunch: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    valueInChaos: Mapped[float] = mapped_column(Float(4), nullable=False)
+
+    __table_args__ = (
+        PrimaryKeyConstraint("currencyId", "leagueId", "createdHoursSinceLaunch"),
     )
 
 
@@ -68,6 +82,92 @@ class ItemBaseType(Base):
     relatedUniques: Mapped[str | None] = mapped_column(Text)
 
 
+class ItemAvailability(Base):
+    __tablename__ = "item_availability"
+
+    availabilityId: Mapped[int] = mapped_column(
+        Integer, primary_key=True, autoincrement=True
+    )
+    itemId: Mapped[str] = mapped_column(
+        Integer,
+        ForeignKey("item.itemId", ondelete="CASCADE", onupdate="CASCADE"),
+        nullable=False,
+    )
+
+    currencyId: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("currency_type.currencyId", ondelete="RESTRICT", onupdate="CASCADE"),
+        nullable=False,
+    )
+    currencyAmount: Mapped[float] = mapped_column(Float(4), nullable=False)
+
+    validFrom: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    validTo: Mapped[int | None] = mapped_column(SmallInteger, nullable=True)
+
+    isAsync: Mapped[bool | None] = mapped_column(Boolean, nullable=False)
+
+    __table_args__ = (
+        Index("ix_item_id_valid_from", "itemId", "validFrom"),
+        UniqueConstraint("itemId", "validFrom"),
+        CheckConstraint(
+            """
+                item_availability."validTo" IS NULL
+                OR item_availability."validTo" > item_availability."validFrom"
+            """,
+            name="check_positive_duration",
+        ),
+    )
+
+
+class Item(Base):
+    __tablename__ = "item"
+    itemId: Mapped[int] = mapped_column(
+        Integer,
+        Identity(start=1, increment=1),
+        primary_key=True,
+    )
+    gameItemId: Mapped[str | None] = mapped_column(Text, nullable=False)
+    leagueId: Mapped[SmallInteger] = mapped_column(
+        SmallInteger,
+        ForeignKey("league.leagueId", ondelete="CASCADE", onupdate="CASCADE"),
+        nullable=False,
+    )
+    firstObserved: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    name: Mapped[str] = mapped_column(Text, nullable=False)
+    itemBaseTypeId: Mapped[int] = mapped_column(
+        SmallInteger,
+        ForeignKey(
+            "item_base_type.itemBaseTypeId", ondelete="RESTRICT", onupdate="CASCADE"
+        ),
+        nullable=False,
+    )
+    ilvl: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    rarity: Mapped[str] = mapped_column(Text, nullable=False)
+
+    identified: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    corrupted: Mapped[bool | None] = mapped_column(Boolean)
+
+    fractured: Mapped[bool | None] = mapped_column(Boolean)
+    synthesised: Mapped[bool | None] = mapped_column(Boolean)
+    replica: Mapped[bool | None] = mapped_column(Boolean)
+    searing: Mapped[bool | None] = mapped_column(Boolean)
+    tangled: Mapped[bool | None] = mapped_column(Boolean)
+    influences: Mapped[dict[str, str] | None] = mapped_column(
+        JSONB
+    )  # elder, shaper, warlord etc
+
+    __table_args__ = (
+        Index(
+            "ix_item_leagueId_itemBaseTypeId",
+            "leagueId",
+            "itemBaseTypeId",
+        ),
+        UniqueConstraint(
+            "gameItemId", "leagueId", name="uq_item_game_item_id_league_id"
+        ),
+    )
+
+
 class _ItemBase:
     name: Mapped[str | None] = mapped_column(Text, nullable=False)
     itemBaseTypeId: Mapped[int] = mapped_column(
@@ -84,51 +184,20 @@ class _ItemBase:
         nullable=False,
     )
     itemId: Mapped[int] = mapped_column(
-        BigInteger,
+        Integer,
         Identity(start=1, increment=1, always=True),
         primary_key=True,  # Primary key constraint gets removed on hypertable creation
     )
+
     currencyId: Mapped[int] = mapped_column(
         Integer,
-        ForeignKey("currency.currencyId", ondelete="RESTRICT"),
+        ForeignKey("currency_type.currencyId", ondelete="RESTRICT"),
         index=True,
         nullable=False,
     )
     ilvl: Mapped[int] = mapped_column(SmallInteger, nullable=False)
     currencyAmount: Mapped[float] = mapped_column(Float(4), nullable=False)
     rarity: Mapped[str] = mapped_column(Text, nullable=False)
-
-
-class Item(_ItemBase, Base):
-    # Hypertable
-    # For hypertable specs, see alembic revision `cc29b89156db'
-    __tablename__ = "item"
-    # TODO do something about None and make it not nullable
-    gameItemId: Mapped[str | None] = mapped_column(Text)
-    prefixes: Mapped[int | None] = mapped_column(SmallInteger)
-    suffixes: Mapped[int | None] = mapped_column(SmallInteger)
-    foilVariation: Mapped[int | None] = mapped_column(SmallInteger)
-    identified: Mapped[bool] = mapped_column(Boolean, nullable=False)
-    corrupted: Mapped[bool | None] = mapped_column(Boolean)
-    delve: Mapped[bool | None] = mapped_column(Boolean)
-    fractured: Mapped[bool | None] = mapped_column(Boolean)
-    synthesised: Mapped[bool | None] = mapped_column(Boolean)
-    replica: Mapped[bool | None] = mapped_column(Boolean)
-    searing: Mapped[bool | None] = mapped_column(Boolean)
-    tangled: Mapped[bool | None] = mapped_column(Boolean)
-    influences: Mapped[dict[str, str] | None] = mapped_column(
-        JSONB
-    )  # elder, shaper, warlord etc
-
-    __table_args__ = (
-        Index(
-            "ix_item_name_itemBaseTypeId_createdHoursSinceLaunch_leagueId",
-            "name",
-            "itemBaseTypeId",
-            "createdHoursSinceLaunch",
-            "leagueId",
-        ),
-    )
 
 
 class UnidentifiedItem(_ItemBase, Base):
@@ -163,10 +232,14 @@ class UnidentifiedItem(_ItemBase, Base):
 class Modifier(Base):
     __tablename__ = "modifier"
 
-    modifierId: Mapped[int] = mapped_column(SmallInteger, nullable=False)
-    position: Mapped[int] = mapped_column(SmallInteger, nullable=False)
-    minRoll: Mapped[float | None] = mapped_column(Float(4))
-    maxRoll: Mapped[float | None] = mapped_column(Float(4))
+    modifierId: Mapped[int] = mapped_column(SmallInteger, primary_key=True)
+
+    static: Mapped[bool | None] = mapped_column(Boolean)
+    effect: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
+    regex: Mapped[str | None] = mapped_column(Text)
+
+    relatedUniques: Mapped[str | None] = mapped_column(Text)
+
     implicit: Mapped[bool | None] = mapped_column(Boolean)
     explicit: Mapped[bool | None] = mapped_column(Boolean)
     delve: Mapped[bool | None] = mapped_column(Boolean)
@@ -176,11 +249,7 @@ class Modifier(Base):
     corrupted: Mapped[bool | None] = mapped_column(Boolean)
     enchanted: Mapped[bool | None] = mapped_column(Boolean)
     veiled: Mapped[bool | None] = mapped_column(Boolean)
-    static: Mapped[bool | None] = mapped_column(Boolean)
-    effect: Mapped[str] = mapped_column(Text, nullable=False)
-    relatedUniques: Mapped[str | None] = mapped_column(Text)
-    textRolls: Mapped[str | None] = mapped_column(Text)
-    regex: Mapped[str | None] = mapped_column(Text)
+
     createdAt: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=func.now(), nullable=False
     )
@@ -190,29 +259,15 @@ class Modifier(Base):
     )
 
     __table_args__ = (
-        PrimaryKeyConstraint("modifierId", "position"),
         CheckConstraint(
             """
             CASE
                 WHEN (modifier.static = TRUE)
                 THEN (
-                        (modifier."minRoll" IS NULL AND modifier."maxRoll" IS NULL)
-                        AND modifier."textRolls" IS NULL
-                        AND modifier.regex IS NULL
+                        modifier.regex IS NULL
                     )
                 ELSE (
-                        (
-                            (
-                                (modifier."minRoll" IS NOT NULL AND modifier."maxRoll" IS NOT NULL)
-                                AND modifier."textRolls" IS NULL
-                            )
-                            OR
-                            (
-                                (modifier."minRoll" IS  NULL AND modifier."maxRoll" IS  NULL)
-                                AND modifier."textRolls" IS NOT NULL
-                            )
-                        )
-                        AND modifier.regex IS NOT NULL
+                        modifier.regex IS NOT NULL
                     )
             END
             """,
@@ -232,18 +287,38 @@ class Modifier(Base):
             """,
             name="check_modifier_if_not_static_then_modifier_contains_hashtag",
         ),
+    )
+
+
+class ModifierRoll(Base):
+    __tablename__ = "modifier_roll"
+
+    modifierId: Mapped[int] = mapped_column(
+        SmallInteger,
+        ForeignKey("modifier.modifierId", ondelete="CASCADE", onupdate="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    position: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    minRoll: Mapped[float | None] = mapped_column(Float(4))
+    maxRoll: Mapped[float | None] = mapped_column(Float(4))
+    textRolls: Mapped[list[str] | None] = mapped_column(ARRAY(Text()))
+
+    __table_args__ = (
+        PrimaryKeyConstraint("modifierId", "position"),
         CheckConstraint(
-            """ modifier."maxRoll" >= modifier."minRoll" """,
+            """ modifier_roll."maxRoll" >= modifier_roll."minRoll" """,
             name="check_modifier_maxRoll_greaterThan_minRoll",
         ),
     )
 
 
 class ItemModifier(Base):
-    # Hypertable
-    # For hypertable specs, see alembic revision `cc29b89156db'
-
     __tablename__ = "item_modifier"
+    itemId: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+    )
 
     modifierId: Mapped[int] = mapped_column(
         SmallInteger,
@@ -253,27 +328,24 @@ class ItemModifier(Base):
         SmallInteger,
         nullable=False,
     )
-    createdHoursSinceLaunch: Mapped[int] = mapped_column(SmallInteger, nullable=False)
-    itemId: Mapped[int] = mapped_column(
-        BigInteger,
+    instance: Mapped[int] = mapped_column(
+        SmallInteger,
         nullable=False,
-        primary_key=True,  # Primary key constraint gets removed on hypertable creation
-    )
+    )  # a modifier can appear multiple times on an item (eg. forbidden shako)
     roll: Mapped[float | None] = mapped_column(
         Float(4),
     )
     __table_args__ = (
+        PrimaryKeyConstraint("itemId", "modifierId", "position"),
         ForeignKeyConstraint(
             ["modifierId", "position"],
-            ["modifier.modifierId", "modifier.position"],
+            ["modifier_roll.modifierId", "modifier_roll.position"],
             ondelete="CASCADE",
             onupdate="CASCADE",
         ),
         Index(
-            "ix_item_modifierId_createdHoursSinceLaunch_roll_itemId",
+            "ix_item_modifierId_itemId",
             "modifierId",
-            "createdHoursSinceLaunch",
-            "roll",
             "itemId",
         ),
     )

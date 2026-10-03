@@ -6,6 +6,23 @@ from logging import Logger
 
 import pytest
 import pytest_asyncio
+from backend_api.app.api.deps import get_async_db, get_db
+from backend_api.app.core.cache.cache import cache
+from backend_api.app.core.cache.user_cache import UserCache, UserCacheTokenType
+from backend_api.app.core.config import settings
+from backend_api.app.core.models.init_db import init_db
+from backend_api.app.core.rate_limit.rate_limiters import limiter_ip, limiter_user
+from backend_api.app.main import app as actual_app
+from backend_api.app.tests.test_simulating_env.setup_test_database import (
+    ASYNC_TEST_DATABASE_URL,
+    TEST_DATABASE_URL,
+)
+from backend_api.app.tests.utils.database_utils import (
+    clear_all_tables,
+    mock_src_database_for_test_db,
+)
+from backend_api.app.tests.utils.user import authentication_token_from_email
+from backend_api.app.tests.utils.utils import get_superuser_token_headers
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from httpx import ASGITransport, AsyncClient
@@ -18,24 +35,6 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from sqlalchemy.orm import Session
-
-from app.api.deps import get_async_db, get_db
-from app.core.cache.cache import cache
-from app.core.cache.user_cache import UserCache, UserCacheTokenType
-from app.core.config import settings
-from app.core.models.init_db import init_db
-from app.core.rate_limit.rate_limiters import limiter_ip, limiter_user
-from app.main import app as actual_app
-from app.tests.test_simulating_env.setup_test_database import (
-    ASYNC_TEST_DATABASE_URL,
-    TEST_DATABASE_URL,
-)
-from app.tests.utils.database_utils import (
-    clear_all_tables,
-    mock_src_database_for_test_db,
-)
-from app.tests.utils.user import authentication_token_from_email
-from app.tests.utils.utils import get_superuser_token_headers
 
 
 @pytest.fixture(autouse=True)

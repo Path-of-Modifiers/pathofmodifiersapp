@@ -5,24 +5,31 @@ import time
 from collections.abc import Iterator
 from concurrent.futures import Future, ThreadPoolExecutor
 from queue import Empty, Full, Queue
-from typing import Any, Literal
+from typing import Literal
 
 import httpx
 import pandas as pd
 import redis
+from backend_api.app.core.schemas.league import League
+from pydantic import TypeAdapter
 
 from data_retrieval_app.external_data_retrieval.config import settings
+from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.external.poe import (
+    Stash,
+)
+from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.internal.categorized import (
+    OrganizedItemsByCategory,
+)
 from data_retrieval_app.external_data_retrieval.data_retrieval.utils import (
     ByteResponse,
     RateLimiterThreadSafe,
 )
+from data_retrieval_app.external_data_retrieval.detectors.detector_controller import (
+    DetectorController,
+)
 from data_retrieval_app.external_data_retrieval.detectors.unique_detector import (
-    UniqueArmourDetector,
+    # UnidentifiedUniqueDetector,
     UniqueDetector,
-    UniqueJewelDetector,
-    UniqueJewelleryDetector,
-    UniqueUnidentifiedDetector,
-    UniqueWeaponDetector,
 )
 from data_retrieval_app.external_data_retrieval.utils import (
     ProgramTooSlowException,
@@ -40,7 +47,7 @@ class PoEAPIHandler:
     """
 
     headers = {
-        "User-Agent": f"OAuth pathofmodifiers/0.1.0 (contact: {settings.OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
+        "User-Agent": f"OAuth pathofmodifiers/{settings.TAG} (contact: {settings.OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
     }
 
     def __init__(
@@ -48,8 +55,8 @@ class PoEAPIHandler:
         url: str,
         auth_token: str,
         *,
-        leagues: list[dict[str, Any]],
-        item_detectors: list[UniqueDetector] | None = None,
+        leagues: list[League],
+        detector_controller: DetectorController | None = None,
     ) -> None:
         """
         Parameters:
@@ -59,15 +66,14 @@ class PoEAPIHandler:
         """
         logger.debug("Initializing PoEAPIHandler.")
         self.leagues = leagues
-        if item_detectors is None:
-            item_detectors = [
-                UniqueArmourDetector(leagues),
-                UniqueJewelDetector(leagues),
-                UniqueJewelleryDetector(leagues),
-                UniqueWeaponDetector(leagues),
-                UniqueUnidentifiedDetector(leagues),
-            ]
-        logger.debug("Item detectors set to: " + str(item_detectors))
+        if detector_controller is None:
+            detector_controller = DetectorController(
+                [
+                    UniqueDetector(),
+                    # UnidentifiedUniqueDetector(),
+                ],
+                leagues,
+            )
         self.url = url
         logger.debug("Url set to: " + self.url)
         self.auth_token = auth_token
@@ -75,74 +81,12 @@ class PoEAPIHandler:
 
         logger.debug("Headers set to: " + str(self.headers))
 
-        self.item_detectors = item_detectors
-        logger.debug("Item detectors set to: " + str(self.item_detectors))
+        self.detector_controller = detector_controller
+
+        self.stashes_adapter = TypeAdapter(list[Stash])
 
         self.skip_program_too_slow = False
         logger.info("PoEAPIHandler successfully initialized.")
-
-    def _json_to_df(self, stashes: list) -> pd.DataFrame | None:
-        df_temp = pd.json_normalize(stashes)
-
-        if "items" not in df_temp.columns:
-            return None
-
-        df_temp = df_temp.explode(["items"])
-
-        df_temp = df_temp.loc[~df_temp["items"].isnull()]
-
-        df_temp.drop("items", axis=1, inplace=True)
-
-        df = pd.json_normalize(stashes, record_path=["items"])
-
-        df["stash_index"] = df_temp.index
-
-        df_temp.index = df.index
-
-        df[df_temp.columns.to_list()] = df_temp
-
-        return df
-
-    def _detector_filter(self, stashes: list) -> pd.DataFrame:
-        """
-        Parameters:
-            :param stashes: (list) A list of stash objects
-        """
-        df_wanted = pd.DataFrame()
-        n_new_items = 0
-        n_total_unique_items = 0
-        df = self._json_to_df(stashes)
-        if df is None:
-            return df_wanted
-
-        # The stashes are fed to all item detectors, slowly being filtered down
-        try:
-            for item_detector in self.item_detectors:
-                (
-                    df_filtered,
-                    item_count,
-                    n_unique_found_items,
-                    df_leftover,
-                ) = item_detector.iterate_stashes(df)
-
-                df_wanted = pd.concat((df_wanted, df_filtered))
-
-                del df_filtered
-
-                n_new_items += item_count
-                n_total_unique_items += n_unique_found_items
-                if df_leftover.empty:
-                    break
-
-                df = df_leftover.copy(deep=True)
-                del df_leftover
-        except Exception as e:
-            logger.exception(
-                f"While checking stashes (detector: {item_detector}), this exception occured: {e}"
-            )
-            raise
-
-        return df_wanted.reset_index()
 
     def _get_latest_change_id(self) -> str:
         """
@@ -192,9 +136,7 @@ class PoEAPIHandler:
                     # pick up from latest checkpoint
                     if listener_id == 0:
                         logger.debug("Main listener initiating the ping-pong again")
-                        change_id = cache.get(
-                            f"next_change_id:{self.leagues[0]["name"]}"
-                        )
+                        change_id = cache.get(f"next_change_id:{self.leagues[0].name}")
                         if change_id is None:
                             change_id = self.initial_change_id
                         # Make sure second listener also resets
@@ -202,7 +144,11 @@ class PoEAPIHandler:
                         reset_event.clear()
                 else:
                     if sent_outgoing:
-                        change_id = incoming.get()
+                        try:
+                            # The timeout is to avoid getting stuck when the other listener has stopped
+                            change_id = incoming.get(timeout=10)
+                        except Empty:
+                            continue
 
                 sent_outgoing = False
 
@@ -330,9 +276,9 @@ class PoEAPIHandler:
         return futures
 
     @sync_timing_tracker
-    def _read_stream(self) -> tuple[list[Any], str | None]:
+    def _read_stream(self) -> tuple[list[Stash], str | None]:
         i = 0
-        stashes = []
+        stashes = list[Stash]()
         next_change_id = None
         while i < self.mini_batch_size:
             try:
@@ -349,7 +295,7 @@ class PoEAPIHandler:
                 continue
 
             obj = json.loads(pending.response.decode("utf-8"))
-            stashes.extend(obj["stashes"])
+            stashes.extend(self.stashes_adapter.validate_python(obj["stashes"]))
             self.response_queue.task_done()
 
             next_change_id = pending.next_change_id
@@ -358,19 +304,14 @@ class PoEAPIHandler:
 
         return stashes, next_change_id
 
-    @sync_timing_tracker
-    def _process_stream(self, stashes: list) -> pd.DataFrame:
-        logger.info("Stashes are ready for processing")
-        wanted_df = self._detector_filter(stashes)
-        logger.info("Finished processing the data, waiting for more")
-        return wanted_df
-
-    def _gather_n_checkpoints(self, n: int) -> tuple[pd.DataFrame | None, str | None]:
-        df = None
+    def _gather_n_checkpoints(self, n: int) -> tuple[OrganizedItemsByCategory, str]:
+        all_organized_items = OrganizedItemsByCategory()
         for _ in range(n):
             start_time = time.perf_counter()
             stashes, next_change_id = self._read_stream()
-            wanted_df = self._process_stream(stashes)
+            organized_items = self.detector_controller.filter_stashes(
+                stashes, self.redis_cache
+            )
             end_time = time.perf_counter()
 
             time_per_mini_batch = end_time - start_time
@@ -383,27 +324,23 @@ class PoEAPIHandler:
                     # Does not allow a batch to take longer than 2 minutes
                     raise ProgramTooSlowException
 
-            if wanted_df.empty:
-                continue
+            all_organized_items.extend(organized_items)
 
-            if df is None:
-                df = wanted_df
-            else:
-                df = pd.concat((df, wanted_df))
+        return all_organized_items, next_change_id
 
-        return df, next_change_id
-
-    def dump_stream(self) -> Iterator[tuple[pd.DataFrame, str | None]]:
-        time.sleep(5)  # Waits for the listening threads to have time to start up.
+    def dump_stream(
+        self, cache: redis.Redis
+    ) -> Iterator[tuple[OrganizedItemsByCategory, str]]:
+        self.redis_cache = cache
+        # time.sleep(5)  # Waits for the listening threads to have time to start up.
         while True:
             logger.info("Waiting for data from the stream")
-            df, next_change_id = self._gather_n_checkpoints(
+            organized_items, next_change_id = self._gather_n_checkpoints(
                 n=settings.N_CHECKPOINTS_PER_TRANSFORMATION,
             )
-            if df is None:
+            if organized_items.is_empty():
                 logger.info("Found no data")
                 continue
             logger.info("Finished processing the stream, entering transformation phase")
-            yield df.reset_index(), next_change_id
-            del df
+            yield organized_items, next_change_id
             logger.info("Finished transformation phase")

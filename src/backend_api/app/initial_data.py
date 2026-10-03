@@ -1,9 +1,8 @@
 import logging
 
+from backend_api.app.core.models.database import engine
+from backend_api.app.core.models.init_db import init_db
 from sqlalchemy.orm import Session
-
-from app.core.models.database import engine
-from app.core.models.init_db import init_db
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

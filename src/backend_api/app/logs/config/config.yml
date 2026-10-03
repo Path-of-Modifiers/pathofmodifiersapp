@@ -5,7 +5,7 @@ formatters:
     format: "[%(name)s|%(levelname)s|%(module)s]: %(asctime)s: %(message)s"
     datefmt: "%Y-%m-%dT%H:%M:%S%z"
   json:
-    (): app.logs.config.JSONFormatter
+    (): backend_api.app.logs.config.JSONFormatter
     fmt_keys:
       logger: name
       level: levelname
@@ -13,9 +13,9 @@ formatters:
       message: message
 filters:
   sensitive_data_filter:
-    (): app.logs.config.SensitiveDataFilter
+    (): backend_api.app.logs.config.SensitiveDataFilter
   unwanted_data_filter:
-    (): app.logs.config.UnwantedDataFilter
+    (): backend_api.app.logs.config.UnwantedDataFilter
 handlers:
   stdout:
     class: logging.StreamHandler
@@ -34,7 +34,7 @@ handlers:
     level: DEBUG
     filters: [sensitive_data_filter]
     formatter: simple
-    filename: "app/logs/backend-api.log"
+    filename: "backend_api/app/logs/backend-api.log"
     maxBytes: 504857600 # 500 MB
     backupCount: 2
 loggers:

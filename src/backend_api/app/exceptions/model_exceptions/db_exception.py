@@ -1,10 +1,9 @@
 from typing import Any
 
 import starlette.status as status
-
-from app.core.models.models import User as model_User
-from app.exceptions.exception_base import PathOfModifiersAPIError
-from app.logs.logger import logger
+from backend_api.app.core.models.models import User as model_User
+from backend_api.app.exceptions.exception_base import PathOfModifiersAPIError
+from backend_api.app.logs.logger import logger
 
 HIDDEN_TABLE_LIST = [model_User.__tablename__]
 

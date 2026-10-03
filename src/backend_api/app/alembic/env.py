@@ -6,8 +6,8 @@ from sqlalchemy import pool
 import os
 from alembic import context
 
-from app.core.models.models import Base
-from app.core.config import settings
+from backend_api.app.core.models.models import Base
+from backend_api.app.core.config import settings
 
 
 def get_url():

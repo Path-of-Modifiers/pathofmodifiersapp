@@ -3,8 +3,8 @@ import time
 from json import JSONDecodeError
 from typing import Any
 
-from app.logs.logger import test_logger as logger
-from app.tests.test_real_env.api.real_env_base import RealEnvBase
+from backend_api.app.logs.logger import test_logger as logger
+from backend_api.app.tests.test_real_env.api.real_env_base import RealEnvBase
 
 
 class TestPlotRealEnv(RealEnvBase):

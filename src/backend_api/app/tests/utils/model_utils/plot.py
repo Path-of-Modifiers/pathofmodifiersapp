@@ -1,16 +1,15 @@
 from typing import Any
 
-from sqlalchemy.orm import Session
-
-from app.core.models.models import (
+from backend_api.app.core.models.models import (
     League as model_League,
 )
-from app.core.models.models import (
+from backend_api.app.core.models.models import (
     Modifier as model_Modifier,
 )
-from app.tests.utils.model_utils.item_modifier import (
+from backend_api.app.tests.utils.model_utils.item_modifier import (
     generate_random_item_modifier,
 )
+from sqlalchemy.orm import Session
 
 
 async def create_minimal_random_plot_query_dict(db: Session) -> dict[str, Any]:

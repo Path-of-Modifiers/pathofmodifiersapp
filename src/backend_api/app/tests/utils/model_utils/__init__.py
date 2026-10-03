@@ -1,20 +1,20 @@
-from app.tests.utils.model_utils.currency import (
+from backend_api.app.tests.utils.model_utils.currency import (
     create_random_currency_dict,
     generate_random_currency,
 )
-from app.tests.utils.model_utils.item_base_type import (
+from backend_api.app.tests.utils.model_utils.item_base_type import (
     create_random_item_base_type_dict,
     generate_random_item_base_type,
 )
-from app.tests.utils.model_utils.item_modifier import (
+from backend_api.app.tests.utils.model_utils.item_modifier import (
     create_random_item_modifier_dict,
     generate_random_item_modifier,
 )
-from app.tests.utils.model_utils.item import (
+from backend_api.app.tests.utils.model_utils.item import (
     create_random_item_dict,
     generate_random_item,
 )
-from app.tests.utils.model_utils.modifier import (
+from backend_api.app.tests.utils.model_utils.modifier import (
     create_random_modifier_dict,
     generate_random_modifier,
 )

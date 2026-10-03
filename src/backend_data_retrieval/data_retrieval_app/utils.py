@@ -1,10 +1,11 @@
 import logging
 from collections.abc import Generator
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, Literal
 
 import pandas as pd
 import requests
+from backend_api.app.core.schemas.league import League
 from pydantic import HttpUrl
 
 from data_retrieval_app.logs.logger import main_logger as logger
@@ -53,23 +54,21 @@ def df_to_JSON(
         )
 
 
-def find_hours_since_launch(leagues_df: list[dict]) -> dict[int, int]:
+def find_hours_since_launch(leagues: list[League]) -> dict[int, int]:
     """
     Finds the number of hours since launch for each of the leagues in the given dataframe
     """
     current_time = datetime.now(UTC)
-    hours_since_launch_dict = {}
-    for league in leagues_df:
-        league_launch_time = datetime.fromisoformat(league["validFrom"])
-
-        time_since_launch = current_time - league_launch_time
+    hours_since_launch_dict = dict[int, int]()
+    for league in leagues:
+        time_since_launch = current_time - league.validFrom
 
         days_since_launch, seconds_since_launch = (
             time_since_launch.days,
             time_since_launch.seconds,
         )
         hours_since_launch = days_since_launch * 24 + seconds_since_launch // 3600
-        hours_since_launch_dict[league["leagueId"]] = hours_since_launch
+        hours_since_launch_dict[league.leagueId] = hours_since_launch
 
     return hours_since_launch_dict
 
@@ -142,7 +141,42 @@ def get_data_safe(
     except Exception as e:
         if logger is not None:
             logger.error(
-                f"The following error occurred while making request a request to {url}: {e}"
+                f"The following error occurred while making request a get request to {url}: {e}"
+            )
+        raise e
+
+    return response
+
+
+def send_request_safe(
+    method: Literal["get", "put", "patch", "post", "delete"],
+    url: str,
+    *args,
+    logger: logging.Logger = None,
+    **kwargs,
+) -> requests.Response:
+    method_func = None
+    if method == "get":
+        method_func = requests.get
+    elif method == "put":
+        method_func = requests.put
+    elif method == "patch":
+        method_func = requests.patch
+    elif method == "post":
+        method_func = requests.post
+    elif method == "delete":
+        method_func = requests.delete
+    else:
+        raise ValueError(
+            f"Invalid method ({method}), must be one of: get, put, patch, post, delete"
+        )
+    try:
+        response = method_func(url, *args, **kwargs)
+        response.raise_for_status()
+    except Exception as e:
+        if logger is not None:
+            logger.error(
+                f"The following error occurred while making request a {method} request to {url}: {e}"
             )
         raise e
 

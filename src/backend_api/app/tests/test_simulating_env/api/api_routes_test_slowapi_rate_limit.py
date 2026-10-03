@@ -2,12 +2,13 @@ from collections.abc import Awaitable, Callable
 from typing import Any
 
 import pytest
+from backend_api.app.core.config import settings
+from backend_api.app.tests.test_simulating_env.api.api_test_rate_limit_base import (
+    TestRateLimitBase,
+)
+from backend_api.app.tests.utils.rate_limit import RateLimitPerTimeInterval
 from slowapi import Limiter
 from sqlalchemy.orm import Session
-
-from app.core.config import settings
-from app.tests.test_simulating_env.api.api_test_rate_limit_base import TestRateLimitBase
-from app.tests.utils.rate_limit import RateLimitPerTimeInterval
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)

@@ -1,13 +1,13 @@
 from collections.abc import Callable, Generator
 
 import pytest
+from backend_api.app.core.models.database import engine
+from backend_api.app.crud import CRUD_currency
+from backend_api.app.crud.base import CRUDBase
+from backend_api.app.tests.utils.model_utils.currency import generate_random_currency
 from sqlalchemy.orm import Session
 
 import app.tests.test_simulating_env.crud.crud_test_base as test_crud
-from app.core.models.database import engine
-from app.crud import CRUD_currency
-from app.crud.base import CRUDBase
-from app.tests.utils.model_utils.currency import generate_random_currency
 
 
 @pytest.fixture(scope="session")
