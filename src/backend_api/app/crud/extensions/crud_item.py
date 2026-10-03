@@ -180,6 +180,26 @@ class CRUDItem:
             db, incoming=latest_by_item.keys()
         )
 
+        # removes items not already in the db
+        incoming_data = list[tuple[int, int, float, int, bool]]()
+        for item in updated_availability:
+            item_id = incoming_to_database.get((item.gameItemId, item.leagueId))
+            if item_id is None:
+                continue
+
+            incoming_data.append(
+                (
+                    item_id,
+                    item.price.currencyId,
+                    item.price.currencyAmount,
+                    item.validFrom,
+                    item.price.isAsync,
+                )
+            )
+
+        if not incoming_data:
+            return []
+
         incoming_table = values(
             column("item_id", Integer),
             column("currency_id", Integer),
@@ -187,18 +207,7 @@ class CRUDItem:
             column("valid_from", Integer),
             column("is_async", Boolean),
             name="incoming",
-        ).data(
-            [
-                (
-                    incoming_to_database[(item.gameItemId, item.leagueId)],
-                    item.price.currencyId,
-                    item.price.currencyAmount,
-                    item.validFrom,
-                    item.price.isAsync,
-                )
-                for item in updated_availability
-            ]
-        )
+        ).data(incoming_data)
         # 1. Delete existing same-hour availability
         db.execute(
             delete(model_ItemAvailability).where(
@@ -258,19 +267,23 @@ class CRUDItem:
             ],
         )
 
+        # removes items which don't already exist in db
+        expired_data = list[tuple[str, int]]()
+        for item in expired_availability:
+            item_id = incoming_to_database.get((item.gameItemId, item.leagueId))
+            if item_id is None:
+                continue
+
+            expired_data.append((item_id, item.validTo))
+
+        if not expired_data:
+            return []
+
         expired_table = values(
             column("item_id", Integer),
             column("valid_to", Integer),
             name="expired",
-        ).data(
-            [
-                (
-                    incoming_to_database[(item.gameItemId, item.leagueId)],
-                    item.validTo,
-                )
-                for item in expired_availability
-            ]
-        )
+        ).data(expired_data)
         # 1. Delete existing same-hour availability
         db.execute(
             delete(model_ItemAvailability).where(
@@ -288,7 +301,7 @@ class CRUDItem:
                     model_ItemAvailability.validTo.is_(None),
                 )
                 .values(
-                    validTo=expired_table.c.valid_from,
+                    validTo=expired_table.c.valid_to,
                 )
             )
             .scalars()

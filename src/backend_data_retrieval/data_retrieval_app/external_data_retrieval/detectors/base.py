@@ -34,8 +34,8 @@ class CategoryDetectorBase(ABC):
 
     def find_interesting_items(
         self, donor_stash: Stash, receiver_stash: Stash, no_cache_receiver_stash: Stash
-    ):
-        donated_items = list[str]()
+    ) -> bool:
+        donated_items = list[int]()
         for i, item in enumerate(donor_stash.items):
             if not self.matches_category(item):
                 continue
@@ -55,3 +55,5 @@ class CategoryDetectorBase(ABC):
 
         for idx in reversed(donated_items):
             donor_stash.items.pop(idx)
+
+        return len(donated_items) > 0

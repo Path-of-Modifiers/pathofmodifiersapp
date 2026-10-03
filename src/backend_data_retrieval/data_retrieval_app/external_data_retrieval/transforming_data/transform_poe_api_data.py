@@ -184,7 +184,7 @@ class TransformerBase[RemoveSchemaType, UpdateSchemaType, CreateSchemaType](ABC)
         send_request_safe(
             "patch",
             remove_url,
-            json=self.type_adapters["remove"].validate_python(removed_items),
+            json=self.type_adapters["remove"].dump_python(removed_items),
             headers=self.pom_auth_headers,
         )
 
@@ -287,7 +287,7 @@ class UniqueTransformer(
                 ItemAvailabilityExpired(
                     gameItemId=item.id,
                     leagueId=league_id,
-                    validTo=self.current_hours[self.league_to_id],
+                    validTo=self.current_hours[league_id] + 1,
                 )
             )
 

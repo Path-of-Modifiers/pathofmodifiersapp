@@ -1,3 +1,4 @@
+import json
 from typing import Any
 
 import redis
@@ -41,7 +42,7 @@ class DetectorController:
         self.detectors = detectors
 
         self.local_cache = dict[str, CacheStash]()
-        self.cached_stash_adapter = TypeAdapter(list[CacheStash | None])
+        self.cached_stash_adapter = TypeAdapter(CacheStash)
 
     def _filter_duplicates(self, stashes: list[Stash]) -> list[Stash]:
         previous_ids = list[str]()
@@ -55,7 +56,9 @@ class DetectorController:
             previous_ids.append(stash.id)
             non_duplicate_stashes.append(stash)
 
-        logger.info(f"Filtered away {duplicates_found} duplicate stashes")
+        logger.info(
+            f"task=filter_duplicates n_stashes_in={len(stashes)} n_duplicate_stashes={duplicates_found}"
+        )
         return non_duplicate_stashes
 
     def _filter_never_used(
@@ -132,22 +135,27 @@ class DetectorController:
             n_items_in += len(donor_stash.items)
             receiver_stash = donor_stash.model_copy(update={"items": []})
             no_cache_receiver_stash = donor_stash.model_copy(update={"items": []})
+            found_items = False
             for detector in self.detectors:
                 # the donor stash is modified inplace, with its items moving over to the receiver stashes inplace
-                detector.find_interesting_items(
-                    donor_stash, receiver_stash, no_cache_receiver_stash
+                found_items = (
+                    detector.find_interesting_items(
+                        donor_stash, receiver_stash, no_cache_receiver_stash
+                    )
+                    or found_items
                 )
 
-            if receiver_stash.items:
-                interesting_stashes.append(receiver_stash)
+            if found_items:
+                if receiver_stash.items:
+                    interesting_stashes.append(receiver_stash)
 
-            if no_cache_receiver_stash.items:
-                # items such as unidentified items
-                no_cache_new_items.extend(no_cache_receiver_stash.items)
+                if no_cache_receiver_stash.items:
+                    # items such as unidentified items
+                    no_cache_new_items.extend(no_cache_receiver_stash.items)
+            else:
+                n_uninteresting_items += len(donor_stash.items)
 
-            n_uninteresting_items += len(donor_stash.items)
-
-            filtered_stashes.append(donor_stash)
+                filtered_stashes.append(donor_stash)
 
         logger.info(
             f"task=filter_uninteresting n_stashes_in={len(stashes)} n_stashes_filtered={len(filtered_stashes)} n_items_in={n_items_in} n_items_filtered={n_uninteresting_items}"
@@ -171,31 +179,42 @@ class DetectorController:
             cached_stash = self.local_cache.get(f"stash:{id}")
             if cached_stash is None:
                 still_needs_check.append((i, id))
-            cached_stashes.append(cached_stash)
+                cached_stashes.append(None)
+            else:
+                cached_stashes.append(
+                    self.cached_stash_adapter.validate_json(cached_stash)
+                )
 
         # then redis cache
-        redis_cached_stashes = self.cached_stash_adapter.validate_python(
-            redis_cache.mget([f"stash:{id}" for _, id in still_needs_check])
+        redis_cached_stashes = redis_cache.mget(
+            [f"stash:{id}" for _, id in still_needs_check]
         )
         for i, cached_stash in enumerate(redis_cached_stashes):
             if cached_stash is not None:
                 idx, _ = still_needs_check[i]
-                cached_stashes[idx] = cached_stash
+                cached_stashes[idx] = self.cached_stash_adapter.validate_json(
+                    cached_stash
+                )
 
         return cached_stashes
 
     def _find_removed_items(
         self, empty_stash_ids: list[str], redis_cache: redis.Redis
-    ) -> list[CacheItem]:
+    ) -> list[CacheItemWithContext]:
         # TODO what if league can change but id stays the same
         empty_cached_stashes = self._get_cached_stashes(redis_cache, empty_stash_ids)
-        removed_items = list[CacheItem]()
+        removed_items = list[CacheItemWithContext]()
         cached_stashes_to_remove = list[str]()
 
         for id, cached_stash in zip(empty_stash_ids, empty_cached_stashes, strict=True):
             if cached_stash is not None:
                 cached_stashes_to_remove.append(f"stash:{id}")
-                removed_items.extend(cached_stash.items)
+                for cached_item in cached_stash.items:
+                    removed_items.append(
+                        CacheItemWithContext(
+                            **cached_item.model_dump(), league=cached_stash.league
+                        )
+                    )
 
         if cached_stashes_to_remove:
             [self.local_cache.pop(id, None) for id in cached_stashes_to_remove]
@@ -264,7 +283,7 @@ class DetectorController:
             new_items.extend(stash.items)
 
             if cached_stash_changed and cached_stash.items:
-                stashes_to_cache[f"stash:{stash.id}"] = cached_stash
+                stashes_to_cache[f"stash:{stash.id}"] = cached_stash.model_dump_json()
 
         if stashes_to_cache:
             self.local_cache.update(stashes_to_cache)
@@ -355,8 +374,6 @@ class DetectorController:
 
 
 if __name__ == "__main__":
-    import json
-
     from data_retrieval_app.external_data_retrieval.detectors.unique_detector import (
         UnidentifiedUniqueDetector,
         UniqueDetector,
