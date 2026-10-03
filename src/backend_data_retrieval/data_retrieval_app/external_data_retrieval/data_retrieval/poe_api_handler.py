@@ -144,7 +144,11 @@ class PoEAPIHandler:
                         reset_event.clear()
                 else:
                     if sent_outgoing:
-                        change_id = incoming.get()
+                        try:
+                            # The timeout is to avoid getting stuck when the other listener has stopped
+                            change_id = incoming.get(timeout=10)
+                        except Empty:
+                            continue
 
                 sent_outgoing = False
 
