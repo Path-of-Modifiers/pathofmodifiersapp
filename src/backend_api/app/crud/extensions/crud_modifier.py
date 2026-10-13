@@ -47,7 +47,6 @@ class CRUDModifier(
             for modifier_roll in modifier.rolls
         ]
         db.add_all(db_modifier_rolls)
-        db.flush()
         db.commit()
 
         return self.validate(db_modifiers)

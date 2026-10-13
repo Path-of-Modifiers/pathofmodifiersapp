@@ -52,7 +52,7 @@ class ModifierRoll(_pydantic.BaseModel):
 
 # Properties to receive on modifier creation
 class ModifierCreate(ModifierBase):
-    rolls: list[ModifierRoll] = _pydantic.Field(default_factory=list)
+    rolls: list[ModifierRoll] = _pydantic.Field(default_factory=list[ModifierRoll])
 
 
 # Properties to return to client

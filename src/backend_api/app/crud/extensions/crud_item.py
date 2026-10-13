@@ -160,7 +160,6 @@ class CRUDItem:
             )
 
         db.add_all(db_item_availability)
-        db.flush()
         db.commit()
 
         return self.item_validate(db_items)
@@ -208,6 +207,7 @@ class CRUDItem:
             column("is_async", Boolean),
             name="incoming",
         ).data(incoming_data)
+
         # 1. Delete existing same-hour availability
         db.execute(
             delete(model_ItemAvailability).where(

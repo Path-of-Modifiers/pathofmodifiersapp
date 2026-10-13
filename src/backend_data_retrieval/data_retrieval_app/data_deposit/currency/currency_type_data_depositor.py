@@ -109,6 +109,7 @@ class CurrencyTypeDataDepositor(DataDepositorBase):
                     current_currency.name == "TEMP_NAME"
                     and current_currency.tradeName == trade_name
                 ):
+                    # Only happens once after a migration
                     need_update = True
                 if (
                     current_currency.name == currency.name

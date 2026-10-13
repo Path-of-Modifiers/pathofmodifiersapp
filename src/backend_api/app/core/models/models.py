@@ -336,7 +336,7 @@ class ItemModifier(Base):
         Float(4),
     )
     __table_args__ = (
-        PrimaryKeyConstraint("itemId", "modifierId", "position"),
+        PrimaryKeyConstraint("itemId", "modifierId", "position", "instance"),
         ForeignKeyConstraint(
             ["modifierId", "position"],
             ["modifier_roll.modifierId", "modifier_roll.position"],

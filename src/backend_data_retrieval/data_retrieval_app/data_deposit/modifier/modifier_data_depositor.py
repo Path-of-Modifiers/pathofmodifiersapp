@@ -41,8 +41,6 @@ class ModifierDataDepositor(DataDepositorBase):
         need_update = False
         updated_modifier = ModifierUpdate(modifierId=current_modifier.modifierId)
         for field in modifier.model_fields:
-            if field == "rolls":
-                continue
             if field == "relatedUniques":
                 new = modifier.relatedUniques.split("|")
                 old = current_modifier.relatedUniques.split("|")
@@ -53,7 +51,7 @@ class ModifierDataDepositor(DataDepositorBase):
 
                 continue
 
-            if field == "regex":
+            if field in ("regex", "rolls"):
                 continue
 
             new = getattr(modifier, field)
