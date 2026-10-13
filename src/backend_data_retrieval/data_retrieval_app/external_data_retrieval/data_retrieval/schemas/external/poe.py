@@ -190,14 +190,13 @@ class PoeItem(PoeModel):
         )
 
     def __eq__(self, other: CacheItem | object) -> bool:
-        if isinstance(other, CacheItem):
-            print(other)
+        if isinstance(other, CacheItem) or isinstance(other, self.__class__):
             return other.id == self.id and other.note == self.note
         return super().__eq__(other)
 
     def has_price(self) -> bool:
         return self.note is not None and re.match(
-            r"^(~b\/o|~price) [0-9]*[.]?[0-9]+ [^ ]*$", self.note
+            r"^(~b\/o|~price) [0-9]*[.]?[0-9]+ [^ ]+$", self.note
         )
 
 
@@ -222,10 +221,9 @@ class Stash(PoeModel):
             r"^(~b\/o|~price) \d+ [^ ]*$", self.stash
         )
 
-    def get_item(self, id: str) -> tuple[int, PoeItem | None]:
-        for i, item in enumerate(self.items):
+    def get_item(self, id: str) -> PoeItem | None:
+        for item in self.items:
             if item.id == id:
-                return i, item
+                return item
 
-        # this will crash the program if the idx is used
-        return len(self.items), None
+        return None

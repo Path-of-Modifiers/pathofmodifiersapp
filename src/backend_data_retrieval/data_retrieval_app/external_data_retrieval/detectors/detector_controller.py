@@ -22,6 +22,9 @@ from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.internal.
 from data_retrieval_app.external_data_retrieval.detectors.base import (
     CategoryDetectorBase,
 )
+from data_retrieval_app.external_data_retrieval.detectors.cache import (
+    DetectedStashesCache,
+)
 from data_retrieval_app.external_data_retrieval.utils import (
     sync_timing_tracker,
 )
@@ -30,7 +33,6 @@ from data_retrieval_app.logs.logger import data_retrieval_logger as logger
 
 class DetectorController:
     backend_base_url = settings.BACKEND_BASE_URL
-    existing_items_url = f"{backend_base_url}/item/existing/"
 
     def __init__(
         self,
@@ -41,8 +43,12 @@ class DetectorController:
 
         self.detectors = detectors
 
-        self.local_cache = dict[str, CacheStash]()
-        self.cached_stash_adapter = TypeAdapter(CacheStash)
+        self.cache = DetectedStashesCache()
+        self.redis_cache_set = False
+
+    def set_redis_cache(self, redis_cache: redis.Redis):
+        self.cache.set_redis_cache(redis_cache)
+        self.redis_cache_set = True
 
     def _filter_duplicates(self, stashes: list[Stash]) -> list[Stash]:
         previous_ids = list[str]()
@@ -162,63 +168,28 @@ class DetectorController:
         )
         return interesting_stashes, no_cache_new_items, filtered_stashes
 
-    def _get_cached_stashes(
-        self, redis_cache: redis.Redis, ids: list[str]
-    ) -> list[CacheStash | None]:
-        """
-        First checks local cache, then redis cache. This method relies on the local cache
-        being exactly aligned with the redis cache for stashes that exists in both.
-        """
-        if len(ids) == 0:
-            return []
-
-        # first local cache
-        cached_stashes = list[CacheStash | None]()
-        still_needs_check = list[tuple[int, str]]()
-        for i, id in enumerate(ids):
-            cached_stash = self.local_cache.get(f"stash:{id}")
-            if cached_stash is None:
-                still_needs_check.append((i, id))
-                cached_stashes.append(None)
-            else:
-                cached_stashes.append(
-                    self.cached_stash_adapter.validate_json(cached_stash)
-                )
-
-        # then redis cache
-        redis_cached_stashes = redis_cache.mget(
-            [f"stash:{id}" for _, id in still_needs_check]
-        )
-        for i, cached_stash in enumerate(redis_cached_stashes):
-            if cached_stash is not None:
-                idx, _ = still_needs_check[i]
-                cached_stashes[idx] = self.cached_stash_adapter.validate_json(
-                    cached_stash
-                )
-
-        return cached_stashes
-
     def _find_removed_items(
-        self, empty_stash_ids: list[str], redis_cache: redis.Redis
+        self, empty_stash_ids: list[str]
     ) -> list[CacheItemWithContext]:
         # TODO what if league can change but id stays the same
-        empty_cached_stashes = self._get_cached_stashes(redis_cache, empty_stash_ids)
+        empty_cached_stashes = self.cache.get_stashes(empty_stash_ids)
         removed_items = list[CacheItemWithContext]()
         cached_stashes_to_remove = list[str]()
 
         for id, cached_stash in zip(empty_stash_ids, empty_cached_stashes, strict=True):
-            if cached_stash is not None:
-                cached_stashes_to_remove.append(f"stash:{id}")
-                for cached_item in cached_stash.items:
-                    removed_items.append(
-                        CacheItemWithContext(
-                            **cached_item.model_dump(), league=cached_stash.league
-                        )
+            if cached_stash is None:
+                continue
+
+            cached_stashes_to_remove.append(id)
+            for cached_item in cached_stash.items:
+                removed_items.append(
+                    CacheItemWithContext(
+                        **cached_item.model_dump(), league=cached_stash.league
                     )
+                )
 
         if cached_stashes_to_remove:
-            [self.local_cache.pop(id, None) for id in cached_stashes_to_remove]
-            redis_cache.delete(*cached_stashes_to_remove)
+            self.cache.remove_stashes(cached_stashes_to_remove)
 
         logger.info(
             f"task=find_removed n_stashes_in={len(empty_stash_ids)} n_stashes_cached={len(cached_stashes_to_remove)} n_removed_items={len(removed_items)}"
@@ -226,14 +197,12 @@ class DetectorController:
         return removed_items
 
     def _find_changed_items_filter_unchanged(
-        self, stashes: list[Stash], redis_cache: redis.Redis
+        self, stashes: list[Stash]
     ) -> tuple[list[CacheItemWithContext], list[PoeItem], list[PoeItem]]:
         # TODO what if league can change but id stays the same
         not_empty_stash_ids = [stash.id for stash in stashes]
 
-        not_empty_cached_stashes = self._get_cached_stashes(
-            redis_cache, not_empty_stash_ids
-        )
+        not_empty_cached_stashes = self.cache.get_stashes(not_empty_stash_ids)
 
         changed_items = list[PoeItem]()
         new_items = list[PoeItem]()
@@ -243,51 +212,45 @@ class DetectorController:
         n_items_filtered = 0
 
         stashes_to_cache = dict[str, CacheStash]()
-        for cached_stash, stash in zip(not_empty_cached_stashes, stashes, strict=True):
+        for cached_stash, current_stash in zip(
+            not_empty_cached_stashes, stashes, strict=True
+        ):
             cached_stash_changed = False
             if cached_stash is not None:
+                # The stash has previously been cached
                 n_stashes_cached += 1
-                for cached_item in cached_stash.items[:]:
-                    idx, new_item = stash.get_item(cached_item.id)
-                    if new_item is None:
-                        # a cached item doesnt exist anymore
-                        cached_stash_changed = True
-                        cached_stash.items.remove(cached_item)
-                        removed_items.append(
-                            CacheItemWithContext(
-                                id=cached_item.id,
-                                note=cached_item.note,
-                                category=cached_item.category,
-                                league=stash.league,
-                            )
-                        )
-                        continue
-                    if new_item.note == cached_item.note:
-                        # Duplicate found in cache
-                        n_items_filtered += 1
-                        stash.items.pop(idx)
-                        continue
+                (
+                    n_more_items_filtered,
+                    more_removed_items,
+                    more_changed_items,
+                    more_new_items,
+                ) = self.cache.separate_cached_items(current_stash, cached_stash)
+                n_items_filtered += n_more_items_filtered
 
-                    # PoeItem has changed from cache
-                    changed_items.append(new_item)
+                cached_stash.items = [
+                    item.to_cache(self) for item in (more_new_items + more_new_items)
+                ]
+
+                removed_items.extend(more_removed_items)
+                changed_items.extend(more_changed_items)
+                new_items.extend(more_new_items)
+
+                if more_removed_items or more_changed_items or more_new_items:
                     cached_stash_changed = True
-                    cached_stash.items.remove(cached_item)
-
-                cached_stash.items.extend(stash.to_cache(self).items)
 
             else:
                 # The stash has never been cached
                 cached_stash_changed = True
-                cached_stash = stash.to_cache(self)
+                cached_stash = current_stash.to_cache(self)
 
-            new_items.extend(stash.items)
+                # All items must be new
+                new_items.extend(current_stash.items)
 
             if cached_stash_changed and cached_stash.items:
-                stashes_to_cache[f"stash:{stash.id}"] = cached_stash.model_dump_json()
+                stashes_to_cache[current_stash.id] = cached_stash
 
         if stashes_to_cache:
-            self.local_cache.update(stashes_to_cache)
-            redis_cache.mset(stashes_to_cache)
+            self.cache.update_stashes(stashes_to_cache)
 
         logger.info(
             f"task=find_changed_filter_unchanged n_stashes_in={len(stashes)} n_stashes_cached={n_stashes_cached} n_items_filtered={n_items_filtered} n_removed_items={len(removed_items)} n_changed_items={len(changed_items)} n_new_items={len(new_items)}"
@@ -331,9 +294,7 @@ class DetectorController:
         raise ValueError("PoeItem does not match a detector category")
 
     @sync_timing_tracker
-    def filter_stashes(
-        self, stashes: list[Stash], redis_cache: redis.Redis
-    ) -> OrganizedItemsByCategory:
+    def filter_stashes(self, stashes: list[Stash]) -> OrganizedItemsByCategory:
         """
         Parameters:
             :param stashes: a list of stash objects
@@ -343,6 +304,11 @@ class DetectorController:
             :Changed items: items which need to start a new entry
             :New items: items which need to be entered into the system
         """
+        if not self.redis_cache_set:
+            raise RuntimeError(
+                "Redis cache has not been set. Call set_redis_cache() first."
+            )
+
         stashes = self._filter_duplicates(stashes)
 
         filtered_stashes, empty_stashes = self._filter_never_used(stashes)
@@ -355,13 +321,13 @@ class DetectorController:
         ) = self._filter_uninteresting_items(filtered_stashes)
         empty_stash_ids.extend([stash.id for stash in uninteresting_stashes])
 
-        removed_items = self._find_removed_items(empty_stash_ids, redis_cache)
+        removed_items = self._find_removed_items(empty_stash_ids)
 
         (
             more_removed_items,
             changed_items,
             more_new_items,
-        ) = self._find_changed_items_filter_unchanged(interesting_stashes, redis_cache)
+        ) = self._find_changed_items_filter_unchanged(interesting_stashes)
 
         new_items = no_cache_new_items + more_new_items
         removed_items.extend(more_removed_items)
@@ -371,6 +337,23 @@ class DetectorController:
         )
 
         return self._organize_items(removed_items, changed_items, new_items)
+
+    # def post_transform_cleanup(self, organized_items: OrganizedItemsByCategory):
+    #     dismissed_items_by_cached_stash = defaultdict[str, list[PoeItem]]()
+    #     for category in organized_items.iter_categories():
+    #         for dimissed_item in category.dismissed_items:
+    #             cached_stash_id = self.item_id_to_cached_stash_id[dimissed_item.id]
+    #             dismissed_items_by_cached_stash[cached_stash_id].append(dimissed_item)
+
+    #     for cached_stash_id, dimissed_items in dismissed_items_by_cached_stash.items():
+    #         cached_stash = self.cached_stash_adapter.validate_json(
+    #             self.local_cache[cached_stash_id]
+    #         )
+    #         for item in dimissed_items:
+    #             cached_stash.items.remove(item)
+
+    def end_of_program_cleanup(self):
+        self.cache.flush_local_cache()
 
 
 if __name__ == "__main__":

@@ -309,9 +309,7 @@ class PoEAPIHandler:
         for _ in range(n):
             start_time = time.perf_counter()
             stashes, next_change_id = self._read_stream()
-            organized_items = self.detector_controller.filter_stashes(
-                stashes, self.redis_cache
-            )
+            organized_items = self.detector_controller.filter_stashes(stashes)
             end_time = time.perf_counter()
 
             time_per_mini_batch = end_time - start_time
@@ -332,15 +330,22 @@ class PoEAPIHandler:
         self, cache: redis.Redis
     ) -> Iterator[tuple[OrganizedItemsByCategory, str]]:
         self.redis_cache = cache
+        self.detector_controller.set_redis_cache(self.redis_cache)
         # time.sleep(5)  # Waits for the listening threads to have time to start up.
-        while True:
-            logger.info("Waiting for data from the stream")
-            organized_items, next_change_id = self._gather_n_checkpoints(
-                n=settings.N_CHECKPOINTS_PER_TRANSFORMATION,
-            )
-            if organized_items.is_empty():
-                logger.info("Found no data")
-                continue
-            logger.info("Finished processing the stream, entering transformation phase")
-            yield organized_items, next_change_id
-            logger.info("Finished transformation phase")
+        try:
+            while True:
+                logger.info("Waiting for data from the stream")
+                organized_items, next_change_id = self._gather_n_checkpoints(
+                    n=settings.N_CHECKPOINTS_PER_TRANSFORMATION,
+                )
+                if organized_items.is_empty():
+                    logger.info("Found no data")
+                    continue
+                logger.info(
+                    "Finished processing the stream, entering transformation phase"
+                )
+                yield organized_items, next_change_id
+                # self.detector_controller.post_transform_cleanup(organized_items)
+                logger.info("Finished transformation phase")
+        finally:
+            self.detector_controller.end_of_program_cleanup()
