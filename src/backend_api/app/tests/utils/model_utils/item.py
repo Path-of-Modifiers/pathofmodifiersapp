@@ -1,18 +1,20 @@
-from sqlalchemy.orm import Session
-
-from app import crud
-from app.core.models.models import Currency, Item, ItemBaseType, League
-from app.core.schemas.item import ItemCreate
-from app.tests.utils.model_utils.currency import generate_random_currency
-from app.tests.utils.model_utils.item_base_type import generate_random_item_base_type
-from app.tests.utils.model_utils.league import generate_random_league
-from app.tests.utils.utils import (
+from backend_api.app.core.models.models import Currency, Item, ItemBaseType, League
+from backend_api.app.core.schemas.item import ItemCreate
+from backend_api.app.tests.utils.model_utils.currency import generate_random_currency
+from backend_api.app.tests.utils.model_utils.item_base_type import (
+    generate_random_item_base_type,
+)
+from backend_api.app.tests.utils.model_utils.league import generate_random_league
+from backend_api.app.tests.utils.utils import (
     random_bool,
     random_float,
     random_int,
     random_json,
     random_lower_string,
 )
+from sqlalchemy.orm import Session
+
+from app import crud
 
 
 async def create_random_item_dict(

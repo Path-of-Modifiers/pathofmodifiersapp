@@ -83,18 +83,18 @@ class Settings(BaseSettings):
 
     REDIS_PORT: int = 6379
     REDIS_SERVER: str
-    REDIS_CACHE: str = str(0)
+    REDIS_BACKEND_API: int = 0
     REDIS_PASSWORD: str = ""
 
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def CACHE_URI(self) -> AnyUrl:
+    def API_CACHE_URI(self) -> AnyUrl:
         return MultiHostUrl.build(
             scheme="redis",
             password=self.REDIS_PASSWORD,
             host=self.REDIS_SERVER,
             port=self.REDIS_PORT,
-            path=self.REDIS_CACHE,
+            path=f"{self.REDIS_BACKEND_API}",
         )
 
     SMTP_TLS: bool = True

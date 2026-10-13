@@ -1,7 +1,6 @@
 import starlette.status as status
-
-from app.exceptions.exception_base import PathOfModifiersAPIError
-from app.logs.logger import test_logger
+from backend_api.app.exceptions.exception_base import PathOfModifiersAPIError
+from backend_api.app.logs.logger import test_logger
 
 
 class _TestErrorLogBase(PathOfModifiersAPIError):

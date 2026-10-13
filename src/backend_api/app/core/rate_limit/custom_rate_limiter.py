@@ -9,9 +9,10 @@ from asyncio_redis_rate_limit.compat import (
     AnyRedis,
     pipeline_expire,
 )
+from backend_api.app.exceptions.model_exceptions.rate_limit_exception import (
+    RateLimitExceededError,
+)
 from typing_extensions import final
-
-from app.exceptions.model_exceptions.rate_limit_exception import RateLimitExceededError
 
 #: These aliases makes our code more readable.
 _Seconds: TypeAlias = int

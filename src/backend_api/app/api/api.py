@@ -1,13 +1,9 @@
-from fastapi import APIRouter
-
-from app.api.routes import (
+from backend_api.app.api.routes import (
     currency,
     currency_prefix,
     item,
     item_base_type,
     item_base_type_prefix,
-    item_modifier,
-    item_modifier_prefix,
     item_prefix,
     league,
     league_prefix,
@@ -24,6 +20,7 @@ from app.api.routes import (
     unidentified_item,
     unidentified_item_prefix,
 )
+from fastapi import APIRouter
 
 api_router = APIRouter()
 
@@ -35,11 +32,6 @@ api_router.include_router(
     item_base_type.router,
     prefix=f"/{item_base_type_prefix}",
     tags=[item_base_type_prefix],
-)
-api_router.include_router(
-    item_modifier.router,
-    prefix=f"/{item_modifier_prefix}",
-    tags=[item_modifier_prefix],
 )
 api_router.include_router(item.router, prefix=f"/{item_prefix}", tags=[item_prefix])
 api_router.include_router(

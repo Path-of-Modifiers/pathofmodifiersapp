@@ -2,23 +2,22 @@ from collections.abc import Generator, Iterable
 from itertools import islice
 from typing import Any, Generic, Literal, TypeVar
 
-from pydantic import BaseModel, TypeAdapter
-from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.orm import Session
-
-# from app.api.params import FilterParams
-from app.api.params import FilterParams
-from app.exceptions import (
+# from backend_api.app.api.params import FilterParams
+from backend_api.app.api.params import FilterParams
+from backend_api.app.exceptions import (
     ArgValueNotSupportedError,
     DbObjectDoesNotExistError,
     DbTooManyItemsDeleteError,
 )
-from app.exceptions.model_exceptions.db_exception import (
+from backend_api.app.exceptions.model_exceptions.db_exception import (
     DbObjectAlreadyExistsError,
     GeneralDBError,
 )
-from app.logs.logger import logger
-from app.utils.sort_algorithms import sort_with_reference
+from backend_api.app.logs.logger import logger
+from backend_api.app.utils.sort_algorithms import sort_with_reference
+from pydantic import BaseModel, TypeAdapter
+from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.orm import Session
 
 ModelType = TypeVar("ModelType", bound=Any)
 SchemaType = TypeVar("SchemaType", bound=Any)
@@ -55,15 +54,14 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         self,
         objs: list[ModelType],
         sort_key: str | None = None,
-        sort_method: Literal["asc", "dec"] | None = None,
+        sort_method: Literal["asc", "dec"] = "asc",
     ) -> list[ModelType]:
         """
         `sort_key` is the column name to sort on. For example `createdAt`.
         """
         if sort_key is None:
             return objs
-        if sort_method is None:
-            sort_method = "asc"
+
         unsorted_extracted_column = []
         for obj in objs:
             unsorted_extracted_column.append(getattr(obj, sort_key))

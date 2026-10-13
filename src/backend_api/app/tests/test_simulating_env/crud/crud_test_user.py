@@ -1,11 +1,10 @@
 import pytest
+from backend_api.app.core.schemas import UserCreate, UserUpdate
+from backend_api.app.core.security import verify_password
+from backend_api.app.crud import CRUD_user as crud
+from backend_api.app.tests.test_simulating_env.base_test import BaseTest
+from backend_api.app.tests.utils.utils import random_email, random_lower_string
 from sqlalchemy.orm import Session
-
-from app.core.schemas import UserCreate, UserUpdate
-from app.core.security import verify_password
-from app.crud import CRUD_user as crud
-from app.tests.test_simulating_env.base_test import BaseTest
-from app.tests.utils.utils import random_email, random_lower_string
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)

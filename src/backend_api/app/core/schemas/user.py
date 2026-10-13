@@ -2,6 +2,7 @@ import uuid
 from datetime import datetime
 from typing import Annotated
 
+from backend_api.app.core.schemas.wrap_validator import custom_error_msg
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -9,8 +10,6 @@ from pydantic import (
     Field,
     StringConstraints,
 )
-
-from app.core.schemas.wrap_validator import custom_error_msg
 
 
 class UsernameValidationError(ValueError):
@@ -21,7 +20,7 @@ class UsernameValidationError(ValueError):
         exc: Exception | None,
     ) -> Exception:
         return cls(
-            f"Username must be less than 30 characters and can not contain special symbols or white/empty space.",
+            "Username must be less than 30 characters and can not contain special symbols or white/empty space.",
         )
 
 

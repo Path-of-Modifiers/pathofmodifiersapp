@@ -3,25 +3,28 @@ from typing import Any
 
 import pytest
 import pytest_asyncio
+from backend_api.app.api.routes import (
+    currency_prefix,
+    item_base_type_prefix,
+    item_prefix,
+)
+from backend_api.app.core.config import settings
+from backend_api.app.core.models.models import Currency, Item, ItemBaseType
+from backend_api.app.crud import CRUD_item
+from backend_api.app.crud.base import CRUDBase, ModelType
+from backend_api.app.tests.utils.model_utils.item import (
+    create_random_item_dict,
+    generate_random_item,
+)
+from backend_api.app.tests.utils.utils import (
+    get_model_table_name,
+    get_model_unique_identifier,
+)
 from fastapi import Response
 from httpx import AsyncClient
 from sqlalchemy.orm import Session
 
 import app.tests.test_simulating_env.api.api_routes_test_base as test_api
-from app.api.routes import (
-    currency_prefix,
-    item_base_type_prefix,
-    item_prefix,
-)
-from app.core.config import settings
-from app.core.models.models import Currency, Item, ItemBaseType
-from app.crud import CRUD_item
-from app.crud.base import CRUDBase, ModelType
-from app.tests.utils.model_utils.item import (
-    create_random_item_dict,
-    generate_random_item,
-)
-from app.tests.utils.utils import get_model_table_name, get_model_unique_identifier
 
 
 @pytest.fixture(scope="module")

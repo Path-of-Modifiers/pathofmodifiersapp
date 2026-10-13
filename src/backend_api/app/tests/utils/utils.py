@@ -5,11 +5,10 @@ from datetime import datetime, timedelta, timezone
 from inspect import iscoroutinefunction
 from typing import Any
 
+from backend_api.app.core.config import settings
+from backend_api.app.crud.base import ModelType
 from httpx import AsyncClient
 from sqlalchemy import inspect
-
-from app.core.config import settings
-from app.crud.base import ModelType
 
 
 def random_lower_string(*, small_string: bool | None = None) -> str:

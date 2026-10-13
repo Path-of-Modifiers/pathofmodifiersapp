@@ -7,7 +7,9 @@ from data_retrieval_app.external_data_retrieval.config import settings
 
 @contextmanager
 def get_cache():
-    cache = redis.from_url(str(settings.CACHE_URI), decode_responses=True)
+    cache = redis.from_url(
+        str(settings.DATA_RETRIEVAL_CACHE_URI), decode_responses=True
+    )
 
     try:
         yield cache

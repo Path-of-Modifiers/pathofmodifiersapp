@@ -1,21 +1,22 @@
 from uuid import uuid4
 
+from backend_api.app.api.deps import (
+    get_current_active_superuser,
+    get_db,
+)
+from backend_api.app.core.config import settings
+from backend_api.app.core.models.models import Item as model_Item
+from backend_api.app.core.models.models import User as model_User
+from backend_api.app.core.schemas import ItemCreate, User
+from backend_api.app.crud import CRUD_user
+from backend_api.app.exceptions.model_exceptions.test_exception import (
+    OnlyAvailableInLocalEnvError,
+)
+from backend_api.app.logs.logger import test_logger as logger
 from fastapi import APIRouter, Depends, HTTPException
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import insert
 from sqlalchemy.orm import Session
-
-from app.api.deps import (
-    get_current_active_superuser,
-    get_db,
-)
-from app.core.config import settings
-from app.core.models.models import Item as model_Item
-from app.core.models.models import User as model_User
-from app.core.schemas import ItemCreate, User
-from app.crud import CRUD_user
-from app.exceptions.model_exceptions.test_exception import OnlyAvailableInLocalEnvError
-from app.logs.logger import test_logger as logger
 
 router = APIRouter()
 
@@ -133,7 +134,7 @@ async def bulk_insert_users_and_verify(count: int, db: Session = Depends(get_db)
     logger.debug("Verifying users")
 
     # Verify users by making an internal request to the login route
-    from app.main import app
+    from backend_api.app.main import app
 
     tokens = []
     async with AsyncClient(

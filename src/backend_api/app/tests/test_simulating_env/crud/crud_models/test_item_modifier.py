@@ -1,23 +1,24 @@
 from collections.abc import Callable
 
 import pytest
-
-from app.core.models.models import (
+from backend_api.app.core.models.models import (
     Currency,
     Item,
     ItemBaseType,
     ItemModifier,
     Modifier,
 )
-from app.crud import (
+from backend_api.app.crud import (
     CRUD_currency,
     CRUD_item,
     CRUD_itemBaseType,
     CRUD_itemModifier,
     CRUD_modifier,
 )
-from app.crud.base import CRUDBase
-from app.tests.utils.model_utils.item_modifier import generate_random_item_modifier
+from backend_api.app.crud.base import CRUDBase
+from backend_api.app.tests.utils.model_utils.item_modifier import (
+    generate_random_item_modifier,
+)
 
 
 @pytest.fixture(scope="module")
@@ -31,14 +32,16 @@ def is_hypertable() -> bool:
 
 
 @pytest.fixture(scope="module")
-def object_generator_func_w_deps() -> Callable[
-    [],
-    tuple[
-        dict,
-        ItemModifier,
-        list[dict | Item | ItemBaseType | Currency | Modifier],
-    ],
-]:
+def object_generator_func_w_deps() -> (
+    Callable[
+        [],
+        tuple[
+            dict,
+            ItemModifier,
+            list[dict | Item | ItemBaseType | Currency | Modifier],
+        ],
+    ]
+):
     def generate_random_item_modifier_w_deps(
         db,
     ) -> Callable[

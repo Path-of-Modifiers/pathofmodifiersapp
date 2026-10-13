@@ -1,10 +1,11 @@
 import httpx  # Use httpx instead of requests
+from backend_api.app.api.api_message_util import (
+    get_failed_send_challenge_request_error_msg,
+)
+from backend_api.app.core.config import settings
+from backend_api.app.core.schemas import TurnstileQuery, TurnstileResponse
 from fastapi import HTTPException
 from pydantic import TypeAdapter
-
-from app.api.api_message_util import get_failed_send_challenge_request_error_msg
-from app.core.config import settings
-from app.core.schemas import TurnstileQuery, TurnstileResponse
 
 
 class ValidateTurnstileRequest:

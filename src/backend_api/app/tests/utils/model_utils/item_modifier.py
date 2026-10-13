@@ -1,7 +1,4 @@
-from sqlalchemy.orm import Session
-
-from app import crud
-from app.core.models.models import (
+from backend_api.app.core.models.models import (
     Currency,
     Item,
     ItemBaseType,
@@ -9,10 +6,13 @@ from app.core.models.models import (
     League,
     Modifier,
 )
-from app.core.schemas.item_modifier import ItemModifierCreate
-from app.tests.utils.model_utils.item import generate_random_item
-from app.tests.utils.model_utils.modifier import generate_random_modifier
-from app.tests.utils.utils import random_float, random_int
+from backend_api.app.core.schemas.item_modifier import ItemModifierCreate
+from backend_api.app.tests.utils.model_utils.item import generate_random_item
+from backend_api.app.tests.utils.model_utils.modifier import generate_random_modifier
+from backend_api.app.tests.utils.utils import random_float, random_int
+from sqlalchemy.orm import Session
+
+from app import crud
 
 
 async def create_random_item_modifier_dict(

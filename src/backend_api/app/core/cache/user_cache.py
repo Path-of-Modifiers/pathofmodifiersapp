@@ -2,15 +2,14 @@ from enum import StrEnum
 from typing import Any
 from uuid import UUID, uuid4
 
-from pydantic import TypeAdapter
-
-from app.core.cache.cache import cache
-from app.core.models.models import User as model_User
-from app.core.schemas.user import UserInCache
-from app.exceptions import (
+from backend_api.app.core.cache.cache import cache
+from backend_api.app.core.models.models import User as model_User
+from backend_api.app.core.schemas.user import UserInCache
+from backend_api.app.exceptions import (
     InvalidCacheUpdateParamsError,
     InvalidTokenError,
 )
+from pydantic import TypeAdapter
 
 
 class UserCacheTokenType(StrEnum):

@@ -1,6 +1,5 @@
 import starlette.status as status
-
-from app.exceptions.exception_base import PathOfModifiersAPIError
+from backend_api.app.exceptions.exception_base import PathOfModifiersAPIError
 
 
 class UserWithNotEnoughPrivilegesError(PathOfModifiersAPIError):

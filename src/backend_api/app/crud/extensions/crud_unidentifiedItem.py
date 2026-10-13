@@ -1,14 +1,15 @@
-from pydantic import TypeAdapter
-from sqlalchemy import delete, select
-from sqlalchemy.orm import Session
-
-from app.core.models.models import UnidentifiedItem as model_UnidentifiedItem
-from app.core.schemas.unidentified_item import (
+from backend_api.app.core.models.models import (
+    UnidentifiedItem as model_UnidentifiedItem,
+)
+from backend_api.app.core.schemas.unidentified_item import (
     UnidentifiedItem,
     UnidentifiedItemCreate,
     UnidentifiedItemUpdate,
 )
-from app.crud.base import CRUDBase
+from backend_api.app.crud.base import CRUDBase
+from pydantic import TypeAdapter
+from sqlalchemy import delete, select
+from sqlalchemy.orm import Session
 
 
 class CRUDUnidentifiedItem(
@@ -19,6 +20,13 @@ class CRUDUnidentifiedItem(
         UnidentifiedItemUpdate,
     ]
 ):
+    def __init__(self):
+        super().__init__(
+            model=model_UnidentifiedItem,
+            schema=UnidentifiedItem,
+            create_schema=UnidentifiedItemCreate,
+        )
+
     async def get_non_aggregated(self, db: Session) -> list[UnidentifiedItem]:
         """
         Returns the non aggregated unidentified items

@@ -5,16 +5,19 @@ from logging import Logger
 from typing import Any
 
 import pytest
+from backend_api.app.api.routes.plot import plot_prefix
+from backend_api.app.core.config import settings
+from backend_api.app.core.rate_limit.rate_limit_config import rate_limit_settings
+from backend_api.app.tests.test_simulating_env.api.api_test_rate_limit_base import (
+    TestRateLimitBase,
+)
+from backend_api.app.tests.utils.model_utils.plot import (
+    create_minimal_random_plot_query_dict,
+)
+from backend_api.app.tests.utils.rate_limit import RateLimitPerTimeInterval
 from fastapi import Response
 from httpx import AsyncClient
 from sqlalchemy.orm import Session
-
-from app.api.routes.plot import plot_prefix
-from app.core.config import settings
-from app.core.rate_limit.rate_limit_config import rate_limit_settings
-from app.tests.test_simulating_env.api.api_test_rate_limit_base import TestRateLimitBase
-from app.tests.utils.model_utils.plot import create_minimal_random_plot_query_dict
-from app.tests.utils.rate_limit import RateLimitPerTimeInterval
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)

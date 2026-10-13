@@ -1,15 +1,14 @@
-from fastapi import APIRouter, Depends, Request
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.api.deps import (
+from backend_api.app.api.deps import (
     get_async_db,
     get_user_ip_from_header,
 )
-from app.core.rate_limit.custom_rate_limiter import RateSpec
-from app.core.rate_limit.rate_limit_config import rate_limit_settings
-from app.core.rate_limit.rate_limiters import apply_custom_rate_limit
-from app.core.schemas.plot import PlotData, PlotQuery
-from app.plotting import configure_plotter_by_query, plotter_service
+from backend_api.app.core.rate_limit.custom_rate_limiter import RateSpec
+from backend_api.app.core.rate_limit.rate_limit_config import rate_limit_settings
+from backend_api.app.core.rate_limit.rate_limiters import apply_custom_rate_limit
+from backend_api.app.core.schemas.plot import PlotData, PlotQuery
+from backend_api.app.plotting import configure_plotter_by_query, plotter_service
+from fastapi import APIRouter, Depends, Request
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 

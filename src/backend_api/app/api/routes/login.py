@@ -1,24 +1,23 @@
 # From FastAPI Fullstack Template https://github.com/fastapi/full-stack-fastapi-template/blob/master/backend/app/api/routes/login.py
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request, Response
-from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
-
-from app.api.deps import (
+from backend_api.app.api.deps import (
     UserCacheSession,
     get_db,
 )
-from app.core.config import settings
-from app.core.rate_limit.rate_limit_config import rate_limit_settings
-from app.core.rate_limit.rate_limiters import (
+from backend_api.app.core.config import settings
+from backend_api.app.core.rate_limit.rate_limit_config import rate_limit_settings
+from backend_api.app.core.rate_limit.rate_limiters import (
     apply_ip_rate_limits,
 )
-from app.core.schemas import Token
-from app.crud import CRUD_user
-from app.exceptions import (
+from backend_api.app.core.schemas import Token
+from backend_api.app.crud import CRUD_user
+from backend_api.app.exceptions import (
     BadLoginCredentialsError,
 )
+from fastapi import APIRouter, Depends, Request, Response
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 

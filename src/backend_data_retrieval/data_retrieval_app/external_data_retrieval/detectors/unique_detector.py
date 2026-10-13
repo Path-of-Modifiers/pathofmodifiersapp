@@ -1,31 +1,91 @@
-import pandas as pd
-
-from data_retrieval_app.external_data_retrieval.detectors.base import DetectorBase
-
-
-class UniqueDetector(DetectorBase):
-    def _check_if_wanted(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = df.loc[df["name"].isin(self.wanted_items)]
-        return df
-
-    def _specialized_filter(self, df: pd.DataFrame) -> pd.DataFrame:
-        if "rarity" not in df.columns:
-            return pd.DataFrame(columns=df.columns)
-
-        df = df.loc[df["rarity"] == "Unique"]
-
-        df = self._check_if_wanted(df)
-
-        if self.pbar_enabled:
-            temp_df = df["name"] + df["baseType"]
-            for name_baseType in temp_df.unique():
-                if name_baseType not in self.found_items:
-                    self.found_items[name_baseType] = True
-
-        return df
+from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.external.poe import (
+    PoeItem,
+)
+from data_retrieval_app.external_data_retrieval.detectors.base import (
+    CategoryDetectorBase,
+    SubCategoryDetectorBase,
+)
 
 
-class UniqueUnidentifiedDetector(UniqueDetector):
+class UniqueJewelDetector(SubCategoryDetectorBase):
+    wanted_items = [
+        "Grand Spectrum",
+        "Forbidden Flesh",
+        "Forbidden Flame",
+        "The Balance of Terror",
+        "That Which Was Taken",
+        "Split Personality",
+        "Thread of Hope",
+        "The Adorned",
+        "Impossible Escape",
+        "Watcher's Eye",
+        "Bound By Destiny",
+        "Sublime Vision",
+        "The Light of Meaning",
+        "Glorious Vanity",
+        "Lethal Pride",
+        "Brutal Restraint",
+        "Militant Faith",
+        "Elegant Hubris",
+        "Voices",
+        "Heroic Tragedy",
+    ]
+
+    def __str__(self):
+        return "Unique Jewel Detector"
+
+
+class UniqueJewelleryDetector(SubCategoryDetectorBase):
+    wanted_items = [
+        "Aul's Uprising",
+        "Replica Dragonfang's Flight",
+        "The Utmost",
+        "Precursor's Emblem",
+        "Circle of Ambition",
+        "Circle of Guilt",
+        "Circle of Anguish",
+        "Circle of Regret",
+        "Circle of Fear",
+        "Circle of Nostalgia",
+        "Screams of the Desiccated",
+    ]
+
+    def __str__(self):
+        return "Unique Jewellery Detector"
+
+
+class UniqueArmourDetector(SubCategoryDetectorBase):
+    wanted_items = ["Forbidden Shako", "Skin of the Lords", "Shroud of the Lightless"]
+
+    def __str__(self):
+        return "Unique Armour Detector"
+
+
+class UniqueWeaponDetector(SubCategoryDetectorBase):
+    wanted_items = ["Paradoxica", "Cane of Kulemak"]
+
+    def __str__(self):
+        return "Unique Weapon Detector"
+
+
+class UniqueDetector(CategoryDetectorBase):
+    identifier = "unique"
+
+    should_cache = True
+
+    detectors = [
+        UniqueJewelDetector(),
+        UniqueJewelleryDetector(),
+        UniqueArmourDetector(),
+        UniqueWeaponDetector(),
+    ]
+
+    def matches_category(self, item: PoeItem) -> bool:
+        return item.identified and item.rarity is not None and item.rarity == "Unique"
+
+
+class UnidentifiedUniqueDetector(CategoryDetectorBase):
+    # TODO separate this into sub categories
     """
     Notes:
     Precursor's Emblems, Shroud of the Lightless and Paradoxica are not supported.
@@ -39,6 +99,10 @@ class UniqueUnidentifiedDetector(UniqueDetector):
     Is this a problem?
         No, because they are not particularly sought after in their un-id form
     """
+
+    identifier = "unidentified_unique"
+
+    should_cache = False
 
     wanted_base_types = [
         "Viridian Jewel",
@@ -96,81 +160,24 @@ class UniqueUnidentifiedDetector(UniqueDetector):
         "Soulcord.png": "Screams of the Desiccated",
     }
 
-    def _check_if_wanted(self, df: pd.DataFrame) -> pd.DataFrame:
+    def matches_category(self, item: PoeItem) -> bool:
         """
-        Uses the icon to identify which unique it is, then saving that name.
-        If the name attribute still has a length of 0 it means no matching unique
-        was found.
+        Uses the icon to identify which unique it is, then saving that name inplace.
         """
-        df = df.loc[(~df["identified"] & df["baseType"].isin(self.wanted_base_types))]
+        if (
+            item.identified
+            or (item.rarity is None or item.rarity != "Unique")
+            or item.base_type not in self.wanted_base_types
+        ):
+            return False
 
-        for icon, name in self.wanted_item_icons.items():
-            df.loc[df["icon"].str.endswith(icon), "name"] = name
+        icon = item.icon.split("/")[-1]
+        name = self.wanted_item_icons.get(icon)
+        if name is None:
+            return False
 
-        df = df.loc[df["name"].str.len() != 0]
-        # self._snapshot(df)
-        return df
+        item.name = name
+        return True
 
     def __str__(self):
         return "Unidentifed Unique detector"
-
-
-class UniqueJewelDetector(UniqueDetector):
-    wanted_items = [
-        "Grand Spectrum",
-        "Forbidden Flesh",
-        "Forbidden Flame",
-        "The Balance of Terror",
-        "That Which Was Taken",
-        "Split Personality",
-        "Thread of Hope",
-        "The Adorned",
-        "Impossible Escape",
-        "Watcher's Eye",
-        "Bound By Destiny",
-        "Sublime Vision",
-        "The Light of Meaning",
-        "Glorious Vanity",
-        "Lethal Pride",
-        "Brutal Restraint",
-        "Militant Faith",
-        "Elegant Hubris",
-        "Voices",
-        "Heroic Tragedy",
-    ]
-
-    def __str__(self):
-        return "Unique Jewel Detector"
-
-
-class UniqueJewelleryDetector(UniqueDetector):
-    wanted_items = [
-        "Aul's Uprising",
-        "Replica Dragonfang's Flight",
-        "The Utmost",
-        "Precursor's Emblem",
-        "Circle of Ambition",
-        "Circle of Guilt",
-        "Circle of Anguish",
-        "Circle of Regret",
-        "Circle of Fear",
-        "Circle of Nostalgia",
-        "Screams of the Desiccated",
-    ]
-
-    def __str__(self):
-        return "Unique Jewellery Detector"
-
-
-class UniqueArmourDetector(UniqueDetector):
-    wanted_items = ["Forbidden Shako", "Skin of the Lords", "Shroud of the Lightless"]
-
-    def __str__(self):
-        return "Unique Armour Detector"
-
-
-class UniqueWeaponDetector(UniqueDetector):
-    wanted_items = ["Paradoxica", "Cane of Kulemak"]
-
-    def __str__(self):
-        return "Unique Weapon Detector"

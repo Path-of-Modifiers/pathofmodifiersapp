@@ -1,5 +1,9 @@
 import sys
 
+from backend_api.app.exceptions.model_exceptions.rate_limit_exception import (
+    RateLimitExceededError,
+)
+from backend_api.app.logs.logger import logger
 from fastapi import Request
 from fastapi.exception_handlers import http_exception_handler as _http_exception_handler
 from fastapi.exception_handlers import (
@@ -8,9 +12,6 @@ from fastapi.exception_handlers import (
 from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.responses import JSONResponse, PlainTextResponse, Response
 from slowapi.errors import RateLimitExceeded
-
-from app.exceptions.model_exceptions.rate_limit_exception import RateLimitExceededError
-from app.logs.logger import logger
 
 """
 Taken from https://medium.com/@roy-pstr/fastapi-server-errors-and-logs-take-back-control-696405437983

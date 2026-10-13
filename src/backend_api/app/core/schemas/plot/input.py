@@ -1,6 +1,5 @@
 import pydantic as _pydantic
-
-from app.core.schemas.item import Influences
+from backend_api.app.core.schemas.item import Influences
 
 
 class ItemSpecs(_pydantic.BaseModel):

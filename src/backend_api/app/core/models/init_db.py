@@ -1,10 +1,9 @@
+from backend_api.app.core.config import settings
+from backend_api.app.core.models.models import User
+from backend_api.app.core.schemas.user import UserCreate
+from backend_api.app.crud import CRUD_user
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-
-from app.core.config import settings
-from app.core.models.models import User
-from app.core.schemas.user import UserCreate
-from app.crud import CRUD_user
 
 
 def init_db(session: Session) -> None:

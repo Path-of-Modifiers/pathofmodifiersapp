@@ -3,11 +3,10 @@ from pathlib import Path
 from typing import Any
 
 import emails  # type: ignore
+from backend_api.app.core.config import settings
+from backend_api.app.logs.logger import logger
 from jinja2 import Template
 from pydantic import EmailStr
-
-from app.core.config import settings
-from app.logs.logger import logger
 
 
 @dataclass

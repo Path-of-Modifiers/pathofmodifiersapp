@@ -1,9 +1,9 @@
+from backend_api.app.core.models.models import ItemBaseType as model_ItemBaseType
+from backend_api.app.core.schemas.item_base_type import ItemBaseTypeCreate
+from backend_api.app.tests.utils.utils import random_int, random_lower_string
 from sqlalchemy.orm import Session
 
 from app import crud
-from app.core.models.models import ItemBaseType as model_ItemBaseType
-from app.core.schemas.item_base_type import ItemBaseTypeCreate
-from app.tests.utils.utils import random_int, random_lower_string
 
 
 def create_random_item_base_type_dict() -> dict:

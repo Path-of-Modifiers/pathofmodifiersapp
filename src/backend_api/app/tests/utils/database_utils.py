@@ -1,9 +1,8 @@
+from backend_api.app.core.config import settings
+from backend_api.app.core.models.database import engine as src_db_engine
+from backend_api.app.core.models.models import User
 from sqlalchemy import Engine, MetaData, delete
 from sqlalchemy.exc import SQLAlchemyError
-
-from app.core.config import settings
-from app.core.models.database import engine as src_db_engine
-from app.core.models.models import User
 
 src_db_metadata = MetaData()
 test_db_metadata = MetaData()

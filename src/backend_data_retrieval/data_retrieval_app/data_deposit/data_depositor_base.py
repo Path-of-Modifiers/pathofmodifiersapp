@@ -14,7 +14,10 @@ from data_retrieval_app.utils import df_to_JSON
 
 
 class DataDepositorBase:
-    def __init__(self, data_type: Literal["modifier", "item_base_type"]) -> None:
+    def __init__(
+        self,
+        data_type: Literal["modifier", "item_base_type", "league"],
+    ) -> None:
         self.base_url = settings.BACKEND_BASE_URL
         self.pom_auth_headers = get_superuser_token_headers(self.base_url)
 
