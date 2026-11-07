@@ -2,8 +2,14 @@ import random
 import string
 from typing import Any
 
+RNG = random.Random()
 
-def random_lower_string(*, small_string: bool | None = None) -> str:
+
+def random_lower_string(
+    *,
+    small_string: bool | None = None,
+    rng: random.Random = RNG,
+) -> str:
     """Generate a random lowercase string.
 
     Args:
@@ -12,58 +18,70 @@ def random_lower_string(*, small_string: bool | None = None) -> str:
     Returns:
         str: Random lowercase string.
     """
-    random_lower_string = "".join(random.choices(string.ascii_lowercase, k=32))
+    random_lower_string = "".join(rng.choices(string.ascii_lowercase, k=32))
     if small_string:
         random_lower_string = random_lower_string[:5]
     return random_lower_string
 
 
-def random_string(max_length: int = 15):
+def random_string(
+    max_length: int = 15,
+    rng: random.Random = RNG,
+):
     """Generates a random string of a specified length (default is 15)."""
     return "".join(
-        random.choice(string.ascii_letters) for _ in range(random_int(5, max_length))
+        rng.choice(string.ascii_letters)
+        for _ in range(random_int(5, max_length, rng=rng))
     )
 
 
-def random_int(min_val: int = 1, max_val: int = 100):
+def random_int(min_val: int = 1, max_val: int = 100, *, rng: random.Random = RNG):
     """Generates a random integer between min_val and max_val (default is 0 to 100)."""
-    return random.randint(min_val, max_val)
+    return rng.randint(min_val, max_val)
 
 
-def random_float(min_val: float = 1, max_val: float = 100, precision: int = 2):
+def random_float(
+    min_val: float = 1,
+    max_val: float = 100,
+    precision: int = 2,
+    *,
+    rng: random.Random = RNG,
+):
     """Generates a random float between min_val and max_val (default is 0 to 100)."""
-    return round(random.uniform(min_val, max_val), precision)
+    return round(rng.uniform(min_val, max_val), precision)
 
 
-def random_boolean():
+def random_boolean(*, rng: random.Random = RNG):
     """Generates a random boolean value (True or False)."""
-    return random.choice([True, False])
+    return rng.choice([True, False])
 
 
-def random_list_str(max_length: int = 5) -> list[str]:
+def random_list_str(max_length: int = 5, *, rng: random.Random = RNG) -> list[str]:
     """Generates a list with a random number of random string elements (max 5)."""
-    return [random_string(random_int(5, 15)) for _ in range(random_int(5, max_length))]
+    return [random_string(rng=rng) for _ in range(random_int(5, max_length, rng=rng))]
 
 
-def random_dict(max_length: int = 5) -> dict:
+def random_dict(max_length: int = 5, *, rng: random.Random = RNG) -> dict:
     """Generates a random object."""
     dict = {}
-    for _ in range(random_int(1, max_length)):
-        dict[random_string()] = random_string()
+    for _ in range(random_int(1, max_length, rng=rng)):
+        dict[random_string(rng=rng)] = random_string(rng=rng)
     return dict
 
 
-def random_value_by_type(value: Any) -> Any:
+def random_value_by_type(
+    annotation: Any, *, rng: random.Random = RNG, field_name: str = ""
+) -> Any:
     """Generates a random value based on the data type of the input value."""
-    if isinstance(value, bool):
-        return random_boolean()
-    elif isinstance(value, str):
-        return random_string() if value == "" else value
-    elif isinstance(value, int):
-        return random_int()
-    elif isinstance(value, dict):
-        return replace_false_values(value)  # Recursively handle nested dictionaries
-    return value  # Fallback for other types
+    if annotation is bool:
+        return random_boolean(rng=rng)
+    elif annotation is str:
+        return random_string(rng=rng)
+    elif annotation is int:
+        return random_int(rng=rng)
+    raise TypeError(
+        f"No generator registered for {annotation!r} " f"(field={field_name!r})"
+    )
 
 
 def replace_false_values(data: dict) -> dict:
