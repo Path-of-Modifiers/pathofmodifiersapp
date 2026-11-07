@@ -1,14 +1,18 @@
 import logging
+from collections import defaultdict
 from collections.abc import Generator
 from datetime import UTC, datetime
 from typing import Any, Literal
 
 import pandas as pd
 import requests
+from backend_api.app.core.schemas.item_base_type import ItemBaseType
 from backend_api.app.core.schemas.league import League
-from pydantic import HttpUrl
+from backend_api.app.core.schemas.modifier import GroupedModifier
+from pydantic import HttpUrl, TypeAdapter
 
-from data_retrieval_app.logs.logger import main_logger as logger
+from data_retrieval_app.external_data_retrieval.config import settings
+from data_retrieval_app.logs.logger import db_retrieval_logger, main_logger
 
 
 def _chunks(lst: list[Any], n: int) -> Generator[Any, None, None]:
@@ -30,7 +34,9 @@ def remove_empty_fields(json_in: list[dict[str, str]]) -> list[dict[str, Any]]:
 def df_to_JSON(
     df: pd.DataFrame | pd.Series, request_method: str
 ) -> list[dict[str, Any]] | dict[str, Any] | Any:
-    logger.debug(f"Transforming data into JSON with request method {request_method}.")
+    main_logger.debug(
+        f"Transforming data into JSON with request method {request_method}."
+    )
     if isinstance(df, pd.Series):
         df = df.to_frame().transpose()
     with pd.option_context("future.no_silent_downcasting", True):
@@ -42,13 +48,13 @@ def df_to_JSON(
     df_json = remove_empty_fields(df_json)  # Removes empty fields element-wise
 
     if request_method == "post":
-        logger.debug("Transformed data into JSON for post method.")
+        main_logger.debug("Transformed data into JSON for post method.")
         return df_json
     elif request_method == "put":
-        logger.debug("Transformed data into JSON for put method.")
+        main_logger.debug("Transformed data into JSON for put method.")
         return df_json[0]
     else:
-        logger.exception("Invalid request method for df to json.")
+        main_logger.exception("Invalid request method for df to json.")
         raise NotImplementedError(
             f"df to json for the request method {request_method} is not implemented."
         )
@@ -181,3 +187,65 @@ def send_request_safe(
         raise e
 
     return response
+
+
+def get_leagues(headers: dict) -> list[League]:
+    response = get_data_safe(
+        f"{settings.BACKEND_BASE_URL}/league/",
+        headers=headers,
+        logger=db_retrieval_logger,
+    )
+
+    return TypeAdapter(list[League]).validate_python(response.json())
+
+
+def get_leagues_active(headers: dict) -> list[League]:
+    response = get_data_safe(
+        f"{settings.BACKEND_BASE_URL}/league/active/",
+        headers=headers,
+        logger=db_retrieval_logger,
+    )
+
+    return TypeAdapter(list[League]).validate_python(response.json())
+
+
+def get_grouped_modifiers(headers: dict) -> list[GroupedModifier]:
+    response = send_request_safe(
+        "get",
+        f"{settings.BACKEND_BASE_URL}/modifier/grouped/",
+        headers=headers,
+        logger=db_retrieval_logger,
+    )
+    modifiers = TypeAdapter(list[GroupedModifier]).validate_python(response.json())
+    return modifiers
+
+
+def get_grouped_modifiers_by_unique(headers: dict) -> dict[str, list[GroupedModifier]]:
+    modifiers = get_grouped_modifiers(headers)
+
+    modifiers_by_unique = defaultdict[str, list[GroupedModifier]](list)
+    for modifier in modifiers:
+        uniques = modifier.relatedUniques.split("|")
+        for unique in uniques:
+            modifiers_by_unique[unique].append(modifier)
+
+    return dict(modifiers_by_unique)
+
+
+def get_item_base_types(headers: dict) -> list[ItemBaseType]:
+    response = send_request_safe(
+        "get",
+        f"{settings.BACKEND_BASE_URL}/itemBaseType/",
+        headers=headers,
+        logger=db_retrieval_logger,
+    )
+    base_types = TypeAdapter(list[ItemBaseType]).validate_python(response.json())
+    return base_types
+
+
+def get_item_base_type_id_by_name(headers: dict) -> dict[str, int]:
+    base_types = get_item_base_types(headers)
+    base_type_ids = {
+        base_type.baseType: base_type.itemBaseTypeId for base_type in base_types
+    }
+    return base_type_ids

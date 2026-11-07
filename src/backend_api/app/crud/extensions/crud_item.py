@@ -92,7 +92,7 @@ class CRUDItem:
         )
 
         truely_new_items = list[ItemCreate]()
-        existing_items = list[ItemCreate]()
+        existing_items = list[ItemCreate]()  # items that have been seen before
 
         for item in new_items:
             game_item_id = item.item.gameItemId
@@ -142,24 +142,39 @@ class CRUDItem:
             )
 
         db.add_all(db_item_modifiers)
+        db.add_all(db_item_availability)
 
+        # existing items must be handled with extra care
+        existing_items_availability = list[model_ItemAvailability]()
         for existing_item in existing_items:
             game_item_id = existing_item.item.gameItemId
             league_id = existing_item.item.leagueId
 
             db_item_id = incoming_to_database[(game_item_id, league_id)]
 
-            db_item_availability.append(
-                model_ItemAvailability(
-                    itemId=db_item_id,
-                    currencyId=existing_item.price.currencyId,
-                    currencyAmount=existing_item.price.currencyAmount,
-                    validFrom=existing_item.item.firstObserved,
-                    isAsync=existing_item.price.isAsync,
-                )
+            existing_items_availability.append(
+                {
+                    "itemId": db_item_id,
+                    "currencyId": existing_item.price.currencyId,
+                    "currencyAmount": existing_item.price.currencyAmount,
+                    "validFrom": existing_item.item.firstObserved,
+                    "isAsync": existing_item.price.isAsync,
+                }
             )
+        stmt = insert(model_ItemAvailability).values(existing_items_availability)
 
-        db.add_all(db_item_availability)
+        # handles the edge case where the existing item was seen this hour
+        stmt = stmt.on_conflict_do_update(
+            constraint="item_availability_itemId_validFrom_key",
+            set_={
+                col.name: getattr(stmt.excluded, col.name)
+                for col in model_ItemAvailability.__table__.columns
+                if col.name != "availabilityId"
+            },
+        )
+
+        db.execute(stmt)
+
         db.commit()
 
         return self.item_validate(db_items)

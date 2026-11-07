@@ -13,7 +13,7 @@ from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.internal.
 
 class DetectedStashesCache:
     def __init__(self):
-        self.local_cache = dict[str, str]()
+        self.local_cache = dict[str, CacheStash]()
         self.redis_cache = None
 
         self.cached_stash_adapter = TypeAdapter(CacheStash)
@@ -34,11 +34,8 @@ class DetectedStashesCache:
             cached_stash = self.local_cache.get(self._format_stash_id(id))
             if cached_stash is None:
                 still_needs_check.append((i, id))
-                cached_stashes.append(None)
-            else:
-                cached_stashes.append(
-                    self.cached_stash_adapter.validate_json(cached_stash)
-                )
+
+            cached_stashes.append(cached_stash)
 
         return cached_stashes, still_needs_check
 
@@ -58,51 +55,6 @@ class DetectedStashesCache:
                 )
 
         return cached_stashes
-
-    def separate_cached_items(
-        self, current_stash: Stash, cached_stash: CacheStash
-    ) -> tuple[int, list[CacheItemWithContext], list[PoeItem], list[PoeItem]]:
-        """
-        Separates items in the current cached into removed, changed, and new.
-        Returns:
-            n_items_filtered: (int) number of unchanged items
-            removed_items: (list[CacheItemWithContext]) items that are no longer present in the current stash
-            changed_items: (list[PoeItem]) items with a different price
-            new_items: (list[PoeItem]) items not present in cache
-        """
-        removed_items = list[CacheItemWithContext]()
-        changed_items = list[PoeItem]()
-        new_items = current_stash.items
-
-        n_items_filtered = 0
-        for cached_item in cached_stash.items:
-            item = current_stash.get_item(cached_item.id)
-            if item is None:
-                # a cached item doesnt exist anymore
-                removed_items.append(
-                    CacheItemWithContext(
-                        id=cached_item.id,
-                        note=cached_item.note,
-                        category=cached_item.category,
-                        league=current_stash.league,
-                    )
-                )
-            else:
-                # Item has been previously cached -> not new
-                new_items.remove(item)
-                if item.note == cached_item.note:
-                    # Duplicate found in cache
-                    n_items_filtered += 1
-                else:
-                    # PoeItem has changed from cache
-                    changed_items.append(item)
-
-        return (
-            n_items_filtered,
-            removed_items,
-            changed_items,
-            new_items,
-        )
 
     def get_stashes(self, ids: list[str]) -> list[CacheStash | None]:
         """
@@ -124,8 +76,50 @@ class DetectedStashesCache:
 
     def update_stashes(self, stashes: dict[str, CacheStash]):
         for id, stash in stashes.items():
-            self.local_cache[self._format_stash_id(id)] = stash.model_dump_json()
+            self.local_cache[self._format_stash_id(id)] = stash
 
     def flush_local_cache(self):
         if self.local_cache:
-            self.redis_cache.mset(self.local_cache)
+            local_stash_dump = {
+                key: self.cached_stash_adapter.dump_json(cached_stash)
+                for key, cached_stash in self.local_cache.items()
+            }
+            self.redis_cache.mset(local_stash_dump)
+
+    def separate_cached_items(
+        self, current_stash: Stash, cached_stash: CacheStash
+    ) -> tuple[int, list[CacheItemWithContext], list[PoeItem], list[PoeItem]]:
+        """
+        Separates items in the current cached into removed, changed, and new.
+        Returns:
+            n_items_filtered: (int) number of unchanged items
+            removed_items: (list[CacheItemWithContext]) items that are no longer present in the current stash
+            changed_items: (list[PoeItem]) items with a different price
+            new_items: (list[PoeItem]) items not present in cache
+        """
+        removed_items = list[CacheItemWithContext]()
+        changed_items = list[PoeItem]()
+        new_items = current_stash.items[:]
+
+        n_items_filtered = 0
+        for cached_item in cached_stash.items:
+            item = current_stash.get_item(cached_item.id)
+            if item is None:
+                # a cached item doesnt exist anymore
+                removed_items.append(cached_item.add_context(current_stash.league))
+            else:
+                # Item has been previously cached -> not new
+                new_items.remove(item)
+                if item.note == cached_item.note:
+                    # Duplicate found in cache
+                    n_items_filtered += 1
+                else:
+                    # PoeItem has changed from cache
+                    changed_items.append(item)
+
+        return (
+            n_items_filtered,
+            removed_items,
+            changed_items,
+            new_items,
+        )

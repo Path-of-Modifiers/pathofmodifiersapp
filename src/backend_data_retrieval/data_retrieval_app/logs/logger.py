@@ -26,6 +26,8 @@ timing_logger = external_data_retrieval_logger.getChild("timing")
 
 data_retrieval_logger = external_data_retrieval_logger.getChild("dataret")
 
+db_retrieval_logger = main_logger.getChild("db retrieval")
+
 filter_logger = external_data_retrieval_logger.getChild("filter")
 
 transform_logger = external_data_retrieval_logger.getChild("transform")

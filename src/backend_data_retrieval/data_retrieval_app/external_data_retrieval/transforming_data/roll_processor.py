@@ -20,7 +20,7 @@ class RollProcessor:
 
         self.missing_modifiers = defaultdict[str, set[str]](set)
 
-    def _process_dynamic_modifier(
+    def _extract_rolls(
         self, db_mod: GroupedModifier, match: re.Match
     ) -> list[ItemModifierRoll]:
         position = 0
@@ -44,7 +44,7 @@ class RollProcessor:
 
         return rolls
 
-    def _extract_rolls(
+    def _create_item_modifier(
         self, modifier: ItemMod, db_modifiers: list[GroupedModifier]
     ) -> ItemModifierCreate | None:
         # pre processing
@@ -59,36 +59,25 @@ class RollProcessor:
                     )
 
             elif (match := db_mod.regex.match(effect)) is not None:
-                rolls = self._process_dynamic_modifier(db_mod, match)
+                rolls = self._extract_rolls(db_mod, match)
 
                 return ItemModifierCreate(modifierId=db_mod.modifierId, rolls=rolls)
 
         return None
 
-    def extract_modifiers(self, item: PoeItem) -> list[ItemModifierCreate] | None:
+    def extract_modifiers(self, item: PoeItem) -> list[ItemModifierCreate]:
         db_modifiers = self.modifiers[item.name]
 
         extracted_modifiers = list[ItemModifierCreate]()
-        if item.name == "The Adorned" and item.explicit_mods is None:
-            # rare case where the modifier dissapears completely from the item when it rolls 0
-            # This can happen with other items, but they will still have some other mods left over
-            item.explicit_mods = [
-                ItemMod(
-                    description=r"0% increased Effect of Jewel Socket Passive Skills containing Corrupted Magic Jewels"
-                )
-            ]
-        elif item.explicit_mods is None:
-            logger.critical(f"An item was found with no explicit mods: {item}")
-            return None
 
         for mod in item.explicit_mods:
-            extracted_rolls = self._extract_rolls(mod, db_modifiers)
-            if extracted_rolls is None:
+            extracted_modifier = self._create_item_modifier(mod, db_modifiers)
+            if extracted_modifier is not None:
+                extracted_modifiers.append(extracted_modifier)
+            else:
                 self.missing_modifiers[item.name].add(
                     mod.description.replace("\n", " ")
                 )
-            else:
-                extracted_modifiers.append(extracted_rolls)
 
         return extracted_modifiers
 

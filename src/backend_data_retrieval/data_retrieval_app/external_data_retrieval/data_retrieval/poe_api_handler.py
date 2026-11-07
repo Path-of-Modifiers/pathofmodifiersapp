@@ -10,6 +10,7 @@ from typing import Literal
 import httpx
 import pandas as pd
 import redis
+from backend_api.app.core.schemas.currency import Currency
 from backend_api.app.core.schemas.league import League
 from pydantic import TypeAdapter
 
@@ -30,6 +31,9 @@ from data_retrieval_app.external_data_retrieval.detectors.detector_controller im
 from data_retrieval_app.external_data_retrieval.detectors.unique_detector import (
     # UnidentifiedUniqueDetector,
     UniqueDetector,
+)
+from data_retrieval_app.external_data_retrieval.transforming_data.transform_poe_api_data import (
+    PoEAPIDataTransformer,
 )
 from data_retrieval_app.external_data_retrieval.utils import (
     ProgramTooSlowException,
@@ -56,7 +60,6 @@ class PoEAPIHandler:
         auth_token: str,
         *,
         leagues: list[League],
-        detector_controller: DetectorController | None = None,
     ) -> None:
         """
         Parameters:
@@ -66,22 +69,22 @@ class PoEAPIHandler:
         """
         logger.debug("Initializing PoEAPIHandler.")
         self.leagues = leagues
-        if detector_controller is None:
-            detector_controller = DetectorController(
-                [
-                    UniqueDetector(),
-                    # UnidentifiedUniqueDetector(),
-                ],
-                leagues,
-            )
+        self.data_transformer = PoEAPIDataTransformer(self.leagues)
+        self.detector_controller = DetectorController(
+            [
+                UniqueDetector(),
+                # UnidentifiedUniqueDetector(),
+            ],
+            leagues,
+            self.data_transformer,
+        )
+
         self.url = url
         logger.debug("Url set to: " + self.url)
         self.auth_token = auth_token
         self.headers["Authorization"] = "Bearer " + auth_token
 
         logger.debug("Headers set to: " + str(self.headers))
-
-        self.detector_controller = detector_controller
 
         self.stashes_adapter = TypeAdapter(list[Stash])
 
@@ -168,6 +171,7 @@ class PoEAPIHandler:
                             time.sleep(30)
                             continue
                         else:
+                            response.read()
                             logger.exception(
                                 f"Recieved the following response: status:'{response.status_code}' '{response.reason_phrase}' text:'{response.text}'"
                             )
@@ -276,14 +280,18 @@ class PoEAPIHandler:
         return futures
 
     @sync_timing_tracker
-    def _read_stream(self) -> tuple[list[Stash], str | None]:
+    def _read_stream(
+        self, stop_event: threading.Event
+    ) -> tuple[list[Stash], str | None]:
         i = 0
         stashes = list[Stash]()
         next_change_id = None
         while i < self.mini_batch_size:
             try:
-                pending: ByteResponse | None = self.response_queue.get(timeout=30)
+                pending: ByteResponse | None = self.response_queue.get(timeout=10)
             except Empty:
+                if stop_event.is_set():
+                    break
                 continue
 
             # This is equivalent to a stop event, but ensures all stashes are processed
@@ -295,7 +303,17 @@ class PoEAPIHandler:
                 continue
 
             obj = json.loads(pending.response.decode("utf-8"))
-            stashes.extend(self.stashes_adapter.validate_python(obj["stashes"]))
+            _stashes = self.stashes_adapter.validate_python(obj["stashes"])
+            # interesting_stashes = filter_by_owner(
+            #     _stashes, "Bogadisa#6339"
+            # )  # , "Kaaosvoima#6748"
+            # if interesting_stashes is None:
+            #     continue
+            # print("stashes found!")
+            # print(interesting_stashes)
+            # stashes_to_json(pending.change_id, interesting_stashes)
+            # continue
+            stashes.extend(_stashes)
             self.response_queue.task_done()
 
             next_change_id = pending.next_change_id
@@ -304,11 +322,13 @@ class PoEAPIHandler:
 
         return stashes, next_change_id
 
-    def _gather_n_checkpoints(self, n: int) -> tuple[OrganizedItemsByCategory, str]:
+    def _gather_n_checkpoints(
+        self, n: int, stop_event: threading.Event
+    ) -> tuple[OrganizedItemsByCategory, str]:
         all_organized_items = OrganizedItemsByCategory()
         for _ in range(n):
             start_time = time.perf_counter()
-            stashes, next_change_id = self._read_stream()
+            stashes, next_change_id = self._read_stream(stop_event)
             organized_items = self.detector_controller.filter_stashes(stashes)
             end_time = time.perf_counter()
 
@@ -323,29 +343,39 @@ class PoEAPIHandler:
                     raise ProgramTooSlowException
 
             all_organized_items.extend(organized_items)
+            if stop_event.is_set():
+                break
 
         return all_organized_items, next_change_id
 
     def dump_stream(
-        self, cache: redis.Redis
-    ) -> Iterator[tuple[OrganizedItemsByCategory, str]]:
+        self,
+        cache: redis.Redis,
+        current_hours: dict[int, int],
+        currencies: dict[tuple[int, str], Currency],
+        stop_event: threading.Event,
+    ) -> Iterator[str | None]:
         self.redis_cache = cache
         self.detector_controller.set_redis_cache(self.redis_cache)
-        # time.sleep(5)  # Waits for the listening threads to have time to start up.
-        try:
-            while True:
-                logger.info("Waiting for data from the stream")
-                organized_items, next_change_id = self._gather_n_checkpoints(
-                    n=settings.N_CHECKPOINTS_PER_TRANSFORMATION,
-                )
-                if organized_items.is_empty():
-                    logger.info("Found no data")
-                    continue
-                logger.info(
-                    "Finished processing the stream, entering transformation phase"
-                )
-                yield organized_items, next_change_id
-                # self.detector_controller.post_transform_cleanup(organized_items)
-                logger.info("Finished transformation phase")
-        finally:
-            self.detector_controller.end_of_program_cleanup()
+
+        self.data_transformer.set_current_hours(current_hours)
+        self.data_transformer.set_currencies(currencies)
+
+        while True and not stop_event.is_set():
+            logger.info("Waiting for data from the stream")
+            organized_items, next_change_id = self._gather_n_checkpoints(
+                n=settings.N_CHECKPOINTS_PER_TRANSFORMATION, stop_event=stop_event
+            )
+            if organized_items.is_empty():
+                logger.info("Found no data")
+                continue
+            logger.info("Finished processing the stream, entering transformation phase")
+            self.data_transformer.transform_and_insert(organized_items)
+            logger.info("Finished transformation phase")
+            yield next_change_id
+
+    def end_of_hour_cleanup(self):
+        self.data_transformer.end_of_hour_cleanup()
+
+    def end_of_program_cleanup(self):
+        self.detector_controller.end_of_program_cleanup()

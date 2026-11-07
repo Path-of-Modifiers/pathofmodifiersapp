@@ -1,6 +1,6 @@
-import csv
 import os
 from collections.abc import Iterator
+from pathlib import Path
 
 from backend_api.app.core.schemas.modifier import (
     GroupedModifier,
@@ -14,8 +14,9 @@ from data_retrieval_app.data_deposit.data_depositor_base import DataDepositorBas
 from data_retrieval_app.data_deposit.modifier.modifier_processing_modules import (
     ModifierRegexCreator,
 )
+from data_retrieval_app.data_deposit.utils import read_csv
 from data_retrieval_app.logs.logger import data_deposit_logger as logger
-from data_retrieval_app.utils import send_request_safe
+from data_retrieval_app.utils import get_grouped_modifiers, send_request_safe
 
 
 class ModifierDataDepositor(DataDepositorBase):
@@ -24,14 +25,7 @@ class ModifierDataDepositor(DataDepositorBase):
         self.regex_creator = ModifierRegexCreator()
 
     def _get_current_modifiers(self) -> dict[str, GroupedModifier]:
-        response = send_request_safe(
-            "get",
-            f"{self.data_url}grouped/",
-            headers=self.pom_auth_headers,
-            logger=logger,
-        )
-
-        modifiers = TypeAdapter(list[GroupedModifier]).validate_python(response.json())
+        modifiers = get_grouped_modifiers(self.pom_auth_headers)
 
         return {modifier.effect: modifier for modifier in modifiers}
 
@@ -141,31 +135,14 @@ class ModifierDataDepositor(DataDepositorBase):
 
     def _load_data(self) -> Iterator[ModifierCreate]:
         for filename in os.listdir(self.new_data_location):
-            modifiers = list[dict]()
-            filepath = os.path.join(self.new_data_location, filename)
+            modifiers = list[dict[str, str]]()
+            filepath = Path(self.new_data_location, filename)
 
-            self.logged_file_comments = {}
             logger.info(f"Loading new data from '{filename}'.")
-            with open(filepath) as infile:
-                while True:
-                    position = infile.tell()
-                    line = infile.readline()
-
-                    if not line:
-                        break
-
-                    if line.startswith("#"):
-                        logger.info(line.rstrip())
-                        split_line = line[1:].split(":", 1)
-                        self.logged_file_comments[split_line[0].strip()] = split_line[
-                            1
-                        ].strip()
-                    else:
-                        # We found the CSV header, so go back to its beginning
-                        infile.seek(position)
-                        break
-
-                modifiers.extend(csv.DictReader(infile))
+            more_modifiers, self.logged_file_comments = read_csv(
+                filepath, logger=logger
+            )
+            modifiers.extend(more_modifiers)
 
             deposit_modifiers = dict[str, ModifierCreate]()
             for modifier in modifiers:

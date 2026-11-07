@@ -82,7 +82,7 @@ async def get_all_leagues(
 
 
 @router.get(
-    f"/active_{league_prefix}/",
+    "/active/",
     response_model=list[schemas.League],
     dependencies=[
         Depends(get_current_active_user),

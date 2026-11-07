@@ -125,6 +125,8 @@ services:
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
 
+    stop_grace_period: 15s
+
   frontend:
     image: "${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}"
     restart: always

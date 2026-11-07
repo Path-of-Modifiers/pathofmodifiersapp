@@ -5,7 +5,6 @@ import redis
 from backend_api.app.core.schemas.league import League
 from pydantic import TypeAdapter
 
-from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.external.poe import (
     PoeItem,
     Stash,
@@ -25,6 +24,9 @@ from data_retrieval_app.external_data_retrieval.detectors.base import (
 from data_retrieval_app.external_data_retrieval.detectors.cache import (
     DetectedStashesCache,
 )
+from data_retrieval_app.external_data_retrieval.transforming_data.transform_poe_api_data import (
+    PoEAPIDataTransformer,
+)
 from data_retrieval_app.external_data_retrieval.utils import (
     sync_timing_tracker,
 )
@@ -32,28 +34,49 @@ from data_retrieval_app.logs.logger import data_retrieval_logger as logger
 
 
 class DetectorController:
-    backend_base_url = settings.BACKEND_BASE_URL
-
     def __init__(
         self,
         detectors: list[CategoryDetectorBase],
         leagues: list[League],
+        transformer: PoEAPIDataTransformer,
     ):
-        self.leagues = [league.name for league in leagues]
-
         self.detectors = detectors
+        self.leagues = [league.name for league in leagues]
+        self.transformer = transformer
 
         self.cache = DetectedStashesCache()
         self.redis_cache_set = False
+
+        self.uninteresting_item_fields = {
+            "monsterLevel",
+            "lockedToCharacter",
+            "lockedToAccount",
+            "logbookMods",
+            "ultimatumMods",
+            "mercenarySkills",
+            "isRelic",
+            "enshrouded",
+            "ruthless",
+            "hybrid",
+            "unmodifiableExceptChaos",
+        }
 
     def set_redis_cache(self, redis_cache: redis.Redis):
         self.cache.set_redis_cache(redis_cache)
         self.redis_cache_set = True
 
-    def _filter_duplicates(self, stashes: list[Stash]) -> list[Stash]:
+    def get_category(self, item: PoeItem) -> str:
+        for detector in self.detectors:
+            if detector.matches_category(item):
+                return detector.identifier
+
+        raise ValueError("Item does not match a detector category")
+
+    def _filter_duplicate_stashes(self, stashes: list[Stash]) -> list[Stash]:
         previous_ids = list[str]()
         non_duplicate_stashes = list[Stash]()
         duplicates_found = 0
+        # reverse, so that the latest stash is prioritized
         for stash in reversed(stashes):
             if stash.id in previous_ids:
                 duplicates_found += 1
@@ -70,20 +93,6 @@ class DetectorController:
     def _filter_never_used(
         self, stashes: list[Stash]
     ) -> tuple[list[Stash], list[Stash]]:
-        uninteresting_item_fields = {
-            "monsterLevel",
-            "lockedToCharacter",
-            "lockedToAccount",
-            "logbookMods",
-            "ultimatumMods",
-            "mercenarySkills",
-            "isRelic",
-            "enshrouded",
-            "ruthless",
-            "hybrid",
-            "unmodifiableExceptChaos",
-        }
-
         filtered_stashes = list[Stash]()
         empty_stashes = list[Stash]()
 
@@ -93,13 +102,18 @@ class DetectorController:
         for stash in stashes:
             items: list[PoeItem] = stash.items
             filtered_items = []
-            if not stash.public or stash.league not in self.leagues:
+            if (
+                not stash.public
+                or stash.stash_type != "TradeStash"  # async stash
+                or stash.league not in self.leagues
+            ):
                 # TODO should I already filter leagues? depends on what happens on migration
+                # Testing revealed that leagues that can be migrated are not suitable for tracking
                 continue
             n_items_in += len(items)
             for item in items:
                 if (
-                    uninteresting_item_fields
+                    self.uninteresting_item_fields
                     & item.model_dump(exclude_none=True).keys()
                 ):
                     # if any of these fields are present, it automatically means we are not interested
@@ -111,6 +125,10 @@ class DetectorController:
                 elif stash.has_price():
                     item.note = stash.stash
                 else:
+                    n_uninteresting_items += 1
+                    continue
+
+                if self.transformer.extract_valid_price(item) is None:
                     n_uninteresting_items += 1
                     continue
 
@@ -196,6 +214,36 @@ class DetectorController:
         )
         return removed_items
 
+    def _process_previously_cached_stash(
+        self, cached_stash: CacheStash, current_stash: Stash
+    ) -> tuple[
+        int, CacheStash, list[CacheItemWithContext], list[PoeItem], list[PoeItem]
+    ]:
+        (
+            n_more_items_filtered,
+            more_removed_items,
+            more_changed_items,
+            more_new_items,
+        ) = self.cache.separate_cached_items(current_stash, cached_stash)
+
+        updated_cached_stash = current_stash.to_cache(self)
+
+        return (
+            n_more_items_filtered,
+            updated_cached_stash,
+            more_removed_items,
+            more_changed_items,
+            more_new_items,
+        )
+
+    def _process_new_stash(
+        self, current_stash: Stash
+    ) -> tuple[CacheStash, list[PoeItem]]:
+        cached_stash = current_stash.to_cache(self)
+        more_new_items = current_stash.items
+
+        return cached_stash, more_new_items
+
     def _find_changed_items_filter_unchanged(
         self, stashes: list[Stash]
     ) -> tuple[list[CacheItemWithContext], list[PoeItem], list[PoeItem]]:
@@ -221,15 +269,12 @@ class DetectorController:
                 n_stashes_cached += 1
                 (
                     n_more_items_filtered,
+                    updated_cached_stash,
                     more_removed_items,
                     more_changed_items,
                     more_new_items,
-                ) = self.cache.separate_cached_items(current_stash, cached_stash)
+                ) = self._process_previously_cached_stash(cached_stash, current_stash)
                 n_items_filtered += n_more_items_filtered
-
-                cached_stash.items = [
-                    item.to_cache(self) for item in (more_new_items + more_new_items)
-                ]
 
                 removed_items.extend(more_removed_items)
                 changed_items.extend(more_changed_items)
@@ -241,13 +286,14 @@ class DetectorController:
             else:
                 # The stash has never been cached
                 cached_stash_changed = True
-                cached_stash = current_stash.to_cache(self)
-
+                updated_cached_stash, more_new_items = self._process_new_stash(
+                    current_stash
+                )
                 # All items must be new
-                new_items.extend(current_stash.items)
+                new_items.extend(more_new_items)
 
-            if cached_stash_changed and cached_stash.items:
-                stashes_to_cache[current_stash.id] = cached_stash
+            if cached_stash_changed and updated_cached_stash.items:
+                stashes_to_cache[current_stash.id] = updated_cached_stash
 
         if stashes_to_cache:
             self.cache.update_stashes(stashes_to_cache)
@@ -286,13 +332,6 @@ class DetectorController:
 
         return categorized_items
 
-    def get_category(self, item: PoeItem) -> str:
-        for detector in self.detectors:
-            if detector.matches_category(item):
-                return detector.identifier
-
-        raise ValueError("PoeItem does not match a detector category")
-
     @sync_timing_tracker
     def filter_stashes(self, stashes: list[Stash]) -> OrganizedItemsByCategory:
         """
@@ -309,7 +348,7 @@ class DetectorController:
                 "Redis cache has not been set. Call set_redis_cache() first."
             )
 
-        stashes = self._filter_duplicates(stashes)
+        stashes = self._filter_duplicate_stashes(stashes)
 
         filtered_stashes, empty_stashes = self._filter_never_used(stashes)
         empty_stash_ids = [stash.id for stash in empty_stashes]

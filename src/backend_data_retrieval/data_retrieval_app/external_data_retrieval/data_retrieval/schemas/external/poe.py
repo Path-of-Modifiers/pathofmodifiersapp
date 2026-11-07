@@ -19,6 +19,8 @@ if TYPE_CHECKING:
         DetectorController,
     )
 
+HAS_PRICE_REGEX = re.compile(r"^(~b\/o|~price) [0-9]*[.]?[0-9]+ [^ ]+$")
+
 
 class ItemModFlags(PoeModel):
     fractured: bool | None = None
@@ -72,27 +74,6 @@ class PoeItem(PoeModel):
     ilvl: int
     item_level: int | None = Field(default=None, alias="itemLevel")
     monster_level: int | None = Field(default=None, alias="monsterLevel")
-
-    # Inventory dimensions / location
-    w: int
-    h: int
-    x: int | None = None
-    y: int | None = None
-    inventory_id: str | None = Field(
-        default=None,
-        alias="inventoryId",
-    )
-
-    # Stack information
-    stack_size: int | None = Field(default=None, alias="stackSize")
-    max_stack_size: int | None = Field(
-        default=None,
-        alias="maxStackSize",
-    )
-    stack_size_text: str | None = Field(
-        default=None,
-        alias="stackSizeText",
-    )
 
     # Visuals
     icon: str
@@ -157,14 +138,6 @@ class PoeItem(PoeModel):
         default=None,
         alias="flavourText",
     )
-    descr_text: str | None = Field(
-        default=None,
-        alias="descrText",
-    )
-    sec_descr_text: str | None = Field(
-        default=None,
-        alias="secDescrText",
-    )
     note: str | None = None
     forum_note: str | None = None
 
@@ -195,15 +168,14 @@ class PoeItem(PoeModel):
         return super().__eq__(other)
 
     def has_price(self) -> bool:
-        return self.note is not None and re.match(
-            r"^(~b\/o|~price) [0-9]*[.]?[0-9]+ [^ ]+$", self.note
-        )
+        return self.note is not None and HAS_PRICE_REGEX.match(self.note)
 
 
 class Stash(PoeModel):
     id: str
 
     public: bool
+    account_name: str | None = Field(default=None, alias="accountName")
 
     stash: str | None = None
     stash_type: str = Field(alias="stashType")
@@ -217,9 +189,7 @@ class Stash(PoeModel):
         )
 
     def has_price(self) -> bool:
-        return self.stash is not None and re.match(
-            r"^(~b\/o|~price) \d+ [^ ]*$", self.stash
-        )
+        return self.stash is not None and HAS_PRICE_REGEX.match(self.stash)
 
     def get_item(self, id: str) -> PoeItem | None:
         for item in self.items:

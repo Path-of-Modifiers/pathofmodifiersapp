@@ -81,7 +81,12 @@ class UniqueDetector(CategoryDetectorBase):
     ]
 
     def matches_category(self, item: PoeItem) -> bool:
-        return item.identified and item.rarity is not None and item.rarity == "Unique"
+        return (
+            item.identified
+            and item.explicit_mods is not None
+            and item.rarity is not None
+            and item.rarity == "Unique"
+        )
 
 
 class UnidentifiedUniqueDetector(CategoryDetectorBase):

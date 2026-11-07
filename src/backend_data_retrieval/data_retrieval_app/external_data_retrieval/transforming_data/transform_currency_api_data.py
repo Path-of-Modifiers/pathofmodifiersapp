@@ -42,7 +42,6 @@ class TransformCurrencyAPIData:
             if currency_type is None:
                 continue
 
-            value = -1
             if ratio.chaos.chaosValue is None or ratio.chaos.chaosValue == 0:
                 value = ratio.divine.chaosValue
             else:

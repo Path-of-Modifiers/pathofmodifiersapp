@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from collections import defaultdict
 from typing import Literal, TypeVar
 
 from backend_api.app.core.schemas.currency import Currency
@@ -10,9 +9,7 @@ from backend_api.app.core.schemas.item import (
     ItemCreate,
     ItemPrice,
 )
-from backend_api.app.core.schemas.item_base_type import ItemBaseType
 from backend_api.app.core.schemas.league import League
-from backend_api.app.core.schemas.modifier import GroupedModifier
 from pydantic import BaseModel, TypeAdapter
 
 from data_retrieval_app.external_data_retrieval.config import settings
@@ -39,7 +36,11 @@ from data_retrieval_app.external_data_retrieval.transforming_data.roll_processor
 from data_retrieval_app.external_data_retrieval.utils import sync_timing_tracker
 from data_retrieval_app.logs.logger import transform_logger as logger
 from data_retrieval_app.pom_api_authentication import get_superuser_token_headers
-from data_retrieval_app.utils import send_request_safe
+from data_retrieval_app.utils import (
+    get_grouped_modifiers_by_unique,
+    get_item_base_type_id_by_name,
+    send_request_safe,
+)
 
 
 class PoEAPIDataTransformer:
@@ -52,146 +53,42 @@ class PoEAPIDataTransformer:
     ) -> None:
         logger.debug("Initializing PoEAPIDataTransformer")
 
-        self.pom_auth_headers = get_superuser_token_headers(self.url)
-
-        modifiers = self._get_modifiers()
-        item_base_types = self._get_item_base_types()
-
+        modifiers = get_grouped_modifiers_by_unique(self.pom_auth_headers)
         self.roll_processor = RollProcessor(modifiers)
+
+        self.item_base_types = get_item_base_type_id_by_name(self.pom_auth_headers)
 
         self.league_to_id = {league.name: league.leagueId for league in leagues}
 
         logger.debug("Initializing PoEAPIDataTransformer done.")
 
         self.transformers: list[TransformerBase] = [
-            UniqueTransformer(self.league_to_id, item_base_types, self.roll_processor),
+            UniqueTransformer(self),
             # UnidentifiedUniqueTransformer(self.league_to_id, item_base_types, self.roll_processor),
         ]
 
-    def _get_modifiers(self) -> dict[str, GroupedModifier]:
-        response = send_request_safe(
-            "get",
-            f"{self.url}/modifier/grouped/",
-            headers=self.pom_auth_headers,
-            logger=logger,
-        )
-        modifiers = TypeAdapter(list[GroupedModifier]).validate_python(response.json())
-
-        name_to_modifiers = defaultdict[str, list[GroupedModifier]](list)
-        for modifier in modifiers:
-            uniques = modifier.relatedUniques.split("|")
-            for unique in uniques:
-                name_to_modifiers[unique].append(modifier)
-
-        return dict(name_to_modifiers)
-
-    def _get_item_base_types(self) -> dict[str, int]:
-        response = send_request_safe(
-            "get",
-            f"{self.url}/itemBaseType/",
-            headers=self.pom_auth_headers,
-            logger=logger,
-        )
-
-        base_types = TypeAdapter(list[ItemBaseType]).validate_python(response.json())
-        base_type_ids = {
-            base_type.baseType: base_type.itemBaseTypeId for base_type in base_types
-        }
-        return base_type_ids
-
-    def set_current_hours(self, current_hours: dict[int, int]):
-        for transformer in self.transformers:
-            transformer.set_current_hours(current_hours)
-
-    def set_currencies(self, currencies: dict[tuple[int, str], Currency]):
-        for transformer in self.transformers:
-            transformer.set_currencies(currencies)
-
-    @sync_timing_tracker
-    def transform_and_insert(
-        self,
-        organized_items: OrganizedItemsByCategory,
-    ):
-        for transformer in self.transformers:
-            transformer.transform_and_insert(
-                getattr(organized_items, transformer.identifier),
-            )
-
-    def end_of_hour_cleanup(self):
-        self.roll_processor.log_missing_modifiers()
-        for transformer in self.transformers:
-            transformer.end_of_hour_cleanup()
-
-
-CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
-UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
-
-
-class TransformerBase[RemoveSchemaType, UpdateSchemaType, CreateSchemaType](ABC):
-    detector: CategoryDetectorBase
-    identifier: str
-
-    url = settings.BACKEND_BASE_URL
-    sub_path: str
-    url: str
-
-    remove_subpath: str | None = None
-    update_subpath: str | None = None
-    insert_subpath: str | None = None
-
-    pom_auth_headers = get_superuser_token_headers(url)
-
-    def __init__(
-        self,
-        league_to_id: dict[str, int],
-        item_base_types: dict[str, int],
-        roll_processor: RollProcessor,
-    ):
-        self.identifier = self.detector.identifier
-        self.url = f"{self.url}/{self.sub_path}/"
-
-        self.type_adapters: dict[Literal["remove", "update", "insert"], TypeAdapter] = {
-            "remove": TypeAdapter(list[RemoveSchemaType]),
-            "update": TypeAdapter(list[UpdateSchemaType]),
-            "insert": TypeAdapter(list[CreateSchemaType]),
-        }
-
-        self.league_to_id = league_to_id
-        self.item_base_types = item_base_types
-        self.roll_processor = roll_processor
+        self.current_hours = None
+        self.currencies = None
+        self.league_to_mirror = None
 
     def set_current_hours(self, current_hours: dict[int, int]):
         self.current_hours = current_hours
 
     def set_currencies(self, currencies: dict[tuple[int, str], Currency]):
         self.currencies = currencies
+
         self.league_to_mirror = dict[int, Currency]()
         for league_id in self.league_to_id.values():
             mirror = currencies[(league_id, "mirror")]
             self.league_to_mirror[league_id] = mirror
 
-    @abstractmethod
-    def _transform_remove(
-        self, removed_items: list[CacheItemWithContext], current_hours: dict[int, int]
-    ) -> list[RemoveSchemaType]:
-        """Transforms items into objects for removing"""
+    def extract_valid_price(self, item: PoeItem) -> ItemPrice | None:
+        if self.currencies is None:
+            raise RuntimeError("Must set currencies first")
 
-    def _remove(self, removed_items: list[RemoveSchemaType]):
-        remove_url = self.url
-        if self.remove_subpath is not None:
-            remove_url += f"{self.remove_subpath}/"
-
-        send_request_safe(
-            "patch",
-            remove_url,
-            json=self.type_adapters["remove"].dump_python(removed_items),
-            headers=self.pom_auth_headers,
-        )
-
-    def _extract_price(self, item: PoeItem) -> ItemPrice | None:
         league_id = self.league_to_id[item.league]
 
-        _, currency_amount_str, currency_type_str = item.note.split()
+        _, currency_amount_str, currency_type_str = item.note.split(maxsplit=2)
 
         currency_type = self.currencies.get((league_id, currency_type_str))
         if currency_type is None:
@@ -213,6 +110,84 @@ class TransformerBase[RemoveSchemaType, UpdateSchemaType, CreateSchemaType](ABC)
 
         return price_in_mirrors > settings.MAX_MIRROR_PRICE
 
+    @sync_timing_tracker
+    def transform_and_insert(
+        self,
+        organized_items: OrganizedItemsByCategory,
+    ):
+        """
+        Includes inplace population of the `dismissed_items` field for each category
+        Params:
+            :Organized items: (OrganizedItemsByCategory) items are transformed, and inserted into the database.
+                                Items which could not be tranformed are inserted into the respective `dismissed_items`
+                                field.
+        """
+        if self.currencies is None:
+            raise RuntimeError("Must set currencies first")
+        if self.current_hours is None:
+            raise RuntimeError("Must set current hours first")
+
+        for transformer in self.transformers:
+            transformer.transform_and_insert(
+                getattr(organized_items, transformer.identifier),
+            )
+
+    def end_of_hour_cleanup(self):
+        self.roll_processor.log_missing_modifiers()
+        for transformer in self.transformers:
+            transformer.end_of_hour_cleanup()
+
+
+CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
+UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
+
+
+class TransformerBase[RemoveSchemaType, UpdateSchemaType, CreateSchemaType](ABC):
+    detector: CategoryDetectorBase
+    identifier: str
+
+    base_url = settings.BACKEND_BASE_URL
+    sub_path: str
+
+    remove_subpath: str | None = None
+    update_subpath: str | None = None
+    insert_subpath: str | None = None
+
+    pom_auth_headers = get_superuser_token_headers(base_url)
+
+    def __init__(
+        self,
+        main_transformer: PoEAPIDataTransformer,
+    ):
+        self.main_transformer = main_transformer
+
+        self.identifier = self.detector.identifier
+        self.url = f"{self.base_url}/{self.sub_path}/"
+
+        self.type_adapters: dict[Literal["remove", "update", "insert"], TypeAdapter] = {
+            "remove": TypeAdapter(list[RemoveSchemaType]),
+            "update": TypeAdapter(list[UpdateSchemaType]),
+            "insert": TypeAdapter(list[CreateSchemaType]),
+        }
+
+    @abstractmethod
+    def _transform_remove(
+        self, removed_items: list[CacheItemWithContext]
+    ) -> list[RemoveSchemaType]:
+        """Transforms items into objects for removing"""
+
+    def _remove(self, removed_items: list[RemoveSchemaType]):
+        remove_url = self.url
+        if self.remove_subpath is not None:
+            remove_url += f"{self.remove_subpath}/"
+
+        send_request_safe(
+            "patch",
+            remove_url,
+            json=self.type_adapters["remove"].dump_python(removed_items),
+            headers=self.pom_auth_headers,
+        )
+
     @abstractmethod
     def _transform_update(self, changed_items: list[PoeItem]) -> list[UpdateSchemaType]:
         """Transforms items into objects for updating"""
@@ -232,7 +207,7 @@ class TransformerBase[RemoveSchemaType, UpdateSchemaType, CreateSchemaType](ABC)
         )
 
     @abstractmethod
-    def _transform(self, new_items: list[PoeItem]) -> CreateSchemaType:
+    def _transform_new(self, new_items: list[PoeItem]) -> list[CreateSchemaType]:
         """Transforms items, using currencies info, into a create schema for the relevant table"""
 
     def _insert(self, transformed: list[CreateSchemaType]):
@@ -259,7 +234,7 @@ class TransformerBase[RemoveSchemaType, UpdateSchemaType, CreateSchemaType](ABC)
             self._update(transformed_update)
 
         if items.new_items:
-            transformed = self._transform(items.new_items)
+            transformed = self._transform_new(items.new_items)
             self._insert(transformed)
 
     @abstractmethod
@@ -281,13 +256,13 @@ class UniqueTransformer(
     ) -> list[ItemAvailabilityExpired]:
         transformed = list[ItemAvailabilityExpired]()
         for item in removed_items:
-            league_id = self.league_to_id[item.league]
+            league_id = self.main_transformer.league_to_id[item.league]
 
             transformed.append(
                 ItemAvailabilityExpired(
                     gameItemId=item.id,
                     leagueId=league_id,
-                    validTo=self.current_hours[league_id] + 1,
+                    validTo=self.main_transformer.current_hours[league_id] + 1,
                 )
             )
 
@@ -299,40 +274,38 @@ class UniqueTransformer(
         patches = list[ItemAvailabilityUpdated]()
         for item in changed_items:
             game_item_id = item.id
-            league_id = self.league_to_id[item.league]
+            league_id = self.main_transformer.league_to_id[item.league]
 
-            price = self._extract_price(item)
+            price = self.main_transformer.extract_valid_price(item)
             if price is None:
-                continue
+                raise ValueError("An item with invalid price made it past filtering")
 
             patches.append(
                 ItemAvailabilityUpdated(
                     gameItemId=game_item_id,
                     leagueId=league_id,
                     price=price,
-                    validFrom=self.current_hours[league_id],
+                    validFrom=self.main_transformer.current_hours[league_id],
                 )
             )
 
         return patches
 
-    def _transform(self, new_items: list[PoeItem]) -> ItemCreate:
+    def _transform_new(self, new_items: list[PoeItem]) -> list[ItemCreate]:
         transformed = list[ItemCreate]()
         for item in new_items:
             game_item_id = item.id
-            league_id = self.league_to_id[item.league]
+            league_id = self.main_transformer.league_to_id[item.league]
 
-            price = self._extract_price(item)
+            price = self.main_transformer.extract_valid_price(item)
             if price is None:
-                continue
+                raise ValueError("An item with invalid price made it past filtering")
 
-            modifiers = self.roll_processor.extract_modifiers(item)
-            if modifiers is None:
-                continue
+            modifiers = self.main_transformer.roll_processor.extract_modifiers(item)
 
-            item_base_type_id = self.item_base_types[item.base_type]
+            item_base_type_id = self.main_transformer.item_base_types[item.base_type]
 
-            first_observed = self.current_hours[league_id]
+            first_observed = self.main_transformer.current_hours[league_id]
 
             item_base = ItemBase(
                 game_item_id=game_item_id,
