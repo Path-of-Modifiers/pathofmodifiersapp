@@ -12,6 +12,7 @@ def read_csv(
         dict of comments
     """
     comments = dict[str, str]()
+    file_content = list[dict[str, str]]()
     with open(filepath) as infile:
         while True:
             position = infile.tell()
@@ -30,5 +31,7 @@ def read_csv(
                 break
 
         lines = csv.DictReader(infile)
+        for line in lines:
+            file_content.append(dict(line))
 
-    return lines, comments
+    return file_content, comments

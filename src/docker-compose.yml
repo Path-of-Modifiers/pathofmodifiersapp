@@ -182,7 +182,7 @@ services:
 
 volumes:
   pom-db-data:
-    name: "830-test-pom-db-default-data"
+    name: "pom-db-default-data"
   pom-cache-data:
     name: "pom-cache-data"
   pgadmin-data:

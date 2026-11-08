@@ -2,13 +2,13 @@
 
 python data_retrieval_app/dataretrieval_pre_start.py
 
-# Create initial data in DB
-# if python data_retrieval_app/data_deposit/main.py; then
-#     echo "Data deposit successful. Continuing..."
-# else
-#     echo "Data deposit failed. Exiting..."
-#     exit 1
-# fi
+Create initial data in DB
+if python data_retrieval_app/data_deposit/main.py; then
+    echo "Data deposit successful. Continuing..."
+else
+    echo "Data deposit failed. Exiting..."
+    exit 1
+fi
 # python app/tests/scripts/create_public_stashes_test_data/utils/data_deposit_test_data_creator.py
 # exit 0
 
