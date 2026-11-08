@@ -2,7 +2,7 @@
 
 python data_retrieval_app/dataretrieval_pre_start.py
 
-Create initial data in DB
+# Create initial data in DB
 if python data_retrieval_app/data_deposit/main.py; then
     echo "Data deposit successful. Continuing..."
 else
