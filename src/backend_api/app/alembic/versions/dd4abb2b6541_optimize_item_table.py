@@ -28,7 +28,6 @@ def upgrade() -> None:
         # sa.Column("itemId", sa.Integer(), nullable=False), # Will be added later
         sa.Column("currencyId", sa.SmallInteger(), nullable=False),
         sa.Column("currencyAmount", sa.Float(4), nullable=False),
-        sa.Column("isAsync", sa.Boolean()),
         sa.Column("validFrom", sa.SmallInteger(), nullable=False),
         sa.Column("validTo", sa.SmallInteger()),
         sa.ForeignKeyConstraint(
@@ -222,7 +221,6 @@ def upgrade() -> None:
         sa.Column("itemId", sa.Integer(), nullable=False),
         sa.Column("currencyId", sa.SmallInteger(), nullable=False),
         sa.Column("currencyAmount", sa.Float(4), nullable=False),
-        sa.Column("isAsync", sa.Boolean()),
         sa.Column("validFrom", sa.SmallInteger(), nullable=False),
         sa.Column("validTo", sa.SmallInteger()),
         sa.ForeignKeyConstraint(

@@ -41,7 +41,6 @@ class ItemBase(_pydantic.BaseModel):
 class ItemPrice(_pydantic.BaseModel):
     currencyId: int
     currencyAmount: float
-    isAsync: bool | None = None
 
 
 class ItemCreate(_pydantic.BaseModel):
@@ -80,8 +79,6 @@ class _BaseItemAvailability(_pydantic.BaseModel):
 
     validFrom: int
     validTo: int | None = None
-
-    isAsync: bool | None = None
 
 
 class ItemAvailabilityExpired(_pydantic.BaseModel):

@@ -104,8 +104,6 @@ class ItemAvailability(Base):
     validFrom: Mapped[int] = mapped_column(SmallInteger, nullable=False)
     validTo: Mapped[int | None] = mapped_column(SmallInteger, nullable=True)
 
-    isAsync: Mapped[bool | None] = mapped_column(Boolean, nullable=False)
-
     __table_args__ = (
         Index("ix_item_id_valid_from", "itemId", "validFrom"),
         UniqueConstraint("itemId", "validFrom"),

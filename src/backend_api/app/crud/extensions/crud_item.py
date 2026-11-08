@@ -18,7 +18,6 @@ from backend_api.app.core.schemas.item import (
 from backend_api.app.crud.base import CRUDBase
 from pydantic import TypeAdapter
 from sqlalchemy import (
-    Boolean,
     Float,
     Integer,
     String,
@@ -137,7 +136,6 @@ class CRUDItem:
                     currencyId=new_item.price.currencyId,
                     currencyAmount=new_item.price.currencyAmount,
                     validFrom=new_item.item.firstObserved,
-                    isAsync=new_item.price.isAsync,
                 )
             )
 
@@ -158,7 +156,6 @@ class CRUDItem:
                     "currencyId": existing_item.price.currencyId,
                     "currencyAmount": existing_item.price.currencyAmount,
                     "validFrom": existing_item.item.firstObserved,
-                    "isAsync": existing_item.price.isAsync,
                 }
             )
         stmt = insert(model_ItemAvailability).values(existing_items_availability)
@@ -207,7 +204,6 @@ class CRUDItem:
                     item.price.currencyId,
                     item.price.currencyAmount,
                     item.validFrom,
-                    item.price.isAsync,
                 )
             )
 
@@ -219,7 +215,6 @@ class CRUDItem:
             column("currency_id", Integer),
             column("currency_amount", Float),
             column("valid_from", Integer),
-            column("is_async", Boolean),
             name="incoming",
         ).data(incoming_data)
 
@@ -252,14 +247,12 @@ class CRUDItem:
                         "currencyId",
                         "currencyAmount",
                         "validFrom",
-                        "isAsync",
                     ],
                     select(
                         incoming_table.c.item_id,
                         incoming_table.c.currency_id,
                         incoming_table.c.currency_amount,
                         incoming_table.c.valid_from,
-                        incoming_table.c.is_async,
                     ),
                 )
             )
