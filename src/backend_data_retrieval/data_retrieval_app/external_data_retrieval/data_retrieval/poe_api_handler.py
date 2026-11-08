@@ -149,7 +149,7 @@ class PoEAPIHandler:
                     if sent_outgoing:
                         try:
                             # The timeout is to avoid getting stuck when the other listener has stopped
-                            change_id = incoming.get(timeout=10)
+                            change_id = incoming.get(timeout=5)
                         except Empty:
                             continue
 
@@ -194,8 +194,11 @@ class PoEAPIHandler:
                         time.sleep(30)
                         continue
 
-                    outgoing.put(next_change_id)
-                    sent_outgoing = True
+                    try:
+                        outgoing.put(next_change_id, timeout=5)
+                        sent_outgoing = True
+                    except Full:
+                        continue
 
                     byte_response = ByteResponse(
                         change_id=change_id,
@@ -204,23 +207,25 @@ class PoEAPIHandler:
                     )
                 local_responses.append(byte_response)
                 if len(local_responses) >= self.mini_batch_size // 2:
-                    try:
-                        while local_responses:
-                            self.response_queue.put(local_responses[0])
-                            local_responses.pop(0)
-                    except Full:
-                        time.sleep(0.5)
+                    self._dump_responses(local_responses, stop_event)
         finally:
             logger.info(
                 f"Listener {listener_id}: Exiting {self._follow_stream.__name__} gracefully"
             )
-            while local_responses:
-                self.response_queue.put(local_responses.pop(0))
+            self._dump_responses(local_responses, stop_event)
             if stop_event.is_set():
                 self.response_queue.put(None)
-            if not sent_outgoing:
+            elif not sent_outgoing:
                 logger.debug("Need to redo last request")
                 outgoing.put(change_id)
+
+    def _dump_responses(self, local_responses: list, stop_event: threading.Event):
+        try:
+            while local_responses and not stop_event.is_set():
+                self.response_queue.put(local_responses[0])
+                local_responses.pop(0)
+        except Full:
+            time.sleep(0.5)
 
     def initialize_data_stream_threads(
         self,
@@ -288,7 +293,7 @@ class PoEAPIHandler:
         next_change_id = None
         while i < self.mini_batch_size:
             try:
-                pending: ByteResponse | None = self.response_queue.get(timeout=10)
+                pending: ByteResponse | None = self.response_queue.get(timeout=5)
             except Empty:
                 if stop_event.is_set():
                     break

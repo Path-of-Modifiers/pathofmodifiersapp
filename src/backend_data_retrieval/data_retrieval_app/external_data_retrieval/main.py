@@ -79,6 +79,7 @@ class ContinuousDataRetrieval:
     def _handle_shutdown(
         self, stop_event: threading.Event, executor: ThreadPoolExecutor
     ):
+        logger.info("Received termination signal, exiting gracefully...")
         stop_event.set()
         executor.shutdown(wait=True, cancel_futures=True)
         self.poe_api_handler.end_of_program_cleanup()
@@ -121,12 +122,12 @@ class ContinuousDataRetrieval:
             futures[follow_future] = "data_processing"
             logger.info("Waiting for futures to crash.")
             finished = False
-            while True:
+            while not stop_event.is_set():
                 if finished:
                     return
 
                 done_futures, _ = wait(futures, return_when=FIRST_COMPLETED)
-                while done_futures and not finished:
+                while done_futures and not finished and not stop_event.is_set():
                     future = done_futures.pop()
                     future_job: str = futures.pop(future)
                     if future_job == "data_processing":
