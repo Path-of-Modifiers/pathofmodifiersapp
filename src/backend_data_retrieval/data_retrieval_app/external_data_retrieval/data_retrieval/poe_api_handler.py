@@ -1,3 +1,4 @@
+import enum
 import json
 import logging
 import threading
@@ -8,7 +9,6 @@ from queue import Empty, Full, Queue
 from typing import Literal
 
 import httpx
-import pandas as pd
 import redis
 from backend_api.app.core.schemas.currency import Currency
 from backend_api.app.core.schemas.league import League
@@ -42,7 +42,12 @@ from data_retrieval_app.external_data_retrieval.utils import (
 from data_retrieval_app.logs.logger import data_retrieval_logger as logger
 from data_retrieval_app.utils import get_data_safe
 
-pd.options.mode.chained_assignment = None  # default='warn'
+
+class NextRequestState(enum.Enum):
+    STOP = 1
+    RESET = 2
+    RETRY = 3
+    READY = 4
 
 
 class PoEAPIHandler:
@@ -116,6 +121,68 @@ class PoEAPIHandler:
 
         return next_change_id
 
+    def _set_up_next_request(
+        self,
+        listener_id: int,
+        sent_outgoing: bool,
+        incoming: Queue,
+        reset_event: threading.Event,
+        stop_event: threading.Event,
+        cache: redis.Redis,
+    ) -> tuple[NextRequestState, str | None]:
+        if stop_event.is_set():
+            return NextRequestState.STOP, None
+        if reset_event.is_set():
+            logger.debug("Resetting the listener thread")
+            change_id = None
+            if listener_id == 0:
+                logger.debug("Main listener initiating the ping-pong again")
+                change_id = cache.get(f"next_change_id:{self.leagues[0].name}")
+                if change_id is None:
+                    change_id = self.initial_change_id
+                    # Make sure second listener also resets
+                time.sleep(5)
+                reset_event.clear()
+            return NextRequestState.RESET, change_id
+
+        if sent_outgoing:
+            try:
+                # The timeout is to avoid getting stuck when the other listener has stopped
+                change_id = incoming.get(timeout=5)
+            except Empty:
+                return NextRequestState.RETRY, None
+
+            return NextRequestState.READY, change_id
+
+        return NextRequestState.RETRY, None
+
+    def _handle_response_error(
+        self, response: httpx.Response, stop_event: threading.Event, weird_errors: int
+    ) -> bool:
+        # rate limited = 429 -> handled by ratelimiter
+        if response.status_code == 503:
+            # Temporarily unavailable = servers are down
+            logger.critical(
+                "Server is temporarily unavailable, sleeping for 30 seconds"
+            )
+            time.sleep(30)
+            return
+        else:
+            response.read()
+            logger.exception(
+                f"Recieved the following response: status:'{response.status_code}' '{response.reason_phrase}' text:'{response.text}'"
+            )
+            response.raise_for_status()
+            logger.warning(
+                "The above response code did not result in an error, discarding the response for safety"
+            )
+            if weird_errors > 10:
+                logger.exception(
+                    "Too many unkown errors have occured, stopping current listener"
+                )
+                stop_event.set()
+            return True
+
     def _follow_stream(
         self,
         listener_id: int,
@@ -131,27 +198,18 @@ class PoEAPIHandler:
         weird_errors = 0
         try:
             while True:
-                if stop_event.is_set():
-                    break
-                if reset_event.is_set():
-                    logger.debug("Resetting the listener thread")
-                    local_responses = []
-                    # pick up from latest checkpoint
-                    if listener_id == 0:
-                        logger.debug("Main listener initiating the ping-pong again")
-                        change_id = cache.get(f"next_change_id:{self.leagues[0].name}")
-                        if change_id is None:
-                            change_id = self.initial_change_id
-                        # Make sure second listener also resets
-                        time.sleep(5)
-                        reset_event.clear()
-                else:
-                    if sent_outgoing:
-                        try:
-                            # The timeout is to avoid getting stuck when the other listener has stopped
-                            change_id = incoming.get(timeout=5)
-                        except Empty:
-                            continue
+                action, new_change_id = self._set_up_next_request(
+                    listener_id, sent_outgoing, incoming, reset_event, stop_event, cache
+                )
+                match action:
+                    case NextRequestState.STOP:
+                        break
+                    case NextRequestState.RESET:
+                        continue
+                    case NextRequestState.RETRY:
+                        continue
+                    case NextRequestState.READY:
+                        change_id = new_change_id
 
                 sent_outgoing = False
 
@@ -162,30 +220,13 @@ class PoEAPIHandler:
                     headers = response.headers
                     self.rate_limiter.update(headers)
                     if response.status_code >= 300:
-                        # rate limited = 429 -> handled by ratelimiter
-                        if response.status_code == 503:
-                            # Temporarily unavailable = servers are down
-                            logger.critical(
-                                "Server is temporarily unavailable, sleeping for 30 seconds"
-                            )
-                            time.sleep(30)
-                            continue
-                        else:
-                            response.read()
-                            logger.exception(
-                                f"Recieved the following response: status:'{response.status_code}' '{response.reason_phrase}' text:'{response.text}'"
-                            )
-                            response.raise_for_status()
-                            logger.warning(
-                                "The above response code did not result in an error, discarding the response for safety"
-                            )
-                            if weird_errors > 10:
-                                logger.exception(
-                                    "Too many unkown errors have occured, stopping current listener"
-                                )
-                                stop_event.set()
+                        is_weird_error = self._handle_response_error(
+                            response, stop_event, weird_errors
+                        )
+                        if is_weird_error:
                             weird_errors += 1
-                            continue
+
+                        continue
 
                     next_change_id = headers["X-Next-Change-Id"]
                     if next_change_id == change_id:
@@ -215,14 +256,11 @@ class PoEAPIHandler:
             self._dump_responses(local_responses, stop_event)
             if stop_event.is_set():
                 self.response_queue.put(None)
-            elif not sent_outgoing:
-                logger.debug("Need to redo last request")
-                outgoing.put(change_id)
 
     def _dump_responses(self, local_responses: list, stop_event: threading.Event):
         try:
             while local_responses and not stop_event.is_set():
-                self.response_queue.put(local_responses[0])
+                self.response_queue.put(local_responses[0], timeout=5)
                 local_responses.pop(0)
         except Full:
             time.sleep(0.5)
@@ -295,7 +333,7 @@ class PoEAPIHandler:
             try:
                 pending: ByteResponse | None = self.response_queue.get(timeout=5)
             except Empty:
-                if stop_event.is_set():
+                if self.response_queue.all_tasks_done and stop_event.is_set():
                     break
                 continue
 

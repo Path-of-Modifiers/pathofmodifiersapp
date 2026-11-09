@@ -121,24 +121,20 @@ class ContinuousDataRetrieval:
             )
             futures[follow_future] = "data_processing"
             logger.info("Waiting for futures to crash.")
-            finished = False
             while not stop_event.is_set():
-                if finished:
-                    return
-
                 done_futures, _ = wait(futures, return_when=FIRST_COMPLETED)
-                while done_futures and not finished and not stop_event.is_set():
+                while done_futures:
                     future = done_futures.pop()
                     future_job: str = futures.pop(future)
                     if future_job == "data_processing":
                         try:
                             future.result()
-                            finished = True
+                            stop_event.set()
                         except ProgramTooSlowException:
                             logger.info(
                                 f"The job '{future_job}' was too slow. Restarting..."
                             )
-                            finished = True
+                            stop_event.set()
                         except Exception:
                             logger.exception(
                                 f"The following exception occured in job '{future_job}'",
