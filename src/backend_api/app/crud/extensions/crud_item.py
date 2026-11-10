@@ -197,7 +197,9 @@ class CRUDItem:
         for item in updated_availability:
             item_id = incoming_to_database.get((item.gameItemId, item.leagueId))
             if item_id is None:
-                continue
+                raise Exception(
+                    f"Tried to update the availability of an item that does not exist: {item_id}"
+                )
 
             incoming_data.append(
                 (

@@ -25,7 +25,7 @@ class RollProcessor:
     ) -> list[ItemModifierRoll]:
         position = 0
         rolls = list[ItemModifierRoll]()
-        for roll in match.groups():
+        for i, roll in enumerate(match.groups()):
             try:
                 if roll in ["reduced", "increased"]:
                     continue
@@ -35,6 +35,16 @@ class RollProcessor:
                     extracted_roll = db_roll.textRolls.index(roll)
                 else:
                     extracted_roll = float(roll)
+                    if len(match.groups()) < i + 1:
+                        next_roll = match.group(i + 1)
+                        # Flips the extracted roll, to match the standard effect
+                        if next_roll == "reduced" and "reduced" not in db_mod.effect:
+                            extracted_roll *= -1
+                        if (
+                            next_roll == "increased"
+                            and "increased" not in db_mod.effect
+                        ):
+                            extracted_roll *= -1
 
                 rolls.append(ItemModifierRoll(position=position, roll=extracted_roll))
                 position += 1
