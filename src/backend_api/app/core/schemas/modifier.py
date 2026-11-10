@@ -7,8 +7,6 @@ import pydantic as _pydantic
 class ModifierBase(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True, extra="ignore")
 
-    relatedUniques: str | None = None
-
     static: bool | None = None
     effect: str
     regex: re.Pattern | None = None

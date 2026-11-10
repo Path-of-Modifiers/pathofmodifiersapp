@@ -8,7 +8,6 @@ class _BaseItemBaseType(_pydantic.BaseModel):
     baseType: str
     category: str
     subCategory: str | None = None
-    relatedUniques: str | None = None
 
 
 # Properties to receive on item base type creation

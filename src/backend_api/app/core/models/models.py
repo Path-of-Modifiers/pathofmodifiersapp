@@ -79,7 +79,6 @@ class ItemBaseType(Base):
     )
     category: Mapped[str] = mapped_column(Text, nullable=False)
     subCategory: Mapped[str | None] = mapped_column(Text)
-    relatedUniques: Mapped[str | None] = mapped_column(Text)
 
 
 class ItemAvailability(Base):
@@ -236,8 +235,6 @@ class Modifier(Base):
     effect: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
     regex: Mapped[str | None] = mapped_column(Text)
 
-    relatedUniques: Mapped[str | None] = mapped_column(Text)
-
     implicit: Mapped[bool | None] = mapped_column(Boolean)
     explicit: Mapped[bool | None] = mapped_column(Boolean)
     delve: Mapped[bool | None] = mapped_column(Boolean)
@@ -347,6 +344,44 @@ class ItemModifier(Base):
             "itemId",
         ),
     )
+
+
+class UniqueItem(Base):
+    __tablename__ = "unique_item"
+    uniqueId: Mapped[int] = mapped_column(
+        SmallInteger, Identity(start=1, increment=1), primary_key=True
+    )
+    name: Mapped[str] = mapped_column(Text, nullable=False)
+    itemBaseTypeId: Mapped[int] = mapped_column(
+        SmallInteger,
+        ForeignKey(
+            "item_base_type.itemBaseTypeId", ondelete="RESTRICT", onupdate="CASCADE"
+        ),
+        nullable=False,
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "name", "itemBaseTypeId", name="uq_unique_name_item_basetype_id"
+        ),
+    )
+
+
+class ModifierUnique(Base):
+    __tablename__ = "modifier_unique_item"
+
+    modifierId: Mapped[int] = mapped_column(
+        SmallInteger,
+        ForeignKey("modifier.modifierId", ondelete="CASCADE", onupdate="CASCADE"),
+        nullable=False,
+    )
+    uniqueId: Mapped[int] = mapped_column(
+        SmallInteger,
+        ForeignKey("unique.uniqueId", ondelete="CASCADE", onupdate="CASCADE"),
+        nullable=False,
+    )
+    required: Mapped[bool | None] = mapped_column(Boolean)
+    __table_args__ = (PrimaryKeyConstraint("modifierId", "uniqueId"),)
 
 
 class User(Base):
