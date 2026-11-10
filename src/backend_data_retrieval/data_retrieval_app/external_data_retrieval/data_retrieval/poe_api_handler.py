@@ -196,6 +196,9 @@ class PoEAPIHandler:
         local_responses = []
         sent_outgoing = True
         weird_errors = 0
+        default_retry_delay = 2
+        retry_delay = default_retry_delay
+        max_delay = 60
         try:
             while True:
                 action, new_change_id = self._set_up_next_request(
@@ -210,43 +213,53 @@ class PoEAPIHandler:
                         continue
                     case NextRequestState.READY:
                         change_id = new_change_id
+                        retry_delay = default_retry_delay
 
                 sent_outgoing = False
 
                 self.rate_limiter.acquire()
-                with self.client.stream(
-                    "GET", self.url, params={"id": change_id}
-                ) as response:
-                    headers = response.headers
-                    self.rate_limiter.update(headers)
-                    if response.status_code >= 300:
-                        is_weird_error = self._handle_response_error(
-                            response, stop_event, weird_errors
+                try:
+                    with self.client.stream(
+                        "GET", self.url, params={"id": change_id}
+                    ) as response:
+                        headers = response.headers
+                        self.rate_limiter.update(headers)
+                        if response.status_code >= 300:
+                            is_weird_error = self._handle_response_error(
+                                response, stop_event, weird_errors
+                            )
+                            if is_weird_error:
+                                weird_errors += 1
+
+                            continue
+
+                        next_change_id = headers["X-Next-Change-Id"]
+                        if next_change_id == change_id:
+                            self.skip_program_too_slow = True
+                            logger.info("We sucessfully caught up to the stream!")
+                            time.sleep(30)
+                            continue
+
+                        try:
+                            outgoing.put(next_change_id, timeout=5)
+                            sent_outgoing = True
+                        except Full:
+                            continue
+
+                        byte_response = ByteResponse(
+                            change_id=change_id,
+                            next_change_id=next_change_id,
+                            response=response.read(),
                         )
-                        if is_weird_error:
-                            weird_errors += 1
-
-                        continue
-
-                    next_change_id = headers["X-Next-Change-Id"]
-                    if next_change_id == change_id:
-                        self.skip_program_too_slow = True
-                        logger.info("We sucessfully caught up to the stream!")
-                        time.sleep(30)
-                        continue
-
-                    try:
-                        outgoing.put(next_change_id, timeout=5)
-                        sent_outgoing = True
-                    except Full:
-                        continue
-
-                    byte_response = ByteResponse(
-                        change_id=change_id,
-                        next_change_id=next_change_id,
-                        response=response.read(),
+                    local_responses.append(byte_response)
+                except httpx.TransportError:
+                    logger.warning(
+                        f"Connection lost with server, backing off for {retry_delay} seconds",
+                        exc_info=True,
                     )
-                local_responses.append(byte_response)
+                    time.sleep(retry_delay)
+                    retry_delay = min(retry_delay * 2, max_delay)
+
                 if len(local_responses) >= self.mini_batch_size // 2:
                     self._dump_responses(local_responses, stop_event)
         finally:
