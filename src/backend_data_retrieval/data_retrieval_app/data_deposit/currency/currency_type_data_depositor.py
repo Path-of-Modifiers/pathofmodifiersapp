@@ -66,9 +66,16 @@ class CurrencyTypeDataDepositor(DataDepositorBase):
             logger=logger,
         )
         response_json = response.json()
+
+        yield response_json["items"]
+
+    def _check_for_complex_updates(self, new_data, current, updated):
+        return False, updated
+
+    def _preprocess_data(self, data):
         currency_items = list[ExchangeRatioItem]()
         currency_item_adaptor = TypeAdapter(ExchangeRatioItem)
-        for item in response_json["items"]:
+        for item in data:
             if item["category"] == "currency":
                 item["leagueId"] = -1
                 currency_items.append(currency_item_adaptor.validate_python(item))

@@ -17,7 +17,9 @@ class ItemBaseTypeCreate(_BaseItemBaseType):
 
 # Properties to receive on update
 class ItemBaseTypeUpdate(_BaseItemBaseType):
-    pass
+    itemBaseTypeId: int
+    baseType: str | None = None
+    category: str | None = None
 
 
 # Properties shared by models stored in DB

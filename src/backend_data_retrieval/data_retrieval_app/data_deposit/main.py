@@ -19,7 +19,7 @@ def main():
     setup_logging()
     logger.info("Starting deposit phase.")
     data_depositors: dict[str, DataDepositorBase] = {
-        "modifer": ModifierDataDepositor(),
+        "modifier": ModifierDataDepositor(),
         "itemBaseType": ItemBaseTypeDataDepositor(),
         "league": LeagueDataDepositor(),
         "currencyType": CurrencyTypeDataDepositor(),
