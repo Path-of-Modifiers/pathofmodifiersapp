@@ -11,7 +11,7 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
-from app.alembic.replaceable_objects.main import ReplaceableTrigger
+from backend_api.app.alembic.replaceable_objects.main import ReplaceableTrigger
 
 # revision identifiers, used by Alembic.
 revision: str = "17daa1c96438"

@@ -3,8 +3,8 @@ from collections.abc import Awaitable, Callable
 from typing import Any
 from unittest.mock import patch
 
-from app.tests.test_simulating_env.base_test import BaseTest
-from app.tests.utils.rate_limit import RateLimitPerTimeInterval
+from backend_api.app.tests.test_simulating_env.base_test import BaseTest
+from backend_api.app.tests.utils.rate_limit import RateLimitPerTimeInterval
 
 
 class TestRateLimitBase(BaseTest):

@@ -41,7 +41,6 @@ services:
           - node.labels.${STACK_NAME?Variable not set}.pom-cache-data == true
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD?Variable not set}
-      REDIS_CACHE: ${REDIS_CACHE?Variable not set}
     volumes:
       - pom-cache-data:/data
     healthcheck:
@@ -121,8 +120,12 @@ services:
       - .env
     build:
       context: ./backend_data_retrieval
+      additional_contexts:
+        backend_api: ./backend_api
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
+
+    stop_grace_period: 15s
 
   frontend:
     image: "${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}"

@@ -1,9 +1,8 @@
-from pydantic import EmailStr
-
-from app.core.schemas.message import Message
-from app.core.schemas.user import (
+from backend_api.app.core.schemas.message import Message
+from backend_api.app.core.schemas.user import (
     UsernameStr,
 )
+from pydantic import EmailStr
 
 
 def get_delete_return_msg(

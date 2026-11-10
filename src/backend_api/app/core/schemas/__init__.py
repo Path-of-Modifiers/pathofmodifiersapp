@@ -1,7 +1,25 @@
 "All schemas are imported here and then exported to the main file"
 
-from .currency import Currency, CurrencyCreate, CurrencyInDB, CurrencyUpdate
-from .item import Item, ItemCreate, ItemInDB, ItemUpdate
+from .currency import (
+    Currency,
+    CurrencyPrice,
+    CurrencyPriceCreate,
+    CurrencyPriceInDB,
+    CurrencyPriceUpdate,
+    CurrencyType,
+    CurrencyTypeCreate,
+    CurrencyTypeInDB,
+    CurrencyTypeUpdate,
+)
+from .item import (
+    Item,
+    ItemAvailability,
+    ItemAvailabilityExpired,
+    ItemAvailabilityUpdated,
+    ItemCreate,
+    ItemQuery,
+    ItemUpdate,
+)
 from .item_base_type import (
     ItemBaseType,
     ItemBaseTypeCreate,
@@ -11,8 +29,6 @@ from .item_base_type import (
 from .item_modifier import (
     ItemModifier,
     ItemModifierCreate,
-    ItemModifierInDB,
-    ItemModifierUpdate,
 )
 from .league import (
     League,
@@ -22,10 +38,9 @@ from .league import (
 )
 from .message import Message
 from .modifier import (
-    GroupedModifierByEffect,
+    GroupedModifier,
     Modifier,
     ModifierCreate,
-    ModifierInDB,
     ModifierUpdate,
 )
 from .token import NewPassword, Token, TokenPayload

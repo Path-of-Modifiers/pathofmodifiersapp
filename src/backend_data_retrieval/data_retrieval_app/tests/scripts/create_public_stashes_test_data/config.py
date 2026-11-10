@@ -24,6 +24,9 @@ class PoEPublicStashesTestDataSettings(BaseSettings):
         "divine",
     ]  # , "divine", "mirror", etc.
     MEAN_ITEM_PRICE: int = 200
+    STD_ITEM_PRICE: int = 50
+
+    LEAGUES: list[str] = ["Allflame"]
 
 
 script_settings = PoEPublicStashesTestDataSettings()

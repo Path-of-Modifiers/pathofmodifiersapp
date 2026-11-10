@@ -3,7 +3,7 @@ from functools import wraps
 from time import perf_counter
 from typing import ParamSpec, TypeVar
 
-from app.logs.logger import logger
+from backend_api.app.logs.logger import logger
 
 Param = ParamSpec("Param")
 RetType = TypeVar("RetType")

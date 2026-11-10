@@ -3,15 +3,14 @@ import math
 from collections.abc import Awaitable, Callable
 from typing import Any
 
-from sqlalchemy.inspection import inspect
-from sqlalchemy.orm import Session
-
-from app.core.models.database import insp
-from app.crud.base import (
+from backend_api.app.core.models.database import insp
+from backend_api.app.crud.base import (
     CRUDBase,
     ModelType,
 )
-from app.tests.utils.utils import get_extract_functions
+from backend_api.app.tests.utils.utils import get_extract_functions
+from sqlalchemy.inspection import inspect
+from sqlalchemy.orm import Session
 
 
 class BaseTest:

@@ -1,23 +1,22 @@
 from collections.abc import AsyncGenerator, Generator
 from typing import Annotated
 
-from fastapi import Depends, Request
-from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Session
-from starlette.datastructures import Headers
-
-from app.core.cache.user_cache import UserCache, UserCacheTokenType
-from app.core.config import settings
-from app.core.models.database import AsyncSessionLocal, SessionLocal
-from app.core.models.models import User
-from app.core.rate_limit.rate_limit_config import rate_limit_settings
-from app.exceptions import (
+from backend_api.app.core.cache.user_cache import UserCache, UserCacheTokenType
+from backend_api.app.core.config import settings
+from backend_api.app.core.models.database import AsyncSessionLocal, SessionLocal
+from backend_api.app.core.models.models import User
+from backend_api.app.core.rate_limit.rate_limit_config import rate_limit_settings
+from backend_api.app.exceptions import (
     DbObjectDoesNotExistError,
     InvalidHeaderProvidedError,
     UserIsNotActiveError,
     UserWithNotEnoughPrivilegesError,
 )
+from fastapi import Depends, Request
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
+from starlette.datastructures import Headers
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/login/access-token",

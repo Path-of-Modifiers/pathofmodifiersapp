@@ -1,5 +1,20 @@
 from contextlib import asynccontextmanager
 
+from backend_api.app.api.api import api_router
+from backend_api.app.core.config import settings
+from backend_api.app.core.models.database import async_engine
+from backend_api.app.exception_handlers import (
+    custom_rate_limit_exceeded_handler,
+    http_exception_handler,
+    request_validation_exception_handler,
+    slow_api_rate_limit_exceeded_handler,
+    unhandled_exception_handler,
+)
+from backend_api.app.exceptions.model_exceptions.rate_limit_exception import (
+    RateLimitExceededError,
+)
+from backend_api.app.logs.logger import setup_logging
+from backend_api.app.middleware.request_logs import log_request_middleware
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
@@ -7,20 +22,6 @@ from slowapi.errors import RateLimitExceeded
 from starlette.exceptions import HTTPException
 from starlette.middleware.cors import CORSMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
-
-from app.api.api import api_router
-from app.core.config import settings
-from app.core.models.database import async_engine
-from app.exception_handlers import (
-    custom_rate_limit_exceeded_handler,
-    http_exception_handler,
-    request_validation_exception_handler,
-    slow_api_rate_limit_exceeded_handler,
-    unhandled_exception_handler,
-)
-from app.exceptions.model_exceptions.rate_limit_exception import RateLimitExceededError
-from app.logs.logger import setup_logging
-from app.middleware.request_logs import log_request_middleware
 
 
 def custom_generate_unique_id(route: APIRoute) -> str:

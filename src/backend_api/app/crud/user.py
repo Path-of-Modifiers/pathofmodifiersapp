@@ -1,19 +1,18 @@
 from uuid import UUID
 
-from pydantic import EmailStr, TypeAdapter
-from sqlalchemy.orm import Session
-from sqlalchemy.sql import func, select
-
-from app.core.models.models import User as model_User
-from app.core.schemas import User, UserCreate, UserUpdate
-from app.core.schemas.user import UpdatePassword, UsersPublic
-from app.core.security import get_password_hash, verify_password
-from app.exceptions import (
+from backend_api.app.core.models.models import User as model_User
+from backend_api.app.core.schemas import User, UserCreate, UserUpdate
+from backend_api.app.core.schemas.user import UpdatePassword, UsersPublic
+from backend_api.app.core.security import get_password_hash, verify_password
+from backend_api.app.exceptions import (
     DbObjectAlreadyExistsError,
     DbObjectDoesNotExistError,
     InvalidPasswordError,
     NewPasswordIsSameError,
 )
+from pydantic import EmailStr, TypeAdapter
+from sqlalchemy.orm import Session
+from sqlalchemy.sql import func, select
 
 
 class CRUDUser:

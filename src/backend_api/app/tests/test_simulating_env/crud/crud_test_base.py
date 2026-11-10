@@ -1,18 +1,17 @@
 from collections.abc import Callable
 
 import pytest
-from sqlalchemy.orm import Session
-
-from app.crud.base import (
+from backend_api.app.crud.base import (
     CRUDBase,
     ModelType,
 )
-from app.exceptions.model_exceptions.db_exception import (
+from backend_api.app.exceptions.model_exceptions.db_exception import (
     DbObjectAlreadyExistsError,
     DbObjectDoesNotExistError,
 )
-from app.tests.test_simulating_env.base_test import BaseTest
-from app.tests.utils.utils import get_ignore_keys
+from backend_api.app.tests.test_simulating_env.base_test import BaseTest
+from backend_api.app.tests.utils.utils import get_ignore_keys
+from sqlalchemy.orm import Session
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)

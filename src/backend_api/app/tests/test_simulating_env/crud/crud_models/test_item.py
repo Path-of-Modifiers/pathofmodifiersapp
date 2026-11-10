@@ -1,16 +1,16 @@
 from collections.abc import Callable
 
 import pytest
-
-import app.tests.test_simulating_env.crud.crud_test_base as test_crud
-from app.core.models.models import Currency, Item, ItemBaseType
-from app.crud import (
+from backend_api.app.core.models.models import Currency, Item, ItemBaseType
+from backend_api.app.crud import (
     CRUD_currency,
     CRUD_item,
     CRUD_itemBaseType,
 )
-from app.crud.base import CRUDBase
-from app.tests.utils.model_utils.item import generate_random_item
+from backend_api.app.crud.base import CRUDBase
+from backend_api.app.tests.utils.model_utils.item import generate_random_item
+
+import app.tests.test_simulating_env.crud.crud_test_base as test_crud
 
 
 @pytest.fixture(scope="module")

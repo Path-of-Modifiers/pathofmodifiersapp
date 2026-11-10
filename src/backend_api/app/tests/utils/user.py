@@ -1,11 +1,10 @@
+from backend_api.app.core.config import settings
+from backend_api.app.core.schemas import User, UserCreate, UserUpdate
+from backend_api.app.crud import CRUD_user
+from backend_api.app.tests.utils.utils import random_email, random_lower_string
 from httpx import AsyncClient
 from pydantic import EmailStr
 from sqlalchemy.orm import Session
-
-from app.core.config import settings
-from app.core.schemas import User, UserCreate, UserUpdate
-from app.crud import CRUD_user
-from app.tests.utils.utils import random_email, random_lower_string
 
 
 async def user_authentication_headers(

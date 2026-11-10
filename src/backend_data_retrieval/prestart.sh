@@ -40,6 +40,47 @@ if [[ "${MANUAL_NEXT_CHANGE_ID}" == "True" ]]; then
     fi
 fi
 
+
+shutdown() {
+    if [ "$shutdown_requested" = "true" ]; then
+        return
+    fi
+    echo "Received termination signal. Stopping Python..."
+    # Forward signal to Python if it is running
+    if [ -n "$python_pid" ]; then
+        kill -TERM "$python_pid" 2>/dev/null || true
+    fi
+    shutdown_requested=true
+}
+
+trap 'shutdown' TERM INT
+
 while true; do
-    python data_retrieval_app/external_data_retrieval/main.py
+    python -u data_retrieval_app/external_data_retrieval/main.py & python_pid=$!
+
+     # Wait for Python to finish.
+    # A trapped signal can interrupt wait, so wait again if needed.
+    while true; do
+        wait "$python_pid"
+        status=$?
+
+        # If Python is still running, wait again.
+        if kill -0 "$python_pid" 2>/dev/null; then
+            continue
+        fi
+
+        break
+    done
+
+    python_pid=""
+
+    # Exit if shutdown was requested
+    if [ "$shutdown_requested" = "true" ]; then
+        break
+    fi
+
+    echo "Python exited with status $status. Restarting..."
 done
+
+echo "Prestart script stopped."
+exit 0

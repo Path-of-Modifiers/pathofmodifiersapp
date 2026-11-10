@@ -3,22 +3,25 @@ from collections.abc import Awaitable, Callable
 from typing import Any
 
 import pytest
-from httpx import AsyncClient, Response
-from sqlalchemy.orm import Session
-
-from app.api.api_message_util import (
+from backend_api.app.api.api_message_util import (
     get_delete_return_msg,
 )
-from app.core.cache.user_cache import UserCache
-from app.core.config import settings
-from app.crud.base import CRUDBase, ModelType
-from app.exceptions import (
+from backend_api.app.core.cache.user_cache import UserCache
+from backend_api.app.core.config import settings
+from backend_api.app.crud.base import CRUDBase, ModelType
+from backend_api.app.exceptions import (
     DbObjectDoesNotExistError,
 )
-from app.exceptions.model_exceptions.db_exception import DbObjectAlreadyExistsError
-from app.exceptions.model_exceptions.request_exception import InvalidTokenError
-from app.tests.test_simulating_env.base_test import BaseTest
-from app.tests.utils.utils import is_courotine_function
+from backend_api.app.exceptions.model_exceptions.db_exception import (
+    DbObjectAlreadyExistsError,
+)
+from backend_api.app.exceptions.model_exceptions.request_exception import (
+    InvalidTokenError,
+)
+from backend_api.app.tests.test_simulating_env.base_test import BaseTest
+from backend_api.app.tests.utils.utils import is_courotine_function
+from httpx import AsyncClient, Response
+from sqlalchemy.orm import Session
 
 
 @pytest.mark.usefixtures("clear_db", autouse=True)

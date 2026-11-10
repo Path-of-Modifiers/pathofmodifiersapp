@@ -1,29 +1,31 @@
 from collections.abc import Awaitable, Callable
 
 import pytest
-from sqlalchemy.orm import Session
-
-from app.api.routes import (
+from backend_api.app.api.routes import (
     currency_prefix,
     item_base_type_prefix,
     item_modifier_prefix,
     item_prefix,
     modifier_prefix,
 )
-from app.core.models.models import (
+from backend_api.app.core.models.models import (
     Currency,
     Item,
     ItemBaseType,
     ItemModifier,
     Modifier,
 )
-from app.crud import CRUD_itemModifier
-from app.crud.base import CRUDBase, ModelType
-from app.tests.utils.model_utils.item_modifier import (
+from backend_api.app.crud import CRUD_itemModifier
+from backend_api.app.crud.base import CRUDBase, ModelType
+from backend_api.app.tests.utils.model_utils.item_modifier import (
     create_random_item_modifier_dict,
     generate_random_item_modifier,
 )
-from app.tests.utils.utils import get_model_table_name, get_model_unique_identifier
+from backend_api.app.tests.utils.utils import (
+    get_model_table_name,
+    get_model_unique_identifier,
+)
+from sqlalchemy.orm import Session
 
 
 @pytest.fixture(scope="module")
@@ -114,14 +116,16 @@ def create_random_object_func() -> Callable[[Session], Awaitable[dict]]:
 
 
 @pytest.fixture(scope="module")
-def object_generator_func_w_deps() -> Callable[
-    [],
-    tuple[
-        dict,
-        ItemModifier,
-        list[dict | Item | ItemBaseType | Currency | Modifier],
-    ],
-]:
+def object_generator_func_w_deps() -> (
+    Callable[
+        [],
+        tuple[
+            dict,
+            ItemModifier,
+            list[dict | Item | ItemBaseType | Currency | Modifier],
+        ],
+    ]
+):
     def generate_random_item_modifier_w_deps(
         db,
     ) -> Callable[

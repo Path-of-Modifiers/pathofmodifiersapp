@@ -1,6 +1,5 @@
+from backend_api.app.core.config import settings
 from pydantic import PostgresDsn
-
-from app.core.config import settings
 
 TEST_DATABASE_URL: PostgresDsn | None = str(settings.TEST_DATABASE_URI)
 ASYNC_TEST_DATABASE_URL: PostgresDsn | None = str(settings.ASYNC_TEST_DATABASE_URI)

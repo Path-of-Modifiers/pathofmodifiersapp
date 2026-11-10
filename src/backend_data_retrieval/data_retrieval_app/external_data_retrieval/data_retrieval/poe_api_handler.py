@@ -1,3 +1,4 @@
+import enum
 import json
 import logging
 import threading
@@ -5,24 +6,34 @@ import time
 from collections.abc import Iterator
 from concurrent.futures import Future, ThreadPoolExecutor
 from queue import Empty, Full, Queue
-from typing import Any, Literal
+from typing import Literal
 
 import httpx
-import pandas as pd
 import redis
+from backend_api.app.core.schemas.currency import Currency
+from backend_api.app.core.schemas.league import League
+from pydantic import TypeAdapter
 
 from data_retrieval_app.external_data_retrieval.config import settings
+from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.external.poe import (
+    Stash,
+)
+from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.internal.categorized import (
+    OrganizedItemsByCategory,
+)
 from data_retrieval_app.external_data_retrieval.data_retrieval.utils import (
     ByteResponse,
     RateLimiterThreadSafe,
 )
+from data_retrieval_app.external_data_retrieval.detectors.detector_controller import (
+    DetectorController,
+)
 from data_retrieval_app.external_data_retrieval.detectors.unique_detector import (
-    UniqueArmourDetector,
+    # UnidentifiedUniqueDetector,
     UniqueDetector,
-    UniqueJewelDetector,
-    UniqueJewelleryDetector,
-    UniqueUnidentifiedDetector,
-    UniqueWeaponDetector,
+)
+from data_retrieval_app.external_data_retrieval.transforming_data.transform_poe_api_data import (
+    PoEAPIDataTransformer,
 )
 from data_retrieval_app.external_data_retrieval.utils import (
     ProgramTooSlowException,
@@ -31,7 +42,12 @@ from data_retrieval_app.external_data_retrieval.utils import (
 from data_retrieval_app.logs.logger import data_retrieval_logger as logger
 from data_retrieval_app.utils import get_data_safe
 
-pd.options.mode.chained_assignment = None  # default='warn'
+
+class NextRequestState(enum.Enum):
+    STOP = 1
+    RESET = 2
+    RETRY = 3
+    READY = 4
 
 
 class PoEAPIHandler:
@@ -40,7 +56,7 @@ class PoEAPIHandler:
     """
 
     headers = {
-        "User-Agent": f"OAuth pathofmodifiers/0.1.0 (contact: {settings.OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
+        "User-Agent": f"OAuth pathofmodifiers/{settings.TAG} (contact: {settings.OATH_ACC_TOKEN_CONTACT_EMAIL}) StrictMode"
     }
 
     def __init__(
@@ -48,8 +64,7 @@ class PoEAPIHandler:
         url: str,
         auth_token: str,
         *,
-        leagues: list[dict[str, Any]],
-        item_detectors: list[UniqueDetector] | None = None,
+        leagues: list[League],
     ) -> None:
         """
         Parameters:
@@ -59,15 +74,16 @@ class PoEAPIHandler:
         """
         logger.debug("Initializing PoEAPIHandler.")
         self.leagues = leagues
-        if item_detectors is None:
-            item_detectors = [
-                UniqueArmourDetector(leagues),
-                UniqueJewelDetector(leagues),
-                UniqueJewelleryDetector(leagues),
-                UniqueWeaponDetector(leagues),
-                UniqueUnidentifiedDetector(leagues),
-            ]
-        logger.debug("Item detectors set to: " + str(item_detectors))
+        self.data_transformer = PoEAPIDataTransformer(self.leagues)
+        self.detector_controller = DetectorController(
+            [
+                UniqueDetector(),
+                # UnidentifiedUniqueDetector(),
+            ],
+            leagues,
+            self.data_transformer,
+        )
+
         self.url = url
         logger.debug("Url set to: " + self.url)
         self.auth_token = auth_token
@@ -75,74 +91,10 @@ class PoEAPIHandler:
 
         logger.debug("Headers set to: " + str(self.headers))
 
-        self.item_detectors = item_detectors
-        logger.debug("Item detectors set to: " + str(self.item_detectors))
+        self.stashes_adapter = TypeAdapter(list[Stash])
 
         self.skip_program_too_slow = False
         logger.info("PoEAPIHandler successfully initialized.")
-
-    def _json_to_df(self, stashes: list) -> pd.DataFrame | None:
-        df_temp = pd.json_normalize(stashes)
-
-        if "items" not in df_temp.columns:
-            return None
-
-        df_temp = df_temp.explode(["items"])
-
-        df_temp = df_temp.loc[~df_temp["items"].isnull()]
-
-        df_temp.drop("items", axis=1, inplace=True)
-
-        df = pd.json_normalize(stashes, record_path=["items"])
-
-        df["stash_index"] = df_temp.index
-
-        df_temp.index = df.index
-
-        df[df_temp.columns.to_list()] = df_temp
-
-        return df
-
-    def _detector_filter(self, stashes: list) -> pd.DataFrame:
-        """
-        Parameters:
-            :param stashes: (list) A list of stash objects
-        """
-        df_wanted = pd.DataFrame()
-        n_new_items = 0
-        n_total_unique_items = 0
-        df = self._json_to_df(stashes)
-        if df is None:
-            return df_wanted
-
-        # The stashes are fed to all item detectors, slowly being filtered down
-        try:
-            for item_detector in self.item_detectors:
-                (
-                    df_filtered,
-                    item_count,
-                    n_unique_found_items,
-                    df_leftover,
-                ) = item_detector.iterate_stashes(df)
-
-                df_wanted = pd.concat((df_wanted, df_filtered))
-
-                del df_filtered
-
-                n_new_items += item_count
-                n_total_unique_items += n_unique_found_items
-                if df_leftover.empty:
-                    break
-
-                df = df_leftover.copy(deep=True)
-                del df_leftover
-        except Exception as e:
-            logger.exception(
-                f"While checking stashes (detector: {item_detector}), this exception occured: {e}"
-            )
-            raise
-
-        return df_wanted.reset_index()
 
     def _get_latest_change_id(self) -> str:
         """
@@ -169,6 +121,68 @@ class PoEAPIHandler:
 
         return next_change_id
 
+    def _set_up_next_request(
+        self,
+        listener_id: int,
+        sent_outgoing: bool,
+        incoming: Queue,
+        reset_event: threading.Event,
+        stop_event: threading.Event,
+        cache: redis.Redis,
+    ) -> tuple[NextRequestState, str | None]:
+        if stop_event.is_set():
+            return NextRequestState.STOP, None
+        if reset_event.is_set():
+            logger.debug("Resetting the listener thread")
+            change_id = None
+            if listener_id == 0:
+                logger.debug("Main listener initiating the ping-pong again")
+                change_id = cache.get(f"next_change_id:{self.leagues[0].name}")
+                if change_id is None:
+                    change_id = self.initial_change_id
+                    # Make sure second listener also resets
+                time.sleep(5)
+                reset_event.clear()
+            return NextRequestState.RESET, change_id
+
+        if sent_outgoing:
+            try:
+                # The timeout is to avoid getting stuck when the other listener has stopped
+                change_id = incoming.get(timeout=5)
+            except Empty:
+                return NextRequestState.RETRY, None
+
+            return NextRequestState.READY, change_id
+
+        return NextRequestState.RETRY, None
+
+    def _handle_response_error(
+        self, response: httpx.Response, stop_event: threading.Event, weird_errors: int
+    ) -> bool:
+        # rate limited = 429 -> handled by ratelimiter
+        if response.status_code == 503:
+            # Temporarily unavailable = servers are down
+            logger.critical(
+                "Server is temporarily unavailable, sleeping for 30 seconds"
+            )
+            time.sleep(30)
+            return
+        else:
+            response.read()
+            logger.exception(
+                f"Recieved the following response: status:'{response.status_code}' '{response.reason_phrase}' text:'{response.text}'"
+            )
+            response.raise_for_status()
+            logger.warning(
+                "The above response code did not result in an error, discarding the response for safety"
+            )
+            if weird_errors > 10:
+                logger.exception(
+                    "Too many unkown errors have occured, stopping current listener"
+                )
+                stop_event.set()
+            return True
+
     def _follow_stream(
         self,
         listener_id: int,
@@ -182,95 +196,87 @@ class PoEAPIHandler:
         local_responses = []
         sent_outgoing = True
         weird_errors = 0
+        default_retry_delay = 2
+        retry_delay = default_retry_delay
+        max_delay = 60
         try:
             while True:
-                if stop_event.is_set():
-                    break
-                if reset_event.is_set():
-                    logger.debug("Resetting the listener thread")
-                    local_responses = []
-                    # pick up from latest checkpoint
-                    if listener_id == 0:
-                        logger.debug("Main listener initiating the ping-pong again")
-                        change_id = cache.get(
-                            f"next_change_id:{self.leagues[0]["name"]}"
-                        )
-                        if change_id is None:
-                            change_id = self.initial_change_id
-                        # Make sure second listener also resets
-                        time.sleep(5)
-                        reset_event.clear()
-                else:
-                    if sent_outgoing:
-                        change_id = incoming.get()
+                action, new_change_id = self._set_up_next_request(
+                    listener_id, sent_outgoing, incoming, reset_event, stop_event, cache
+                )
+                match action:
+                    case NextRequestState.STOP:
+                        break
+                    case NextRequestState.RESET:
+                        continue
+                    case NextRequestState.RETRY:
+                        continue
+                    case NextRequestState.READY:
+                        change_id = new_change_id
+                        retry_delay = default_retry_delay
 
                 sent_outgoing = False
 
                 self.rate_limiter.acquire()
-                with self.client.stream(
-                    "GET", self.url, params={"id": change_id}
-                ) as response:
-                    headers = response.headers
-                    self.rate_limiter.update(headers)
-                    if response.status_code >= 300:
-                        # rate limited = 429 -> handled by ratelimiter
-                        if response.status_code == 503:
-                            # Temporarily unavailable = servers are down
-                            logger.critical(
-                                "Server is temporarily unavailable, sleeping for 30 seconds"
+                try:
+                    with self.client.stream(
+                        "GET", self.url, params={"id": change_id}
+                    ) as response:
+                        headers = response.headers
+                        self.rate_limiter.update(headers)
+                        if response.status_code >= 300:
+                            is_weird_error = self._handle_response_error(
+                                response, stop_event, weird_errors
                             )
+                            if is_weird_error:
+                                weird_errors += 1
+
+                            continue
+
+                        next_change_id = headers["X-Next-Change-Id"]
+                        if next_change_id == change_id:
+                            self.skip_program_too_slow = True
+                            logger.info("We sucessfully caught up to the stream!")
                             time.sleep(30)
                             continue
-                        else:
-                            logger.exception(
-                                f"Recieved the following response: status:'{response.status_code}' '{response.reason_phrase}' text:'{response.text}'"
-                            )
-                            response.raise_for_status()
-                            logger.warning(
-                                "The above response code did not result in an error, discarding the response for safety"
-                            )
-                            if weird_errors > 10:
-                                logger.exception(
-                                    "Too many unkown errors have occured, stopping current listener"
-                                )
-                                stop_event.set()
-                            weird_errors += 1
+
+                        try:
+                            outgoing.put(next_change_id, timeout=5)
+                            sent_outgoing = True
+                        except Full:
                             continue
 
-                    next_change_id = headers["X-Next-Change-Id"]
-                    if next_change_id == change_id:
-                        self.skip_program_too_slow = True
-                        logger.info("We sucessfully caught up to the stream!")
-                        time.sleep(30)
-                        continue
-
-                    outgoing.put(next_change_id)
-                    sent_outgoing = True
-
-                    byte_response = ByteResponse(
-                        change_id=change_id,
-                        next_change_id=next_change_id,
-                        response=response.read(),
+                        byte_response = ByteResponse(
+                            change_id=change_id,
+                            next_change_id=next_change_id,
+                            response=response.read(),
+                        )
+                    local_responses.append(byte_response)
+                except httpx.TransportError:
+                    logger.warning(
+                        f"Connection lost with server, backing off for {retry_delay} seconds",
+                        exc_info=True,
                     )
-                local_responses.append(byte_response)
+                    time.sleep(retry_delay)
+                    retry_delay = min(retry_delay * 2, max_delay)
+
                 if len(local_responses) >= self.mini_batch_size // 2:
-                    try:
-                        while local_responses:
-                            self.response_queue.put(local_responses[0])
-                            local_responses.pop(0)
-                    except Full:
-                        time.sleep(0.5)
+                    self._dump_responses(local_responses, stop_event)
         finally:
             logger.info(
                 f"Listener {listener_id}: Exiting {self._follow_stream.__name__} gracefully"
             )
-            while local_responses:
-                self.response_queue.put(local_responses.pop(0))
+            self._dump_responses(local_responses, stop_event)
             if stop_event.is_set():
                 self.response_queue.put(None)
-            if not sent_outgoing:
-                logger.debug("Need to redo last request")
-                outgoing.put(change_id)
+
+    def _dump_responses(self, local_responses: list, stop_event: threading.Event):
+        try:
+            while local_responses and not stop_event.is_set():
+                self.response_queue.put(local_responses[0], timeout=5)
+                local_responses.pop(0)
+        except Full:
+            time.sleep(0.5)
 
     def initialize_data_stream_threads(
         self,
@@ -330,14 +336,18 @@ class PoEAPIHandler:
         return futures
 
     @sync_timing_tracker
-    def _read_stream(self) -> tuple[list[Any], str | None]:
+    def _read_stream(
+        self, stop_event: threading.Event
+    ) -> tuple[list[Stash], str | None]:
         i = 0
-        stashes = []
+        stashes = list[Stash]()
         next_change_id = None
         while i < self.mini_batch_size:
             try:
-                pending: ByteResponse | None = self.response_queue.get(timeout=30)
+                pending: ByteResponse | None = self.response_queue.get(timeout=5)
             except Empty:
+                if self.response_queue.all_tasks_done and stop_event.is_set():
+                    break
                 continue
 
             # This is equivalent to a stop event, but ensures all stashes are processed
@@ -349,7 +359,17 @@ class PoEAPIHandler:
                 continue
 
             obj = json.loads(pending.response.decode("utf-8"))
-            stashes.extend(obj["stashes"])
+            _stashes = self.stashes_adapter.validate_python(obj["stashes"])
+            # interesting_stashes = filter_by_owner(
+            #     _stashes, "Bogadisa#6339"
+            # )  # , "Kaaosvoima#6748"
+            # if interesting_stashes is None:
+            #     continue
+            # print("stashes found!")
+            # print(interesting_stashes)
+            # stashes_to_json(pending.change_id, interesting_stashes)
+            # continue
+            stashes.extend(_stashes)
             self.response_queue.task_done()
 
             next_change_id = pending.next_change_id
@@ -358,19 +378,14 @@ class PoEAPIHandler:
 
         return stashes, next_change_id
 
-    @sync_timing_tracker
-    def _process_stream(self, stashes: list) -> pd.DataFrame:
-        logger.info("Stashes are ready for processing")
-        wanted_df = self._detector_filter(stashes)
-        logger.info("Finished processing the data, waiting for more")
-        return wanted_df
-
-    def _gather_n_checkpoints(self, n: int) -> tuple[pd.DataFrame | None, str | None]:
-        df = None
+    def _gather_n_checkpoints(
+        self, n: int, stop_event: threading.Event
+    ) -> tuple[OrganizedItemsByCategory, str]:
+        all_organized_items = OrganizedItemsByCategory()
         for _ in range(n):
             start_time = time.perf_counter()
-            stashes, next_change_id = self._read_stream()
-            wanted_df = self._process_stream(stashes)
+            stashes, next_change_id = self._read_stream(stop_event)
+            organized_items = self.detector_controller.filter_stashes(stashes)
             end_time = time.perf_counter()
 
             time_per_mini_batch = end_time - start_time
@@ -383,27 +398,40 @@ class PoEAPIHandler:
                     # Does not allow a batch to take longer than 2 minutes
                     raise ProgramTooSlowException
 
-            if wanted_df.empty:
-                continue
+            all_organized_items.extend(organized_items)
+            if stop_event.is_set():
+                break
 
-            if df is None:
-                df = wanted_df
-            else:
-                df = pd.concat((df, wanted_df))
+        return all_organized_items, next_change_id
 
-        return df, next_change_id
+    def dump_stream(
+        self,
+        cache: redis.Redis,
+        current_hours: dict[int, int],
+        currencies: dict[tuple[int, str], Currency],
+        stop_event: threading.Event,
+    ) -> Iterator[str | None]:
+        self.redis_cache = cache
+        self.detector_controller.set_redis_cache(self.redis_cache)
 
-    def dump_stream(self) -> Iterator[tuple[pd.DataFrame, str | None]]:
-        time.sleep(5)  # Waits for the listening threads to have time to start up.
-        while True:
+        self.data_transformer.set_current_hours(current_hours)
+        self.data_transformer.set_currencies(currencies)
+
+        while True and not stop_event.is_set():
             logger.info("Waiting for data from the stream")
-            df, next_change_id = self._gather_n_checkpoints(
-                n=settings.N_CHECKPOINTS_PER_TRANSFORMATION,
+            organized_items, next_change_id = self._gather_n_checkpoints(
+                n=settings.N_CHECKPOINTS_PER_TRANSFORMATION, stop_event=stop_event
             )
-            if df is None:
+            if organized_items.is_empty():
                 logger.info("Found no data")
                 continue
             logger.info("Finished processing the stream, entering transformation phase")
-            yield df.reset_index(), next_change_id
-            del df
+            self.data_transformer.transform_and_insert(organized_items)
             logger.info("Finished transformation phase")
+            yield next_change_id
+
+    def end_of_hour_cleanup(self):
+        self.data_transformer.end_of_hour_cleanup()
+
+    def end_of_program_cleanup(self):
+        self.detector_controller.end_of_program_cleanup()

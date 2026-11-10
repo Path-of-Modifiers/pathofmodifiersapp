@@ -1,13 +1,18 @@
 import logging
+from collections import defaultdict
 from collections.abc import Generator
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, Literal
 
 import pandas as pd
 import requests
-from pydantic import HttpUrl
+from backend_api.app.core.schemas.item_base_type import ItemBaseType
+from backend_api.app.core.schemas.league import League
+from backend_api.app.core.schemas.modifier import GroupedModifier
+from pydantic import HttpUrl, TypeAdapter
 
-from data_retrieval_app.logs.logger import main_logger as logger
+from data_retrieval_app.external_data_retrieval.config import settings
+from data_retrieval_app.logs.logger import db_retrieval_logger, main_logger
 
 
 def _chunks(lst: list[Any], n: int) -> Generator[Any, None, None]:
@@ -29,7 +34,9 @@ def remove_empty_fields(json_in: list[dict[str, str]]) -> list[dict[str, Any]]:
 def df_to_JSON(
     df: pd.DataFrame | pd.Series, request_method: str
 ) -> list[dict[str, Any]] | dict[str, Any] | Any:
-    logger.debug(f"Transforming data into JSON with request method {request_method}.")
+    main_logger.debug(
+        f"Transforming data into JSON with request method {request_method}."
+    )
     if isinstance(df, pd.Series):
         df = df.to_frame().transpose()
     with pd.option_context("future.no_silent_downcasting", True):
@@ -41,35 +48,33 @@ def df_to_JSON(
     df_json = remove_empty_fields(df_json)  # Removes empty fields element-wise
 
     if request_method == "post":
-        logger.debug("Transformed data into JSON for post method.")
+        main_logger.debug("Transformed data into JSON for post method.")
         return df_json
     elif request_method == "put":
-        logger.debug("Transformed data into JSON for put method.")
+        main_logger.debug("Transformed data into JSON for put method.")
         return df_json[0]
     else:
-        logger.exception("Invalid request method for df to json.")
+        main_logger.exception("Invalid request method for df to json.")
         raise NotImplementedError(
             f"df to json for the request method {request_method} is not implemented."
         )
 
 
-def find_hours_since_launch(leagues_df: list[dict]) -> dict[int, int]:
+def find_hours_since_launch(leagues: list[League]) -> dict[int, int]:
     """
     Finds the number of hours since launch for each of the leagues in the given dataframe
     """
     current_time = datetime.now(UTC)
-    hours_since_launch_dict = {}
-    for league in leagues_df:
-        league_launch_time = datetime.fromisoformat(league["validFrom"])
-
-        time_since_launch = current_time - league_launch_time
+    hours_since_launch_dict = dict[int, int]()
+    for league in leagues:
+        time_since_launch = current_time - league.validFrom
 
         days_since_launch, seconds_since_launch = (
             time_since_launch.days,
             time_since_launch.seconds,
         )
         hours_since_launch = days_since_launch * 24 + seconds_since_launch // 3600
-        hours_since_launch_dict[league["leagueId"]] = hours_since_launch
+        hours_since_launch_dict[league.leagueId] = hours_since_launch
 
     return hours_since_launch_dict
 
@@ -142,8 +147,105 @@ def get_data_safe(
     except Exception as e:
         if logger is not None:
             logger.error(
-                f"The following error occurred while making request a request to {url}: {e}"
+                f"The following error occurred while making request a get request to {url}: {e}"
             )
         raise e
 
     return response
+
+
+def send_request_safe(
+    method: Literal["get", "put", "patch", "post", "delete"],
+    url: str,
+    *args,
+    logger: logging.Logger = None,
+    **kwargs,
+) -> requests.Response:
+    method_func = None
+    if method == "get":
+        method_func = requests.get
+    elif method == "put":
+        method_func = requests.put
+    elif method == "patch":
+        method_func = requests.patch
+    elif method == "post":
+        method_func = requests.post
+    elif method == "delete":
+        method_func = requests.delete
+    else:
+        raise ValueError(
+            f"Invalid method ({method}), must be one of: get, put, patch, post, delete"
+        )
+    try:
+        response = method_func(url, *args, **kwargs)
+        response.raise_for_status()
+    except Exception as e:
+        if logger is not None:
+            logger.error(
+                f"The following error occurred while making request a {method} request to {url}: {e}"
+            )
+        raise e
+
+    return response
+
+
+def get_leagues(headers: dict) -> list[League]:
+    response = get_data_safe(
+        f"{settings.BACKEND_BASE_URL}/league/",
+        headers=headers,
+        logger=db_retrieval_logger,
+    )
+
+    return TypeAdapter(list[League]).validate_python(response.json())
+
+
+def get_leagues_active(headers: dict) -> list[League]:
+    response = get_data_safe(
+        f"{settings.BACKEND_BASE_URL}/league/active/",
+        headers=headers,
+        logger=db_retrieval_logger,
+    )
+
+    return TypeAdapter(list[League]).validate_python(response.json())
+
+
+def get_grouped_modifiers(headers: dict) -> list[GroupedModifier]:
+    response = send_request_safe(
+        "get",
+        f"{settings.BACKEND_BASE_URL}/modifier/grouped/",
+        headers=headers,
+        logger=db_retrieval_logger,
+    )
+    modifiers = TypeAdapter(list[GroupedModifier]).validate_python(response.json())
+    return modifiers
+
+
+def get_grouped_modifiers_by_unique(headers: dict) -> dict[str, list[GroupedModifier]]:
+    modifiers = get_grouped_modifiers(headers)
+
+    modifiers_by_unique = defaultdict[str, list[GroupedModifier]](list)
+    for modifier in modifiers:
+        uniques = modifier.relatedUniques.split("|")
+        for unique in uniques:
+            modifiers_by_unique[unique].append(modifier)
+
+    return dict(modifiers_by_unique)
+
+
+def get_item_base_types(headers: dict) -> list[ItemBaseType]:
+    response = send_request_safe(
+        "get",
+        f"{settings.BACKEND_BASE_URL}/itemBaseType/",
+        headers=headers,
+        logger=db_retrieval_logger,
+    )
+    base_types = TypeAdapter(list[ItemBaseType]).validate_python(response.json())
+    return base_types
+
+
+def get_item_base_type_id_by_name(headers: dict) -> dict[str, int]:
+    base_types = get_item_base_types(headers)
+    base_type_ids = {
+        base_type.baseType: base_type.itemBaseTypeId for base_type in base_types
+    }
+    return base_type_ids

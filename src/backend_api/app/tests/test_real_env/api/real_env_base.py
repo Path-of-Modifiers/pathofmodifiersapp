@@ -1,12 +1,11 @@
 from collections.abc import AsyncGenerator
 
+from backend_api.app.core.config import settings
+from backend_api.app.logs.logger import setup_logging
+from backend_api.app.logs.logger import test_logger as logger
+from backend_api.app.main import app
+from backend_api.app.tests.utils.utils import get_superuser_token_headers
 from httpx import AsyncClient
-
-from app.core.config import settings
-from app.logs.logger import setup_logging
-from app.logs.logger import test_logger as logger
-from app.main import app
-from app.tests.utils.utils import get_superuser_token_headers
 
 
 class RealEnvBase:

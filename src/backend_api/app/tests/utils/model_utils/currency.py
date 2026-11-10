@@ -1,14 +1,14 @@
-from sqlalchemy.orm import Session
-
-from app import crud
-from app.core.models.models import Currency, League
-from app.core.schemas import CurrencyCreate
-from app.tests.utils.model_utils.league import generate_random_league
-from app.tests.utils.utils import (
+from backend_api.app.core.models.models import Currency, League
+from backend_api.app.core.schemas import CurrencyCreate
+from backend_api.app.tests.utils.model_utils.league import generate_random_league
+from backend_api.app.tests.utils.utils import (
     random_float,
     random_int,
     random_lower_string,
 )
+from sqlalchemy.orm import Session
+
+from app import crud
 
 
 async def create_random_currency_dict(
