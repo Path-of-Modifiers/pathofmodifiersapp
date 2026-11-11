@@ -2,6 +2,7 @@ from backend_api.app.core.schemas.modifier import (
     GroupedModifier,
     ModifierCreate,
     ModifierRoll,
+    ModifierUniqueItem,
     ModifierUpdate,
 )
 from pydantic import TypeAdapter
@@ -10,7 +11,11 @@ from data_retrieval_app.data_deposit.data_depositor_base import DataDepositorBas
 from data_retrieval_app.data_deposit.modifier.modifier_processing_modules import (
     ModifierRegexCreator,
 )
-from data_retrieval_app.utils import get_grouped_modifiers
+from data_retrieval_app.utils import (
+    get_grouped_modifiers,
+    get_item_base_type_id_by_name,
+    get_uniques_by_name_and_basetype_id,
+)
 
 
 class ModifierDataDepositor(
@@ -23,7 +28,7 @@ class ModifierDataDepositor(
     def _get_current_modifiers(self) -> dict[str, GroupedModifier]:
         modifiers = get_grouped_modifiers(self.pom_auth_headers)
 
-        return {modifier.effect: modifier for modifier in modifiers}
+        return {(modifier.effect,): modifier for modifier in modifiers}
 
     def _check_for_complex_updates(self, new_data, current, updated):
         need_update = False
@@ -62,15 +67,26 @@ class ModifierDataDepositor(
 
         return need_update, updated
 
-    def _track_comments(self, modifiers: list[ModifierCreate]) -> list[ModifierCreate]:
-        unique_name = self.logged_file_comments["Unique Name"]
-        for modifier in modifiers:
-            modifier.relatedUniques = unique_name
-
-        return modifiers
+    def _set_db_state(self):
+        self.uniques_by_name_and_basetype_id = get_uniques_by_name_and_basetype_id(
+            self.pom_auth_headers
+        )
+        self.basetype_id_by_name = get_item_base_type_id_by_name(self.pom_auth_headers)
 
     def _preprocess_data(self, data):
         deposit_modifiers = dict[str, ModifierCreate]()
+        uniques = [
+            self.uniques_by_name_and_basetype_id[
+                (
+                    self.logged_file_comments["Unique Name"],
+                    self.basetype_id_by_name[basetype],
+                )
+            ]
+            for basetype in self.logged_file_comments["Base Types"].split("|")
+        ]
+        modifier_uniques = [
+            ModifierUniqueItem(uniqueItemId=unique.uniqueItemId) for unique in uniques
+        ]
         for modifier in data:
             for key in list(modifier.keys()):
                 if modifier[key] == "":
@@ -89,7 +105,7 @@ class ModifierDataDepositor(
 
             deposit_modifier = deposit_modifiers.get(modifier["effect"])
             if deposit_modifier is None:
-                deposit_modifier = ModifierCreate(**modifier)
+                deposit_modifier = ModifierCreate(**modifier, uniques=modifier_uniques)
                 deposit_modifiers[modifier["effect"]] = deposit_modifier
 
             deposit_modifier.rolls.append(roll)
@@ -105,7 +121,7 @@ class ModifierDataDepositor(
             data,
             primary_key="modifierId",
             unique_key="effect",
-            skip_fields=["regex", "rolls"],
+            skip_fields=["regex", "rolls", "uniques"],
         )
         non_duplicate_data = self.regex_creator.add_regex(non_duplicate_data)
         return non_duplicate_data

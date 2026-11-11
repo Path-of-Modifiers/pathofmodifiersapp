@@ -11,6 +11,9 @@ from data_retrieval_app.data_deposit.league.league_data_depositor import (
 from data_retrieval_app.data_deposit.modifier.modifier_data_depositor import (
     ModifierDataDepositor,
 )
+from data_retrieval_app.data_deposit.unique_item.unique_data_depositor import (
+    UniqueItemDataDepositor,
+)
 from data_retrieval_app.logs.logger import data_deposit_logger as logger
 from data_retrieval_app.logs.logger import setup_logging
 
@@ -19,9 +22,10 @@ def main():
     setup_logging()
     logger.info("Starting deposit phase.")
     data_depositors: dict[str, DataDepositorBase] = {
-        "modifier": ModifierDataDepositor(),
-        "itemBaseType": ItemBaseTypeDataDepositor(),
         "league": LeagueDataDepositor(),
+        "itemBaseType": ItemBaseTypeDataDepositor(),
+        "uniqueItem": UniqueItemDataDepositor(),
+        "modifier": ModifierDataDepositor(),
         "currencyType": CurrencyTypeDataDepositor(),
     }
     for key, data_depositor in data_depositors.items():

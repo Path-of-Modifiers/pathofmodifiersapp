@@ -43,6 +43,10 @@ class DataDepositorBase[
 
         self.update_model = update_model
 
+    @abstractmethod
+    def _set_db_state(self):
+        """Retrieves the relevant state of the database"""
+
     def _load_data(self) -> Iterator[list[dict[str, str]]]:
         for filename in os.listdir(self.new_data_location):
             filepath = Path(self.new_data_location, filename)
@@ -110,22 +114,30 @@ class DataDepositorBase[
 
         return need_update
 
+    def _get_unique_key_val(
+        self, datum: CreateModel, unique_key: str | list[str]
+    ) -> tuple[str]:
+        if isinstance(unique_key, str):
+            unique_key = [unique_key]
+
+        return tuple(getattr(datum, key) for key in unique_key)
+
     def _remove_duplicates(
         self,
         data: list[CreateModel],
         *,
         primary_key: str,
-        unique_key: str | None = None,
+        unique_key: str | list[str] | None = None,
         skip_fields: list[str] | None = None,
     ) -> list[CreateModel]:
         if unique_key is None:
             unique_key = primary_key
 
-        non_duplicates = dict[str, CreateModel]()
+        non_duplicates = dict[tuple[str], CreateModel]()
         did_update = False
 
         for datum in data:
-            unique_key_val = getattr(datum, unique_key)
+            unique_key_val = self._get_unique_key_val(datum, unique_key)
             if unique_key_val in self.current_data_by_unique_key:
                 did_update = (
                     self._check_for_updates(
@@ -184,6 +196,7 @@ class DataDepositorBase[
         logger.info("Successfully inserted data into database.")
 
     def deposit_data(self) -> None:
+        self._set_db_state()
         for raw_data in self._load_data():
             data = self._preprocess_data(raw_data)
             data = self._process_data(data)

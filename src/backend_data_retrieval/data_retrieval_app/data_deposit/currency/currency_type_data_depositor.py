@@ -26,6 +26,9 @@ class CurrencyTypeDataDepositor(DataDepositorBase):
 
         self.name_to_trade_name = self._get_name_to_trade_name_dict()
 
+    def _set_db_state(self):
+        pass
+
     def _get_name_to_trade_name_dict(self) -> dict[str, str]:
         """
         Retrieves a map for "fancy" currency names, as used in the API, to their trade names, which we need.

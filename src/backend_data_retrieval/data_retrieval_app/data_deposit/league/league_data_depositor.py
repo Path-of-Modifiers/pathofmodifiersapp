@@ -12,10 +12,13 @@ class LeagueDataDepositor(DataDepositorBase[League, LeagueCreate, LeagueUpdate])
         self.data_url += "?on_duplicate_pkey_do_nothing=true"
         self.current_data_by_unique_key = self._get_current_leagues()
 
+    def _set_db_state(self):
+        pass
+
     def _get_current_leagues(self) -> dict[str, League]:
         leagues = get_leagues(self.pom_auth_headers)
 
-        return {league.name: league for league in leagues}
+        return {(league.name,): league for league in leagues}
 
     def _check_for_complex_updates(self, new_data, current, updated):
         return False, updated

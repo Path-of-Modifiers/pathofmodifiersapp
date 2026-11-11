@@ -23,7 +23,10 @@ class ItemBaseTypeDataDepositor(
     def _get_current_basetypes(self) -> dict[str, ItemBaseType]:
         basetypes = get_item_base_types(self.pom_auth_headers)
 
-        return {basetype.baseType: basetype for basetype in basetypes}
+        return {(basetype.baseType,): basetype for basetype in basetypes}
+
+    def _set_db_state(self):
+        pass
 
     def _check_for_complex_updates(self, new_data, current, updated):
         return False, updated
