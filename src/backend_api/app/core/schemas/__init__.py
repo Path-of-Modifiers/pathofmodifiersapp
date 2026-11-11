@@ -43,6 +43,11 @@ from .modifier import (
     ModifierCreate,
     ModifierUpdate,
 )
+from .unique_item import (
+    UniqueItem,
+    UniqueItemCreate,
+    UniqueItemUpdate,
+)
 from .token import NewPassword, Token, TokenPayload
 from .turnstile import TurnstileQuery, TurnstileResponse
 from .unidentified_item import (

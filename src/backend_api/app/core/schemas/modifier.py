@@ -48,9 +48,17 @@ class ModifierRoll(_pydantic.BaseModel):
     textRolls: list[str] | None = None
 
 
+class ModifierUniqueItem(_pydantic.BaseModel):
+    uniqueItemId: int
+    required: bool | None = None
+
+
 # Properties to receive on modifier creation
 class ModifierCreate(ModifierBase):
     rolls: list[ModifierRoll] = _pydantic.Field(default_factory=list[ModifierRoll])
+    uniques: list[ModifierUniqueItem] = _pydantic.Field(
+        default_factory=list[ModifierUniqueItem]
+    )
 
 
 # Properties to return to client
@@ -64,4 +72,5 @@ class GroupedModifier(Modifier):
 
 class ModifierUpdate(Modifier):
     rolls: list[ModifierRoll] | None = None
+    uniques: list[ModifierUniqueItem] | None = None
     effect: str | None = None

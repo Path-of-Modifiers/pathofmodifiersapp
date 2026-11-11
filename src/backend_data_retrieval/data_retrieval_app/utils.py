@@ -9,6 +9,7 @@ import requests
 from backend_api.app.core.schemas.item_base_type import ItemBaseType
 from backend_api.app.core.schemas.league import League
 from backend_api.app.core.schemas.modifier import GroupedModifier
+from backend_api.app.core.schemas.unique_item import UniqueItem
 from pydantic import HttpUrl, TypeAdapter
 
 from data_retrieval_app.external_data_retrieval.config import settings
@@ -190,7 +191,8 @@ def send_request_safe(
 
 
 def get_leagues(headers: dict) -> list[League]:
-    response = get_data_safe(
+    response = send_request_safe(
+        "get",
         f"{settings.BACKEND_BASE_URL}/league/",
         headers=headers,
         logger=db_retrieval_logger,
@@ -200,7 +202,8 @@ def get_leagues(headers: dict) -> list[League]:
 
 
 def get_leagues_active(headers: dict) -> list[League]:
-    response = get_data_safe(
+    response = send_request_safe(
+        "get",
         f"{settings.BACKEND_BASE_URL}/league/active/",
         headers=headers,
         logger=db_retrieval_logger,
@@ -249,3 +252,21 @@ def get_item_base_type_id_by_name(headers: dict) -> dict[str, int]:
         base_type.baseType: base_type.itemBaseTypeId for base_type in base_types
     }
     return base_type_ids
+
+
+def get_uniques(headers: dict) -> list[UniqueItem]:
+    response = send_request_safe(
+        "get",
+        f"{settings.BACKEND_BASE_URL}/uniqueItem/",
+        headers=headers,
+        logger=db_retrieval_logger,
+    )
+    return TypeAdapter(list[UniqueItem]).validate_python(response.json())
+
+
+def get_uniques_by_name_and_basetype_id(
+    headers: dict,
+) -> dict[tuple[str, int], UniqueItem]:
+    uniques = get_uniques(headers)
+
+    return {(unique.name, unique.itemBaseTypeId): unique for unique in uniques}
