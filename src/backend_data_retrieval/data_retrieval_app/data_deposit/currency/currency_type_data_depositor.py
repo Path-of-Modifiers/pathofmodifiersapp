@@ -26,6 +26,9 @@ class CurrencyTypeDataDepositor(DataDepositorBase):
 
         self.name_to_trade_name = self._get_name_to_trade_name_dict()
 
+    def _set_db_state(self):
+        pass
+
     def _get_name_to_trade_name_dict(self) -> dict[str, str]:
         """
         Retrieves a map for "fancy" currency names, as used in the API, to their trade names, which we need.
@@ -66,14 +69,21 @@ class CurrencyTypeDataDepositor(DataDepositorBase):
             logger=logger,
         )
         response_json = response.json()
+
+        yield response_json["items"]
+
+    def _check_for_complex_updates(self, new_data, current, updated):
+        return False, updated
+
+    def _preprocess_data(self, data):
         currency_items = list[ExchangeRatioItem]()
         currency_item_adaptor = TypeAdapter(ExchangeRatioItem)
-        for item in response_json["items"]:
+        for item in data:
             if item["category"] == "currency":
                 item["leagueId"] = -1
                 currency_items.append(currency_item_adaptor.validate_python(item))
 
-        yield currency_items
+        return currency_items
 
     def _process_data(
         self, currency_items: list[ExchangeRatioItem]

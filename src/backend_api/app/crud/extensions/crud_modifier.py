@@ -1,7 +1,11 @@
 from backend_api.app.core.models.models import Modifier as model_Modifier
 from backend_api.app.core.models.models import ModifierRoll as model_ModifierRoll
+from backend_api.app.core.models.models import (
+    ModifierUniqueItem as model_ModifierUniqueItem,
+)
 from backend_api.app.core.schemas.modifier import (
     GroupedModifier,
+    GroupedModifierWUniques,
     Modifier,
     ModifierCreate,
     ModifierUpdate,
@@ -32,7 +36,7 @@ class CRUDModifier(
         self, db: Session, *, modifiers: list[ModifierCreate]
     ) -> list[Modifier]:
         db_modifiers = [
-            model_Modifier(**modifier.model_dump(exclude="rolls"))
+            model_Modifier(**modifier.model_dump(exclude={"rolls", "uniques"}))
             for modifier in modifiers
         ]
 
@@ -47,6 +51,16 @@ class CRUDModifier(
             for modifier_roll in modifier.rolls
         ]
         db.add_all(db_modifier_rolls)
+
+        db_modifier_uniques = [
+            model_ModifierUniqueItem(
+                modifierId=db_modifier.modifierId, **modifier_unique.model_dump()
+            )
+            for db_modifier, modifier in zip(db_modifiers, modifiers, strict=True)
+            if modifier.uniques is not None
+            for modifier_unique in modifier.uniques
+        ]
+        db.add_all(db_modifier_uniques)
         db.commit()
 
         return self.validate(db_modifiers)
@@ -57,7 +71,7 @@ class CRUDModifier(
             .where(model_Modifier.modifierId == modifier.modifierId)
             .values(
                 **modifier.model_dump(
-                    exclude_unset=True, exclude_none=True, exclude={"rolls"}
+                    exclude_unset=True, exclude_none=True, exclude={"rolls", "uniques"}
                 )
             )
         )
@@ -109,3 +123,72 @@ class CRUDModifier(
         grouped_modifiers = db.execute(stmt).mappings().all()
 
         return TypeAdapter(list[GroupedModifier]).validate_python(grouped_modifiers)
+
+    async def get_grouped_modifiers_w_uniques(
+        self, db: Session
+    ) -> list[GroupedModifierWUniques]:
+        grouped_modifier_rolls = (
+            select(
+                model_ModifierRoll.modifierId,
+                func.json_agg(
+                    aggregate_order_by(
+                        func.json_build_object(
+                            "position",
+                            model_ModifierRoll.position,
+                            "minRoll",
+                            model_ModifierRoll.minRoll,
+                            "maxRoll",
+                            model_ModifierRoll.maxRoll,
+                            "textRolls",
+                            model_ModifierRoll.textRolls,
+                        ),
+                        model_ModifierRoll.modifierId,
+                        model_ModifierRoll.position,
+                    ),
+                ).label("rolls"),
+            )
+            .group_by(model_ModifierRoll.modifierId)
+            .cte("grouped_modifier_rolls")
+        )
+        grouped_modifier_uniques = (
+            select(
+                model_ModifierUniqueItem.modifierId,
+                func.json_agg(
+                    aggregate_order_by(
+                        func.json_build_object(
+                            "uniqueItemId",
+                            model_ModifierUniqueItem.uniqueItemId,
+                            "name",
+                            model_ModifierUniqueItem.name,
+                            "required",
+                            model_ModifierUniqueItem.required,
+                        ),
+                        model_ModifierUniqueItem.modifierId,
+                        model_ModifierUniqueItem.uniqueItemId,
+                    ),
+                ).label("uniques"),
+            )
+            .group_by(model_ModifierUniqueItem.modifierId)
+            .cte("grouped_modifier_uniques")
+        )
+
+        stmt = (
+            select(
+                *model_Modifier.__table__.columns,
+                grouped_modifier_rolls.c.rolls,
+                grouped_modifier_uniques.c.uniques,
+            )
+            .join(
+                grouped_modifier_rolls,
+                model_Modifier.modifierId == grouped_modifier_rolls.c.modifierId,
+            )
+            .join(
+                grouped_modifier_uniques,
+                model_Modifier.modifierId == grouped_modifier_uniques.c.modifierId,
+            )
+        )
+        grouped_modifiers_w_uniques = db.execute(stmt).mappings().all()
+
+        return TypeAdapter(list[GroupedModifierWUniques]).validate_python(
+            grouped_modifiers_w_uniques
+        )

@@ -8,7 +8,11 @@ import pandas as pd
 import requests
 from backend_api.app.core.schemas.item_base_type import ItemBaseType
 from backend_api.app.core.schemas.league import League
-from backend_api.app.core.schemas.modifier import GroupedModifier
+from backend_api.app.core.schemas.modifier import (
+    GroupedModifier,
+    GroupedModifierWUniques,
+)
+from backend_api.app.core.schemas.unique_item import UniqueItem
 from pydantic import HttpUrl, TypeAdapter
 
 from data_retrieval_app.external_data_retrieval.config import settings
@@ -190,7 +194,8 @@ def send_request_safe(
 
 
 def get_leagues(headers: dict) -> list[League]:
-    response = get_data_safe(
+    response = send_request_safe(
+        "get",
         f"{settings.BACKEND_BASE_URL}/league/",
         headers=headers,
         logger=db_retrieval_logger,
@@ -200,7 +205,8 @@ def get_leagues(headers: dict) -> list[League]:
 
 
 def get_leagues_active(headers: dict) -> list[League]:
-    response = get_data_safe(
+    response = send_request_safe(
+        "get",
         f"{settings.BACKEND_BASE_URL}/league/active/",
         headers=headers,
         logger=db_retrieval_logger,
@@ -220,14 +226,29 @@ def get_grouped_modifiers(headers: dict) -> list[GroupedModifier]:
     return modifiers
 
 
-def get_grouped_modifiers_by_unique(headers: dict) -> dict[str, list[GroupedModifier]]:
-    modifiers = get_grouped_modifiers(headers)
+def get_grouped_modifiers_w_uniques(headers: dict) -> list[GroupedModifierWUniques]:
+    response = send_request_safe(
+        "get",
+        f"{settings.BACKEND_BASE_URL}/modifier/grouped/uniqueItem/",
+        headers=headers,
+        logger=db_retrieval_logger,
+    )
+    modifiers = TypeAdapter(list[GroupedModifierWUniques]).validate_python(
+        response.json()
+    )
+    return modifiers
 
-    modifiers_by_unique = defaultdict[str, list[GroupedModifier]](list)
+
+def get_grouped_modifiers_by_unique(
+    headers: dict,
+) -> dict[str, list[GroupedModifierWUniques]]:
+    modifiers = get_grouped_modifiers_w_uniques(headers)
+
+    modifiers_by_unique = defaultdict[str, list[GroupedModifierWUniques]](list)
     for modifier in modifiers:
-        uniques = modifier.relatedUniques.split("|")
+        uniques = modifier.uniques
         for unique in uniques:
-            modifiers_by_unique[unique].append(modifier)
+            modifiers_by_unique[unique.name].append(modifier)
 
     return dict(modifiers_by_unique)
 
@@ -249,3 +270,21 @@ def get_item_base_type_id_by_name(headers: dict) -> dict[str, int]:
         base_type.baseType: base_type.itemBaseTypeId for base_type in base_types
     }
     return base_type_ids
+
+
+def get_uniques(headers: dict) -> list[UniqueItem]:
+    response = send_request_safe(
+        "get",
+        f"{settings.BACKEND_BASE_URL}/uniqueItem/",
+        headers=headers,
+        logger=db_retrieval_logger,
+    )
+    return TypeAdapter(list[UniqueItem]).validate_python(response.json())
+
+
+def get_uniques_by_name_and_basetype_id(
+    headers: dict,
+) -> dict[tuple[str, int], UniqueItem]:
+    uniques = get_uniques(headers)
+
+    return {(unique.name, unique.itemBaseTypeId): unique for unique in uniques}

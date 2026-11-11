@@ -39,6 +39,7 @@ from .league import (
 from .message import Message
 from .modifier import (
     GroupedModifier,
+    GroupedModifierWUniques,
     Modifier,
     ModifierCreate,
     ModifierUpdate,
@@ -50,6 +51,11 @@ from .unidentified_item import (
     UnidentifiedItemCreate,
     UnidentifiedItemInDB,
     UnidentifiedItemUpdate,
+)
+from .unique_item import (
+    UniqueItem,
+    UniqueItemCreate,
+    UniqueItemUpdate,
 )
 from .user import (
     UpdatePassword,

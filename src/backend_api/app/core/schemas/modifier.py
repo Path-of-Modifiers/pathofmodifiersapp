@@ -7,8 +7,6 @@ import pydantic as _pydantic
 class ModifierBase(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True, extra="ignore")
 
-    relatedUniques: str | None = None
-
     static: bool | None = None
     effect: str
     regex: re.Pattern | None = None
@@ -50,9 +48,16 @@ class ModifierRoll(_pydantic.BaseModel):
     textRolls: list[str] | None = None
 
 
+class ModifierUniqueItem(_pydantic.BaseModel):
+    uniqueItemId: int
+    name: str
+    required: bool | None = None
+
+
 # Properties to receive on modifier creation
 class ModifierCreate(ModifierBase):
     rolls: list[ModifierRoll] = _pydantic.Field(default_factory=list[ModifierRoll])
+    uniques: list[ModifierUniqueItem] | None = None
 
 
 # Properties to return to client
@@ -64,6 +69,11 @@ class GroupedModifier(Modifier):
     rolls: list[ModifierRoll]
 
 
+class GroupedModifierWUniques(GroupedModifier):
+    uniques: list[ModifierUniqueItem]
+
+
 class ModifierUpdate(Modifier):
     rolls: list[ModifierRoll] | None = None
+    uniques: list[ModifierUniqueItem] | None = None
     effect: str | None = None

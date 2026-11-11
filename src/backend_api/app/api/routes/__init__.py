@@ -8,4 +8,5 @@ from backend_api.app.api.routes.plot import plot_prefix
 from backend_api.app.api.routes.test import test_prefix
 from backend_api.app.api.routes.turnstile import turnstile_prefix
 from backend_api.app.api.routes.unidentified_item import unidentified_item_prefix
+from backend_api.app.api.routes.unique_item import unique_item_prefix
 from backend_api.app.api.routes.user import user_prefix

@@ -1,5 +1,5 @@
 # Source: NA
 # Note: Only contains bases relevant to the uniques we are tracking
-baseType,category,subCategory,relatedUniques
-"Vaal Rapier","weapon","one-handed sword","Paradoxica"
-"Serpentine Staff","weapon","warstaff","Cane of Kulemak"
+baseType,category,subCategory
+"Vaal Rapier","weapon","one-handed sword"
+"Serpentine Staff","weapon","warstaff"

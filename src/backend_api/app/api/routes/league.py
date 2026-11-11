@@ -130,12 +130,11 @@ async def create_league(
 
 
 @router.put(
-    "/{leagueId}",
+    "/",
     response_model=schemas.League,
     dependencies=[Depends(get_current_active_superuser)],
 )
-async def update_modifier(
-    leagueId: int,
+async def update_league(
     league_update: schemas.LeagueUpdate,
     db: Session = Depends(get_db),
 ):
@@ -145,11 +144,11 @@ async def update_modifier(
     Returns the updated league.
     """
 
-    modifier_map = {"leagueId": leagueId}
+    league_map = {"leagueId": league_update.leagueId}
 
-    modifier = await CRUD_league.get(
+    league = await CRUD_league.get(
         db=db,
-        filter=modifier_map,
+        filter=league_map,
     )
 
-    return await CRUD_league.update(db_obj=modifier, obj_in=league_update, db=db)
+    return await CRUD_league.update(db_obj=league, obj_in=league_update, db=db)

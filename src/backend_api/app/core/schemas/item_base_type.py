@@ -8,7 +8,6 @@ class _BaseItemBaseType(_pydantic.BaseModel):
     baseType: str
     category: str
     subCategory: str | None = None
-    relatedUniques: str | None = None
 
 
 # Properties to receive on item base type creation
@@ -18,7 +17,9 @@ class ItemBaseTypeCreate(_BaseItemBaseType):
 
 # Properties to receive on update
 class ItemBaseTypeUpdate(_BaseItemBaseType):
-    pass
+    itemBaseTypeId: int
+    baseType: str | None = None
+    category: str | None = None
 
 
 # Properties shared by models stored in DB

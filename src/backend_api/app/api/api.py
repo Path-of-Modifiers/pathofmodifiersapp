@@ -19,6 +19,8 @@ from backend_api.app.api.routes import (
     turnstile_prefix,
     unidentified_item,
     unidentified_item_prefix,
+    unique_item,
+    unique_item_prefix,
 )
 from fastapi import APIRouter
 
@@ -44,6 +46,9 @@ api_router.include_router(
 )
 api_router.include_router(
     modifier.router, prefix=f"/{modifier_prefix}", tags=[modifier_prefix]
+)
+api_router.include_router(
+    unique_item.router, prefix=f"/{unique_item_prefix}", tags=[unique_item_prefix]
 )
 api_router.include_router(plot.router, prefix=f"/{plot_prefix}", tags=[plot_prefix])
 api_router.include_router(

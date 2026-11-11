@@ -1,11 +1,8 @@
-import os
-from collections.abc import Iterator
-from pathlib import Path
-
 from backend_api.app.core.schemas.modifier import (
     GroupedModifier,
     ModifierCreate,
     ModifierRoll,
+    ModifierUniqueItem,
     ModifierUpdate,
 )
 from pydantic import TypeAdapter
@@ -14,52 +11,29 @@ from data_retrieval_app.data_deposit.data_depositor_base import DataDepositorBas
 from data_retrieval_app.data_deposit.modifier.modifier_processing_modules import (
     ModifierRegexCreator,
 )
-from data_retrieval_app.data_deposit.utils import read_csv
-from data_retrieval_app.logs.logger import data_deposit_logger as logger
-from data_retrieval_app.utils import get_grouped_modifiers, send_request_safe
+from data_retrieval_app.utils import (
+    get_grouped_modifiers,
+    get_item_base_type_id_by_name,
+    get_uniques_by_name_and_basetype_id,
+)
 
 
-class ModifierDataDepositor(DataDepositorBase):
+class ModifierDataDepositor(
+    DataDepositorBase[GroupedModifier, ModifierCreate, ModifierUpdate]
+):
     def __init__(self) -> None:
-        super().__init__(data_type="modifier")
+        super().__init__(data_type="modifier", update_model=ModifierUpdate)
         self.regex_creator = ModifierRegexCreator()
 
     def _get_current_modifiers(self) -> dict[str, GroupedModifier]:
         modifiers = get_grouped_modifiers(self.pom_auth_headers)
 
-        return {modifier.effect: modifier for modifier in modifiers}
+        return {(modifier.effect,): modifier for modifier in modifiers}
 
-    def _check_for_updates(
-        self, modifier: ModifierCreate, current_modifier: GroupedModifier
-    ):
+    def _check_for_complex_updates(self, new_data, current, updated):
         need_update = False
-        updated_modifier = ModifierUpdate(modifierId=current_modifier.modifierId)
-        for field in modifier.model_fields:
-            if field == "relatedUniques":
-                new = modifier.relatedUniques.split("|")
-                old = current_modifier.relatedUniques.split("|")
-                related_uniques = set(new).difference(set(old))
-                if related_uniques:
-                    updated_modifier.relatedUniques = "|".join(set(new) | set(old))
-                    need_update = True
-
-                continue
-
-            if field in ("regex", "rolls"):
-                continue
-
-            new = getattr(modifier, field)
-            old = getattr(current_modifier, field)
-            if not (new == old or (isinstance(old, bool) and old)):
-                # update rows which have a different value
-                # ignore rows which are bools that are already True
-                setattr(updated_modifier, field, new)
-                need_update = True
-
         update_regex = False
-        for new_roll, old_roll in zip(
-            modifier.rolls, current_modifier.rolls, strict=True
-        ):
+        for new_roll, old_roll in zip(new_data.rolls, current.rolls, strict=True):
             updated_roll = ModifierRoll(position=new_roll.position)
             roll_need_update = False
             if new_roll.minRoll is not None and new_roll.minRoll < old_roll.minRoll:
@@ -79,118 +53,76 @@ class ModifierDataDepositor(DataDepositorBase):
                     update_regex = True  # regex contains text rolls
 
             if roll_need_update:
-                if updated_modifier.rolls is None:
-                    updated_modifier.rolls = list[ModifierRoll]()
+                if updated.rolls is None:
+                    updated.rolls = list[ModifierRoll]()
 
-                updated_modifier.rolls.append(updated_roll)
+                updated.rolls.append(updated_roll)
                 need_update = True
 
         if update_regex:
-            updated_modifier.regex = self.regex_creator.make_regex(
-                modifier.effect, updated_modifier.rolls
+            updated.regex = self.regex_creator.make_regex(
+                new_data.effect, updated.rolls
             )
             need_update = True
 
-        if need_update:
-            send_request_safe(
-                "put",
-                self.data_url,
-                json=updated_modifier.model_dump(exclude_none=True, exclude_unset=True),
-                headers=self.pom_auth_headers,
-                logger=logger,
-            )
+        return need_update, updated
 
-        return need_update
+    def _set_db_state(self):
+        self.uniques_by_name_and_basetype_id = get_uniques_by_name_and_basetype_id(
+            self.pom_auth_headers
+        )
+        self.basetype_id_by_name = get_item_base_type_id_by_name(self.pom_auth_headers)
 
-    def _remove_duplicates(
-        self, modifiers: list[ModifierCreate]
-    ) -> list[ModifierCreate]:
-        current_modifiers = self._get_current_modifiers()
-
-        previous_effects = list[str]()
-        did_update = False
-        for modifier in modifiers[:]:
-            if modifier.effect in current_modifiers:
-                did_update = self._check_for_updates(
-                    modifier, current_modifiers[modifier.effect]
+    def _preprocess_data(self, data):
+        deposit_modifiers = dict[str, ModifierCreate]()
+        uniques = [
+            self.uniques_by_name_and_basetype_id[
+                (
+                    self.logged_file_comments["Unique Name"],
+                    self.basetype_id_by_name[basetype],
                 )
-                modifiers.remove(modifier)
-                continue
+            ]
+            for basetype in self.logged_file_comments["Base Types"].split("|")
+        ]
+        modifier_uniques = [
+            ModifierUniqueItem(uniqueItemId=unique.uniqueItemId, name=unique.name)
+            for unique in uniques
+        ]
+        for modifier in data:
+            for key in list(modifier.keys()):
+                if modifier[key] == "":
+                    modifier.pop(key)
 
-            if modifier.effect in previous_effects:
-                modifiers.remove(modifier)
-                continue
+            text_roll: str | None = modifier.get("textRolls")
+            if text_roll is not None:
+                text_roll = text_roll.split("|")
 
-            previous_effects.append(modifier.effect)
-        if did_update:
-            logger.info("Updated modifiers using new data")
-        return modifiers
-
-    def _track_comments(self, modifiers: list[ModifierCreate]) -> list[ModifierCreate]:
-        unique_name = self.logged_file_comments["Unique Name"]
-        for modifier in modifiers:
-            modifier.relatedUniques = unique_name
-
-        return modifiers
-
-    def _load_data(self) -> Iterator[ModifierCreate]:
-        for filename in os.listdir(self.new_data_location):
-            modifiers = list[dict[str, str]]()
-            filepath = Path(self.new_data_location, filename)
-
-            logger.info(f"Loading new data from '{filename}'.")
-            more_modifiers, self.logged_file_comments = read_csv(
-                filepath, logger=logger
-            )
-            modifiers.extend(more_modifiers)
-
-            deposit_modifiers = dict[str, ModifierCreate]()
-            for modifier in modifiers:
-                for key in list(modifier.keys()):
-                    if modifier[key] == "":
-                        modifier.pop(key)
-
-                text_roll: str | None = modifier.get("textRolls")
-                if text_roll is not None:
-                    text_roll = text_roll.split("|")
-
-                roll = ModifierRoll(
-                    position=modifier["position"],
-                    minRoll=modifier.get("minRoll"),
-                    maxRoll=modifier.get("maxRoll"),
-                    textRolls=text_roll,
-                )
-
-                deposit_modifier = deposit_modifiers.get(modifier["effect"])
-                if deposit_modifier is None:
-                    deposit_modifier = ModifierCreate(**modifier)
-                    deposit_modifiers[modifier["effect"]] = deposit_modifier
-
-                deposit_modifier.rolls.append(roll)
-
-            yield TypeAdapter(list[ModifierCreate]).validate_python(
-                deposit_modifiers.values()
+            roll = ModifierRoll(
+                position=modifier["position"],
+                minRoll=modifier.get("minRoll"),
+                maxRoll=modifier.get("maxRoll"),
+                textRolls=text_roll,
             )
 
-    def _process_data(self, modifiers: list[ModifierCreate]) -> list[ModifierCreate]:
-        modifiers = self.regex_creator.add_regex(modifiers)
-        modifiers = self._track_comments(modifiers)
-        modifiers = self._remove_duplicates(modifiers)
-        return modifiers
+            deposit_modifier = deposit_modifiers.get(modifier["effect"])
+            if deposit_modifier is None:
+                deposit_modifier = ModifierCreate(**modifier, uniques=modifier_uniques)
+                deposit_modifiers[modifier["effect"]] = deposit_modifier
 
-    def _insert_data(self, modifiers: list[ModifierCreate]):
-        if not modifiers:
-            return
+            deposit_modifier.rolls.append(roll)
 
-        logger.info("Inserting data into database.")
-        headers = {"accept": "application/json", "Content-Type": "application/json"}
-        headers.update(self.pom_auth_headers)
-
-        send_request_safe(
-            "post",
-            self.data_url,
-            json=TypeAdapter(list[ModifierCreate]).dump_python(modifiers),
-            headers=headers,
+        return TypeAdapter(list[ModifierCreate]).validate_python(
+            deposit_modifiers.values()
         )
 
-        logger.info("Successfully inserted data into database.")
+    def _process_data(self, data):
+        self.current_data_by_unique_key = self._get_current_modifiers()
+        # data = self._track_comments(data)
+        non_duplicate_data = self._remove_duplicates(
+            data,
+            primary_key="modifierId",
+            unique_key="effect",
+            skip_fields=["regex", "rolls", "uniques"],
+        )
+        non_duplicate_data = self.regex_creator.add_regex(non_duplicate_data)
+        return non_duplicate_data
