@@ -382,6 +382,7 @@ class ModifierUniqueItem(Base):
         ForeignKey("unique_item.uniqueItemId", ondelete="CASCADE", onupdate="CASCADE"),
         nullable=False,
     )
+    name: Mapped[str] = mapped_column(Text, nullable=False)
     required: Mapped[bool | None] = mapped_column(Boolean)
     __table_args__ = (PrimaryKeyConstraint("modifierId", "uniqueItemId"),)
 

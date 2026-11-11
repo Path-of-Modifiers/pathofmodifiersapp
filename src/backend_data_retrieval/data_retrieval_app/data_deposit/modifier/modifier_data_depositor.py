@@ -85,7 +85,8 @@ class ModifierDataDepositor(
             for basetype in self.logged_file_comments["Base Types"].split("|")
         ]
         modifier_uniques = [
-            ModifierUniqueItem(uniqueItemId=unique.uniqueItemId) for unique in uniques
+            ModifierUniqueItem(uniqueItemId=unique.uniqueItemId, name=unique.name)
+            for unique in uniques
         ]
         for modifier in data:
             for key in list(modifier.keys()):

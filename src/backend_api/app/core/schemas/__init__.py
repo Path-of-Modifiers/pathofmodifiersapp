@@ -39,14 +39,10 @@ from .league import (
 from .message import Message
 from .modifier import (
     GroupedModifier,
+    GroupedModifierWUniques,
     Modifier,
     ModifierCreate,
     ModifierUpdate,
-)
-from .unique_item import (
-    UniqueItem,
-    UniqueItemCreate,
-    UniqueItemUpdate,
 )
 from .token import NewPassword, Token, TokenPayload
 from .turnstile import TurnstileQuery, TurnstileResponse
@@ -55,6 +51,11 @@ from .unidentified_item import (
     UnidentifiedItemCreate,
     UnidentifiedItemInDB,
     UnidentifiedItemUpdate,
+)
+from .unique_item import (
+    UniqueItem,
+    UniqueItemCreate,
+    UniqueItemUpdate,
 )
 from .user import (
     UpdatePassword,

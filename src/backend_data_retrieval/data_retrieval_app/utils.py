@@ -8,7 +8,10 @@ import pandas as pd
 import requests
 from backend_api.app.core.schemas.item_base_type import ItemBaseType
 from backend_api.app.core.schemas.league import League
-from backend_api.app.core.schemas.modifier import GroupedModifier
+from backend_api.app.core.schemas.modifier import (
+    GroupedModifier,
+    GroupedModifierWUniques,
+)
 from backend_api.app.core.schemas.unique_item import UniqueItem
 from pydantic import HttpUrl, TypeAdapter
 
@@ -223,14 +226,29 @@ def get_grouped_modifiers(headers: dict) -> list[GroupedModifier]:
     return modifiers
 
 
-def get_grouped_modifiers_by_unique(headers: dict) -> dict[str, list[GroupedModifier]]:
-    modifiers = get_grouped_modifiers(headers)
+def get_grouped_modifiers_w_uniques(headers: dict) -> list[GroupedModifierWUniques]:
+    response = send_request_safe(
+        "get",
+        f"{settings.BACKEND_BASE_URL}/modifier/grouped/uniqueItem/",
+        headers=headers,
+        logger=db_retrieval_logger,
+    )
+    modifiers = TypeAdapter(list[GroupedModifierWUniques]).validate_python(
+        response.json()
+    )
+    return modifiers
 
-    modifiers_by_unique = defaultdict[str, list[GroupedModifier]](list)
+
+def get_grouped_modifiers_by_unique(
+    headers: dict,
+) -> dict[str, list[GroupedModifierWUniques]]:
+    modifiers = get_grouped_modifiers_w_uniques(headers)
+
+    modifiers_by_unique = defaultdict[str, list[GroupedModifierWUniques]](list)
     for modifier in modifiers:
-        uniques = modifier.relatedUniques.split("|")
+        uniques = modifier.uniques
         for unique in uniques:
-            modifiers_by_unique[unique].append(modifier)
+            modifiers_by_unique[unique.name].append(modifier)
 
     return dict(modifiers_by_unique)
 

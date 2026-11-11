@@ -50,15 +50,14 @@ class ModifierRoll(_pydantic.BaseModel):
 
 class ModifierUniqueItem(_pydantic.BaseModel):
     uniqueItemId: int
+    name: str
     required: bool | None = None
 
 
 # Properties to receive on modifier creation
 class ModifierCreate(ModifierBase):
     rolls: list[ModifierRoll] = _pydantic.Field(default_factory=list[ModifierRoll])
-    uniques: list[ModifierUniqueItem] = _pydantic.Field(
-        default_factory=list[ModifierUniqueItem]
-    )
+    uniques: list[ModifierUniqueItem] | None = None
 
 
 # Properties to return to client
@@ -68,6 +67,10 @@ class Modifier(ModifierBase):
 
 class GroupedModifier(Modifier):
     rolls: list[ModifierRoll]
+
+
+class GroupedModifierWUniques(GroupedModifier):
+    uniques: list[ModifierUniqueItem]
 
 
 class ModifierUpdate(Modifier):

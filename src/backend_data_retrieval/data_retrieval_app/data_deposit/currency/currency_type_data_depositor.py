@@ -83,7 +83,7 @@ class CurrencyTypeDataDepositor(DataDepositorBase):
                 item["leagueId"] = -1
                 currency_items.append(currency_item_adaptor.validate_python(item))
 
-        yield currency_items
+        return currency_items
 
     def _process_data(
         self, currency_items: list[ExchangeRatioItem]

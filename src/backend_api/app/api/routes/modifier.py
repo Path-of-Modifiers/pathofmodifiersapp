@@ -113,6 +113,34 @@ async def get_grouped_modifier_by_effect(
     return all_grouped_modifiers_by_effect
 
 
+@router.get(
+    "/grouped/uniqueItem/",
+    response_model=list[schemas.GroupedModifierWUniques],
+)
+@apply_ip_rate_limits(
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_SECOND,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_MINUTE,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_HOUR,
+    rate_limit_settings.DEFAULT_USER_RATE_LIMIT_DAY,
+)
+async def get_grouped_modifier_by_effect_w_uniques(
+    request: Request,  # noqa: ARG001
+    response: Response,  # noqa: ARG001
+    db: Session = Depends(get_db),
+):
+    """
+    Get all grouped modifiers by effect.
+
+    Returns a list of all grouped modifiers by effect.
+    """
+
+    all_grouped_modifiers_by_effect_w_unique = (
+        await CRUD_modifier.get_grouped_modifiers_w_uniques(db=db)
+    )
+
+    return all_grouped_modifiers_by_effect_w_unique
+
+
 @router.post(
     "/",
     response_model=list[schemas.Modifier],

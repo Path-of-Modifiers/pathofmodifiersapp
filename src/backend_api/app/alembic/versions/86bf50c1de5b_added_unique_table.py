@@ -46,6 +46,7 @@ def upgrade() -> None:
         "modifier_unique_item",
         sa.Column("modifierId", sa.SmallInteger(), nullable=False),
         sa.Column("uniqueItemId", sa.SmallInteger(), nullable=False),
+        sa.Column("name", sa.Text(), nullable=False),
         sa.Column("required", sa.Boolean(), nullable=True),
         sa.ForeignKeyConstraint(
             ["modifierId"],
