@@ -325,7 +325,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
             )
 
         for field in obj_data:
-            if field in update_data:
+            if field in update_data and update_data.get(field) is not None:
                 logger.debug(
                     f"Update field:{field}:Update data field:{update_data[field]}"
                 )

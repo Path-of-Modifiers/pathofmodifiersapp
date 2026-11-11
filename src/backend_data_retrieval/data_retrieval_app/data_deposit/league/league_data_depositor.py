@@ -30,16 +30,17 @@ class LeagueDataDepositor(DataDepositorBase[League, LeagueCreate, LeagueUpdate])
                 if league[key] == "":
                     league.pop(key)
 
+            name = league["name"]
             deposit_leagues.extend(
                 [
                     LeagueCreate(
-                        name=league["name"],
+                        name=name,
                         validFrom=league["validFrom"],
                         validTo=league.get("validTo"),
                         version=league["version"],
                     ),
                     LeagueCreate(
-                        name=f"Hardcore {league["name"]}",
+                        name=f"Hardcore {name}" if name != "Standard" else "Hardcore",
                         validFrom=league["validFrom"],
                         validTo=league.get("validTo"),
                         version=league["version"],

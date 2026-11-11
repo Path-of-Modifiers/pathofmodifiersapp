@@ -13,7 +13,6 @@ class UniqueJewelDetector(SubCategoryDetectorBase):
         "Forbidden Flesh",
         "Forbidden Flame",
         "The Balance of Terror",
-        "That Which Was Taken",
         "Split Personality",
         "Thread of Hope",
         "The Adorned",

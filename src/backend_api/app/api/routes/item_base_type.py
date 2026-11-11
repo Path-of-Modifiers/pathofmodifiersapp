@@ -120,7 +120,6 @@ async def create_item_base_type(
     ],
 )
 async def update_item_base_type(
-    itemBaseTypeId: int,
     item_base_type_update: schemas.ItemBaseTypeUpdate,
     db: Session = Depends(get_db),
 ):
@@ -129,7 +128,7 @@ async def update_item_base_type(
 
     Returns the updated item base type.
     """
-    item_base_type_map = {"itemBaseTypeId": itemBaseTypeId}
+    item_base_type_map = {"itemBaseTypeId": item_base_type_update.itemBaseTypeId}
     itemBaseType = await CRUD_itemBaseType.get(
         db=db,
         filter=item_base_type_map,
