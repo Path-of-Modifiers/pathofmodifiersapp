@@ -348,7 +348,7 @@ class ItemModifier(Base):
 
 class UniqueItem(Base):
     __tablename__ = "unique_item"
-    uniqueId: Mapped[int] = mapped_column(
+    uniqueItemId: Mapped[int] = mapped_column(
         SmallInteger, Identity(start=1, increment=1), primary_key=True
     )
     name: Mapped[str] = mapped_column(Text, nullable=False)
@@ -360,6 +360,8 @@ class UniqueItem(Base):
         nullable=False,
     )
 
+    iconSuffix: Mapped[str] = mapped_column(Text)
+
     __table_args__ = (
         UniqueConstraint(
             "name", "itemBaseTypeId", name="uq_unique_name_item_basetype_id"
@@ -367,7 +369,7 @@ class UniqueItem(Base):
     )
 
 
-class ModifierUnique(Base):
+class ModifierUniqueItem(Base):
     __tablename__ = "modifier_unique_item"
 
     modifierId: Mapped[int] = mapped_column(
@@ -375,13 +377,13 @@ class ModifierUnique(Base):
         ForeignKey("modifier.modifierId", ondelete="CASCADE", onupdate="CASCADE"),
         nullable=False,
     )
-    uniqueId: Mapped[int] = mapped_column(
+    uniqueItemId: Mapped[int] = mapped_column(
         SmallInteger,
-        ForeignKey("unique.uniqueId", ondelete="CASCADE", onupdate="CASCADE"),
+        ForeignKey("unique_item.uniqueItemId", ondelete="CASCADE", onupdate="CASCADE"),
         nullable=False,
     )
     required: Mapped[bool | None] = mapped_column(Boolean)
-    __table_args__ = (PrimaryKeyConstraint("modifierId", "uniqueId"),)
+    __table_args__ = (PrimaryKeyConstraint("modifierId", "uniqueItemId"),)
 
 
 class User(Base):

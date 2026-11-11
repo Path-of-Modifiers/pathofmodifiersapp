@@ -23,20 +23,21 @@ def upgrade() -> None:
     op.create_table(
         "unique_item",
         sa.Column(
-            "uniqueId",
+            "uniqueItemId",
             sa.SmallInteger(),
             sa.Identity(always=False, start=1, increment=1),
             nullable=False,
         ),
         sa.Column("name", sa.Text(), nullable=False),
         sa.Column("itemBaseTypeId", sa.SmallInteger(), nullable=False),
+        sa.Column("iconSuffix", sa.Text(), nullable=True),
         sa.ForeignKeyConstraint(
             ["itemBaseTypeId"],
             ["item_base_type.itemBaseTypeId"],
             onupdate="CASCADE",
             ondelete="RESTRICT",
         ),
-        sa.PrimaryKeyConstraint("uniqueId"),
+        sa.PrimaryKeyConstraint("uniqueItemId"),
         sa.UniqueConstraint(
             "name", "itemBaseTypeId", name="uq_unique_item_name_item_basetype_id"
         ),
@@ -44,7 +45,7 @@ def upgrade() -> None:
     op.create_table(
         "modifier_unique_item",
         sa.Column("modifierId", sa.SmallInteger(), nullable=False),
-        sa.Column("uniqueId", sa.SmallInteger(), nullable=False),
+        sa.Column("uniqueItemId", sa.SmallInteger(), nullable=False),
         sa.Column("required", sa.Boolean(), nullable=True),
         sa.ForeignKeyConstraint(
             ["modifierId"],
@@ -53,12 +54,12 @@ def upgrade() -> None:
             ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
-            ["uniqueId"],
-            ["unique_item.uniqueId"],
+            ["uniqueItemId"],
+            ["unique_item.uniqueItemId"],
             onupdate="CASCADE",
             ondelete="CASCADE",
         ),
-        sa.PrimaryKeyConstraint("modifierId", "uniqueId"),
+        sa.PrimaryKeyConstraint("modifierId", "uniqueItemId"),
     )
     # ### end Alembic commands ###
     op.drop_column("item_base_type", "relatedUniques")
