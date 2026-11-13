@@ -1,12 +1,21 @@
 from backend_api.app.core.schemas.league import League, LeagueCreate, LeagueUpdate
 
 from data_retrieval_app.data_deposit.data_depositor_base import DataDepositorBase
+from data_retrieval_app.data_deposit.update_schema import UpdateJSONSchemaBase
 from data_retrieval_app.utils import get_leagues
 
 
-class LeagueDataDepositor(DataDepositorBase[League, LeagueCreate, LeagueUpdate]):
+class LeagueDataDepositor(
+    DataDepositorBase[League, LeagueCreate, LeagueUpdate, UpdateJSONSchemaBase]
+):
     def __init__(self) -> None:
-        super().__init__(data_type="league", update_model=LeagueUpdate)
+        super().__init__(
+            data_type="league",
+            primary_key="leagueId",
+            unique_key="name",
+            create_model=LeagueCreate,
+            update_model=LeagueUpdate,
+        )
 
         self.update_url = str(self.data_url)
         self.data_url += "?on_duplicate_pkey_do_nothing=true"
@@ -23,7 +32,7 @@ class LeagueDataDepositor(DataDepositorBase[League, LeagueCreate, LeagueUpdate])
     def _check_for_complex_updates(self, new_data, current, updated):
         return False, updated
 
-    def _preprocess_data(self, data):
+    def _preprocess_new_data(self, data):
         deposit_leagues = list[LeagueCreate]()
         for league in data:
             for key in list(league.keys()):
@@ -50,6 +59,9 @@ class LeagueDataDepositor(DataDepositorBase[League, LeagueCreate, LeagueUpdate])
 
         return deposit_leagues
 
-    def _process_data(self, data):
-        data = self._remove_duplicates(data, primary_key="leagueId", unique_key="name")
+    def _process_new_data(self, data):
+        data = self._remove_duplicates(data)
         return data
+
+    def _process_update_data(self, data):
+        pass
