@@ -1,5 +1,6 @@
 # Source: https://www.poewiki.net/wiki/League#Challenge_leagues
 name,validFrom,validTo,version
-Allflame,2026-07-24T20:00:00Z,2026-11-16T22:00:00Z,3.29
+Standard,2025-01-01T00:00:00Z,,3.30
+Allflame,2026-07-24T20:00:00Z,2026-11-10T22:00:00Z,3.29
 Mirage,2026-03-06T19:00:00Z,2026-07-20T22:00:00Z,3.28
 Keepers,2025-10-31T19:00:00Z,2026-03-02T21:00:00Z,3.27
