@@ -9,6 +9,8 @@ class _BaseItemBaseType(_pydantic.BaseModel):
     category: str
     subCategory: str | None = None
 
+    deprecated: bool | None = None
+
 
 # Properties to receive on item base type creation
 class ItemBaseTypeCreate(_BaseItemBaseType):

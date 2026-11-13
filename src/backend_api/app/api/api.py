@@ -13,6 +13,8 @@ from backend_api.app.api.routes import (
     modifier_prefix,
     plot,
     plot_prefix,
+    table_version,
+    table_version_prefix,
     test,
     test_prefix,
     turnstile,
@@ -59,4 +61,10 @@ api_router.include_router(
     login.router,
     prefix=f"/{login_prefix}",
     tags=[login_prefix],
+)
+
+api_router.include_router(
+    table_version.router,
+    prefix=f"/{table_version_prefix}",
+    tags=[table_version_prefix],
 )

@@ -1,9 +1,15 @@
 from backend_api.app.core.models.models import ItemBaseType as model_ItemBaseType
+from backend_api.app.core.models.models import TableVersion as model_TableVersion
 from backend_api.app.core.models.models import UniqueItem as model_UniqueItem
 from backend_api.app.core.schemas.item_base_type import (
     ItemBaseType,
     ItemBaseTypeCreate,
     ItemBaseTypeUpdate,
+)
+from backend_api.app.core.schemas.table_version import (
+    TableVersion,
+    TableVersionCreate,
+    TableVersionUpdate,
 )
 from backend_api.app.core.schemas.unique_item import (
     UniqueItem,
@@ -38,4 +44,9 @@ CRUD_uniqueItem = CRUDBase[
     model_UniqueItem, UniqueItem, UniqueItemCreate, UniqueItemUpdate
 ](model=model_UniqueItem, schema=UniqueItem, create_schema=UniqueItemCreate)
 
+
 CRUD_user = CRUDUser()
+
+CRUD_tableVersion = CRUDBase[
+    model_TableVersion, TableVersion, TableVersionCreate, TableVersionUpdate
+](model=model_TableVersion, schema=TableVersion, create_schema=TableVersionCreate)

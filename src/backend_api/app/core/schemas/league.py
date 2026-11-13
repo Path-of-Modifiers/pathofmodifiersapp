@@ -10,6 +10,8 @@ class _BaseLeague(_pydantic.BaseModel):
     validTo: _pydantic.AwareDatetime | None = None
     version: float
 
+    deprecated: bool | None = None
+
     @_pydantic.field_serializer("validFrom", "validTo")
     def serialize_valid_from(self, value: _pydantic.AwareDatetime | None) -> str:
         if value is None:
