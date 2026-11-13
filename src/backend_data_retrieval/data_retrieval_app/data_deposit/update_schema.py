@@ -5,7 +5,7 @@ from pydantic import BaseModel, model_validator
 class UpdateJSONSchemaBase(BaseModel):
     old: str | list[str]
     new: str | list[str] | None = None
-    set_deprecated: bool | None = None
+    set_deprecated: bool = False
     remove: bool = False
     patch: bool = False
     post: bool = False
