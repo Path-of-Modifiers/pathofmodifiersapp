@@ -7,7 +7,10 @@ from backend_api.app.core.schemas.currency import (
 )
 from pydantic import TypeAdapter
 
-from data_retrieval_app.data_deposit.data_depositor_base import DataDepositorBase
+from data_retrieval_app.data_deposit.data_depositor_base import (
+    DataDepositorBase,
+    FileType,
+)
 from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.external_data_retrieval.data_retrieval.schemas.external.currency import (
     ExchangeRatioItem,
@@ -63,19 +66,19 @@ class CurrencyTypeDataDepositor(DataDepositorBase):
 
         return TypeAdapter(list[CurrencyType]).validate_python(response.json())
 
-    def _load_data(self) -> Iterator[list[ExchangeRatioItem]]:
+    def _load_data(self) -> Iterator[tuple[FileType, list[ExchangeRatioItem]]]:
         response = get_data_safe(
             "https://api.poe.watch/exchange/ratios?league=Standard&game=poe1",
             logger=logger,
         )
         response_json = response.json()
 
-        yield response_json["items"]
+        yield FileType.NEW_DATA, response_json["items"]
 
     def _check_for_complex_updates(self, new_data, current, updated):
         return False, updated
 
-    def _preprocess_data(self, data):
+    def _preprocess_new_data(self, data):
         currency_items = list[ExchangeRatioItem]()
         currency_item_adaptor = TypeAdapter(ExchangeRatioItem)
         for item in data:
@@ -85,7 +88,7 @@ class CurrencyTypeDataDepositor(DataDepositorBase):
 
         return currency_items
 
-    def _process_data(
+    def _process_new_data(
         self, currency_items: list[ExchangeRatioItem]
     ) -> list[CurrencyTypeCreate]:
         """
@@ -168,6 +171,12 @@ class CurrencyTypeDataDepositor(DataDepositorBase):
             )
 
         return processed_currencies
+
+    def _preprocess_update_data(self, data):
+        return None
+
+    def _process_update_data(self, data):
+        pass
 
     def _insert_data(self, currencies: list[CurrencyTypeCreate]):
         if not currencies:

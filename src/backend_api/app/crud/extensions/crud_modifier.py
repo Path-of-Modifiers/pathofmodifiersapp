@@ -114,11 +114,13 @@ class CRUDModifier(
             .cte("grouped_modifier_rolls")
         )
 
-        stmt = select(
-            *model_Modifier.__table__.columns, grouped_modifier_rolls.c.rolls
-        ).join(
-            grouped_modifier_rolls,
-            model_Modifier.modifierId == grouped_modifier_rolls.c.modifierId,
+        stmt = (
+            select(*model_Modifier.__table__.columns, grouped_modifier_rolls.c.rolls)
+            .join(
+                grouped_modifier_rolls,
+                model_Modifier.modifierId == grouped_modifier_rolls.c.modifierId,
+            )
+            .where(model_Modifier.deprecated.isnot(True))
         )
         grouped_modifiers = db.execute(stmt).mappings().all()
 
@@ -186,6 +188,7 @@ class CRUDModifier(
                 grouped_modifier_uniques,
                 model_Modifier.modifierId == grouped_modifier_uniques.c.modifierId,
             )
+            .where(model_Modifier.deprecated.isnot(True))
         )
         grouped_modifiers_w_uniques = db.execute(stmt).mappings().all()
 

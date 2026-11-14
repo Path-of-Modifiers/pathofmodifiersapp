@@ -35,6 +35,8 @@ class League(Base):
     validTo: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
     version: Mapped[float] = mapped_column(Float, nullable=False)
 
+    deprecated: Mapped[bool | None] = mapped_column(Boolean)
+
 
 class CurrencyType(Base):
     __tablename__ = "currency_type"
@@ -79,6 +81,8 @@ class ItemBaseType(Base):
     )
     category: Mapped[str] = mapped_column(Text, nullable=False)
     subCategory: Mapped[str | None] = mapped_column(Text)
+
+    deprecated: Mapped[bool | None] = mapped_column(Boolean)
 
 
 class ItemAvailability(Base):
@@ -253,6 +257,8 @@ class Modifier(Base):
         onupdate=func.now(),
     )
 
+    deprecated: Mapped[bool | None] = mapped_column(Boolean)
+
     __table_args__ = (
         CheckConstraint(
             """
@@ -360,7 +366,9 @@ class UniqueItem(Base):
         nullable=False,
     )
 
-    iconSuffix: Mapped[str] = mapped_column(Text)
+    iconSuffix: Mapped[str | None] = mapped_column(Text)
+
+    deprecated: Mapped[bool | None] = mapped_column(Boolean)
 
     __table_args__ = (
         UniqueConstraint(
@@ -420,3 +428,10 @@ class User(Base):
             name="check_username_letters_numbers_and_underscores",
         ),
     )
+
+
+class TableVersion(Base):
+    __tablename__ = "table_version"
+
+    tableName: Mapped[str] = mapped_column(Text, primary_key=True)
+    version: Mapped[str] = mapped_column(Text, nullable=False)

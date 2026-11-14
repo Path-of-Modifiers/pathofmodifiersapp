@@ -7,6 +7,8 @@ class UniqueItemBase(_pydantic.BaseModel):
     itemBaseTypeId: int
     iconSuffix: str | None = None
 
+    deprecated: bool | None = None
+
 
 # Properties to receive on modifier creation
 class UniqueItemCreate(UniqueItemBase):

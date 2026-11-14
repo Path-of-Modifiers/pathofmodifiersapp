@@ -12,6 +12,7 @@ from backend_api.app.core.schemas.modifier import (
     GroupedModifier,
     GroupedModifierWUniques,
 )
+from backend_api.app.core.schemas.table_version import TableVersion
 from backend_api.app.core.schemas.unique_item import UniqueItem
 from pydantic import HttpUrl, TypeAdapter
 
@@ -288,3 +289,13 @@ def get_uniques_by_name_and_basetype_id(
     uniques = get_uniques(headers)
 
     return {(unique.name, unique.itemBaseTypeId): unique for unique in uniques}
+
+
+def get_table_version(table: str, headers: dict) -> TableVersion | None:
+    response = send_request_safe(
+        "get",
+        f"{settings.BACKEND_BASE_URL}/tableVersion/{table}",
+        headers=headers,
+        logger=db_retrieval_logger,
+    )
+    return TypeAdapter(TableVersion | None).validate_python(response.json())

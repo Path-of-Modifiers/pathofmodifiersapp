@@ -10,3 +10,4 @@ from backend_api.app.api.routes.turnstile import turnstile_prefix
 from backend_api.app.api.routes.unidentified_item import unidentified_item_prefix
 from backend_api.app.api.routes.unique_item import unique_item_prefix
 from backend_api.app.api.routes.user import user_prefix
+from backend_api.app.api.routes.table_version import table_version_prefix

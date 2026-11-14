@@ -11,22 +11,34 @@ from data_retrieval_app.data_deposit.data_depositor_base import DataDepositorBas
 from data_retrieval_app.data_deposit.modifier.modifier_processing_modules import (
     ModifierRegexCreator,
 )
+from data_retrieval_app.data_deposit.update_schema import (
+    ModifierUpdateJSONSchema,
+)
 from data_retrieval_app.utils import (
-    get_grouped_modifiers,
+    get_grouped_modifiers_w_uniques,
     get_item_base_type_id_by_name,
     get_uniques_by_name_and_basetype_id,
 )
 
 
 class ModifierDataDepositor(
-    DataDepositorBase[GroupedModifier, ModifierCreate, ModifierUpdate]
+    DataDepositorBase[
+        GroupedModifier, ModifierCreate, ModifierUpdate, ModifierUpdateJSONSchema
+    ]
 ):
     def __init__(self) -> None:
-        super().__init__(data_type="modifier", update_model=ModifierUpdate)
+        super().__init__(
+            data_type="modifier",
+            primary_key="modifierId",
+            unique_key="effect",
+            create_model=ModifierCreate,
+            update_model=ModifierUpdate,
+            update_json_schema=ModifierUpdateJSONSchema,
+        )
         self.regex_creator = ModifierRegexCreator()
 
     def _get_current_modifiers(self) -> dict[str, GroupedModifier]:
-        modifiers = get_grouped_modifiers(self.pom_auth_headers)
+        modifiers = get_grouped_modifiers_w_uniques(self.pom_auth_headers)
 
         return {(modifier.effect,): modifier for modifier in modifiers}
 
@@ -68,12 +80,13 @@ class ModifierDataDepositor(
         return need_update, updated
 
     def _set_db_state(self):
+        self.current_data_by_unique_key = self._get_current_modifiers()
         self.uniques_by_name_and_basetype_id = get_uniques_by_name_and_basetype_id(
             self.pom_auth_headers
         )
         self.basetype_id_by_name = get_item_base_type_id_by_name(self.pom_auth_headers)
 
-    def _preprocess_data(self, data):
+    def _preprocess_new_data(self, data):
         deposit_modifiers = dict[str, ModifierCreate]()
         uniques = [
             self.uniques_by_name_and_basetype_id[
@@ -115,13 +128,10 @@ class ModifierDataDepositor(
             deposit_modifiers.values()
         )
 
-    def _process_data(self, data):
-        self.current_data_by_unique_key = self._get_current_modifiers()
+    def _process_new_data(self, data):
         # data = self._track_comments(data)
         non_duplicate_data = self._remove_duplicates(
             data,
-            primary_key="modifierId",
-            unique_key="effect",
             skip_fields=["regex", "rolls", "uniques"],
         )
         non_duplicate_data = self.regex_creator.add_regex(non_duplicate_data)

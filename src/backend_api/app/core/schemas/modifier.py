@@ -7,8 +7,9 @@ import pydantic as _pydantic
 class ModifierBase(_pydantic.BaseModel):
     model_config = _pydantic.ConfigDict(from_attributes=True, extra="ignore")
 
-    static: bool | None = None
     effect: str
+
+    static: bool | None = None
     regex: re.Pattern | None = None
 
     implicit: bool | None = None
@@ -20,6 +21,8 @@ class ModifierBase(_pydantic.BaseModel):
     corrupted: bool | None = None
     enchanted: bool | None = None
     veiled: bool | None = None
+
+    deprecated: bool | None = None
 
     @_pydantic.field_validator("regex", mode="before")
     @classmethod

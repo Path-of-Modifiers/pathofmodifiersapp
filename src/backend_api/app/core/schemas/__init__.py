@@ -68,3 +68,8 @@ from .user import (
     UserUpdate,
     UserUpdateMe,
 )
+from .table_version import (
+    TableVersion,
+    TableVersionCreate,
+    TableVersionUpdate,
+)
