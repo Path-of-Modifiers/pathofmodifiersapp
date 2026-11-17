@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 import requests
 from pydantic import HttpUrl
 
@@ -5,6 +7,7 @@ from data_retrieval_app.external_data_retrieval.config import settings
 from data_retrieval_app.logs.logger import main_logger
 
 
+@lru_cache(maxsize=1)
 def get_superuser_token_headers(url: HttpUrl) -> dict[str, str]:
     login_data = {
         "username": settings.FIRST_SUPERUSER,

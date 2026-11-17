@@ -46,8 +46,9 @@ from data_retrieval_app.utils import get_data_safe
 class NextRequestState(enum.Enum):
     STOP = 1
     RESET = 2
-    RETRY = 3
+    WAIT = 3
     READY = 4
+    RETRY = 5
 
 
 class PoEAPIHandler:
@@ -150,7 +151,7 @@ class PoEAPIHandler:
                 # The timeout is to avoid getting stuck when the other listener has stopped
                 change_id = incoming.get(timeout=5)
             except Empty:
-                return NextRequestState.RETRY, None
+                return NextRequestState.WAIT, None
 
             return NextRequestState.READY, change_id
 
@@ -208,12 +209,16 @@ class PoEAPIHandler:
                     case NextRequestState.STOP:
                         break
                     case NextRequestState.RESET:
-                        continue
-                    case NextRequestState.RETRY:
+                        local_responses = []
+                        change_id = new_change_id
+                        retry_delay = default_retry_delay
+                    case NextRequestState.WAIT:
                         continue
                     case NextRequestState.READY:
                         change_id = new_change_id
                         retry_delay = default_retry_delay
+                    case NextRequestState.RETRY:
+                        pass
 
                 sent_outgoing = False
 
@@ -252,7 +257,7 @@ class PoEAPIHandler:
                             response=response.read(),
                         )
                     local_responses.append(byte_response)
-                except httpx.TransportError:
+                except (httpx.TransportError, httpx.HTTPStatusError):
                     logger.warning(
                         f"Connection lost with server, backing off for {retry_delay} seconds",
                         exc_info=True,
@@ -289,17 +294,17 @@ class PoEAPIHandler:
         crashed: bool = False,
         listener_id: int = None,
     ) -> dict[Future, Literal["listener_0", "listener_1"]]:
-        if settings.MANUAL_NEXT_CHANGE_ID:
-            self.initial_change_id = settings.NEXT_CHANGE_ID
-        else:
-            league = self.leagues[0]["name"]
-            self.initial_change_id = cache.get(f"next_change_id:{league}")
-            if self.initial_change_id is None:
-                logger.info("Using manually set change id")
-                self.initial_change_id = self._get_latest_change_id()
-
         if not crashed:
             logger.info("Initializing follow stream threads")
+            if settings.MANUAL_NEXT_CHANGE_ID:
+                self.initial_change_id = settings.NEXT_CHANGE_ID
+            else:
+                league = self.leagues[0].name
+                self.initial_change_id = cache.get(f"next_change_id:{league}")
+                if self.initial_change_id is None:
+                    logger.info("Using manually set change id")
+                    self.initial_change_id = self._get_latest_change_id()
+
             self.rate_limiter = RateLimiterThreadSafe()
             self.mini_batch_size = settings.MINI_BATCH_SIZE
             self.response_queue = Queue(maxsize=self.mini_batch_size)
