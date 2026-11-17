@@ -244,7 +244,8 @@ class CRUDItem:
         # 3. Insert the new availability
         new_availability = (
             db.execute(
-                insert(model_ItemAvailability).from_select(
+                insert(model_ItemAvailability)
+                .from_select(
                     [
                         "itemId",
                         "currencyId",
@@ -258,6 +259,7 @@ class CRUDItem:
                         incoming_table.c.valid_from,
                     ),
                 )
+                .returning(model_ItemAvailability)
             )
             .scalars()
             .all()

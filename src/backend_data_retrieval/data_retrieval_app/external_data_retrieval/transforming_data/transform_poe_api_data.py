@@ -79,7 +79,7 @@ class PoEAPIDataTransformer:
 
         self.league_to_mirror = dict[int, Currency]()
         for league_id in self.league_to_id.values():
-            mirror = currencies[(league_id, "mirror")]
+            mirror = currencies.get((league_id, "mirror"))
             self.league_to_mirror[league_id] = mirror
 
     def extract_valid_price(self, item: PoeItem) -> ItemPrice | None:
@@ -106,6 +106,9 @@ class PoEAPIDataTransformer:
 
     def _exceeds_price_threshold(self, league_id: int, chaos_price: float) -> bool:
         mirror = self.league_to_mirror[league_id]
+        if mirror is None:
+            return True
+
         price_in_mirrors = chaos_price / mirror.valueInChaos
 
         return price_in_mirrors > settings.MAX_MIRROR_PRICE
