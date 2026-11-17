@@ -207,7 +207,9 @@ class DetectorController:
                 )
 
         if cached_stashes_to_remove:
-            self.cache.remove_stashes(cached_stashes_to_remove)
+            self.cached_stashes_to_remove = cached_stashes_to_remove
+        else:
+            cached_stashes_to_remove = None
 
         logger.info(
             f"task=find_removed n_stashes_in={len(empty_stash_ids)} n_stashes_cached={len(cached_stashes_to_remove)} n_removed_items={len(removed_items)}"
@@ -296,7 +298,9 @@ class DetectorController:
                 stashes_to_cache[current_stash.id] = updated_cached_stash
 
         if stashes_to_cache:
-            self.cache.update_stashes(stashes_to_cache)
+            self.stashes_to_cache = stashes_to_cache
+        else:
+            self.stashes_to_cache = None
 
         logger.info(
             f"task=find_changed_filter_unchanged n_stashes_in={len(stashes)} n_stashes_cached={n_stashes_cached} n_items_filtered={n_items_filtered} n_removed_items={len(removed_items)} n_changed_items={len(changed_items)} n_new_items={len(new_items)}"
@@ -377,19 +381,11 @@ class DetectorController:
 
         return self._organize_items(removed_items, changed_items, new_items)
 
-    # def post_transform_cleanup(self, organized_items: OrganizedItemsByCategory):
-    #     dismissed_items_by_cached_stash = defaultdict[str, list[PoeItem]]()
-    #     for category in organized_items.iter_categories():
-    #         for dimissed_item in category.dismissed_items:
-    #             cached_stash_id = self.item_id_to_cached_stash_id[dimissed_item.id]
-    #             dismissed_items_by_cached_stash[cached_stash_id].append(dimissed_item)
-
-    #     for cached_stash_id, dimissed_items in dismissed_items_by_cached_stash.items():
-    #         cached_stash = self.cached_stash_adapter.validate_json(
-    #             self.local_cache[cached_stash_id]
-    #         )
-    #         for item in dimissed_items:
-    #             cached_stash.items.remove(item)
+    def to_cache(self):
+        if self.cached_stashes_to_remove is not None:
+            self.cache.remove_stashes(self.cached_stashes_to_remove)
+        if self.stashes_to_cache is not None:
+            self.cache.update_stashes(self.stashes_to_cache)
 
     def end_of_program_cleanup(self):
         self.cache.flush_local_cache()

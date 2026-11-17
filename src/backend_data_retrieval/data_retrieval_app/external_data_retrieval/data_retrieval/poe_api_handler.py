@@ -432,6 +432,7 @@ class PoEAPIHandler:
                 continue
             logger.info("Finished processing the stream, entering transformation phase")
             self.data_transformer.transform_and_insert(organized_items)
+            self.detector_controller.to_cache()
             logger.info("Finished transformation phase")
             yield next_change_id
 
