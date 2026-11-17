@@ -209,7 +209,7 @@ class DetectorController:
         if cached_stashes_to_remove:
             self.cached_stashes_to_remove = cached_stashes_to_remove
         else:
-            cached_stashes_to_remove = None
+            self.cached_stashes_to_remove = None
 
         logger.info(
             f"task=find_removed n_stashes_in={len(empty_stash_ids)} n_stashes_cached={len(cached_stashes_to_remove)} n_removed_items={len(removed_items)}"
